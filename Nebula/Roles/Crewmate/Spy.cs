@@ -15,7 +15,7 @@ namespace Nebula.Roles.Crewmate
                      crewmateSideSet, Impostor.Impostor.impostorSideSet, Crewmate.crewmateEndSet,
                      false, true, false, false, true)
         {
-
+            deceiveImpostorInNameDisplay = true;
         }
     }
 }

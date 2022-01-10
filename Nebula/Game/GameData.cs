@@ -43,6 +43,7 @@ namespace Nebula.Game
         public bool IsAlive { get; private set; }
 
         public PlayerOutfit outfit { get; }
+        public string currentName { get; set; }
 
         public PlayerData(byte playerId, string name,PlayerOutfit outfit,Role role)
         {
@@ -53,6 +54,7 @@ namespace Nebula.Game
             this.roleData = new Dictionary<int, int>();
             this.IsAlive = true;
             this.outfit = outfit;
+            this.currentName = name;
         }
 
         public int GetRoleData(int id)
@@ -83,6 +85,16 @@ namespace Nebula.Game
         public void Die()
         {
             IsAlive = false;
+
+            if (role.hasFakeTask)
+            {
+                Helpers.allPlayersById()[id].clearAllTasks();
+            }
+        }
+
+        public bool IsMyPlayerData()
+        {
+            return id == GameData.data.myData.getGlobalData().id;
         }
     }
 

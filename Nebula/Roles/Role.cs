@@ -58,6 +58,7 @@ namespace Nebula.Roles
         public bool useImpostorLightRadius { get; set; }
         //Modで管理するFakeTaskを所持しているかどうか(Impostorは対象外)
         public bool hasFakeTask { get; }
+        public bool deceiveImpostorInNameDisplay { get; set; }
 
         private HashSet<Patches.EndCondition> winReasons { get; }
 
@@ -171,6 +172,8 @@ namespace Nebula.Roles
 
             this.lightRadiusMin = 1.0f;
             this.lightRadiusMax = 1.0f;
+
+            this.deceiveImpostorInNameDisplay = false;
 
             //未設定
             this.optionId = -1;

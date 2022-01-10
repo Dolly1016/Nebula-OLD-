@@ -157,7 +157,7 @@ namespace Nebula
             target.RawSetColor(colorId);
             target.RawSetVisor(visorId);
             target.RawSetHat(hatId, colorId);
-            //target.RawSetName(hidePlayerName(PlayerControl.LocalPlayer, target) ? "" : playerName);
+            Game.GameData.data.players[target.PlayerId].currentName = playerName;
 
             SkinData nextSkin = DestroyableSingleton<HatManager>.Instance.GetSkinById(skinId);
             PlayerPhysics playerPhysics = target.MyPhysics;
