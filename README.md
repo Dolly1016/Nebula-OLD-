@@ -25,6 +25,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 **インポスター陣営**
 | Roles |
 | ---------- |
+| [Camouflager](#camouflager) |
 | [Evil Ace](#evil-ace) |
 
 **クルーメイト陣営**
@@ -39,6 +40,15 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 | Roles |
 | ---------- |
 | [Jackal](#jackal) |
+
+-----------------------
+
+## Camouflager
+ Camouflagerは、プレイヤーを判別できないようにして場を混乱させます。
+ 
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
 
 -----------------------
 
