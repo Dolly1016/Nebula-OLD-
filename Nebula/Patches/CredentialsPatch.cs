@@ -23,7 +23,15 @@ namespace Nebula.Patches
 
                 var credentials = UnityEngine.Object.Instantiate<TMPro.TextMeshPro>(__instance.text);
                 credentials.transform.position = new Vector3(0, 0, 0);
-                credentials.SetText($"v{Nebula.NebulaPlugin.PluginVersion}");
+
+                if (Nebula.NebulaPlugin.PluginStage != null)
+                {
+                    credentials.SetText(Nebula.NebulaPlugin.PluginStage + " v" + Nebula.NebulaPlugin.PluginVersion);
+                }
+                else
+                {
+                    credentials.SetText($"v{Nebula.NebulaPlugin.PluginVersion}");
+                }
                 credentials.alignment = TMPro.TextAlignmentOptions.Center;
                 credentials.fontSize *= 0.75f;
 
