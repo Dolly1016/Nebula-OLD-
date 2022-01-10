@@ -1,0 +1,84 @@
+"option.display.pressTabForMore" : "Press Tab For More"
+"option.display.percentage.0" : "0%"
+"option.display.percentage.10" : "10%"
+"option.display.percentage.20" : "20%"
+"option.display.percentage.30" : "30%"
+"option.display.percentage.40" : "40%"
+"option.display.percentage.50" : "50%"
+"option.display.percentage.60" : "60%"
+"option.display.percentage.70" : "70%"
+"option.display.percentage.80" : "80%"
+"option.display.percentage.90" : "90%"
+"option.display.percentage.100" : "100%"
+"option.display.preset.1" : "Preset 1"
+"option.display.preset.2" : "Preset 2"
+"option.display.preset.3" : "Preset 3"
+"option.display.preset.4" : "Preset 4"
+"option.display.preset.5" : "Preset 5"
+"option.switch.on" : "On"
+"option.switch.off" : "Off"
+
+"option.preset" : "Preset"
+"option.activeRoles" : "Active Mod Roles and Block Vanilla Roles"
+"option.crewmateRoles" : "Crewmate Roles"
+"option.minimumCrewmateRoles" : "Minimum Crewmate Roles"
+"option.maximumCrewmateRoles" : "Maximum Crewmate Roles"
+"option.neutralRoles" : "Neutral Roles"
+"option.minimumNeutralRoles" : "Minimum Neutral Roles"
+"option.maximumNeutralRoles" : "Maximum Neutral Roles"
+"option.impostorRoles" : "Impostor Roles"
+"option.minimumImpostorRoles" : "Minimum Impostor Roles"
+"option.maximumImpostorRoles" : "Maximum Impostor Roles"
+
+"option.maxNumberOfMeetings" : "Max Number Of Meetings"
+"option.blockSkippingInEmergencyMeetings" : "Block Skipping In Emergency Meetings"
+"option.noVoteIsSelfVote" : "No Vote Is Self Vote"
+"option.parallelMedbayScans" : "Parallel Medbay Scans"
+"option.hideSettings" : "Hide Settings"
+
+"option.uselessOptions" : "Useless Option"
+"option.playRandomMaps" : "Play Random Maps"
+
+"option.roleCount" : "Max Players"
+
+"option.suffix.cross" : "x"
+"option.suffix.second" : "s"
+
+"role.crewmate.name" : "Crewmate"
+"role.crewmate.description" : "Find the <color=#ff1919ff>Impostors</color>"
+
+"role.securityGuard.name" : "Security Guard"
+"role.securityGuard.description" : "Seal Vent to Inhibit Barbarism"
+"role.securityGuard.maxScrews" : "Max Screws Vents"
+
+"role.sheriff.name" : "Sheriff"
+"role.sheriff.description" : "Shoot the <color=#ff1919ff>Impostors</color>"
+
+"role.spy.name" : "Spy"
+"role.spy.description" : "Confuse the <color=#ff1919ff>Impostors</color>"
+
+"role.madmate.name" : "Madmate"
+"role.madmate.description" : "Assist the <color=#ff1919ff>Impostors</color>"
+
+"role.impostor.name" : "Impostor"
+"role.impostor.description" : "Kill the Crewmates"
+
+"role.evilAce.name" : "Evil Ace"
+"role.evilAce.description" : "Kill the Crewmates"
+"role.evilAce.killCoolDown" : "Kill Cool Down Multiplier"
+
+"role.camouflager.name" : "Camouflager"
+"role.camouflager.description" : "Camouflage and Kill the Crewmates"
+"role.camouflager.camouflageCoolDown" : "Camouflage Cool Down"
+"role.camouflager.camouflageDuration" : "Camouflage Duration"
+
+"role.jackal.name" : "Jackal"
+"role.jackal.description" : "Kill all Crewmates and <color=#ff1919ff>Impostors</color> to Win"
+
+"side.crewmate.name" : "Crewmate"
+"side.impostor.name" : "Impostor"
+"side.jackal.name" : "Jackal"
+
+"game.endText.crewmate" : "Team Crewmate Wins"
+"game.endText.impostor" : "Team Impostor Wins"
+"game.endText.jackal" : "Team Jackal Wins"
