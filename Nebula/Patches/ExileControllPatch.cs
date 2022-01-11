@@ -32,8 +32,17 @@ namespace Nebula.Patches
 
         static void WrapUpPostfix(GameData.PlayerInfo exiled)
         {
+            if (Game.GameData.data.players[exiled.PlayerId].role.OnExiled())
+            {
+               
+                Game.GameData.data.players[exiled.PlayerId].Die();
+            }
+            else
+            {
+                exiled.IsDead = false;
+            }
+
             Game.GameData.data.myData.getGlobalData().role.OnMeetingEnd();
-            Game.GameData.data.players[exiled.PlayerId].Die();
         }
     }
 }

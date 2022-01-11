@@ -75,10 +75,15 @@
 "role.jackal.name" : "Jackal"
 "role.jackal.description" : "Kill all Crewmates and <color=#ff1919ff>Impostors</color> to Win"
 
+"role.jester.name" : "Jester"
+"role.jester.description" : "Get Voted Out"
+
 "side.crewmate.name" : "Crewmate"
 "side.impostor.name" : "Impostor"
 "side.jackal.name" : "Jackal"
+"side.jester.name" : "Jester"
 
 "game.endText.crewmate" : "Team Crewmate Wins"
 "game.endText.impostor" : "Team Impostor Wins"
 "game.endText.jackal" : "Team Jackal Wins"
+"game.endText.jester" : "Jester Wins"

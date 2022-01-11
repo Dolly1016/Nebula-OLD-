@@ -54,16 +54,20 @@ namespace Nebula.Patches
     [HarmonyPatch]
     class IntroPatch
     {
-        public static void setupIntroTeam(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> yourTeam)
+        public static void setupIntroTeamText(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> yourTeam)
         {
             Roles.Role role = Game.GameData.data.players[PlayerControl.LocalPlayer.PlayerId].role;
-
-            yourTeam.Clear();
 
             __instance.BackgroundBar.material.color = role.introMainDisplaySide.color;
             __instance.TeamTitle.text = Language.Language.GetString("side." + role.introMainDisplaySide.localizeSide + ".name");
             __instance.TeamTitle.color = role.introMainDisplaySide.color;
+        }
 
+        public static void setupIntroTeamMembers(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> yourTeam)
+        {
+            Roles.Role role = Game.GameData.data.players[PlayerControl.LocalPlayer.PlayerId].role;
+
+            yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             Roles.Role.ExtractDisplayPlayers(ref yourTeam);
         }
 
@@ -84,18 +88,26 @@ namespace Nebula.Patches
         [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.BeginCrewmate))]
         class BeginCrewmatePatch
         {
+            public static void Prefix(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> yourTeam)
+            {
+                setupIntroTeamMembers(__instance, ref yourTeam);
+            }
             public static void Postfix(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> yourTeam)
             {
-                setupIntroTeam(__instance, ref yourTeam);
+                setupIntroTeamText(__instance, ref yourTeam);
             }
         }
 
         [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.BeginImpostor))]
         class BeginImpostorPatch
         {
+            public static void Prefix(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> yourTeam)
+            {
+                setupIntroTeamMembers(__instance, ref yourTeam);
+            }
             public static void Postfix(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> yourTeam)
             {
-                setupIntroTeam(__instance, ref yourTeam);
+                setupIntroTeamText(__instance, ref yourTeam);
             }
         }
     }

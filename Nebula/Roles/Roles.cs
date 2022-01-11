@@ -23,6 +23,7 @@ namespace Nebula.Roles
         public static Impostor.Camouflager Camouflager = new Impostor.Camouflager();
 
         public static Neutral.Jackal Jackal = new Neutral.Jackal();
+        public static Neutral.Jester Jester = new Neutral.Jester();
 
 
         public static List<Role> AllRoles = new List<Role>()
@@ -30,7 +31,7 @@ namespace Nebula.Roles
             Crewmate,Sheriff,SecurityGuard,Spy,
             Madmate,
             Impostor,EvilAce,Camouflager,
-            Jackal
+            Jackal,Jester
         };
     }
 }

@@ -50,17 +50,21 @@ namespace Nebula.Roles.Impostor
                     camouflageWriter.Write(camouflageDurationOption.getFloat());
                     AmongUsClient.Instance.FinishRpcImmediately(camouflageWriter);
                     RPCEvents.GlobalEvent(Events.GlobalEvent.Type.Camouflage.Id, camouflageDurationOption.getFloat());
-
-
-                    camouflageButton.Timer = camouflageButton.MaxTimer;
                 },
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
                 () => { return PlayerControl.LocalPlayer.CanMove; },
-                () => { camouflageButton.Timer = camouflageButton.MaxTimer; },
+                () => { 
+                    camouflageButton.Timer = camouflageButton.MaxTimer;
+                    camouflageButton.isEffectActive = false;
+                    camouflageButton.actionButton.cooldownTimerText.color = Palette.EnabledColor;
+                },
                 getButtonSprite(),
-                new Vector3(0f, 1f, 0),
+                new Vector3(-1.8f, -0.06f, 0),
                 __instance,
-                KeyCode.Q
+                KeyCode.F,
+                true,
+                camouflageDurationOption.getFloat(),
+                () => { camouflageButton.Timer = camouflageButton.MaxTimer; }
             );
             camouflageButton.MaxTimer = camouflageCoolDownOption.getFloat();
         }

@@ -141,6 +141,11 @@ namespace Nebula.Roles
 
         public virtual void OnMeetingEnd() { }
 
+        public virtual bool OnExiled()
+        {
+            return true;
+        }
+
         protected Role(string name, string localizeName, Color color, RoleCategory category,
             Side side, Side introMainDisplaySide, HashSet<Side> introDisplaySides, HashSet<Side> introInfluenceSides,
             HashSet<Patches.EndCondition> winReasons,
@@ -210,7 +215,10 @@ namespace Nebula.Roles
             {
                 if (myData.role.introMainDisplaySide.showFullMemberAtIntro)
                 {
-                    players.Add(player);
+                    if (!players.Contains(player))
+                    {
+                        players.Add(player);
+                    }
                 }
                 else
                 {
@@ -220,7 +228,10 @@ namespace Nebula.Roles
                     {
                         if (myData.role.introDisplaySides.Contains(side))
                         {
-                            players.Add(player);
+                            if (!players.Contains(player))
+                            {
+                                players.Add(player);
+                            }
                             break;
                         }
                     }

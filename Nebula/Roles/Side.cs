@@ -80,8 +80,12 @@ namespace Nebula.Roles
             return null;
         });
 
-        public static Side Jester = new Side("Jester", "jester", false, new Color(221, 74, 145), (PlayerStatistics statistics, ShipStatus status) =>
+        public static Side Jester = new Side("Jester", "jester", false, Neutral.Jester.Color, (PlayerStatistics statistics, ShipStatus status) =>
         {
+            if (Roles.Jester.WinTrigger)
+            {
+                return EndCondition.JesterWin;
+            }
             return null;
         });
 
