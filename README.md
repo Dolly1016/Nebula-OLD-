@@ -40,6 +40,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 | Roles |
 | ---------- |
 | [Jackal](#jackal) |
+| [Jester](#jester) |
 
 -----------------------
 
@@ -103,6 +104,15 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 ## Jackal
  Jackalはキルをすることができる第三陣営で、自身以外全員の死亡が勝利条件です。
+ 
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+
+-----------------------
+
+## Jester
+ Jesterは投票によって吊られることで勝利します。
  
  ### オプション
 | オプション名 | 設定内容 |
