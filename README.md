@@ -16,7 +16,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 <details>
   <summary>クリックで展開</summary>
   
-**Version Alpha 1.0.0**
+**Version Alpha 1.1.0**
  - Jester , Camouflager を追加
  - Spyがインポスター陣営側から赤文字で見えるように
  - ゲーム開始画面で正常にチームメンバーが表示されるよう修正
