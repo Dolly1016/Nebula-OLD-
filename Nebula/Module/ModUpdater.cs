@@ -131,15 +131,23 @@ namespace Nebula.Module
                 string json = await response.Content.ReadAsStringAsync();
                 JObject data = JObject.Parse(json);
 
-                string tagname = data["tag_name"]?.ToString();
+                string[] tagname = data["tag_name"]?.ToString().Split(',');
+
                 if (tagname == null)
                 {
                     return false; // Something went wrong
                 }
+
+                if (tagname.Length != 2)
+                {
+                    return false;
+                }
+
                 // check version
-                
-                int diff = NebulaPlugin.PluginVersion.CompareTo(tagname);
-                if (diff != 0)
+
+                int modDiff = NebulaPlugin.PluginVersion.CompareTo(tagname[0]);
+                int amoDiff = NebulaPlugin.AmongUsVersion.CompareTo(tagname[1]);
+                if ((modDiff != 0) && (amoDiff == 0))
                 { // Update required
                     hasUpdate = true;
                     JToken assets = data["assets"];
