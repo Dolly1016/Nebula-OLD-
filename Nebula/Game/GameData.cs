@@ -145,12 +145,13 @@ namespace Nebula.Game
             return -1;
         }
 
-        public static void RegisterRoleDataId(string data)
+        public static int RegisterRoleDataId(string data)
         {
             if (!RoleDataIdMap.ContainsKey(data))
             {
                 RoleDataIdMap.Add(data, RoleDataIdMap.Count);
             }
+            return GetRoleDataId(data);
         }
 
         public void RegisterPlayer(byte playerId,Role role)

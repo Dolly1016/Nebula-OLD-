@@ -18,8 +18,9 @@ namespace Nebula.Roles.Crewmate
         private TMPro.TMP_Text sealButtonString;
 
         private Vent ventTarget = null;
-        public int remainingScrews = 0;
-        public int totalScrews = 0;
+
+        public int remainingScrewsDataId;
+        public int totalScrewsDataId;
 
         private Module.CustomOption maxScrewsOption;
 
@@ -68,7 +69,9 @@ namespace Nebula.Roles.Crewmate
 
 
         public override void Initialize(PlayerControl __instance) {
-            totalScrews = remainingScrews = (int)maxScrewsOption.getFloat();
+            int value = (int)maxScrewsOption.getFloat();
+            Game.GameData.data.myData.getGlobalData().SetRoleData(totalScrewsDataId, value);
+            Game.GameData.data.myData.getGlobalData().SetRoleData(remainingScrewsDataId, value);
         }
 
         public override void ButtonInitialize(HudManager __instance)
@@ -86,16 +89,18 @@ namespace Nebula.Roles.Crewmate
                         writer.EndMessage();
                         RPCEvents.SealVent(ventTarget.Id);
                         ventTarget = null;
-                        remainingScrews--;
+                        Game.GameData.data.myData.getGlobalData().AddRoleData(remainingScrewsDataId,-1);
 
                         sealButton.Timer = sealButton.MaxTimer;
                     }
                 },
-                () => { return !PlayerControl.LocalPlayer.Data.IsDead && remainingScrews > 0; },
+                () => { return !PlayerControl.LocalPlayer.Data.IsDead && Game.GameData.data.myData.getGlobalData().GetRoleData(remainingScrewsDataId) > 0; },
                 () => {
-                    sealButtonString.text = $"{remainingScrews}/{totalScrews}";
+                    int total = Game.GameData.data.myData.getGlobalData().GetRoleData(totalScrewsDataId);
+                    int remain = Game.GameData.data.myData.getGlobalData().GetRoleData(remainingScrewsDataId);
+                    sealButtonString.text = $"{remain}/{total}";
 
-                    return (ventTarget != null) &&remainingScrews > 0 && PlayerControl.LocalPlayer.CanMove;
+                    return (ventTarget != null) && remain > 0 && PlayerControl.LocalPlayer.CanMove;
                     
                 },
                 () => { sealButton.Timer = sealButton.MaxTimer; },
@@ -141,6 +146,9 @@ namespace Nebula.Roles.Crewmate
                  false, false, false, false, false)
         {
             sealButton = null;
+
+            totalScrewsDataId=Game.GameData.RegisterRoleDataId("securityGuard.totalScrew");
+            remainingScrewsDataId=Game.GameData.RegisterRoleDataId("securityGuard.remainScrew");
         }
     }
 }

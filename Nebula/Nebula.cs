@@ -20,7 +20,7 @@ namespace Nebula
 
         public const string PluginGuid = "jp.dreamingpig.amongus.nebula";
         public const string PluginName = "TheNebula";
-        public const string PluginVersion = "1.0.0";
+        public const string PluginVersion = "1.1.0";
         public const string PluginStage = "ALPHA";
 
         public static NebulaPlugin Instance;
