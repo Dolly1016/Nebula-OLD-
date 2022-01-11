@@ -10,7 +10,7 @@ namespace Nebula.Events
     public delegate GlobalEvent GlobalEventGenerator(float duration);
     public class GlobalEvent
     {
-        static public HashSet<GlobalEvent> Events=new HashSet<GlobalEvent>();
+        static public List<GlobalEvent> Events=new List<GlobalEvent>();
         static private Dictionary<Type, GlobalEventGenerator> Generators = new Dictionary<Type, GlobalEventGenerator>();
 
         public class Type
@@ -67,10 +67,15 @@ namespace Nebula.Events
 
         }
 
+        //このイベントが発生している時、プレイヤーの見た目の変更の反映を許すかどうか
+        public bool AllowUpdateOutfit { get; protected set; }
+
         protected GlobalEvent(Type type,float duration)
         {
             this.type = type;
             this.duration = duration;
+
+            this.AllowUpdateOutfit = true;
         }
 
         static public bool IsActive(Type type)
@@ -90,7 +95,7 @@ namespace Nebula.Events
                 globalEvent.duration -= Time.deltaTime;
             }
 
-            Events.RemoveWhere(e => e.CheckTerminal());
+            Events.RemoveAll(e => e.CheckTerminal());
         }
 
         static public bool Activate(GlobalEvent.Type type,float duration)

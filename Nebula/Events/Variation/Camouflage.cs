@@ -10,7 +10,7 @@ namespace Nebula.Events.Variation
     {
         public Camouflage(float duration):base(GlobalEvent.Type.Camouflage,duration)
         {
-
+            AllowUpdateOutfit = false;
         }
 
         public override void OnActivate()
@@ -25,7 +25,7 @@ namespace Nebula.Events.Variation
 
         public override void OnTerminal()
         {
-            if (!GlobalEvent.IsActive(GlobalEvent.Type.Camouflage)) return;
+            if (GlobalEvent.IsActive(GlobalEvent.Type.Camouflage)) return;
 
             foreach(PlayerControl player in PlayerControl.AllPlayerControls)
             {

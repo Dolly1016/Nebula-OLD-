@@ -15,6 +15,7 @@ namespace Nebula
         // Main Controls
 
         ResetVaribles = 60,
+        VersionHandshake,
         ForceEnd,
         ShareOptions,
         SetRole,
@@ -40,6 +41,16 @@ namespace Nebula
 
                 case (byte)CustomRPC.ResetVaribles:
                     RPCEvents.ResetVaribles();
+                    break;
+                case (byte)CustomRPC.VersionHandshake:
+                    byte length = reader.ReadByte();
+                    byte[] version = new byte[length];
+                    for(byte i = 0; i < length; i++)
+                    {
+                        version[i] = reader.ReadByte();
+                    }
+                    int clientId = reader.ReadInt32();
+                    RPCEvents.VersionHandshake(version, new Guid(reader.ReadBytesAndSize()), reader.ReadInt32());
                     break;
                 case (byte)CustomRPC.ForceEnd:
                     RPCEvents.ForceEnd(reader.ReadByte());
@@ -75,6 +86,11 @@ namespace Nebula
             Game.GameData.Initialize();
             Events.GlobalEvent.Initialize();
             Roles.Role.AllCleanUp();
+        }
+
+        public static void VersionHandshake(byte[] version , Guid guid, int clientId)
+        {
+            Patches.GameStartManagerPatch.playerVersions[clientId] = new Patches.GameStartManagerPatch.PlayerVersion(version, guid);
         }
 
         public static void ForceEnd(byte playerId)

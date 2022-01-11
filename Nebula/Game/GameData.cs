@@ -19,7 +19,10 @@ namespace Nebula.Game
         {
             if (globalData == null)
             {
-                globalData = Game.GameData.data.players[PlayerControl.LocalPlayer.PlayerId];
+                if (Game.GameData.data.players.ContainsKey(PlayerControl.LocalPlayer.PlayerId))
+                {
+                    globalData = Game.GameData.data.players[PlayerControl.LocalPlayer.PlayerId];
+                }
             }
             return globalData;
         }
@@ -31,8 +34,35 @@ namespace Nebula.Game
         }
     }
 
-    class PlayerData
+    public class PlayerData
     {
+        public class PlayerOutfitData
+        {
+            public int ColorId { get; }
+            public string HatId { get; }
+            public string VisorId { get; }
+            public string SkinId { get; }
+            public string PetId { get; }
+
+            public PlayerOutfitData(PlayerOutfit outfit)
+            {
+                ColorId = outfit.ColorId;
+                HatId = outfit.HatId;
+                VisorId = outfit.VisorId;
+                SkinId = outfit.SkinId;
+                PetId = outfit.PetId;
+            }
+
+            public PlayerOutfitData(PlayerOutfitData outfit)
+            {
+                ColorId = outfit.ColorId;
+                HatId = outfit.HatId;
+                VisorId = outfit.VisorId;
+                SkinId = outfit.SkinId;
+                PetId = outfit.PetId;
+            }
+        }
+
         public byte id { get; }
         public string name { get; }
 
@@ -42,7 +72,8 @@ namespace Nebula.Game
 
         public bool IsAlive { get; private set; }
 
-        public PlayerOutfit outfit { get; }
+        public PlayerOutfitData Outfit { get; }
+        public PlayerOutfitData CurrentOutfit { set; get; }
         public string currentName { get; set; }
 
         public PlayerData(byte playerId, string name,PlayerOutfit outfit,Role role)
@@ -53,7 +84,8 @@ namespace Nebula.Game
             this.role = role;
             this.roleData = new Dictionary<int, int>();
             this.IsAlive = true;
-            this.outfit = outfit;
+            this.Outfit = new PlayerOutfitData(outfit);
+            this.CurrentOutfit = new PlayerOutfitData(outfit);
             this.currentName = name;
         }
 

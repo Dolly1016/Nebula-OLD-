@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 using UnhollowerBaseLib;
 using UnityEngine;
+using Hazel;
 
 namespace Nebula
 {
@@ -187,7 +188,7 @@ namespace Nebula
         public static void SetOutfit(this PlayerControl target, PlayerControl reference)
         {
             string name = Game.GameData.data.players[reference.PlayerId].name;
-            GameData.PlayerOutfit outfit = Game.GameData.data.players[reference.PlayerId].outfit;
+            Game.PlayerData.PlayerOutfitData outfit = Game.GameData.data.players[reference.PlayerId].CurrentOutfit;
             if (outfit == null)
             {
                 return;
@@ -199,6 +200,20 @@ namespace Nebula
         public static void ResetOutfit(this PlayerControl target)
         {
             target.SetOutfit(target);
+        }
+
+        public static void shareGameVersion()
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.VersionHandshake, Hazel.SendOption.Reliable, -1);
+            writer.Write(NebulaPlugin.Instance.PluginVersionData.Length);
+            foreach (byte data in NebulaPlugin.Instance.PluginVersionData)
+            {
+                writer.Write(data);
+            }
+            writer.WritePacked(AmongUsClient.Instance.ClientId);
+            writer.Write(Assembly.GetExecutingAssembly().ManifestModule.ModuleVersionId.ToByteArray());
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.VersionHandshake(NebulaPlugin.Instance.PluginVersionData, Assembly.GetExecutingAssembly().ManifestModule.ModuleVersionId, AmongUsClient.Instance.ClientId);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,8 +21,9 @@ namespace Nebula
 
         public const string PluginGuid = "jp.dreamingpig.amongus.nebula";
         public const string PluginName = "TheNebula";
-        public const string PluginVersion = "1.1.0";
+        public const string PluginVersion = "1.2.0";
         public const string PluginStage = "ALPHA";
+        public readonly byte[] PluginVersionData = new byte[] { 0, 1, 2, 0 };
 
         public static NebulaPlugin Instance;
 
@@ -29,8 +31,12 @@ namespace Nebula
 
         public static Sprite ModStamp;
 
+        public static bool DebugMode=false;
+
         override public void Load()
         {
+            if (File.Exists("patches/DebugMode.patch"))DebugMode = true;
+
             Instance = this;
 
             //言語データを読み込む
@@ -38,6 +44,9 @@ namespace Nebula
 
             //オプションを読み込む
             CustomOptionHolder.Load();
+
+            //GlobalEventデータを読み込む
+            Events.Events.Load();
 
             // Harmonyパッチ全てを適用する
             Harmony.PatchAll();
@@ -60,7 +69,25 @@ namespace Nebula
 
         public static void Postfix(KeyboardJoystick __instance)
         {
-            //if (!TheOtherRolesPlugin.DebugMode.Value) return;
+            if (!NebulaPlugin.DebugMode) return;
+
+            // Spawn dummys
+            if (Input.GetKeyDown(KeyCode.J))
+            {
+                var playerControl = UnityEngine.Object.Instantiate(AmongUsClient.Instance.PlayerPrefab);
+                var i = playerControl.PlayerId = (byte)GameData.Instance.GetAvailableId();
+
+                bots.Add(playerControl);
+                GameData.Instance.AddPlayer(playerControl);
+                AmongUsClient.Instance.Spawn(playerControl, -2, InnerNet.SpawnFlags.None);
+
+                playerControl.transform.position = PlayerControl.LocalPlayer.transform.position;
+                playerControl.GetComponent<DummyBehaviour>().enabled = false;
+                playerControl.NetTransform.enabled = true;
+                playerControl.SetName(RandomString(10));
+                playerControl.SetColor((byte)random.Next(Palette.PlayerColors.Length));
+                GameData.Instance.RpcSetTasks(playerControl.PlayerId, new byte[0]);
+            }
 
             // Spawn dummys
             if (Input.GetKeyDown(KeyCode.K))
@@ -74,7 +101,7 @@ namespace Nebula
 
                 playerControl.transform.position = PlayerControl.LocalPlayer.transform.position;
                 playerControl.GetComponent<DummyBehaviour>().enabled = true;
-                playerControl.NetTransform.enabled = false;
+                playerControl.NetTransform.enabled = true;
                 playerControl.SetName(RandomString(10));
                 playerControl.SetColor((byte)random.Next(Palette.PlayerColors.Length));
                 GameData.Instance.RpcSetTasks(playerControl.PlayerId, new byte[0]);

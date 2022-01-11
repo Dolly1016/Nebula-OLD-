@@ -8,5 +8,10 @@ namespace Nebula.Events
 {
     class Events
     {
+        static public void Load()
+        {
+            GlobalEvent.Register(GlobalEvent.Type.Camouflage,duration => { return new Variation.Camouflage(duration); });
+        }
+        
     }
 }
