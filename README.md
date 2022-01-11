@@ -9,11 +9,17 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 # ダウンロード
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
-| Alpha 1.0.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/AlphaRelease/Nebula.zip)|
+| Alpha 1.1.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/AlphaRelease1.1.0/Nebula.zip)|
+| Alpha 1.0.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/AlphaRelease1.0.0/Nebula.zip)|
 
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+  
+**Version Alpha 1.0.0**
+ - Jester , Camouflager を追加
+ - Spyがインポスター陣営側から赤文字で見えるように
+ - ゲーム開始画面で正常にチームメンバーが表示されるよう修正
   
 **Version Alpha 1.0.0**
  - α版を公開
