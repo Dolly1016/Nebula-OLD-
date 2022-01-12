@@ -9,7 +9,9 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 # ダウンロード
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
-| Alpha 1.2.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.2.1/Nebula.zip)|
+| Alpha 1.2.6 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.2.6,2021.12.15/Nebula.zip)|
+| Alpha 1.2.5 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.2.5,2021.12.15/Nebula.zip)|
+| Alpha 1.2.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.2.1,2021.12.15/Nebula.zip)|
 | Alpha 1.2.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.2.0/Nebula.zip)|
 | Alpha 1.1.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.1.0/Nebula.zip)|
 | Alpha 1.0.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.0.0/Nebula.zip)|
@@ -17,9 +19,25 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+
+ **Version Alpha 1.2.6**
+ - Alpha 1.2.0の追加内容に関するバグ修正
+ - Reaperが死体を引き連れてベントに入ったとき、死体が見えなくなるように
+  
+**Version Alpha 1.2.5**
+ - Reaperを暫定的に追加
+ - zipファイルの内容を変更
+ - Jesterにベントに関する設定項目を追加
+  
+**Version Alpha 1.2.1**
+ - Alpha 1.2.0の追加内容に関するバグ修正
+  
+**Version Alpha 1.2.0**
+ - バージョン競合が起こっているゲームが開始できないように
+ - Modを自動で更新できるように
   
 **Version Alpha 1.1.0**
- - Jester , Camouflager を追加
+ - Jester , Camouflagerを追加
  - Spyがインポスター陣営側から赤文字で見えるように
  - ゲーム開始画面で正常にチームメンバーが表示されるよう修正
   
@@ -35,6 +53,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 | ---------- |
 | [Camouflager](#camouflager) |
 | [Evil Ace](#evil-ace) |
+| [Reaper](#reaper) |
 
 **クルーメイト陣営**
 | Roles |
@@ -68,6 +87,15 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 | オプション名 | 設定内容 |
 |----------|:-------------:|
 | Kill Cool Down Multiplier | インポスター陣営が1人だけのときにクールダウンにかかる倍率 
+
+-----------------------
+
+## Reaper
+ Reaperは、死体を引きずることができるインポスターです。
+ 
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
 
 -----------------------
 
