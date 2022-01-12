@@ -32,6 +32,7 @@ namespace Nebula.Module
     {
         private static void Prefix(MainMenuManager __instance)
         {
+            UnityEngine.Debug.Log("Prefix Update Check.");
             ModUpdater.LaunchUpdater();
             if (!ModUpdater.hasUpdate) return;
 
@@ -120,6 +121,7 @@ namespace Nebula.Module
         {
             try
             {
+
                 HttpClient http = new HttpClient();
                 http.DefaultRequestHeaders.Add("User-Agent", "NebulaUpdater");
                 var response = await http.GetAsync(new System.Uri("https://api.github.com/repos/Dolly1016/Nebula/releases/latest"), HttpCompletionOption.ResponseContentRead);
