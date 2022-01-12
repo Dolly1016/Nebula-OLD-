@@ -197,6 +197,11 @@ namespace Nebula.Patches
         {
             public static bool Prefix(GameStartManager __instance)
             {
+                if (NebulaPlugin.DebugMode)
+                {
+                    return true;
+                }
+
                 // Block game start if not everyone has the same mod version
                 bool continueStart = true;
 

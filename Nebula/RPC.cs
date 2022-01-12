@@ -22,6 +22,7 @@ namespace Nebula
         UncheckedMurderPlayer,
         UpdateRoleData,
         GlobalEvent,
+        DragAndDropPlayer,
 
         // Role functionality
 
@@ -69,6 +70,9 @@ namespace Nebula
                     break;
                 case (byte)CustomRPC.GlobalEvent:
                     RPCEvents.GlobalEvent(reader.ReadByte(), reader.ReadSingle());
+                    break;
+                case (byte)CustomRPC.DragAndDropPlayer:
+                    RPCEvents.DragAndDropPlayer(reader.ReadByte(), reader.ReadByte());
                     break;
 
 
@@ -130,6 +134,18 @@ namespace Nebula
         public static void GlobalEvent(byte eventId, float duration)
         {
             Events.GlobalEvent.Activate(Events.GlobalEvent.Type.GetType(eventId),duration);
+        }
+
+        public static void DragAndDropPlayer(byte playerId,byte targetId)
+        {
+            if (targetId != Byte.MaxValue)
+            {
+                Game.GameData.data.players[playerId].DragPlayer(targetId);
+            }
+            else
+            {
+                Game.GameData.data.players[playerId].DropPlayer();
+            }
         }
 
         //送信元と受信先で挙動が異なる（以下は受信側）

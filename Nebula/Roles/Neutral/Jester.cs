@@ -16,6 +16,8 @@ namespace Nebula.Roles.Neutral
 
         public bool WinTrigger=false;
 
+        private Module.CustomOption canUseVentsOption;
+
         public override bool OnExiled()
         {
             WinTrigger = true;
@@ -25,14 +27,20 @@ namespace Nebula.Roles.Neutral
         public override void Initialize(PlayerControl __instance)
         {
             WinTrigger = false;
+            canMoveInVents = canUseVents = canUseVentsOption.getBool();
+        }
+
+        public override void LoadOptionData()
+        {
+            canUseVentsOption = CreateOption(Color.white, "canUseVents", true);
         }
 
         public Jester()
             : base("Jester", "jester", Color, RoleCategory.Neutral, Side.Jester, Side.Jester,
                  new HashSet<Side>() { Side.Jester }, new HashSet<Side>() { Side.Jester },
                  new HashSet<Patches.EndCondition>() { Patches.EndCondition.JesterWin },
-                 true, false, false, false, false)
-        {
+                 true, true, true, false, false)
+        { 
         }
     }
 }

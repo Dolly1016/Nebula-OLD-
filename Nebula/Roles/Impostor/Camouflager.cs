@@ -67,6 +67,7 @@ namespace Nebula.Roles.Impostor
                 () => { camouflageButton.Timer = camouflageButton.MaxTimer; }
             );
             camouflageButton.MaxTimer = camouflageCoolDownOption.getFloat();
+            camouflageButton.EffectDuration = camouflageDurationOption.getFloat();
         }
 
         public override void OnMeetingEnd()

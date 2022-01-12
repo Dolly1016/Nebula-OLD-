@@ -130,11 +130,11 @@ namespace Nebula.Roles
         public virtual void ButtonInitialize(HudManager __instance) { }
 
         public virtual void Initialize(PlayerControl __instance) { }
-        //
+        //毎ティック呼び出されます
         public virtual void MyPlayerControlUpdate()　{ }
-
+        //ゲーム終了時に呼び出されます。
         public virtual void CleanUp() { }
-
+        //
         public virtual void GetLightRadius(ref float radius) {  }
 
         public virtual void SetKillCoolDown(ref float multiplier,ref float addition) { }

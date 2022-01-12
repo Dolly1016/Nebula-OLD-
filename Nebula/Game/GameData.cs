@@ -75,6 +75,7 @@ namespace Nebula.Game
         public PlayerOutfitData Outfit { get; }
         public PlayerOutfitData CurrentOutfit { set; get; }
         public string currentName { get; set; }
+        public byte dragPlayerId { get; set; }
 
         public PlayerData(byte playerId, string name,PlayerOutfit outfit,Role role)
         {
@@ -87,6 +88,7 @@ namespace Nebula.Game
             this.Outfit = new PlayerOutfitData(outfit);
             this.CurrentOutfit = new PlayerOutfitData(outfit);
             this.currentName = name;
+            this.dragPlayerId = Byte.MaxValue;
         }
 
         public int GetRoleData(int id)
@@ -127,6 +129,30 @@ namespace Nebula.Game
         public bool IsMyPlayerData()
         {
             return id == GameData.data.myData.getGlobalData().id;
+        }
+
+        public bool DragPlayer(byte playerId)
+        {
+            if (playerId == Byte.MaxValue)
+            {
+                return false;
+            }
+
+            dragPlayerId =playerId;
+
+            return true;
+        }
+
+        public bool DropPlayer()
+        {
+            if (dragPlayerId == Byte.MaxValue)
+            {
+                return false;
+            }
+
+            dragPlayerId = Byte.MaxValue;
+
+            return true;
         }
     }
 

@@ -16,7 +16,7 @@ namespace Nebula.Patches
             canUse = couldUse = false;
 
             if (__instance.AllowImpostor) return true;
-            if (Game.GameData.data.players[pc.PlayerId].role.hasFakeTask) return true;
+            if (!Game.GameData.data.players[pc.PlayerId].role.hasFakeTask) return true;
             __result = float.MaxValue;
             
             return false;

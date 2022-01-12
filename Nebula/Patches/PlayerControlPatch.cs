@@ -11,6 +11,19 @@ namespace Nebula.Patches
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixedUpdate))]
     public class PlayerControlPatch
     {
+        static private bool CheckTargetable(Vector3 position, Vector3 myPosition, ref float distanceCondition)
+        {
+            Vector3 vector = position - PlayerControl.LocalPlayer.transform.position;
+            float magnitude = vector.magnitude;
+
+            if(magnitude <= distanceCondition && !PhysicsHelpers.AnyNonTriggersBetween(myPosition, vector.normalized, magnitude, Constants.ShipAndObjectsMask))
+            {
+                distanceCondition=magnitude;
+                return true;
+            }
+            return false;
+        }
+
         static public PlayerControl SetMyTarget(bool onlyCrewmates = false, bool targetPlayersInVents = false, List<PlayerControl> untargetablePlayers = null, PlayerControl targetingPlayer = null)
         {
             PlayerControl result = null;
@@ -41,12 +54,9 @@ namespace Nebula.Patches
 
                     if (@object && (!@object.inVent || targetPlayersInVents))
                     {
-                        Vector2 vector = @object.GetTruePosition() - truePosition;
-                        float magnitude = vector.magnitude;
-                        if (magnitude <= num && !PhysicsHelpers.AnyNonTriggersBetween(truePosition, vector.normalized, magnitude, Constants.ShipAndObjectsMask))
+                        if(CheckTargetable(@object.GetTruePosition(),truePosition,ref num))
                         {
                             result = @object;
-                            num = magnitude;
                         }
                     }
                 }
@@ -62,6 +72,34 @@ namespace Nebula.Patches
             target.myRend.material.SetColor("_OutlineColor", color);
         }
 
+        static public DeadBody SetMyDeadTarget()
+        {
+            DeadBody result = null;
+            float num = GameOptionsData.KillDistances[Mathf.Clamp(PlayerControl.GameOptions.KillDistance, 0, 2)];
+            if (!ShipStatus.Instance) return result;
+
+            Vector2 truePosition = PlayerControl.LocalPlayer.GetTruePosition();
+
+            foreach (DeadBody deadBody in UnityEngine.Object.FindObjectsOfType<DeadBody>())
+            {
+                if (CheckTargetable(deadBody.transform.position, truePosition,ref num) ||
+                    CheckTargetable(deadBody.transform.position + new Vector3(0.1f,0.1f), truePosition, ref num))
+                {
+                    result = deadBody;
+                }
+            }
+            return result;
+        }
+
+        static public void SetDeadBodyOutline(DeadBody target, Color color)
+        {
+            if (target == null || target.bodyRenderer == null) return;
+
+            target.bodyRenderer.material.SetFloat("_Outline", 1f);
+            target.bodyRenderer.material.SetColor("_OutlineColor", color);
+        }
+
+
         static void ResetPlayerOutlines()
         {
             foreach (PlayerControl target in PlayerControl.AllPlayerControls)
@@ -69,6 +107,16 @@ namespace Nebula.Patches
                 if (target == null || target.myRend == null) continue;
 
                 target.myRend.material.SetFloat("_Outline", 0f);
+            }
+        }
+
+        static void ResetDeadBodyOutlines()
+        {
+            foreach (DeadBody deadBody in UnityEngine.Object.FindObjectsOfType<DeadBody>())
+            {
+                if (deadBody == null || deadBody.bodyRenderer == null) continue;
+
+                deadBody.bodyRenderer.material.SetFloat("_Outline", 0f);
             }
         }
 
@@ -87,6 +135,7 @@ namespace Nebula.Patches
             if (__instance.PlayerId == PlayerControl.LocalPlayer.PlayerId)
             {
                 ResetPlayerOutlines();
+                ResetDeadBodyOutlines();
                 Game.GameData.data.players[__instance.PlayerId].role.MyPlayerControlUpdate();
             }
 
@@ -154,4 +203,5 @@ namespace Nebula.Patches
             hideNextAnimation = false;
         }
     }
+
 }

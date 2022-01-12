@@ -177,9 +177,7 @@ namespace Nebula.Patches
                 }
                 else
                 {
-                    UnityEngine.Debug.Log("Start assigning roles.");
                     assignRoles();
-                    UnityEngine.Debug.Log("Finish assigning roles.");
                 }
             }
 

@@ -35,7 +35,7 @@ namespace Nebula.Language
         {
             language = new Language();
 
-            language.deserialize(getDefaultLanguageStream());
+            language.deserialize(GetDefaultLanguageStream());
             Dictionary<string, string> defaultSet = language.languageSet;
             language.deserialize(@"language\lang.dat");
 
@@ -49,7 +49,7 @@ namespace Nebula.Language
             }
         }
 
-        public static Stream getDefaultLanguageStream()
+        public static Stream GetDefaultLanguageStream()
         {
             return Assembly.GetExecutingAssembly().GetManifestResourceStream("Nebula.Resources.Lang.dat");
         }
@@ -63,7 +63,8 @@ namespace Nebula.Language
                 {
                     return deserialize(sr);
                 }
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 return false;
             }
@@ -80,6 +81,7 @@ namespace Nebula.Language
 
         public bool deserialize(StreamReader reader)
         {
+            bool result = true;
             try
             {
                 string data = "", line;
@@ -104,29 +106,25 @@ namespace Nebula.Language
 
                 if (!data.Equals(""))
                 {
-                    try
-                    {
 
-                        JsonSerializerOptions option = new JsonSerializerOptions
-                        {
-                            Encoder = JavaScriptEncoder.Create(UnicodeRanges.All),
-                            WriteIndented = true
-                        };
 
-                        languageSet = JsonSerializer.Deserialize<Dictionary<string, string>>("{ " + data + " }", option);
-                    }
-                    catch (Exception e)
+                    JsonSerializerOptions option = new JsonSerializerOptions
                     {
-                        return false;
-                    }
-                    return true;
+                        Encoder = JavaScriptEncoder.Create(UnicodeRanges.All),
+                        WriteIndented = true
+                    };
+
+                    languageSet = JsonSerializer.Deserialize<Dictionary<string, string>>("{ " + data + " }", option);
+
+                    result = true;
                 }
             }
             catch (Exception e)
             {
-
+                result = false;
             }
-            return false;
+
+            return result;
         }
     }
 }

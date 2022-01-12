@@ -72,6 +72,9 @@
 "role.camouflager.camouflageCoolDown" : "Camouflage Cool Down"
 "role.camouflager.camouflageDuration" : "Camouflage Duration"
 
+"role.reaper.name" : "Reaper"
+"role.reaper.description" : "Kill and Deceive the Crewmates"
+
 "role.jackal.name" : "Jackal"
 "role.jackal.description" : "Kill all Crewmates and <color=#ff1919ff>Impostors</color> to Win"
 

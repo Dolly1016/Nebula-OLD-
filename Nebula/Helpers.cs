@@ -202,6 +202,14 @@ namespace Nebula
             target.SetOutfit(target);
         }
 
+        public static float Distance(this Vector3 vector,Vector3 opponent)
+        {
+            float x = vector.x - opponent.x;
+            float y = vector.y - opponent.y;
+            float z = vector.z - opponent.z;
+            return Mathf.Sqrt(x*x + y*y + z*z);
+        }
+
         public static void shareGameVersion()
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.VersionHandshake, Hazel.SendOption.Reliable, -1);
