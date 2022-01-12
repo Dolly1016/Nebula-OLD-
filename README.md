@@ -1,8 +1,8 @@
-# The Nebula
+# Nebula on the Ship
 <p align="center">
 This mod is not affiliated with Among Us or Innersloth LLC, and the content contained therein is not endorsed or otherwise sponsored by Innersloth LLC. Portions of the materials contained herein are property of Innersloth LLC. © Innersloth LLC.</p>
 
-**The Nebula** は Among Us に新たなロールを追加するModです。
+**Nebula on the Ship (NoS)** は Among Us に新たなロールを追加するModです。
 
 また、このModの一部コードは The Other Roles のものを継承しています。
 
