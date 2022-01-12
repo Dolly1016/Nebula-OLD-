@@ -50,8 +50,8 @@ namespace Nebula
                     {
                         version[i] = reader.ReadByte();
                     }
-                    int clientId = reader.ReadInt32();
-                    RPCEvents.VersionHandshake(version, new Guid(reader.ReadBytesAndSize()), clientId);
+                    int clientId = reader.ReadPackedInt32();
+                    RPCEvents.VersionHandshake(version, new Guid(reader.ReadBytes(16)), clientId);
                     break;
                 case (byte)CustomRPC.ForceEnd:
                     RPCEvents.ForceEnd(reader.ReadByte());
