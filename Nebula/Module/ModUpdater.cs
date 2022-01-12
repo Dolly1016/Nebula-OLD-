@@ -123,8 +123,11 @@ namespace Nebula.Module
             {
 
                 HttpClient http = new HttpClient();
-                http.DefaultRequestHeaders.Add("User-Agent", "NebulaUpdater");
+                //http.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue { NoCache = true };
+                http.DefaultRequestHeaders.Add("User-Agent", "Nebula Updater");
+
                 var response = await http.GetAsync(new System.Uri("https://api.github.com/repos/Dolly1016/Nebula/releases/latest"), HttpCompletionOption.ResponseContentRead);
+
                 if (response.StatusCode != HttpStatusCode.OK || response.Content == null)
                 {
                     System.Console.WriteLine("Server returned no data: " + response.StatusCode.ToString());
@@ -147,7 +150,7 @@ namespace Nebula.Module
 
                 // check version
 
-                int modDiff = NebulaPlugin.PluginVersion.CompareTo(tagname[0]);
+                int modDiff = NebulaPlugin.PluginVersionForFetch.CompareTo(tagname[0]);
                 int amoDiff = NebulaPlugin.AmongUsVersion.CompareTo(tagname[1]);
                 if ((modDiff != 0) && (amoDiff == 0))
                 { // Update required
@@ -174,7 +177,9 @@ namespace Nebula.Module
             catch (System.Exception ex)
             {
                 System.Console.WriteLine(ex);
+
             }
+           
             return false;
         }
 
@@ -183,7 +188,7 @@ namespace Nebula.Module
             try
             {
                 HttpClient http = new HttpClient();
-                http.DefaultRequestHeaders.Add("User-Agent", "NebulaUpdater");
+                http.DefaultRequestHeaders.Add("User-Agent", "Nebula Updater");
                 var response = await http.GetAsync(new System.Uri(updateURI), HttpCompletionOption.ResponseContentRead);
                 if (response.StatusCode != HttpStatusCode.OK || response.Content == null)
                 {

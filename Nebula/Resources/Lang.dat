@@ -1,3 +1,10 @@
+"update.pleaseWait" : "Please wait..."
+"update.manually" : "Faild to update. Please update manually."
+"update.inProgress" : "In progress..."
+"update.restart" : "Updated successfully! Please restart game."
+"update.failed" : "Update has failed."
+"title.button.updateNebula" : "Update NoS"
+
 "option.display.pressTabForMore" : "Press Tab For More"
 "option.display.percentage.0" : "0%"
 "option.display.percentage.10" : "10%"
