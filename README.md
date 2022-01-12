@@ -32,6 +32,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
  - Reaperを暫定的に追加
  - zipファイルの内容を変更
  - Jesterにベントに関する設定項目を追加
+ - Steamのアカウントへのログインに失敗するバグを修正
   
 **Version Alpha 1.2.1**
  - Alpha 1.2.0の追加内容に関するバグ修正
