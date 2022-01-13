@@ -9,6 +9,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 # ダウンロード
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| Alpha 1.2.8 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.2.8,2021.12.15/Nebula.zip)|
 | Alpha 1.2.7 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.2.7,2021.12.15/Nebula.zip)|
 | Alpha 1.2.6 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.2.6,2021.12.15/Nebula.zip)|
 | Alpha 1.2.5 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.2.5,2021.12.15/Nebula.zip)|
@@ -21,6 +22,10 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 <details>
   <summary>クリックで展開</summary>
 
+ **Version Alpha 1.2.8**
+ - Vultureを追加
+ - バージョン競合検出に関するバグを再度修正
+  
  **Version Alpha 1.2.7**
  - バージョン競合検出に関するバグを修正
   
@@ -73,6 +78,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 | ---------- |
 | [Jackal](#jackal) |
 | [Jester](#jester) |
+| [Vulture](#vulture) |
 
 -----------------------
 
@@ -158,5 +164,15 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
+
+-----------------------
+
+## Vulture
+ Vultureは指定数の死体をレポートされる前に食べることで勝利します。
+ 
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+| Count of Eaten Needed | 勝利に必要な死体の捕食数 
 
 -----------------------
