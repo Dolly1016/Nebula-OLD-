@@ -24,7 +24,7 @@ namespace Nebula.Patches
             return false;
         }
 
-        static public PlayerControl SetMyTarget(bool onlyCrewmates = false, bool targetPlayersInVents = false, List<PlayerControl> untargetablePlayers = null, PlayerControl targetingPlayer = null)
+        static public PlayerControl SetMyTarget(bool onlyWhiteNames = false, bool targetPlayersInVents = false, List<PlayerControl> untargetablePlayers = null, PlayerControl targetingPlayer = null)
         {
             PlayerControl result = null;
             float num = GameOptionsData.KillDistances[Mathf.Clamp(PlayerControl.GameOptions.KillDistance, 0, 2)];
@@ -43,7 +43,7 @@ namespace Nebula.Patches
                     continue;
                 }
 
-                if (!playerInfo.Disconnected && !playerInfo.IsDead && (!onlyCrewmates || !playerInfo.Role.IsImpostor))
+                if (!playerInfo.Disconnected && !playerInfo.IsDead && (!onlyWhiteNames || !(playerInfo.Role.IsImpostor||Game.GameData.data.players[playerInfo.PlayerId].role.deceiveImpostorInNameDisplay)))
                 {
                     PlayerControl @object = playerInfo.Object;
                     if (untargetablePlayers != null && untargetablePlayers.Any(x => x == @object))
@@ -80,8 +80,13 @@ namespace Nebula.Patches
 
             Vector2 truePosition = PlayerControl.LocalPlayer.GetTruePosition();
 
-            foreach (DeadBody deadBody in UnityEngine.Object.FindObjectsOfType<DeadBody>())
+            foreach (DeadBody deadBody in Helpers.AllDeadBodies())
             {
+                if (!deadBody.bodyRenderer.enabled)
+                {
+                    continue;
+                }
+
                 if (CheckTargetable(deadBody.transform.position, truePosition,ref num) ||
                     CheckTargetable(deadBody.transform.position + new Vector3(0.1f,0.1f), truePosition, ref num))
                 {
@@ -112,7 +117,7 @@ namespace Nebula.Patches
 
         static void ResetDeadBodyOutlines()
         {
-            foreach (DeadBody deadBody in UnityEngine.Object.FindObjectsOfType<DeadBody>())
+            foreach (DeadBody deadBody in Helpers.AllDeadBodies())
             {
                 if (deadBody == null || deadBody.bodyRenderer == null) continue;
 
@@ -168,6 +173,17 @@ namespace Nebula.Patches
                 target.clearAllTasks();
             }
 
+            //GlobalMethod
+            target.GetModData().role.OnMurdered(__instance.PlayerId,target.PlayerId);
+            target.GetModData().role.OnDied(target.PlayerId);
+
+            //LocalMethod (自身が死んだとき)
+            if (target.PlayerId == PlayerControl.LocalPlayer.PlayerId)
+            {
+                target.GetModData().role.OnMurdered(__instance.PlayerId);
+                target.GetModData().role.OnDied();
+            }
+            
             Game.GameData.data.players[target.PlayerId].Die();
         }
     }
@@ -181,6 +197,7 @@ namespace Nebula.Patches
             float multiplier = 1f;
             float addition = 0f;
 
+            //キルクールを設定する
             if (__instance.PlayerId == PlayerControl.LocalPlayer.PlayerId)
             {
                 Game.GameData.data.myData.getGlobalData().role.SetKillCoolDown(ref multiplier,ref addition);    

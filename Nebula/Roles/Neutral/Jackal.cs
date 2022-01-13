@@ -20,7 +20,7 @@ namespace Nebula.Roles.Neutral
         {
             Game.MyPlayerData data = Game.GameData.data.myData;
             data.currentTarget = Patches.PlayerControlPatch.SetMyTarget();
-            Patches.PlayerControlPatch.SetPlayerOutline(data.currentTarget, Color.cyan);
+            Patches.PlayerControlPatch.SetPlayerOutline(data.currentTarget, Palette.ImpostorRed);
         }
 
         public override void ButtonInitialize(HudManager __instance)

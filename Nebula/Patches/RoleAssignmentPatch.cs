@@ -82,21 +82,19 @@ namespace Nebula.Patches
 
                 int rand;
 
-                UnityEngine.Debug.Log("Start first phase.");
                 //割り当てられるだけ100%ロールを割り当てる
                 while ((left > 0) && (firstRoles.Count > 0)&&(players.Count>0))
                 {
-                    UnityEngine.Debug.Log("Run while loop.");
                     rand = NebulaPlugin.rnd.Next(firstRoles.Count);
                     RoleAssignmentPatch.setRoleToRandomPlayer(firstRoles[rand], players, true);
                     firstRoles.RemoveAt(rand);
                     left--;
                 }
-                UnityEngine.Debug.Log("Start secondary phase.");
+
+                //確率で付与されるロールを割り当てる
                 int sum;
                 while ((left > 0) && (secondaryRoles.Count > 0)&& (players.Count>0))
                 {
-                    UnityEngine.Debug.Log("Run while loop.");
                     sum = 0;
                     foreach(RoleAllocation allocation in secondaryRoles)
                     {

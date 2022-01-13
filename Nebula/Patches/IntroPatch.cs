@@ -46,6 +46,7 @@ namespace Nebula.Patches
         public static void Prefix(IntroCutscene __instance)
         {
             Roles.Role role = Game.GameData.data.players[PlayerControl.LocalPlayer.PlayerId].role;
+
             role.ButtonInitialize(HudManagerStartPatch.Manager);
             role.Initialize(PlayerControl.LocalPlayer);
         }

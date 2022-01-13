@@ -22,10 +22,10 @@ namespace Nebula
         public const string AmongUsVersion = "2021.12.15";
         public const string PluginGuid = "jp.dreamingpig.amongus.nebula";
         public const string PluginName = "TheNebula";
-        public const string PluginVersion = "1.2.7";
+        public const string PluginVersion = "1.2.8";
         public const string PluginStage = "ALPHA";
-        public const string PluginVersionForFetch = "0.1.2.7";
-        public byte[] PluginVersionData = new byte[] { 0, 1, 2, 7 };
+        public const string PluginVersionForFetch = "0.1.2.8";
+        public byte[] PluginVersionData = new byte[] { 0, 1, 2, 8 };
 
         public static NebulaPlugin Instance;
 
@@ -74,7 +74,7 @@ namespace Nebula
             if (!NebulaPlugin.DebugMode) return;
 
             // Spawn dummys
-            if (Input.GetKeyDown(KeyCode.J))
+            if (Input.GetKeyDown(KeyCode.F1))
             {
                 var playerControl = UnityEngine.Object.Instantiate(AmongUsClient.Instance.PlayerPrefab);
                 var i = playerControl.PlayerId = (byte)GameData.Instance.GetAvailableId();
@@ -92,7 +92,7 @@ namespace Nebula
             }
 
             // Spawn dummys
-            if (Input.GetKeyDown(KeyCode.K))
+            if (Input.GetKeyDown(KeyCode.F2))
             {
                 var playerControl = UnityEngine.Object.Instantiate(AmongUsClient.Instance.PlayerPrefab);
                 var i = playerControl.PlayerId = (byte)GameData.Instance.GetAvailableId();
@@ -109,16 +109,57 @@ namespace Nebula
                 GameData.Instance.RpcSetTasks(playerControl.PlayerId, new byte[0]);
             }
 
-            
+            // Suiside
+            if (Input.GetKeyDown(KeyCode.F9))
+            {
+                MessageWriter killWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UncheckedMurderPlayer, Hazel.SendOption.Reliable, -1);
+                killWriter.Write(PlayerControl.LocalPlayer.PlayerId);
+                killWriter.Write(PlayerControl.LocalPlayer.PlayerId);
+                killWriter.Write(byte.MaxValue);
+                AmongUsClient.Instance.FinishRpcImmediately(killWriter);
+                RPCEvents.UncheckedMurderPlayer(PlayerControl.LocalPlayer.PlayerId, PlayerControl.LocalPlayer.PlayerId, Byte.MaxValue);
+
+            }
+
+            // Kill nearest player
+            if (Input.GetKeyDown(KeyCode.F10))
+            {
+                PlayerControl target = Patches.PlayerControlPatch.SetMyTarget();
+                if (target == null) return;
+
+                MessageWriter killWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UncheckedMurderPlayer, Hazel.SendOption.Reliable, -1);
+                killWriter.Write(PlayerControl.LocalPlayer.PlayerId);
+                killWriter.Write(target.PlayerId);
+                killWriter.Write(byte.MaxValue);
+                AmongUsClient.Instance.FinishRpcImmediately(killWriter);
+                RPCEvents.UncheckedMurderPlayer(PlayerControl.LocalPlayer.PlayerId, target.PlayerId, Byte.MaxValue);
+
+            }
+
             // Terminate round
-            if (Input.GetKeyDown(KeyCode.L))
+            if (Input.GetKeyDown(KeyCode.F11))
             {
                 MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ForceEnd, Hazel.SendOption.Reliable, -1);
                 writer.WritePacked(PlayerControl.LocalPlayer.PlayerId);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
                 RPCEvents.ForceEnd(PlayerControl.LocalPlayer.PlayerId);
             }
-            
+
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+            {
+                Objects.CustomMessage.Create("test1",5f,1f,2f,Color.white);
+            }
+
+            if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                Objects.CustomMessage message = Objects.CustomMessage.Create(1.3f, 3f, 2.3f, null, "test1", 1f, 0.5f, 2f, (float)NebulaPlugin.rnd.NextDouble() * 3.5f +0.8f, new Color(1f, 1f, 1f, 0.4f));
+                message.textSwapDuration = 0.1f;
+                message.textSwapGain = 5;
+
+                float rand = (float)NebulaPlugin.rnd.NextDouble() * 0.2f +0.1f;
+                message.textSizeVelocity = new Vector3(rand,rand);
+            }
+
         }
 
         public static string RandomString(int length)

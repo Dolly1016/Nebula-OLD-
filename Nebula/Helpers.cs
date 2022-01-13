@@ -202,6 +202,26 @@ namespace Nebula
             target.SetOutfit(target);
         }
 
+        public static Game.PlayerData GetModData(this PlayerControl player)
+        {
+            return Game.GameData.data.players[player.PlayerId];
+        }
+
+        public static Game.PlayerData GetModData(this GameData.PlayerInfo player)
+        {
+            return Game.GameData.data.players[player.PlayerId];
+        }
+
+        public static Game.PlayerData GetModData(this DeadBody player)
+        {
+            return Game.GameData.data.players[player.ParentId];
+        }
+
+        public static DeadBody[] AllDeadBodies()
+        {
+            return UnityEngine.Object.FindObjectsOfType<DeadBody>();
+        }
+
         public static float Distance(this Vector3 vector,Vector3 opponent)
         {
             float x = vector.x - opponent.x;

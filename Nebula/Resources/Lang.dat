@@ -88,6 +88,10 @@
 "role.jester.name" : "Jester"
 "role.jester.description" : "Get Voted Out"
 
+"role.vulture.name" : "Vulture"
+"role.vulture.description" : "Eat Corpses to Win"
+"role.vulture.eatenCountNeeded" : "Count of Eaten Needed"
+
 "side.crewmate.name" : "Crewmate"
 "side.impostor.name" : "Impostor"
 "side.jackal.name" : "Jackal"
@@ -97,3 +101,6 @@
 "game.endText.impostor" : "Team Impostor Wins"
 "game.endText.jackal" : "Team Jackal Wins"
 "game.endText.jester" : "Jester Wins"
+"game.endText.vulture" : "Vulture Wins"
+
+"message.test1" : "ABCDEF"

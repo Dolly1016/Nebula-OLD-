@@ -97,7 +97,7 @@ namespace Nebula.Patches
         public static void UpdateDraggedPlayer()
         {
             Game.PlayerData data;
-            DeadBody[] deadBodies = UnityEngine.Object.FindObjectsOfType<DeadBody>();
+            DeadBody[] deadBodies = Helpers.AllDeadBodies();
             DeadBody deadBody;
             float distance;
             Vector3 targetPosition;
@@ -148,17 +148,45 @@ namespace Nebula.Patches
             }
         }
 
+        public static void UpdateImpostorKillButton(HudManager __instance)
+        {
+            __instance.KillButton.SetTarget(PlayerControlPatch.SetMyTarget(true));
+        }
+
         public static void Postfix(HudManager __instance)
         {
             if (AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Started) return;
 
+            /* ボタン類の更新 */
             CustomButton.HudUpdate();
+            if(!PlayerControl.LocalPlayer.Data.Role.IsImpostor && PlayerControl.LocalPlayer.GetModData().role.canUseVents)
+            {
+                if (Input.GetKeyDown(KeyCode.V))
+                HudManagerStartPatch.Manager.ImpostorVentButton.DoClick();
+            }
             
-            //
+            //名前タグの更新
             ResetNameTagsAndColors();
 
             //引きずられているプレイヤーの処理
             UpdateDraggedPlayer();
+
+            //インポスターのキルボタンのパッチ
+            if (PlayerControl.LocalPlayer.Data.Role.IsImpostor)
+            {
+                UpdateImpostorKillButton(__instance);
+            }
+
+            //ベントの色の設定
+            Color ventColor;
+            foreach (Vent vent in ShipStatus.Instance.AllVents)
+            {
+                ventColor = PlayerControl.LocalPlayer.GetModData().role.ventColor;
+                vent.myRend.material.SetColor("_OutlineColor", ventColor);
+
+                if (vent.myRend.material.GetColor("_AddColor").a > 0f)
+                    vent.myRend.material.SetColor("_AddColor", ventColor);
+            }
 
             Events.GlobalEvent.Update();
 

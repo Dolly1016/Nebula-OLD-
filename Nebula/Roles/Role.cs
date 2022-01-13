@@ -41,6 +41,7 @@ namespace Nebula.Roles
         /// 自身が同じチームとして表示される陣営
         /// </summary>
         private HashSet<Side> introInfluenceSides { get; }
+        public Color ventColor { get; set; }
         public bool canUseVents { get; set; }
         public bool canMoveInVents { get; set; }
         /// <summary>
@@ -61,22 +62,24 @@ namespace Nebula.Roles
         public bool deceiveImpostorInNameDisplay { get; set; }
 
         private HashSet<Patches.EndCondition> winReasons { get; }
+        public bool CheckWin(Patches.EndCondition winReason)
+        {
+            return winReasons.Contains(winReason);
+        }
 
         public Module.CustomOption roleChanceOption { get; private set; }
         public Module.CustomOption roleCountOption { get; private set; }
 
         private int optionId { get; set; }
 
-        public bool checkWin(Patches.EndCondition winReason)
-        {
-            return this.winReasons.Contains(winReason);
-        }
-
         //使用済みロールID
         static private byte maxId = 0;
 
         //オプションで使用するID
         static private int optionAvailableId = 10;
+
+        /*--------------------------------------------------------------------------------------*/
+        /*--------------------------------------------------------------------------------------*/
 
         public void SetupRoleOptionData()
         {
@@ -126,25 +129,113 @@ namespace Nebula.Roles
             return CreateOption(color, name, new string[] { "option.switch.off", "option.switch.on" }, defaultValue ? "option.switch.on" : "option.switch.off");
         }
 
-        //ボタン設定を初期化します。自身のロールについてのみ初期化を行います。
+        
+        /*--------------------------------------------------------------------------------------*/
+        /*--------------------------------------------------------------------------------------*/
+
+
+        /// <summary>
+        /// ボタン設定を初期化します。自身のロールについてのみ初期化を行います。
+        /// </summary>
+        [RoleLocalMethod]
         public virtual void ButtonInitialize(HudManager __instance) { }
 
-        public virtual void Initialize(PlayerControl __instance) { }
-        //毎ティック呼び出されます
-        public virtual void MyPlayerControlUpdate()　{ }
-        //ゲーム終了時に呼び出されます。
-        public virtual void CleanUp() { }
         //
+        [RoleLocalMethod]
+        public virtual void Initialize(PlayerControl __instance) { }
+
+        /// <summary>
+        /// 毎ティック呼び出されます
+        /// </summary>
+        [RoleLocalMethod]
+        public virtual void MyPlayerControlUpdate()　{ }
+
+        /// <summary>
+        ///ゲーム終了時に呼び出されます。 
+        /// </summary>
+        [RoleLocalMethod]
+        public virtual void CleanUp() { }
+
+        /// <summary>
+        /// //明かりの大きさを調整します。毎ティック呼び出されます。
+        /// </summary>
+        /// <param name="radius">現行の明かりの大きさ</param>
+        [RoleLocalMethod]
         public virtual void GetLightRadius(ref float radius) {  }
 
+        /// <summary>
+        /// キルクールダウンを設定する際に呼び出されます。
+        /// </summary>
+        /// <param name="multiplier">クールダウンに掛け合わせる値</param>
+        /// <param name="addition">クールダウンに足しこむ値</param>
+        [RoleLocalMethod]
         public virtual void SetKillCoolDown(ref float multiplier,ref float addition) { }
 
+        /// <summary>
+        /// 会議が終了した際に呼び出されます。
+        /// </summary>
+        [RoleLocalMethod]
         public virtual void OnMeetingEnd() { }
 
-        public virtual bool OnExiled()
+        /// <summary>
+        /// 誰かが殺害されたときに呼び出されます。
+        /// プレイヤー自身のロールについてのみ呼び出されます。
+        /// </summary>
+        /// <param name="murderId">殺害者のプレイヤーID</param>
+        /// <param name="targetId">被害者のプレイヤーID</param>
+        [RoleLocalMethod]
+        public virtual void OnAnyoneMurdered(byte murderId,byte targetId) { }
+
+        /// <summary>
+        /// 追放されたときに呼び出されます。
+        /// </summary>
+        [RoleLocalMethod]
+        public virtual void OnExiled(){}
+
+        /// <summary>
+        /// 殺害されて死んだときに呼び出されます。
+        /// </summary>
+        [RoleLocalMethod]
+        public virtual void OnMurdered(byte murderId) { }
+
+        /// <summary>
+        /// 理由に関わらず、死んだときに呼び出されます。
+        /// OnExiledやOnMurderedの後に呼ばれます。
+        /// </summary>
+        [RoleLocalMethod]
+        public virtual void OnDied() { }
+
+        /*--------------------------------------------------------------------------------------*/
+        /*--------------------------------------------------------------------------------------*/
+
+
+        /// <summary>
+        /// その役職のプレイヤーが追放されたときに呼び出されます。
+        /// </summary>
+        /// <returns>falseの場合死を回避します。</returns>
+        [RoleGlobalMethod]
+        public virtual bool OnExiled(byte playerId)
         {
             return true;
         }
+
+        /// <summary>
+        /// その役職のプレイヤーが殺害されて死んだときに呼び出されます。
+        /// </summary>
+        [RoleGlobalMethod]
+        public virtual void OnMurdered(byte murderId, byte playerId) { }
+
+        /// <summary>
+        /// 理由に関わらず、その役職のプレイヤーが死んだときに呼び出されます。
+        /// OnExiledやOnMurderedの後に呼ばれます。
+        /// </summary>
+        [RoleGlobalMethod]
+        public virtual void OnDied(byte playerId) { }
+
+
+        /*--------------------------------------------------------------------------------------*/
+        /*--------------------------------------------------------------------------------------*/
+
 
         protected Role(string name, string localizeName, Color color, RoleCategory category,
             Side side, Side introMainDisplaySide, HashSet<Side> introDisplaySides, HashSet<Side> introInfluenceSides,
@@ -179,6 +270,8 @@ namespace Nebula.Roles
             this.lightRadiusMax = 1.0f;
 
             this.deceiveImpostorInNameDisplay = false;
+
+            this.ventColor = Palette.ImpostorRed;
 
             //未設定
             this.optionId = -1;

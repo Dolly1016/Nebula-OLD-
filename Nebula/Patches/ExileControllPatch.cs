@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Hazel;
-using HarmonyLib;
+﻿using HarmonyLib;
 
 namespace Nebula.Patches
 {
     [HarmonyPatch]
     class ExileControllerWrapUpPatch
     {
-
         [HarmonyPatch(typeof(ExileController), nameof(ExileController.WrapUp))]
         class BaseExileControllerPatch
         {
@@ -32,9 +25,16 @@ namespace Nebula.Patches
 
         static void WrapUpPostfix(GameData.PlayerInfo exiled)
         {
-            if (Game.GameData.data.players[exiled.PlayerId].role.OnExiled())
+            if (exiled.GetModData().role.OnExiled(exiled.PlayerId))
             {
-               
+                exiled.GetModData().role.OnDied(exiled.PlayerId);
+
+                if (exiled.PlayerId == PlayerControl.LocalPlayer.PlayerId)
+                {
+                    exiled.GetModData().role.OnExiled();
+                    exiled.GetModData().role.OnDied();
+                }
+
                 Game.GameData.data.players[exiled.PlayerId].Die();
             }
             else

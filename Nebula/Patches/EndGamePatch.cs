@@ -21,7 +21,7 @@ namespace Nebula.Patches
         public static EndCondition JesterWin = new EndCondition(16, Roles.Neutral.Jester.Color, "jester");
         public static EndCondition JackalWin = new EndCondition(17, Roles.Neutral.Jackal.Color, "jackal");
         public static EndCondition ArsonistWin = new EndCondition(18, Palette.ImpostorRed, "arsonist");
-        public static EndCondition VultureWin = new EndCondition(19, Palette.ImpostorRed, "vulture");
+        public static EndCondition VultureWin = new EndCondition(19, Roles.Neutral.Vulture.Color, "vulture");
 
         public static HashSet<EndCondition> AllEnds = new HashSet<EndCondition>() {
             CrewmateWinByVote ,CrewmateWinByTask,CrewmateWinDisconnect,
@@ -124,7 +124,7 @@ namespace Nebula.Patches
             TempData.winners.Clear();
 
             foreach(PlayerControl player in PlayerControl.AllPlayerControls){
-                if (Game.GameData.data.players[player.PlayerId].role.checkWin(EndCondition))
+                if (Game.GameData.data.players[player.PlayerId].role.CheckWin(EndCondition))
                 {
                     TempData.winners.Add(new WinningPlayerData(player.Data));
                 }

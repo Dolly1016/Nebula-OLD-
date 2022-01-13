@@ -46,6 +46,7 @@ namespace Nebula.Events
 
         public Type type {get;}
         public float duration { get; private set; }
+        public bool SpreadOverMeeting { get; protected set; }
 
         public bool CheckTerminal()
         {
@@ -118,6 +119,19 @@ namespace Nebula.Events
         static public void Initialize()
         {
             Events.Clear();
+        }
+
+        static public void OnMeeting()
+        {
+            foreach (GlobalEvent globalEvent in Events)
+            {
+                if (globalEvent.SpreadOverMeeting)
+                {
+                    globalEvent.duration = 0;
+                }
+            }
+
+            Events.RemoveAll(e => e.CheckTerminal());
         }
     }
 }

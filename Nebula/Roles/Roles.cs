@@ -25,6 +25,7 @@ namespace Nebula.Roles
 
         public static Neutral.Jackal Jackal = new Neutral.Jackal();
         public static Neutral.Jester Jester = new Neutral.Jester();
+        public static Neutral.Vulture Vulture = new Neutral.Vulture();
 
 
         public static List<Role> AllRoles = new List<Role>()
@@ -32,7 +33,7 @@ namespace Nebula.Roles
             Crewmate,Sheriff,SecurityGuard,Spy,
             Madmate,
             Impostor,EvilAce,Camouflager,Reaper,
-            Jackal,Jester
+            Jackal,Jester,Vulture
         };
 
         public static void RegisterAddonRoles(Role role)

@@ -13,11 +13,47 @@ namespace Nebula.Roles.Impostor
 {
     public class Reaper : Role
     {
+        /* ボタン */
         private CustomButton dragButton;
+        public override void ButtonInitialize(HudManager __instance)
+        {
+            if (dragButton != null)
+            {
+                dragButton.Destroy();
+            }
+            dragButton = new CustomButton(
+                () =>
+                {
+                    byte target;
+                    if (Game.GameData.data.myData.getGlobalData().dragPlayerId != Byte.MaxValue)
+                    {
+                        target = Byte.MaxValue;
+                    }
+                    else
+                    {
+                        target = (byte)deadBodyId;
+                    }
 
+                    MessageWriter dragAndDropWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.DragAndDropPlayer, Hazel.SendOption.Reliable, -1);
+                    dragAndDropWriter.Write(PlayerControl.LocalPlayer.PlayerId);
+                    dragAndDropWriter.Write(target);
+                    AmongUsClient.Instance.FinishRpcImmediately(dragAndDropWriter);
+                    RPCEvents.DragAndDropPlayer(PlayerControl.LocalPlayer.PlayerId, target);
+                },
+                () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
+                () => { return PlayerControl.LocalPlayer.CanMove; },
+                () => { },
+                getDragButtonSprite(),
+                new Vector3(-1.8f, -0.06f, 0),
+                __instance,
+                KeyCode.F
+            );
 
-        public byte deadBodyId;
+            dragButton.MaxTimer = 1;
+            dragButton.Timer = 0;
+        }
 
+        /* 画像 */
 
         private Sprite dragButtonSprite = null;
         public Sprite getDragButtonSprite()
@@ -34,6 +70,10 @@ namespace Nebula.Roles.Impostor
             dropButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.DropButton.png", 115f);
             return dropButtonSprite;
         }
+
+        /* 各種変数 */
+        public byte deadBodyId;
+
 
         public override void MyPlayerControlUpdate()
         {
@@ -58,44 +98,6 @@ namespace Nebula.Roles.Impostor
             {
                 dragButton.Sprite = getDropButtonSprite();
             }
-        }
-
-        public override void ButtonInitialize(HudManager __instance)
-        {
-            if (dragButton != null)
-            {
-                dragButton.Destroy();
-            }
-            dragButton = new CustomButton(
-                () =>
-                {
-                    byte target;
-                    if (Game.GameData.data.myData.getGlobalData().dragPlayerId!=Byte.MaxValue)
-                    {
-                        target = Byte.MaxValue;
-                    }
-                    else
-                    {
-                        target = (byte)deadBodyId;
-                    }
-
-                    MessageWriter dragAndDropWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.DragAndDropPlayer, Hazel.SendOption.Reliable, -1);
-                    dragAndDropWriter.Write(PlayerControl.LocalPlayer.PlayerId);
-                    dragAndDropWriter.Write(target);
-                    AmongUsClient.Instance.FinishRpcImmediately(dragAndDropWriter);
-                    RPCEvents.DragAndDropPlayer(PlayerControl.LocalPlayer.PlayerId, target);
-                },
-                () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
-                () => { return PlayerControl.LocalPlayer.CanMove; },
-                () => { },
-                getDragButtonSprite(),
-                new Vector3(-1.8f, -0.06f, 0),
-                __instance,
-                KeyCode.F
-            );
-            
-            dragButton.MaxTimer = 1;
-            dragButton.Timer = 0;
         }
 
         public override void CleanUp()

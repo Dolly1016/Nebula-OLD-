@@ -9,5 +9,17 @@ using Hazel;
 
 namespace Nebula.Patches
 {
+    [HarmonyPatch]
+    class MeetingHudPatch
+    {
 
+        [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Awake))]
+        class MeetingCalculateVotesPatch
+        {
+            static void Postfix(MeetingHud __instance)
+            {
+                Events.GlobalEvent.OnMeeting();
+            }
+        }
+    }
 }

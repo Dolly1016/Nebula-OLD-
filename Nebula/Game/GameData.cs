@@ -166,10 +166,14 @@ namespace Nebula.Game
         
         public MyPlayerData myData;
 
+        public int TotalTasks, CompleteTasks;
+
         public GameData()
         {
             players = new Dictionary<byte, PlayerData>();
             myData = new MyPlayerData();
+            TotalTasks = 0;
+            CompleteTasks = 0;
         }
 
         //データを消去します。

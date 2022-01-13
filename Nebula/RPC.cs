@@ -27,6 +27,7 @@ namespace Nebula
         // Role functionality
 
         SealVent = 91,
+        CleanDeadBody
 
     }
 
@@ -44,13 +45,14 @@ namespace Nebula
                     RPCEvents.ResetVaribles();
                     break;
                 case (byte)CustomRPC.VersionHandshake:
-                    byte length = reader.ReadByte();
+                    int length = reader.ReadInt32();
                     byte[] version = new byte[length];
                     for(byte i = 0; i < length; i++)
                     {
                         version[i] = reader.ReadByte();
                     }
                     int clientId = reader.ReadPackedInt32();
+                    UnityEngine.Debug.Log("Received Handshake:"+version[0]+"." + version[1] + "." + version[2] + "." + version[3] );
                     RPCEvents.VersionHandshake(version, new Guid(reader.ReadBytes(16)), clientId);
                     break;
                 case (byte)CustomRPC.ForceEnd:
@@ -89,10 +91,11 @@ namespace Nebula
         {
             Game.GameData.Initialize();
             Events.GlobalEvent.Initialize();
+            Objects.CustomMessage.Initialize();
             Roles.Role.AllCleanUp();
         }
 
-        public static void VersionHandshake(byte[] version , Guid guid, int clientId)
+        public static void VersionHandshake(byte[] version, Guid guid, int clientId)
         {
             Patches.GameStartManagerPatch.playerVersions[clientId] = new Patches.GameStartManagerPatch.PlayerVersion(version, guid);
         }
@@ -101,7 +104,7 @@ namespace Nebula
         {
             foreach (PlayerControl player in PlayerControl.AllPlayerControls)
             {
-                if (player.PlayerId!= playerId)
+                if (player.PlayerId != playerId)
                 {
                     player.RemoveInfected();
                     player.MurderPlayer(player);
@@ -110,12 +113,12 @@ namespace Nebula
             }
         }
 
-        public static void SetRole(Roles.Role role,byte playerId)
+        public static void SetRole(Roles.Role role, byte playerId)
         {
-            Game.GameData.data.RegisterPlayer(playerId,role);
+            Game.GameData.data.RegisterPlayer(playerId, role);
         }
 
-        public static void UncheckedMurderPlayer(byte murdererId,byte targetId, byte showAnimation)
+        public static void UncheckedMurderPlayer(byte murdererId, byte targetId, byte showAnimation)
         {
             PlayerControl source = Helpers.playerById(murdererId);
             PlayerControl target = Helpers.playerById(targetId);
@@ -126,17 +129,17 @@ namespace Nebula
             }
         }
 
-        public static void UpdataRoleData(byte playerId,int dataId,int newData)
+        public static void UpdataRoleData(byte playerId, int dataId, int newData)
         {
             Game.GameData.data.players[playerId].SetRoleData(dataId, newData);
         }
 
         public static void GlobalEvent(byte eventId, float duration)
         {
-            Events.GlobalEvent.Activate(Events.GlobalEvent.Type.GetType(eventId),duration);
+            Events.GlobalEvent.Activate(Events.GlobalEvent.Type.GetType(eventId), duration);
         }
 
-        public static void DragAndDropPlayer(byte playerId,byte targetId)
+        public static void DragAndDropPlayer(byte playerId, byte targetId)
         {
             if (targetId != Byte.MaxValue)
             {
@@ -175,7 +178,7 @@ namespace Nebula
             //if (PlayerControl.LocalPlayer == SecurityGuard.securityGuard)
             //{
             vent.EnterVentAnim = vent.ExitVentAnim = null;
-            if(PlayerControl.GameOptions.MapId == 2)
+            if (PlayerControl.GameOptions.MapId == 2)
             {
                 //Polus
                 vent.myRend.sprite = Roles.Roles.SecurityGuard.getCaveSealedSprite();
@@ -184,13 +187,24 @@ namespace Nebula
             {
                 PowerTools.SpriteAnim animator = vent.GetComponent<PowerTools.SpriteAnim>();
                 animator?.Stop();
-                vent.myRend.sprite =Roles.Roles.SecurityGuard.getVentSealedSprite();
+                vent.myRend.sprite = Roles.Roles.SecurityGuard.getVentSealedSprite();
             }
             vent.myRend.color = new Color(1f, 1f, 1f, 1f);
             vent.name = "%SEALED%" + vent.name;
             //}
 
             //MapOptions.ventsToSeal.Add(vent);
+        }
+
+        public static void CleanDeadBody(byte deadBodyId)
+        {
+            foreach (DeadBody deadBody in Helpers.AllDeadBodies())
+            {
+                if (deadBody.ParentId == deadBodyId)
+                {
+                    UnityEngine.Object.Destroy(deadBody.gameObject);
+                }
+            }
         }
     }
 }

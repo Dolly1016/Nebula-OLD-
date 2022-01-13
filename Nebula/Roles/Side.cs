@@ -89,8 +89,12 @@ namespace Nebula.Roles
             return null;
         });
 
-        public static Side Vulture = new Side("Vulture", "vulture", false, new Color(123, 60, 16), (PlayerStatistics statistics, ShipStatus status) =>
+        public static Side Vulture = new Side("Vulture", "vulture", false, Neutral.Vulture.Color, (PlayerStatistics statistics, ShipStatus status) =>
         {
+            if (Roles.Vulture.WinTrigger)
+            {
+                return EndCondition.VultureWin;
+            }
             return null;
         });
 
