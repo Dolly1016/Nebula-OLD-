@@ -22,10 +22,12 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
-
-   **Version Alpha 1.2.8**
+  
+ **Version Alpha 1.3.1**
+ - Sheriffがクルーメイト陣営をキルしようとすると自身が死ぬように
+  
+ **Version Alpha 1.3.0**
  - Bait , Greeneyed , Psychicを追加
- - バージョン競合検出に関するバグを再度修正
   
  **Version Alpha 1.2.8**
  - Vultureを追加
