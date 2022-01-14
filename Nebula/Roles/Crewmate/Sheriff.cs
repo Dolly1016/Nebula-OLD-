@@ -34,6 +34,10 @@ namespace Nebula.Roles.Crewmate
                 () =>
                 {
                     byte targetId = Game.GameData.data.myData.currentTarget.PlayerId;
+                    if (Game.GameData.data.players[targetId].role.category == RoleCategory.Crewmate)
+                    {
+                        targetId = PlayerControl.LocalPlayer.PlayerId;
+                    }
                     RPCEventInvoker.UncheckedMurderPlayer(PlayerControl.LocalPlayer.PlayerId, targetId, true);
 
 
