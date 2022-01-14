@@ -9,6 +9,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 # ダウンロード
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| Alpha 1.3.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.3.1,2021.12.15/Nebula.zip)|
 | Alpha 1.3.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.3.0,2021.12.15/Nebula.zip)|
 | Alpha 1.2.8 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.2.8,2021.12.15/Nebula.zip)|
 | Alpha 1.2.7 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.2.7,2021.12.15/Nebula.zip)|
