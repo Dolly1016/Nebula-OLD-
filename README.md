@@ -81,7 +81,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 | Roles |
 | ---------- |
 | [Bait](#bait) |
-| [Greeneyed](#greeneyed) |
+| [Provocateur](#provocateur) |
 | [Psychic](#psychic) |
 | [Madmate](#madmate) |
 | [Security Guard](#security-guard) |
@@ -144,8 +144,8 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 -----------------------
 
-## Greeneyed
- Greeneyedは自身を追放させたプレイヤーやキルしたプレイヤーを呪い返し、死へ追いやります。
+## Provocateur
+ Provocateurは自身を追放させたプレイヤーやキルしたプレイヤーを呪い返し、死へ追いやります。
  
  ### オプション
 | オプション名 | 設定内容 |
