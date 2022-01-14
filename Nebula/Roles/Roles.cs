@@ -13,7 +13,7 @@ namespace Nebula.Roles
 
         public static Crewmate.Crewmate Crewmate=new Crewmate.Crewmate();
         public static Crewmate.Bait Bait = new Crewmate.Bait();
-        public static Crewmate.Greeneyed Greeneyed = new Crewmate.Greeneyed();
+        public static Crewmate.Provocateur Provocateur = new Crewmate.Provocateur();
         public static Crewmate.Psychic Psychic = new Crewmate.Psychic();
         public static Crewmate.SecurityGuard SecurityGuard = new Crewmate.SecurityGuard();
         public static Crewmate.Sheriff Sheriff = new Crewmate.Sheriff();
@@ -33,7 +33,7 @@ namespace Nebula.Roles
         //全てのロールはこの中に含まれている必要があります
         public static List<Role> AllRoles = new List<Role>()
         {
-            Crewmate,Bait,Greeneyed,Psychic,SecurityGuard,Sheriff,Spy,
+            Crewmate,Bait,Provocateur,Psychic,SecurityGuard,Sheriff,Spy,
             Madmate,
             Impostor,Camouflager,EvilAce,Reaper,
             Jackal,Jester,Vulture

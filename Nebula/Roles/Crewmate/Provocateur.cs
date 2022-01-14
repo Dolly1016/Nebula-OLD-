@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Nebula.Roles.Crewmate
 {
-    public class Greeneyed : Role
+    public class Provocateur : Role
     {
         static public Color Color = new Color(112f / 255f, 255f / 255f, 89f / 255f);
 
@@ -26,8 +26,8 @@ namespace Nebula.Roles.Crewmate
             RPCEventInvoker.UncheckedExilePlayer(voters[NebulaPlugin.rnd.Next(voters.Length)]);
         }
 
-        public Greeneyed()
-            : base("Greeneyed", "greeneyed", Color, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
+        public Provocateur()
+            : base("Provocateur", "provocateur", Color, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                  Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Crewmate.crewmateEndSet,
                  false, false, false, false, false)
         {
