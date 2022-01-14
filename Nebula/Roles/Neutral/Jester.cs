@@ -18,7 +18,7 @@ namespace Nebula.Roles.Neutral
 
         private Module.CustomOption canUseVentsOption;
 
-        public override bool OnExiled(byte playerId)
+        public override bool OnExiled(byte[] voters,byte playerId)
         {
             WinTrigger = true;
             return false;    

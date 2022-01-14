@@ -60,6 +60,17 @@ namespace Nebula.Roles.Neutral
                 KeyCode.F
             );
             eatButton.MaxTimer = 5;
+            eatButton.Timer = 5;
+        }
+
+        public override void ButtonActivate()
+        {
+            eatButton.setActive(true);
+        }
+
+        public override void ButtonDeactivate()
+        {
+            eatButton.setActive(false);
         }
 
         /* 矢印 */
@@ -139,7 +150,7 @@ namespace Nebula.Roles.Neutral
             WinTrigger = false;
         }
 
-        public override void CleanUp()
+        public override void ButtonCleanUp()
         {
             if (eatButton != null)
             {

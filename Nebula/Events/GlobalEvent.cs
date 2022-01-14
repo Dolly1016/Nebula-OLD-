@@ -125,9 +125,9 @@ namespace Nebula.Events
         {
             foreach (GlobalEvent globalEvent in Events)
             {
-                if (globalEvent.SpreadOverMeeting)
+                if (!globalEvent.SpreadOverMeeting)
                 {
-                    globalEvent.duration = 0;
+                    globalEvent.duration = -1;
                 }
             }
 

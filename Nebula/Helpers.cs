@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.IO;
 using System.Reflection;
 using UnhollowerBaseLib;
 using UnityEngine;
 using Hazel;
+using HarmonyLib;
+using System.Linq;
 
 namespace Nebula
 {
@@ -202,19 +205,34 @@ namespace Nebula
             target.SetOutfit(target);
         }
 
+        public static Game.PlayerData GetModData(byte player)
+        {
+            if (Game.GameData.data.players.ContainsKey(player))
+            {
+                return Game.GameData.data.players[player];
+            }
+            return null;
+        }
+
+        public static bool HasModData(byte player)
+        {
+            if (Game.GameData.data == null) return false; 
+            return Game.GameData.data.players.ContainsKey(player);
+        }
+
         public static Game.PlayerData GetModData(this PlayerControl player)
         {
-            return Game.GameData.data.players[player.PlayerId];
+            return GetModData(player.PlayerId);
         }
 
         public static Game.PlayerData GetModData(this GameData.PlayerInfo player)
         {
-            return Game.GameData.data.players[player.PlayerId];
+            return GetModData(player.PlayerId);
         }
 
         public static Game.PlayerData GetModData(this DeadBody player)
         {
-            return Game.GameData.data.players[player.ParentId];
+            return GetModData(player.ParentId);
         }
 
         public static DeadBody[] AllDeadBodies()
@@ -242,6 +260,16 @@ namespace Nebula
             writer.Write(Assembly.GetExecutingAssembly().ManifestModule.ModuleVersionId.ToByteArray());
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.VersionHandshake(NebulaPlugin.Instance.PluginVersionData, Assembly.GetExecutingAssembly().ManifestModule.ModuleVersionId, AmongUsClient.Instance.ClientId);
+        }
+
+        public static Vector3 GetVector(float radius)
+        {
+            return GetVector((float)(NebulaPlugin.rnd.NextDouble() * Math.PI * 2f), radius);
+        }
+
+        public static Vector3 GetVector(float angle, float radius)
+        {
+            return new Vector3(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius);
         }
     }
 }

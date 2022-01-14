@@ -13,6 +13,7 @@ using Nebula.Roles;
 
 namespace Nebula.Patches
 {
+
     [HarmonyPatch(typeof(RoleOptionsData), nameof(RoleOptionsData.GetNumPerGame))]
     class RoleOptionsDataGetNumPerGamePatch
     {
@@ -76,6 +77,18 @@ namespace Nebula.Patches
                 }
             }
 
+            public void RegisterRoleChance(RoleAllocation allocation)
+            {
+                if (allocation.expected < 10)
+                {
+                    secondaryRoles.Add(allocation);
+                }
+                else
+                {
+                    firstRoles.Add(allocation.role);
+                }
+            }
+
             public void Assign(List<PlayerControl> players)
             {
                 int left = roles;
@@ -134,6 +147,7 @@ namespace Nebula.Patches
 
         public AssignRoles(int crewmates, int impostors)
         {
+            //カテゴリごとの人数決定とロール割り当て
             int min, max;
 
             min = (int)CustomOptionHolder.crewmateRolesCountMin.getFloat();
@@ -151,6 +165,30 @@ namespace Nebula.Patches
                 max = crewmates - impostors - 1;
             }
             neutralData = new CategoryData(min, max, RoleCategory.Neutral);
+
+            //ComplexRoleの割り当て
+            RoleAllocation[] allocations;
+            foreach(Role role in Roles.Roles.AllRoles)
+            {
+                if (role.category != RoleCategory.Complex) continue;
+
+                allocations = role.GetComplexAllocations();
+                if (allocations == null)  continue;
+                foreach (RoleAllocation allocation in allocations)
+                {
+                    if (allocation.role.category == RoleCategory.Crewmate)
+                    {
+                        crewmateData.RegisterRoleChance(allocation);
+                    }else if (allocation.role.category == RoleCategory.Impostor)
+                    {
+                        impostorData.RegisterRoleChance(allocation);
+                    }
+                    else if (allocation.role.category == RoleCategory.Neutral)
+                    {
+                        neutralData.RegisterRoleChance(allocation);
+                    }
+                }
+            }
         }
     }
 

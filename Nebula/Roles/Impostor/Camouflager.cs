@@ -70,12 +70,22 @@ namespace Nebula.Roles.Impostor
             camouflageButton.EffectDuration = camouflageDurationOption.getFloat();
         }
 
+        public override void ButtonActivate()
+        {
+            camouflageButton.setActive(true);
+        }
+
+        public override void ButtonDeactivate()
+        {
+            camouflageButton.setActive(false);
+        }
+
         public override void OnMeetingEnd()
         {
             camouflageButton.Timer = camouflageButton.MaxTimer;
         }
 
-        public override void CleanUp()
+        public override void ButtonCleanUp()
         {
             if (camouflageButton != null)
             {

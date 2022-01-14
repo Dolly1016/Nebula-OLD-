@@ -15,7 +15,8 @@ namespace Nebula.Roles
     {
         Crewmate,
         Impostor,
-        Neutral
+        Neutral,
+        Complex
     }
 
     public abstract class Role
@@ -24,7 +25,7 @@ namespace Nebula.Roles
         public string name { get; private set; }
         public string localizeName { get; private set; }
         public Color color { get; private set; }
-        public RoleCategory category{ get; }
+        public RoleCategory category { get; }
         /// <summary>
         /// 勝ち負け判定に使用する陣営
         /// </summary>
@@ -83,7 +84,7 @@ namespace Nebula.Roles
 
         public void SetupRoleOptionData()
         {
-            roleChanceOption =Module.CustomOption.Create(optionAvailableId, color,"role."+localizeName+".name", CustomOptionHolder.rates, null, true);
+            roleChanceOption = Module.CustomOption.Create(optionAvailableId, color, "role." + localizeName + ".name", CustomOptionHolder.rates, null, true);
             optionId = optionAvailableId + 1;
             optionAvailableId += 10;
 
@@ -106,14 +107,14 @@ namespace Nebula.Roles
             {
                 return null;
             }
-            Module.CustomOption option=new Module.CustomOption(optionId, color, "role." + this.localizeName + "." + name, selections, defaultValue, roleChanceOption, false, false, "");
+            Module.CustomOption option = new Module.CustomOption(optionId, color, "role." + this.localizeName + "." + name, selections, defaultValue, roleChanceOption, false, false, "");
             optionId++;
             return option;
         }
 
         protected Module.CustomOption CreateOption(Color color, string name, string[] selections)
         {
-            return CreateOption(color,name,selections,"");
+            return CreateOption(color, name, selections, "");
         }
 
         protected Module.CustomOption CreateOption(Color color, string name, float defaultValue, float min, float max, float step)
@@ -129,16 +130,28 @@ namespace Nebula.Roles
             return CreateOption(color, name, new string[] { "option.switch.off", "option.switch.on" }, defaultValue ? "option.switch.on" : "option.switch.off");
         }
 
-        
+
         /*--------------------------------------------------------------------------------------*/
         /*--------------------------------------------------------------------------------------*/
 
 
         /// <summary>
-        /// ボタン設定を初期化します。自身のロールについてのみ初期化を行います。
+        /// ボタン設定を初期化します。全ロールに対して行います。
         /// </summary>
         [RoleLocalMethod]
         public virtual void ButtonInitialize(HudManager __instance) { }
+
+        /// <summary>
+        /// ボタンを有効化します。自身のロールについてのみ行います。
+        /// </summary>
+        [RoleLocalMethod]
+        public virtual void ButtonActivate() { }
+
+        /// <summary>
+        /// ボタンを無効化します。自身のロールについてのみ行います。
+        /// </summary>
+        [RoleLocalMethod]
+        public virtual void ButtonDeactivate() { }
 
         //
         [RoleLocalMethod]
@@ -148,20 +161,20 @@ namespace Nebula.Roles
         /// 毎ティック呼び出されます
         /// </summary>
         [RoleLocalMethod]
-        public virtual void MyPlayerControlUpdate()　{ }
+        public virtual void MyPlayerControlUpdate() { }
 
         /// <summary>
         ///ゲーム終了時に呼び出されます。 
         /// </summary>
         [RoleLocalMethod]
-        public virtual void CleanUp() { }
+        public virtual void ButtonCleanUp() { }
 
         /// <summary>
         /// //明かりの大きさを調整します。毎ティック呼び出されます。
         /// </summary>
         /// <param name="radius">現行の明かりの大きさ</param>
         [RoleLocalMethod]
-        public virtual void GetLightRadius(ref float radius) {  }
+        public virtual void GetLightRadius(ref float radius) { }
 
         /// <summary>
         /// キルクールダウンを設定する際に呼び出されます。
@@ -169,7 +182,7 @@ namespace Nebula.Roles
         /// <param name="multiplier">クールダウンに掛け合わせる値</param>
         /// <param name="addition">クールダウンに足しこむ値</param>
         [RoleLocalMethod]
-        public virtual void SetKillCoolDown(ref float multiplier,ref float addition) { }
+        public virtual void SetKillCoolDown(ref float multiplier, ref float addition) { }
 
         /// <summary>
         /// 会議が終了した際に呼び出されます。
@@ -184,13 +197,13 @@ namespace Nebula.Roles
         /// <param name="murderId">殺害者のプレイヤーID</param>
         /// <param name="targetId">被害者のプレイヤーID</param>
         [RoleLocalMethod]
-        public virtual void OnAnyoneMurdered(byte murderId,byte targetId) { }
+        public virtual void OnAnyoneMurdered(byte murderId, byte targetId) { }
 
         /// <summary>
         /// 追放されたときに呼び出されます。
         /// </summary>
         [RoleLocalMethod]
-        public virtual void OnExiled(){}
+        public virtual void OnExiled(byte[] voters) { }
 
         /// <summary>
         /// 殺害されて死んだときに呼び出されます。
@@ -214,7 +227,7 @@ namespace Nebula.Roles
         /// </summary>
         /// <returns>falseの場合死を回避します。</returns>
         [RoleGlobalMethod]
-        public virtual bool OnExiled(byte playerId)
+        public virtual bool OnExiled(byte[] voters,byte playerId)
         {
             return true;
         }
@@ -236,12 +249,20 @@ namespace Nebula.Roles
         /*--------------------------------------------------------------------------------------*/
         /*--------------------------------------------------------------------------------------*/
 
+        //ComplexRoleの子ロールなど、オプション画面で隠したいロールはtrueにしてください。
+        protected bool IsHideRole { get; set; }
+
+        //Complexなロールカテゴリーについてのみ呼ばれます。
+        public virtual AssignRoles.RoleAllocation[] GetComplexAllocations()
+        {
+            return null;
+        }
 
         protected Role(string name, string localizeName, Color color, RoleCategory category,
             Side side, Side introMainDisplaySide, HashSet<Side> introDisplaySides, HashSet<Side> introInfluenceSides,
             HashSet<Patches.EndCondition> winReasons,
-            bool hasFakeTask,bool canUseVents,bool canMoveInVents,
-            bool ignoreBlackout,bool useImpostorLightRadius)
+            bool hasFakeTask, bool canUseVents, bool canMoveInVents,
+            bool ignoreBlackout, bool useImpostorLightRadius)
         {
             this.id = maxId;
             maxId++;
@@ -253,7 +274,7 @@ namespace Nebula.Roles
             this.category = category;
 
             this.side = side;
-            this.introMainDisplaySide=introMainDisplaySide;
+            this.introMainDisplaySide = introMainDisplaySide;
             this.introDisplaySides = introDisplaySides;
             this.introInfluenceSides = introInfluenceSides;
 
@@ -275,6 +296,8 @@ namespace Nebula.Roles
 
             //未設定
             this.optionId = -1;
+
+            this.IsHideRole = false;
         }
 
         public static Role GetRoleById(byte id)
@@ -286,14 +309,6 @@ namespace Nebula.Roles
                 }
             }
             return null;
-        }
-
-        public static void AllCleanUp()
-        {
-            foreach (Role role in Roles.AllRoles)
-            {
-                role.CleanUp();
-            }
         }
 
         static public void ExtractDisplayPlayers(ref Il2CppSystem.Collections.Generic.List<PlayerControl> players)
@@ -336,8 +351,11 @@ namespace Nebula.Roles
         {
             foreach (Role role in Roles.AllRoles)
             {
-                role.SetupRoleOptionData();
-                role.LoadOptionData();
+                if (!role.IsHideRole)
+                {
+                    role.SetupRoleOptionData();
+                    role.LoadOptionData();
+                }
             }
         }
     }

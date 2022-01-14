@@ -25,17 +25,18 @@ namespace Nebula.Patches
 
         static void WrapUpPostfix(GameData.PlayerInfo exiled)
         {
-            if (exiled.GetModData().role.OnExiled(exiled.PlayerId))
+            byte[] voters=MeetingHudPatch.GetVoters(exiled.PlayerId);
+            if (exiled.GetModData().role.OnExiled(voters,exiled.PlayerId))
             {
                 exiled.GetModData().role.OnDied(exiled.PlayerId);
 
                 if (exiled.PlayerId == PlayerControl.LocalPlayer.PlayerId)
                 {
-                    exiled.GetModData().role.OnExiled();
+                    exiled.GetModData().role.OnExiled(voters);
                     exiled.GetModData().role.OnDied();
                 }
 
-                Game.GameData.data.players[exiled.PlayerId].Die();
+                Game.GameData.data.players[exiled.PlayerId].Die(Game.DeadPlayerData.DeathReason.Exiled);
             }
             else
             {
@@ -43,6 +44,12 @@ namespace Nebula.Patches
             }
 
             Game.GameData.data.myData.getGlobalData().role.OnMeetingEnd();
+
+            //死体はすべて消去される
+            foreach(Game.DeadPlayerData deadPlayerData in Game.GameData.data.deadPlayers.Values)
+            {
+                deadPlayerData.EraseBody();
+            }
         }
     }
 }

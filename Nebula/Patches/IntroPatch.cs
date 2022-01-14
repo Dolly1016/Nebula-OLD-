@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HarmonyLib;
-using UnityEngine;
+﻿using HarmonyLib;
 
 namespace Nebula.Patches
 {
@@ -32,11 +26,16 @@ namespace Nebula.Patches
     [HarmonyPatch(typeof(HudManager), nameof(HudManager.Start))]
     static class HudManagerStartPatch
     {
-        public static HudManager Manager;
+        static public HudManager Manager;
 
         public static void Postfix(HudManager __instance)
         {
             Manager = __instance;
+            foreach (Roles.Role role in Roles.Roles.AllRoles)
+            {
+                role.ButtonCleanUp();
+                role.ButtonInitialize(__instance);
+            }
         }
     }
 
@@ -47,8 +46,8 @@ namespace Nebula.Patches
         {
             Roles.Role role = Game.GameData.data.players[PlayerControl.LocalPlayer.PlayerId].role;
 
-            role.ButtonInitialize(HudManagerStartPatch.Manager);
             role.Initialize(PlayerControl.LocalPlayer);
+            role.ButtonActivate();
         }
     }
 

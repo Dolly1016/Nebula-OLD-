@@ -20,6 +20,8 @@ namespace Nebula
         ShareOptions,
         SetRole,
         UncheckedMurderPlayer,
+        UncheckedExilePlayer,
+        UncheckedCmdReportDeadBody,
         UpdateRoleData,
         GlobalEvent,
         DragAndDropPlayer,
@@ -67,6 +69,12 @@ namespace Nebula
                 case (byte)CustomRPC.UncheckedMurderPlayer:
                     RPCEvents.UncheckedMurderPlayer(reader.ReadByte(), reader.ReadByte(), reader.ReadByte());
                     break;
+                case (byte)CustomRPC.UncheckedExilePlayer:
+                    RPCEvents.UncheckedExilePlayer(reader.ReadByte());
+                    break;
+                case (byte)CustomRPC.UncheckedCmdReportDeadBody:
+                    RPCEvents.UncheckedCmdReportDeadBody(reader.ReadByte(), reader.ReadByte());
+                    break;
                 case (byte)CustomRPC.UpdateRoleData:
                     RPCEvents.UpdataRoleData(reader.ReadByte(), reader.ReadInt32(), reader.ReadInt32());
                     break;
@@ -91,8 +99,9 @@ namespace Nebula
         {
             Game.GameData.Initialize();
             Events.GlobalEvent.Initialize();
+            Events.LocalEvent.Initialize();
             Objects.CustomMessage.Initialize();
-            Roles.Role.AllCleanUp();
+            Patches.MeetingHudPatch.Initialize();
         }
 
         public static void VersionHandshake(byte[] version, Guid guid, int clientId)
@@ -126,6 +135,38 @@ namespace Nebula
             {
                 if (showAnimation == 0) Patches.KillAnimationCoPerformKillPatch.hideNextAnimation = true;
                 source.MurderPlayer(target);
+            }
+        }
+
+        public static void UncheckedExilePlayer(byte playerId)
+        {
+            PlayerControl player = Helpers.playerById(playerId);
+            if (player != null)
+            {
+                player.Exiled();
+
+                if (player.GetModData().role.OnExiled(new byte[0], playerId))
+                {
+                    player.GetModData().role.OnDied(playerId);
+
+                    if (player.PlayerId == PlayerControl.LocalPlayer.PlayerId)
+                    {
+                        player.GetModData().role.OnExiled(new byte[0]);
+                        player.GetModData().role.OnDied();
+                    }
+
+                    Game.GameData.data.players[playerId].Die(Game.DeadPlayerData.DeathReason.Exiled);
+                }
+            }
+        }
+
+        public static void UncheckedCmdReportDeadBody(byte reporterId, byte targetId)
+        {
+            PlayerControl reporter = Helpers.playerById(reporterId);
+            PlayerControl target = Helpers.playerById(targetId);
+            if (reporter != null && target != null)
+            {
+                reporter.ReportDeadBody(target.Data);
             }
         }
 
@@ -203,8 +244,40 @@ namespace Nebula
                 if (deadBody.ParentId == deadBodyId)
                 {
                     UnityEngine.Object.Destroy(deadBody.gameObject);
+                    Game.GameData.data.deadPlayers[deadBodyId].EraseBody();
+                    break;
                 }
             }
+        }
+    }
+
+    public class RPCEventInvoker
+    {
+        public static void UncheckedMurderPlayer(byte murdererId, byte targetId, bool showAnimation)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UncheckedMurderPlayer, Hazel.SendOption.Reliable, -1);
+            writer.Write(murdererId);
+            writer.Write(targetId);
+            writer.Write(showAnimation ? Byte.MaxValue : (byte)0);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.UncheckedMurderPlayer(murdererId, targetId, showAnimation ? Byte.MaxValue : (byte)0);
+        }
+
+        public static void UncheckedExilePlayer(byte playerId)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UncheckedExilePlayer, Hazel.SendOption.Reliable, -1);
+            writer.Write(playerId);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.UncheckedExilePlayer(playerId);
+        }
+
+        public static void UncheckedCmdReportDeadBody(byte reporterId, byte targetId)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UncheckedCmdReportDeadBody, Hazel.SendOption.Reliable, -1);
+            writer.Write(reporterId);
+            writer.Write(targetId);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.UncheckedCmdReportDeadBody(reporterId, targetId);
         }
     }
 }

@@ -22,10 +22,10 @@ namespace Nebula
         public const string AmongUsVersion = "2021.12.15";
         public const string PluginGuid = "jp.dreamingpig.amongus.nebula";
         public const string PluginName = "TheNebula";
-        public const string PluginVersion = "1.2.8";
+        public const string PluginVersion = "1.3.0";
         public const string PluginStage = "ALPHA";
-        public const string PluginVersionForFetch = "0.1.2.8";
-        public byte[] PluginVersionData = new byte[] { 0, 1, 2, 8 };
+        public const string PluginVersionForFetch = "0.1.3.0";
+        public byte[] PluginVersionData = new byte[] { 0, 1, 3, 0 };
 
         public static NebulaPlugin Instance;
 
@@ -40,6 +40,9 @@ namespace Nebula
             if (File.Exists("patches/DebugMode.patch"))DebugMode = true;
 
             Instance = this;
+
+            //色データを読み込む
+            Module.CustomColors.Load();
 
             //言語データを読み込む
             Language.Language.Load();
@@ -112,12 +115,7 @@ namespace Nebula
             // Suiside
             if (Input.GetKeyDown(KeyCode.F9))
             {
-                MessageWriter killWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UncheckedMurderPlayer, Hazel.SendOption.Reliable, -1);
-                killWriter.Write(PlayerControl.LocalPlayer.PlayerId);
-                killWriter.Write(PlayerControl.LocalPlayer.PlayerId);
-                killWriter.Write(byte.MaxValue);
-                AmongUsClient.Instance.FinishRpcImmediately(killWriter);
-                RPCEvents.UncheckedMurderPlayer(PlayerControl.LocalPlayer.PlayerId, PlayerControl.LocalPlayer.PlayerId, Byte.MaxValue);
+                RPCEventInvoker.UncheckedMurderPlayer(PlayerControl.LocalPlayer.PlayerId, PlayerControl.LocalPlayer.PlayerId, true);
 
             }
 
@@ -127,12 +125,7 @@ namespace Nebula
                 PlayerControl target = Patches.PlayerControlPatch.SetMyTarget();
                 if (target == null) return;
 
-                MessageWriter killWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UncheckedMurderPlayer, Hazel.SendOption.Reliable, -1);
-                killWriter.Write(PlayerControl.LocalPlayer.PlayerId);
-                killWriter.Write(target.PlayerId);
-                killWriter.Write(byte.MaxValue);
-                AmongUsClient.Instance.FinishRpcImmediately(killWriter);
-                RPCEvents.UncheckedMurderPlayer(PlayerControl.LocalPlayer.PlayerId, target.PlayerId, Byte.MaxValue);
+                RPCEventInvoker.UncheckedMurderPlayer(PlayerControl.LocalPlayer.PlayerId, target.PlayerId, true);
 
             }
 

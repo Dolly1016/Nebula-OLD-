@@ -34,6 +34,40 @@ namespace Nebula.Game
         }
     }
 
+    public class DeadPlayerData
+    {
+        public enum DeathReason
+        {
+            Killed,
+            Exiled,
+            Suicide,
+        }
+
+        public PlayerData Data { get; }
+        public byte MurderId { get; }
+        public DeathReason Reason { get; }
+        public bool existDeadBody { get; private set; }
+        //死亡場所
+        public Vector3 deathLocation { get; }
+        //死後経過時間
+        public float Elapsed { get; set; }
+
+        public DeadPlayerData(PlayerData playerData,DeathReason deathReason,byte murderId)
+        {
+            this.Data = playerData;
+            this.Reason = deathReason;
+            this.MurderId = murderId;
+            this.existDeadBody = true;
+            this.deathLocation = Helpers.allPlayersById()[playerData.id].transform.position;
+            this.Elapsed = 0f;
+        }
+
+        public void EraseBody()
+        {
+            existDeadBody = false;
+        }
+    }
+
     public class PlayerData
     {
         public class PlayerOutfitData
@@ -116,7 +150,7 @@ namespace Nebula.Game
             SetRoleData(id,GetRoleData(id)+addValue);
         }
 
-        public void Die()
+        private void Die(DeadPlayerData.DeathReason deathReason,byte murderId)
         {
             IsAlive = false;
 
@@ -124,6 +158,18 @@ namespace Nebula.Game
             {
                 Helpers.allPlayersById()[id].clearAllTasks();
             }
+
+            Game.GameData.data.deadPlayers.Add(id, new DeadPlayerData(this, deathReason, murderId));
+        }
+
+        public void Die(DeadPlayerData.DeathReason deathReason)
+        {
+            Die(deathReason,Byte.MaxValue);
+        }
+
+        public void Die(byte murderId)
+        {
+            Die(DeadPlayerData.DeathReason.Killed, murderId);
         }
 
         public bool IsMyPlayerData()
@@ -163,7 +209,8 @@ namespace Nebula.Game
         private static Dictionary<string, int> RoleDataIdMap=new Dictionary<string, int>();
 
         public Dictionary<byte, PlayerData> players;
-        
+        public Dictionary<byte, DeadPlayerData> deadPlayers;
+
         public MyPlayerData myData;
 
         public int TotalTasks, CompleteTasks;
@@ -171,6 +218,7 @@ namespace Nebula.Game
         public GameData()
         {
             players = new Dictionary<byte, PlayerData>();
+            deadPlayers = new Dictionary<byte, DeadPlayerData>();
             myData = new MyPlayerData();
             TotalTasks = 0;
             CompleteTasks = 0;
@@ -180,6 +228,7 @@ namespace Nebula.Game
         private void Clear()
         {
             players.Clear();
+            deadPlayers.Clear();
         }
 
         public static void Close()

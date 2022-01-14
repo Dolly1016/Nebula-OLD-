@@ -54,12 +54,26 @@
 "role.crewmate.name" : "Crewmate"
 "role.crewmate.description" : "Find the <color=#ff1919ff>Impostors</color>"
 
-"role.securityGuard.name" : "Security Guard"
-"role.securityGuard.description" : "Seal Vent to Inhibit Barbarism"
-"role.securityGuard.maxScrews" : "Max Screws Vents"
+"role.bait.name" : "Bait"
+"role.bait.description" : "Bait Your Enemies"
+
+"role.greeneyed.name" : "Greeneyed"
+"role.greeneyed.description" : "Go To The Grave Together"
+
+"role.psychic.name" : "Psychic"
+"role.psychic.description" : "Gather Testimony"
+"role.psychic.color.dark" : "dark"
+"role.psychic.color.light" : "light"
+"role.psychic.message.elapsedTime" : "It's been %TIME% seconds since I was killed."
+"role.psychic.message.killerColor" : "My murder's color is %COLOR%."
+"role.psychic.message.killerRole" : "My murder's role is %ROLE%."
 
 "role.sheriff.name" : "Sheriff"
 "role.sheriff.description" : "Shoot the <color=#ff1919ff>Impostors</color>"
+
+"role.securityGuard.name" : "Security Guard"
+"role.securityGuard.description" : "Seal Vent to Inhibit Barbarism"
+"role.securityGuard.maxScrews" : "Max Screws Vents"
 
 "role.spy.name" : "Spy"
 "role.spy.description" : "Confuse the <color=#ff1919ff>Impostors</color>"

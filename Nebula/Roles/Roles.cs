@@ -12,27 +12,30 @@ namespace Nebula.Roles
     {
 
         public static Crewmate.Crewmate Crewmate=new Crewmate.Crewmate();
-        public static Crewmate.Sheriff Sheriff = new Crewmate.Sheriff();
+        public static Crewmate.Bait Bait = new Crewmate.Bait();
+        public static Crewmate.Greeneyed Greeneyed = new Crewmate.Greeneyed();
+        public static Crewmate.Psychic Psychic = new Crewmate.Psychic();
         public static Crewmate.SecurityGuard SecurityGuard = new Crewmate.SecurityGuard();
+        public static Crewmate.Sheriff Sheriff = new Crewmate.Sheriff();
         public static Crewmate.Spy Spy = new Crewmate.Spy();
 
         public static Crewmate.Madmate Madmate = new Crewmate.Madmate();
 
         public static Impostor.Impostor Impostor = new Impostor.Impostor();
-        public static Impostor.EvilAce EvilAce = new Impostor.EvilAce();
         public static Impostor.Camouflager Camouflager = new Impostor.Camouflager();
+        public static Impostor.EvilAce EvilAce = new Impostor.EvilAce();
         public static Impostor.Reaper Reaper = new Impostor.Reaper();
 
         public static Neutral.Jackal Jackal = new Neutral.Jackal();
         public static Neutral.Jester Jester = new Neutral.Jester();
         public static Neutral.Vulture Vulture = new Neutral.Vulture();
 
-
+        //全てのロールはこの中に含まれている必要があります
         public static List<Role> AllRoles = new List<Role>()
         {
-            Crewmate,Sheriff,SecurityGuard,Spy,
+            Crewmate,Bait,Greeneyed,Psychic,SecurityGuard,Sheriff,Spy,
             Madmate,
-            Impostor,EvilAce,Camouflager,Reaper,
+            Impostor,Camouflager,EvilAce,Reaper,
             Jackal,Jester,Vulture
         };
 

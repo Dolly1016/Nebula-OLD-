@@ -34,13 +34,7 @@ namespace Nebula.Roles.Crewmate
                 () =>
                 {
                     byte targetId = Game.GameData.data.myData.currentTarget.PlayerId;
-
-                    MessageWriter killWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UncheckedMurderPlayer, Hazel.SendOption.Reliable, -1);
-                    killWriter.Write(PlayerControl.LocalPlayer.PlayerId);
-                    killWriter.Write(targetId);
-                    killWriter.Write(byte.MaxValue);
-                    AmongUsClient.Instance.FinishRpcImmediately(killWriter);
-                    RPCEvents.UncheckedMurderPlayer(PlayerControl.LocalPlayer.PlayerId, targetId, Byte.MaxValue);
+                    RPCEventInvoker.UncheckedMurderPlayer(PlayerControl.LocalPlayer.PlayerId, targetId, true);
 
 
                     killButton.Timer = killButton.MaxTimer;
@@ -57,11 +51,21 @@ namespace Nebula.Roles.Crewmate
             killButton.MaxTimer = killCooldownOption.getFloat();
         }
 
+        public override void ButtonActivate()
+        {
+            killButton.setActive(true);
+        }
+
+        public override void ButtonDeactivate()
+        {
+            killButton.setActive(false);
+        }
+
         public override void OnMeetingEnd() {
             killButton.Timer = killButton.MaxTimer;
         }
 
-        public override void CleanUp()
+        public override void ButtonCleanUp()
         {
             if (killButton != null)
             {

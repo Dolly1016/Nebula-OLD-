@@ -118,13 +118,23 @@ namespace Nebula.Roles.Crewmate
             sealButtonString.transform.localPosition += new Vector3(-0.05f, 0.7f, 0);
         }
 
+        public override void ButtonActivate()
+        {
+            sealButton.setActive(true);
+        }
+
+        public override void ButtonDeactivate()
+        {
+            sealButton.setActive(false);
+        }
+
         public override void OnMeetingEnd()
         {
             sealButton.Timer = sealButton.MaxTimer;
         }
 
 
-        public override void CleanUp()
+        public override void ButtonCleanUp()
         {
             if (sealButton != null)
             {

@@ -53,6 +53,16 @@ namespace Nebula.Roles.Impostor
             dragButton.Timer = 0;
         }
 
+        public override void ButtonActivate()
+        {
+            dragButton.setActive(true);
+        }
+
+        public override void ButtonDeactivate()
+        {
+            dragButton.setActive(false);
+        }
+
         /* 画像 */
 
         private Sprite dragButtonSprite = null;
@@ -100,7 +110,7 @@ namespace Nebula.Roles.Impostor
             }
         }
 
-        public override void CleanUp()
+        public override void ButtonCleanUp()
         {
             if (dragButton != null)
             {

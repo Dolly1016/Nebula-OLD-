@@ -35,11 +35,11 @@ namespace Nebula.Objects
         {
             if (fadeIn > phase)
             {
-                text.color=text.color.SetAlpha(text.color.a*phase / fadeIn);
+                text.color=new Color(text.color.r, text.color.g, text.color.b, text.color.a*(text.color.a*phase / fadeIn));
             }
             else if (1f-fadeOut < phase)
             {
-                text.color = text.color.SetAlpha(text.color.a * (1f - phase) / fadeOut);
+                text.color = new Color(text.color.r, text.color.g, text.color.b, text.color.a * (1f - phase) / fadeOut);
             }
         }
 
@@ -74,20 +74,24 @@ namespace Nebula.Objects
             textSwapLeft = 0;
             textSizeVelocity = null;
 
+            
+            
             RoomTracker roomTracker = HudManager.Instance?.roomTracker;
+
             if (roomTracker != null)
             {
-                GameObject gameObject = UnityEngine.Object.Instantiate(roomTracker.gameObject);
-
-                gameObject.transform.SetParent(HudManager.Instance.transform);
+                GameObject gameObject = UnityEngine.Object.Instantiate(HudManager.Instance.roomTracker.gameObject);
                 UnityEngine.Object.DestroyImmediate(gameObject.GetComponent<RoomTracker>());
+                
                 text = gameObject.GetComponent<TMPro.TMP_Text>();
 
-                String originalText= Language.Language.GetString("message." + message);
+                String originalText = message;
                 String currentText=originalText;
                 text.text = originalText;
 
                 text.transform.localScale *= fontSizeRate;
+
+                Vector3 currentPosition = Camera.main.transform.position;
                 
 
                 if (stickingMap)
@@ -109,7 +113,8 @@ namespace Nebula.Objects
                     {
                         if (stickingMap)
                         {
-                            gameObject.transform.position += (Vector3)velocity * Time.deltaTime;
+                            gameObject.transform.position += (Vector3)velocity * Time.deltaTime+(currentPosition- Camera.main.transform.position)*0.12f;
+                            currentPosition = Camera.main.transform.position;
                         }
                         else
                         {

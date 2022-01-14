@@ -156,6 +156,7 @@ namespace Nebula.Patches
         public static void Postfix(HudManager __instance)
         {
             if (AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Started) return;
+            if (!Helpers.HasModData(PlayerControl.LocalPlayer.PlayerId)) return;
 
             /* ボタン類の更新 */
             CustomButton.HudUpdate();
@@ -165,6 +166,12 @@ namespace Nebula.Patches
                 HudManagerStartPatch.Manager.ImpostorVentButton.DoClick();
             }
             
+            //死後経過時間を更新
+            foreach(Game.DeadPlayerData deadPlayer in Game.GameData.data.deadPlayers.Values)
+            {
+                deadPlayer.Elapsed += Time.deltaTime;
+            }
+
             //名前タグの更新
             ResetNameTagsAndColors();
 
@@ -177,18 +184,23 @@ namespace Nebula.Patches
                 UpdateImpostorKillButton(__instance);
             }
 
-            //ベントの色の設定
-            Color ventColor;
-            foreach (Vent vent in ShipStatus.Instance.AllVents)
+            if (PlayerControl.LocalPlayer.GetModData().role.canUseVents)
             {
-                ventColor = PlayerControl.LocalPlayer.GetModData().role.ventColor;
-                vent.myRend.material.SetColor("_OutlineColor", ventColor);
+                //ベントの色の設定
+                Color ventColor;
+                foreach (Vent vent in ShipStatus.Instance.AllVents)
+                {
+                    ventColor = PlayerControl.LocalPlayer.GetModData().role.ventColor;
+                    vent.myRend.material.SetColor("_OutlineColor", ventColor);
 
-                if (vent.myRend.material.GetColor("_AddColor").a > 0f)
-                    vent.myRend.material.SetColor("_AddColor", ventColor);
+                    if (vent.myRend.material.GetColor("_AddColor").a > 0f)
+                        vent.myRend.material.SetColor("_AddColor", ventColor);
+                }
             }
 
+
             Events.GlobalEvent.Update();
+            Events.LocalEvent.Update();
 
 
         }

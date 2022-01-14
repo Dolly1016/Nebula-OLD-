@@ -184,7 +184,7 @@ namespace Nebula.Patches
                 target.GetModData().role.OnDied();
             }
             
-            Game.GameData.data.players[target.PlayerId].Die();
+            Game.GameData.data.players[target.PlayerId].Die(__instance.PlayerId);
         }
     }
 
