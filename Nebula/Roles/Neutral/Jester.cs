@@ -18,13 +18,13 @@ namespace Nebula.Roles.Neutral
 
         private Module.CustomOption canUseVentsOption;
 
-        public override bool OnExiled(byte[] voters,byte playerId)
+        public override bool OnExiledPost(byte[] voters,byte playerId)
         {
             WinTrigger = true;
             return false;    
         }
 
-        public override void Initialize(PlayerControl __instance)
+        public override void GlobalInitialize(PlayerControl __instance)
         {
             WinTrigger = false;
             canMoveInVents = canUseVents = canUseVentsOption.getBool();

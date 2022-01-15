@@ -25,6 +25,8 @@ namespace Nebula
         UpdateRoleData,
         GlobalEvent,
         DragAndDropPlayer,
+        ChangeRole,
+        SwapRole,
 
         // Role functionality
 
@@ -76,7 +78,7 @@ namespace Nebula
                     RPCEvents.UncheckedCmdReportDeadBody(reader.ReadByte(), reader.ReadByte());
                     break;
                 case (byte)CustomRPC.UpdateRoleData:
-                    RPCEvents.UpdataRoleData(reader.ReadByte(), reader.ReadInt32(), reader.ReadInt32());
+                    RPCEvents.UpdateRoleData(reader.ReadByte(), reader.ReadInt32(), reader.ReadInt32());
                     break;
                 case (byte)CustomRPC.GlobalEvent:
                     RPCEvents.GlobalEvent(reader.ReadByte(), reader.ReadSingle());
@@ -84,10 +86,16 @@ namespace Nebula
                 case (byte)CustomRPC.DragAndDropPlayer:
                     RPCEvents.DragAndDropPlayer(reader.ReadByte(), reader.ReadByte());
                     break;
+                case (byte)CustomRPC.ChangeRole:
+                    RPCEvents.ChangeRole(reader.ReadByte(), reader.ReadByte());
+                    break;
+                case (byte)CustomRPC.SwapRole:
+                    RPCEvents.SwapRole(reader.ReadByte(), reader.ReadByte());
+                    break;
 
 
                 case (byte)CustomRPC.SealVent:
-                    RPCEvents.SealVent(reader.ReadInt32());
+                    RPCEvents.SealVent(reader.ReadByte(), reader.ReadInt32());
                     break;
             }
         }
@@ -145,13 +153,13 @@ namespace Nebula
             {
                 player.Exiled();
 
-                if (player.GetModData().role.OnExiled(new byte[0], playerId))
+                if (player.GetModData().role.OnExiledPost(new byte[0], playerId))
                 {
                     player.GetModData().role.OnDied(playerId);
 
                     if (player.PlayerId == PlayerControl.LocalPlayer.PlayerId)
                     {
-                        player.GetModData().role.OnExiled(new byte[0]);
+                        player.GetModData().role.OnExiledPost(new byte[0]);
                         player.GetModData().role.OnDied();
                     }
 
@@ -170,7 +178,7 @@ namespace Nebula
             }
         }
 
-        public static void UpdataRoleData(byte playerId, int dataId, int newData)
+        public static void UpdateRoleData(byte playerId, int dataId, int newData)
         {
             Game.GameData.data.players[playerId].SetRoleData(dataId, newData);
         }
@@ -192,6 +200,63 @@ namespace Nebula
             }
         }
 
+        private static void SetUpRole(Game.PlayerData data,PlayerControl player,Roles.Role role,Dictionary<int,int>? roleData=null)
+        {
+            bool isMe = false; 
+            if (player.PlayerId == PlayerControl.LocalPlayer.PlayerId)
+            {
+                isMe = true;
+            }
+
+            if (isMe)
+            {
+                data.role.ButtonCleanUp();
+            }
+            data.CleanRoleDataInGame(roleData);
+
+            data.role = role;
+            if (data.role.category == Roles.RoleCategory.Impostor)
+            {
+                DestroyableSingleton<RoleManager>.Instance.SetRole(player, RoleTypes.Impostor);
+            }
+            else
+            {
+                DestroyableSingleton<RoleManager>.Instance.SetRole(player, RoleTypes.Crewmate);
+            }
+
+            if (roleData == null)
+            {
+                data.role.GlobalInitialize(player);
+            }
+
+            if (isMe)
+            {
+                data.role.Initialize(player);
+                data.role.ButtonInitialize(Patches.HudManagerStartPatch.Manager);
+                data.role.ButtonActivate();
+            }
+        }
+
+        public static void ChangeRole(byte playerId, byte roleId)
+        {
+            Game.PlayerData data = Game.GameData.data.players[playerId];
+            //ロールを変更
+            SetUpRole(data, Helpers.playerById(playerId), Roles.Role.GetRoleById(roleId));
+        }
+
+        public static void SwapRole(byte playerId_1, byte playerId_2)
+        {
+            Game.PlayerData data1 = Game.GameData.data.players[playerId_1];
+            Game.PlayerData data2 = Game.GameData.data.players[playerId_2];
+
+            Dictionary<int, int> roleData1 = data1.ExtractRoleData(), roleData2 = data2.ExtractRoleData();
+            Roles.Role role1=data1.role, role2=data2.role;
+
+            //ロールを変更
+            SetUpRole(data1, Helpers.playerById(playerId_1), role2, roleData2);
+            SetUpRole(data2, Helpers.playerById(playerId_2), role1, roleData1);
+        }
+
         //送信元と受信先で挙動が異なる（以下は受信側）
         public static void ShareOptions(int numberOfOptions, MessageReader reader)
         {
@@ -211,13 +276,11 @@ namespace Nebula
             }
         }
 
-        public static void SealVent(int ventId)
+        public static void SealVent(byte playerId,int ventId)
         {
             Vent vent = ShipStatus.Instance.AllVents.FirstOrDefault((x) => x != null && x.Id == ventId);
             if (vent == null) return;
 
-            //if (PlayerControl.LocalPlayer == SecurityGuard.securityGuard)
-            //{
             vent.EnterVentAnim = vent.ExitVentAnim = null;
             if (PlayerControl.GameOptions.MapId == 2)
             {
@@ -232,9 +295,8 @@ namespace Nebula
             }
             vent.myRend.color = new Color(1f, 1f, 1f, 1f);
             vent.name = "%SEALED%" + vent.name;
-            //}
 
-            //MapOptions.ventsToSeal.Add(vent);
+            Game.GameData.data.players[playerId].AddRoleData(Roles.Roles.SecurityGuard.remainingScrewsDataId, -1);
         }
 
         public static void CleanDeadBody(byte deadBodyId)
@@ -278,6 +340,16 @@ namespace Nebula
             writer.Write(targetId);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.UncheckedCmdReportDeadBody(reporterId, targetId);
+        }
+
+        public static void UpdateRoleData(byte playerId, int dataId,int newData)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UncheckedCmdReportDeadBody, Hazel.SendOption.Reliable, -1);
+            writer.Write(playerId);
+            writer.Write(dataId);
+            writer.Write(newData);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.UpdateRoleData(playerId, dataId, newData);
         }
     }
 }

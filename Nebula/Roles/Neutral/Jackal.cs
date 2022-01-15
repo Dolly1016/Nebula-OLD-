@@ -32,10 +32,7 @@ namespace Nebula.Roles.Neutral
             killButton = new CustomButton(
                 () =>
                 {
-                    byte targetId = Game.GameData.data.myData.currentTarget.PlayerId;
-
-                    RPCEventInvoker.UncheckedMurderPlayer(PlayerControl.LocalPlayer.PlayerId, targetId, true);
-
+                    Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, Game.GameData.data.myData.currentTarget, true);
 
                     killButton.Timer = killButton.MaxTimer;
                     Game.GameData.data.myData.currentTarget = null;

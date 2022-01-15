@@ -2,6 +2,21 @@
 
 namespace Nebula.Patches
 {
+    [HarmonyPatch(typeof(ExileController), nameof(ExileController.Begin))]
+    class ExileControllerBeginPatch
+    {
+        public static void Prefix(ExileController __instance, [HarmonyArgument(0)] ref GameData.PlayerInfo exiled, [HarmonyArgument(1)] bool tie)
+        {
+            byte[] voters = MeetingHudPatch.GetVoters(exiled.PlayerId);
+            exiled.GetModData().role.OnExiledPre(voters, exiled.PlayerId);
+
+            if (exiled.PlayerId == PlayerControl.LocalPlayer.PlayerId)
+            {
+                exiled.GetModData().role.OnExiledPre(voters);
+            }
+        }
+    }
+
     [HarmonyPatch]
     class ExileControllerWrapUpPatch
     {
@@ -26,13 +41,13 @@ namespace Nebula.Patches
         static void WrapUpPostfix(GameData.PlayerInfo exiled)
         {
             byte[] voters=MeetingHudPatch.GetVoters(exiled.PlayerId);
-            if (exiled.GetModData().role.OnExiled(voters,exiled.PlayerId))
+            if (exiled.GetModData().role.OnExiledPost(voters,exiled.PlayerId))
             {
                 exiled.GetModData().role.OnDied(exiled.PlayerId);
 
                 if (exiled.PlayerId == PlayerControl.LocalPlayer.PlayerId)
                 {
-                    exiled.GetModData().role.OnExiled(voters);
+                    exiled.GetModData().role.OnExiledPost(voters);
                     exiled.GetModData().role.OnDied();
                 }
 

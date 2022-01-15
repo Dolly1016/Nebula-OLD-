@@ -23,6 +23,7 @@ namespace Nebula.Roles
 
         public static Impostor.Impostor Impostor = new Impostor.Impostor();
         public static Impostor.Camouflager Camouflager = new Impostor.Camouflager();
+        public static Impostor.Eraser Eraser = new Impostor.Eraser();
         public static Impostor.EvilAce EvilAce = new Impostor.EvilAce();
         public static Impostor.Reaper Reaper = new Impostor.Reaper();
 
@@ -35,8 +36,12 @@ namespace Nebula.Roles
         {
             Crewmate,Bait,Provocateur,Psychic,SecurityGuard,Sheriff,Spy,
             Madmate,
-            Impostor,Camouflager,EvilAce,Reaper,
+            Impostor,Camouflager,Eraser,EvilAce,Reaper,
             Jackal,Jester,Vulture
+        };
+
+        public static List<ExtraRole> AllExtraRoles = new List<ExtraRole>()
+        {
         };
 
         public static void RegisterAddonRoles(Role role)

@@ -271,6 +271,27 @@ namespace Nebula
         {
             return new Vector3(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius);
         }
+
+        public enum MurderAttemptResult
+        {
+            PerformKill,
+            SuppressKill,
+            BlankKill
+        }
+
+        public static MurderAttemptResult checkMuderAttempt(PlayerControl killer, PlayerControl target, bool blockRewind = false)
+        {
+            return MurderAttemptResult.PerformKill;
+        }
+        public static MurderAttemptResult checkMuderAttemptAndKill(PlayerControl killer, PlayerControl target, bool isMeetingStart = false, bool showAnimation = true)
+        {
+            MurderAttemptResult murder = checkMuderAttempt(killer, target, isMeetingStart);
+            if (murder == MurderAttemptResult.PerformKill)
+            {
+                RPCEventInvoker.UncheckedMurderPlayer(killer.PlayerId,target.PlayerId, showAnimation);
+            }
+            return murder;
+        }
     }
 }
 

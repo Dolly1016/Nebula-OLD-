@@ -43,12 +43,14 @@ namespace Nebula.Roles.Neutral
                     eatWriter.Write(byte.MaxValue);
                     AmongUsClient.Instance.FinishRpcImmediately(eatWriter);
                     RPCEvents.CleanDeadBody(targetId);
-                    eatLeft--;
-                    if (eatLeft==0)
+
+                    Game.GameData.data.myData.getGlobalData().AddRoleData(eatLeftId, -1);
+                    int eatLeft = Game.GameData.data.myData.getGlobalData().GetRoleData(eatLeftId);
+                    RPCEventInvoker.UpdateRoleData(PlayerControl.LocalPlayer.PlayerId, eatLeftId, eatLeft);
+                    if (eatLeft<=0)
                     {
                         WinTrigger = true;
                     }
-
                     eatButton.Timer = eatButton.MaxTimer;
                 },
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
@@ -77,7 +79,8 @@ namespace Nebula.Roles.Neutral
         Dictionary<byte, Arrow> Arrows;
 
         public byte deadBodyId;
-        public int eatLeft;
+
+        public int eatLeftId;
 
         /* 画像 */
         private Sprite eatButtonSprite = null;
@@ -146,8 +149,12 @@ namespace Nebula.Roles.Neutral
         public override void Initialize(PlayerControl __instance)
         {
             Arrows = new Dictionary<byte, Arrow>();
-            eatLeft = (int)eatOption.getFloat();
             WinTrigger = false;
+        }
+
+        public override void GlobalInitialize(PlayerControl __instance)
+        {
+            Game.GameData.data.myData.getGlobalData().SetRoleData(eatLeftId, (int)eatOption.getFloat());
         }
 
         public override void ButtonCleanUp()

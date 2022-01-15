@@ -33,13 +33,12 @@ namespace Nebula.Roles.Crewmate
             killButton = new CustomButton(
                 () =>
                 {
-                    byte targetId = Game.GameData.data.myData.currentTarget.PlayerId;
-                    if (Game.GameData.data.players[targetId].role.category == RoleCategory.Crewmate)
+                    PlayerControl target = Game.GameData.data.myData.currentTarget;
+                    if (Game.GameData.data.players[target.PlayerId].role.category == RoleCategory.Crewmate)
                     {
-                        targetId = PlayerControl.LocalPlayer.PlayerId;
+                        target = PlayerControl.LocalPlayer;
                     }
-                    RPCEventInvoker.UncheckedMurderPlayer(PlayerControl.LocalPlayer.PlayerId, targetId, true);
-
+                    Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, target, true);
 
                     killButton.Timer = killButton.MaxTimer;
                     Game.GameData.data.myData.currentTarget = null;

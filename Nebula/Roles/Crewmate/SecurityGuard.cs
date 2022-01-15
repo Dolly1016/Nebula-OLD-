@@ -68,7 +68,7 @@ namespace Nebula.Roles.Crewmate
         }
 
 
-        public override void Initialize(PlayerControl __instance) {
+        public override void GlobalInitialize(PlayerControl __instance) {
             int value = (int)maxScrewsOption.getFloat();
             Game.GameData.data.myData.getGlobalData().SetRoleData(totalScrewsDataId, value);
             Game.GameData.data.myData.getGlobalData().SetRoleData(remainingScrewsDataId, value);
@@ -87,7 +87,7 @@ namespace Nebula.Roles.Crewmate
                         MessageWriter writer = AmongUsClient.Instance.StartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SealVent, Hazel.SendOption.Reliable);
                         writer.WritePacked(ventTarget.Id);
                         writer.EndMessage();
-                        RPCEvents.SealVent(ventTarget.Id);
+                        RPCEvents.SealVent(PlayerControl.LocalPlayer.PlayerId,ventTarget.Id);
                         ventTarget = null;
                         Game.GameData.data.myData.getGlobalData().AddRoleData(remainingScrewsDataId,-1);
 

@@ -34,7 +34,6 @@ namespace Nebula.Patches
             foreach (Roles.Role role in Roles.Roles.AllRoles)
             {
                 role.ButtonCleanUp();
-                role.ButtonInitialize(__instance);
             }
         }
     }
@@ -47,6 +46,7 @@ namespace Nebula.Patches
             Roles.Role role = Game.GameData.data.players[PlayerControl.LocalPlayer.PlayerId].role;
 
             role.Initialize(PlayerControl.LocalPlayer);
+            role.ButtonInitialize(HudManagerStartPatch.Manager);
             role.ButtonActivate();
         }
     }

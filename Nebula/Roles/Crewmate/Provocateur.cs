@@ -18,7 +18,7 @@ namespace Nebula.Roles.Crewmate
             RPCEventInvoker.UncheckedMurderPlayer(PlayerControl.LocalPlayer.PlayerId, murderId,false);
         }
 
-        public override void OnExiled(byte[] voters)
+        public override void OnExiledPre(byte[] voters)
         {
             if (voters.Length == 0) return;
 

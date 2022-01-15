@@ -101,6 +101,7 @@ namespace Nebula.Game
         public string name { get; }
 
         public Role role { get; set; }
+        public List<ExtraRole> extraRole { get; }
 
         private Dictionary<int, int> roleData { get; set; }
 
@@ -117,6 +118,7 @@ namespace Nebula.Game
             this.id = playerId;
             this.name = name;
             this.role = role;
+            this.extraRole = new List<ExtraRole>();
             this.roleData = new Dictionary<int, int>();
             this.IsAlive = true;
             this.Outfit = new PlayerOutfitData(outfit);
@@ -144,10 +146,48 @@ namespace Nebula.Game
             {
                 roleData.Add(id, newValue);
             }
+
         }
+
         public void AddRoleData(int id,int addValue)
         {
             SetRoleData(id,GetRoleData(id)+addValue);
+        }
+
+        /// <summary>
+        /// ロールデータを差し替えます。ゲーム中に実行できます。
+        /// </summary>
+        /// <param name="newData"></param>
+        public void CleanRoleDataInGame(Dictionary<int,int>? newData=null)
+        {
+            if (newData != null)
+            {
+                roleData = newData;
+            }
+            else
+            {
+                roleData = new Dictionary<int, int>();
+            }
+        }
+
+        /// <summary>
+        /// ロールデータを他人と交換します。 ロール自体は交換されないことに注意してください。
+        /// </summary>
+        /// <param name="target">ロールデータの交換相手</param>
+        public void SwapRoleData(PlayerData target)
+        {
+            Dictionary<int, int> temp= target.roleData;
+            target.roleData = roleData;
+            roleData = temp;
+        }
+
+        /// <summary>
+        /// ロールデータ全体を取得します。
+        /// </summary>
+        /// <returns></returns>
+        public Dictionary<int,int> ExtractRoleData()
+        {
+            return roleData;
         }
 
         private void Die(DeadPlayerData.DeathReason deathReason,byte murderId)
