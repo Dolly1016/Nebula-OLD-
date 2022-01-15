@@ -9,6 +9,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 # ダウンロード
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| Alpha 1.3.2 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.3.2,2021.12.15/Nebula.zip)|
 | Alpha 1.3.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.3.1,2021.12.15/Nebula.zip)|
 | Alpha 1.3.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.3.0,2021.12.15/Nebula.zip)|
 | Alpha 1.2.8 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.2.8,2021.12.15/Nebula.zip)|
@@ -23,6 +24,9 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+  
+ **Version Alpha 1.3.2**
+ - GreeneyedをProvocateurに名称変更
   
  **Version Alpha 1.3.1**
  - Sheriffがクルーメイト陣営をキルしようとすると自身が死ぬように
@@ -77,7 +81,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 | Roles |
 | ---------- |
 | [Bait](#bait) |
-| [Greeneyed](#greeneyed) |
+| [Provocateur](#provocateur) |
 | [Psychic](#psychic) |
 | [Madmate](#madmate) |
 | [Security Guard](#security-guard) |
@@ -140,8 +144,8 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 -----------------------
 
-## Greeneyed
- Greeneyedは自身を追放させたプレイヤーやキルしたプレイヤーを呪い返し、死へ追いやります。
+## Provocateur
+ Provocateurは自身を追放させたプレイヤーやキルしたプレイヤーを呪い返し、死へ追いやります。
  
  ### オプション
 | オプション名 | 設定内容 |
