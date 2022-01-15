@@ -80,6 +80,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 | ---------- |
 | [Camouflager](#camouflager) |
 | [Damned](#damned) |
+| [Eraser](#eraser) |
 | [Evil Ace](#evil-ace) |
 | [Reaper](#reaper) |
 
