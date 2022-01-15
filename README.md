@@ -9,6 +9,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 # ダウンロード
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| Alpha 1.4.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.4.0,2021.12.15/Nebula.zip)|
 | Alpha 1.3.2 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.3.2,2021.12.15/Nebula.zip)|
 | Alpha 1.3.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.3.1,2021.12.15/Nebula.zip)|
 | Alpha 1.3.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.3.0,2021.12.15/Nebula.zip)|
@@ -24,6 +25,10 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+  
+ **Version Alpha 1.4.0**
+ - Eraser , Damned を追加
+ - Provocateurの追放の道連れが死ぬタイミングを調整
   
  **Version Alpha 1.3.2**
  - GreeneyedをProvocateurに名称変更
@@ -74,6 +79,8 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 | Roles |
 | ---------- |
 | [Camouflager](#camouflager) |
+| [Damned](#damned) |
+| [Eraser](#eraser) |
 | [Evil Ace](#evil-ace) |
 | [Reaper](#reaper) |
 
@@ -99,6 +106,26 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 ## Camouflager
  Camouflagerは、プレイヤーを判別できないようにして場を混乱させます。
+ 
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+
+-----------------------
+
+## Damned
+ DamnedはCrewmateとしてスポーンしますが、一度キルされてもガードされ、
+ 二度目のキルをされる前に会議が始まるとインポスターになります。
+ キルされるまで、Crewmateは自身がDamnedになれるかどうかを知るすべはありません。
+ 
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+
+-----------------------
+
+## Eraser
+ Eraserは相手の役職を消してCrewmateにすることができます。
  
  ### オプション
 | オプション名 | 設定内容 |
