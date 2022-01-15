@@ -52,8 +52,12 @@ namespace Nebula.Patches
 
                 foreach (Role role in Roles.Roles.AllRoles)
                 {
-                    //対象外のロールはスキップする
+                    //対象外のロールと非表示ロールはスキップする
                     if (role.category != category)
+                    {
+                        continue;
+                    }
+                    if (role.IsHideRole)
                     {
                         continue;
                     }

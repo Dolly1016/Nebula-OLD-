@@ -175,6 +175,8 @@ namespace Nebula.Roles.Neutral
                  true, true, true, true, true)
         {
             eatButton = null;
+
+            eatLeftId = Game.GameData.RegisterRoleDataId("vulture.eatLeft");
         }
     }
 }

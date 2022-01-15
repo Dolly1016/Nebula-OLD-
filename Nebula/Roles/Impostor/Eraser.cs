@@ -49,12 +49,7 @@ namespace Nebula.Roles.Impostor
             eraserButton = new CustomButton(
                 () =>
                 {
-                    MessageWriter roleWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.GlobalEvent, Hazel.SendOption.Reliable, -1);
-                    roleWriter.Write(Game.GameData.data.myData.currentTarget.PlayerId);
-                    roleWriter.Write(Roles.Crewmate.id);
-                    AmongUsClient.Instance.FinishRpcImmediately(roleWriter);
-                    RPCEvents.ChangeRole(Game.GameData.data.myData.currentTarget.PlayerId, Roles.Crewmate.id);
-
+                    RPCEventInvoker.ChangeRole(Game.GameData.data.myData.currentTarget,Roles.Crewmate);
                     Game.GameData.data.myData.currentTarget = null;
 
                     eraserButton.Timer = eraserButton.MaxTimer;

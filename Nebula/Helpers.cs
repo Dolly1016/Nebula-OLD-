@@ -281,6 +281,14 @@ namespace Nebula
 
         public static MurderAttemptResult checkMuderAttempt(PlayerControl killer, PlayerControl target, bool blockRewind = false)
         {
+            MurderAttemptResult result= MurderAttemptResult.PerformKill;
+            //GlobalMethod
+            result=target.GetModData().role.OnMurdered(killer.PlayerId, target.PlayerId);
+            if (result != MurderAttemptResult.PerformKill)
+            {
+                return result;
+            }
+
             return MurderAttemptResult.PerformKill;
         }
         public static MurderAttemptResult checkMuderAttemptAndKill(PlayerControl killer, PlayerControl target, bool isMeetingStart = false, bool showAnimation = true)
@@ -288,9 +296,57 @@ namespace Nebula
             MurderAttemptResult murder = checkMuderAttempt(killer, target, isMeetingStart);
             if (murder == MurderAttemptResult.PerformKill)
             {
+                //LocalMethod (自身が死んだとき)
+                if (target.PlayerId == PlayerControl.LocalPlayer.PlayerId)
+                {
+                    target.GetModData().role.OnMurdered(killer.PlayerId);
+                }
+
                 RPCEventInvoker.UncheckedMurderPlayer(killer.PlayerId,target.PlayerId, showAnimation);
             }
             return murder;
+        }
+
+        public static void PlayFlash(Color color)
+        {
+            HudManager.Instance.FullScreen.color = color;
+            HudManager.Instance.FullScreen.enabled = true;
+            HudManager.Instance.StartCoroutine(Effects.Lerp(0.5f, new Action<float>((p) =>
+            {
+                var renderer = HudManager.Instance.FullScreen;
+                if (p < 0.5)
+                {
+                    if (renderer != null)
+                        renderer.color = new Color(color.r, color.g, color.b, Mathf.Clamp01(p * 2 * 0.75f));
+                }
+                else
+                {
+                    if (renderer != null)
+                        renderer.color = new Color(color.r, color.g, color.b, Mathf.Clamp01((1 - p) * 2 * 0.75f));
+                }
+                if (p == 1f && renderer != null) renderer.enabled = false;
+            })));
+        }
+
+        public static void PlayQuickFlash(Color color)
+        {
+            HudManager.Instance.FullScreen.color = color;
+            HudManager.Instance.FullScreen.enabled = true;
+            HudManager.Instance.StartCoroutine(Effects.Lerp(0.5f, new Action<float>((p) =>
+            {
+                var renderer = HudManager.Instance.FullScreen;
+                if (p < 0.2)
+                {
+                    if (renderer != null)
+                        renderer.color = new Color(color.r, color.g, color.b, Mathf.Clamp01(p * 5f * 0.75f));
+                }
+                else 
+                {
+                    if (renderer != null)
+                        renderer.color = new Color(color.r, color.g, color.b, Mathf.Clamp01((1 - p) * 1.25f * 0.75f));
+                }
+                if (p == 1f && renderer != null) renderer.enabled = false;
+            })));
         }
     }
 }

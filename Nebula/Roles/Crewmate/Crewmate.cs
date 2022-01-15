@@ -22,7 +22,7 @@ namespace Nebula.Roles.Crewmate
                      crewmateSideSet, crewmateSideSet, crewmateEndSet,
                      false,false, false, false, false)
         {
-
+            IsHideRole = true;
         }
     }
 }

@@ -68,7 +68,6 @@ namespace Nebula.Patches
         {
             public static void Postfix(GameStartManager __instance)
             {
-                playerVersions = new Dictionary<int, PlayerVersion>();
                 // Trigger version refresh
                 versionSent = false;
                 // Reset lobby countdown timer

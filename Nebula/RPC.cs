@@ -181,6 +181,17 @@ namespace Nebula
         public static void UpdateRoleData(byte playerId, int dataId, int newData)
         {
             Game.GameData.data.players[playerId].SetRoleData(dataId, newData);
+
+            //自身のロールデータ更新時に呼ぶメソッド群
+            if (playerId == PlayerControl.LocalPlayer.PlayerId)
+            {
+                Game.GameData.data.myData.getGlobalData().role.OnUpdateRoleData(dataId,newData);
+
+                foreach(Roles.ExtraRole role in Game.GameData.data.myData.getGlobalData().extraRole)
+                {
+                    role.OnUpdateRoleData(dataId,newData);
+                }
+            }
         }
 
         public static void GlobalEvent(byte eventId, float duration)
@@ -350,6 +361,30 @@ namespace Nebula
             writer.Write(newData);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.UpdateRoleData(playerId, dataId, newData);
+        }
+
+        public static void AddAndUpdateRoleData(byte playerId, int dataId, int addData)
+        {
+            int newData = Game.GameData.data.players[playerId].GetRoleData(dataId) + addData;
+            UpdateRoleData(playerId,dataId,newData);
+        }
+
+        public static void ChangeRole(PlayerControl player,Roles.Role role)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ChangeRole, Hazel.SendOption.Reliable, -1);
+            writer.Write(player.PlayerId);
+            writer.Write(role.id);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.ChangeRole(player.PlayerId,role.id);
+        }
+
+        public static void SwapRole(PlayerControl player1, PlayerControl player2)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SwapRole, Hazel.SendOption.Reliable, -1);
+            writer.Write(player1.PlayerId);
+            writer.Write(player2.PlayerId);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.SwapRole(player1.PlayerId, player2.PlayerId);
         }
     }
 }

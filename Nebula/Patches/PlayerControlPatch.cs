@@ -174,13 +174,11 @@ namespace Nebula.Patches
             }
 
             //GlobalMethod
-            target.GetModData().role.OnMurdered(__instance.PlayerId,target.PlayerId);
             target.GetModData().role.OnDied(target.PlayerId);
 
             //LocalMethod (自身が死んだとき)
             if (target.PlayerId == PlayerControl.LocalPlayer.PlayerId)
             {
-                target.GetModData().role.OnMurdered(__instance.PlayerId);
                 target.GetModData().role.OnDied();
             }
             

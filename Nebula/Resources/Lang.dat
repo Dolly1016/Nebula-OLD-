@@ -53,6 +53,8 @@
 
 "role.crewmate.name" : "Crewmate"
 "role.crewmate.description" : "Find the <color=#ff1919ff>Impostors</color>"
+"role.crewmate.maxCountOfDamned" : "Max Count Of Damned"
+"role.crewmate.chanceOfDamned" : "Chance Of Damned"
 
 "role.bait.name" : "Bait"
 "role.bait.description" : "Bait Your Enemies"
@@ -84,14 +86,18 @@
 "role.impostor.name" : "Impostor"
 "role.impostor.description" : "Kill the Crewmates"
 
-"role.evilAce.name" : "Evil Ace"
-"role.evilAce.description" : "Kill the Crewmates"
-"role.evilAce.killCoolDown" : "Kill Cool Down Multiplier"
-
 "role.camouflager.name" : "Camouflager"
 "role.camouflager.description" : "Camouflage and Kill the Crewmates"
 "role.camouflager.camouflageCoolDown" : "Camouflage Cool Down"
 "role.camouflager.camouflageDuration" : "Camouflage Duration"
+
+"role.damned.name" : "Damned"
+"role.damned.description" : "Kill the Crewmates"
+"role.damned.message.killed" : "You'll become a impostor at the next meeting..."
+
+"role.evilAce.name" : "Evil Ace"
+"role.evilAce.description" : "Kill the Crewmates"
+"role.evilAce.killCoolDown" : "Kill Cool Down Multiplier"
 
 "role.reaper.name" : "Reaper"
 "role.reaper.description" : "Kill and Deceive the Crewmates"

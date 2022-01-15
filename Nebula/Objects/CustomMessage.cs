@@ -81,6 +81,12 @@ namespace Nebula.Objects
             if (roomTracker != null)
             {
                 GameObject gameObject = UnityEngine.Object.Instantiate(HudManager.Instance.roomTracker.gameObject);
+
+                if (!stickingMap)
+                {
+                    gameObject.transform.SetParent(HudManager.Instance.transform);
+                }
+
                 UnityEngine.Object.DestroyImmediate(gameObject.GetComponent<RoomTracker>());
                 
                 text = gameObject.GetComponent<TMPro.TMP_Text>();
@@ -94,15 +100,8 @@ namespace Nebula.Objects
                 Vector3 currentPosition = Camera.main.transform.position;
                 
 
-                if (stickingMap)
-                {
-                    gameObject.transform.position = position;
-                }
-                else
-                {
-                    //localPositionはマップの座標に左右されない
-                    gameObject.transform.localPosition = new Vector3(0f, 0f, gameObject.transform.localPosition.z) + position;
-                }
+                gameObject.transform.localPosition = new Vector3(0f, 0f, gameObject.transform.localPosition.z) + position;
+                
 
                 customMessages.Add(this);
 
@@ -111,15 +110,7 @@ namespace Nebula.Objects
                 {
                     if (velocity != null)
                     {
-                        if (stickingMap)
-                        {
-                            gameObject.transform.position += (Vector3)velocity * Time.deltaTime+(currentPosition- Camera.main.transform.position)*0.12f;
-                            currentPosition = Camera.main.transform.position;
-                        }
-                        else
-                        {
-                            gameObject.transform.localPosition += (Vector3)velocity * Time.deltaTime;
-                        }
+                        gameObject.transform.localPosition += (Vector3)velocity * Time.deltaTime;
                     }
                     if (text != null)
                     {
@@ -151,7 +142,7 @@ namespace Nebula.Objects
 
                         if (color2 != null)
                         {
-                            bool even = ((int)(p * duration / 0.25f)) % 2 == 0; // Bool flips every 0.25 seconds
+                            bool even = ((int)(p * sum / 0.25f)) % 2 == 0; // Bool flips every 0.25 seconds
                             text.color = even ? color1 : (Color)color2;
                         }
                         else

@@ -13,7 +13,7 @@ namespace Nebula.Roles
         public string name { get; private set; }
         public string localizeName { get; private set; }
         public Color color { get; private set; }
-        
+
         protected HashSet<Patches.EndCondition> winReasons { get; }
         public virtual bool CheckWin(Patches.EndCondition winReason)
         {
@@ -141,6 +141,12 @@ namespace Nebula.Roles
         public virtual void SetKillCoolDown(ref float multiplier, ref float addition) { }
 
         /// <summary>
+        /// 会議が開始した際に呼び出されます。
+        /// </summary>
+        [RoleLocalMethod]
+        public virtual void OnMeetingStart() { }
+
+        /// <summary>
         /// 会議が終了した際に呼び出されます。
         /// </summary>
         [RoleLocalMethod]
@@ -171,7 +177,7 @@ namespace Nebula.Roles
         public virtual void OnExiledPost(byte[] voters) { }
 
         /// <summary>
-        /// 殺害されて死んだときに呼び出されます。
+        /// 殺害されて死ぬときに呼び出されます。
         /// </summary>
         [RoleLocalMethod]
         public virtual void OnMurdered(byte murderId) { }
@@ -183,6 +189,11 @@ namespace Nebula.Roles
         [RoleLocalMethod]
         public virtual void OnDied() { }
 
+        /// <summary>
+        /// 正常にロールデータが更新された際に呼び出されます。
+        /// </summary>
+        public virtual void OnUpdateRoleData(int dataId, int newData) { }
+    
         /*--------------------------------------------------------------------------------------*/
         /*--------------------------------------------------------------------------------------*/
 
@@ -203,12 +214,6 @@ namespace Nebula.Roles
         }
 
         /// <summary>
-        /// その役職のプレイヤーが殺害されて死んだときに呼び出されます。
-        /// </summary>
-        [RoleGlobalMethod]
-        public virtual void OnMurdered(byte murderId, byte playerId) { }
-
-        /// <summary>
         /// 理由に関わらず、その役職のプレイヤーが死んだときに呼び出されます。
         /// OnExiledやOnMurderedの後に呼ばれます。
         /// </summary>
@@ -220,12 +225,24 @@ namespace Nebula.Roles
         [RoleGlobalMethod]
         public virtual void GlobalInitialize(PlayerControl __instance) { }
 
+        /*--------------------------------------------------------------------------------------*/
+        /*--------------------------------------------------------------------------------------*/
+
+        /// <summary>
+        /// その役職のプレイヤーが殺害されて死んだときに呼び出されます。
+        /// </summary>
+        /// <param name="murderId">殺害者のID</param>
+        /// <param name="playerId">死亡者のID</param>
+        /// <returns>キルが実行されるかどうか</returns>
+        [RoleIndefiniteMethod]
+        public virtual Helpers.MurderAttemptResult OnMurdered(byte murderId, byte playerId) { return Helpers.MurderAttemptResult.PerformKill; }
+
 
         /*--------------------------------------------------------------------------------------*/
         /*--------------------------------------------------------------------------------------*/
 
         //ComplexRoleの子ロールなど、オプション画面で隠したいロールはtrueにしてください。
-        protected bool IsHideRole { get; set; }
+        public bool IsHideRole { get; protected set; }
 
         protected Assignable(string name, string localizeName, Color color, 
             HashSet<Patches.EndCondition> winReasons)

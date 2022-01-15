@@ -45,6 +45,7 @@ namespace Nebula.Patches
         {
             Roles.Role role = Game.GameData.data.players[PlayerControl.LocalPlayer.PlayerId].role;
 
+            role.GlobalInitialize(PlayerControl.LocalPlayer);
             role.Initialize(PlayerControl.LocalPlayer);
             role.ButtonInitialize(HudManagerStartPatch.Manager);
             role.ButtonActivate();

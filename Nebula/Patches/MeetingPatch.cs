@@ -23,6 +23,8 @@ namespace Nebula.Patches
             {
                 Events.GlobalEvent.OnMeeting();
                 Events.LocalEvent.OnMeeting();
+
+                Game.GameData.data.myData.getGlobalData().role.OnMeetingStart();
             }
         }
 
