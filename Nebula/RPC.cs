@@ -22,6 +22,7 @@ namespace Nebula
         UncheckedMurderPlayer,
         UncheckedExilePlayer,
         UncheckedCmdReportDeadBody,
+        CloseUpKill,
         UpdateRoleData,
         GlobalEvent,
         DragAndDropPlayer,
@@ -76,6 +77,9 @@ namespace Nebula
                     break;
                 case (byte)CustomRPC.UncheckedCmdReportDeadBody:
                     RPCEvents.UncheckedCmdReportDeadBody(reader.ReadByte(), reader.ReadByte());
+                    break;
+                case (byte)CustomRPC.CloseUpKill:
+                    RPCEvents.CloseUpKill(reader.ReadByte(), reader.ReadByte());
                     break;
                 case (byte)CustomRPC.UpdateRoleData:
                     RPCEvents.UpdateRoleData(reader.ReadByte(), reader.ReadInt32(), reader.ReadInt32());
@@ -176,6 +180,12 @@ namespace Nebula
             {
                 reporter.ReportDeadBody(target.Data);
             }
+        }
+
+        public static void CloseUpKill(byte murdererId, byte targetId)
+        {
+            UncheckedMurderPlayer(murdererId, targetId, 0);
+            if (Constants.ShouldPlaySfx()) SoundManager.Instance.PlaySound(Helpers.playerById(targetId).KillSfx, false, 0.8f);
         }
 
         public static void UpdateRoleData(byte playerId, int dataId, int newData)
@@ -361,6 +371,15 @@ namespace Nebula
             writer.Write(newData);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.UpdateRoleData(playerId, dataId, newData);
+        }
+
+        public static void CloseUpKill(PlayerControl murder, PlayerControl target)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.CloseUpKill, Hazel.SendOption.Reliable, -1);
+            writer.Write(murder.PlayerId);
+            writer.Write(target.PlayerId);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.CloseUpKill(murder.PlayerId, target.PlayerId);
         }
 
         public static void AddAndUpdateRoleData(byte playerId, int dataId, int addData)

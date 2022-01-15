@@ -8,14 +8,14 @@ using HarmonyLib;
 using Hazel;
 using Nebula.Objects;
 
-namespace Nebula.Roles.Crewmate
+namespace Nebula.Roles.CrewmateRoles
 {
     public class Madmate : Role
     {
 
         public Madmate()
                 : base("Madmate", "madmate", Palette.ImpostorRed, RoleCategory.Crewmate, Side.Impostor, Side.Crewmate,
-                     Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Impostor.Impostor.impostorEndSet,
+                     Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, ImpostorRoles.Impostor.impostorEndSet,
                      true, true, true, false, false)
         {
             

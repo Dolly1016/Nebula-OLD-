@@ -9,7 +9,7 @@ using Nebula.Objects;
 using HarmonyLib;
 using Hazel;
 
-namespace Nebula.Roles.Impostor
+namespace Nebula.Roles.ImpostorRoles
 {
     public class Reaper : Role
     {

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Nebula.Roles.Crewmate
+namespace Nebula.Roles.CrewmateRoles
 {
     public class DamnedCrew : Crewmate
     {
@@ -51,6 +51,7 @@ namespace Nebula.Roles.Crewmate
         public DamnedCrew():base()
         {
             guardLeftId = Game.GameData.RegisterRoleDataId("damnedCrew.guardLeft");
+            IsGuessableRole = false;
         }
     }
 }

@@ -8,7 +8,7 @@ using HarmonyLib;
 using Hazel;
 using Nebula.Objects;
 
-namespace Nebula.Roles.Crewmate
+namespace Nebula.Roles.CrewmateRoles
 {
     public class SecurityGuard : Role
     {

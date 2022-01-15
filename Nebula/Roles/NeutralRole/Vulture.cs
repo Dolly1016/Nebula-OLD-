@@ -8,7 +8,7 @@ using HarmonyLib;
 using Hazel;
 using Nebula.Objects;
 
-namespace Nebula.Roles.Neutral
+namespace Nebula.Roles.NeutralRoles
 {
     public class Vulture : Role
     {

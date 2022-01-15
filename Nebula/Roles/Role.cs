@@ -58,6 +58,7 @@ namespace Nebula.Roles
         //Modで管理するFakeTaskを所持しているかどうか(Impostorは対象外)
         public bool hasFakeTask { get; }
         public bool deceiveImpostorInNameDisplay { get; set; }
+        public bool IsGuessableRole { get; protected set; }
 
         //使用済みロールID
         static private byte maxId = 0;

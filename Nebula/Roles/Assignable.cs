@@ -141,6 +141,15 @@ namespace Nebula.Roles
         public virtual void SetKillCoolDown(ref float multiplier, ref float addition) { }
 
         /// <summary>
+        /// 会議で表示するボタンを設定します。
+        /// </summary>
+        [RoleLocalMethod]
+        public virtual void SetupMeetingButton(MeetingHud __instance)
+        {
+
+        }
+
+        /// <summary>
         /// 会議が開始した際に呼び出されます。
         /// </summary>
         [RoleLocalMethod]

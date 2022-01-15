@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Hazel;
 using UnityEngine;
 
-namespace Nebula.Roles.Crewmate
+namespace Nebula.Roles.CrewmateRoles
 {
     public class Provocateur : Role
     {

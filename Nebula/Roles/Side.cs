@@ -71,7 +71,7 @@ namespace Nebula.Roles
             return null;
         });
 
-        public static Side Jackal = new Side("Jackal", "jackal", false, Neutral.Jackal.Color, (PlayerStatistics statistics, ShipStatus status) =>
+        public static Side Jackal = new Side("Jackal", "jackal", false, NeutralRoles.Jackal.Color, (PlayerStatistics statistics, ShipStatus status) =>
         {
             if (statistics.GetAlivePlayers(Jackal) == statistics.TotalAlive)
             {
@@ -80,7 +80,7 @@ namespace Nebula.Roles
             return null;
         });
 
-        public static Side Jester = new Side("Jester", "jester", false, Neutral.Jester.Color, (PlayerStatistics statistics, ShipStatus status) =>
+        public static Side Jester = new Side("Jester", "jester", false, NeutralRoles.Jester.Color, (PlayerStatistics statistics, ShipStatus status) =>
         {
             if (Roles.Jester.WinTrigger)
             {
@@ -89,7 +89,7 @@ namespace Nebula.Roles
             return null;
         });
 
-        public static Side Vulture = new Side("Vulture", "vulture", false, Neutral.Vulture.Color, (PlayerStatistics statistics, ShipStatus status) =>
+        public static Side Vulture = new Side("Vulture", "vulture", false, NeutralRoles.Vulture.Color, (PlayerStatistics statistics, ShipStatus status) =>
         {
             if (Roles.Vulture.WinTrigger)
             {

@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace Nebula.Roles.Complex
+namespace Nebula.Roles.ComplexRoles
 {
-    public class Crewmate : Role
+    public class FCrewmate : Role
     {
         private Module.CustomOption maxCountOfDamnedOption;
         private Module.CustomOption chanceOfDamnedOption;
@@ -55,7 +55,7 @@ namespace Nebula.Roles.Complex
             maxCountOfDamnedOption = CreateOption(Color.white, "maxCountOfDamned", 1f, 0f, 15f, 1f);
         }
 
-        public Crewmate()
+        public FCrewmate()
                 : base("Crewmate", "crewmate", Palette.CrewmateBlue, RoleCategory.Complex, Side.Crewmate, Side.Crewmate,
                      new HashSet<Side>(), new HashSet<Side>(), new HashSet<Patches.EndCondition>(),
                      false, false, false, false, false)

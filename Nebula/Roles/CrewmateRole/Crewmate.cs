@@ -9,7 +9,7 @@ using Hazel;
 using Nebula.Objects;
 using Nebula.Patches;
 
-namespace Nebula.Roles.Crewmate
+namespace Nebula.Roles.CrewmateRoles
 {
     public class Crewmate : Role
     {

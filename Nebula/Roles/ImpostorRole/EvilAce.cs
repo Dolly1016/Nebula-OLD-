@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Nebula.Patches;
 
-namespace Nebula.Roles.Impostor
+namespace Nebula.Roles.ImpostorRoles
 {
     public class EvilAce : Role
     {

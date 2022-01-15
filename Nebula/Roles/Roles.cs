@@ -11,36 +11,38 @@ namespace Nebula.Roles
     static public class Roles
     {
 
-        public static Crewmate.Crewmate Crewmate=new Crewmate.Crewmate();
-        public static Crewmate.Bait Bait = new Crewmate.Bait();
-        public static Crewmate.DamnedCrew DamnedCrew = new Crewmate.DamnedCrew();
-        public static Crewmate.Provocateur Provocateur = new Crewmate.Provocateur();
-        public static Crewmate.Psychic Psychic = new Crewmate.Psychic();
-        public static Crewmate.SecurityGuard SecurityGuard = new Crewmate.SecurityGuard();
-        public static Crewmate.Sheriff Sheriff = new Crewmate.Sheriff();
-        public static Crewmate.Spy Spy = new Crewmate.Spy();
+        public static CrewmateRoles.Crewmate Crewmate=new CrewmateRoles.Crewmate();
+        public static CrewmateRoles.Bait Bait = new CrewmateRoles.Bait();
+        public static CrewmateRoles.DamnedCrew DamnedCrew = new CrewmateRoles.DamnedCrew();
+        public static ComplexRoles.Guesser NiceGuesser = new ComplexRoles.Guesser("NiceGuesser", "niceGuesser", true);
+        public static CrewmateRoles.Provocateur Provocateur = new CrewmateRoles.Provocateur();
+        public static CrewmateRoles.Psychic Psychic = new CrewmateRoles.Psychic();
+        public static CrewmateRoles.SecurityGuard SecurityGuard = new CrewmateRoles.SecurityGuard();
+        public static CrewmateRoles.Sheriff Sheriff = new CrewmateRoles.Sheriff();
+        public static CrewmateRoles.Spy Spy = new CrewmateRoles.Spy();
 
-        public static Crewmate.Madmate Madmate = new Crewmate.Madmate();
+        public static CrewmateRoles.Madmate Madmate = new CrewmateRoles.Madmate();
 
-        public static Impostor.Impostor Impostor = new Impostor.Impostor();
-        public static Impostor.Camouflager Camouflager = new Impostor.Camouflager();
-        public static Impostor.Damned Damned = new Impostor.Damned();
-        public static Impostor.Eraser Eraser = new Impostor.Eraser();
-        public static Impostor.EvilAce EvilAce = new Impostor.EvilAce();
-        public static Impostor.Reaper Reaper = new Impostor.Reaper();
+        public static ImpostorRoles.Impostor Impostor = new ImpostorRoles.Impostor();
+        public static ImpostorRoles.Camouflager Camouflager = new ImpostorRoles.Camouflager();
+        public static ImpostorRoles.Damned Damned = new ImpostorRoles.Damned();
+        public static ImpostorRoles.Eraser Eraser = new ImpostorRoles.Eraser();
+        public static ImpostorRoles.EvilAce EvilAce = new ImpostorRoles.EvilAce();
+        public static ComplexRoles.Guesser EvilGuesser = new ComplexRoles.Guesser("EvilGuesser", "evilGuesser", true);
+        public static ImpostorRoles.Reaper Reaper = new ImpostorRoles.Reaper();
 
-        public static Neutral.Jackal Jackal = new Neutral.Jackal();
-        public static Neutral.Jester Jester = new Neutral.Jester();
-        public static Neutral.Vulture Vulture = new Neutral.Vulture();
+        public static NeutralRoles.Jackal Jackal = new NeutralRoles.Jackal();
+        public static NeutralRoles.Jester Jester = new NeutralRoles.Jester();
+        public static NeutralRoles.Vulture Vulture = new NeutralRoles.Vulture();
 
-        public static Complex.Crewmate F_Crewmate = new Complex.Crewmate();
+        public static ComplexRoles.FCrewmate F_Crewmate = new ComplexRoles.FCrewmate();
 
         //全てのロールはこの中に含まれている必要があります
         public static List<Role> AllRoles = new List<Role>()
         {
-            F_Crewmate,Crewmate,Bait,DamnedCrew,Provocateur,Psychic,SecurityGuard,Sheriff,Spy,
+            F_Crewmate,Crewmate,Bait,DamnedCrew,NiceGuesser,Provocateur,Psychic,SecurityGuard,Sheriff,Spy,
             Madmate,
-            Impostor,Camouflager,Damned,Eraser,EvilAce,Reaper,
+            Impostor,Camouflager,Damned,Eraser,EvilAce,EvilGuesser,Reaper,
             Jackal,Jester,Vulture,
         };
 

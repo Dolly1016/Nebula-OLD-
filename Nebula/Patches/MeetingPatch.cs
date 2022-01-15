@@ -28,6 +28,15 @@ namespace Nebula.Patches
             }
         }
 
+        [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.ServerStart))]
+        class MeetingServerStartPatch
+        {
+            static void Postfix(MeetingHud __instance)
+            {
+                PlayerControl.LocalPlayer.GetModData().role.SetupMeetingButton(__instance);
+            }
+        }
+
         [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Deserialize))]
         class MeetingDeserializePatch
         {
