@@ -57,6 +57,7 @@
 "role.crewmate.chanceOfDamned" : "Chance Of Damned"
 
 "role.guesser.name" : "Guesser"
+"role.guesser.chanceToSpawnAsImpostor" : "Chance to Spawn as Impostor"
 
 "role.bait.name" : "Bait"
 "role.bait.description" : "Bait Your Enemies"
@@ -100,7 +101,7 @@
 
 "role.eraser.name" : "Eraser"
 "role.eraser.description" : "Kill the Crewmates and Erase Their Roles"
-"role.eraser.eraseCoolDownOption" : "Erase Cool Down"
+"role.eraser.eraseCoolDown" : "Erase Cool Down"
 
 "role.evilAce.name" : "Evil Ace"
 "role.evilAce.description" : "Kill the Crewmates"
@@ -122,6 +123,10 @@
 "role.vulture.name" : "Vulture"
 "role.vulture.description" : "Eat Corpses to Win"
 "role.vulture.eatenCountNeeded" : "Count of Eaten Needed"
+
+"role.lover.name" : "Lover"
+"role.lover.description" : "You're in <color=#fc04bdff>Love</color> with %NAME%"
+"role.lover.maxPairs" : "Max Couples"
 
 "side.crewmate.name" : "Crewmate"
 "side.impostor.name" : "Impostor"
