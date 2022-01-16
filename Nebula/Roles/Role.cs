@@ -39,6 +39,13 @@ namespace Nebula.Roles
         /// 自身が同じチームとして表示される陣営
         /// </summary>
         private HashSet<Side> introInfluenceSides { get; }
+
+        protected HashSet<Patches.EndCondition> winReasons { get; }
+        public virtual bool CheckWin(Patches.EndCondition winReason)
+        {
+            return winReasons.Contains(winReason);
+        }
+
         public Color ventColor { get; set; }
         public bool canUseVents { get; set; }
         public bool canMoveInVents { get; set; }
@@ -66,6 +73,12 @@ namespace Nebula.Roles
         /*--------------------------------------------------------------------------------------*/
         /*--------------------------------------------------------------------------------------*/
 
+        /// <summary>
+        /// 正常にロールデータが更新された際に呼び出されます。
+        /// </summary>
+        [RoleLocalMethod]
+        public virtual void OnUpdateRoleData(int dataId, int newData) { }
+
         //Complexなロールカテゴリーについてのみ呼ばれます。
         public virtual AssignRoles.RoleAllocation[] GetComplexAllocations()
         {
@@ -77,7 +90,7 @@ namespace Nebula.Roles
             HashSet<Patches.EndCondition> winReasons,
             bool hasFakeTask, bool canUseVents, bool canMoveInVents,
             bool ignoreBlackout, bool useImpostorLightRadius):
-            base(name,localizeName,color,winReasons)
+            base(name,localizeName,color)
         {
             this.id = maxId;
             maxId++;
@@ -101,8 +114,10 @@ namespace Nebula.Roles
             this.lightRadiusMax = 1.0f;
 
             this.deceiveImpostorInNameDisplay = false;
-
+            this.IsGuessableRole = true;
             this.ventColor = Palette.ImpostorRed;
+
+            this.winReasons = winReasons;
         }
 
         public static Role GetRoleById(byte id)

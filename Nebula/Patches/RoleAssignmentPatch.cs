@@ -1,15 +1,10 @@
-﻿using System;
+﻿using HarmonyLib;
+using Hazel;
+using Nebula.Roles;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HarmonyLib;
-using UnityEngine;
-using UnhollowerBaseLib;
-using Hazel;
-using Nebula.Game;
 using static Nebula.NebulaPlugin;
-using Nebula.Roles;
 
 namespace Nebula.Patches
 {
@@ -62,10 +57,13 @@ namespace Nebula.Patches
                         continue;
                     }
 
+                    //ロールの湧き数
+                    int roleCount = role.FixedRoleCount ? role.getCustomRoleCount() : (int)role.roleCountOption.getFloat();
+
                     if (role.roleChanceOption.getSelection() < 10)
                     {
                         //ランダムロール
-                        for (int i = 0; i < role.roleCountOption.getFloat(); i++)
+                        for (int i = 0; i < roleCount; i++)
                         {
                             secondaryRoles.Add(new RoleAllocation(role, (int)role.roleChanceOption.getSelection()));
                         }
@@ -73,7 +71,7 @@ namespace Nebula.Patches
                     else
                     {
                         //100%ロール
-                        for (int i = 0; i < role.roleCountOption.getFloat(); i++)
+                        for (int i = 0; i < roleCount; i++)
                         {
                             firstRoles.Add(role);
                         }
@@ -230,13 +228,11 @@ namespace Nebula.Patches
             List<PlayerControl> impostors = PlayerControl.AllPlayerControls.ToArray().ToList().OrderBy(x => Guid.NewGuid()).ToList();
             impostors.RemoveAll(x => !x.Data.Role.IsImpostor);
 
-            AssignRoles roleData = new AssignRoles(crewmates.Count,impostors.Count);
+            /* ロールの割り当て */
+            AssignRoles roleData = new AssignRoles(crewmates.Count, impostors.Count);
 
-            UnityEngine.Debug.Log("Assign neutral roles.");
             roleData.neutralData.Assign(crewmates);
-            UnityEngine.Debug.Log("Assign crewmate roles.");
             roleData.crewmateData.Assign(crewmates);
-            UnityEngine.Debug.Log("Assign impostor roles.");
             roleData.impostorData.Assign(impostors);
 
             //余ったプレイヤーは標準ロールを割り当てる
@@ -248,6 +244,30 @@ namespace Nebula.Patches
             {
                 setRoleToRandomPlayer(Roles.Roles.Impostor, impostors, true);
             }
+
+            /* ExtraRoleの割り当て */
+            byte currentPriority = Byte.MinValue;
+            byte nextPriority = Byte.MaxValue;
+            do
+            {
+                nextPriority = Byte.MaxValue;
+
+                foreach (ExtraRole role in Roles.Roles.AllExtraRoles)
+                {
+                    if (role.assignmentPriority == currentPriority)
+                    {
+                        //ロールを割り当てる
+                        role.Assignment(Game.GameData.data);
+                    }
+                    else if (role.assignmentPriority > currentPriority && role.assignmentPriority < nextPriority)
+                    {
+                        //次に割り当てる優先度を決定する
+                        nextPriority = role.assignmentPriority;
+                    }
+                }
+
+                currentPriority = nextPriority;
+            } while (currentPriority != Byte.MaxValue);
         }
 
         //ModRoleが有効でない場合標準ロールを割り当てます

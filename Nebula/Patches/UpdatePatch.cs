@@ -53,6 +53,9 @@ namespace Nebula.Patches
                 impostorColor = Color.white;
             }
 
+            string name;
+            Game.PlayerData playerData;
+            bool hideFlag;
             foreach (PlayerControl player in PlayerControl.AllPlayerControls)
             {
                 if (!Game.GameData.data.players.ContainsKey(player.PlayerId))
@@ -60,8 +63,27 @@ namespace Nebula.Patches
                     continue;
                 }
 
-                player.nameText.text = Game.GameData.data.players[player.PlayerId].currentName;
-                player.nameText.color = Color.white;
+                playerData = Game.GameData.data.players[player.PlayerId];
+
+                /* 名前を編集する */
+                name = playerData.currentName;
+                hideFlag = playerData.currentName.Length == 0;
+                playerData.role.EditDisplayName(player.PlayerId,ref name, hideFlag);
+                foreach(Roles.ExtraRole role in playerData.extraRole)
+                {
+                    role.EditDisplayName(player.PlayerId, ref name, hideFlag);
+                }
+
+                player.nameText.text = name;
+                if (player == PlayerControl.LocalPlayer)
+                {
+                    //自分自身ならロールの色にする
+                    player.nameText.color = playerData.role.color;
+                }
+                else
+                {
+                    player.nameText.color = Color.white;
+                }
                 player.nameText.color = rewriteImpostorColor(player.Data, player.nameText.color, (Color)impostorColor);
             }
 
@@ -74,7 +96,24 @@ namespace Nebula.Patches
                         continue;
                     }
 
-                    player.NameText.color = Color.white;
+                    playerData = Game.GameData.data.players[player.TargetPlayerId];
+                    /* 名前を編集する */
+                    name = player.name;
+                    playerData.role.EditDisplayName(player.TargetPlayerId, ref name, false);
+                    foreach (Roles.ExtraRole role in playerData.extraRole)
+                    {
+                        role.EditDisplayName(player.TargetPlayerId,ref name, false);
+                    }
+
+                    if (player.TargetPlayerId == PlayerControl.LocalPlayer.PlayerId)
+                    {
+                        //自分自身ならロールの色にする
+                        player.NameText.color = playerData.role.color;
+                    }
+                    else
+                    {
+                        player.NameText.color = Color.white;
+                    }
                     player.NameText.color = rewriteImpostorColor(Helpers.allPlayersById()[player.TargetPlayerId].Data, player.NameText.color, (Color)impostorColor);
 
                 }

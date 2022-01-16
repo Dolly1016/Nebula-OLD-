@@ -11,7 +11,7 @@ using System.Reflection;
 
 namespace Nebula.Roles.ComplexRoles
 {
-    class FGuesser : Role
+    public class FGuesser : Role
     {
         private Module.CustomOption chanceToSpawnAsImpostor;
 
@@ -35,23 +35,12 @@ namespace Nebula.Roles.ComplexRoles
         {
             Patches.AssignRoles.RoleAllocation[] result = new Patches.AssignRoles.RoleAllocation[(int)roleCountOption.getFloat()];
 
-            int damneds = 0;
-            double rnd = NebulaPlugin.rnd.NextDouble();
-            double rate = (double)ChanceToSpawnAsImpostor() / 10.0;
-            while (rnd < rate)
-            {
-                damneds++;
-                rate *= (double)ChanceToSpawnAsImpostor() / 10.0;
-                if (damneds >= result.Length)
-                {
-                    break;
-                }
-            }
+            int evils = Helpers.CalcProbabilityCount(ChanceToSpawnAsImpostor(),result.Length);
 
             int chance = roleChanceOption.getSelection();
             for (int i = 0; i < result.Length; i++)
             {
-                result[i] = new Patches.AssignRoles.RoleAllocation(i < damneds ? Roles.EvilGuesser : Roles.NiceGuesser, chance);
+                result[i] = new Patches.AssignRoles.RoleAllocation(i < evils ? Roles.EvilGuesser : Roles.NiceGuesser, chance);
             }
 
             return result;
@@ -76,7 +65,7 @@ namespace Nebula.Roles.ComplexRoles
         //インポスターはModで操作するFakeTaskは所持していない
         public Guesser(string name, string localizeName, bool isImpostor)
                 : base(name, localizeName,
-                     isImpostor ? Palette.ImpostorRed : Palette.CrewmateBlue,
+                     isImpostor ? Palette.ImpostorRed : FGuesser.Color,
                      isImpostor ? RoleCategory.Impostor : RoleCategory.Crewmate,
                      isImpostor ? Side.Impostor : Side.Crewmate, isImpostor ? Side.Impostor : Side.Crewmate,
                      isImpostor ? ImpostorRoles.Impostor.impostorSideSet : CrewmateRoles.Crewmate.crewmateSideSet,
@@ -85,6 +74,7 @@ namespace Nebula.Roles.ComplexRoles
                      false, isImpostor, isImpostor, false, isImpostor)
         {
             IsGuessableRole = false;
+            IsHideRole = true;
         }
 
         private static GameObject guesserUI;

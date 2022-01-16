@@ -10,7 +10,7 @@ using static GameData;
 namespace Nebula.Game
 {
 
-    class MyPlayerData
+    public class MyPlayerData
     {
         public PlayerControl currentTarget { get; set; }
         private PlayerData globalData { get; set; }
@@ -103,7 +103,10 @@ namespace Nebula.Game
         public Role role { get; set; }
         public List<ExtraRole> extraRole { get; }
 
+        //自身のロールがもつデータ
         private Dictionary<int, int> roleData { get; set; }
+        //Extraロール1つにつき1つのlong変数を割り当てる
+        private Dictionary<byte, ulong> extraRoleData { get; set; }
 
         public bool IsAlive { get; private set; }
 
@@ -120,6 +123,7 @@ namespace Nebula.Game
             this.role = role;
             this.extraRole = new List<ExtraRole>();
             this.roleData = new Dictionary<int, int>();
+            this.extraRoleData = new Dictionary<byte, ulong>();
             this.IsAlive = true;
             this.Outfit = new PlayerOutfitData(outfit);
             this.CurrentOutfit = new PlayerOutfitData(outfit);
@@ -149,9 +153,41 @@ namespace Nebula.Game
 
         }
 
-        public void AddRoleData(int id,int addValue)
+        public void AddRoleData(int id, int addValue)
         {
-            SetRoleData(id,GetRoleData(id)+addValue);
+            SetRoleData(id, GetRoleData(id) + addValue);
+        }
+
+        public ulong GetExtraRoleData(byte id)
+        {
+            if (extraRoleData.ContainsKey(id))
+            {
+                return extraRoleData[id];
+            }
+            return 0;
+        }
+
+        public ulong GetExtraRoleData(ExtraRole role)
+        {
+            return GetExtraRoleData(role.id);
+        }
+
+        public void SetExtraRoleData(byte id, ulong newValue)
+        {
+            if (extraRoleData.ContainsKey(id))
+            {
+                extraRoleData[id] = newValue;
+            }
+            else
+            {
+                extraRoleData.Add(id, newValue);
+            }
+
+        }
+
+        public void SetExtraRoleData(Roles.ExtraRole role, ulong newValue)
+        {
+            SetExtraRoleData(role.id, newValue);
         }
 
         /// <summary>
@@ -242,7 +278,7 @@ namespace Nebula.Game
         }
     }
 
-    class GameData
+    public class GameData
     {
         public static GameData data = null;
 

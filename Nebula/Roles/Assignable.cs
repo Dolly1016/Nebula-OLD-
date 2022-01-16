@@ -14,18 +14,17 @@ namespace Nebula.Roles
         public string localizeName { get; private set; }
         public Color color { get; private set; }
 
-        protected HashSet<Patches.EndCondition> winReasons { get; }
-        public virtual bool CheckWin(Patches.EndCondition winReason)
-        {
-            return winReasons.Contains(winReason);
-        }
-
         public Module.CustomOption roleChanceOption { get; private set; }
         public Module.CustomOption roleCountOption { get; private set; }
         /// <summary>
+        /// FixedRoleCountが有効な場合この関数が呼び出されます。
+        /// </summary>
+        /// <returns></returns>
+        public virtual int getCustomRoleCount() { return 0; }
+        /// <summary>
         /// 配役人数を標準設定に準じさせたくない場合はtrueにしてください。
         /// </summary>
-        protected bool FixedRoleCount { get; set; }
+        public bool FixedRoleCount { get; protected set; }
 
         private int optionId { get; set; }
 
@@ -199,9 +198,13 @@ namespace Nebula.Roles
         public virtual void OnDied() { }
 
         /// <summary>
-        /// 正常にロールデータが更新された際に呼び出されます。
+        /// 表示名を編集します。
         /// </summary>
-        public virtual void OnUpdateRoleData(int dataId, int newData) { }
+        /// <param name="displayName"></param>
+        [RoleGlobalMethod]
+        public virtual void EditDisplayName(byte playerId,ref string displayName,bool hideFlag)
+        {
+        }
     
         /*--------------------------------------------------------------------------------------*/
         /*--------------------------------------------------------------------------------------*/
@@ -253,18 +256,12 @@ namespace Nebula.Roles
         //ComplexRoleの子ロールなど、オプション画面で隠したいロールはtrueにしてください。
         public bool IsHideRole { get; protected set; }
 
-        protected Assignable(string name, string localizeName, Color color, 
-            HashSet<Patches.EndCondition> winReasons)
+        protected Assignable(string name, string localizeName, Color color)
         {
 
             this.name = name;
             this.localizeName = localizeName;
             this.color = color;
-
-         
-
-            this.winReasons = winReasons;
-
 
             //未設定
             this.optionId = -1;

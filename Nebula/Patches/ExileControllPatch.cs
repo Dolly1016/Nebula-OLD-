@@ -12,7 +12,7 @@ namespace Nebula.Patches
 
             if (exiled.PlayerId == PlayerControl.LocalPlayer.PlayerId)
             {
-                exiled.GetModData().role.OnExiledPre(voters);
+                Helpers.RoleAction(exiled.PlayerId, (role) => { role.OnExiledPre(voters); });
             }
         }
     }

@@ -85,24 +85,6 @@ namespace Nebula.Patches
                 players.Add(new FinalPlayer(player.name,
                     player.role, 0, 0));
             }
-
-            /*int complete, total;
-            foreach (PlayerControl player in PlayerControl.AllPlayerControls)
-            {
-                complete = 0;
-                total = 0;
-                foreach (PlayerTask task in player.myTasks)
-                {
-                    if (task.IsComplete)
-                    {
-                        complete++;
-                    }
-                    total++;
-                }
-                players.Add(new FinalPlayer(player.name,
-                    Game.GameData.data.players[player.PlayerId].role,
-                    total, complete));
-            }*/
         }
     }
 
@@ -127,6 +109,17 @@ namespace Nebula.Patches
                 if (Game.GameData.data.players[player.PlayerId].role.CheckWin(EndCondition))
                 {
                     TempData.winners.Add(new WinningPlayerData(player.Data));
+                }
+                else
+                {
+                    foreach(Roles.ExtraRole role in player.GetModData().extraRole)
+                    {
+                        if (role.CheckWin(player, EndCondition))
+                        {
+                            TempData.winners.Add(new WinningPlayerData(player.Data));
+                            break;
+                        }
+                    }
                 }
             }
 

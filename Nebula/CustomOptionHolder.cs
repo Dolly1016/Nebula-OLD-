@@ -79,6 +79,7 @@ namespace Nebula
 
             //ロールのオプションを読み込む
             Roles.Role.LoadAllOptionData();
+            Roles.ExtraRole.LoadAllOptionData();
         }
     }
 }

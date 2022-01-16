@@ -35,6 +35,10 @@ namespace Nebula.Patches
             {
                 role.ButtonCleanUp();
             }
+            foreach (Roles.ExtraRole role in Roles.Roles.AllExtraRoles)
+            {
+                role.ButtonCleanUp();
+            }
         }
     }
 
@@ -43,12 +47,12 @@ namespace Nebula.Patches
     {
         public static void Prefix(IntroCutscene __instance)
         {
-            Roles.Role role = Game.GameData.data.players[PlayerControl.LocalPlayer.PlayerId].role;
-
-            role.GlobalInitialize(PlayerControl.LocalPlayer);
-            role.Initialize(PlayerControl.LocalPlayer);
-            role.ButtonInitialize(HudManagerStartPatch.Manager);
-            role.ButtonActivate();
+            Helpers.RoleAction(PlayerControl.LocalPlayer, (role) => {
+                role.GlobalInitialize(PlayerControl.LocalPlayer);
+                role.Initialize(PlayerControl.LocalPlayer);
+                role.ButtonInitialize(HudManagerStartPatch.Manager);
+                role.ButtonActivate();
+            });
         }
     }
 
@@ -83,6 +87,15 @@ namespace Nebula.Patches
                 __instance.RoleText.color = role.color;
                 __instance.RoleBlurbText.text = Language.Language.GetString("role." + role.localizeName + ".description");
                 __instance.RoleBlurbText.color = role.color;
+
+
+                //追加ロールの情報を付加
+                string description=__instance.RoleBlurbText.text;
+                foreach (Roles.ExtraRole exRole in Game.GameData.data.myData.getGlobalData().extraRole)
+                {
+                    exRole.EditDescriptionString(ref description);
+                }
+                __instance.RoleBlurbText.text = description;
             }
         }
 

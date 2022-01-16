@@ -27,18 +27,7 @@ namespace Nebula.Roles.ComplexRoles
         {
             Patches.AssignRoles.RoleAllocation[] result = new Patches.AssignRoles.RoleAllocation[(int)roleCountOption.getFloat()];
 
-            int damneds = 0;
-            double rnd = NebulaPlugin.rnd.NextDouble();
-            double rate = (double)ChanceOfDamned() / 10.0;
-            while (rnd < rate)
-            {
-                damneds++;
-                rate *= (double)ChanceOfDamned() / 10.0;
-                if (damneds >= MaxCountOfDamned() || damneds>=result.Length)
-                {
-                    break;
-                }
-            }
+            int damneds= Helpers.CalcProbabilityCount(ChanceOfDamned(), result.Length);
 
             int chance = roleChanceOption.getSelection();
             for(int i = 0; i < result.Length; i++)

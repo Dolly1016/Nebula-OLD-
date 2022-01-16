@@ -56,6 +56,8 @@
 "role.crewmate.maxCountOfDamned" : "Max Count Of Damned"
 "role.crewmate.chanceOfDamned" : "Chance Of Damned"
 
+"role.guesser.name" : "Guesser"
+
 "role.bait.name" : "Bait"
 "role.bait.description" : "Bait Your Enemies"
 
@@ -72,6 +74,7 @@
 
 "role.sheriff.name" : "Sheriff"
 "role.sheriff.description" : "Shoot the <color=#ff1919ff>Impostors</color>"
+"role.sheriff.killCoolDownOption" : "Kill Cool Down"
 
 "role.securityGuard.name" : "Security Guard"
 "role.securityGuard.description" : "Seal Vent to Inhibit Barbarism"
@@ -95,9 +98,16 @@
 "role.damned.description" : "Kill the Crewmates"
 "role.damned.message.killed" : "You'll become a impostor at the next meeting..."
 
+"role.eraser.name" : "Eraser"
+"role.eraser.description" : "Kill the Crewmates and Erase Their Roles"
+"role.eraser.eraseCoolDownOption" : "Erase Cool Down"
+
 "role.evilAce.name" : "Evil Ace"
 "role.evilAce.description" : "Kill the Crewmates"
 "role.evilAce.killCoolDown" : "Kill Cool Down Multiplier"
+
+"role.evilGuesser.name" : "Evil Guesser"
+"role.evilGuesser.description" : "Guess and shoot"
 
 "role.reaper.name" : "Reaper"
 "role.reaper.description" : "Kill and Deceive the Crewmates"
@@ -107,6 +117,7 @@
 
 "role.jester.name" : "Jester"
 "role.jester.description" : "Get Voted Out"
+"role.jester.canUseVents" : "Can Use Vents"
 
 "role.vulture.name" : "Vulture"
 "role.vulture.description" : "Eat Corpses to Win"

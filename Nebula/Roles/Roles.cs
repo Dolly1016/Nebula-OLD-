@@ -14,7 +14,7 @@ namespace Nebula.Roles
         public static CrewmateRoles.Crewmate Crewmate=new CrewmateRoles.Crewmate();
         public static CrewmateRoles.Bait Bait = new CrewmateRoles.Bait();
         public static CrewmateRoles.DamnedCrew DamnedCrew = new CrewmateRoles.DamnedCrew();
-        public static ComplexRoles.Guesser NiceGuesser = new ComplexRoles.Guesser("NiceGuesser", "niceGuesser", true);
+        public static ComplexRoles.Guesser NiceGuesser = new ComplexRoles.Guesser("NiceGuesser", "niceGuesser", false);
         public static CrewmateRoles.Provocateur Provocateur = new CrewmateRoles.Provocateur();
         public static CrewmateRoles.Psychic Psychic = new CrewmateRoles.Psychic();
         public static CrewmateRoles.SecurityGuard SecurityGuard = new CrewmateRoles.SecurityGuard();
@@ -36,11 +36,16 @@ namespace Nebula.Roles
         public static NeutralRoles.Vulture Vulture = new NeutralRoles.Vulture();
 
         public static ComplexRoles.FCrewmate F_Crewmate = new ComplexRoles.FCrewmate();
+        public static ComplexRoles.FGuesser F_Guesser = new ComplexRoles.FGuesser();
+
+        public static ExtraRoles.Lover Lover = new ExtraRoles.Lover();
+
 
         //全てのロールはこの中に含まれている必要があります
         public static List<Role> AllRoles = new List<Role>()
         {
-            F_Crewmate,Crewmate,Bait,DamnedCrew,NiceGuesser,Provocateur,Psychic,SecurityGuard,Sheriff,Spy,
+            F_Crewmate,F_Guesser,
+            Crewmate,Bait,DamnedCrew,NiceGuesser,Provocateur,Psychic,SecurityGuard,Sheriff,Spy,
             Madmate,
             Impostor,Camouflager,Damned,Eraser,EvilAce,EvilGuesser,Reaper,
             Jackal,Jester,Vulture,
@@ -48,6 +53,7 @@ namespace Nebula.Roles
 
         public static List<ExtraRole> AllExtraRoles = new List<ExtraRole>()
         {
+            Lover
         };
 
         public static void RegisterAddonRoles(Role role)

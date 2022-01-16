@@ -299,7 +299,7 @@ namespace Nebula
                 //LocalMethod (自身が死んだとき)
                 if (target.PlayerId == PlayerControl.LocalPlayer.PlayerId)
                 {
-                    target.GetModData().role.OnMurdered(killer.PlayerId);
+                    RoleAction(target,(role)=> { role.OnMurdered(killer.PlayerId); });
                 }
 
                 RPCEventInvoker.UncheckedMurderPlayer(killer.PlayerId,target.PlayerId, showAnimation);
@@ -347,6 +347,73 @@ namespace Nebula
                 }
                 if (p == 1f && renderer != null) renderer.enabled = false;
             })));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="chance">0～10の間で指定</param>
+        /// <returns></returns>
+        static public int CalcProbabilityCount(int chance,int max)
+        {
+            int count = 0;
+            double rnd = NebulaPlugin.rnd.NextDouble();
+            double rate = (double)chance / 10.0;
+            while (rnd < rate)
+            {
+                count++;
+                rate *= (double)chance / 10.0;
+                if (count >= max)
+                {
+                    break;
+                }
+            }
+            return count;
+        }
+
+        static public int[] GetRandomArray(int length)
+        {
+            int[] arr = new int[length];
+            for(int i = 0; i < length; i++)
+            {
+                arr[i] = i;
+            }
+
+            System.Random random = new System.Random();
+            arr = arr.OrderBy(x => random.Next()).ToArray();
+
+            return arr;
+        }
+
+        static public Type[] GetRandomArray<Type>(ICollection<Type> collection)
+        {
+            Type[] arr = new Type[collection.Count];
+            int index = 0;
+            foreach (Type value in collection)
+            {
+                arr[index] = value;
+                index++;
+            }
+
+            System.Random random = new System.Random();
+            arr = arr.OrderBy(x => random.Next()).ToArray();
+
+            return arr;
+        }
+
+        static public void RoleAction(byte playerId, System.Action<Roles.Assignable> action)
+        {
+            Game.PlayerData data = Game.GameData.data.players[playerId];
+            action.Invoke(data.role);
+            foreach (Roles.ExtraRole role in data.extraRole)
+            {
+                action.Invoke(role);
+            }
+        }
+
+        static public void RoleAction(PlayerControl player, System.Action<Roles.Assignable> action)
+        {
+            RoleAction(player.PlayerId, action);
         }
     }
 }

@@ -79,7 +79,8 @@ namespace Nebula.Roles.CrewmateRoles
 
         public override void LoadOptionData()
         {
-            killCooldownOption = CreateOption(Color.white, "killCooldownOption", 30f, 10f, 60f, 2.5f);
+            killCooldownOption = CreateOption(Color.white, "killCoolDownOption", 30f, 10f, 60f, 2.5f);
+            killCooldownOption.suffix = "second";
         }
 
         public Sheriff()
