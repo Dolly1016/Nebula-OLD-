@@ -29,7 +29,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 <details>
   <summary>クリックで展開</summary>
  
- **Version Alpha 1.5.0**
+ **Version Alpha 1.5.1**
  - Guesserの挙動を修正
   
  **Version Alpha 1.5.0**
