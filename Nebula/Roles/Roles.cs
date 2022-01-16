@@ -44,11 +44,12 @@ namespace Nebula.Roles
         //全てのロールはこの中に含まれている必要があります
         public static List<Role> AllRoles = new List<Role>()
         {
-            F_Crewmate,F_Guesser,
+            Impostor,Camouflager,Damned,Eraser,EvilAce,EvilGuesser,Reaper,
+            F_Guesser,
+            Jackal,Jester,Vulture,
+            F_Crewmate,
             Crewmate,Bait,DamnedCrew,NiceGuesser,Provocateur,Psychic,SecurityGuard,Sheriff,Spy,
             Madmate,
-            Impostor,Camouflager,Damned,Eraser,EvilAce,EvilGuesser,Reaper,
-            Jackal,Jester,Vulture,
         };
 
         public static List<ExtraRole> AllExtraRoles = new List<ExtraRole>()
