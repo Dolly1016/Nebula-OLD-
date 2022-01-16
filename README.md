@@ -9,6 +9,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 # ダウンロード
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| Alpha 1.5.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.5.12021.12.15/Nebula.zip)|
 | Alpha 1.5.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.5.0,2021.12.15/Nebula.zip)|
 | Alpha 1.4.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.4.1,2021.12.15/Nebula.zip)|
 | Alpha 1.4.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.4.0,2021.12.15/Nebula.zip)|
@@ -28,6 +29,9 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 <details>
   <summary>クリックで展開</summary>
  
+ **Version Alpha 1.5.0**
+ - Guesserの挙動を修正
+  
  **Version Alpha 1.5.0**
  - Loverを追加
  - Damnedが正常に作動しない問題を修正
