@@ -154,6 +154,10 @@ namespace Nebula.Roles
         [RoleLocalMethod]
         public virtual void OnMeetingStart() { }
 
+
+        [RoleLocalMethod]
+        public virtual void MeetingUpdate(MeetingHud __instance, TMPro.TextMeshPro meetingInfo) { }
+
         /// <summary>
         /// 会議が終了した際に呼び出されます。
         /// </summary>
@@ -205,7 +209,16 @@ namespace Nebula.Roles
         public virtual void EditDisplayName(byte playerId,ref string displayName,bool hideFlag)
         {
         }
-    
+
+        /// <summary>
+        /// 表示名を編集します。ゲーム終了時などに使用します。
+        /// </summary>
+        /// <param name="displayName"></param>
+        [RoleGlobalMethod]
+        public virtual void EditDisplayNameForcely(byte playerId, ref string displayName)
+        {
+        }
+
         /*--------------------------------------------------------------------------------------*/
         /*--------------------------------------------------------------------------------------*/
 

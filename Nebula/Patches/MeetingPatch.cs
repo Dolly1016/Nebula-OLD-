@@ -13,9 +13,47 @@ namespace Nebula.Patches
     class MeetingHudPatch
     {
         //最新の会議での得票数記録
-        private static Dictionary<byte, int> VoteHistory=new Dictionary<byte, int>();
+        private static Dictionary<byte, int> VoteHistory = new Dictionary<byte, int>();
         private static Dictionary<byte, List<byte>> Voters = new Dictionary<byte, List<byte>>();
 
+        private static TMPro.TextMeshPro meetingInfoText;
+
+        [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Update))]
+        class MeetingHudUpdatePatch
+        {
+            static void Postfix(MeetingHud __instance)
+            {
+                if (meetingInfoText == null)
+                {
+                    meetingInfoText = UnityEngine.Object.Instantiate(HudManager.Instance.TaskText, __instance.transform);
+                    meetingInfoText.alignment = TMPro.TextAlignmentOptions.BottomLeft;
+                    meetingInfoText.transform.position = Vector3.zero;
+                    meetingInfoText.transform.localPosition = new Vector3(-3.07f, 3.33f, -20f);
+                    meetingInfoText.transform.localScale *= 1.1f;
+                    meetingInfoText.color = Palette.White;
+                    meetingInfoText.gameObject.SetActive(false);
+                }
+
+                meetingInfoText.text = "";
+                meetingInfoText.gameObject.SetActive(false);
+
+                Helpers.RoleAction(PlayerControl.LocalPlayer, (role) =>
+                {
+                    role.MeetingUpdate(__instance,meetingInfoText);
+                });
+            }
+        }
+
+        [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.VotingComplete))]
+        class MeetingHudVotingCompletedPatch
+        {
+            static void Postfix(MeetingHud __instance, [HarmonyArgument(0)] byte[] states, [HarmonyArgument(1)] GameData.PlayerInfo exiled, [HarmonyArgument(2)] bool tie)
+            {
+                if (meetingInfoText != null)
+                    meetingInfoText.gameObject.SetActive(false);
+            }
+        }
+        
         [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Awake))]
         class MeetingCalculateVotesPatch
         {

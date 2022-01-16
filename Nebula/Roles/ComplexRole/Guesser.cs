@@ -13,9 +13,13 @@ namespace Nebula.Roles.ComplexRoles
 {
     public class FGuesser : Role
     {
-        private Module.CustomOption chanceToSpawnAsImpostor;
+        public Module.CustomOption chanceToSpawnAsImpostor;
+        public Module.CustomOption guesserShots;
+        public Module.CustomOption canShotSeveralTimesInTheSameMeeting;
 
         static public Color Color = new Color(255f / 255f, 255f / 255f, 0f / 255f);
+
+        public int remainShotsId { get; private set; }
 
         public int ChanceToSpawnAsImpostor()
         {
@@ -49,6 +53,8 @@ namespace Nebula.Roles.ComplexRoles
         public override void LoadOptionData()
         {
             chanceToSpawnAsImpostor = CreateOption(Color.white, "chanceToSpawnAsImpostor", CustomOptionHolder.rates);
+            canShotSeveralTimesInTheSameMeeting = CreateOption(Color.white,"canShotSeveralTimes",false);
+            guesserShots = CreateOption(Color.white, "guesserShots",3f,1f,15f,1f);
         }
 
         public FGuesser()
@@ -56,7 +62,7 @@ namespace Nebula.Roles.ComplexRoles
                      new HashSet<Side>(), new HashSet<Side>(), new HashSet<Patches.EndCondition>(),
                      false, false, false, false, false)
         {
-
+            remainShotsId = Game.GameData.RegisterRoleDataId("guesser.remainShots");
         }
     }
 
@@ -75,6 +81,11 @@ namespace Nebula.Roles.ComplexRoles
         {
             IsGuessableRole = false;
             IsHideRole = true;
+        }
+
+        public override void GlobalInitialize(PlayerControl __instance)
+        {
+            Game.GameData.data.myData.getGlobalData().SetRoleData(Roles.F_Guesser.remainShotsId, (int)Roles.F_Guesser.guesserShots.getFloat());
         }
 
         private static GameObject guesserUI;
@@ -146,10 +157,14 @@ namespace Nebula.Roles.ComplexRoles
                         // Reset the GUI
                         __instance.playerStates.ToList().ForEach(x => x.gameObject.SetActive(true));
                         UnityEngine.Object.Destroy(container.gameObject);
-                        //if (Guesser.hasMultipleShotsPerMeeting && Guesser.remainingShots(PlayerControl.LocalPlayer.PlayerId) > 1 && dyingTarget != PlayerControl.LocalPlayer)
+
+                        RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId,Roles.F_Guesser.remainShotsId,-1);
+
+                        if (Roles.F_Guesser.canShotSeveralTimesInTheSameMeeting.getBool() &&
+                        Game.GameData.data.myData.getGlobalData().GetRoleData(Roles.F_Guesser.remainShotsId) > 1 && dyingTarget != PlayerControl.LocalPlayer)
                             __instance.playerStates.ToList().ForEach(x => { if (x.TargetPlayerId == dyingTarget.PlayerId && x.transform.FindChild("ShootButton") != null) UnityEngine.Object.Destroy(x.transform.FindChild("ShootButton").gameObject); });
-                        //else
-                        //   __instance.playerStates.ToList().ForEach(x => { if (x.transform.FindChild("ShootButton") != null) UnityEngine.Object.Destroy(x.transform.FindChild("ShootButton").gameObject); });
+                        else
+                           __instance.playerStates.ToList().ForEach(x => { if (x.transform.FindChild("ShootButton") != null) UnityEngine.Object.Destroy(x.transform.FindChild("ShootButton").gameObject); });
 
                         // Shoot player and send chat info if activated
                         RPCEventInvoker.CloseUpKill(PlayerControl.LocalPlayer, dyingTarget);
@@ -163,7 +178,7 @@ namespace Nebula.Roles.ComplexRoles
 
         public override void SetupMeetingButton(MeetingHud __instance)
         {
-            if (!PlayerControl.LocalPlayer.Data.IsDead)
+            if (!PlayerControl.LocalPlayer.Data.IsDead && Game.GameData.data.myData.getGlobalData().GetRoleData(Roles.F_Guesser.remainShotsId) > 0)
             {
                 for (int i = 0; i < __instance.playerStates.Length; i++)
                 {
@@ -184,5 +199,11 @@ namespace Nebula.Roles.ComplexRoles
             }
         }
 
+        public override void MeetingUpdate(MeetingHud __instance, TMPro.TextMeshPro meetingInfo) {
+            int left = Game.GameData.data.myData.getGlobalData().GetRoleData(Roles.F_Guesser.remainShotsId);
+            if (left <= 0) return;
+            meetingInfo.text = Language.Language.GetString("role.guesser.guessesLeft") + ": " + left;
+            meetingInfo.gameObject.SetActive(true);
+        }
     }
 }

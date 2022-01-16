@@ -80,9 +80,14 @@ namespace Nebula.Patches
         {
             players = new HashSet<FinalPlayer>();
 
+            string name;
             foreach(Game.PlayerData player in Game.GameData.data.players.Values)
             {
-                players.Add(new FinalPlayer(player.name,
+                //名前に表示を追加する
+                name=player.name;
+                Helpers.RoleAction(player.id,(role)=> { role.EditDisplayNameForcely(player.id, ref name); });
+
+                players.Add(new FinalPlayer(name,
                     player.role, 0, 0));
             }
         }
@@ -114,6 +119,7 @@ namespace Nebula.Patches
                 {
                     foreach(Roles.ExtraRole role in player.GetModData().extraRole)
                     {
+
                         if (role.CheckWin(player, EndCondition))
                         {
                             TempData.winners.Add(new WinningPlayerData(player.Data));

@@ -58,9 +58,15 @@
 
 "role.guesser.name" : "Guesser"
 "role.guesser.chanceToSpawnAsImpostor" : "Chance to Spawn as Impostor"
+"role.guesser.canShotSeveralTimes" : "Can Shot Several Times In The Same Meeting"
+"role.guesser.guesserShots" : "Guesser Shots"
+"role.guesser.guessesLeft" : "Guesses Left"
 
 "role.bait.name" : "Bait"
 "role.bait.description" : "Bait Your Enemies"
+
+"role.niceGuesser.name" : "Nice Guesser"
+"role.niceGuesser.description" : "Guess and shoot"
 
 "role.provocateur.name" : "Provocateur"
 "role.provocateur.description" : "Go To The Grave Together"
@@ -138,5 +144,3 @@
 "game.endText.jackal" : "Team Jackal Wins"
 "game.endText.jester" : "Jester Wins"
 "game.endText.vulture" : "Vulture Wins"
-
-"message.test1" : "ABCDEF"

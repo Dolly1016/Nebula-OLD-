@@ -19,8 +19,8 @@ namespace Nebula.Roles.CrewmateRoles
 
         private Vent ventTarget = null;
 
-        public int remainingScrewsDataId;
-        public int totalScrewsDataId;
+        public int remainingScrewsDataId { get; private set; }
+        public int totalScrewsDataId { get; private set; }
 
         private Module.CustomOption maxScrewsOption;
 

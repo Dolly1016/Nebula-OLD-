@@ -73,7 +73,7 @@ namespace Nebula.Roles
 
         public static Side Jackal = new Side("Jackal", "jackal", false, NeutralRoles.Jackal.Color, (PlayerStatistics statistics, ShipStatus status) =>
         {
-            if (statistics.GetAlivePlayers(Jackal) == statistics.TotalAlive)
+            if (statistics.GetAlivePlayers(Jackal)*2 >= statistics.TotalAlive && statistics.GetAlivePlayers(Impostor)==0)
             {
                 return EndCondition.JackalWin;
             }

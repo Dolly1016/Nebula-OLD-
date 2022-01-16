@@ -18,24 +18,29 @@ namespace Nebula.Roles.ExtraRoles
         (Color)new Color32(255, 255, 0, 255) ,
         (Color)new Color32(3, 183, 254, 255) };
 
-        private void ActionForMyLover(System.Action<PlayerControl> action)
+        private void ActionForLover(PlayerControl player,System.Action<PlayerControl> action)
         {
-            ulong myLoverId = Game.GameData.data.myData.getGlobalData().GetExtraRoleData(this);
-            PlayerControl player;
+            ulong myLoverId = player.GetModData().GetExtraRoleData(this);
+            PlayerControl target;
             foreach (Game.PlayerData data in Game.GameData.data.players.Values)
             {
                 if (!data.extraRole.Contains(this)) continue;
                 if (data.GetExtraRoleData(this) == myLoverId)
                 {
-                    player = Helpers.playerById(data.id);
+                    target = Helpers.playerById(data.id);
 
                     //自身であれば特に何もしない
-                    if (player == PlayerControl.LocalPlayer) continue;
+                    if (target == PlayerControl.LocalPlayer) continue;
 
                     //指定の方法で自殺する
-                    action.Invoke(player);
+                    action.Invoke(target);
                 }
             }
+        }
+
+        private void ActionForMyLover(System.Action<PlayerControl> action)
+        {
+            ActionForLover(PlayerControl.LocalPlayer,action);
         }
 
         public override void OnExiledPre(byte[] voters) {
@@ -73,7 +78,7 @@ namespace Nebula.Roles.ExtraRoles
 
         public override void LoadOptionData()
         {
-            maxPairsOption = CreateOption(Color.white, "maxPairs", 1f, 0f, 3f, 1f);
+            maxPairsOption = CreateOption(Color.white, "maxPairs", 1f, 0f, 5f, 1f);
         }
 
         public override void EditDisplayName(byte playerId, ref string displayName, bool hideFlag)
@@ -85,9 +90,13 @@ namespace Nebula.Roles.ExtraRoles
                 ulong pairId = Game.GameData.data.myData.getGlobalData().GetExtraRoleData(this);
                 if (Game.GameData.data.players[playerId].GetExtraRoleData(this) == pairId) showFlag = true;
             }
-            
-            if (showFlag)
-                displayName += Helpers.cs(
+
+            if (showFlag)EditDisplayNameForcely(playerId,ref displayName);
+        }
+
+        public override void EditDisplayNameForcely(byte playerId, ref string displayName)
+        {
+            displayName += Helpers.cs(
                     iconColor[Game.GameData.data.players[playerId].GetExtraRoleData(this) - 1], "♥");
         }
 
@@ -106,9 +115,9 @@ namespace Nebula.Roles.ExtraRoles
             if (player.Data.IsDead) return false;
 
             bool winFlag = false;
-            ActionForMyLover((player) =>
+            ActionForLover(player, (partner) =>
             {
-                winFlag |= player.GetModData().role.CheckWin(condition);
+                winFlag |= partner.GetModData().role.CheckWin(condition);
             });
             return winFlag;
         }

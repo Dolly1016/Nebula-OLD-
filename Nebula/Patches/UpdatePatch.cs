@@ -68,11 +68,8 @@ namespace Nebula.Patches
                 /* 名前を編集する */
                 name = playerData.currentName;
                 hideFlag = playerData.currentName.Length == 0;
-                playerData.role.EditDisplayName(player.PlayerId,ref name, hideFlag);
-                foreach(Roles.ExtraRole role in playerData.extraRole)
-                {
-                    role.EditDisplayName(player.PlayerId, ref name, hideFlag);
-                }
+
+                Helpers.RoleAction(player, (role) => { role.EditDisplayName(player.PlayerId, ref name, hideFlag); });
 
                 player.nameText.text = name;
                 if (player == PlayerControl.LocalPlayer)
@@ -99,11 +96,8 @@ namespace Nebula.Patches
                     playerData = Game.GameData.data.players[player.TargetPlayerId];
                     /* 名前を編集する */
                     name = player.name;
-                    playerData.role.EditDisplayName(player.TargetPlayerId, ref name, false);
-                    foreach (Roles.ExtraRole role in playerData.extraRole)
-                    {
-                        role.EditDisplayName(player.TargetPlayerId,ref name, false);
-                    }
+
+                    Helpers.RoleAction(player.TargetPlayerId, (role) => { role.EditDisplayName(player.TargetPlayerId, ref name, false); });
 
                     if (player.TargetPlayerId == PlayerControl.LocalPlayer.PlayerId)
                     {
