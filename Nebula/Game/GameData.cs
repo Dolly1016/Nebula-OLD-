@@ -51,6 +51,8 @@ namespace Nebula.Game
         public Vector3 deathLocation { get; }
         //死後経過時間
         public float Elapsed { get; set; }
+        //復活希望場所(同じプレイヤーの復活希望場所も人によって違う)
+        public SystemTypes RespawnRoom { get; }
 
         public DeadPlayerData(PlayerData playerData,DeathReason deathReason,byte murderId)
         {
@@ -60,6 +62,8 @@ namespace Nebula.Game
             this.existDeadBody = true;
             this.deathLocation = Helpers.allPlayersById()[playerData.id].transform.position;
             this.Elapsed = 0f;
+
+            this.RespawnRoom = Game.GameData.data.Rooms[NebulaPlugin.rnd.Next(Game.GameData.data.Rooms.Count)];
         }
 
         public void EraseBody()
@@ -226,14 +230,21 @@ namespace Nebula.Game
             return roleData;
         }
 
+        public void Revive()
+        {
+            IsAlive = true;
+        }
+
         private void Die(DeadPlayerData.DeathReason deathReason,byte murderId)
         {
             IsAlive = false;
 
+            /*
             if (role.hasFakeTask)
             {
                 Helpers.allPlayersById()[id].clearAllTasks();
             }
+            */
 
             Game.GameData.data.deadPlayers.Add(id, new DeadPlayerData(this, deathReason, murderId));
         }
@@ -278,6 +289,28 @@ namespace Nebula.Game
         }
     }
 
+    public class VentData
+    {
+        public Vent Vent { get; }
+        //
+        public int Id { get; }
+        //
+        public bool PreSealed,Sealed;
+
+        public VentData(Vent vent)
+        {
+            this.Vent = vent;
+            this.Id = vent.Id;
+            PreSealed = false;
+            Sealed = false;
+        }
+
+        public static implicit operator Vent(VentData vent)
+        {
+            return vent.Vent;
+        }
+    }
+
     public class GameData
     {
         public static GameData data = null;
@@ -291,7 +324,8 @@ namespace Nebula.Game
 
         public int TotalTasks, CompleteTasks;
 
-        public Dictionary<string, Vent> VentMap;
+        public Dictionary<string,VentData> VentMap;
+        public List<SystemTypes> Rooms;
 
         public GameData()
         {
@@ -362,11 +396,38 @@ namespace Nebula.Game
 
         public void LoadMapData()
         {
-            VentMap = new Dictionary<string, Vent>();
+            VentMap = new Dictionary<string, VentData>();
             foreach (Vent vent in ShipStatus.Instance.AllVents)
             {
-                VentMap.Add(vent.gameObject.name, vent);
+                VentMap.Add(vent.gameObject.name, new VentData(vent));
             }
+
+            Rooms = new List<SystemTypes>();
+            foreach(SystemTypes type in ShipStatus.Instance.FastRooms.Keys)
+            {
+                Rooms.Add(type);
+            }
+        }
+
+        public VentData GetVentData(string name)
+        {
+            if (VentMap.ContainsKey(name))
+            {
+                return VentMap[name];
+            }
+            return null;
+        }
+
+        public VentData GetVentData(int Id)
+        {
+            foreach(VentData vent in VentMap.Values)
+            {
+                if (vent.Id == Id)
+                {
+                    return vent;
+                }
+            }
+            return null;
         }
     }
     

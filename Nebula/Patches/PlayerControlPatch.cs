@@ -223,7 +223,6 @@ namespace Nebula.Patches
                      role.MyPlayerControlUpdate();
                  });
             }
-
         }
     }
 

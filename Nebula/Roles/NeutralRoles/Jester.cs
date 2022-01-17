@@ -10,7 +10,7 @@ using Nebula.Objects;
 
 namespace Nebula.Roles.NeutralRoles
 {
-    public class Jester : Role
+    public class Jester : Template.Draggable
     {
         static public Color Color = new Color(253f / 255f, 84f / 255f, 167f / 255f);
 

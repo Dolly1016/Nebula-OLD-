@@ -56,7 +56,7 @@ namespace Nebula.Roles.CrewmateRoles
             for (int i = 0; i < ShipStatus.Instance.AllVents.Length; i++)
             {
                 Vent vent = ShipStatus.Instance.AllVents[i];
-                if (vent.gameObject.name.StartsWith("%SEALED%")) continue;
+                if (vent.GetVentData().PreSealed || vent.GetVentData().Sealed) continue;
                 float distance = Vector2.Distance(vent.transform.position, truePosition);
                 if (distance <= vent.UsableDistance && distance < closestDistance)
                 {
@@ -74,6 +74,23 @@ namespace Nebula.Roles.CrewmateRoles
             Game.GameData.data.myData.getGlobalData().SetRoleData(remainingScrewsDataId, value);
         }
 
+        public void SetSealedVentSprite(Vent vent,float alpha)
+        {
+            vent.EnterVentAnim = vent.ExitVentAnim = null;
+            if (PlayerControl.GameOptions.MapId == 2)
+            {
+                //Polus
+                vent.myRend.sprite = getCaveSealedSprite();
+            }
+            else
+            {
+                PowerTools.SpriteAnim animator = vent.GetComponent<PowerTools.SpriteAnim>();
+                animator?.Stop();
+                vent.myRend.sprite = getVentSealedSprite();
+            }
+            vent.myRend.color = new Color(1f, 1f, 1f, alpha);
+        }
+
         public override void ButtonInitialize(HudManager __instance)
         {
             if (sealButton != null)
@@ -88,8 +105,11 @@ namespace Nebula.Roles.CrewmateRoles
                         writer.WritePacked(ventTarget.Id);
                         writer.EndMessage();
                         RPCEvents.SealVent(PlayerControl.LocalPlayer.PlayerId,ventTarget.Id);
+
+                        SetSealedVentSprite(ventTarget, 0.5f);
+                        ventTarget.GetVentData().PreSealed = true;
+
                         ventTarget = null;
-                        Game.GameData.data.myData.getGlobalData().AddRoleData(remainingScrewsDataId,-1);
 
                         sealButton.Timer = sealButton.MaxTimer;
                     }

@@ -31,6 +31,7 @@ namespace Nebula
         DragAndDropPlayer,
         ChangeRole,
         SwapRole,
+        RevivePlayer,
 
         // Role functionality
 
@@ -107,6 +108,9 @@ namespace Nebula
                     break;
                 case (byte)CustomRPC.SwapRole:
                     RPCEvents.SwapRole(reader.ReadByte(), reader.ReadByte());
+                    break;
+                case (byte)CustomRPC.RevivePlayer:
+                    RPCEvents.RevivePlayer(reader.ReadByte());
                     break;
 
 
@@ -298,37 +302,59 @@ namespace Nebula
 
         public static void ChangeRole(byte playerId, byte roleId)
         {
-            Game.PlayerData data = Game.GameData.data.players[playerId];
-
-            if (playerId == PlayerControl.LocalPlayer.PlayerId)
+            Events.Schedule.RegisterPostMeetingAction(() =>
             {
-                data.role.FinalizeInGame(PlayerControl.LocalPlayer);
-            }
+                Game.PlayerData data = Game.GameData.data.players[playerId];
 
-            //ロールを変更
-            SetUpRole(data, Helpers.playerById(playerId), Roles.Role.GetRoleById(roleId));
+                if (playerId == PlayerControl.LocalPlayer.PlayerId)
+                {
+                    data.role.FinalizeInGame(PlayerControl.LocalPlayer);
+                }
+
+                //ロールを変更
+                SetUpRole(data, Helpers.playerById(playerId), Roles.Role.GetRoleById(roleId));
+            });
         }
 
         public static void SwapRole(byte playerId_1, byte playerId_2)
         {
-            Game.PlayerData data1 = Game.GameData.data.players[playerId_1];
-            Game.PlayerData data2 = Game.GameData.data.players[playerId_2];
-
-            if (playerId_1 == PlayerControl.LocalPlayer.PlayerId)
+            Events.Schedule.RegisterPostMeetingAction(() =>
             {
-                data1.role.FinalizeInGame(PlayerControl.LocalPlayer);
-            }
-            if (playerId_2 == PlayerControl.LocalPlayer.PlayerId)
+                Game.PlayerData data1 = Game.GameData.data.players[playerId_1];
+                Game.PlayerData data2 = Game.GameData.data.players[playerId_2];
+
+                if (playerId_1 == PlayerControl.LocalPlayer.PlayerId)
+                {
+                    data1.role.FinalizeInGame(PlayerControl.LocalPlayer);
+                }
+                if (playerId_2 == PlayerControl.LocalPlayer.PlayerId)
+                {
+                    data2.role.FinalizeInGame(PlayerControl.LocalPlayer);
+                }
+
+                Dictionary<int, int> roleData1 = data1.ExtractRoleData(), roleData2 = data2.ExtractRoleData();
+                Roles.Role role1 = data1.role, role2 = data2.role;
+
+                //ロールを変更
+                SetUpRole(data1, Helpers.playerById(playerId_1), role2, roleData2);
+                SetUpRole(data2, Helpers.playerById(playerId_2), role1, roleData1);
+            });
+        }
+
+        public static void RevivePlayer(byte playerId)
+        {
+            foreach(DeadBody body in Helpers.AllDeadBodies())
             {
-                data2.role.FinalizeInGame(PlayerControl.LocalPlayer);
+                if (body.ParentId != playerId) continue;
+
+                Game.GameData.data.players[playerId].Revive();
+                PlayerControl player = Helpers.playerById(playerId);
+                player.transform.position = body.transform.position;
+                player.Revive(false);
+                Game.GameData.data.deadPlayers.Remove(playerId);
+
+                UnityEngine.Object.Destroy(body.gameObject);
             }
-
-            Dictionary<int, int> roleData1 = data1.ExtractRoleData(), roleData2 = data2.ExtractRoleData();
-            Roles.Role role1=data1.role, role2=data2.role;
-
-            //ロールを変更
-            SetUpRole(data1, Helpers.playerById(playerId_1), role2, roleData2);
-            SetUpRole(data2, Helpers.playerById(playerId_2), role1, roleData1);
         }
 
         //送信元と受信先で挙動が異なる（以下は受信側）
@@ -352,23 +378,14 @@ namespace Nebula
 
         public static void SealVent(byte playerId,int ventId)
         {
-            Vent vent = ShipStatus.Instance.AllVents.FirstOrDefault((x) => x != null && x.Id == ventId);
-            if (vent == null) return;
+            Events.Schedule.RegisterPostMeetingAction(() =>
+            {
+                Vent vent = ShipStatus.Instance.AllVents.FirstOrDefault((x) => x != null && x.Id == ventId);
+                if (vent == null) return;
 
-            vent.EnterVentAnim = vent.ExitVentAnim = null;
-            if (PlayerControl.GameOptions.MapId == 2)
-            {
-                //Polus
-                vent.myRend.sprite = Roles.Roles.SecurityGuard.getCaveSealedSprite();
-            }
-            else
-            {
-                PowerTools.SpriteAnim animator = vent.GetComponent<PowerTools.SpriteAnim>();
-                animator?.Stop();
-                vent.myRend.sprite = Roles.Roles.SecurityGuard.getVentSealedSprite();
-            }
-            vent.myRend.color = new Color(1f, 1f, 1f, 1f);
-            vent.name = "%SEALED%" + vent.name;
+                Roles.Roles.SecurityGuard.SetSealedVentSprite(vent,1f);
+                vent.GetVentData().Sealed = true;
+            });
 
             Game.GameData.data.players[playerId].AddRoleData(Roles.Roles.SecurityGuard.remainingScrewsDataId, -1);
         }
@@ -488,6 +505,14 @@ namespace Nebula
             writer.Write(player.PlayerId);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.UnsetExtraRole(role,player.PlayerId);
+        }
+
+        public static void RevivePlayer(PlayerControl player)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RevivePlayer, Hazel.SendOption.Reliable, -1);
+            writer.Write(player.PlayerId);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.RevivePlayer(player.PlayerId);
         }
     }
 }

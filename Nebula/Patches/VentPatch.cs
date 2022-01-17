@@ -21,7 +21,7 @@ namespace Nebula.Patches
 
             var usableDistance = __instance.UsableDistance;
             
-            if (__instance.name.StartsWith("%SEALED%"))
+            if (__instance.GetVentData().Sealed)
             {
                 canUse = couldUse = false;
                 __result = num;

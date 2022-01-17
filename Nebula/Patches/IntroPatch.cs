@@ -46,9 +46,9 @@ namespace Nebula.Patches
     [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.OnDestroy))]
     class IntroCutsceneOnDestroyPatch
     {
-        public static void Prefix(IntroCutscene __instance)
+        public static void Postfix(IntroCutscene __instance)
         {
-            /*
+            
             Game.GameData.data.LoadMapData();
 
             Helpers.RoleAction(PlayerControl.LocalPlayer, (role) => {
@@ -57,7 +57,7 @@ namespace Nebula.Patches
                 role.ButtonInitialize(HudManagerStartPatch.Manager);
                 role.ButtonActivate();
             });
-            */
+            
         }
     }
 

@@ -14,6 +14,7 @@ namespace Nebula.Roles
         public static CrewmateRoles.Crewmate Crewmate=new CrewmateRoles.Crewmate();
         public static CrewmateRoles.Bait Bait = new CrewmateRoles.Bait();
         public static CrewmateRoles.DamnedCrew DamnedCrew = new CrewmateRoles.DamnedCrew();
+        public static CrewmateRoles.Necromancer Necromancer = new CrewmateRoles.Necromancer();
         public static ComplexRoles.Guesser NiceGuesser = new ComplexRoles.Guesser("NiceGuesser", "niceGuesser", false);
         public static CrewmateRoles.Provocateur Provocateur = new CrewmateRoles.Provocateur();
         public static CrewmateRoles.Psychic Psychic = new CrewmateRoles.Psychic();
@@ -48,7 +49,7 @@ namespace Nebula.Roles
             F_Guesser,
             Jackal,Jester,Vulture,
             F_Crewmate,
-            Crewmate,Bait,DamnedCrew,NiceGuesser,Provocateur,Psychic,SecurityGuard,Sheriff,Spy,
+            Crewmate,Bait,DamnedCrew,Necromancer,NiceGuesser,Provocateur,Psychic,SecurityGuard,Sheriff,Spy,
             Madmate,
         };
 

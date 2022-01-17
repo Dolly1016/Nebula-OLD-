@@ -415,6 +415,11 @@ namespace Nebula
         {
             RoleAction(player.PlayerId, action);
         }
+
+        static public Game.VentData GetVentData(this Vent vent)
+        {
+            return Game.GameData.data.GetVentData(vent.name);
+        }
     }
 }
 

@@ -17,12 +17,13 @@ namespace Nebula.Roles.ImpostorRoles
         private CustomButton eraserButton;
 
         private Module.CustomOption eraseCoolDownOption;
+        private Module.CustomOption eraseCoolDownAdditionOption;
 
         private Sprite buttonSprite = null;
         public Sprite getButtonSprite()
         {
             if (buttonSprite) return buttonSprite;
-            buttonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.CamoButton.png", 115f);
+            buttonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.EraseButton.png", 115f);
             return buttonSprite;
         }
 
@@ -30,6 +31,9 @@ namespace Nebula.Roles.ImpostorRoles
         {
             eraseCoolDownOption = CreateOption(Color.white, "eraseCoolDown", 25f, 10f, 60f, 5f);
             eraseCoolDownOption.suffix = "second";
+
+            eraseCoolDownAdditionOption = CreateOption(Color.white, "eraseCoolDownAddition", 15f, 5f, 30f, 5f);
+            eraseCoolDownAdditionOption.suffix = "second";
         }
 
         public override void MyPlayerControlUpdate()
