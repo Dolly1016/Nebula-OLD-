@@ -92,6 +92,8 @@ namespace Nebula.Roles.NeutralRoles
         }
         public override void MyPlayerControlUpdate()
         {
+            if (PlayerControl.LocalPlayer.Data.IsDead) return;
+
             /* 捕食対象の探索 */
 
             {
@@ -136,7 +138,7 @@ namespace Nebula.Roles.NeutralRoles
 
         }
 
-        public override void OnMeetingEnd()
+        private void ClearArrows()
         {
             //矢印を消す
             foreach (Arrow arrow in Arrows.Values)
@@ -144,6 +146,16 @@ namespace Nebula.Roles.NeutralRoles
                 UnityEngine.Object.Destroy(arrow.arrow);
             }
             Arrows.Clear();
+        }
+
+        public override void OnDied()
+        {
+            ClearArrows();
+        }
+
+        public override void OnMeetingEnd()
+        {
+            ClearArrows();
         }
 
         public override void Initialize(PlayerControl __instance)

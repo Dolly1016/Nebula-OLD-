@@ -108,9 +108,19 @@ namespace Nebula.Roles
         [RoleLocalMethod]
         public virtual void ButtonDeactivate() { }
 
-        //
+        /// <summary>
+        /// 初期化時に呼び出されます。
+        /// </summary>
+        /// <param name="__instance"></param>
         [RoleLocalMethod]
         public virtual void Initialize(PlayerControl __instance) { }
+
+        /// <summary>
+        /// ゲーム中にロールが変更される際に呼ばれます。
+        /// </summary>
+        /// <param name="__instance"></param>
+        [RoleLocalMethod]
+        public virtual void FinalizeInGame(PlayerControl __instance) { }
 
         /// <summary>
         /// 毎ティック呼び出されます
@@ -218,6 +228,13 @@ namespace Nebula.Roles
         public virtual void EditDisplayNameForcely(byte playerId, ref string displayName)
         {
         }
+
+        /// <summary>
+        /// プレイヤー速度に掛ける倍率を設定します。
+        /// </summary>
+        /// <param name="playerId"></param>
+        [RoleGlobalMethod]
+        public virtual void MoveSpeedUpdate(byte playerId,ref float speed) { }
 
         /*--------------------------------------------------------------------------------------*/
         /*--------------------------------------------------------------------------------------*/

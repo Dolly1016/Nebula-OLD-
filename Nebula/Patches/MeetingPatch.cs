@@ -61,6 +61,7 @@ namespace Nebula.Patches
             {
                 Events.GlobalEvent.OnMeeting();
                 Events.LocalEvent.OnMeeting();
+                Events.Schedule.OnPreMeeting();
 
                 Game.GameData.data.myData.getGlobalData().role.OnMeetingStart();
             }
@@ -80,6 +81,8 @@ namespace Nebula.Patches
         {
             static void Postfix(MeetingHud __instance, [HarmonyArgument(0)] MessageReader reader, [HarmonyArgument(1)] bool initialState)
             {
+                Events.Schedule.OnPostMeeting();
+
                 VoteHistory.Clear();
                 Voters.Clear();
 

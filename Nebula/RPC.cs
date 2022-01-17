@@ -124,6 +124,7 @@ namespace Nebula
             Game.GameData.Initialize();
             Events.GlobalEvent.Initialize();
             Events.LocalEvent.Initialize();
+            Events.Schedule.Initialize();
             Objects.CustomMessage.Initialize();
             Patches.MeetingHudPatch.Initialize();
         }
@@ -298,6 +299,12 @@ namespace Nebula
         public static void ChangeRole(byte playerId, byte roleId)
         {
             Game.PlayerData data = Game.GameData.data.players[playerId];
+
+            if (playerId == PlayerControl.LocalPlayer.PlayerId)
+            {
+                data.role.FinalizeInGame(PlayerControl.LocalPlayer);
+            }
+
             //ロールを変更
             SetUpRole(data, Helpers.playerById(playerId), Roles.Role.GetRoleById(roleId));
         }
@@ -306,6 +313,15 @@ namespace Nebula
         {
             Game.PlayerData data1 = Game.GameData.data.players[playerId_1];
             Game.PlayerData data2 = Game.GameData.data.players[playerId_2];
+
+            if (playerId_1 == PlayerControl.LocalPlayer.PlayerId)
+            {
+                data1.role.FinalizeInGame(PlayerControl.LocalPlayer);
+            }
+            if (playerId_2 == PlayerControl.LocalPlayer.PlayerId)
+            {
+                data2.role.FinalizeInGame(PlayerControl.LocalPlayer);
+            }
 
             Dictionary<int, int> roleData1 = data1.ExtractRoleData(), roleData2 = data2.ExtractRoleData();
             Roles.Role role1=data1.role, role2=data2.role;

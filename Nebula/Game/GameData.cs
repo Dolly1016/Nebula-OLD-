@@ -291,6 +291,8 @@ namespace Nebula.Game
 
         public int TotalTasks, CompleteTasks;
 
+        public Dictionary<string, Vent> VentMap;
+
         public GameData()
         {
             players = new Dictionary<byte, PlayerData>();
@@ -356,6 +358,15 @@ namespace Nebula.Game
             }
 
             players.Add(playerId, new PlayerData(playerId,name, outfit,role));
+        }
+
+        public void LoadMapData()
+        {
+            VentMap = new Dictionary<string, Vent>();
+            foreach (Vent vent in ShipStatus.Instance.AllVents)
+            {
+                VentMap.Add(vent.gameObject.name, vent);
+            }
         }
     }
     

@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using System.Collections.Generic;
 
 namespace Nebula.Patches
 {
@@ -47,12 +48,16 @@ namespace Nebula.Patches
     {
         public static void Prefix(IntroCutscene __instance)
         {
+            /*
+            Game.GameData.data.LoadMapData();
+
             Helpers.RoleAction(PlayerControl.LocalPlayer, (role) => {
                 role.GlobalInitialize(PlayerControl.LocalPlayer);
                 role.Initialize(PlayerControl.LocalPlayer);
                 role.ButtonInitialize(HudManagerStartPatch.Manager);
                 role.ButtonActivate();
             });
+            */
         }
     }
 

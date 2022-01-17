@@ -11,6 +11,19 @@ namespace Nebula.Patches
     [HarmonyPatch(typeof(ShipStatus))]
     public class ShipStatusPatch
     {
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.Begin))]
+        public static void Postfix(ShipStatus __instance)
+        {
+            Game.GameData.data.LoadMapData();
+
+            Helpers.RoleAction(PlayerControl.LocalPlayer, (role) => {
+                role.GlobalInitialize(PlayerControl.LocalPlayer);
+                role.Initialize(PlayerControl.LocalPlayer);
+                role.ButtonInitialize(HudManagerStartPatch.Manager);
+                role.ButtonActivate();
+            });
+        }
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.CalculateLightRadius))]

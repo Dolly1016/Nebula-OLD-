@@ -48,6 +48,8 @@ namespace Nebula.Patches
     {
         static bool Prefix(VentButton __instance)
         {
+            if (__instance.currentTarget != null) Objects.CustomMessage.Create(__instance.currentTarget.gameObject.name, 1f, 0f, 0f, Color.white);
+
             // Manually modifying the VentButton to use Vent.Use again in order to trigger the Vent.Use prefix patch
             if (__instance.currentTarget != null) __instance.currentTarget.Use();
             return false;
