@@ -42,6 +42,7 @@ namespace Nebula.Roles
         public static ComplexRoles.FGuesser F_Guesser = new ComplexRoles.FGuesser();
 
         public static ExtraRoles.Lover Lover = new ExtraRoles.Lover();
+        public static ExtraRoles.Trilemma Trilemma = new ExtraRoles.Trilemma();
 
 
         //全てのロールはこの中に含まれている必要があります
@@ -57,7 +58,7 @@ namespace Nebula.Roles
 
         public static List<ExtraRole> AllExtraRoles = new List<ExtraRole>()
         {
-            Lover
+            Lover,Trilemma
         };
 
         public static void RegisterAddonRoles(Role role)

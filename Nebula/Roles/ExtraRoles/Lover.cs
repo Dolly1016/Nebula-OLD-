@@ -5,18 +5,39 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using Nebula.Objects;
 
 namespace Nebula.Roles.ExtraRoles
 {
     public class Lover : ExtraRole
     {
         private Module.CustomOption maxPairsOption;
-        static private Color[] iconColor = new Color[] {
+        private Module.CustomOption canChangeTrilemmaOption;
+
+        private PlayerControl trilemmaTarget=null;
+
+        static public Color[] iconColor { get; } = new Color[] {
         (Color)new Color32(251, 3, 188, 255) ,
         (Color)new Color32(254, 132, 3, 255) ,
         (Color)new Color32(3, 254, 188, 255) ,
         (Color)new Color32(255, 255, 0, 255) ,
         (Color)new Color32(3, 183, 254, 255) };
+
+        private bool IsMyLover(PlayerControl player)
+        {
+            if (player == null) return false;
+
+            if (player.PlayerId == PlayerControl.LocalPlayer.PlayerId) return false;
+
+            ulong myLoverId = PlayerControl.LocalPlayer.GetModData().GetExtraRoleData(this);
+            Game.PlayerData data = player.GetModData();
+            
+            if (!data.extraRole.Contains(this)) return false;
+
+            if (data.GetExtraRoleData(this) == myLoverId) return true;
+
+            return false;
+        }
 
         private void ActionForLover(PlayerControl player,System.Action<PlayerControl> action)
         {
@@ -79,6 +100,7 @@ namespace Nebula.Roles.ExtraRoles
         public override void LoadOptionData()
         {
             maxPairsOption = CreateOption(Color.white, "maxPairs", 1f, 0f, 5f, 1f);
+            canChangeTrilemmaOption = CreateOption(Color.white, "canChangeTrilemma", true);
         }
 
         public override void EditDisplayName(byte playerId, ref string displayName, bool hideFlag)
@@ -120,6 +142,107 @@ namespace Nebula.Roles.ExtraRoles
                 winFlag |= partner.GetModData().role.CheckWin(condition);
             });
             return winFlag;
+        }
+
+        private CustomButton involveButton;
+
+        private Sprite buttonSprite = null;
+        public Sprite getButtonSprite()
+        {
+            if (buttonSprite) return buttonSprite;
+            buttonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.InvolveButton.png", 115f);
+            return buttonSprite;
+        }
+
+        public override void MyPlayerControlUpdate()
+        {
+            trilemmaTarget = Patches.PlayerControlPatch.SetMyTarget();
+            
+            if (IsMyLover(trilemmaTarget)) {
+                trilemmaTarget = null;
+                return;
+            }
+
+            Patches.PlayerControlPatch.SetPlayerOutline(trilemmaTarget, iconColor[0]);
+        }
+
+        public override void ButtonInitialize(HudManager __instance)
+        {
+            if (involveButton != null)
+            {
+                involveButton.Destroy();
+            }
+
+            if (!canChangeTrilemmaOption.getBool()) return;
+
+            involveButton = new CustomButton(
+                () =>
+                {
+                    PlayerControl target = trilemmaTarget;
+
+                    //巻き込まれるのがラバーズであった場合
+                    if (target.GetModData().extraRole.Contains(this))
+                    {
+                        ulong removeId = target.GetModData().GetExtraRoleData(id);
+
+                        foreach(Game.PlayerData data in Game.GameData.data.players.Values)
+                        {
+                            if (data.GetExtraRoleData(id) != removeId) continue;
+
+                            //鞍替えする側はなにもしない
+                            if (data.id == target.PlayerId) continue;
+
+                            //ロール消去
+                            RPCEventInvoker.UnsetExtraRole(Helpers.playerById(data.id),this);
+
+                            break;
+                        }
+                    }
+
+                    ulong myLoverId = PlayerControl.LocalPlayer.GetModData().GetExtraRoleData(this);
+
+                    RPCEventInvoker.ChangeExtraRole(target, this, Roles.Trilemma, myLoverId);
+                    RPCEventInvoker.ChangeExtraRole(PlayerControl.LocalPlayer, this, Roles.Trilemma, myLoverId);
+                    ActionForMyLover((player) =>
+                    {
+                        RPCEventInvoker.ChangeExtraRole(player, this, Roles.Trilemma, myLoverId);
+                    });
+
+                    trilemmaTarget = null;
+                },
+                () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
+                () => { return trilemmaTarget && PlayerControl.LocalPlayer.CanMove; },
+                () => { },
+                getButtonSprite(),
+                new Vector3(0f, -0.06f, 0),
+                __instance,
+                KeyCode.Z,
+                true
+            );
+            involveButton.MaxTimer = 0;
+
+            trilemmaTarget = null;
+        }
+
+        public override void ButtonActivate()
+        {
+            if(involveButton!=null)
+            involveButton.setActive(true);
+        }
+
+        public override void ButtonDeactivate()
+        {
+            if(involveButton!=null)
+            involveButton.setActive(false);
+        }
+
+        public override void ButtonCleanUp()
+        {
+            if (involveButton != null)
+            {
+                involveButton.Destroy();
+                involveButton = null;
+            }
         }
 
         public Lover() : base("Lover", "lover", iconColor[0],0)

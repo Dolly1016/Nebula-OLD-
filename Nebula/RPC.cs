@@ -21,6 +21,7 @@ namespace Nebula
         SetRole,
         SetExtraRole,
         UnsetExtraRole,
+        ChangeExtraRole,
         UncheckedMurderPlayer,
         UncheckedExilePlayer,
         UncheckedCmdReportDeadBody,
@@ -79,6 +80,9 @@ namespace Nebula
                     break;
                 case (byte)CustomRPC.UnsetExtraRole:
                     RPCEvents.UnsetExtraRole(Roles.ExtraRole.GetRoleById(reader.ReadByte()), reader.ReadByte());
+                    break;
+                case (byte)CustomRPC.ChangeExtraRole:
+                    RPCEvents.ChangeExtraRole(Roles.ExtraRole.GetRoleById(reader.ReadByte()), Roles.ExtraRole.GetRoleById(reader.ReadByte()), reader.ReadUInt64(), reader.ReadByte());
                     break;
                 case (byte)CustomRPC.UncheckedMurderPlayer:
                     RPCEvents.UncheckedMurderPlayer(reader.ReadByte(), reader.ReadByte(), reader.ReadByte());
@@ -160,17 +164,50 @@ namespace Nebula
             Game.GameData.data.RegisterPlayer(playerId, role);
         }
 
+        /// <summary>
+        /// 初期化時に使用。ゲーム中では使わないこと
+        /// </summary>
+        /// <param name="role"></param>
+        /// <param name="initializeValue"></param>
+        /// <param name="playerId"></param>
         public static void SetExtraRole(Roles.ExtraRole role, ulong initializeValue,byte playerId)
         {
             Game.GameData.data.players[playerId].extraRole.Add(role);
             Game.GameData.data.players[playerId].SetExtraRoleData(role.id,initializeValue);
+
             role.Setup(Game.GameData.data.players[playerId]);
+
+            PlayerControl player = Helpers.playerById(playerId);
+            
+            if (playerId == PlayerControl.LocalPlayer.PlayerId)
+            {
+                role.ButtonCleanUp();
+            }
         }
 
         public static void UnsetExtraRole(Roles.ExtraRole role, byte playerId)
         {
             role.OnUnset(playerId);
             Game.GameData.data.players[playerId].extraRole.Remove(role);
+        }
+
+        public static void ChangeExtraRole(Roles.ExtraRole removeRole, Roles.ExtraRole addRole, ulong initializeValue, byte playerId)
+        {
+            if (removeRole!=null && Helpers.GetModData(playerId).extraRole.Contains(removeRole))
+            {
+                UnsetExtraRole(removeRole, playerId);
+            }
+            SetExtraRole(addRole, initializeValue, playerId);
+
+
+            PlayerControl player = Helpers.playerById(playerId);
+            addRole.GlobalInitialize(player);
+            if (playerId == PlayerControl.LocalPlayer.PlayerId)
+            {
+                addRole.Initialize(player);
+                addRole.ButtonInitialize(Patches.HudManagerStartPatch.Manager);
+                addRole.ButtonActivate();
+            }
         }
 
         public static void UncheckedMurderPlayer(byte murdererId, byte targetId, byte showAnimation)
@@ -514,6 +551,17 @@ namespace Nebula
             writer.Write(player.PlayerId);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.UnsetExtraRole(role,player.PlayerId);
+        }
+
+        public static void ChangeExtraRole(PlayerControl player, Roles.ExtraRole removeRole, Roles.ExtraRole addRole, ulong initializeValue)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ChangeExtraRole, Hazel.SendOption.Reliable, -1);
+            writer.Write(removeRole.id);
+            writer.Write(addRole.id);
+            writer.Write(initializeValue);
+            writer.Write(player.PlayerId);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.ChangeExtraRole(removeRole, addRole, initializeValue, player.PlayerId);
         }
 
         public static void RevivePlayer(PlayerControl player)

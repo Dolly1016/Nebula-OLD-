@@ -103,10 +103,25 @@ namespace Nebula.Roles
             return null;
         });
 
+        public static Side Extra = new Side("Extra", "extra", false, new Color(150, 150, 150), (PlayerStatistics statistics, ShipStatus side) =>
+        {
+            if (statistics.TotalAlive == 3)
+            {
+                foreach(Game.PlayerData player in Game.GameData.data.players.Values)
+                {
+                    if (!player.IsAlive) continue;
+                    if (!player.extraRole.Contains(Roles.Trilemma)) return null;
+                }
+                return EndCondition.TrilemmaWin;
+            }
+            return null;
+        });
+
         public static List<Side> AllSides = new List<Side>()
         {
             Crewmate, Impostor,
-            Jackal, Jester, Vulture, Arsonist
+            Jackal, Jester, Vulture, Arsonist, 
+            Extra
         };
 
         //ロールの設定関わりなく全てのプレイヤーを同陣営として表示するフラグ
