@@ -58,6 +58,7 @@ namespace Nebula.Patches
                 exiled.IsDead = false;
             }
 
+            Objects.CustomButton.MeetingEndedUpdate();
             Game.GameData.data.myData.getGlobalData().role.OnMeetingEnd();
 
             //死体はすべて消去される

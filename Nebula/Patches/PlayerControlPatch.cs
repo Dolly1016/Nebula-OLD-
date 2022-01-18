@@ -297,5 +297,4 @@ namespace Nebula.Patches
             hideNextAnimation = false;
         }
     }
-
 }

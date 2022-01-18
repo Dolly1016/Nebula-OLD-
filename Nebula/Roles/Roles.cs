@@ -26,6 +26,7 @@ namespace Nebula.Roles
 
         public static ImpostorRoles.Impostor Impostor = new ImpostorRoles.Impostor();
         public static ImpostorRoles.Camouflager Camouflager = new ImpostorRoles.Camouflager();
+        public static ImpostorRoles.Cleaner Cleaner = new ImpostorRoles.Cleaner();
         public static ImpostorRoles.Damned Damned = new ImpostorRoles.Damned();
         public static ImpostorRoles.Eraser Eraser = new ImpostorRoles.Eraser();
         public static ImpostorRoles.EvilAce EvilAce = new ImpostorRoles.EvilAce();
@@ -45,7 +46,7 @@ namespace Nebula.Roles
         //全てのロールはこの中に含まれている必要があります
         public static List<Role> AllRoles = new List<Role>()
         {
-            Impostor,Camouflager,Damned,Eraser,EvilAce,EvilGuesser,Reaper,
+            Impostor,Camouflager,Cleaner,Damned,Eraser,EvilAce,EvilGuesser,Reaper,
             F_Guesser,
             Jackal,Jester,Vulture,
             F_Crewmate,

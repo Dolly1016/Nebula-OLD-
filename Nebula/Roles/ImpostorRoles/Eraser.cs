@@ -19,6 +19,8 @@ namespace Nebula.Roles.ImpostorRoles
         private Module.CustomOption eraseCoolDownOption;
         private Module.CustomOption eraseCoolDownAdditionOption;
 
+        private int eraseCountId;
+
         private Sprite buttonSprite = null;
         public Sprite getButtonSprite()
         {
@@ -56,12 +58,13 @@ namespace Nebula.Roles.ImpostorRoles
                     RPCEventInvoker.ChangeRole(Game.GameData.data.myData.currentTarget,Roles.Crewmate);
                     Game.GameData.data.myData.currentTarget = null;
 
-                    eraserButton.Timer = eraserButton.MaxTimer;
+                    RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, eraseCountId, 1);
+                    eraserButton.Timer = eraserButton.MaxTimer + eraseCoolDownAdditionOption.getFloat()*PlayerControl.LocalPlayer.GetModData().GetRoleData(eraseCountId);
                 },
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
                 () => { return PlayerControl.LocalPlayer.CanMove && Game.GameData.data.myData.currentTarget!=null; },
                 () => {
-                    eraserButton.Timer = eraserButton.MaxTimer;
+                    eraserButton.Timer = eraserButton.MaxTimer + eraseCoolDownAdditionOption.getFloat() * PlayerControl.LocalPlayer.GetModData().GetRoleData(eraseCountId); 
                 },
                 getButtonSprite(),
                 new Vector3(-1.8f, -0.06f, 0),
@@ -81,11 +84,6 @@ namespace Nebula.Roles.ImpostorRoles
             eraserButton.setActive(false);
         }
 
-        public override void OnMeetingEnd()
-        {
-            eraserButton.Timer = eraserButton.MaxTimer;
-        }
-
         public override void ButtonCleanUp()
         {
             if (eraserButton != null)
@@ -95,6 +93,11 @@ namespace Nebula.Roles.ImpostorRoles
             }
         }
 
+        public override void GlobalInitialize(PlayerControl __instance)
+        {
+            Game.GameData.data.myData.getGlobalData().SetRoleData(eraseCountId, 0);
+        }
+
         //インポスターはModで操作するFakeTaskは所持していない
         public Eraser()
                 : base("Eraser", "eraser", Palette.ImpostorRed, RoleCategory.Impostor, Side.Impostor, Side.Impostor,
@@ -102,6 +105,8 @@ namespace Nebula.Roles.ImpostorRoles
                      false, true, true, false, true)
         {
             eraserButton = null;
+
+            eraseCountId = Game.GameData.RegisterRoleDataId("eraser.eraseCount");
         }
     }
 }

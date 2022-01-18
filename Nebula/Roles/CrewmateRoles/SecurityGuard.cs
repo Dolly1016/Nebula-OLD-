@@ -148,12 +148,6 @@ namespace Nebula.Roles.CrewmateRoles
             sealButton.setActive(false);
         }
 
-        public override void OnMeetingEnd()
-        {
-            sealButton.Timer = sealButton.MaxTimer;
-        }
-
-
         public override void ButtonCleanUp()
         {
             if (sealButton != null)

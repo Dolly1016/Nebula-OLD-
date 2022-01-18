@@ -64,10 +64,6 @@ namespace Nebula.Roles.CrewmateRoles
             killButton.setActive(false);
         }
 
-        public override void OnMeetingEnd() {
-            killButton.Timer = killButton.MaxTimer;
-        }
-
         public override void ButtonCleanUp()
         {
             if (killButton != null)

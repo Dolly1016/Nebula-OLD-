@@ -80,11 +80,6 @@ namespace Nebula.Roles.ImpostorRoles
             camouflageButton.setActive(false);
         }
 
-        public override void OnMeetingEnd()
-        {
-            camouflageButton.Timer = camouflageButton.MaxTimer;
-        }
-
         public override void ButtonCleanUp()
         {
             if (camouflageButton != null)

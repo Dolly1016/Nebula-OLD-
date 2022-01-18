@@ -23,7 +23,7 @@ namespace Nebula.Roles.CrewmateRoles
         public Sprite getReviveButtonSprite()
         {
             if (buttonSprite) return buttonSprite;
-            buttonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.reviveButton.png", 115f);
+            buttonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.ReviveButton.png", 115f);
             return buttonSprite;
         }
 
@@ -150,9 +150,6 @@ namespace Nebula.Roles.CrewmateRoles
 
         public override void OnMeetingEnd()
         {
-            base.OnMeetingEnd();
-
-            reviveButton.Timer = reviveButton.MaxTimer;
             CleanArrow();
         }
 
