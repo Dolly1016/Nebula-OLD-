@@ -64,6 +64,11 @@ namespace Nebula.Patches
                 Events.Schedule.OnPreMeeting();
 
                 Game.GameData.data.myData.getGlobalData().role.OnMeetingStart();
+
+                foreach(Game.PlayerData player in Game.GameData.data.players.Values)
+                {
+                    player.Speed.OnMeeting();
+                }
             }
         }
 

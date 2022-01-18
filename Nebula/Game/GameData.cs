@@ -72,6 +72,80 @@ namespace Nebula.Game
         }
     }
 
+    public class SpeedFactor
+    {
+        public bool IsPermanent { get; private set; }
+        public float Duration;
+        public float SpeedRate { get; private set; }
+        public bool CanCrossOverMeeting { get; private set; }
+
+        public SpeedFactor(bool IsPermanent,float duration, float speed,bool canCrossOverMeeting)
+        {
+            IsPermanent = IsPermanent;
+            Duration = duration;
+            SpeedRate = speed;
+            CanCrossOverMeeting = canCrossOverMeeting;
+        }
+
+        public SpeedFactor(float speed)
+            :this(true,1f,speed,true)
+        {}
+
+        public SpeedFactor(float duration,float speed, bool canCrossOverMeeting)
+         : this(false, duration, speed, canCrossOverMeeting)
+        { }
+    }
+
+    public class SpeedFactorManager
+    {
+        HashSet<SpeedFactor> Factors;
+        byte PlayerId;
+
+        public SpeedFactorManager(byte playerId)
+        {
+            Factors = new HashSet<SpeedFactor>();
+            PlayerId = playerId;
+        }
+
+        public void Register(SpeedFactor speed)
+        {
+            Factors.Add(speed);
+            Reflect();
+        }
+
+        public void Update()
+        {
+            int num = Factors.Count;
+            Factors.RemoveWhere((speed) =>
+            {
+                speed.Duration -= Time.deltaTime;
+                return !(speed.Duration > 0);
+            });
+            if (Factors.Count != num)
+            {
+                Reflect();
+            }
+        }
+
+        public void OnMeeting()
+        {
+            Factors.RemoveWhere((speed) =>
+            {
+                return !speed.CanCrossOverMeeting;
+            });
+            Reflect();
+        }
+
+        public void Reflect()
+        {
+            PlayerControl player=Helpers.playerById(PlayerId);
+            player.MyPhysics.Speed = Game.GameData.data.OriginalSpeed;
+            foreach(SpeedFactor speed in Factors)
+            {
+                player.MyPhysics.Speed *= speed.SpeedRate;
+            }
+        }
+    }
     public class PlayerData
     {
         public class PlayerOutfitData
@@ -119,6 +193,8 @@ namespace Nebula.Game
         public string currentName { get; set; }
         public byte dragPlayerId { get; set; }
 
+        public SpeedFactorManager Speed { get; }
+
         public PlayerData(byte playerId, string name,PlayerOutfit outfit,Role role)
         {
             
@@ -133,6 +209,7 @@ namespace Nebula.Game
             this.CurrentOutfit = new PlayerOutfitData(outfit);
             this.currentName = name;
             this.dragPlayerId = Byte.MaxValue;
+            this.Speed = new SpeedFactorManager(playerId) ;
         }
 
         public int GetRoleData(int id)
@@ -327,6 +404,8 @@ namespace Nebula.Game
         public Dictionary<string,VentData> VentMap;
         public List<SystemTypes> Rooms;
 
+        public float OriginalSpeed;
+
         public GameData()
         {
             players = new Dictionary<byte, PlayerData>();
@@ -334,6 +413,8 @@ namespace Nebula.Game
             myData = new MyPlayerData();
             TotalTasks = 0;
             CompleteTasks = 0;
+
+            OriginalSpeed=PlayerControl.LocalPlayer.MyPhysics.Speed;
         }
 
         //データを消去します。
@@ -341,6 +422,11 @@ namespace Nebula.Game
         {
             players.Clear();
             deadPlayers.Clear();
+
+            foreach(PlayerControl player in PlayerControl.AllPlayerControls)
+            {
+                player.MyPhysics.Speed = OriginalSpeed;
+            }
         }
 
         public static void Close()

@@ -223,6 +223,9 @@ namespace Nebula.Patches
                      role.MyPlayerControlUpdate();
                  });
             }
+
+            //全てのプレイヤーに対して実行
+            __instance.GetModData().Speed.Update();
         }
     }
 

@@ -56,8 +56,7 @@ namespace Nebula.Patches
                 role.Initialize(PlayerControl.LocalPlayer);
                 role.ButtonInitialize(HudManagerStartPatch.Manager);
                 role.ButtonActivate();
-            });
-            
+            });            
         }
     }
 

@@ -32,11 +32,12 @@ namespace Nebula
         ChangeRole,
         SwapRole,
         RevivePlayer,
+        EmitSpeedFactor,
+        CleanDeadBody,
 
         // Role functionality
 
         SealVent = 91,
-        CleanDeadBody
 
     }
 
@@ -111,6 +112,9 @@ namespace Nebula
                     break;
                 case (byte)CustomRPC.RevivePlayer:
                     RPCEvents.RevivePlayer(reader.ReadByte());
+                    break;
+                case (byte)CustomRPC.EmitSpeedFactor:
+                    RPCEvents.EmitSpeedFactor(reader.ReadByte(), new Game.SpeedFactor(reader.ReadBoolean(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadBoolean()));
                     break;
 
 
@@ -357,6 +361,11 @@ namespace Nebula
             }
         }
 
+        public static void EmitSpeedFactor(byte playerId,Game.SpeedFactor speedFactor)
+        {
+            Game.GameData.data.players[playerId].Speed.Register(speedFactor);
+        }
+
         //送信元と受信先で挙動が異なる（以下は受信側）
         public static void ShareOptions(int numberOfOptions, MessageReader reader)
         {
@@ -513,6 +522,18 @@ namespace Nebula
             writer.Write(player.PlayerId);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.RevivePlayer(player.PlayerId);
+        }
+
+        public static void EmitSpeedFactor(PlayerControl player,Game.SpeedFactor speedFactor)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.EmitSpeedFactor, Hazel.SendOption.Reliable, -1);
+            writer.Write(player.PlayerId);
+            writer.Write(speedFactor.IsPermanent);
+            writer.Write(speedFactor.Duration);
+            writer.Write(speedFactor.SpeedRate);
+            writer.Write(speedFactor.CanCrossOverMeeting);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.EmitSpeedFactor(player.PlayerId, speedFactor);
         }
     }
 }

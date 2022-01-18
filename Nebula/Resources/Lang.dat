@@ -65,6 +65,12 @@
 "role.bait.name" : "Bait"
 "role.bait.description" : "Bait Your Enemies"
 
+"role.booster.name" : "Booster"
+"role.booster.description" : "Run Through"
+"role.booster.boostCoolDown" : "Boost Cool Down"
+"role.booster.boostDuration" : "Boost Duration"
+"role.booster.boostSpeed" : "Boost Strength"
+
 "role.necromancer.name" : "Necromancer"
 "role.necromancer.description" : "Revive Phantoms"
 "role.necromancer.phantomMessage" : "Please take me to %ROOM%..."
@@ -132,7 +138,7 @@
 
 "role.sheriff.name" : "Sheriff"
 "role.sheriff.description" : "Shoot the <color=#ff1919ff>Impostors</color>"
-"role.sheriff.killCoolDownOption" : "Kill Cool Down"
+"role.sheriff.killCoolDown" : "Kill Cool Down"
 
 "role.securityGuard.name" : "Security Guard"
 "role.securityGuard.description" : "Seal Vent to Inhibit Barbarism"
@@ -151,6 +157,10 @@
 "role.camouflager.description" : "Camouflage and Kill the Crewmates"
 "role.camouflager.camouflageCoolDown" : "Camouflage Cool Down"
 "role.camouflager.camouflageDuration" : "Camouflage Duration"
+
+"role.cleaner.name" : "Cleaner"
+"role.cleaner.description" : "Kill Everyone and Leave No Traces"
+"role.cleaner.cleanCoolDown" : "Clean Cool Down"
 
 "role.damned.name" : "Damned"
 "role.damned.description" : "Kill the Crewmates"
