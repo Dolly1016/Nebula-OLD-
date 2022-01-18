@@ -176,18 +176,17 @@ namespace Nebula
             Game.GameData.data.players[playerId].SetExtraRoleData(role.id,initializeValue);
 
             role.Setup(Game.GameData.data.players[playerId]);
-
-            PlayerControl player = Helpers.playerById(playerId);
-            
-            if (playerId == PlayerControl.LocalPlayer.PlayerId)
-            {
-                role.ButtonCleanUp();
-            }
         }
 
         public static void UnsetExtraRole(Roles.ExtraRole role, byte playerId)
         {
             role.OnUnset(playerId);
+
+            if (playerId == PlayerControl.LocalPlayer.PlayerId)
+            {
+                role.ButtonDeactivate();
+            }
+
             Game.GameData.data.players[playerId].extraRole.Remove(role);
         }
 

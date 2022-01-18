@@ -202,11 +202,12 @@ namespace Nebula.Roles.ExtraRoles
                     ulong myLoverId = PlayerControl.LocalPlayer.GetModData().GetExtraRoleData(this);
 
                     RPCEventInvoker.ChangeExtraRole(target, this, Roles.Trilemma, myLoverId);
-                    RPCEventInvoker.ChangeExtraRole(PlayerControl.LocalPlayer, this, Roles.Trilemma, myLoverId);
                     ActionForMyLover((player) =>
                     {
                         RPCEventInvoker.ChangeExtraRole(player, this, Roles.Trilemma, myLoverId);
                     });
+                    RPCEventInvoker.ChangeExtraRole(PlayerControl.LocalPlayer, this, Roles.Trilemma, myLoverId);
+                    
 
                     trilemmaTarget = null;
                 },
