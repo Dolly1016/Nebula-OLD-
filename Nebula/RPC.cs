@@ -310,10 +310,7 @@ namespace Nebula
 
             if (isMe)
             {
-                Helpers.RoleAction(player, (role) =>
-                {
-                    role.ButtonCleanUp();
-                });
+                data.role.ButtonCleanUp();
             }
             data.CleanRoleDataInGame(roleData);
 
@@ -344,6 +341,8 @@ namespace Nebula
         {
             Events.Schedule.RegisterPostMeetingAction(() =>
             {
+                NebulaPlugin.Instance.Logger.Print("Start Changing Role");
+
                 Game.PlayerData data = Game.GameData.data.players[playerId];
 
                 if (playerId == PlayerControl.LocalPlayer.PlayerId)
@@ -353,6 +352,8 @@ namespace Nebula
 
                 //ロールを変更
                 SetUpRole(data, Helpers.playerById(playerId), Roles.Role.GetRoleById(roleId));
+
+                NebulaPlugin.Instance.Logger.Print("Role Change Finished!");
             });
         }
 

@@ -7,12 +7,15 @@ namespace Nebula.Patches
     {
         public static void Prefix(ExileController __instance, [HarmonyArgument(0)] ref GameData.PlayerInfo exiled, [HarmonyArgument(1)] bool tie)
         {
-            byte[] voters = MeetingHudPatch.GetVoters(exiled.PlayerId);
-            exiled.GetModData().role.OnExiledPre(voters, exiled.PlayerId);
-
-            if (exiled.PlayerId == PlayerControl.LocalPlayer.PlayerId)
+            if (exiled != null)
             {
-                Helpers.RoleAction(exiled.PlayerId, (role) => { role.OnExiledPre(voters); });
+                byte[] voters = MeetingHudPatch.GetVoters(exiled.PlayerId);
+                exiled.GetModData().role.OnExiledPre(voters, exiled.PlayerId);
+
+                if (exiled.PlayerId == PlayerControl.LocalPlayer.PlayerId)
+                {
+                    Helpers.RoleAction(exiled.PlayerId, (role) => { role.OnExiledPre(voters); });
+                }
             }
         }
     }
@@ -38,24 +41,27 @@ namespace Nebula.Patches
             }
         }
 
-        static void WrapUpPostfix(GameData.PlayerInfo exiled)
+        static void WrapUpPostfix(GameData.PlayerInfo? exiled)
         {
-            byte[] voters=MeetingHudPatch.GetVoters(exiled.PlayerId);
-            if (exiled.GetModData().role.OnExiledPost(voters,exiled.PlayerId))
+            if (exiled != null)
             {
-                exiled.GetModData().role.OnDied(exiled.PlayerId);
-
-                if (exiled.PlayerId == PlayerControl.LocalPlayer.PlayerId)
+                byte[] voters = MeetingHudPatch.GetVoters(exiled.PlayerId);
+                if (exiled.GetModData().role.OnExiledPost(voters, exiled.PlayerId))
                 {
-                    exiled.GetModData().role.OnExiledPost(voters);
-                    exiled.GetModData().role.OnDied();
-                }
+                    exiled.GetModData().role.OnDied(exiled.PlayerId);
 
-                Game.GameData.data.players[exiled.PlayerId].Die(Game.DeadPlayerData.DeathReason.Exiled);
-            }
-            else
-            {
-                exiled.IsDead = false;
+                    if (exiled.PlayerId == PlayerControl.LocalPlayer.PlayerId)
+                    {
+                        exiled.GetModData().role.OnExiledPost(voters);
+                        exiled.GetModData().role.OnDied();
+                    }
+
+                    Game.GameData.data.players[exiled.PlayerId].Die(Game.DeadPlayerData.DeathReason.Exiled);
+                }
+                else
+                {
+                    exiled.IsDead = false;
+                }
             }
 
             Objects.CustomButton.MeetingEndedUpdate();

@@ -49,49 +49,15 @@ namespace Nebula.Patches
         {
             static void Postfix(MeetingHud __instance, [HarmonyArgument(0)] byte[] states, [HarmonyArgument(1)] GameData.PlayerInfo exiled, [HarmonyArgument(2)] bool tie)
             {
-                if (meetingInfoText != null)
-                    meetingInfoText.gameObject.SetActive(false);
-            }
-        }
-        
-        [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Awake))]
-        class MeetingCalculateVotesPatch
-        {
-            static void Postfix(MeetingHud __instance)
-            {
-                Events.GlobalEvent.OnMeeting();
-                Events.LocalEvent.OnMeeting();
-                Events.Schedule.OnPreMeeting();
+                if (meetingInfoText != null)meetingInfoText.gameObject.SetActive(false);
 
-                Game.GameData.data.myData.getGlobalData().role.OnMeetingStart();
-
-                foreach(Game.PlayerData player in Game.GameData.data.players.Values)
-                {
-                    player.Speed.OnMeeting();
-                }
-            }
-        }
-
-        [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.ServerStart))]
-        class MeetingServerStartPatch
-        {
-            static void Postfix(MeetingHud __instance)
-            {
-                PlayerControl.LocalPlayer.GetModData().role.SetupMeetingButton(__instance);
-            }
-        }
-
-        [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Deserialize))]
-        class MeetingDeserializePatch
-        {
-            static void Postfix(MeetingHud __instance, [HarmonyArgument(0)] MessageReader reader, [HarmonyArgument(1)] bool initialState)
-            {
+                NebulaPlugin.Instance.Logger.Print("Start MeetingDeserializePatch's Prefix");
                 Events.Schedule.OnPostMeeting();
 
                 VoteHistory.Clear();
                 Voters.Clear();
 
-                foreach(PlayerVoteArea player in __instance.playerStates)
+                foreach (PlayerVoteArea player in __instance.playerStates)
                 {
                     if (!VoteHistory.ContainsKey(player.VotedFor))
                     {
@@ -111,6 +77,37 @@ namespace Nebula.Patches
                         Voters[player.VotedFor].Add(player.TargetPlayerId);
                     }
                 }
+            }
+        }
+
+
+        [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CoStartMeeting))]
+        class StartMeetingPatch
+        {
+            public static void Prefix(PlayerControl __instance, [HarmonyArgument(0)] GameData.PlayerInfo meetingTarget)
+            {
+                Events.GlobalEvent.OnMeeting();
+                Events.LocalEvent.OnMeeting();
+                Events.Schedule.OnPreMeeting();
+
+                Game.GameData.data.myData.getGlobalData().role.OnMeetingStart();
+
+                foreach (Game.PlayerData player in Game.GameData.data.players.Values)
+                {
+                    player.Speed.OnMeeting();
+                }
+            }
+        }
+
+
+        [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.ServerStart))]
+        class MeetingServerStartPatch
+        {
+            static void Postfix(MeetingHud __instance)
+            {
+                PlayerControl.LocalPlayer.GetModData().role.SetupMeetingButton(__instance);
+
+                
             }
         }
 

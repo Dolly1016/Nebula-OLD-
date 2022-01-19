@@ -34,8 +34,7 @@ namespace Nebula.Roles.CrewmateRoles
         public override void OnUpdateRoleData(int dataId, int newData)
         {
             if (dataId == guardLeftId && newData >= 0) {
-                Helpers.
-                    PlayQuickFlash(Palette.ImpostorRed);
+                Helpers.PlayQuickFlash(Palette.ImpostorRed);
                 Objects.CustomMessage.Create(new Vector3(0, 0, 0), false, Language.Language.GetString("role.damned.message.killed"), 0.2f, 4f, 1f, 1.5f, Color.yellow, Color.red);
                 //変身トリガ
                 changeTrigger = true;
@@ -46,6 +45,7 @@ namespace Nebula.Roles.CrewmateRoles
         {
             if (!changeTrigger) return;
             RPCEventInvoker.ChangeRole(PlayerControl.LocalPlayer,Roles.Damned);
+            NebulaPlugin.Instance.Logger.Print("EventRegistered");
         }
 
         public DamnedCrew():base()

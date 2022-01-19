@@ -35,9 +35,13 @@ namespace Nebula
 
         public static bool DebugMode=false;
 
+        public Logger.Logger Logger;
+
         override public void Load()
         {
             if (File.Exists("patches/DebugMode.patch"))DebugMode = true;
+
+            Logger = new Logger.Logger(DebugMode);
 
             Instance = this;
 
