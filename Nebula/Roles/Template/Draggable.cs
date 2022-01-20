@@ -123,7 +123,7 @@ namespace Nebula.Roles.Template
             }
         }
 
-        public override void ButtonCleanUp()
+        public override void CleanUp()
         {
             if (dragButton != null)
             {

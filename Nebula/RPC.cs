@@ -31,6 +31,7 @@ namespace Nebula
         GlobalEvent,
         DragAndDropPlayer,
         ChangeRole,
+        ImmediatelyChangeRole,
         SwapRole,
         RevivePlayer,
         EmitSpeedFactor,
@@ -112,6 +113,9 @@ namespace Nebula
                     break;
                 case (byte)CustomRPC.ChangeRole:
                     RPCEvents.ChangeRole(reader.ReadByte(), reader.ReadByte());
+                    break;
+                case (byte)CustomRPC.ImmediatelyChangeRole:
+                    RPCEvents.ImmediatelyChangeRole(reader.ReadByte(), reader.ReadByte());
                     break;
                 case (byte)CustomRPC.SwapRole:
                     RPCEvents.SwapRole(reader.ReadByte(), reader.ReadByte());
@@ -319,7 +323,7 @@ namespace Nebula
 
             if (isMe)
             {
-                data.role.ButtonCleanUp();
+                data.role.CleanUp();
             }
             data.CleanRoleDataInGame(roleData);
 
@@ -350,16 +354,21 @@ namespace Nebula
         {
             Events.Schedule.RegisterPostMeetingAction(() =>
             {
-                Game.PlayerData data = Game.GameData.data.players[playerId];
-
-                if (playerId == PlayerControl.LocalPlayer.PlayerId)
-                {
-                    data.role.FinalizeInGame(PlayerControl.LocalPlayer);
-                }
-
-                //ロールを変更
-                SetUpRole(data, Helpers.playerById(playerId), Roles.Role.GetRoleById(roleId));
+                ImmediatelyChangeRole(playerId,roleId);
             });
+        }
+
+        public static void ImmediatelyChangeRole(byte playerId, byte roleId)
+        {
+            Game.PlayerData data = Game.GameData.data.players[playerId];
+
+            if (playerId == PlayerControl.LocalPlayer.PlayerId)
+            {
+                data.role.FinalizeInGame(PlayerControl.LocalPlayer);
+            }
+
+            //ロールを変更
+            SetUpRole(data, Helpers.playerById(playerId), Roles.Role.GetRoleById(roleId));
         }
 
         public static void SwapRole(byte playerId_1, byte playerId_2)
@@ -537,6 +546,15 @@ namespace Nebula
             writer.Write(role.id);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.ChangeRole(player.PlayerId,role.id);
+        }
+
+        public static void ImmediatelyChangeRole(PlayerControl player, Roles.Role role)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ImmediatelyChangeRole, Hazel.SendOption.Reliable, -1);
+            writer.Write(player.PlayerId);
+            writer.Write(role.id);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.ImmediatelyChangeRole(player.PlayerId, role.id);
         }
 
         public static void SwapRole(PlayerControl player1, PlayerControl player2)

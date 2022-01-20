@@ -61,7 +61,7 @@ namespace Nebula.Roles.CrewmateRoles
             repairButton.setActive(false);
         }
 
-        public override void ButtonCleanUp()
+        public override void CleanUp()
         {
             if (repairButton != null)
             {
@@ -75,7 +75,7 @@ namespace Nebula.Roles.CrewmateRoles
         }
 
         public Engineer()
-            : base("Engineer", "Engineer", Color, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
+            : base("Engineer", "engineer", Color, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                  Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Crewmate.crewmateEndSet,
                  false, true, true, false, false)
         {

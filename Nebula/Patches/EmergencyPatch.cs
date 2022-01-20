@@ -94,7 +94,7 @@ namespace Nebula.Patches
                     score += EmergencyPatch.occurredSabotage ? 1 : 0;
                     require++;
                 }
-                if (!Game.GameData.data.GameRule.moreStrongEmergencyLock)
+                if (!Game.GameData.data.GameRule.severeEmergencyLock)
                 {
                     if (require > 0) require = 1;
                 }

@@ -12,7 +12,7 @@ namespace Nebula.Roles.NeutralRoles
 {
     public class Jackal : Role
     {
-        static public Color Color = new Color(0, 162, 211);
+        static public Color Color = new Color(0f, 162f/255f, 211f/255f);
 
         static private CustomButton killButton;
 
@@ -58,7 +58,7 @@ namespace Nebula.Roles.NeutralRoles
             killButton.setActive(false);
         }
 
-        public override void ButtonCleanUp()
+        public override void CleanUp()
         {
             if (killButton != null)
             {

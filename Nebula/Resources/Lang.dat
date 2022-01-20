@@ -37,7 +37,14 @@
 "option.minimumImpostorRoles" : "Minimum Impostor Roles"
 "option.maximumImpostorRoles" : "Maximum Impostor Roles"
 
+"option.emergencyOptions" : "Emergency Option"
 "option.maxNumberOfMeetings" : "Max Number Of Meetings"
+"option.deathPenaltyForDiscussionTime" : "Death Penalty For Voting Time"
+"option.canUseEmergencyWithoutDeath" : "Can Use Emergency Without Anyone's Death"
+"option.canUseEmergencyWithoutSabotage" : "Can Use Emergency Without Any Sabotage"
+"option.canUseEmergencyWithoutReport" : "Can Use Emergency Without Report"
+"option.severeEmergencyLock" : "Severe Emergency Lock"
+
 "option.blockSkippingInEmergencyMeetings" : "Block Skipping In Emergency Meetings"
 "option.noVoteIsSelfVote" : "No Vote Is Self Vote"
 "option.parallelMedbayScans" : "Parallel Medbay Scans"
@@ -71,9 +78,14 @@
 "role.booster.boostDuration" : "Boost Duration"
 "role.booster.boostSpeed" : "Boost Strength"
 
+"role.engineer.name" : "Engineer"
+"role.engineer.description" : "Maintain Important Systems on The Ship"
+
 "role.mayor.name" : "Mayor"
 "role.mayor.description" : "Find and Vote out the <color=#ff1919ff>Impostors</color>"
 "role.mayor.voteStockLeft" : "Vote Stock Left"
+"role.mayor.maxVote" : "Max Vote"
+"role.mayor.maxVoteStock" : "Max Vote Stock"
 
 "role.necromancer.name" : "Necromancer"
 "role.necromancer.description" : "Revive Phantoms"
@@ -125,6 +137,8 @@
 "role.necromancer.room.Gaproom" : "Gaproom"
 "role.necromancer.room.MainHall" : "MainHall"
 "role.necromancer.room.Medical" : "Medical"
+"role.necromancer.reviveCoolDown" : "Revive Cool Down"
+"role.necromancer.reviveDuration" : "Revive Duration"
 
 "role.niceGuesser.name" : "Nice Guesser"
 "role.niceGuesser.description" : "Guess and shoot"
@@ -173,6 +187,7 @@
 "role.eraser.name" : "Eraser"
 "role.eraser.description" : "Kill the Crewmates and Erase Their Roles"
 "role.eraser.eraseCoolDown" : "Erase Cool Down"
+"role.eraser.eraseCoolDownAddition" : "Erase Cool Down Addition"
 
 "role.evilAce.name" : "Evil Ace"
 "role.evilAce.description" : "Kill the Crewmates"
@@ -183,6 +198,9 @@
 
 "role.reaper.name" : "Reaper"
 "role.reaper.description" : "Kill and Deceive the Crewmates"
+
+"role.arsonist.name" : "Arsonist"
+"role.arsonist.description" : "Let Them Burn"
 
 "role.jackal.name" : "Jackal"
 "role.jackal.description" : "Kill all Crewmates and <color=#ff1919ff>Impostors</color> to Win"
@@ -198,14 +216,18 @@
 "role.lover.name" : "Lover"
 "role.lover.description" : "You're in <color=#fc04bdff>Love</color> with %NAME%"
 "role.lover.maxPairs" : "Max Couples"
+"role.lover.canChangeTrilemma" : "Can Change Trilemma"
+"role.lover.additionalEndText" : " <color=#ffffffff>with</color> <color=#fb02beff>Lovers</color>"
 
 "side.crewmate.name" : "Crewmate"
 "side.impostor.name" : "Impostor"
 "side.jackal.name" : "Jackal"
 "side.jester.name" : "Jester"
+"side.arsonist.name" : "Arsonist"
 
 "game.endText.crewmate" : "Team Crewmate Wins"
 "game.endText.impostor" : "Team Impostor Wins"
+"game.endText.arsonist" : "Arsonist Wins"
 "game.endText.jackal" : "Team Jackal Wins"
 "game.endText.jester" : "Jester Wins"
 "game.endText.vulture" : "Vulture Wins"

@@ -34,11 +34,11 @@ namespace Nebula.Patches
             Manager = __instance;
             foreach (Roles.Role role in Roles.Roles.AllRoles)
             {
-                role.ButtonCleanUp();
+                role.CleanUp();
             }
             foreach (Roles.ExtraRole role in Roles.Roles.AllExtraRoles)
             {
-                role.ButtonCleanUp();
+                role.CleanUp();
             }
         }
     }
@@ -46,8 +46,10 @@ namespace Nebula.Patches
     [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.OnDestroy))]
     class IntroCutsceneOnDestroyPatch
     {
+        public static PoolablePlayer PlayerPrefab=null;
         public static void Postfix(IntroCutscene __instance)
         {
+            PlayerPrefab = __instance.PlayerPrefab;
             
             Game.GameData.data.LoadMapData();
 

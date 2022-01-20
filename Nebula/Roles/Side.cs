@@ -98,8 +98,12 @@ namespace Nebula.Roles
             return null;
         });
 
-        public static Side Arsonist = new Side("Arsonist", "arsonist", false, new Color(241, 97, 0), (PlayerStatistics statistics, ShipStatus side) =>
+        public static Side Arsonist = new Side("Arsonist", "arsonist", false, NeutralRoles.Arsonist.Color, (PlayerStatistics statistics, ShipStatus side) =>
         {
+            if (Roles.Arsonist.WinTrigger)
+            {
+                return EndCondition.ArsonistWin;
+            }
             return null;
         });
 

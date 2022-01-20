@@ -64,7 +64,7 @@ namespace Nebula.Roles.CrewmateRoles
             killButton.setActive(false);
         }
 
-        public override void ButtonCleanUp()
+        public override void CleanUp()
         {
             if (killButton != null)
             {

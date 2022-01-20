@@ -141,6 +141,10 @@ namespace Nebula.Roles.ExtraRoles
             {
                 winFlag |= partner.GetModData().role.CheckWin(condition);
             });
+            if (winFlag)
+            {
+                EndGameManagerSetUpPatch.AddEndText(Language.Language.GetString("role.lover.additionalEndText"));
+            }
             return winFlag;
         }
 
@@ -215,7 +219,7 @@ namespace Nebula.Roles.ExtraRoles
                 () => { return trilemmaTarget && PlayerControl.LocalPlayer.CanMove; },
                 () => { },
                 getButtonSprite(),
-                new Vector3(0f, -0.06f, 0),
+                new Vector3(0f, 1f, 0f),
                 __instance,
                 KeyCode.Z,
                 true
@@ -237,7 +241,7 @@ namespace Nebula.Roles.ExtraRoles
             involveButton.setActive(false);
         }
 
-        public override void ButtonCleanUp()
+        public override void CleanUp()
         {
             if (involveButton != null)
             {

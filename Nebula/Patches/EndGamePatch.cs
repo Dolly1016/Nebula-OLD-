@@ -18,11 +18,11 @@ namespace Nebula.Patches
         public static EndCondition ImpostorWinBySabotage = new EndCondition(GameOverReason.ImpostorBySabotage, Palette.ImpostorRed, "impostor");
         public static EndCondition ImpostorWinByVote = new EndCondition(GameOverReason.ImpostorByVote, Palette.ImpostorRed, "impostor");
         public static EndCondition ImpostorWinDisconnect = new EndCondition(GameOverReason.ImpostorDisconnect, Palette.ImpostorRed, "impostor");
-        public static EndCondition JesterWin = new EndCondition(16, Roles.NeutralRoles.Jester.Color, "jester");
-        public static EndCondition JackalWin = new EndCondition(17, Roles.NeutralRoles.Jackal.Color, "jackal");
-        public static EndCondition ArsonistWin = new EndCondition(18, Palette.ImpostorRed, "arsonist");
-        public static EndCondition VultureWin = new EndCondition(19, Roles.NeutralRoles.Vulture.Color, "vulture");
-        public static EndCondition TrilemmaWin = new EndCondition(20, new Color(209f / 255f, 63f / 255f, 138f / 255f), "trilemma");
+        public static EndCondition JesterWin = new EndCondition(16, Roles.NeutralRoles.Jester.Color, "jester", () => { });
+        public static EndCondition JackalWin = new EndCondition(17, Roles.NeutralRoles.Jackal.Color, "jackal", () => { });
+        public static EndCondition ArsonistWin = new EndCondition(18, Roles.NeutralRoles.Arsonist.Color, "arsonist", () => { PlayerControl.AllPlayerControls.ForEach((Action<PlayerControl>)((p) => { if (!p.Data.IsDead && p.GetModData().role.side != Roles.Side.Arsonist) p.MurderPlayer(p); })); });
+        public static EndCondition VultureWin = new EndCondition(19, Roles.NeutralRoles.Vulture.Color, "vulture", () => { });
+        public static EndCondition TrilemmaWin = new EndCondition(20, new Color(209f / 255f, 63f / 255f, 138f / 255f), "trilemma",()=> { });
 
         public static HashSet<EndCondition> AllEnds = new HashSet<EndCondition>() {
             CrewmateWinByVote ,CrewmateWinByTask,CrewmateWinDisconnect,
@@ -46,15 +46,18 @@ namespace Nebula.Patches
         public GameOverReason Id { get; }
         public Color Color { get; }
         public String Identifier { get; }
+        public Action EndAction { get; }
         public EndCondition(GameOverReason Id,Color Color,String Identifier)
         {
             this.Id = Id;
             this.Color = Color;
             this.Identifier = Identifier;
+            this.EndAction = ()=> { };
         }
 
-        public EndCondition(int Id, Color Color, String EndText) : this((GameOverReason)Id,Color,EndText)
+        public EndCondition(int Id, Color Color, String EndText, System.Action EndAction) : this((GameOverReason)Id,Color,EndText)
         {
+            this.EndAction=EndAction;
         }
 
     }
@@ -109,6 +112,7 @@ namespace Nebula.Patches
 
         public static void Postfix(AmongUsClient __instance, [HarmonyArgument(0)] ref EndGameResult endGameResult)
         {
+            EndCondition.EndAction.Invoke();
             //勝利者を消去する
             TempData.winners.Clear();
 
@@ -141,6 +145,10 @@ namespace Nebula.Patches
     [HarmonyPatch(typeof(EndGameManager), nameof(EndGameManager.SetEverythingUp))]
     public class EndGameManagerSetUpPatch
     {
+        static HashSet<string> AdditionalTextSet = new HashSet<string>();
+
+        public static void AddEndText(string text) { AdditionalTextSet.Add(text); }
+
         public static void Postfix(EndGameManager __instance)
         {
             // Delete and readd PoolablePlayers always showing the name and role of the player
@@ -157,6 +165,7 @@ namespace Nebula.Patches
                 }
                 return -1;
             }).ToList<WinningPlayerData>();
+
             for (int i = 0; i < list.Count; i++)
             {
                 WinningPlayerData winningPlayerData2 = list[i];
@@ -193,7 +202,12 @@ namespace Nebula.Patches
             bonusText.transform.localScale = new Vector3(0.7f, 0.7f, 1f);
             TMPro.TMP_Text textRenderer = bonusText.GetComponent<TMPro.TMP_Text>();
             textRenderer.text = Language.Language.GetString("game.endText."+OnGameEndPatch.EndCondition.Identifier);
+            foreach(string text in AdditionalTextSet)
+            {
+                textRenderer.text += text;
+            }
             textRenderer.color = OnGameEndPatch.EndCondition.Color;
+            AdditionalTextSet.Clear();
 
             __instance.BackgroundBar.material.SetColor("_Color", OnGameEndPatch.EndCondition.Color);
 

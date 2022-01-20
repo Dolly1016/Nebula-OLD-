@@ -15,7 +15,7 @@ namespace Nebula
         public bool canUseEmergencyWithoutDeath { get; }
         public bool canUseEmergencyWithoutSabotage { get; }
         public bool canUseEmergencyWithoutReport { get; }
-        public bool moreStrongEmergencyLock { get; }
+        public bool severeEmergencyLock { get; }
         public float deathPenaltyForDiscussionTime { get; }
         public int maxMeetingsCount { get; }
         public int vanillaVotingTime { get; }
@@ -30,7 +30,7 @@ namespace Nebula
                 canUseEmergencyWithoutDeath = CustomOptionHolder.canUseEmergencyWithoutDeath.getBool();
                 canUseEmergencyWithoutSabotage = CustomOptionHolder.canUseEmergencyWithoutSabotage.getBool();
                 canUseEmergencyWithoutReport = CustomOptionHolder.canUseEmergencyWithoutReport.getBool();
-                moreStrongEmergencyLock = CustomOptionHolder.moreStrongEmergencyLock.getBool();
+                severeEmergencyLock = CustomOptionHolder.severeEmergencyLock.getBool();
                 maxMeetingsCount = (int)CustomOptionHolder.maxNumberOfMeetings.getFloat();
             }
             else
@@ -39,7 +39,7 @@ namespace Nebula
                 canUseEmergencyWithoutDeath = false;
                 canUseEmergencyWithoutSabotage = false;
                 canUseEmergencyWithoutReport = false;
-                moreStrongEmergencyLock = false;
+                severeEmergencyLock = false;
                 maxMeetingsCount = 15;
             }
 
@@ -99,7 +99,7 @@ namespace Nebula
         public static CustomOption canUseEmergencyWithoutDeath;
         public static CustomOption canUseEmergencyWithoutSabotage;
         public static CustomOption canUseEmergencyWithoutReport;
-        public static CustomOption moreStrongEmergencyLock;
+        public static CustomOption severeEmergencyLock;
 
 
         public static CustomOption hideSettings;
@@ -134,7 +134,7 @@ namespace Nebula
             canUseEmergencyWithoutDeath = CustomOption.Create(1103, Color.white, "option.canUseEmergencyWithoutDeath", false, emergencyOptions);
             canUseEmergencyWithoutSabotage = CustomOption.Create(1104, Color.white, "option.canUseEmergencyWithoutSabotage", false, emergencyOptions);
             canUseEmergencyWithoutReport = CustomOption.Create(1105, Color.white, "option.canUseEmergencyWithoutReport", false, emergencyOptions);
-            moreStrongEmergencyLock = CustomOption.Create(1109, Color.white, "option.moreStrongEmergencyLock", false, emergencyOptions);
+            severeEmergencyLock = CustomOption.Create(1109, Color.white, "option.severeEmergencyLock", false, emergencyOptions);
 
 
             uselessOptions = CustomOption.Create(1120, Color.white, "option.uselessOptions", false, null, isHeader: true);

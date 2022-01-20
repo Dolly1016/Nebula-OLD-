@@ -105,7 +105,7 @@ namespace Nebula.Roles.ImpostorRoles
 
         }
 
-        public override void ButtonCleanUp()
+        public override void CleanUp()
         {
             if (cleanButton != null)
             {

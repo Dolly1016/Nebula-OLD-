@@ -36,6 +36,7 @@ namespace Nebula.Roles
         public static ComplexRoles.Guesser EvilGuesser = new ComplexRoles.Guesser("EvilGuesser", "evilGuesser", true);
         public static ImpostorRoles.Reaper Reaper = new ImpostorRoles.Reaper();
 
+        public static NeutralRoles.Arsonist Arsonist = new NeutralRoles.Arsonist();
         public static NeutralRoles.Jackal Jackal = new NeutralRoles.Jackal();
         public static NeutralRoles.Jester Jester = new NeutralRoles.Jester();
         public static NeutralRoles.Vulture Vulture = new NeutralRoles.Vulture();
@@ -52,7 +53,7 @@ namespace Nebula.Roles
         {
             Impostor,Camouflager,Cleaner,Damned,Eraser,EvilAce,EvilGuesser,Reaper,
             F_Guesser,
-            Jackal,Jester,Vulture,
+            Arsonist,Jackal,Jester,Vulture,
             F_Crewmate,
             Crewmate,Bait,Booster,DamnedCrew,Engineer,Mayor,Necromancer,NiceGuesser,Provocateur,Psychic,SecurityGuard,Sheriff,Spy,
             Madmate,

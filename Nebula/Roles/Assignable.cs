@@ -132,7 +132,7 @@ namespace Nebula.Roles
         ///ゲーム終了時に呼び出されます。 
         /// </summary>
         [RoleLocalMethod]
-        public virtual void ButtonCleanUp() { }
+        public virtual void CleanUp() { }
 
         /// <summary>
         /// //明かりの大きさを調整します。毎ティック呼び出されます。

@@ -24,7 +24,7 @@ namespace Nebula.Patches
             return false;
         }
 
-        static public PlayerControl SetMyTarget(bool onlyWhiteNames = false, bool targetPlayersInVents = false, List<PlayerControl> untargetablePlayers = null, PlayerControl targetingPlayer = null)
+        static public PlayerControl SetMyTarget(bool onlyWhiteNames = false, bool targetPlayersInVents = false, List<byte> untargetablePlayers = null, PlayerControl targetingPlayer = null)
         {
             PlayerControl result = null;
             float num = GameOptionsData.KillDistances[Mathf.Clamp(PlayerControl.GameOptions.KillDistance, 0, 2)];
@@ -46,7 +46,7 @@ namespace Nebula.Patches
                 if (!playerInfo.Disconnected && !playerInfo.IsDead && (!onlyWhiteNames || !(playerInfo.Role.IsImpostor||Game.GameData.data.players[playerInfo.PlayerId].role.deceiveImpostorInNameDisplay)))
                 {
                     PlayerControl @object = playerInfo.Object;
-                    if (untargetablePlayers != null && untargetablePlayers.Any(x => x == @object))
+                    if (untargetablePlayers != null && untargetablePlayers.Any(x => x == @object.PlayerId))
                     {
                         // if that player is not targetable: skip check
                         continue;

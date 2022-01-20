@@ -70,7 +70,7 @@ namespace Nebula.Roles.CrewmateRoles
             boostButton.setActive(false);
         }
 
-        public override void ButtonCleanUp()
+        public override void CleanUp()
         {
             if (boostButton != null)
             {

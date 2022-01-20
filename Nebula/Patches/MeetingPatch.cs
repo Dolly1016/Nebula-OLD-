@@ -178,10 +178,10 @@ namespace Nebula.Patches
         }
 
 
-        [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.ServerStart))]
+        [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.CoStartCutscene))]
         class MeetingServerStartPatch
         {
-            static void Postfix(MeetingHud __instance, [HarmonyArgument(0)] byte reporter) { 
+            static void Postfix(MeetingHud __instance) { 
                 //票の重み設定をリセット
                 VoteWeight.Clear();
 

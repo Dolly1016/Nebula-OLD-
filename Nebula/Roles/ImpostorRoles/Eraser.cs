@@ -84,7 +84,7 @@ namespace Nebula.Roles.ImpostorRoles
             eraserButton.setActive(false);
         }
 
-        public override void ButtonCleanUp()
+        public override void CleanUp()
         {
             if (eraserButton != null)
             {

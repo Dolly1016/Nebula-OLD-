@@ -153,9 +153,9 @@ namespace Nebula.Roles.CrewmateRoles
             CleanArrow();
         }
 
-        public override void ButtonCleanUp()
+        public override void CleanUp()
         {
-            base.ButtonCleanUp();
+            base.CleanUp();
 
             if (reviveButton != null)
             {

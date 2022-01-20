@@ -10,10 +10,10 @@ using Nebula.Objects;
 
 namespace Nebula.Roles.NeutralRoles
 {
-    public class Vulture : Role
+    public class Vulture : Role, Template.HasWinTrigger
     {
         /* 陣営色 */
-        static public Color Color = new Color(139f/255f, 69f / 255f, 18f / 255f);
+        static public Color Color = new Color(139f / 255f, 69f / 255f, 18f / 255f);
 
         /* オプション */
         private Module.CustomOption eatOption;
@@ -22,7 +22,7 @@ namespace Nebula.Roles.NeutralRoles
             eatOption = CreateOption(Color.white, "eatenCountNeeded", 3f, 1f, 5f, 1f);
         }
 
-        public bool WinTrigger = false;
+        public bool WinTrigger { get; set; } = false;
 
         /* ボタン */
         static private CustomButton eatButton;
@@ -169,7 +169,7 @@ namespace Nebula.Roles.NeutralRoles
             Game.GameData.data.myData.getGlobalData().SetRoleData(eatLeftId, (int)eatOption.getFloat());
         }
 
-        public override void ButtonCleanUp()
+        public override void CleanUp()
         {
             if (eatButton != null)
             {
