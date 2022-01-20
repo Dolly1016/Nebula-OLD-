@@ -406,6 +406,8 @@ namespace Nebula.Game
 
         public float OriginalSpeed;
 
+        public GameRule GameRule;
+
         public GameData()
         {
             players = new Dictionary<byte, PlayerData>();
@@ -415,6 +417,8 @@ namespace Nebula.Game
             CompleteTasks = 0;
 
             OriginalSpeed=PlayerControl.LocalPlayer.MyPhysics.Speed;
+
+            GameRule = new GameRule();
         }
 
         //データを消去します。

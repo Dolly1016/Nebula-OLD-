@@ -164,6 +164,11 @@ namespace Nebula.Roles
         [RoleLocalMethod]
         public virtual void OnMeetingStart() { }
 
+        /// <summary>
+        /// 投票した際に呼び出されます。
+        /// </summary>
+        [RoleLocalMethod]
+        public virtual void OnVote(byte targetId) { }
 
         [RoleLocalMethod]
         public virtual void MeetingUpdate(MeetingHud __instance, TMPro.TextMeshPro meetingInfo) { }

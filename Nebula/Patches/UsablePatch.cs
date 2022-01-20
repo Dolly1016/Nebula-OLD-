@@ -20,4 +20,14 @@ namespace Nebula.Patches
             return false;
         }
     }
+
+    [HarmonyPatch(typeof(PlayerTask), nameof(PlayerTask.Initialize))]
+    class SabotageTaskRemovePatch
+    {
+        static void Postfix(PlayerTask __instance)
+        {
+            if(__instance is SabotageTask)
+            EmergencyPatch.SabotageUpdate();
+        }
+    }
 }

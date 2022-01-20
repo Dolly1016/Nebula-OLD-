@@ -71,6 +71,10 @@
 "role.booster.boostDuration" : "Boost Duration"
 "role.booster.boostSpeed" : "Boost Strength"
 
+"role.mayor.name" : "Mayor"
+"role.mayor.description" : "Find and Vote out the <color=#ff1919ff>Impostors</color>"
+"role.mayor.voteStockLeft" : "Vote Stock Left"
+
 "role.necromancer.name" : "Necromancer"
 "role.necromancer.description" : "Revive Phantoms"
 "role.necromancer.phantomMessage" : "Please take me to %ROOM%..."
@@ -164,7 +168,7 @@
 
 "role.damned.name" : "Damned"
 "role.damned.description" : "Kill the Crewmates"
-"role.damned.message.killed" : "You'll become a impostor at the next meeting..."
+"role.damned.message.killed" : "You'll be an impostor at the end of the next meeting..."
 
 "role.eraser.name" : "Eraser"
 "role.eraser.description" : "Kill the Crewmates and Erase Their Roles"

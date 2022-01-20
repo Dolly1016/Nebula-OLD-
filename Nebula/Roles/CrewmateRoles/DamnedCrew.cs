@@ -45,7 +45,6 @@ namespace Nebula.Roles.CrewmateRoles
         {
             if (!changeTrigger) return;
             RPCEventInvoker.ChangeRole(PlayerControl.LocalPlayer,Roles.Damned);
-            NebulaPlugin.Instance.Logger.Print("EventRegistered");
         }
 
         public DamnedCrew():base()

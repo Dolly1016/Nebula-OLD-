@@ -35,10 +35,12 @@ namespace Nebula
         RevivePlayer,
         EmitSpeedFactor,
         CleanDeadBody,
+        FixLights,
 
         // Role functionality
 
         SealVent = 91,
+        MultipleVote,
 
     }
 
@@ -120,10 +122,16 @@ namespace Nebula
                 case (byte)CustomRPC.EmitSpeedFactor:
                     RPCEvents.EmitSpeedFactor(reader.ReadByte(), new Game.SpeedFactor(reader.ReadBoolean(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadBoolean()));
                     break;
+                case (byte)CustomRPC.FixLights:
+                    RPCEvents.FixLights();
+                    break;
 
 
                 case (byte)CustomRPC.SealVent:
                     RPCEvents.SealVent(reader.ReadByte(), reader.ReadInt32());
+                    break;
+                case (byte)CustomRPC.MultipleVote:
+                    RPCEvents.MultipleVote(reader.ReadByte(), reader.ReadByte());
                     break;
             }
         }
@@ -139,6 +147,7 @@ namespace Nebula
             Events.Schedule.Initialize();
             Objects.CustomMessage.Initialize();
             Patches.MeetingHudPatch.Initialize();
+            Patches.EmergencyPatch.Initialize();
         }
 
         public static void VersionHandshake(byte[] version, Guid guid, int clientId)
@@ -341,8 +350,6 @@ namespace Nebula
         {
             Events.Schedule.RegisterPostMeetingAction(() =>
             {
-                NebulaPlugin.Instance.Logger.Print("Start Changing Role");
-
                 Game.PlayerData data = Game.GameData.data.players[playerId];
 
                 if (playerId == PlayerControl.LocalPlayer.PlayerId)
@@ -352,8 +359,6 @@ namespace Nebula
 
                 //ロールを変更
                 SetUpRole(data, Helpers.playerById(playerId), Roles.Role.GetRoleById(roleId));
-
-                NebulaPlugin.Instance.Logger.Print("Role Change Finished!");
             });
         }
 
@@ -418,22 +423,8 @@ namespace Nebula
             }
             catch (Exception e)
             {
-                UnityEngine.Debug.Log("Error while deserializing options: " + e.Message);
+              
             }
-        }
-
-        public static void SealVent(byte playerId,int ventId)
-        {
-            Events.Schedule.RegisterPostMeetingAction(() =>
-            {
-                Vent vent = ShipStatus.Instance.AllVents.FirstOrDefault((x) => x != null && x.Id == ventId);
-                if (vent == null) return;
-
-                Roles.Roles.SecurityGuard.SetSealedVentSprite(vent,1f);
-                vent.GetVentData().Sealed = true;
-            });
-
-            Game.GameData.data.players[playerId].AddRoleData(Roles.Roles.SecurityGuard.remainingScrewsDataId, -1);
         }
 
         public static void CleanDeadBody(byte deadBodyId)
@@ -447,6 +438,31 @@ namespace Nebula
                     break;
                 }
             }
+        }
+
+        public static void FixLights()
+        {
+            SwitchSystem switchSystem = ShipStatus.Instance.Systems[SystemTypes.Electrical].Cast<SwitchSystem>();
+            switchSystem.ActualSwitches = switchSystem.ExpectedSwitches;
+        }
+
+        public static void SealVent(byte playerId, int ventId)
+        {
+            Events.Schedule.RegisterPostMeetingAction(() =>
+            {
+                Vent vent = ShipStatus.Instance.AllVents.FirstOrDefault((x) => x != null && x.Id == ventId);
+                if (vent == null) return;
+
+                Roles.Roles.SecurityGuard.SetSealedVentSprite(vent, 1f);
+                vent.GetVentData().Sealed = true;
+            });
+
+            Game.GameData.data.players[playerId].AddRoleData(Roles.Roles.SecurityGuard.remainingScrewsDataId, -1);
+        }
+
+        public static void MultipleVote(byte playerId, byte count)
+        {
+            Patches.MeetingHudPatch.SetVoteWeight(playerId, count);
         }
     }
 
@@ -582,6 +598,15 @@ namespace Nebula
             writer.Write(speedFactor.CanCrossOverMeeting);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.EmitSpeedFactor(player.PlayerId, speedFactor);
+        }
+
+        public static void MultipleVote(PlayerControl player,byte count)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.MultipleVote, Hazel.SendOption.Reliable, -1);
+            writer.Write(player.PlayerId);
+            writer.Write(count);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.MultipleVote(player.PlayerId,count);
         }
     }
 }

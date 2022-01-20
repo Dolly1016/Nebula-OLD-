@@ -67,6 +67,8 @@ namespace Nebula.Roles
         public bool deceiveImpostorInNameDisplay { get; set; }
         public bool IsGuessableRole { get; protected set; }
 
+        public bool CanCallEmergencyMeeting { get; protected set; }
+
         //使用済みロールID
         static private byte maxId = 0;
 
@@ -118,6 +120,8 @@ namespace Nebula.Roles
             this.ventColor = Palette.ImpostorRed;
 
             this.winReasons = winReasons;
+
+            this.CanCallEmergencyMeeting = true;
         }
 
         public static Role GetRoleById(byte id)

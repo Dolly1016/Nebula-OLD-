@@ -246,6 +246,8 @@ namespace Nebula.Patches
 
         public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
         {
+            EmergencyPatch.KillUpdate();
+
             // キル用の設定を元に戻す
             if (resetToCrewmate) __instance.Data.Role.TeamType = RoleTeamTypes.Crewmate;
             if (resetToDead) __instance.Data.IsDead = true;

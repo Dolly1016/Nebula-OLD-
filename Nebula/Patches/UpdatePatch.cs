@@ -191,6 +191,12 @@ namespace Nebula.Patches
             if (AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Started) return;
             if (!Helpers.HasModData(PlayerControl.LocalPlayer.PlayerId)) return;
 
+            /* サボタージュを確認 */
+            if (Helpers.SabotageIsActive())
+            {
+                EmergencyPatch.SabotageUpdate();
+            }
+
             /* ボタン類の更新 */
             CustomButton.HudUpdate();
             if(!PlayerControl.LocalPlayer.Data.Role.IsImpostor && PlayerControl.LocalPlayer.GetModData().role.canUseVents)

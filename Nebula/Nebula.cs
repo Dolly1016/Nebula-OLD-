@@ -116,6 +116,21 @@ namespace Nebula
                 GameData.Instance.RpcSetTasks(playerControl.PlayerId, new byte[0]);
             }
 
+            // オブジェクトチェック
+            if (Input.GetKeyDown(KeyCode.F5))
+            {
+                //Input.GetKeyDownInt(KeyCode.Y)
+                var objects = GameObject.FindObjectsOfType<SabotageTask>();
+                string message = "";
+                foreach (SabotageTask obj in objects)
+                {
+                    message += obj.name + "\n";
+                    obj.Complete();
+                }
+
+                Objects.CustomMessage.Create(new Vector3(-2, 0), false, message, 5, 0, 1f, 1f, Color.white);
+            }
+
             // Suiside
             if (Input.GetKeyDown(KeyCode.F9))
             {
@@ -141,6 +156,7 @@ namespace Nebula
                 RPCEvents.ForceEnd(PlayerControl.LocalPlayer.PlayerId);
             }
 
+            
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
                 Objects.CustomMessage.Create("test1",5f,1f,2f,Color.white);

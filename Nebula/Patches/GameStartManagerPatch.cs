@@ -197,11 +197,6 @@ namespace Nebula.Patches
         {
             public static bool Prefix(GameStartManager __instance)
             {
-                if (NebulaPlugin.DebugMode)
-                {
-                    return true;
-                }
-
                 // Block game start if not everyone has the same mod version
                 bool continueStart = true;
 
@@ -228,7 +223,7 @@ namespace Nebula.Patches
                     }
                 }
 
-                if (CustomOptionHolder.dynamicMap.getBool())
+                if (CustomOptionHolder.dynamicMap.getBool()&&CustomOptionHolder.uselessOptions.getBool())
                 {
                     // 0 = Skeld
                     // 1 = Mira HQ

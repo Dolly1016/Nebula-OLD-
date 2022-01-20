@@ -28,7 +28,6 @@ namespace Nebula.Roles.CrewmateRoles
     
         public override void OnMurdered(byte murderId)
         {
-            UnityEngine.Debug.Log("Bait murdered.");
             //少しの時差の後レポート
             Events.LocalEvent.Activate(new BaitEvent(murderId));
         }
