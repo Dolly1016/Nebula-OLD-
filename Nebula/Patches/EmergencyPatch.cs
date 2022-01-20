@@ -16,6 +16,16 @@ namespace Nebula.Patches
         static bool occurredSabotage = false, occurredKill = false, occurredReport = false;
         static int meetingsCount = 0, maxMeetingsCount = 15;
 
+        static public int GetVotingTime(int defaultTime)
+        {
+            int time = defaultTime-(int)(Game.GameData.data.deadPlayers.Count * Game.GameData.data.GameRule.deathPenaltyForDiscussionTime);
+            if (time > 10)
+            {
+                return time;
+            }
+            return 10;
+        }
+
         static public void Initialize()
         {
             occurredSabotage = false;
@@ -24,7 +34,8 @@ namespace Nebula.Patches
             meetingsCount = 0;
             maxMeetingsCount = Game.GameData.data.GameRule.maxMeetingsCount;
 
-            NebulaPlugin.Instance.Logger.Print("1");
+            //短縮させた会議時間を元に戻す
+            PlayerControl.GameOptions.VotingTime = Game.GameData.data.GameRule.vanillaVotingTime;
         }
 
 

@@ -18,9 +18,12 @@ namespace Nebula
         public bool moreStrongEmergencyLock { get; }
         public float deathPenaltyForDiscussionTime { get; }
         public int maxMeetingsCount { get; }
+        public int vanillaVotingTime { get; }
 
         public GameRule()
         {
+            vanillaVotingTime = PlayerControl.GameOptions.VotingTime;
+
             if (CustomOptionHolder.emergencyOptions.getBool())
             {
                 deathPenaltyForDiscussionTime = CustomOptionHolder.deathPenaltyForDiscussionTime.getFloat();
@@ -126,7 +129,7 @@ namespace Nebula
 
             emergencyOptions = CustomOption.Create(1100, Color.white, "option.emergencyOptions", false, null, true);
             maxNumberOfMeetings = CustomOption.Create(1101, Color.white, "option.maxNumberOfMeetings", 10, 0, 15, 1, emergencyOptions);
-            deathPenaltyForDiscussionTime = CustomOption.Create(1102, Color.white, "option.deathPenaltyForDiscussionTime", 5f, 0f, 20f, 2.5f, emergencyOptions);
+            deathPenaltyForDiscussionTime = CustomOption.Create(1102, Color.white, "option.deathPenaltyForDiscussionTime", 5f, 0f, 30f, 5f, emergencyOptions);
             deathPenaltyForDiscussionTime.suffix = "second";
             canUseEmergencyWithoutDeath = CustomOption.Create(1103, Color.white, "option.canUseEmergencyWithoutDeath", false, emergencyOptions);
             canUseEmergencyWithoutSabotage = CustomOption.Create(1104, Color.white, "option.canUseEmergencyWithoutSabotage", false, emergencyOptions);

@@ -199,6 +199,8 @@ namespace Nebula.Patches
                 {
                     player.Speed.OnMeeting();
                 }
+
+                PlayerControl.GameOptions.VotingTime = EmergencyPatch.GetVotingTime(Game.GameData.data.GameRule.vanillaVotingTime);
             }
         }
 
