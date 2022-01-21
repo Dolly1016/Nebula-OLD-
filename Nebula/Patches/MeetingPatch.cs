@@ -178,7 +178,7 @@ namespace Nebula.Patches
         }
 
 
-        [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.CoStartCutscene))]
+        [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Start))]
         class MeetingServerStartPatch
         {
             static void Postfix(MeetingHud __instance) { 
