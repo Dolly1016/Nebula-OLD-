@@ -210,6 +210,13 @@ namespace Nebula.Roles
         public virtual void OnMurdered(byte murderId) { }
 
         /// <summary>
+        /// 誰かをキルしたときに呼び出されます。
+        /// </summary>
+        /// <param name="targetId"></param>
+        [RoleLocalMethod]
+        public virtual void OnKillPlayer(byte targetId) { }
+
+        /// <summary>
         /// 理由に関わらず、死んだときに呼び出されます。
         /// OnExiledやOnMurderedの後に呼ばれます。
         /// </summary>

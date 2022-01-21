@@ -127,7 +127,7 @@ namespace Nebula
             allowParallelMedBayScans = CustomOption.Create(6, Color.white, "option.parallelMedbayScans", false, specialOptions);
             hideSettings = CustomOption.Create(7, Color.white, "option.hideSettings", false, specialOptions);
 
-            emergencyOptions = CustomOption.Create(1100, Color.white, "option.emergencyOptions", false, null, true);
+            emergencyOptions = CustomOption.Create(1100, Color.white, "option.emergencyOptions", false, null, false);
             maxNumberOfMeetings = CustomOption.Create(1101, Color.white, "option.maxNumberOfMeetings", 10, 0, 15, 1, emergencyOptions);
             deathPenaltyForDiscussionTime = CustomOption.Create(1102, Color.white, "option.deathPenaltyForDiscussionTime", 5f, 0f, 30f, 5f, emergencyOptions);
             deathPenaltyForDiscussionTime.suffix = "second";

@@ -296,12 +296,6 @@ namespace Nebula
             MurderAttemptResult murder = checkMuderAttempt(killer, target, isMeetingStart);
             if (murder == MurderAttemptResult.PerformKill)
             {
-                //LocalMethod (自身が死んだとき)
-                if (target.PlayerId == PlayerControl.LocalPlayer.PlayerId)
-                {
-                    RoleAction(target,(role)=> { role.OnMurdered(killer.PlayerId); });
-                }
-
                 RPCEventInvoker.UncheckedMurderPlayer(killer.PlayerId,target.PlayerId, showAnimation);
             }
             return murder;
@@ -420,7 +414,7 @@ namespace Nebula
 
         static public Game.VentData GetVentData(this Vent vent)
         {
-            return Game.GameData.data.GetVentData(vent.name);
+            return Game.GameData.data.GetVentData(vent.gameObject.name);
         }
         
         static public bool SabotageIsActive()

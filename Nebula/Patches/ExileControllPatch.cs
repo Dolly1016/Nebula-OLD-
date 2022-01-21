@@ -46,14 +46,15 @@ namespace Nebula.Patches
             if (exiled != null)
             {
                 byte[] voters = MeetingHudPatch.GetVoters(exiled.PlayerId);
+
                 if (exiled.GetModData().role.OnExiledPost(voters, exiled.PlayerId))
                 {
-                    exiled.GetModData().role.OnDied(exiled.PlayerId);
+                    Helpers.RoleAction(exiled.PlayerId, (role) => { role.OnDied(exiled.PlayerId); });
 
                     if (exiled.PlayerId == PlayerControl.LocalPlayer.PlayerId)
                     {
-                        exiled.GetModData().role.OnExiledPost(voters);
-                        exiled.GetModData().role.OnDied();
+                        Helpers.RoleAction(exiled.PlayerId, (role) => { role.OnExiledPost(voters); });
+                        Helpers.RoleAction(exiled.PlayerId, (role) => { role.OnDied(); });
                     }
 
                     Game.GameData.data.players[exiled.PlayerId].Die(Game.DeadPlayerData.DeathReason.Exiled);

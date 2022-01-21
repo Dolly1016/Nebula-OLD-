@@ -230,6 +230,34 @@ namespace Nebula
             {
                 if (showAnimation == 0) Patches.KillAnimationCoPerformKillPatch.hideNextAnimation = true;
                 source.MurderPlayer(target);
+
+                if (Game.GameData.data.players[target.PlayerId].role.hasFakeTask)
+                {
+                    target.clearAllTasks();
+                }
+
+                //LocalMethod（自身が殺したとき）
+                if (source.PlayerId == PlayerControl.LocalPlayer.PlayerId)
+                {
+                    Helpers.RoleAction(source, (role) => { role.OnKillPlayer(target.PlayerId); });
+                }
+                //LocalMethod (自身が死んだとき)
+                if (target.PlayerId == PlayerControl.LocalPlayer.PlayerId)
+                {
+                    Helpers.RoleAction(target, (role) => { role.OnMurdered(source.PlayerId); });
+                }
+
+
+                //GlobalMethod
+                Helpers.RoleAction(target, (role) => { role.OnDied(target.PlayerId); });
+
+                //LocalMethod (自身が死んだとき)
+                if (target.PlayerId == PlayerControl.LocalPlayer.PlayerId)
+                {
+                    Helpers.RoleAction(target, (role) => { role.OnDied(); });
+                }
+
+                Game.GameData.data.players[target.PlayerId].Die(source.PlayerId);
             }
         }
 

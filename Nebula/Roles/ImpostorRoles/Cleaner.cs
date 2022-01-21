@@ -40,7 +40,9 @@ namespace Nebula.Roles.ImpostorRoles
                     AmongUsClient.Instance.FinishRpcImmediately(eatWriter);
                     RPCEvents.CleanDeadBody(targetId);
 
+                    //キル・クリーンボタンのクールダウンは同期する
                     cleanButton.Timer = cleanButton.MaxTimer;
+                    PlayerControl.LocalPlayer.killTimer = PlayerControl.GameOptions.KillCooldown;
                 },
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
                 () => { return deadBodyId != Byte.MaxValue && PlayerControl.LocalPlayer.CanMove; },
@@ -51,6 +53,12 @@ namespace Nebula.Roles.ImpostorRoles
                 KeyCode.F
             );
             cleanButton.MaxTimer=cleanCoolDownOption.getFloat();
+            cleanButton.Timer = cleanButton.MaxTimer;
+        }
+
+        public override void OnKillPlayer(byte targetId)
+        {
+            //killボタンと連動する
             cleanButton.Timer = cleanButton.MaxTimer;
         }
 

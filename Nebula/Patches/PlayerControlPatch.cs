@@ -251,22 +251,6 @@ namespace Nebula.Patches
             // キル用の設定を元に戻す
             if (resetToCrewmate) __instance.Data.Role.TeamType = RoleTeamTypes.Crewmate;
             if (resetToDead) __instance.Data.IsDead = true;
-
-            if (Game.GameData.data.players[target.PlayerId].role.hasFakeTask)
-            {
-                target.clearAllTasks();
-            }
-
-            //GlobalMethod
-            target.GetModData().role.OnDied(target.PlayerId);
-
-            //LocalMethod (自身が死んだとき)
-            if (target.PlayerId == PlayerControl.LocalPlayer.PlayerId)
-            {
-                target.GetModData().role.OnDied();
-            }
-            
-            Game.GameData.data.players[target.PlayerId].Die(__instance.PlayerId);
         }
     }
 

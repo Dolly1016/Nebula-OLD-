@@ -197,14 +197,15 @@ namespace Nebula.Module
 
         public virtual void updateSelection(int newSelection)
         {
-            if (selections.Length == 2)
+            if (newSelection < 0)
             {
-                selection = Mathf.Clamp(newSelection % selections.Length, 0, selections.Length - 1);
+                selection = selections.Length - 1;
             }
             else
             {
-                selection = Mathf.Clamp(newSelection, 0, selections.Length - 1);
+                selection = newSelection % selections.Length;
             }
+            
 
             if (optionBehaviour != null && optionBehaviour is StringOption stringOption)
             {
@@ -407,7 +408,7 @@ namespace Nebula.Module
             var killCoolOption = __instance.Children.FirstOrDefault(x => x.name == "KillCooldown").TryCast<NumberOption>();
             if (killCoolOption != null) killCoolOption.ValidRange = new FloatRange(2.5f, 60f);
 
-            /*
+            
             var commonTasksOption = __instance.Children.FirstOrDefault(x => x.name == "NumCommonTasks").TryCast<NumberOption>();
             if (commonTasksOption != null) commonTasksOption.ValidRange = new FloatRange(0f, 4f);
 
@@ -416,7 +417,7 @@ namespace Nebula.Module
 
             var longTasksOption = __instance.Children.FirstOrDefault(x => x.name == "NumLongTasks").TryCast<NumberOption>();
             if (longTasksOption != null) longTasksOption.ValidRange = new FloatRange(0f, 15f);
-            */
+            
         }
     }
 
