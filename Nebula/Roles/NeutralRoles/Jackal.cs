@@ -65,6 +65,7 @@ namespace Nebula.Roles.NeutralRoles
                 killButton.Destroy();
                 killButton = null;
             }
+
         }
 
         public Jackal()

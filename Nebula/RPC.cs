@@ -37,6 +37,10 @@ namespace Nebula
         EmitSpeedFactor,
         CleanDeadBody,
         FixLights,
+        RequireUniqueRPC,
+        ExemptTasks,
+        RefreshTasks,
+        CompleteTask,
 
         // Role functionality
 
@@ -128,6 +132,18 @@ namespace Nebula
                     break;
                 case (byte)CustomRPC.FixLights:
                     RPCEvents.FixLights();
+                    break;
+                case (byte)CustomRPC.RequireUniqueRPC:
+                    RPCEvents.RequireUniqueRPC(reader.ReadByte(), reader.ReadByte());
+                    break;
+                case (byte)CustomRPC.ExemptTasks:
+                    RPCEvents.ExemptTasks(reader.ReadByte(), reader.ReadInt32(), reader.ReadInt32());
+                    break;
+                case (byte)CustomRPC.RefreshTasks:
+                    RPCEvents.RefreshTasks(reader.ReadByte(), reader.ReadInt32(), reader.ReadInt32());
+                    break;
+                case (byte)CustomRPC.CompleteTask:
+                    RPCEvents.CompleteTask(reader.ReadByte());
                     break;
 
 
@@ -445,6 +461,16 @@ namespace Nebula
             Game.GameData.data.players[playerId].Speed.Register(speedFactor);
         }
 
+        //ホストのイベントを本人に受け継ぐ
+        public static void RequireUniqueRPC(byte playerId,byte actionId)
+        {
+            //自分自身に対する要求の場合
+            if (PlayerControl.LocalPlayer.PlayerId == playerId)
+            {
+                Game.GameData.data.myData.getGlobalData().role.UniqueAction(actionId);
+            }
+        }
+
         //送信元と受信先で挙動が異なる（以下は受信側）
         public static void ShareOptions(int numberOfOptions, MessageReader reader)
         {
@@ -475,6 +501,25 @@ namespace Nebula
                     break;
                 }
             }
+        }
+
+        public static void ExemptTasks(byte playerId, int displayTasks, int quota)
+        {
+            Game.GameData.data.players[playerId].Tasks.AllTasks -= Game.GameData.data.players[playerId].Tasks.DisplayTasks - displayTasks;
+            Game.GameData.data.players[playerId].Tasks.DisplayTasks = displayTasks;
+            Game.GameData.data.players[playerId].Tasks.Quota = quota;
+        }
+
+        public static void RefreshTasks(byte playerId, int displayTasks, int addQuota)
+        {
+            Game.GameData.data.players[playerId].Tasks.AllTasks += displayTasks;
+            Game.GameData.data.players[playerId].Tasks.DisplayTasks = displayTasks;
+            Game.GameData.data.players[playerId].Tasks.Quota += addQuota;
+        }
+
+        public static void CompleteTask(byte playerId)
+        {
+            Game.GameData.data.players[playerId].Tasks.Completed++;
         }
 
         public static void FixLights()
@@ -532,7 +577,7 @@ namespace Nebula
             RPCEvents.UncheckedCmdReportDeadBody(reporterId, targetId);
         }
 
-        public static void UpdateRoleData(byte playerId, int dataId,int newData)
+        public static void UpdateRoleData(byte playerId, int dataId, int newData)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UpdateRoleData, Hazel.SendOption.Reliable, -1);
             writer.Write(playerId);
@@ -564,16 +609,16 @@ namespace Nebula
         public static void AddAndUpdateRoleData(byte playerId, int dataId, int addData)
         {
             int newData = Game.GameData.data.players[playerId].GetRoleData(dataId) + addData;
-            UpdateRoleData(playerId,dataId,newData);
+            UpdateRoleData(playerId, dataId, newData);
         }
 
-        public static void ChangeRole(PlayerControl player,Roles.Role role)
+        public static void ChangeRole(PlayerControl player, Roles.Role role)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ChangeRole, Hazel.SendOption.Reliable, -1);
             writer.Write(player.PlayerId);
             writer.Write(role.id);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
-            RPCEvents.ChangeRole(player.PlayerId,role.id);
+            RPCEvents.ChangeRole(player.PlayerId, role.id);
         }
 
         public static void ImmediatelyChangeRole(PlayerControl player, Roles.Role role)
@@ -594,7 +639,7 @@ namespace Nebula
             RPCEvents.SwapRole(player1.PlayerId, player2.PlayerId);
         }
 
-        public static void SetExtraRole(PlayerControl player, Roles.ExtraRole role,ulong initializeValue)
+        public static void SetExtraRole(PlayerControl player, Roles.ExtraRole role, ulong initializeValue)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetExtraRole, Hazel.SendOption.Reliable, -1);
             writer.Write(role.id);
@@ -604,7 +649,7 @@ namespace Nebula
             RPCEvents.SetExtraRole(role, initializeValue, player.PlayerId);
         }
 
-        public static void UnsetExtraRole(PlayerControl player,Roles.ExtraRole role)
+        public static void UnsetExtraRole(PlayerControl player, Roles.ExtraRole role)
         {
             if (!player.GetModData().extraRole.Contains(role)) return;
 
@@ -612,7 +657,7 @@ namespace Nebula
             writer.Write(role.id);
             writer.Write(player.PlayerId);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
-            RPCEvents.UnsetExtraRole(role,player.PlayerId);
+            RPCEvents.UnsetExtraRole(role, player.PlayerId);
         }
 
         public static void ChangeExtraRole(PlayerControl player, Roles.ExtraRole removeRole, Roles.ExtraRole addRole, ulong initializeValue)
@@ -634,7 +679,7 @@ namespace Nebula
             RPCEvents.RevivePlayer(player.PlayerId);
         }
 
-        public static void EmitSpeedFactor(PlayerControl player,Game.SpeedFactor speedFactor)
+        public static void EmitSpeedFactor(PlayerControl player, Game.SpeedFactor speedFactor)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.EmitSpeedFactor, Hazel.SendOption.Reliable, -1);
             writer.Write(player.PlayerId);
@@ -646,13 +691,93 @@ namespace Nebula
             RPCEvents.EmitSpeedFactor(player.PlayerId, speedFactor);
         }
 
-        public static void MultipleVote(PlayerControl player,byte count)
+        public static void RequireUniqueRPC(byte playerId, byte actionId)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RequireUniqueRPC, Hazel.SendOption.Reliable, -1);
+            writer.Write(playerId);
+            writer.Write(actionId);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.RequireUniqueRPC(playerId, actionId);
+        }
+
+        public static void MultipleVote(PlayerControl player, byte count)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.MultipleVote, Hazel.SendOption.Reliable, -1);
             writer.Write(player.PlayerId);
             writer.Write(count);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
-            RPCEvents.MultipleVote(player.PlayerId,count);
+            RPCEvents.MultipleVote(player.PlayerId, count);
+        }
+
+        public static void ExemptTasks(byte playerId, int allTasks, int quota)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ExemptTasks, Hazel.SendOption.Reliable, -1);
+            writer.Write(playerId);
+            writer.Write(allTasks);
+            writer.Write(quota);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.ExemptTasks(playerId, allTasks, quota);
+
+            var tasks = new Il2CppSystem.Collections.Generic.List<GameData.TaskInfo>();
+            GameData.TaskInfo taskInfo;
+
+            foreach (var task in PlayerControl.LocalPlayer.Data.Tasks)
+            {
+                tasks.Add(task);
+            }
+
+            while (tasks.Count > allTasks)
+            {
+                tasks.RemoveAt(NebulaPlugin.rnd.Next(tasks.Count));
+            }
+
+            PlayerControl.LocalPlayer.clearAllTasks();
+            PlayerControl.LocalPlayer.SetTasks(tasks);
+            PlayerControl.LocalPlayer.Data.Tasks = tasks;
+        }
+
+        public static void RefreshTasks(byte playerId, int newTasks, int addQuota, float longTaskChance)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RefreshTasks, Hazel.SendOption.Reliable, -1);
+            writer.Write(playerId);
+            writer.Write(newTasks);
+            writer.Write(addQuota);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.RefreshTasks(playerId, newTasks, addQuota);
+
+            var tasks = new Il2CppSystem.Collections.Generic.List<GameData.TaskInfo>();
+            GameData.TaskInfo taskInfo;
+
+            while (tasks.Count < newTasks)
+            {
+                PlayerTask task = null;
+                if (NebulaPlugin.rnd.NextDouble() < longTaskChance)
+                {
+                    if (ShipStatus.Instance.LongTasks.Count > 0)
+                        task = ShipStatus.Instance.LongTasks[NebulaPlugin.rnd.Next(ShipStatus.Instance.LongTasks.Count)];
+                }
+                else
+                {
+                    if (ShipStatus.Instance.NormalTasks.Count > 0)
+                        task = ShipStatus.Instance.NormalTasks[NebulaPlugin.rnd.Next(ShipStatus.Instance.NormalTasks.Count)];
+                }
+                if (task != null)
+                {
+                    tasks.Add(new GameData.TaskInfo((byte)task.TaskType, task.Id));
+                }
+            }
+
+            PlayerControl.LocalPlayer.clearAllTasks();
+            PlayerControl.LocalPlayer.SetTasks(tasks);
+            PlayerControl.LocalPlayer.Data.Tasks = tasks;
+        }
+
+        public static void CompleteTask(byte playerId)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.CompleteTask, Hazel.SendOption.Reliable, -1);
+            writer.Write(playerId);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.CompleteTask(playerId);
         }
     }
 }

@@ -43,6 +43,8 @@ namespace Nebula.Patches
 
         static void WrapUpPostfix(GameData.PlayerInfo? exiled)
         {
+            Events.Schedule.OnPostMeeting();
+
             if (exiled != null)
             {
                 byte[] voters = MeetingHudPatch.GetVoters(exiled.PlayerId);

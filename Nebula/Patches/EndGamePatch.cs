@@ -21,13 +21,14 @@ namespace Nebula.Patches
         public static EndCondition JesterWin = new EndCondition(16, Roles.NeutralRoles.Jester.Color, "jester", () => { });
         public static EndCondition JackalWin = new EndCondition(17, Roles.NeutralRoles.Jackal.Color, "jackal", () => { });
         public static EndCondition ArsonistWin = new EndCondition(18, Roles.NeutralRoles.Arsonist.Color, "arsonist", () => { PlayerControl.AllPlayerControls.ForEach((Action<PlayerControl>)((p) => { if (!p.Data.IsDead && p.GetModData().role.side != Roles.Side.Arsonist) p.MurderPlayer(p); })); });
-        public static EndCondition VultureWin = new EndCondition(19, Roles.NeutralRoles.Vulture.Color, "vulture", () => { });
-        public static EndCondition TrilemmaWin = new EndCondition(20, new Color(209f / 255f, 63f / 255f, 138f / 255f), "trilemma",()=> { });
+        public static EndCondition EmpiricWin = new EndCondition(19, Roles.NeutralRoles.Empiric.Color, "empiric", () => { });
+        public static EndCondition VultureWin = new EndCondition(20, Roles.NeutralRoles.Vulture.Color, "vulture", () => { });
+        public static EndCondition TrilemmaWin = new EndCondition(32, new Color(209f / 255f, 63f / 255f, 138f / 255f), "trilemma",()=> { });
 
         public static HashSet<EndCondition> AllEnds = new HashSet<EndCondition>() {
             CrewmateWinByVote ,CrewmateWinByTask,CrewmateWinDisconnect,
             ImpostorWinByKill,ImpostorWinBySabotage,ImpostorWinByVote,ImpostorWinDisconnect,
-            JesterWin,JackalWin,ArsonistWin,VultureWin,
+            JesterWin,JackalWin,ArsonistWin,EmpiricWin,VultureWin,
             TrilemmaWin
         };
     

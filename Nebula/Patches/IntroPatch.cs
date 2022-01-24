@@ -53,9 +53,18 @@ namespace Nebula.Patches
             
             Game.GameData.data.LoadMapData();
 
+            foreach (Game.PlayerData player in Game.GameData.data.players.Values)
+            {
+                Helpers.RoleAction(player, (role) => {
+                    PlayerControl pc = Helpers.playerById(player.id);
+                    role.GlobalInitialize(pc);
+                    role.GlobalIntroInitialize(pc);
+                });
+            }
+
             Helpers.RoleAction(PlayerControl.LocalPlayer, (role) => {
-                role.GlobalInitialize(PlayerControl.LocalPlayer);
                 role.Initialize(PlayerControl.LocalPlayer);
+                role.IntroInitialize(PlayerControl.LocalPlayer);
                 role.ButtonInitialize(HudManagerStartPatch.Manager);
                 role.ButtonActivate();
             });            

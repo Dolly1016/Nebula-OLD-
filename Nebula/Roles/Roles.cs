@@ -12,6 +12,7 @@ namespace Nebula.Roles
     {
 
         public static CrewmateRoles.Crewmate Crewmate=new CrewmateRoles.Crewmate();
+        public static CrewmateRoles.Agent Agent = new CrewmateRoles.Agent();
         public static CrewmateRoles.Bait Bait = new CrewmateRoles.Bait();
         public static CrewmateRoles.Booster Booster = new CrewmateRoles.Booster();
         public static CrewmateRoles.DamnedCrew DamnedCrew = new CrewmateRoles.DamnedCrew();
@@ -37,6 +38,7 @@ namespace Nebula.Roles
         public static ImpostorRoles.Reaper Reaper = new ImpostorRoles.Reaper();
 
         public static NeutralRoles.Arsonist Arsonist = new NeutralRoles.Arsonist();
+        public static NeutralRoles.Empiric Empiric = new NeutralRoles.Empiric();
         public static NeutralRoles.Jackal Jackal = new NeutralRoles.Jackal();
         public static NeutralRoles.Jester Jester = new NeutralRoles.Jester();
         public static NeutralRoles.Vulture Vulture = new NeutralRoles.Vulture();
@@ -53,9 +55,9 @@ namespace Nebula.Roles
         {
             Impostor,Camouflager,Cleaner,Damned,Eraser,EvilAce,EvilGuesser,Reaper,
             F_Guesser,
-            Arsonist,Jackal,Jester,Vulture,
+            Arsonist,Empiric,Jackal,Jester,Vulture,
             F_Crewmate,
-            Crewmate,Bait,Booster,DamnedCrew,Engineer,Mayor,Necromancer,NiceGuesser,Provocateur,Psychic,SecurityGuard,Sheriff,Spy,
+            Crewmate,Agent,Bait,Booster,DamnedCrew,Engineer,Mayor,Necromancer,NiceGuesser,Provocateur,Psychic,SecurityGuard,Sheriff,Spy,
             Madmate,
         };
 

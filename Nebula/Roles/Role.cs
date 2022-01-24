@@ -76,6 +76,13 @@ namespace Nebula.Roles
         /*--------------------------------------------------------------------------------------*/
 
         /// <summary>
+        /// ホストが受け取ったイベントをイベントに関わるプレイヤーに委譲します
+        /// </summary>
+        /// <param name="actionId"></param>
+        [RoleLocalMethod]
+        public virtual void UniqueAction(byte actionId) { }
+
+        /// <summary>
         /// 正常にロールデータが更新された際に呼び出されます。
         /// </summary>
         [RoleLocalMethod]

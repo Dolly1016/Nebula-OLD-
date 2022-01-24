@@ -116,6 +116,12 @@ namespace Nebula.Roles
         public virtual void Initialize(PlayerControl __instance) { }
 
         /// <summary>
+        /// ゲーム開始時にのみ呼ばれる初期化
+        /// </summary>
+        [RoleLocalMethod]
+        public virtual void IntroInitialize(PlayerControl __instance) { }
+
+        /// <summary>
         /// ゲーム中にロールが変更される際に呼ばれます。
         /// </summary>
         /// <param name="__instance"></param>
@@ -167,8 +173,8 @@ namespace Nebula.Roles
         /// <summary>
         /// 投票した際に呼び出されます。
         /// </summary>
-        [RoleLocalMethod]
-        public virtual void OnVote(byte targetId) { }
+        [RoleIndefiniteMethod]
+        public virtual void OnVote(byte playerId,byte targetId) { }
 
         [RoleLocalMethod]
         public virtual void MeetingUpdate(MeetingHud __instance, TMPro.TextMeshPro meetingInfo) { }
@@ -278,6 +284,12 @@ namespace Nebula.Roles
         //全てのプレイヤーに対して呼び出されます。
         [RoleGlobalMethod]
         public virtual void GlobalInitialize(PlayerControl __instance) { }
+
+        /// <summary>
+        /// ゲーム開始時にのみ呼ばれる初期化
+        /// </summary>
+        [RoleGlobalMethod]
+        public virtual void GlobalIntroInitialize(PlayerControl __instance) { }
 
         /*--------------------------------------------------------------------------------------*/
         /*--------------------------------------------------------------------------------------*/

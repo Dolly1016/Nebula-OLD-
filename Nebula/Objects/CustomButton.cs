@@ -168,11 +168,6 @@ namespace Nebula.Objects
 
         private void Update()
         {
-            if (!actionButton.gameObject.active)
-            {
-                return;
-            }
-
             if (PlayerControl.LocalPlayer.Data == null || MeetingHud.Instance || ExileController.Instance || !HasButton())
             {
                 temporaryHide(true);

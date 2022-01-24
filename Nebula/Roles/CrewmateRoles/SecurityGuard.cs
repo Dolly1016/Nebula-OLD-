@@ -154,7 +154,11 @@ namespace Nebula.Roles.CrewmateRoles
             {
                 sealButton.Destroy();
                 sealButton = null;
+            }
 
+            if (sealButtonString != null)
+            {
+                sealButtonString.DestroySubMeshObjects();
                 sealButtonString = null;
             }
         }

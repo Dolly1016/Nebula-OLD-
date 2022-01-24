@@ -32,26 +32,11 @@ namespace Nebula
 
         public static Tuple<int, int> taskInfo(GameData.PlayerInfo playerInfo)
         {
-            int TotalTasks = 0;
-            int CompletedTasks = 0;
-            if (!playerInfo.Disconnected && playerInfo.Tasks != null &&
-                playerInfo.Object &&
-                (PlayerControl.GameOptions.GhostsDoTasks || !playerInfo.IsDead) &&
-                playerInfo.Role && playerInfo.Role.TasksCountTowardProgress &&
-                !playerInfo.GetModData().role.hasFakeTask
-                )
+            if (Game.GameData.data.players.ContainsKey(playerInfo.PlayerId))
             {
-
-                for (int j = 0; j < playerInfo.Tasks.Count; j++)
-                {
-                    TotalTasks++;
-                    if (playerInfo.Tasks[j].Complete)
-                    {
-                        CompletedTasks++;
-                    }
-                }
+                return Tuple.Create(playerInfo.GetModData().Tasks.Completed, playerInfo.GetModData().Tasks.Quota);
             }
-            return Tuple.Create(CompletedTasks, TotalTasks);
+            return Tuple.Create(0, 12);
         }
 
         [HarmonyPatch(typeof(GameData), nameof(GameData.RecomputeTaskCounts))]
@@ -65,16 +50,7 @@ namespace Nebula
                 {
                     
                     GameData.PlayerInfo playerInfo = __instance.AllPlayers[i];
-                    /*
-                    if (playerInfo.Object &&
-                        ((playerInfo.Object?.isLovers() == true && !Lovers.hasTasks) ||
-                         (playerInfo.PlayerId == Shifter.shifter?.PlayerId && Shifter.isNeutral) || // Neutral shifter has tasks, but they don't count
-                          playerInfo.PlayerId == Lawyer.lawyer?.PlayerId || // Tasks of the Lawyer do not count
-                         (playerInfo.PlayerId == Pursuer.pursuer?.PlayerId && Pursuer.pursuer.Data.IsDead) // Tasks of the Pursuer only count, if he's alive
-                        )
-                    )
-                        continue;
-                    */
+
                     var (playerCompleted, playerTotal) = taskInfo(playerInfo);
                     __instance.TotalTasks += playerTotal;
                     __instance.CompletedTasks += playerCompleted;

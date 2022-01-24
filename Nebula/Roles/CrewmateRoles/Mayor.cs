@@ -33,10 +33,15 @@ namespace Nebula.Roles.CrewmateRoles
             PlayerControl.LocalPlayer.GetModData().AddRoleData(votesId, 1);
         }
 
-        public override void OnVote(byte targetId)
+        public override void OnVote(byte playerId, byte targetId)
+        {
+            RPCEventInvoker.RequireUniqueRPC(playerId,targetId);
+        }
+
+        public override void UniqueAction(byte actionId)
         {
             RPCEventInvoker.MultipleVote(PlayerControl.LocalPlayer, numOfVote);
-            RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId,votesId,-numOfVote);
+            RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, votesId, -numOfVote);
         }
 
         public override void SetupMeetingButton(MeetingHud __instance)

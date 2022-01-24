@@ -69,6 +69,10 @@
 "role.guesser.guesserShots" : "Guesser Shots"
 "role.guesser.guessesLeft" : "Guesses Left"
 
+"role.agent.name" : "Agent"
+"role.agent.desctiption" : "Do Your Tasks More"
+"role.agent.exemptTasks" : "Exempt Tasks"
+
 "role.bait.name" : "Bait"
 "role.bait.description" : "Bait Your Enemies"
 
@@ -202,6 +206,9 @@
 "role.arsonist.name" : "Arsonist"
 "role.arsonist.description" : "Let Them Burn"
 
+"role.empiric.name" : "Empiric"
+"role.empiric.description" : "Spread a Disease"
+
 "role.jackal.name" : "Jackal"
 "role.jackal.description" : "Kill all Crewmates and <color=#ff1919ff>Impostors</color> to Win"
 
@@ -224,10 +231,12 @@
 "side.jackal.name" : "Jackal"
 "side.jester.name" : "Jester"
 "side.arsonist.name" : "Arsonist"
+"side.empiric.name" : "Empiric"
 
 "game.endText.crewmate" : "Team Crewmate Wins"
 "game.endText.impostor" : "Team Impostor Wins"
 "game.endText.arsonist" : "Arsonist Wins"
+"game.endText.empiric" : "Empiric Wins"
 "game.endText.jackal" : "Team Jackal Wins"
 "game.endText.jester" : "Jester Wins"
 "game.endText.vulture" : "Vulture Wins"

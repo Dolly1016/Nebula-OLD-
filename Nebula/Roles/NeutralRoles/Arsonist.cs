@@ -12,7 +12,7 @@ using Nebula.Game;
 
 namespace Nebula.Roles.NeutralRoles
 {
-    public class Arsonist : Template.HasHologram, Template.HasWinTrigger
+    public class Arsonist : Template.HasAlignedHologram, Template.HasWinTrigger
     {
         static public Color Color = new Color(255f/255f, 103f/255f, 1/255f);
 
@@ -48,14 +48,12 @@ namespace Nebula.Roles.NeutralRoles
             return igniteSprite;
         }
 
-        static private List<byte> dousedPlayers=new List<byte>();
         static private bool canIgnite = false;
 
         public override void Initialize(PlayerControl __instance)
         {
             base.Initialize(__instance);
 
-            dousedPlayers.Clear();
             canIgnite = false;
             WinTrigger = false;
         }
@@ -64,18 +62,8 @@ namespace Nebula.Roles.NeutralRoles
         {
             base.CleanUp();
 
-            dousedPlayers.Clear();
             canIgnite = false;
             WinTrigger = false;
-        }
-
-        public override void InitializePlayerIcon(PoolablePlayer player, byte PlayerId, int index) {
-            Vector3 bottomLeft = new Vector3(-HudManager.Instance.UseButton.transform.localPosition.x, HudManager.Instance.UseButton.transform.localPosition.y, HudManager.Instance.UseButton.transform.localPosition.z);
-
-            player.transform.localPosition = bottomLeft + new Vector3(-0.25f, -0.25f, 0) + Vector3.right * index++ * 0.25f;
-            player.transform.localScale = Vector3.one * 0.24f;
-            player.setSemiTransparent(true);
-            player.gameObject.SetActive(true);
         }
 
         public override void ButtonInitialize(HudManager __instance)
@@ -115,7 +103,7 @@ namespace Nebula.Roles.NeutralRoles
                 () => {
                     if (Game.GameData.data.myData.currentTarget != null)
                     {
-                        dousedPlayers.Add(Game.GameData.data.myData.currentTarget.PlayerId);
+                        activePlayers.Add(Game.GameData.data.myData.currentTarget.PlayerId);
                         Game.GameData.data.myData.currentTarget = null;
                     }
 
@@ -123,7 +111,7 @@ namespace Nebula.Roles.NeutralRoles
                     foreach (PlayerControl player in PlayerControl.AllPlayerControls)
                     {
                         if (player.Data.IsDead) continue;
-                        if (dousedPlayers.Contains(player.PlayerId)) continue;
+                        if (activePlayers.Contains(player.PlayerId)) continue;
                         if (player.PlayerId == PlayerControl.LocalPlayer.PlayerId) continue;
 
                         cannotIgnite = true; break;
@@ -162,35 +150,11 @@ namespace Nebula.Roles.NeutralRoles
 
         public override void MyPlayerControlUpdate()
         {
+            base.MyPlayerControlUpdate();
+
             Game.MyPlayerData data = Game.GameData.data.myData;
-            data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(false,false,dousedPlayers);
+            data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(false,false,activePlayers);
             Patches.PlayerControlPatch.SetPlayerOutline(data.currentTarget, Color.yellow);
-
-            int visibleCounter = 0;
-            Vector3 bottomLeft = HudManager.Instance.UseButton.transform.localPosition;
-            bottomLeft.x *= -1;
-            bottomLeft += new Vector3(-0.25f, -0.25f, 0);
-
-            foreach (PlayerControl p in PlayerControl.AllPlayerControls)
-            {
-                if (p.PlayerId == PlayerControl.LocalPlayer.PlayerId) continue;
-                if (!PlayerIcons.ContainsKey(p.PlayerId)) continue;
-
-                if (p.Data.IsDead || p.Data.Disconnected)
-                {
-                    PlayerIcons[p.PlayerId].gameObject.SetActive(false);
-                }
-                else
-                {
-                    PlayerIcons[p.PlayerId].gameObject.SetActive(true);
-                    PlayerIcons[p.PlayerId].transform.localScale = Vector3.one * 0.25f;
-                    PlayerIcons[p.PlayerId].transform.localPosition = bottomLeft + Vector3.right * visibleCounter * 0.24f;
-                    visibleCounter++;
-                }
-                bool isDoused = dousedPlayers.Any(x => x == p.PlayerId);
-                PlayerIcons[p.PlayerId].setSemiTransparent(!isDoused);
-
-            }
         }
 
         public Arsonist()

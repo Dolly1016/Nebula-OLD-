@@ -44,7 +44,7 @@ namespace Nebula.Roles.Template
                     RPCEvents.DragAndDropPlayer(PlayerControl.LocalPlayer.PlayerId, target);
                 },
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
-                () => { return PlayerControl.LocalPlayer.CanMove; },
+                () => { return PlayerControl.LocalPlayer.CanMove && Game.GameData.data.myData.getGlobalData().dragPlayerId != Byte.MaxValue; },
                 () => { },
                 getDragButtonSprite(),
                 new Vector3(-1.8f, -0.06f, 0),

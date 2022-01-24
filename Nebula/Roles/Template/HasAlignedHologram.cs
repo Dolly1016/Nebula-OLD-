@@ -1,0 +1,110 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using UnityEngine;
+using Nebula.Patches;
+using Nebula.Objects;
+using HarmonyLib;
+using Hazel;
+using Nebula.Game;
+
+namespace Nebula.Roles.Template
+{
+    public class HasAlignedHologram : HasHologram
+    {
+        protected List<byte> activePlayers = new List<byte>();
+
+        public override void Initialize(PlayerControl __instance)
+        {
+            base.Initialize(__instance);
+
+            activePlayers.Clear();
+            UpdatePlayerIcon();
+        }
+
+        public override void CleanUp()
+        {
+            base.CleanUp();
+
+            activePlayers.Clear();
+        }
+        public override void InitializePlayerIcon(PoolablePlayer player, byte PlayerId, int index)
+        {
+            Vector3 bottomLeft = new Vector3(-HudManager.Instance.UseButton.transform.localPosition.x, HudManager.Instance.UseButton.transform.localPosition.y, HudManager.Instance.UseButton.transform.localPosition.z);
+
+            player.transform.localPosition = bottomLeft + new Vector3(-0.25f, -0.25f, 0) + Vector3.right * index++ * 0.3f;
+            player.transform.localScale = Vector3.one * 0.25f;
+            player.setSemiTransparent(true);
+            player.gameObject.SetActive(true);
+        }
+
+        public override void MyPlayerControlUpdate()
+        {
+            base.MyPlayerControlUpdate();
+
+            foreach (PlayerControl p in PlayerControl.AllPlayerControls)
+            {
+                if (!PlayerIcons.ContainsKey(p.PlayerId)) continue;
+
+                bool isActive = activePlayers.Any(x => x == p.PlayerId);
+                
+                PlayerIcons[p.PlayerId].setSemiTransparent(!isActive);
+
+                if (!PlayerIcons[p.PlayerId].gameObject.active)
+                {
+                    PlayerIcons[p.PlayerId].NameText.text = "";
+                }
+            }
+        }
+
+        public override void OnMeetingEnd()
+        {
+            base.OnMeetingEnd();
+
+            UpdatePlayerIcon();
+        }
+
+        private void UpdatePlayerIcon()
+        {
+            int visibleCounter = 0;
+            Vector3 bottomLeft = HudManager.Instance.UseButton.transform.localPosition;
+            bottomLeft.x *= -1;
+            bottomLeft += new Vector3(-0.25f, -0.25f, 0);
+
+            foreach (PlayerControl p in PlayerControl.AllPlayerControls)
+            {
+                if (p.PlayerId == PlayerControl.LocalPlayer.PlayerId) { PlayerIcons[p.PlayerId].NameText.SetActiveSubMeshes(false); continue; }
+                if (!PlayerIcons.ContainsKey(p.PlayerId)) continue;
+
+                if (p.Data.IsDead || p.Data.Disconnected)
+                {
+                    PlayerIcons[p.PlayerId].gameObject.SetActive(false);
+                }
+                else
+                {
+                    PlayerIcons[p.PlayerId].gameObject.SetActive(true);
+                    PlayerIcons[p.PlayerId].transform.localScale = Vector3.one * 0.25f;
+                    PlayerIcons[p.PlayerId].transform.localPosition = bottomLeft + Vector3.right * visibleCounter * 0.3f;
+                    visibleCounter++;
+                }
+            }
+        }
+
+        protected HasAlignedHologram(string name, string localizeName, Color color, RoleCategory category,
+                Side side, Side introMainDisplaySide, HashSet<Side> introDisplaySides, HashSet<Side> introInfluenceSides,
+                HashSet<Patches.EndCondition> winReasons,
+                bool hasFakeTask, bool canUseVents, bool canMoveInVents,
+                bool ignoreBlackout, bool useImpostorLightRadius) :
+                base(name, localizeName, color, category,
+                    side, introMainDisplaySide, introDisplaySides, introInfluenceSides,
+                    winReasons,
+                    hasFakeTask, canUseVents, canMoveInVents,
+                    ignoreBlackout, useImpostorLightRadius)
+        {
+            PlayerIcons = new Dictionary<byte, PoolablePlayer>();
+            activePlayers = new List<byte>();
+        }
+    }
+}

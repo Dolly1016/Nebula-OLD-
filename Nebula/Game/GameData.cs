@@ -146,6 +146,30 @@ namespace Nebula.Game
             }
         }
     }
+
+    public class TaskData
+    {
+        //表示タスク総量
+        public int DisplayTasks { get; set; }
+        //タスク総量
+        public int AllTasks { get; set; }
+        //ノルマタスク数
+        public int Quota { get; set; }
+        //完了タスク数
+        public int Completed { get; set; }
+
+        public TaskData(bool hasFakeTask){
+            if (hasFakeTask)Quota = 0;
+            else
+            {
+                Quota = PlayerControl.GameOptions.NumCommonTasks + PlayerControl.GameOptions.NumShortTasks + PlayerControl.GameOptions.NumLongTasks;
+            }
+            AllTasks = Quota;
+            DisplayTasks = Quota;
+            Completed = 0;
+        }
+    }
+
     public class PlayerData
     {
         public class PlayerOutfitData
@@ -195,6 +219,8 @@ namespace Nebula.Game
 
         public SpeedFactorManager Speed { get; }
 
+        public TaskData Tasks { get; }
+
         public PlayerData(byte playerId, string name,PlayerOutfit outfit,Role role)
         {
             
@@ -210,6 +236,7 @@ namespace Nebula.Game
             this.currentName = name;
             this.dragPlayerId = Byte.MaxValue;
             this.Speed = new SpeedFactorManager(playerId) ;
+            this.Tasks = new TaskData(role.side==Roles.Side.Impostor || role.hasFakeTask);
         }
 
         public int GetRoleData(int id)

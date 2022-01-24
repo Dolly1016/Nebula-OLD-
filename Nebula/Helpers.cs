@@ -397,6 +397,15 @@ namespace Nebula
             return arr;
         }
 
+        static public void RoleAction(Game.PlayerData player, System.Action<Roles.Assignable> action)
+        {
+            action.Invoke(player.role);
+            foreach (Roles.ExtraRole role in player.extraRole)
+            {
+                action.Invoke(role);
+            }
+
+        }
         static public void RoleAction(byte playerId, System.Action<Roles.Assignable> action)
         {
             Game.PlayerData data = Game.GameData.data.players[playerId];

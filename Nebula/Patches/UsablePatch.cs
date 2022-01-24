@@ -21,13 +21,14 @@ namespace Nebula.Patches
         }
     }
 
-    [HarmonyPatch(typeof(PlayerTask), nameof(PlayerTask.Initialize))]
-    class SabotageTaskRemovePatch
+    [HarmonyPatch(typeof(NormalPlayerTask), nameof(NormalPlayerTask.NextStep))]
+    class TaskCompletePatch
     {
-        static void Postfix(PlayerTask __instance)
+        static void Prefix(NormalPlayerTask __instance)
         {
-            if(__instance is SabotageTask)
-            EmergencyPatch.SabotageUpdate();
+            if (__instance.MaxStep-1 == __instance.TaskStep)
+                if (__instance.Owner.PlayerId == PlayerControl.LocalPlayer.PlayerId)
+                    RPCEventInvoker.CompleteTask(__instance.Owner.PlayerId);
         }
     }
 }

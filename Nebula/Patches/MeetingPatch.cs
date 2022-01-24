@@ -23,10 +23,11 @@ namespace Nebula.Patches
         class PlayerVoteAreaSelectPatch
         {
          
-            static void Prefix(MeetingHud __instance, [HarmonyArgument(0)] byte suspectIdx)
+            static void Prefix(PlayerVoteArea __instance, [HarmonyArgument(0)] byte suspectIdx)
             {
-                Helpers.RoleAction(PlayerControl.LocalPlayer,(role)=> {
-                    role.OnVote(suspectIdx);
+                Helpers.RoleAction(__instance.TargetPlayerId, (role) =>
+                {
+                    role.OnVote(__instance.TargetPlayerId,suspectIdx);
                 });
             }
         }
@@ -144,8 +145,6 @@ namespace Nebula.Patches
             static void Postfix(MeetingHud __instance, [HarmonyArgument(0)] byte[] states, [HarmonyArgument(1)] GameData.PlayerInfo exiled, [HarmonyArgument(2)] bool tie)
             {
                 if (meetingInfoText != null)meetingInfoText.gameObject.SetActive(false);
-
-                Events.Schedule.OnPostMeeting();
 
                 VoteHistory.Clear();
                 Voters.Clear();
