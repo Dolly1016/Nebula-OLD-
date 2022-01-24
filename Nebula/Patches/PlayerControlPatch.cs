@@ -211,6 +211,9 @@ namespace Nebula.Patches
                 return;
             }
 
+            //全員に対して実行
+            __instance.GetModData().role.GlobalUpdate(__instance.PlayerId);
+
             if (__instance.PlayerId == PlayerControl.LocalPlayer.PlayerId)
             {
                 UpdateAllPlayersInfo();

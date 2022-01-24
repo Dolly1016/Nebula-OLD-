@@ -11,6 +11,7 @@ namespace Nebula.Events
         static public void Load()
         {
             GlobalEvent.Register(GlobalEvent.Type.Camouflage,duration => { return new Variation.Camouflage(duration); });
+            GlobalEvent.Register(GlobalEvent.Type.EMI, duration => { return new Variation.EMI(duration); });
         }
         
     }

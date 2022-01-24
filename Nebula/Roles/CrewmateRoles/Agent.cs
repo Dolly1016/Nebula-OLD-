@@ -27,7 +27,7 @@ namespace Nebula.Roles.CrewmateRoles
         public Sprite getButtonSprite()
         {
             if (buttonSprite) return buttonSprite;
-            buttonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.RepairButton.png", 115f);
+            buttonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.AgentButton.png", 115f);
             return buttonSprite;
         }
 

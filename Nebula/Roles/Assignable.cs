@@ -258,6 +258,12 @@ namespace Nebula.Roles
         /*--------------------------------------------------------------------------------------*/
 
         /// <summary>
+        /// プレイヤー全員から呼び出されます。
+        /// </summary>
+        [RoleGlobalMethod]
+        public virtual void GlobalUpdate(byte playerId) { }
+
+        /// <summary>
         /// その役職のプレイヤーが追放されたときに呼び出されます。
         /// </summary>
         [RoleGlobalMethod]

@@ -17,6 +17,7 @@ namespace Nebula.Events
         {
             static private byte availableId=0;
             static public Type Camouflage = new Type();
+            static public Type EMI = new Type();
 
             public byte Id { get; }
 
@@ -28,7 +29,8 @@ namespace Nebula.Events
 
             public static HashSet<Type> AllTypes = new HashSet<Type>()
             {
-                Camouflage
+                Camouflage,
+                EMI
             };
 
             public static Type GetType(byte id)

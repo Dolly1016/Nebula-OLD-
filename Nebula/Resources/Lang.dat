@@ -70,8 +70,15 @@
 "role.guesser.guessesLeft" : "Guesses Left"
 
 "role.agent.name" : "Agent"
-"role.agent.desctiption" : "Do Your Tasks More"
+"role.agent.description" : "Do Your Tasks More"
 "role.agent.exemptTasks" : "Exempt Tasks"
+"role.agent.actOverTasks" : "Act Over Tasks"
+
+"role.alien.name" : "Alien"
+"role.alien.description" : "Mediate The Ship"
+"role.alien.emiCoolDown" : "E.M.I. Cool Down"
+"role.alien.emiDuration" : "E.M.I. Duration"
+"role.alien.emiRange" : "E.M.I. Range"
 
 "role.bait.name" : "Bait"
 "role.bait.description" : "Bait Your Enemies"
