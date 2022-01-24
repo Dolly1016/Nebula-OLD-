@@ -127,6 +127,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 | Roles |
 | ---------- |
 | [Arsonist](#arsonist) |
+| [Empiric](#empiric) |
 | [Jackal](#jackal) |
 | [Jester](#jester) |
 | [Vulture](#vulture) |
@@ -311,6 +312,16 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 ## Arsonist
  Arsonistは全員に油をかけて点火させることが勝利条件です。
+ 
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+
+-----------------------
+
+## Empiric
+ Empiricは自身が選択した感染者の周囲にいるプレイヤーを徐々に感染させます。
+ 全ての生存プレイヤーが感染することが勝利条件です。
  
  ### オプション
 | オプション名 | 設定内容 |
