@@ -360,7 +360,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 -----------------------
 
 ## Trilemma
- TrilemmaはLoverが第三者を巻き込んだ三すくみです。
+ TrilemmaはLoverが第三者を巻き込んだ三位一体のチームです。
  三人だけが生き残ることで勝利します。
  
  ### オプション
