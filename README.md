@@ -118,10 +118,10 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 | [Nice Guesser](#guesser) |
 | [Provocateur](#provocateur) |
 | [Psychic](#psychic) |
-| [Madmate](#madmate) |
 | [Security Guard](#security-guard) |
 | [Sheriff](#sheriff) |
 | [Spy](#spy) |
+| [Madmate](#madmate) |
 
 **第三陣営**
 | Roles |
