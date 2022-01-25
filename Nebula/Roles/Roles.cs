@@ -21,6 +21,7 @@ namespace Nebula.Roles
         public static CrewmateRoles.Mayor Mayor = new CrewmateRoles.Mayor();
         public static CrewmateRoles.Necromancer Necromancer = new CrewmateRoles.Necromancer();
         public static ComplexRoles.Guesser NiceGuesser = new ComplexRoles.Guesser("NiceGuesser", "niceGuesser", false);
+        public static ComplexRoles.Trapper NiceTrapper = new ComplexRoles.Trapper("NiceTrapper", "niceTrapper", false);
         public static CrewmateRoles.Provocateur Provocateur = new CrewmateRoles.Provocateur();
         public static CrewmateRoles.Psychic Psychic = new CrewmateRoles.Psychic();
         public static CrewmateRoles.SecurityGuard SecurityGuard = new CrewmateRoles.SecurityGuard();
@@ -36,6 +37,7 @@ namespace Nebula.Roles
         public static ImpostorRoles.Eraser Eraser = new ImpostorRoles.Eraser();
         public static ImpostorRoles.EvilAce EvilAce = new ImpostorRoles.EvilAce();
         public static ComplexRoles.Guesser EvilGuesser = new ComplexRoles.Guesser("EvilGuesser", "evilGuesser", true);
+        public static ComplexRoles.Trapper EvilTrapper = new ComplexRoles.Trapper("EvilTrapper", "evilTrapper", true);
         public static ImpostorRoles.Reaper Reaper = new ImpostorRoles.Reaper();
 
         public static NeutralRoles.Arsonist Arsonist = new NeutralRoles.Arsonist();
@@ -46,6 +48,7 @@ namespace Nebula.Roles
 
         public static ComplexRoles.FCrewmate F_Crewmate = new ComplexRoles.FCrewmate();
         public static ComplexRoles.FGuesser F_Guesser = new ComplexRoles.FGuesser();
+        public static ComplexRoles.FTrapper F_Trapper = new ComplexRoles.FTrapper();
 
         public static ExtraRoles.Lover Lover = new ExtraRoles.Lover();
         public static ExtraRoles.Trilemma Trilemma = new ExtraRoles.Trilemma();
@@ -54,11 +57,11 @@ namespace Nebula.Roles
         //全てのロールはこの中に含まれている必要があります
         public static List<Role> AllRoles = new List<Role>()
         {
-            Impostor,Camouflager,Cleaner,Damned,Eraser,EvilAce,EvilGuesser,Reaper,
-            F_Guesser,
+            Impostor,Camouflager,Cleaner,Damned,Eraser,EvilAce,EvilGuesser,EvilTrapper,Reaper,
+            F_Guesser,F_Trapper,
             Arsonist,Empiric,Jackal,Jester,Vulture,
             F_Crewmate,
-            Crewmate,Agent,Alien,Bait,Booster,DamnedCrew,Engineer,Mayor,Necromancer,NiceGuesser,Provocateur,Psychic,SecurityGuard,Sheriff,Spy,
+            Crewmate,Agent,Alien,Bait,Booster,DamnedCrew,Engineer,Mayor,Necromancer,NiceGuesser,NiceTrapper,Provocateur,Psychic,SecurityGuard,Sheriff,Spy,
             Madmate,
         };
 

@@ -41,6 +41,7 @@ namespace Nebula
         ExemptTasks,
         RefreshTasks,
         CompleteTask,
+        ObjectInstantiate,
 
         // Role functionality
 
@@ -128,7 +129,7 @@ namespace Nebula
                     RPCEvents.RevivePlayer(reader.ReadByte());
                     break;
                 case (byte)CustomRPC.EmitSpeedFactor:
-                    RPCEvents.EmitSpeedFactor(reader.ReadByte(), new Game.SpeedFactor(reader.ReadBoolean(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadBoolean()));
+                    RPCEvents.EmitSpeedFactor(reader.ReadByte(), new Game.SpeedFactor(reader.ReadBoolean(), reader.ReadByte(),reader.ReadSingle(), reader.ReadSingle(), reader.ReadBoolean()));
                     break;
                 case (byte)CustomRPC.FixLights:
                     RPCEvents.FixLights();
@@ -144,6 +145,9 @@ namespace Nebula
                     break;
                 case (byte)CustomRPC.CompleteTask:
                     RPCEvents.CompleteTask(reader.ReadByte());
+                    break;
+                case (byte)CustomRPC.ObjectInstantiate:
+                    RPCEvents.ObjectInstantiate(reader.ReadByte(), reader.ReadByte(),reader.ReadUInt64(),reader.ReadSingle(), reader.ReadSingle());
                     break;
 
 
@@ -166,6 +170,7 @@ namespace Nebula
             Events.LocalEvent.Initialize();
             Events.Schedule.Initialize();
             Objects.CustomMessage.Initialize();
+            Objects.CustomObject.Initialize();
             Patches.MeetingHudPatch.Initialize();
             Patches.EmergencyPatch.Initialize();
         }
@@ -528,6 +533,12 @@ namespace Nebula
             switchSystem.ActualSwitches = switchSystem.ExpectedSwitches;
         }
 
+        public static void ObjectInstantiate(byte ownerId,byte objectTypeId,ulong objectId,float positionX,float positionY)
+        {
+            Objects.CustomObject obj=new Objects.CustomObject(ownerId,Objects.CustomObject.Type.AllTypes[objectTypeId],objectId,new Vector3(positionX,positionY));
+            obj.ObjectType.UpdateFunction.Invoke(obj);
+        }
+
         public static void SealVent(byte playerId, int ventId)
         {
             Events.Schedule.RegisterPostMeetingAction(() =>
@@ -684,6 +695,7 @@ namespace Nebula
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.EmitSpeedFactor, Hazel.SendOption.Reliable, -1);
             writer.Write(player.PlayerId);
             writer.Write(speedFactor.IsPermanent);
+            writer.Write(speedFactor.DupId);
             writer.Write(speedFactor.Duration);
             writer.Write(speedFactor.SpeedRate);
             writer.Write(speedFactor.CanCrossOverMeeting);
@@ -778,6 +790,23 @@ namespace Nebula
             writer.Write(playerId);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.CompleteTask(playerId);
+        }
+
+        public static void ObjectInstantiate(Objects.CustomObject.Type objectType,Vector3 position)
+        {
+            ulong id;
+            while (true) {
+                id = (ulong)NebulaPlugin.rnd.Next(64);
+                if (!Objects.CustomObject.Objects.ContainsKey((id + (ulong)PlayerControl.LocalPlayer.PlayerId * 64))) break;
+            }
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ObjectInstantiate, Hazel.SendOption.Reliable, -1);
+            writer.Write(PlayerControl.LocalPlayer.PlayerId);
+            writer.Write(objectType.Id);
+            writer.Write(id);
+            writer.Write(position.x);
+            writer.Write(position.y);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.ObjectInstantiate(PlayerControl.LocalPlayer.PlayerId,objectType.Id,id,position.x,position.y);
         }
     }
 }

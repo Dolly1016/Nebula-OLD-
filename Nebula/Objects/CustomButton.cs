@@ -103,7 +103,7 @@ namespace Nebula.Objects
             }
         }
 
-        public static void MeetingEndedUpdate()
+        public static void OnMeetingEnd()
         {
             buttons.RemoveAll(item => item.actionButton == null);
             for (int i = 0; i < buttons.Count; i++)

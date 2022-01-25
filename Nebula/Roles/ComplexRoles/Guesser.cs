@@ -11,20 +11,14 @@ using System.Reflection;
 
 namespace Nebula.Roles.ComplexRoles
 {
-    public class FGuesser : Role
+    public class FGuesser : Template.HasBilateralness
     {
-        public Module.CustomOption chanceToSpawnAsImpostor;
         public Module.CustomOption guesserShots;
         public Module.CustomOption canShotSeveralTimesInTheSameMeeting;
 
         static public Color Color = new Color(255f / 255f, 255f / 255f, 0f / 255f);
 
         public int remainShotsId { get; private set; }
-
-        public int ChanceToSpawnAsImpostor()
-        {
-            return chanceToSpawnAsImpostor.getSelection();
-        }
 
         private static Sprite targetSprite;
         public static Sprite getTargetSprite()
@@ -34,33 +28,19 @@ namespace Nebula.Roles.ComplexRoles
             return targetSprite;
         }
 
-        //Complexなロールカテゴリーについてのみ呼ばれます。
-        public override Patches.AssignRoles.RoleAllocation[] GetComplexAllocations()
-        {
-            Patches.AssignRoles.RoleAllocation[] result = new Patches.AssignRoles.RoleAllocation[(int)roleCountOption.getFloat()];
-
-            int evils = Helpers.CalcProbabilityCount(ChanceToSpawnAsImpostor(),result.Length);
-
-            int chance = roleChanceOption.getSelection();
-            for (int i = 0; i < result.Length; i++)
-            {
-                result[i] = new Patches.AssignRoles.RoleAllocation(i < evils ? Roles.EvilGuesser : Roles.NiceGuesser, chance);
-            }
-
-            return result;
-        }
-
         public override void LoadOptionData()
         {
-            chanceToSpawnAsImpostor = CreateOption(Color.white, "chanceToSpawnAsImpostor", CustomOptionHolder.rates);
+            base.LoadOptionData();
             canShotSeveralTimesInTheSameMeeting = CreateOption(Color.white,"canShotSeveralTimes",false);
             guesserShots = CreateOption(Color.white, "guesserShots",3f,1f,15f,1f);
+
+            FirstRole = Roles.NiceGuesser;
+            SecondaryRole = Roles.EvilGuesser;
         }
 
         public FGuesser()
-                : base("Guesser", "guesser", Color, RoleCategory.Complex, Side.Crewmate, Side.Crewmate,
-                     new HashSet<Side>(), new HashSet<Side>(), new HashSet<Patches.EndCondition>(),
-                     false, false, false, false, false)
+                : base("Guesser", "guesser", Color)
+                     
         {
             remainShotsId = Game.GameData.RegisterRoleDataId("guesser.remainShots");
         }

@@ -37,7 +37,7 @@ namespace Nebula.Roles.CrewmateRoles
             boostButton = new CustomButton(
                 () =>
                 {
-                    RPCEventInvoker.EmitSpeedFactor(PlayerControl.LocalPlayer, new Game.SpeedFactor(boostDurationOption.getFloat(), boostSpeedOption.getFloat(), false));
+                    RPCEventInvoker.EmitSpeedFactor(PlayerControl.LocalPlayer, new Game.SpeedFactor(0,boostDurationOption.getFloat(), boostSpeedOption.getFloat(), false));
 
                     boostButton.Timer = boostButton.MaxTimer;
                 },

@@ -37,7 +37,6 @@ namespace Nebula.Patches
         {
             private static void CalculateVotes(ref Dictionary<byte, int> dictionary, MeetingHud __instance)
             {
-                NebulaPlugin.Instance.Logger.Print("print");
 
                 for (int i = 0; i < __instance.playerStates.Length; i++)
                 {
@@ -88,8 +87,6 @@ namespace Nebula.Patches
                         if (VoteWeight.ContainsKey(playerVoteArea.TargetPlayerId))
                         {
                             weight = VoteWeight[playerVoteArea.TargetPlayerId];
-
-                            NebulaPlugin.Instance.Logger.Print("weight:" + weight);
                         }
                         else
                         {

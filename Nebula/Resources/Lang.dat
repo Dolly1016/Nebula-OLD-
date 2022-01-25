@@ -64,10 +64,13 @@
 "role.crewmate.chanceOfDamned" : "Chance Of Damned"
 
 "role.guesser.name" : "Guesser"
-"role.guesser.chanceToSpawnAsImpostor" : "Chance to Spawn as Impostor"
+"role.guesser.chanceToSpawnAsSecondarySide" : "Chance to Spawn as Impostor"
 "role.guesser.canShotSeveralTimes" : "Can Shot Several Times In The Same Meeting"
 "role.guesser.guesserShots" : "Guesser Shots"
 "role.guesser.guessesLeft" : "Guesses Left"
+
+"role.trapper.name" : "Trapper"
+"role.trapper.chanceToSpawnAsSecondarySide" : "Chance to Spawn as Impostor"
 
 "role.agent.name" : "Agent"
 "role.agent.description" : "Do Your Tasks More"
@@ -152,7 +155,10 @@
 "role.necromancer.reviveDuration" : "Revive Duration"
 
 "role.niceGuesser.name" : "Nice Guesser"
-"role.niceGuesser.description" : "Guess and shoot"
+"role.niceGuesser.description" : "Guess and Shoot"
+
+"role.niceTrapper.name" : "Nice Trapper"
+"role.niceTrapper.description" : "Entrap and Kill Crewmates"
 
 "role.provocateur.name" : "Provocateur"
 "role.provocateur.description" : "Go To The Grave Together"
@@ -164,6 +170,7 @@
 "role.psychic.message.elapsedTime" : "It's been %TIME% seconds since I was killed."
 "role.psychic.message.killerColor" : "My murder's color is %COLOR%."
 "role.psychic.message.killerRole" : "My murder's role is %ROLE%."
+"role.psychic.message.myRole" : "I am %MYROLE%."
 
 "role.sheriff.name" : "Sheriff"
 "role.sheriff.description" : "Shoot the <color=#ff1919ff>Impostors</color>"
@@ -205,7 +212,10 @@
 "role.evilAce.killCoolDown" : "Kill Cool Down Multiplier"
 
 "role.evilGuesser.name" : "Evil Guesser"
-"role.evilGuesser.description" : "Guess and shoot"
+"role.evilGuesser.description" : "Guess and Shoot"
+
+"role.evilTrapper.name" : "Evil Trapper"
+"role.evilTrapper.description" : "Entrap and Kill Crewmates"
 
 "role.reaper.name" : "Reaper"
 "role.reaper.description" : "Kill and Deceive the Crewmates"

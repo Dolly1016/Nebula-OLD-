@@ -129,10 +129,16 @@ namespace Nebula.Roles
         public virtual void FinalizeInGame(PlayerControl __instance) { }
 
         /// <summary>
-        /// 毎ティック呼び出されます
+        /// プレイヤーが更新されるたびに呼び出されます。
         /// </summary>
         [RoleLocalMethod]
         public virtual void MyPlayerControlUpdate() { }
+
+        /// <summary>
+        /// 毎回呼び出されます。ボタンの処理はこちらで行います。
+        /// </summary>
+        [RoleLocalMethod]
+        public virtual void MyUpdate() { }
 
         /// <summary>
         ///ゲーム終了時に呼び出されます。 

@@ -24,6 +24,29 @@ namespace Nebula.Patches
             return false;
         }
 
+        static public PlayerControl GetTarget(Vector3 position,float distance,bool onlyWhiteNames=false,List<byte> untargetablePlayers = null)
+        {
+            PlayerControl result = null;
+            float num;
+            if (!ShipStatus.Instance) return result;
+
+
+            foreach(PlayerControl player in PlayerControl.AllPlayerControls)
+            {
+                if (onlyWhiteNames && (player.Data.Role.IsImpostor || player.GetModData().role.deceiveImpostorInNameDisplay)) continue;
+                if (untargetablePlayers!=null && untargetablePlayers.Contains(player.PlayerId)) continue;
+
+                num=player.transform.position.Distance(position);
+                if (distance > num)
+                {
+                    result = player;
+                    distance = num;
+                }
+            }
+
+            return result;
+        }
+
         static public PlayerControl SetMyTarget(bool onlyWhiteNames = false, bool targetPlayersInVents = false, List<byte> untargetablePlayers = null, PlayerControl targetingPlayer = null)
         {
             PlayerControl result = null;
@@ -216,6 +239,8 @@ namespace Nebula.Patches
 
             if (__instance.PlayerId == PlayerControl.LocalPlayer.PlayerId)
             {
+                Objects.CustomObject.Update();
+
                 UpdateAllPlayersInfo();
                 ResetPlayerOutlines();
                 ResetDeadBodyOutlines();

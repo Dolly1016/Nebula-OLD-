@@ -67,8 +67,10 @@ namespace Nebula.Patches
                 }
             }
 
-            Objects.CustomButton.MeetingEndedUpdate();
+            Objects.CustomButton.OnMeetingEnd();
+            Objects.CustomObject.OnMeetingEnd();
             Game.GameData.data.myData.getGlobalData().role.OnMeetingEnd();
+
 
             //死体はすべて消去される
             foreach(Game.DeadPlayerData deadPlayerData in Game.GameData.data.deadPlayers.Values)

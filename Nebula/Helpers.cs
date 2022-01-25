@@ -244,8 +244,7 @@ namespace Nebula
         {
             float x = vector.x - opponent.x;
             float y = vector.y - opponent.y;
-            float z = vector.z - opponent.z;
-            return Mathf.Sqrt(x*x + y*y + z*z);
+            return Mathf.Sqrt(x*x + y*y);
         }
 
         public static void shareGameVersion()
@@ -353,16 +352,10 @@ namespace Nebula
             if (max == 0) { return 0; }
 
             int count = 0;
-            double rnd = NebulaPlugin.rnd.NextDouble();
             double rate = (double)chance / 10.0;
-            while (rnd < rate)
+            for(int i = 0; i < max; i++)
             {
-                count++;
-                rate *= (double)chance / 10.0;
-                if (count >= max)
-                {
-                    break;
-                }
+                if (NebulaPlugin.rnd.NextDouble() < rate) count++;
             }
             return count;
         }

@@ -44,7 +44,7 @@ namespace Nebula.Roles.Template
                     RPCEvents.DragAndDropPlayer(PlayerControl.LocalPlayer.PlayerId, target);
                 },
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
-                () => { return PlayerControl.LocalPlayer.CanMove && Game.GameData.data.myData.getGlobalData().dragPlayerId != Byte.MaxValue; },
+                () => { return PlayerControl.LocalPlayer.CanMove && (Game.GameData.data.myData.getGlobalData().dragPlayerId != Byte.MaxValue|| deadBodyId!=Byte.MaxValue); },
                 () => { },
                 getDragButtonSprite(),
                 new Vector3(-1.8f, -0.06f, 0),
@@ -52,7 +52,7 @@ namespace Nebula.Roles.Template
                 KeyCode.F
             );
 
-            dragButton.MaxTimer = 1;
+            dragButton.MaxTimer = 0;
             dragButton.Timer = 0;
         }
 
@@ -101,11 +101,9 @@ namespace Nebula.Roles.Template
         public override void MyPlayerControlUpdate()
         {
             if (Game.GameData.data.myData.getGlobalData() == null) return;
-
             if (Game.GameData.data.myData.getGlobalData().dragPlayerId == byte.MaxValue)
             {
                 dragButton.Sprite = getDragButtonSprite();
-
                 DeadBody body = Patches.PlayerControlPatch.SetMyDeadTarget();
                 if (body)
                 {

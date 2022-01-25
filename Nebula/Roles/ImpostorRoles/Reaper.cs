@@ -69,6 +69,7 @@ namespace Nebula.Roles.ImpostorRoles
 
         public override void Initialize(PlayerControl __instance)
         {
+            base.Initialize(__instance);
             ConnectVent(true);
         }
 

@@ -78,21 +78,29 @@ namespace Nebula.Game
         public float Duration;
         public float SpeedRate { get; private set; }
         public bool CanCrossOverMeeting { get; private set; }
+        //DupId=0の場合、重複を許可する。それ以外の場合、既に存在するSpeedFactorは消去される。
+        public byte DupId { get; set; }
 
-        public SpeedFactor(bool IsPermanent,float duration, float speed,bool canCrossOverMeeting)
+
+        public SpeedFactor(bool IsPermanent, byte dupId, float duration, float speed,bool canCrossOverMeeting)
         {
             IsPermanent = IsPermanent;
+            DupId = dupId;
             Duration = duration;
             SpeedRate = speed;
             CanCrossOverMeeting = canCrossOverMeeting;
         }
 
         public SpeedFactor(float speed)
-            :this(true,1f,speed,true)
+            :this(true,0,1f,speed,true)
         {}
 
-        public SpeedFactor(float duration,float speed, bool canCrossOverMeeting)
-         : this(false, duration, speed, canCrossOverMeeting)
+        public SpeedFactor(byte dupId,float speed)
+           : this(true, dupId,1f, speed, true)
+        { }
+
+        public SpeedFactor(byte dupId, float duration,float speed, bool canCrossOverMeeting)
+         : this(false, dupId,duration, speed, canCrossOverMeeting)
         { }
     }
 
@@ -109,6 +117,7 @@ namespace Nebula.Game
 
         public void Register(SpeedFactor speed)
         {
+            if (speed.DupId != 0) Factors.RemoveWhere((factor) => { return factor.DupId == speed.DupId; });
             Factors.Add(speed);
             Reflect();
         }

@@ -199,7 +199,9 @@ namespace Nebula.Patches
 
             /* ボタン類の更新 */
             CustomButton.HudUpdate();
-            if(!PlayerControl.LocalPlayer.Data.Role.IsImpostor && PlayerControl.LocalPlayer.GetModData().role.canUseVents)
+
+            Helpers.RoleAction(PlayerControl.LocalPlayer, (role) => { role.MyUpdate(); });
+            if (!PlayerControl.LocalPlayer.Data.Role.IsImpostor && PlayerControl.LocalPlayer.GetModData().role.canUseVents)
             {
                 if (Input.GetKeyDown(KeyCode.V))
                 HudManagerStartPatch.Manager.ImpostorVentButton.DoClick();

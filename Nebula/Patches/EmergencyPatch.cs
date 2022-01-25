@@ -61,7 +61,6 @@ namespace Nebula.Patches
         {
             static void Postfix(EmergencyMinigame __instance)
             {
-                NebulaPlugin.Instance.Logger.Print("2");
                 var roleCanCallEmergency = true;
                 var statusText = "";
 
@@ -76,7 +75,6 @@ namespace Nebula.Patches
                     return;
                 }
 
-                NebulaPlugin.Instance.Logger.Print("3");
 
                 int score = 0, require = 0;
                 if (Game.GameData.data.GameRule.canUseEmergencyWithoutDeath)
@@ -108,7 +106,6 @@ namespace Nebula.Patches
                     return;
                 }
 
-                NebulaPlugin.Instance.Logger.Print("4");
 
                 // Handle max number of meetings
                 if (__instance.state == 1)
