@@ -9,6 +9,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 # ダウンロード
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| Alpha 1.7.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.7.1,2021.12.15/Nebula.zip)|
 | Alpha 1.7.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.7.0,2021.12.15/Nebula.zip)|
 | Alpha 1.6.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.6.0,2021.12.15/Nebula.zip)|
 | Alpha 1.5.2 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.5.2,2021.12.15/Nebula.zip)|
@@ -28,18 +29,29 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 | Alpha 1.1.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.1.0/Nebula.zip)|
 | Alpha 1.0.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.0.0/Nebula.zip)|
 
+# 言語サポート
+| Language | Translator |
+| --- | --- |
+| 日本語 | - |
+| English | - |
+
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
   
+ **Version Alpha 1.8.0**
+ - Sniper, Morphing を追加
+ - AmongUs本体の言語設定とModの言語設定が同期するように(Mod導入後、一度言語を設定すると同期されます)
+  
  **Version Alpha 1.7.1**
- - ProvocateurがLoversあるいはTrelimmaのとき、相方がキルされるとゲームが強制終了する問題を修正
- - 会議画面中でもLovers, Trelimmaの相方、メンバーにマークがつくように
+ - ProvocateurがLoversあるいはTrilemmaのとき、相方がキルされるとゲームが強制終了する問題を修正
+ - 会議画面中でもLovers, Trilemmaの相方、メンバーにマークがつくように
  - Agentのタスク関連の問題を修正
  - Trapperの設置するトラップのグラフィックを修正
   
  **Version Alpha 1.7.0**
- - Agent, Alien, Trapper を追加
+ - Agent, Alien, EvilTrapper, NiceTrapper を追加
+ - Psychicに新たな霊媒メッセージを追加
   
  **Version Alpha 1.6.0**
  - Booster, Engineer, Mayor, Necromancer, Cleaner, Arsonist, Trilemma を追加
@@ -106,53 +118,37 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 # ロール一覧
 
-**インポスター陣営**
-| Roles |
-| ---------- |
-| [Camouflager](#camouflager) |
-| [Cleaner](#cleaner) |
-| [Damned](#damned) |
-| [Eraser](#eraser) |
-| [Evil Ace](#evil-ace) |
-| [Evil Guesser](#guesser) |
-| [Reaper](#reaper) |
-
-**クルーメイト陣営**
-| Roles |
-| ---------- |
-| [Agent](#agent) |
-| [Bait](#bait) |
-| [Booster](#booster) |
-| [Engineer](#engineer) |
-| [Mayor](#mayor) |
-| [Necromancer](#necromancer) |
-| [Nice Guesser](#guesser) |
-| [Provocateur](#provocateur) |
-| [Psychic](#psychic) |
-| [Security Guard](#security-guard) |
-| [Sheriff](#sheriff) |
-| [Spy](#spy) |
-| [Madmate](#madmate) |
-
-**第三陣営**
-| Roles |
-| ---------- |
-| [Arsonist](#arsonist) |
-| [Empiric](#empiric) |
-| [Jackal](#jackal) |
-| [Jester](#jester) |
-| [Vulture](#vulture) |
-
-**特殊ロール**
-| Roles |
-| ---------- |
-| [Lover](#lover) |
-| [Trilemma](#trilemma) |
+| Impostors | Crewmates | Neutral | Secondary
+| ---------- | ---------- | ---------- | ---------- |
+| [Camouflager](#camouflager) | [Agent](#agent) | [Arsonist](#arsonist) | [Lover](#lover) |
+| [Cleaner](#cleaner) | [Alien](#alien) | [Empiric](#empiric) | [Trilemma](#trilemma) |
+| [Damned](#damned) | [Bait](#bait) | [Jackal](#jackal) ||
+| [Eraser](#eraser) | [Booster](#booster) | [Jester](#jester) ||
+| [Evil Ace](#evil-ace) | [Engineer](#engineer) | [Vulture](#vulture) ||
+| [Evil Guesser](#guesser) | [Mayor](#mayor) |||
+| [Evil Trapper](#trapper) | [Necromancer](#necromancer) |||
+| [Reaper](#reaper) | [Nice Guesser](#guesser) |||
+|| [Nice Trapper](#trapper) |||
+|| [Provocateur](#provocateur) |||
+|| [Psychic](#psychic) |||
+|| [Security Guard](#security-guard) |||
+|| [Sheriff](#sheriff) |||
+|| [Spy](#spy) |||
+|| [Madmate](#madmate) |||
 
 -----------------------
 
 ## Guesser
  Guesserは、会議中に役職を言い当てたプレイヤーをキルすることができます。
+ 
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+
+-----------------------
+
+## Trapper
+ Trapperは、加減速やプレイヤー検知、キルができるトラップを仕掛けることができます。
  
  ### オプション
 | オプション名 | 設定内容 |
@@ -236,6 +232,16 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 |----------|:-------------:|
 | Exempt Tasks | ゲーム開始時に免除されるタスク数
 | Act Over Tasks | タスクを代行するたびに同時に獲得できるタスク数
+
+-----------------------
+
+## Alien
+ Alienは、周囲のプレイヤーのクールダウンの進みを妨げることができます。
+ 効果は敵味方なく及ぼされます。
+ 
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
 
 -----------------------
 
