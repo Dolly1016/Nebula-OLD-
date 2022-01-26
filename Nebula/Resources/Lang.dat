@@ -267,6 +267,8 @@
 "role.lover.canChangeTrilemma" : "Can Change Trilemma"
 "role.lover.additionalEndText" : " <color=#ffffffff>with</color> <color=#fb02beff>Lovers</color>"
 
+"role.trilemma.name" : "Trilemma"
+
 "side.crewmate.name" : "Crewmate"
 "side.impostor.name" : "Impostor"
 "side.jackal.name" : "Jackal"
@@ -282,3 +284,4 @@
 "game.endText.jackal" : "Team Jackal Wins"
 "game.endText.jester" : "Jester Wins"
 "game.endText.vulture" : "Vulture Wins"
+"game.endText.trilemma" : "Trilemma Wins"

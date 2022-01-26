@@ -52,11 +52,11 @@ namespace Nebula.Patches
 
             if (role.ignoreBlackout)
             {
-                rate = Mathf.Lerp(__instance.MinLightRadius * role.lightRadiusMin, __instance.MaxLightRadius * role.lightRadiusMax, rate);
+                rate = __instance.MaxLightRadius * role.lightRadiusMax;
             }
             else
             {
-                rate = __instance.MaxLightRadius;
+                rate = Mathf.Lerp(__instance.MinLightRadius * role.lightRadiusMin, __instance.MaxLightRadius * role.lightRadiusMax, rate);
             }
 
             if (role.useImpostorLightRadius)

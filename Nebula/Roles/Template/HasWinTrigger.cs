@@ -6,6 +6,6 @@ namespace Nebula.Roles.Template
 {
     public interface HasWinTrigger
     {
-        public bool WinTrigger { get; }
+        public bool WinTrigger { get; set; }
     }
 }

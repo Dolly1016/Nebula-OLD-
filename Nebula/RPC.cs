@@ -18,6 +18,7 @@ namespace Nebula
         VersionHandshake,
         UpdatePlayerControl,
         ForceEnd,
+        WinTrigger,
         ShareOptions,
         SetRole,
         SetExtraRole,
@@ -81,6 +82,9 @@ namespace Nebula
                     break;
                 case (byte)CustomRPC.ForceEnd:
                     RPCEvents.ForceEnd(reader.ReadByte());
+                    break;
+                case (byte)CustomRPC.WinTrigger:
+                    RPCEvents.WinTrigger(reader.ReadByte());
                     break;
                 case (byte)CustomRPC.ShareOptions:
                     RPCEvents.ShareOptions((int)reader.ReadPackedUInt32(), reader);
@@ -203,6 +207,15 @@ namespace Nebula
                     player.MurderPlayer(player);
                     player.Data.IsDead = true;
                 }
+            }
+        }
+
+        public static void WinTrigger(byte roleId)
+        {
+            Roles.Role role = Roles.Role.GetRoleById(roleId);
+            if(role is Roles.Template.HasWinTrigger)
+            {
+                ((Roles.Template.HasWinTrigger)role).WinTrigger=true;
             }
         }
 
@@ -625,6 +638,14 @@ namespace Nebula
 
     public class RPCEventInvoker
     {
+        public static void WinTrigger(Roles.Role role)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.WinTrigger, Hazel.SendOption.Reliable, -1);
+            writer.Write(role.id);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.WinTrigger(role.id);
+        }
+
         public static void UpdatePlayerControl()
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UpdatePlayerControl, Hazel.SendOption.Reliable, -1);

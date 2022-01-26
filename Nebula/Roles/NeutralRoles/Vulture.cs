@@ -49,7 +49,7 @@ namespace Nebula.Roles.NeutralRoles
                     RPCEventInvoker.UpdateRoleData(PlayerControl.LocalPlayer.PlayerId, eatLeftId, eatLeft);
                     if (eatLeft<=0)
                     {
-                        WinTrigger = true;
+                        RPCEventInvoker.WinTrigger(this);
                     }
                     eatButton.Timer = eatButton.MaxTimer;
                 },

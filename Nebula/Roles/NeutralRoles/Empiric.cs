@@ -208,9 +208,9 @@ namespace Nebula.Roles.NeutralRoles
                 }
             }
 
-            if (allPlayerInfected)WinTrigger = true;
-            
-            foreach(KeyValuePair<byte,PoolablePlayer> player in PlayerIcons)
+            if (allPlayerInfected)RPCEventInvoker.WinTrigger(this);
+
+            foreach (KeyValuePair<byte,PoolablePlayer> player in PlayerIcons)
             {
                 if (!player.Value.gameObject.active)
                 {

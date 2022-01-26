@@ -78,7 +78,7 @@ namespace Nebula.Roles.NeutralRoles
                     {
                         arsonistButton.isEffectActive = false;
                         arsonistButton.actionButton.cooldownTimerText.color = Palette.EnabledColor;
-                        WinTrigger = true;
+                        RPCEventInvoker.WinTrigger(this);
                     }
                 },
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
