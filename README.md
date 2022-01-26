@@ -143,6 +143,19 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 -----------------------
 
+# クレジットとリソース
+
+[BepInEx](https://github.com/BepInEx) ゲームの関数をフックするために使用しています。
+[TheOtherRoles](https://github.com/Eisbison/TheOtherRoles) このMODの着想の根源はすべてここからのものです。ソースを一部使用しています。
+[TheOtherRoles: GM Edition](https://github.com/yukinogatari/TheOtherRoles-GM) ソースを一部使用しています。Empiric,MadmateのアイデアはこのMODからのものです。
+
+その他ロールアイデアのご提供等
+
+龍 : Reaper, Provocateur, Booster, Alien
+p5p5next : Damned
+
+-----------------------
+
 ## Guesser
  Guesserは、会議中に役職を言い当てたプレイヤーをキルすることができます。
  
