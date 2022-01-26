@@ -131,9 +131,9 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 | [Evil Ace](#evil-ace) | [Engineer](#engineer) | [Vulture](#vulture) ||
 | [Evil Guesser](#guesser) | [Mayor](#mayor) |||
 | [Evil Trapper](#trapper) | [Necromancer](#necromancer) |||
-| [Reaper](#reaper) | [Nice Guesser](#guesser) |||
-|| [Nice Trapper](#trapper) |||
-|| [Provocateur](#provocateur) |||
+| [Morphing](#morphing) | [Nice Guesser](#guesser) |||
+| [Reaper](#reaper) | [Nice Trapper](#trapper) |||
+| [Sniper](#sniper) | [Provocateur](#provocateur) |||
 || [Psychic](#psychic) |||
 || [Security Guard](#security-guard) |||
 || [Sheriff](#sheriff) |||
@@ -205,6 +205,24 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 | オプション名 | 設定内容 |
 |----------|:-------------:|
 | Kill Cool Down Multiplier | インポスター陣営が1人だけのときにクールダウンにかかる倍率 
+
+-----------------------
+
+## Morphing
+ Morphingは、サンプルを採取したプレイヤーに化けることができます。
+ 
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+
+-----------------------
+
+## Sniper
+ Sniperは通常のキルは行えませんが、狙撃銃を繰り出すことで壁を隔てた先からも相手を殺すことができます。
+ 
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
 
 -----------------------
 
