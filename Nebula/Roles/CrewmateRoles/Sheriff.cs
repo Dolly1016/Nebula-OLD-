@@ -38,7 +38,7 @@ namespace Nebula.Roles.CrewmateRoles
                     {
                         target = PlayerControl.LocalPlayer;
                     }
-                    Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, target, true);
+                    Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, target, false,true);
 
                     killButton.Timer = killButton.MaxTimer;
                     Game.GameData.data.myData.currentTarget = null;

@@ -45,13 +45,9 @@
 "option.canUseEmergencyWithoutReport" : "Can Use Emergency Without Report"
 "option.severeEmergencyLock" : "Severe Emergency Lock"
 
-"option.blockSkippingInEmergencyMeetings" : "Block Skipping In Emergency Meetings"
-"option.noVoteIsSelfVote" : "No Vote Is Self Vote"
-"option.parallelMedbayScans" : "Parallel Medbay Scans"
-"option.hideSettings" : "Hide Settings"
-
-"option.uselessOptions" : "Useless Option"
+"option.mapOptions" : "Map Option"
 "option.playRandomMaps" : "Play Random Maps"
+"option.additionalVents" : "Additional Vents"
 
 "option.roleCount" : "Max Players"
 
@@ -71,6 +67,16 @@
 
 "role.trapper.name" : "Trapper"
 "role.trapper.chanceToSpawnAsSecondarySide" : "Chance to Spawn as Impostor"
+"role.trapper.maxTraps" : "Max Traps"
+"role.trapper.accelSpeed" : "Accel Speed"
+"role.trapper.decelSpeed" : "Decel Speed"
+"role.trapper.accelDuration" : "Accel Duration"
+"role.trapper.decelDuration" : "Decel Duration"
+"role.trapper.visibleTrapRange" : "Visible Trap Range"
+"role.trapper.invisibleTrapRange" : "Invisible Trap Range"
+"role.trapper.commTrapCost" : "Log Trap Cost"
+"role.trapper.killTrapCost" : "Kill Trap Cost"
+
 
 "role.agent.name" : "Agent"
 "role.agent.description" : "Do Your Tasks More"
@@ -158,7 +164,7 @@
 "role.niceGuesser.description" : "Guess and Shoot"
 
 "role.niceTrapper.name" : "Nice Trapper"
-"role.niceTrapper.description" : "Entrap and Kill Crewmates"
+"role.niceTrapper.description" : "Entrap and Find the <color=#ff1919ff>Impostors</color>"
 
 "role.provocateur.name" : "Provocateur"
 "role.provocateur.description" : "Go To The Grave Together"
@@ -220,11 +226,24 @@
 "role.reaper.name" : "Reaper"
 "role.reaper.description" : "Kill and Deceive the Crewmates"
 
+"role.sniper.name" : "Sniper"
+"role.sniper.description" : "Snipe and Shoot"
+"role.sniper.snipeCoolDown" : "Snipe Cool Down"
+"role.sniper.shotSize" : "Shot Size"
+"role.sniper.shotEffectiveRange" : "Shot Effective Range"
+"role.sniper.canKillImpostors" : "Can Kill Impostors"
+
 "role.arsonist.name" : "Arsonist"
 "role.arsonist.description" : "Let Them Burn"
+"role.arsonist.douseDuration" : "Douse Duration"
+"role.arsonist.douseCoolDown" : "Douse Cool Down"
 
 "role.empiric.name" : "Empiric"
 "role.empiric.description" : "Spread a Disease"
+"role.empiric.maxInfectMyself" : "Max Infected by Myself"
+"role.empiric.infectDuration" : "Infect Duration"
+"role.empiric.infectRange" : "Infect Range"
+"role.empiric.coastingPhase" : "Coasting Phase After Meetings"
 
 "role.jackal.name" : "Jackal"
 "role.jackal.description" : "Kill all Crewmates and <color=#ff1919ff>Impostors</color> to Win"

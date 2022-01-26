@@ -185,6 +185,18 @@ namespace Nebula.Patches
         public static void UpdateImpostorKillButton(HudManager __instance)
         {
             __instance.KillButton.SetTarget(PlayerControlPatch.SetMyTarget(true));
+
+            if (Game.GameData.data.myData.getGlobalData().role.side == Roles.Side.Impostor)
+            {
+                if (Game.GameData.data.myData.getGlobalData().role.HideKillButtonEvenImpostor)
+                {
+                    __instance.KillButton.Hide();
+                }
+                else
+                {
+                    __instance.KillButton.Show();
+                }
+            }
         }
 
         public static void Postfix(HudManager __instance)
@@ -219,6 +231,11 @@ namespace Nebula.Patches
 
             //引きずられているプレイヤーの処理
             UpdateDraggedPlayer();
+
+            //マウス角度の調整
+            Vector3 mouseDirection = Input.mousePosition - new Vector3(Screen.width / 2, Screen.height / 2);
+            Game.GameData.data.myData.getGlobalData().MouseAngle = Mathf.Atan2(mouseDirection.y, mouseDirection.x);
+
 
             //インポスターのキルボタンのパッチ
             if (PlayerControl.LocalPlayer.Data.Role.IsImpostor)

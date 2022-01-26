@@ -58,6 +58,24 @@ namespace Nebula.Objects
                 else if (obj.Renderer.color.a < 1f) obj.Renderer.color = new Color(1f, 1f, 1f, 1f);
             });
 
+            static public Type SniperRifle = new Type("SniperRifle", "Nebula.Resources.SniperRifle.png", (obj) => { }, (obj) =>
+            {
+                var player = Game.GameData.data.players[obj.OwnerId];
+                var targetPosition = Helpers.playerById(obj.OwnerId).transform.position + new Vector3(0.7f * (float)Math.Cos(player.MouseAngle), 1.2f * (float)Math.Sin(player.MouseAngle));
+                obj.GameObject.transform.position += (targetPosition - obj.GameObject.transform.position) * 0.4f;
+                obj.Renderer.transform.eulerAngles = new Vector3(0f, 0f, (float)(player.MouseAngle * 360f / Math.PI / 2f));
+                if (Math.Cos(player.MouseAngle) < 0.0)
+                {
+                    if (obj.Renderer.transform.localScale.y > 0)
+                        obj.Renderer.transform.localScale = new Vector3(1f, -1f);
+                }
+                else
+                {
+                    if (obj.Renderer.transform.localScale.y < 0)
+                        obj.Renderer.transform.localScale = new Vector3(1f, 1f);
+                }
+            }, false);
+
             static private byte AvailableId = 0;
 
             public byte Id { get; }

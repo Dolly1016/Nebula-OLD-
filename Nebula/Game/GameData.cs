@@ -228,6 +228,8 @@ namespace Nebula.Game
 
         public SpeedFactorManager Speed { get; }
 
+        public float MouseAngle { get; set; }
+
         public TaskData Tasks { get; }
 
         public PlayerData(byte playerId, string name,PlayerOutfit outfit,Role role)
@@ -246,6 +248,7 @@ namespace Nebula.Game
             this.dragPlayerId = Byte.MaxValue;
             this.Speed = new SpeedFactorManager(playerId) ;
             this.Tasks = new TaskData(role.side==Roles.Side.Impostor || role.hasFakeTask);
+            this.MouseAngle = 0f;
         }
 
         public int GetRoleData(int id)

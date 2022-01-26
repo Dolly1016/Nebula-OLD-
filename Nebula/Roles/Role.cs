@@ -69,6 +69,8 @@ namespace Nebula.Roles
 
         public bool CanCallEmergencyMeeting { get; protected set; }
 
+        public bool HideKillButtonEvenImpostor { get; protected set; }
+
         //使用済みロールID
         static private byte maxId = 0;
 
@@ -129,6 +131,7 @@ namespace Nebula.Roles
             this.winReasons = winReasons;
 
             this.CanCallEmergencyMeeting = true;
+            this.HideKillButtonEvenImpostor = false;
         }
 
         public static Role GetRoleById(byte id)

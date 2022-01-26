@@ -16,6 +16,7 @@ namespace Nebula
 
         ResetVaribles = 60,
         VersionHandshake,
+        UpdatePlayerControl,
         ForceEnd,
         ShareOptions,
         SetRole,
@@ -47,7 +48,8 @@ namespace Nebula
 
         SealVent = 91,
         MultipleVote,
-
+        SniperSettleRifle,
+        SniperShot
     }
 
     //RPCを受け取ったときのイベント
@@ -66,13 +68,15 @@ namespace Nebula
                 case (byte)CustomRPC.VersionHandshake:
                     int length = reader.ReadInt32();
                     byte[] version = new byte[length];
-                    for(byte i = 0; i < length; i++)
+                    for (byte i = 0; i < length; i++)
                     {
                         version[i] = reader.ReadByte();
                     }
                     int clientId = reader.ReadPackedInt32();
-                    UnityEngine.Debug.Log("Received Handshake:"+version[0]+"." + version[1] + "." + version[2] + "." + version[3] );
                     RPCEvents.VersionHandshake(version, new Guid(reader.ReadBytes(16)), clientId);
+                    break;
+                case (byte)CustomRPC.UpdatePlayerControl:
+                    RPCEvents.UpdatePlayerControl(reader.ReadByte(),reader.ReadSingle());
                     break;
                 case (byte)CustomRPC.ForceEnd:
                     RPCEvents.ForceEnd(reader.ReadByte());
@@ -129,7 +133,7 @@ namespace Nebula
                     RPCEvents.RevivePlayer(reader.ReadByte());
                     break;
                 case (byte)CustomRPC.EmitSpeedFactor:
-                    RPCEvents.EmitSpeedFactor(reader.ReadByte(), new Game.SpeedFactor(reader.ReadBoolean(), reader.ReadByte(),reader.ReadSingle(), reader.ReadSingle(), reader.ReadBoolean()));
+                    RPCEvents.EmitSpeedFactor(reader.ReadByte(), new Game.SpeedFactor(reader.ReadBoolean(), reader.ReadByte(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadBoolean()));
                     break;
                 case (byte)CustomRPC.FixLights:
                     RPCEvents.FixLights();
@@ -147,15 +151,20 @@ namespace Nebula
                     RPCEvents.CompleteTask(reader.ReadByte());
                     break;
                 case (byte)CustomRPC.ObjectInstantiate:
-                    RPCEvents.ObjectInstantiate(reader.ReadByte(), reader.ReadByte(),reader.ReadUInt64(),reader.ReadSingle(), reader.ReadSingle());
+                    RPCEvents.ObjectInstantiate(reader.ReadByte(), reader.ReadByte(), reader.ReadUInt64(), reader.ReadSingle(), reader.ReadSingle());
                     break;
-
 
                 case (byte)CustomRPC.SealVent:
                     RPCEvents.SealVent(reader.ReadByte(), reader.ReadInt32());
                     break;
                 case (byte)CustomRPC.MultipleVote:
                     RPCEvents.MultipleVote(reader.ReadByte(), reader.ReadByte());
+                    break;
+                case (byte)CustomRPC.SniperSettleRifle:
+                    RPCEvents.SniperSettleRifle(reader.ReadByte());
+                    break;
+                case (byte)CustomRPC.SniperShot:
+                    RPCEvents.SniperShot(reader.ReadByte());
                     break;
             }
         }
@@ -191,6 +200,11 @@ namespace Nebula
                     player.Data.IsDead = true;
                 }
             }
+        }
+
+        public static void UpdatePlayerControl(byte playerId,float mouseAngle)
+        {
+            Helpers.playerById(playerId).GetModData().MouseAngle = mouseAngle;
         }
 
         public static void SetRole(Roles.Role role, byte playerId)
@@ -557,10 +571,60 @@ namespace Nebula
         {
             Patches.MeetingHudPatch.SetVoteWeight(playerId, count);
         }
+
+        public static void SniperSettleRifle(byte playerId)
+        {
+            List<Objects.CustomObject> objList=new List<Objects.CustomObject>();
+            foreach(Objects.CustomObject obj in Objects.CustomObject.Objects.Values)
+            {
+                if (obj.OwnerId != playerId) continue;
+                if (obj.ObjectType != Objects.CustomObject.Type.SniperRifle) continue;
+
+                objList.Add(obj);
+            }
+
+            foreach(var obj in objList)
+            {
+                obj.Destroy();
+            }
+        }
+
+
+        public static void SniperShot(byte murderId)
+        {
+            Objects.Arrow arrow=new Objects.Arrow(Color.white);
+            arrow.image.sprite = Roles.Roles.Sniper.getSnipeArrowSprite();
+
+            Vector3 pos = Helpers.playerById(murderId).transform.position;
+
+            HudManager.Instance.StartCoroutine(Effects.Lerp(10f, new Action<float>((p) =>
+            {
+                arrow.Update(pos);
+                arrow.arrow.transform.eulerAngles = new Vector3(0f, 0f, 0f);
+                if (p > 0.8f)
+                {
+                    arrow.image.color = new Color(1f,1f,1f, (1f - p) * 5f);
+                }
+                if (p == 1f)
+                {
+                    //矢印を消す
+                    UnityEngine.Object.Destroy(arrow.arrow);
+                }
+            })));
+        }
     }
 
     public class RPCEventInvoker
     {
+        public static void UpdatePlayerControl()
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UpdatePlayerControl, Hazel.SendOption.Reliable, -1);
+            writer.Write(PlayerControl.LocalPlayer.PlayerId);
+            writer.Write(Game.GameData.data.myData.getGlobalData().MouseAngle);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            //自身は別で更新しているのでなにもしない
+        }
+
         public static void UncheckedMurderPlayer(byte murdererId, byte targetId, bool showAnimation)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UncheckedMurderPlayer, Hazel.SendOption.Reliable, -1);
@@ -802,6 +866,22 @@ namespace Nebula
             writer.Write(position.y);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.ObjectInstantiate(PlayerControl.LocalPlayer.PlayerId,objectType.Id,id,position.x,position.y);
+        }
+
+        public static void SniperSettleRifle()
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SniperSettleRifle, Hazel.SendOption.Reliable, -1);
+            writer.Write(PlayerControl.LocalPlayer.PlayerId);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.SniperSettleRifle(PlayerControl.LocalPlayer.PlayerId);
+        }
+
+        public static void SniperShot()
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SniperShot, Hazel.SendOption.Reliable, -1);
+            writer.Write(PlayerControl.LocalPlayer.PlayerId);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.SniperShot(PlayerControl.LocalPlayer.PlayerId);
         }
     }
 }
