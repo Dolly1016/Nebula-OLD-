@@ -108,7 +108,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 # ロール一覧
 
-| Impostor | Crewmate | Neutral | Secondary
+| Impostors | Crewmates | Neutral | Secondary
 | ---------- | ---------- | ---------- | ---------- |
 | [Camouflager](#camouflager) | [Agent](#agent) | [Arsonist](#arsonist) | [Lover](#lover) |
 | [Cleaner](#cleaner) | [Alien](#alien) | [Empiric](#empiric) | [Trilemma](#trilemma) |
