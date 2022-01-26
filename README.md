@@ -4,7 +4,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 **Nebula on the Ship (NoS)** は Among Us に新たなロールを追加するModです。
 
-また、このModの一部コードは The Other Roles のものを継承しています。
+また、このModの一部コードは The Other Roles および The Other Roles GM Edition のものを継承しています。
 
 # ダウンロード
 | Version | Among Us Version | Download |
@@ -110,6 +110,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 **クルーメイト陣営**
 | Roles |
 | ---------- |
+| [Agent](#agent) |
 | [Bait](#bait) |
 | [Booster](#booster) |
 | [Engineer](#engineer) |
@@ -118,15 +119,16 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 | [Nice Guesser](#guesser) |
 | [Provocateur](#provocateur) |
 | [Psychic](#psychic) |
-| [Madmate](#madmate) |
 | [Security Guard](#security-guard) |
 | [Sheriff](#sheriff) |
 | [Spy](#spy) |
+| [Madmate](#madmate) |
 
 **第三陣営**
 | Roles |
 | ---------- |
 | [Arsonist](#arsonist) |
+| [Empiric](#empiric) |
 | [Jackal](#jackal) |
 | [Jester](#jester) |
 | [Vulture](#vulture) |
@@ -215,6 +217,18 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 -----------------------
 
+## Agent
+ Agentは、他人の代わりにタスクを行うことができます。
+ また、自身が最低限こなすべきタスクの数は減少しています。
+ 
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+| Exempt Tasks | ゲーム開始時に免除されるタスク数
+| Act Over Tasks | タスクを代行するたびに同時に獲得できるタスク数
+
+-----------------------
+
 ## Bait
  Baitは、自身をキルした人に強制的にレポートさせます。
  
@@ -231,6 +245,9 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
+| Boost Cool Down | 速度上昇のクールダウン
+| Boost Duration | 速度上昇の持続時間
+| Boost Strength | 速度上昇の強度
 
 -----------------------
 
@@ -250,6 +267,8 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
+| Max Vote | 一回の会議で同時に投じることのできる票数
+| Max Vote Stock | 保持することができる票の最大数
 
 -----------------------
 
@@ -259,6 +278,8 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
+| Revive Cool Down | 復活させられるクールダウン
+| Revive Duration | 復活に要する時間
 
 -----------------------
 
@@ -318,6 +339,16 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 -----------------------
 
+## Empiric
+ Empiricは自身が選択した感染者の周囲にいるプレイヤーを徐々に感染させます。
+ 全ての生存プレイヤーが感染することが勝利条件です。
+ 
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+
+-----------------------
+
 ## Jackal
  Jackalはキルをすることができる第三陣営で、自身以外全員の死亡が勝利条件です。
  
@@ -360,7 +391,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 -----------------------
 
 ## Trilemma
- TrilemmaはLoverが第三者を巻き込んだ三すくみです。
+ TrilemmaはLoverが第三者を巻き込んだ三位一体のチームです。
  三人だけが生き残ることで勝利します。
  
  ### オプション
