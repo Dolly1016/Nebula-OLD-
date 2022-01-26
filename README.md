@@ -34,10 +34,10 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 言語パックは自動では更新されませんので、最新版の言語パックをダウンロードしてお使いください。
 形式上、言語パックには下位互換があります。
 
-| Language | Translator | Full Support Version |
-| --- | --- | --- |
-| 日本語 | - | ALPHA 1.8.0 |
-| English | - | ALPHA 1.8.0 |
+| Language | Translator | Full Support Version | Download |
+| --- | --- | --- | --- |
+| 日本語 | - | ALPHA 1.8.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.8.0,2021.12.15/Japanese.dat)|
+| English | - | ALPHA 1.8.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.8.0,2021.12.15/English.dat)|
 
 # 更新履歴
 <details>
