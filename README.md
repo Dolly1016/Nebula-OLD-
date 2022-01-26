@@ -116,18 +116,21 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 | [Eraser](#eraser) |
 | [Evil Ace](#evil-ace) |
 | [Evil Guesser](#guesser) |
+| [Evil Trapper](#trapper) |
 | [Reaper](#reaper) |
 
 **クルーメイト陣営**
 | Roles |
 | ---------- |
 | [Agent](#agent) |
+| [Alien](#alien) |
 | [Bait](#bait) |
 | [Booster](#booster) |
 | [Engineer](#engineer) |
 | [Mayor](#mayor) |
 | [Necromancer](#necromancer) |
 | [Nice Guesser](#guesser) |
+| [Nice Trapper](#trapper) |
 | [Provocateur](#provocateur) |
 | [Psychic](#psychic) |
 | [Security Guard](#security-guard) |
@@ -154,6 +157,15 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 ## Guesser
  Guesserは、会議中に役職を言い当てたプレイヤーをキルすることができます。
+ 
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+
+-----------------------
+
+## Trapper
+ Trapperは、加減速やプレイヤー検知、キルができるトラップを仕掛けることができます。
  
  ### オプション
 | オプション名 | 設定内容 |
@@ -237,6 +249,16 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 |----------|:-------------:|
 | Exempt Tasks | ゲーム開始時に免除されるタスク数
 | Act Over Tasks | タスクを代行するたびに同時に獲得できるタスク数
+
+-----------------------
+
+## Alien
+ Alienは、周囲のプレイヤーのクールダウンの進みを妨げることができます。
+ 効果は敵味方なく及ぼされます。
+ 
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
 
 -----------------------
 
