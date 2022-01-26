@@ -41,6 +41,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
   
  **Version Alpha 1.7.0**
  - Agent, Alien, Trapper を追加
+ - Psychicに新たな霊媒メッセージを追加
   
  **Version Alpha 1.6.0**
  - Booster, Engineer, Mayor, Necromancer, Cleaner, Arsonist, Trilemma を追加
