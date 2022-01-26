@@ -135,5 +135,14 @@ namespace Nebula.Events
 
             Events.RemoveAll(e => e.CheckTerminal());
         }
+
+        static public bool GetAllowUpdateOutfit()
+        {
+            foreach (GlobalEvent globalEvent in Events)
+            {
+                if (! globalEvent.AllowUpdateOutfit) return false;
+            }
+            return true;
+        }
     }
 }

@@ -186,6 +186,8 @@ namespace Nebula.Patches
         {
             __instance.KillButton.SetTarget(PlayerControlPatch.SetMyTarget(true));
 
+
+            if (MeetingHud.Instance != null) return;
             if (Game.GameData.data.myData.getGlobalData().role.side == Roles.Side.Impostor)
             {
                 if (Game.GameData.data.myData.getGlobalData().role.HideKillButtonEvenImpostor)

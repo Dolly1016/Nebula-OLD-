@@ -8,7 +8,6 @@ namespace Nebula.Events.Variation
     {
         public EMI(float duration) : base(GlobalEvent.Type.EMI, duration)
         {
-            AllowUpdateOutfit = false;
         }
     }
 }

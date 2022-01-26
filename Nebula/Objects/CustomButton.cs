@@ -69,7 +69,6 @@ namespace Nebula.Objects
             if (this.Timer < 0f && HasButton() && CouldUse())
             {
                 actionButton.graphic.color = new Color(1f, 1f, 1f, 0.3f);
-                this.OnClick();
 
                 if (this.HasEffect && !this.isEffectActive)
                 {
@@ -77,6 +76,8 @@ namespace Nebula.Objects
                     actionButton.cooldownTimerText.color = new Color(0F, 0.8F, 0F);
                     this.isEffectActive = true;
                 }
+
+                this.OnClick();
             }
         }
         public void Destroy()

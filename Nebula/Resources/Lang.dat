@@ -223,6 +223,11 @@
 "role.evilTrapper.name" : "Evil Trapper"
 "role.evilTrapper.description" : "Entrap and Kill Crewmates"
 
+"role.morphing.name" : "Morphing"
+"role.morphing.description" : "Change Your Look to Not Get Caught"
+"role.morphing.morphCoolDown" : "Morph Cool Down"
+"role.morphing.morphDuration" : "Morph Duration"
+
 "role.reaper.name" : "Reaper"
 "role.reaper.description" : "Kill and Deceive the Crewmates"
 
@@ -268,6 +273,7 @@
 "side.jester.name" : "Jester"
 "side.arsonist.name" : "Arsonist"
 "side.empiric.name" : "Empiric"
+"side.vulture.name" : "Vulture"
 
 "game.endText.crewmate" : "Team Crewmate Wins"
 "game.endText.impostor" : "Team Impostor Wins"

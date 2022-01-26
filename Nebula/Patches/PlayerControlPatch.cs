@@ -16,27 +16,27 @@ namespace Nebula.Patches
             Vector3 vector = position - PlayerControl.LocalPlayer.transform.position;
             float magnitude = vector.magnitude;
 
-            if(magnitude <= distanceCondition && !PhysicsHelpers.AnyNonTriggersBetween(myPosition, vector.normalized, magnitude, Constants.ShipAndObjectsMask))
+            if (magnitude <= distanceCondition && !PhysicsHelpers.AnyNonTriggersBetween(myPosition, vector.normalized, magnitude, Constants.ShipAndObjectsMask))
             {
-                distanceCondition=magnitude;
+                distanceCondition = magnitude;
                 return true;
             }
             return false;
         }
 
-        static public PlayerControl GetTarget(Vector3 position,float distance,bool onlyWhiteNames=false,List<byte> untargetablePlayers = null)
+        static public PlayerControl GetTarget(Vector3 position, float distance, bool onlyWhiteNames = false, List<byte> untargetablePlayers = null)
         {
             PlayerControl result = null;
             float num;
             if (!ShipStatus.Instance) return result;
 
 
-            foreach(PlayerControl player in PlayerControl.AllPlayerControls)
+            foreach (PlayerControl player in PlayerControl.AllPlayerControls)
             {
                 if (onlyWhiteNames && (player.Data.Role.IsImpostor || player.GetModData().role.deceiveImpostorInNameDisplay)) continue;
-                if (untargetablePlayers!=null && untargetablePlayers.Contains(player.PlayerId)) continue;
+                if (untargetablePlayers != null && untargetablePlayers.Contains(player.PlayerId)) continue;
 
-                num=player.transform.position.Distance(position);
+                num = player.transform.position.Distance(position);
                 if (distance > num)
                 {
                     result = player;
@@ -47,10 +47,16 @@ namespace Nebula.Patches
             return result;
         }
 
-        static public PlayerControl SetMyTarget(bool onlyWhiteNames = false, bool targetPlayersInVents = false, List<byte> untargetablePlayers = null, PlayerControl targetingPlayer = null)
+        static public PlayerControl SetMyTarget(bool onlyWhiteNames = false, bool targetPlayersInVents = false, List<byte> untargetablePlayers = null, PlayerControl targetingPlayer = null) 
+        { 
+            return SetMyTarget(GameOptionsData.KillDistances[Mathf.Clamp(PlayerControl.GameOptions.KillDistance, 0, 2)],
+                    onlyWhiteNames,targetPlayersInVents,untargetablePlayers,targetingPlayer);
+        }
+
+        static public PlayerControl SetMyTarget(float range,bool onlyWhiteNames = false, bool targetPlayersInVents = false, List<byte> untargetablePlayers = null, PlayerControl targetingPlayer = null)
         {
             PlayerControl result = null;
-            float num = GameOptionsData.KillDistances[Mathf.Clamp(PlayerControl.GameOptions.KillDistance, 0, 2)];
+            float num = range;
             if (!ShipStatus.Instance) return result;
             if (targetingPlayer == null) targetingPlayer = PlayerControl.LocalPlayer;
             if (targetingPlayer.Data.IsDead) return result;

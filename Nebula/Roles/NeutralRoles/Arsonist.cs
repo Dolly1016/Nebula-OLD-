@@ -153,7 +153,7 @@ namespace Nebula.Roles.NeutralRoles
             base.MyPlayerControlUpdate();
 
             Game.MyPlayerData data = Game.GameData.data.myData;
-            data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(false,false,activePlayers);
+            data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(0.5f, false, false, activePlayers);
             Patches.PlayerControlPatch.SetPlayerOutline(data.currentTarget, Color.yellow);
         }
 

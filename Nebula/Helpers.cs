@@ -188,6 +188,16 @@ namespace Nebula
             PlayerControl.SetPlayerMaterialColors(colorId, target.CurrentPet.rend);
         }
 
+        public static void SetOutfit(this PlayerControl target, string name,Game.PlayerData.PlayerOutfitData outfit)
+        {
+            if (outfit == null)
+            {
+                return;
+            }
+
+            target.SetLook(name, outfit.ColorId, outfit.HatId, outfit.VisorId, outfit.SkinId, outfit.PetId);
+        }
+
         public static void SetOutfit(this PlayerControl target, PlayerControl reference)
         {
             string name = Game.GameData.data.players[reference.PlayerId].name;
@@ -202,7 +212,7 @@ namespace Nebula
 
         public static void ResetOutfit(this PlayerControl target)
         {
-            target.SetOutfit(target);
+            target.SetOutfit(target.GetModData().name, target.GetModData().Outfit);
         }
 
         public static Game.PlayerData GetModData(byte player)

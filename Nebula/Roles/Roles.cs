@@ -38,6 +38,7 @@ namespace Nebula.Roles
         public static ImpostorRoles.EvilAce EvilAce = new ImpostorRoles.EvilAce();
         public static ComplexRoles.Guesser EvilGuesser = new ComplexRoles.Guesser("EvilGuesser", "evilGuesser", true);
         public static ComplexRoles.Trapper EvilTrapper = new ComplexRoles.Trapper("EvilTrapper", "evilTrapper", true);
+        public static ImpostorRoles.Morphing Morphing = new ImpostorRoles.Morphing();
         public static ImpostorRoles.Reaper Reaper = new ImpostorRoles.Reaper();
         public static ImpostorRoles.Sniper Sniper = new ImpostorRoles.Sniper();
 
@@ -58,7 +59,7 @@ namespace Nebula.Roles
         //全てのロールはこの中に含まれている必要があります
         public static List<Role> AllRoles = new List<Role>()
         {
-            Impostor,Camouflager,Cleaner,Damned,Eraser,EvilAce,EvilGuesser,EvilTrapper,Reaper,Sniper,
+            Impostor,Camouflager,Cleaner,Damned,Eraser,EvilAce,EvilGuesser,EvilTrapper,Morphing,Reaper,Sniper,
             F_Guesser,F_Trapper,
             Arsonist,Empiric,Jackal,Jester,Vulture,
             F_Crewmate,

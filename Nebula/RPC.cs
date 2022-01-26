@@ -46,10 +46,11 @@ namespace Nebula
 
         // Role functionality
 
-        SealVent = 91,
+        SealVent = 101,
         MultipleVote,
         SniperSettleRifle,
-        SniperShot
+        SniperShot,
+        Morph
     }
 
     //RPCを受け取ったときのイベント
@@ -165,6 +166,9 @@ namespace Nebula
                     break;
                 case (byte)CustomRPC.SniperShot:
                     RPCEvents.SniperShot(reader.ReadByte());
+                    break;
+                case (byte)CustomRPC.Morph:
+                    RPCEvents.Morph(reader.ReadByte(),reader.ReadByte());
                     break;
             }
         }
@@ -612,6 +616,11 @@ namespace Nebula
                 }
             })));
         }
+
+        public static void Morph(byte playerId,byte targetId)
+        {
+            Events.LocalEvent.Activate(new Roles.ImpostorRoles.Morphing.MorphEvent(playerId,targetId));
+        }
     }
 
     public class RPCEventInvoker
@@ -882,6 +891,15 @@ namespace Nebula
             writer.Write(PlayerControl.LocalPlayer.PlayerId);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.SniperShot(PlayerControl.LocalPlayer.PlayerId);
+        }
+
+        public static void Morph(byte targetId)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Morph, Hazel.SendOption.Reliable, -1);
+            writer.Write(PlayerControl.LocalPlayer.PlayerId);
+            writer.Write(targetId);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.Morph(PlayerControl.LocalPlayer.PlayerId, targetId);
         }
     }
 }

@@ -8,6 +8,11 @@ using System.Text.Json;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
 using System.Reflection;
+using HarmonyLib;
+using UnityEngine;
+using Hazel;
+using BepInEx.Configuration;
+using Nebula.Language;
 
 namespace Nebula.Language
 {
@@ -16,6 +21,9 @@ namespace Nebula.Language
         static private Language language;
 
         public Dictionary<string, string> languageSet;
+
+        public ConfigEntry<string> entry;
+        public string LangageConfig;
 
         public static string GetString(string key)
         {
@@ -29,15 +37,22 @@ namespace Nebula.Language
         public Language()
         {
             languageSet = new Dictionary<string, string>();
+
+            entry = NebulaPlugin.Instance.Config.Bind("Language","Language", "English");
         }
 
-        public static void Load()
+        public static void Load(string lang)
         {
             language = new Language();
 
+            if (lang != null)
+            {
+                language.entry.Value = lang;
+            }
+
             language.deserialize(GetDefaultLanguageStream());
             Dictionary<string, string> defaultSet = language.languageSet;
-            language.deserialize(@"language\lang.dat");
+            language.deserialize(@"language\" + language.entry.Value + ".dat");
 
             //翻訳セットに不足データがある場合デフォルト言語セットで補う
             foreach (KeyValuePair<string, string> pair in defaultSet)
@@ -47,6 +62,11 @@ namespace Nebula.Language
                     language.languageSet.Add(pair.Key, pair.Value);
                 }
             }
+        }
+
+        public static void Load()
+        {
+            Load(null);
         }
 
         public static Stream GetDefaultLanguageStream()
