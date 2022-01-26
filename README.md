@@ -29,9 +29,18 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 | Alpha 1.1.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.1.0/Nebula.zip)|
 | Alpha 1.0.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.0.0/Nebula.zip)|
 
+# 言語サポート
+  | Language | Translator |
+  | 日本語 | - |
+  | English | - |
+
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+  
+ **Version Alpha 1.8.0**
+ - Sniper, Morphing を追加
+ - AmongUs本体の言語設定とModの言語設定が同期するように(Mod導入後、一度言語を設定すると同期されます)
   
  **Version Alpha 1.7.1**
  - ProvocateurがLoversあるいはTrilemmaのとき、相方がキルされるとゲームが強制終了する問題を修正
