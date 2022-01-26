@@ -94,11 +94,12 @@ namespace Nebula.Patches
                     }
 
                     playerData = Game.GameData.data.players[player.TargetPlayerId];
+
                     /* 名前を編集する */
-                    name = player.name;
-
+                    name = playerData.name;
                     Helpers.RoleAction(player.TargetPlayerId, (role) => { role.EditDisplayName(player.TargetPlayerId, ref name, false); });
-
+                    player.NameText.text = name;
+                    
                     if (player.TargetPlayerId == PlayerControl.LocalPlayer.PlayerId)
                     {
                         //自分自身ならロールの色にする

@@ -762,21 +762,16 @@ namespace Nebula
 
             while (tasks.Count < newTasks)
             {
-                PlayerTask task = null;
+                byte task = 0;
                 if (NebulaPlugin.rnd.NextDouble() < longTaskChance)
                 {
-                    if (ShipStatus.Instance.LongTasks.Count > 0)
-                        task = ShipStatus.Instance.LongTasks[NebulaPlugin.rnd.Next(ShipStatus.Instance.LongTasks.Count)];
+                    task = Map.MapData.GetRandomLongTaskId(PlayerControl.GameOptions.MapId);
                 }
                 else
                 {
-                    if (ShipStatus.Instance.NormalTasks.Count > 0)
-                        task = ShipStatus.Instance.NormalTasks[NebulaPlugin.rnd.Next(ShipStatus.Instance.NormalTasks.Count)];
+                    task = Map.MapData.GetRandomShortTaskId(PlayerControl.GameOptions.MapId);
                 }
-                if (task != null)
-                {
-                    tasks.Add(new GameData.TaskInfo((byte)task.TaskType, task.Id));
-                }
+                tasks.Add(new GameData.TaskInfo(task, (uint)tasks.Count+1));                
             }
 
             PlayerControl.LocalPlayer.clearAllTasks();

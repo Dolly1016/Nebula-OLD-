@@ -512,7 +512,7 @@ namespace Nebula.Module
                     bool enabled = true;
                     var parent = option.parent;
 
-                    if (AmongUsClient.Instance?.AmHost == false && CustomOptionHolder.hideSettings.getBool())
+                    if (AmongUsClient.Instance?.AmHost == false)
                     {
                         enabled = false;
                     }
@@ -655,7 +655,7 @@ namespace Nebula.Module
         private static void Postfix(ref string __result)
         {
 
-            bool hideSettings = AmongUsClient.Instance?.AmHost == false && CustomOptionHolder.hideSettings.getBool();
+            bool hideSettings = AmongUsClient.Instance?.AmHost == false;
             if (hideSettings)
             {
                 return;

@@ -13,7 +13,7 @@ namespace Nebula.Objects
         {
             static public Dictionary<byte, Type> AllTypes = new Dictionary<byte, Type>();
 
-            static public Type AccelTrap = new Type("AccelTrap", "Nebula.Resources.AccelTrap.png",(obj)=> {
+            static public Type AccelTrap = new Type("AccelTrap", "Nebula.Resources.AccelTrap.png",(obj)=> {},(obj)=> {
                 if (obj.PassedMeetings == 0)
                 {
                     if (obj.OwnerId != PlayerControl.LocalPlayer.PlayerId)
@@ -27,7 +27,7 @@ namespace Nebula.Objects
                 }
                 else if (obj.Renderer.color.a < 1f) obj.Renderer.color = new Color(1f, 1f, 1f, 1f);
             });
-            static public Type DecelTrap = new Type("DecelTrap", "Nebula.Resources.DecelTrap.png", (obj) => {
+            static public Type DecelTrap = new Type("DecelTrap", "Nebula.Resources.DecelTrap.png", (obj) => { }, (obj) => {
                 if (obj.PassedMeetings == 0)
                 {
                     if (obj.OwnerId != PlayerControl.LocalPlayer.PlayerId)
@@ -41,7 +41,7 @@ namespace Nebula.Objects
                 }
                 else if (obj.Renderer.color.a < 1f) obj.Renderer.color = new Color(1f, 1f, 1f, 1f);
             });
-            static public Type KillTrap = new Type("KillTrap", "Nebula.Resources.KillTrap.png", (obj) => {
+            static public Type KillTrap = new Type("KillTrap", "Nebula.Resources.KillTrap.png", (obj) => { }, (obj) => {
                 if (obj.OwnerId != PlayerControl.LocalPlayer.PlayerId) obj.GameObject.active = false;
                 if (obj.PassedMeetings == 0)
                 {
@@ -49,7 +49,7 @@ namespace Nebula.Objects
                 }
                 else if (obj.Renderer.color.a < 1f) obj.Renderer.color = new Color(1f, 1f, 1f, 1f);
             });
-            static public Type CommTrap = new Type("CommTrap", "Nebula.Resources.CommTrap.png", (obj) => {
+            static public Type CommTrap = new Type("CommTrap", "Nebula.Resources.CommTrap.png", (obj) => { }, (obj) => {
                 if (obj.OwnerId != PlayerControl.LocalPlayer.PlayerId) obj.GameObject.active = false;
                 if (obj.PassedMeetings == 0)
                 {
@@ -76,8 +76,9 @@ namespace Nebula.Objects
             }
 
             public Action<CustomObject> UpdateFunction;
+            public Action<CustomObject> SetUpFunction;
 
-            public Type(string objectName, string spriteAddress, Action<CustomObject> updater, bool isBack = true)
+            public Type(string objectName, string spriteAddress, Action<CustomObject> setUp, Action<CustomObject> updater,bool isBack = true)
             {
                 Id = AvailableId;
                 AvailableId++;
@@ -85,6 +86,7 @@ namespace Nebula.Objects
                 Sprite = null;
                 SpriteAddress = spriteAddress;
                 UpdateFunction = updater;
+                SetUpFunction = setUp;
 
                 IsBack = isBack;
 
@@ -129,6 +131,8 @@ namespace Nebula.Objects
             Renderer.sprite = type.GetSprite();
 
             PassedMeetings = 0;
+
+            type.SetUpFunction.Invoke(this);
 
             if (Objects.ContainsKey(id)) Objects[id].Destroy();
             Objects[id] = this;

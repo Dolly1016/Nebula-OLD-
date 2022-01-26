@@ -43,7 +43,7 @@ namespace Nebula
                 maxMeetingsCount = 15;
             }
 
-            if (CustomOptionHolder.uselessOptions.getBool())
+            if (CustomOptionHolder.mapOptions.getBool())
             {
                 dynamicMap = CustomOptionHolder.dynamicMap.getBool();
             }
@@ -84,14 +84,9 @@ namespace Nebula
         public static CustomOption impostorRolesCountMin;
         public static CustomOption impostorRolesCountMax;
 
-        public static CustomOption uselessOptions;
+        public static CustomOption mapOptions;
         public static CustomOption dynamicMap;
-
-        public static CustomOption specialOptions;
-        public static CustomOption blockSkippingInEmergencyMeetings;
-        public static CustomOption noVoteIsSelfVote;
-        public static CustomOption allowParallelMedBayScans;
-        public static CustomOption hidePlayerNames;
+        public static CustomOption additionalVents;
 
         public static CustomOption emergencyOptions;
         public static CustomOption maxNumberOfMeetings;
@@ -100,13 +95,6 @@ namespace Nebula
         public static CustomOption canUseEmergencyWithoutSabotage;
         public static CustomOption canUseEmergencyWithoutReport;
         public static CustomOption severeEmergencyLock;
-
-
-        public static CustomOption hideSettings;
-        public static CustomOption restrictDevices;
-        public static CustomOption restrictAdmin;
-        public static CustomOption restrictCameras;
-        public static CustomOption restrictVents;
 
 
         public static void Load()
@@ -121,13 +109,8 @@ namespace Nebula
             impostorRolesCountMin = CustomOption.Create(1005, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.minimumImpostorRoles", 0f, 0f, 3f, 1f, activateRoles, false).HiddenOnDisplay(true);
             impostorRolesCountMax = CustomOption.Create(1006, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.maximumImpostorRoles", 0f, 0f, 3f, 1f, activateRoles, false).HiddenOnDisplay(true);
 
-            specialOptions = new CustomOptionBlank(null);
-            blockSkippingInEmergencyMeetings = CustomOption.Create(3, Color.white, "option.blockSkippingInEmergencyMeetings", false, specialOptions);
-            noVoteIsSelfVote = CustomOption.Create(4, Color.white, "option.noVoteIsSelfVote", false, specialOptions);
-            allowParallelMedBayScans = CustomOption.Create(6, Color.white, "option.parallelMedbayScans", false, specialOptions);
-            hideSettings = CustomOption.Create(7, Color.white, "option.hideSettings", false, specialOptions);
-
-            emergencyOptions = CustomOption.Create(1100, Color.white, "option.emergencyOptions", false, null, false);
+           
+            emergencyOptions = CustomOption.Create(1100, Color.white, "option.emergencyOptions", true, null, false);
             maxNumberOfMeetings = CustomOption.Create(1101, Color.white, "option.maxNumberOfMeetings", 10, 0, 15, 1, emergencyOptions);
             deathPenaltyForDiscussionTime = CustomOption.Create(1102, Color.white, "option.deathPenaltyForDiscussionTime", 5f, 0f, 30f, 5f, emergencyOptions);
             deathPenaltyForDiscussionTime.suffix = "second";
@@ -136,9 +119,9 @@ namespace Nebula
             canUseEmergencyWithoutReport = CustomOption.Create(1105, Color.white, "option.canUseEmergencyWithoutReport", false, emergencyOptions);
             severeEmergencyLock = CustomOption.Create(1109, Color.white, "option.severeEmergencyLock", false, emergencyOptions);
 
-
-            uselessOptions = CustomOption.Create(1120, Color.white, "option.uselessOptions", false, null, isHeader: true);
-            dynamicMap = CustomOption.Create(1121, Color.white, "option.playRandomMaps", false, uselessOptions);
+            mapOptions = CustomOption.Create(1120, Color.white, "option.mapOptions", false, null, isHeader: true);
+            dynamicMap = CustomOption.Create(1121, Color.white, "option.playRandomMaps", false, mapOptions);
+            additionalVents = CustomOption.Create(1122, Color.white, "option.additionalVents", false, mapOptions);
 
             //ロールのオプションを読み込む
             Roles.Role.LoadAllOptionData();

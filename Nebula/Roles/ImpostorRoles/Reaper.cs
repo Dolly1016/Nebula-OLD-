@@ -21,20 +21,51 @@ namespace Nebula.Roles.ImpostorRoles
             {
                 case 0:
                     //Skeld
-                    ventMap["WeaponsVent"].Vent.Left = connect ? ventMap["CafeVent"] : null;
-                    ventMap["CafeVent"].Vent.Center = connect ? ventMap["WeaponsVent"] : null;
-
                     ventMap["NavVentNorth"].Vent.Right = connect ? ventMap["NavVentSouth"] : null;
                     ventMap["NavVentSouth"].Vent.Right = connect ? ventMap["NavVentNorth"] : null;
+
+                    ventMap["ShieldsVent"].Vent.Left = connect ? ventMap["WeaponsVent"] : null;
+                    ventMap["WeaponsVent"].Vent.Center = connect ? ventMap["ShieldsVent"] : null;
 
                     ventMap["ReactorVent"].Vent.Left = connect ? ventMap["UpperReactorVent"] : null;
                     ventMap["UpperReactorVent"].Vent.Left = connect ? ventMap["ReactorVent"] : null;
 
-                    ventMap["ReactorVent"].Vent.Center = connect ? ventMap["SecurityVent"] : null;
                     ventMap["SecurityVent"].Vent.Center = connect ? ventMap["ReactorVent"] : null;
+                    ventMap["ReactorVent"].Vent.Center = connect ? ventMap["SecurityVent"] : null;
 
-                    ventMap["MedVent"].Vent.Center = connect ? ventMap["AdminVent"] : null;
-                    ventMap["AdminVent"].Vent.Left = connect ? ventMap["MedVent"] : null;
+                    ventMap["REngineVent"].Vent.Center = connect ? ventMap["LEngineVent"] : null;
+                    ventMap["LEngineVent"].Vent.Center = connect ? ventMap["REngineVent"] : null;
+
+                    if (ventMap.ContainsKey("StorageVent"))
+                    {
+                        ventMap["AdminVent"].Vent.Center = connect ? ventMap["StorageVent"] : null;
+                        ventMap["StorageVent"].Vent.Left = connect ? ventMap["ElecVent"] : null;
+                        ventMap["StorageVent"].Vent.Right = connect ? ventMap["AdminVent"] : null;
+
+                        ventMap["StorageVent"].Vent.Center = connect ? ventMap["CafeUpperVent"] : null;
+                    }
+                    else
+                    {
+                        ventMap["AdminVent"].Vent.Center = connect ? ventMap["MedVent"] : null;
+                        ventMap["MedVent"].Vent.Center = connect ? ventMap["AdminVent"] : null;
+                    }
+
+                    if (ventMap.ContainsKey("CafeUpperVent"))
+                    {
+                        ventMap["CafeUpperVent"].Vent.Left = connect ? ventMap["LEngineVent"] : null;
+                        ventMap["LEngineVent"].Vent.Right = connect ? ventMap["CafeUpperVent"] : null;
+
+                        ventMap["CafeUpperVent"].Vent.Center = connect ? ventMap["StorageVent"] : null;
+
+                        ventMap["CafeUpperVent"].Vent.Right = connect ? ventMap["WeaponsVent"] : null;
+                        ventMap["WeaponsVent"].Vent.Left = connect ? ventMap["CafeUpperVent"] : null;
+                    }
+                    else
+                    {
+                        ventMap["CafeVent"].Vent.Center = connect ? ventMap["WeaponsVent"] : null;
+                        ventMap["WeaponsVent"].Vent.Center = connect ? ventMap["CafeVent"] : null;
+                    }
+
                     break;
                 case 2:
                     //Polus

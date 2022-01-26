@@ -223,7 +223,7 @@ namespace Nebula.Patches
                     }
                 }
 
-                if (CustomOptionHolder.dynamicMap.getBool()&&CustomOptionHolder.uselessOptions.getBool())
+                if (CustomOptionHolder.dynamicMap.getBool()&&CustomOptionHolder.mapOptions.getBool())
                 {
                     // 0 = Skeld
                     // 1 = Mira HQ

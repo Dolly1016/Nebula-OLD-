@@ -15,6 +15,8 @@ namespace Nebula.Roles.CrewmateRoles
         public override void OnMurdered(byte murderId)
         {
             //相手も殺す
+            if (PlayerControl.LocalPlayer.PlayerId == murderId) return;
+            if (Helpers.playerById(murderId).Data.IsDead) return;
             RPCEventInvoker.UncheckedMurderPlayer(PlayerControl.LocalPlayer.PlayerId, murderId,false);
         }
 

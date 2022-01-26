@@ -57,6 +57,10 @@ namespace Nebula
             //GlobalEventデータを読み込む
             Events.Events.Load();
 
+            //マップ関連のデータを読み込む
+            Map.MapEditor.Load();
+            Map.MapData.Load();
+
             // Harmonyパッチ全てを適用する
             Harmony.PatchAll();
         }

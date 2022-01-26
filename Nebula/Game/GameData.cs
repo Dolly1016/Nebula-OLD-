@@ -528,6 +528,9 @@ namespace Nebula.Game
                 VentMap.Add(vent.gameObject.name, new VentData(vent));
             }
 
+            Map.MapEditor.AddVents(PlayerControl.GameOptions.MapId);
+
+
             Rooms = new List<SystemTypes>();
             foreach(SystemTypes type in ShipStatus.Instance.FastRooms.Keys)
             {
