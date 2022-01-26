@@ -9,6 +9,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 # ダウンロード
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| Alpha 1.8.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.8.0,2021.12.15/Nebula.zip)|
 | Alpha 1.7.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.7.1,2021.12.15/Nebula.zip)|
 | Alpha 1.7.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.7.0,2021.12.15/Nebula.zip)|
 | Alpha 1.6.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.6.0,2021.12.15/Nebula.zip)|
@@ -33,10 +34,10 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 言語パックは自動では更新されませんので、最新版の言語パックをダウンロードしてお使いください。
 形式上、言語パックには下位互換があります。
 
-| Language | Translator |
-| --- | --- |
-| 日本語 | - |
-| English | - |
+| Language | Translator | Full Support Version |
+| --- | --- | --- |
+| 日本語 | - | ALPHA 1.8.0 |
+| English | - | ALPHA 1.8.0 |
 
 # 更新履歴
 <details>
