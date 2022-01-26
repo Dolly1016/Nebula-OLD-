@@ -75,7 +75,7 @@ namespace Nebula.Patches
                 if (player == PlayerControl.LocalPlayer)
                 {
                     //自分自身ならロールの色にする
-                    player.nameText.color = playerData.role.color;
+                    player.nameText.color = playerData.role.Color;
                 }
                 else
                 {
@@ -103,7 +103,7 @@ namespace Nebula.Patches
                     if (player.TargetPlayerId == PlayerControl.LocalPlayer.PlayerId)
                     {
                         //自分自身ならロールの色にする
-                        player.NameText.color = playerData.role.color;
+                        player.NameText.color = playerData.role.Color;
                     }
                     else
                     {

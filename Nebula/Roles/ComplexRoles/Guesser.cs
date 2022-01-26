@@ -114,7 +114,7 @@ namespace Nebula.Roles.ComplexRoles
                 int row = i / 5, col = i % 5;
                 buttonParent.localPosition = new Vector3(-3.47f + 1.75f * col, 1.5f - 0.45f * row, -5);
                 buttonParent.localScale = new Vector3(0.55f, 0.55f, 1f);
-                label.text = Helpers.cs(role.color, Language.Language.GetString("role."+role.localizeName+".name"));
+                label.text = Helpers.cs(role.Color, Language.Language.GetString("role."+role.LocalizeName+".name"));
                 label.alignment = TMPro.TextAlignmentOptions.Center;
                 label.transform.localPosition = new Vector3(0, 0, label.transform.localPosition.z);
                 label.transform.localScale *= 1.7f;

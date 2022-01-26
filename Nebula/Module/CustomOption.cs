@@ -35,6 +35,8 @@ namespace Nebula.Module
         public bool isHidden;
         public bool isHiddenOnDisplay;
 
+        public List<CustomOption> prerequisiteOptions;
+
         public virtual bool enabled
         {
             get
@@ -86,6 +88,8 @@ namespace Nebula.Module
                 selection = Mathf.Clamp(entry.Value, 0, selections.Length - 1);
             }
             options.Add(this);
+
+            this.prerequisiteOptions = new List<CustomOption>();
         }
 
         public static CustomOption Create(int id, Color color,string name, string[] selections, CustomOption parent = null, bool isHeader = false, bool isHidden = false, string format = "")
@@ -137,6 +141,11 @@ namespace Nebula.Module
                 messageWriter.WritePacked((uint)Convert.ToUInt32(option.selection));
             }
             messageWriter.EndMessage();
+        }
+
+        public void AddPrerequisite(CustomOption option)
+        {
+            prerequisiteOptions.Add(option);
         }
 
         // Getter
@@ -519,6 +528,10 @@ namespace Nebula.Module
 
                     if (option.isHidden)
                     {
+                        enabled = false;
+                    }
+
+                    if(option.prerequisiteOptions.Count>0 && option.prerequisiteOptions.All((option) => { return !enabled; })){
                         enabled = false;
                     }
 

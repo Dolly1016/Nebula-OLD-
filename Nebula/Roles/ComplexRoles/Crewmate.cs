@@ -25,11 +25,11 @@ namespace Nebula.Roles.ComplexRoles
         //Complexなロールカテゴリーについてのみ呼ばれます。
         public override Patches.AssignRoles.RoleAllocation[] GetComplexAllocations()
         {
-            Patches.AssignRoles.RoleAllocation[] result = new Patches.AssignRoles.RoleAllocation[(int)roleCountOption.getFloat()];
+            Patches.AssignRoles.RoleAllocation[] result = new Patches.AssignRoles.RoleAllocation[(int)RoleCountOption.getFloat()];
 
             int damneds= Helpers.CalcProbabilityCount(ChanceOfDamned(), result.Length);
 
-            int chance = roleChanceOption.getSelection();
+            int chance = RoleChanceOption.getSelection();
             for(int i = 0; i < result.Length; i++)
             {
                 result[i] = new Patches.AssignRoles.RoleAllocation(i < damneds ? Roles.DamnedCrew : Roles.Crewmate, chance);

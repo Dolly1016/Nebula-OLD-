@@ -10,40 +10,41 @@ namespace Nebula.Roles
 {
     public class Assignable
     {
-        public string name { get; private set; }
-        public string localizeName { get; private set; }
-        public Color color { get; private set; }
+        public string Name { get; private set; }
+        public string LocalizeName { get; private set; }
+        public Color Color { get; private set; }
 
-        public Module.CustomOption roleChanceOption { get; private set; }
-        public Module.CustomOption roleCountOption { get; private set; }
+        public Module.CustomOption RoleChanceOption { get; private set; }
+        public Module.CustomOption RoleCountOption { get; private set; }
+
         /// <summary>
         /// FixedRoleCountが有効な場合この関数が呼び出されます。
         /// </summary>
         /// <returns></returns>
-        public virtual int getCustomRoleCount() { return 0; }
+        public virtual int GetCustomRoleCount() { return 0; }
         /// <summary>
         /// 配役人数を標準設定に準じさせたくない場合はtrueにしてください。
         /// </summary>
         public bool FixedRoleCount { get; protected set; }
 
-        private int optionId { get; set; }
+        private int OptionId { get; set; }
 
         //オプションで使用するID
-        static private int optionAvailableId = 10;
+        static private int OptionAvailableId = 10;
 
         /*--------------------------------------------------------------------------------------*/
         /*--------------------------------------------------------------------------------------*/
 
         public void SetupRoleOptionData()
         {
-            roleChanceOption = Module.CustomOption.Create(optionAvailableId, color, "role." + localizeName + ".name", CustomOptionHolder.rates, null, true);
-            optionId = optionAvailableId + 1;
-            optionAvailableId += 10;
+            RoleChanceOption = Module.CustomOption.Create(OptionAvailableId, Color, "role." + LocalizeName + ".name", CustomOptionHolder.rates, null, true);
+            OptionId = OptionAvailableId + 1;
+            OptionAvailableId += 10;
 
             if (!FixedRoleCount)
             {
-                roleCountOption = Module.CustomOption.Create(optionId, Color.white, "option.roleCount", 0f, 0f, 15f, 1f, roleChanceOption, false);
-                optionId++;
+                RoleCountOption = Module.CustomOption.Create(OptionId, Color.white, "option.roleCount", 0f, 0f, 15f, 1f, RoleChanceOption, false);
+                OptionId++;
             }
         }
 
@@ -58,12 +59,12 @@ namespace Nebula.Roles
 
         private Module.CustomOption CreateOption(Color color, string name, object[] selections, System.Object defaultValue)
         {
-            if (optionAvailableId == -1)
+            if (OptionAvailableId == -1)
             {
                 return null;
             }
-            Module.CustomOption option = new Module.CustomOption(optionId, color, "role." + this.localizeName + "." + name, selections, defaultValue, roleChanceOption, false, false, "");
-            optionId++;
+            Module.CustomOption option = new Module.CustomOption(OptionId, color, "role." + this.LocalizeName + "." + name, selections, defaultValue, RoleChanceOption, false, false, "");
+            OptionId++;
             return option;
         }
 
@@ -325,12 +326,12 @@ namespace Nebula.Roles
         protected Assignable(string name, string localizeName, Color color)
         {
 
-            this.name = name;
-            this.localizeName = localizeName;
-            this.color = color;
+            this.Name = name;
+            this.LocalizeName = localizeName;
+            this.Color = color;
 
             //未設定
-            this.optionId = -1;
+            this.OptionId = -1;
 
             this.IsHideRole = false;
         }

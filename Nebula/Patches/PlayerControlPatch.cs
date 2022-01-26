@@ -201,7 +201,7 @@ namespace Nebula.Patches
                     }
 
                     var (tasksCompleted, tasksTotal) = TasksHandler.taskInfo(p.Data);
-                    string roleNames = Helpers.cs(p.GetModData().role.color, Language.Language.GetString("role." + p.GetModData().role.localizeName + ".name"));
+                    string roleNames = Helpers.cs(p.GetModData().role.Color, Language.Language.GetString("role." + p.GetModData().role.LocalizeName + ".name"));
 
                     var completedStr = commsActive ? "?" : tasksCompleted.ToString();
                     string taskInfo = tasksTotal > 0 ? $"<color=#FAD934FF>({completedStr}/{tasksTotal})</color>" : "";

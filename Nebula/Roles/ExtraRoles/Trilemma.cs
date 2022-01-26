@@ -78,7 +78,7 @@ namespace Nebula.Roles.ExtraRoles
             ActionForMyLover((player) => {
                 partner = player.name;
             });
-            partner = Helpers.cs(color, partner);
+            partner = Helpers.cs(Color, partner);
             desctiption += "\n" + Language.Language.GetString("role.lover.description").Replace("%NAME%", partner);
         }
 

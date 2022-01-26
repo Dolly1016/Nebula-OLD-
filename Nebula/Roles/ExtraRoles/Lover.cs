@@ -85,7 +85,7 @@ namespace Nebula.Roles.ExtraRoles
             int maxPairs = maxPairsOption.getSelection();
             if (maxPairs * 2 > gameData.players.Count) maxPairs = gameData.players.Count / 2;
 
-            int pairs = Helpers.CalcProbabilityCount(roleChanceOption.getSelection(), maxPairs);
+            int pairs = Helpers.CalcProbabilityCount(RoleChanceOption.getSelection(), maxPairs);
 
             byte[] playerArray = Helpers.GetRandomArray(gameData.players.Keys);
 
@@ -128,7 +128,7 @@ namespace Nebula.Roles.ExtraRoles
             ActionForMyLover((player)=> {
                 partner=player.name;
             });
-            partner = Helpers.cs(color, partner);
+            partner = Helpers.cs(Color, partner);
             desctiption += "\n" + Language.Language.GetString("role.lover.description").Replace("%NAME%",partner);
         }
 

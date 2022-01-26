@@ -58,14 +58,14 @@ namespace Nebula.Patches
                     }
 
                     //ロールの湧き数
-                    int roleCount = role.FixedRoleCount ? role.getCustomRoleCount() : (int)role.roleCountOption.getFloat();
+                    int roleCount = role.FixedRoleCount ? role.GetCustomRoleCount() : (int)role.RoleCountOption.getFloat();
 
-                    if (role.roleChanceOption.getSelection() < 10)
+                    if (role.RoleChanceOption.getSelection() < 10)
                     {
                         //ランダムロール
                         for (int i = 0; i < roleCount; i++)
                         {
-                            secondaryRoles.Add(new RoleAllocation(role, (int)role.roleChanceOption.getSelection()));
+                            secondaryRoles.Add(new RoleAllocation(role, (int)role.RoleChanceOption.getSelection()));
                         }
                     }
                     else

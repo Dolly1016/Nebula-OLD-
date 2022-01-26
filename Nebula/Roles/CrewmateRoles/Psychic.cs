@@ -38,13 +38,13 @@ namespace Nebula.Roles.CrewmateRoles
                 string m_time = "", m_color = "", m_role = "",i_role="";
                 
                 m_time =((int)(deadPlayerData.Elapsed / 5f) * 5).ToString();
-                i_role = Language.Language.GetString("role." + deadPlayerData.Data.role.localizeName + ".name");
+                i_role = Language.Language.GetString("role." + deadPlayerData.Data.role.LocalizeName + ".name");
                 
                 if (deadPlayerData.MurderId != Byte.MaxValue)
                 {
                     m_color = Module.CustomColors.lighterColors.Contains(Helpers.GetModData(deadPlayerData.MurderId).Outfit.ColorId)?
                         Language.Language.GetString("role.psychic.color.light"): Language.Language.GetString("role.psychic.color.dark");
-                    m_role = Language.Language.GetString("role." + Helpers.GetModData(deadPlayerData.MurderId).role.localizeName + ".name");
+                    m_role = Language.Language.GetString("role." + Helpers.GetModData(deadPlayerData.MurderId).role.LocalizeName + ".name");
 
                 }
 

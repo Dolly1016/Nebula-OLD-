@@ -222,7 +222,7 @@ namespace Nebula.Patches
 
             foreach (FinalPlayerData.FinalPlayer player in OnGameEndPatch.FinalData.players)
             {
-                var roles = string.Join(" ", Helpers.cs(player.role.color, Language.Language.GetString("role." + player.role.localizeName + ".name")));
+                var roles = string.Join(" ", Helpers.cs(player.role.Color, Language.Language.GetString("role." + player.role.LocalizeName + ".name")));
                 roleSummaryText.AppendLine($"{player.name} - {roles}");
             }
 

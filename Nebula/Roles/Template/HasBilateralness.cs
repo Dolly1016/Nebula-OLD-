@@ -27,11 +27,11 @@ namespace Nebula.Roles.Template
         {
             if (FirstRole == null || SecondaryRole == null) return null;
 
-            Patches.AssignRoles.RoleAllocation[] result = new Patches.AssignRoles.RoleAllocation[(int)roleCountOption.getFloat()];
+            Patches.AssignRoles.RoleAllocation[] result = new Patches.AssignRoles.RoleAllocation[(int)RoleCountOption.getFloat()];
 
             int secondary = Helpers.CalcProbabilityCount(ChanceOfSecondarySide(), result.Length);
 
-            int chance = roleChanceOption.getSelection();
+            int chance = RoleChanceOption.getSelection();
             for (int i = 0; i < result.Length; i++)
             {
                 result[i] = new Patches.AssignRoles.RoleAllocation(i < secondary ? SecondaryRole: FirstRole , chance);

@@ -16,10 +16,10 @@ namespace Nebula.Patches
 
             if (data.role != null)
             {
-                __instance.RoleText.text = Language.Language.GetString("role." + data.role.localizeName + ".name");
-                __instance.RoleText.color = data.role.color;
-                __instance.RoleBlurbText.text = Language.Language.GetString("role."+data.role.localizeName+".description");
-                __instance.RoleBlurbText.color = data.role.color;
+                __instance.RoleText.text = Language.Language.GetString("role." + data.role.LocalizeName + ".name");
+                __instance.RoleText.color = data.role.Color;
+                __instance.RoleBlurbText.text = Language.Language.GetString("role."+data.role.LocalizeName+".description");
+                __instance.RoleBlurbText.color = data.role.Color;
             }
         }
     }
@@ -98,10 +98,10 @@ namespace Nebula.Patches
             {
                 Roles.Role role = Game.GameData.data.players[PlayerControl.LocalPlayer.PlayerId].role;
 
-                __instance.RoleText.text = Language.Language.GetString("role." + role.localizeName + ".name");
-                __instance.RoleText.color = role.color;
-                __instance.RoleBlurbText.text = Language.Language.GetString("role." + role.localizeName + ".description");
-                __instance.RoleBlurbText.color = role.color;
+                __instance.RoleText.text = Language.Language.GetString("role." + role.LocalizeName + ".name");
+                __instance.RoleText.color = role.Color;
+                __instance.RoleBlurbText.text = Language.Language.GetString("role." + role.LocalizeName + ".description");
+                __instance.RoleBlurbText.color = role.Color;
 
 
                 //追加ロールの情報を付加
