@@ -33,6 +33,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 # 言語サポート
 言語パックは自動では更新されませんので、最新版の言語パックをダウンロードして、Languageフォルダ内に入れてお使いください。
 形式上、言語パックには下位互換があります。
+また、新しいバージョンに対しても使用できますが、一部翻訳がなされないことがあります。
 
 | Language | Translator | Full Support Version | Download |
 | --- | --- | --- | --- |
