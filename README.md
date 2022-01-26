@@ -34,8 +34,8 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
   <summary>クリックで展開</summary>
   
  **Version Alpha 1.7.1**
- - ProvocateurがLoversあるいはTrelimmaのとき、相方がキルされるとゲームが強制終了する問題を修正
- - 会議画面中でもLovers, Trelimmaの相方、メンバーにマークがつくように
+ - ProvocateurがLoversあるいはTrilemmaのとき、相方がキルされるとゲームが強制終了する問題を修正
+ - 会議画面中でもLovers, Trilemmaの相方、メンバーにマークがつくように
  - Agentのタスク関連の問題を修正
  - Trapperの設置するトラップのグラフィックを修正
   
