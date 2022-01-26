@@ -31,8 +31,8 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 | Alpha 1.0.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.0.0/Nebula.zip)|
 
 # 言語サポート
-言語パックは自動では更新されませんので、最新版の言語パックをダウンロードして、Languageフォルダ内に入れてお使いください。
-形式上、言語パックには下位互換があります。
+言語パックは自動では更新されませんので、最新版の言語パックをダウンロードして、Languageフォルダ内に入れてお使いください。\
+形式上、言語パックには下位互換があります。\
 また、新しいバージョンに対しても使用できますが、一部翻訳がなされないことがあります。
 
 | Language | Translator | Full Support Version | Download |
@@ -145,13 +145,13 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 # クレジットとリソース
 
-[BepInEx](https://github.com/BepInEx) ゲームの関数をフックするために使用しています。
-[TheOtherRoles](https://github.com/Eisbison/TheOtherRoles) このMODの着想の根源はすべてここからのものです。ソースを一部使用しています。
-[TheOtherRoles: GM Edition](https://github.com/yukinogatari/TheOtherRoles-GM) ソースを一部使用しています。Empiric,MadmateのアイデアはこのMODからのものです。
-
-その他ロールアイデアのご提供等
-
-龍 : Reaper, Provocateur, Booster, Alien
+[BepInEx](https://github.com/BepInEx) ゲームの関数をフックするために使用しています。\
+[TheOtherRoles](https://github.com/Eisbison/TheOtherRoles) このMODの着想の根源はすべてここからのものです。ソースを一部使用しています。\
+[TheOtherRoles: GM Edition](https://github.com/yukinogatari/TheOtherRoles-GM) ソースを一部使用しています。Empiric,MadmateのアイデアはこのMODからのものです。\
+\
+その他ロールアイデアのご提供等\
+\
+龍 : Reaper, Provocateur, Booster, Alien\
 p5p5next : Damned
 
 -----------------------
@@ -193,8 +193,7 @@ p5p5next : Damned
 -----------------------
 
 ## Damned
- DamnedはCrewmateとしてスポーンしますが、一度キルされてもガードされ、
- 二度目のキルをされる前に会議が始まるとインポスターになります。
+ DamnedはCrewmateとしてスポーンしますが、一度キルされてもガードされ、二度目のキルをされる前に会議が始まるとインポスターになります。\
  キルされるまで、Crewmateは自身がDamnedになれるかどうかを知るすべはありません。
  
  ### オプション
@@ -250,7 +249,7 @@ p5p5next : Damned
 -----------------------
 
 ## Madmate
- Madmateはクルーメイト陣営に属しますが、インポスターの肩を持つ狂人です。
+ Madmateはクルーメイト陣営に属しますが、インポスターの肩を持つ狂人です。\
  インポスターの勝利条件に与します。
  
  ### オプション
@@ -260,7 +259,7 @@ p5p5next : Damned
 -----------------------
 
 ## Agent
- Agentは、他人の代わりにタスクを行うことができます。
+ Agentは、他人の代わりにタスクを行うことができます。\
  また、自身が最低限こなすべきタスクの数は減少しています。
  
  ### オプション
@@ -272,7 +271,7 @@ p5p5next : Damned
 -----------------------
 
 ## Alien
- Alienは、周囲のプレイヤーのクールダウンの進みを妨げることができます。
+ Alienは、周囲のプレイヤーのクールダウンの進みを妨げることができます。\
  効果は敵味方なく及ぼされます。
  
  ### オプション
@@ -291,7 +290,7 @@ p5p5next : Damned
 -----------------------
 
 ## Booster
- Boosterは一時的に加速することができます。
+ Boosterは一時的に加速することができます。\
  身を守るためには、加速しているところを見られてはなりません。
  
  ### オプション
@@ -304,8 +303,7 @@ p5p5next : Damned
 -----------------------
 
 ## Engineer
- Engineerはベントを使うことのできるクルーメイトで、
- 一度だけサボタージュを遠隔で直すことができます。
+ Engineerはベントを使うことのできるクルーメイトで、一度だけサボタージュを遠隔で直すことができます。
  
  ### オプション
 | オプション名 | 設定内容 |
@@ -373,7 +371,7 @@ p5p5next : Damned
 -----------------------
 
 ## Spy
- Spyはインポスターの中に紛れ込み、インポスター陣営を錯乱させます。
+ Spyはインポスターの中に紛れ込み、インポスター陣営を錯乱させます。\
  勝利条件はクルーメイトのものに準じます。
  
  ### オプション
@@ -392,7 +390,7 @@ p5p5next : Damned
 -----------------------
 
 ## Empiric
- Empiricは自身が選択した感染者の周囲にいるプレイヤーを徐々に感染させます。
+ Empiricは自身が選択した感染者の周囲にいるプレイヤーを徐々に感染させます。\
  全ての生存プレイヤーが感染することが勝利条件です。
  
  ### オプション
@@ -430,9 +428,8 @@ p5p5next : Damned
 -----------------------
 
 ## Lover
- Loverは2人1組として発生する付加的なロールです。
- 相方が死ぬと自分も後追いして死にます。
- 最後まで生存して相方が勝利すれば自分も勝利します。
+ Loverは2人1組として発生する付加的なロールです。\
+ 相方が死ぬと自分も後追いして死にます。最後まで生存して相方が勝利すれば自分も勝利します。\
  二人組のどちらかが、第三者を巻き込むと[Triremma](#triremma)に変化します。
  
  ### オプション
@@ -443,7 +440,7 @@ p5p5next : Damned
 -----------------------
 
 ## Trilemma
- TrilemmaはLoverが第三者を巻き込んだ三位一体のチームです。
+ TrilemmaはLoverが第三者を巻き込んだ三位一体のチームです。\
  三人だけが生き残ることで勝利します。
  
  ### オプション
