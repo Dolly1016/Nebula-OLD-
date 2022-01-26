@@ -108,51 +108,23 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 # ロール一覧
 
-**インポスター陣営**
-| Roles |
-| ---------- |
-| [Camouflager](#camouflager) |
-| [Cleaner](#cleaner) |
-| [Damned](#damned) |
-| [Eraser](#eraser) |
-| [Evil Ace](#evil-ace) |
-| [Evil Guesser](#guesser) |
-| [Evil Trapper](#trapper) |
-| [Reaper](#reaper) |
-
-**クルーメイト陣営**
-| Roles |
-| ---------- |
-| [Agent](#agent) |
-| [Alien](#alien) |
-| [Bait](#bait) |
-| [Booster](#booster) |
-| [Engineer](#engineer) |
-| [Mayor](#mayor) |
-| [Necromancer](#necromancer) |
-| [Nice Guesser](#guesser) |
-| [Nice Trapper](#trapper) |
-| [Provocateur](#provocateur) |
-| [Psychic](#psychic) |
-| [Security Guard](#security-guard) |
-| [Sheriff](#sheriff) |
-| [Spy](#spy) |
-| [Madmate](#madmate) |
-
-**第三陣営**
-| Roles |
-| ---------- |
-| [Arsonist](#arsonist) |
-| [Empiric](#empiric) |
-| [Jackal](#jackal) |
-| [Jester](#jester) |
-| [Vulture](#vulture) |
-
-**特殊ロール**
-| Roles |
-| ---------- |
-| [Lover](#lover) |
-| [Trilemma](#trilemma) |
+| Impostor | Crewmate | Neutral | Secondary
+| ---------- | ---------- | ---------- | ---------- |
+| [Camouflager](#camouflager) | [Agent](#agent) | [Arsonist](#arsonist) | [Lover](#lover) |
+| [Cleaner](#cleaner) | [Alien](#alien) | [Empiric](#empiric) | [Trilemma](#trilemma) |
+| [Damned](#damned) | [Bait](#bait) | [Jackal](#jackal) ||
+| [Eraser](#eraser) | [Booster](#booster) | [Jester](#jester) ||
+| [Evil Ace](#evil-ace) | [Engineer](#engineer) | [Vulture](#vulture) ||
+| [Evil Guesser](#guesser) | [Mayor](#mayor) |||
+| [Evil Trapper](#trapper) | [Necromancer](#necromancer) |||
+| [Reaper](#reaper) | [Nice Guesser](#guesser) |||
+|| [Nice Trapper](#trapper) |||
+|| [Provocateur](#provocateur) |||
+|| [Psychic](#psychic) |||
+|| [Security Guard](#security-guard) |||
+|| [Sheriff](#sheriff) |||
+|| [Spy](#spy) |||
+|| [Madmate](#madmate) |||
 
 -----------------------
 
