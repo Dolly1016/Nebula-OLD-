@@ -40,7 +40,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
  - Trapperの設置するトラップのグラフィックを修正
   
  **Version Alpha 1.7.0**
- - Agent, Alien, Trapper を追加
+ - Agent, Alien, EvilTrapper, NiceTrapper を追加
  - Psychicに新たな霊媒メッセージを追加
   
  **Version Alpha 1.6.0**
