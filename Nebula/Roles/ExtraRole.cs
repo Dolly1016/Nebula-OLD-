@@ -89,13 +89,5 @@ namespace Nebula.Roles
         public virtual void EditDescriptionString(ref string desctiption)
         {
         }
-
-        /// <summary>
-        /// 追加勝利を確認します。
-        /// </summary>
-        /// <param name="condition"></param>
-        /// <returns></returns>
-        [RoleGlobalMethod]
-        public virtual bool CheckWin(PlayerControl player,Patches.EndCondition condition) { return false; }
     }
 }

@@ -116,6 +116,11 @@ namespace Nebula.Roles
             return null;
         });
 
+        public static Side Opportunist = new Side("Opportunist", "opportunist", false, NeutralRoles.Opportunist.Color, (PlayerStatistics statistics, ShipStatus side) =>
+        {
+            return null;
+        });
+
         public static Side Extra = new Side("Extra", "extra", false, new Color(150, 150, 150), (PlayerStatistics statistics, ShipStatus side) =>
         {
             if (statistics.TotalAlive == 3)

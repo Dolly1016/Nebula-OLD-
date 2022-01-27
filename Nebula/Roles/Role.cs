@@ -64,6 +64,8 @@ namespace Nebula.Roles
         public bool useImpostorLightRadius { get; set; }
         //Modで管理するFakeTaskを所持しているかどうか(Impostorは対象外)
         public bool hasFakeTask { get; }
+        //FakeTaskは実行可能かどうか
+        public bool fakeTaskIsExecutable { get; protected set; }
         public bool deceiveImpostorInNameDisplay { get; set; }
         public bool IsGuessableRole { get; protected set; }
 

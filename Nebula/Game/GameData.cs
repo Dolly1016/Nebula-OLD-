@@ -166,15 +166,30 @@ namespace Nebula.Game
         public int Quota { get; set; }
         //完了タスク数
         public int Completed { get; set; }
+        //クルーメイトのタスク勝利に反映させるかどうか
+        public bool IsInfluencedCrewmatesTasks;
 
-        public TaskData(bool hasFakeTask){
-            if (hasFakeTask)Quota = 0;
+        public TaskData(bool hasFakeTask,bool fakeTaskIsExecutable){
+            int tasks= PlayerControl.GameOptions.NumCommonTasks + PlayerControl.GameOptions.NumShortTasks + PlayerControl.GameOptions.NumLongTasks; ;
+
+            if (hasFakeTask) Quota = 0;
+            else Quota = tasks;
+
+            if (hasFakeTask && !fakeTaskIsExecutable)
+            {
+                AllTasks = 0;
+                DisplayTasks = 0;
+            }
             else
             {
-                Quota = PlayerControl.GameOptions.NumCommonTasks + PlayerControl.GameOptions.NumShortTasks + PlayerControl.GameOptions.NumLongTasks;
+                if (hasFakeTask)
+                    AllTasks = 0;
+                else
+                    AllTasks = Quota;
+
+
+                DisplayTasks = Quota;
             }
-            AllTasks = Quota;
-            DisplayTasks = Quota;
             Completed = 0;
         }
     }
@@ -247,7 +262,7 @@ namespace Nebula.Game
             this.currentName = name;
             this.dragPlayerId = Byte.MaxValue;
             this.Speed = new SpeedFactorManager(playerId) ;
-            this.Tasks = new TaskData(role.side==Roles.Side.Impostor || role.hasFakeTask);
+            this.Tasks = new TaskData(role.side == Roles.Side.Impostor || role.hasFakeTask, role.fakeTaskIsExecutable);
             this.MouseAngle = 0f;
         }
 

@@ -19,6 +19,8 @@ namespace Nebula.Roles.Template
         protected int InitialExemptTasks { get; set; } = 1;
         //最高タスク免除数
         protected int MaxExemptTasks { get; set; } = 10;
+
+
         public override void IntroInitialize(PlayerControl __instance)
         {
             int exempt = (int)exemptTasksOption.getFloat();
@@ -26,7 +28,7 @@ namespace Nebula.Roles.Template
             int tasks = PlayerControl.LocalPlayer.myTasks.Count;
             tasks -= exempt;
             if (tasks < 0) tasks = 0;
-            RPCEventInvoker.ExemptTasks(__instance.PlayerId, tasks, tasks);
+            RPCEventInvoker.ExemptTasks(__instance.PlayerId, tasks, hasFakeTask ? 0 : tasks);
         }
 
         public override void LoadOptionData()

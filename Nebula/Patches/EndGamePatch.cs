@@ -117,6 +117,7 @@ namespace Nebula.Patches
             //勝利者を消去する
             TempData.winners.Clear();
 
+            bool addedFlag = false ;
             foreach(PlayerControl player in PlayerControl.AllPlayerControls){
                 if (Game.GameData.data.players[player.PlayerId].role.CheckWin(EndCondition))
                 {
@@ -124,15 +125,14 @@ namespace Nebula.Patches
                 }
                 else
                 {
-                    foreach(Roles.ExtraRole role in player.GetModData().extraRole)
-                    {
-
-                        if (role.CheckWin(player, EndCondition))
+                    addedFlag = false;
+                    Helpers.RoleAction(player,(role)=> {
+                        if ((!addedFlag) && role.CheckWin(player, EndCondition))
                         {
                             TempData.winners.Add(new WinningPlayerData(player.Data));
-                            break;
+                            addedFlag = true;
                         }
-                    }
+                    });
                 }
             }
 

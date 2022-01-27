@@ -46,6 +46,7 @@ namespace Nebula.Roles
         public static NeutralRoles.Empiric Empiric = new NeutralRoles.Empiric();
         public static NeutralRoles.Jackal Jackal = new NeutralRoles.Jackal();
         public static NeutralRoles.Jester Jester = new NeutralRoles.Jester();
+        public static NeutralRoles.Opportunist Opportunist = new NeutralRoles.Opportunist();
         public static NeutralRoles.Vulture Vulture = new NeutralRoles.Vulture();
 
         public static ComplexRoles.FCrewmate F_Crewmate = new ComplexRoles.FCrewmate();
@@ -61,7 +62,7 @@ namespace Nebula.Roles
         {
             Impostor,Camouflager,Cleaner,Damned,Eraser,EvilAce,EvilGuesser,EvilTrapper,Morphing,Reaper,Sniper,
             F_Guesser,F_Trapper,
-            Arsonist,Empiric,Jackal,Jester,Vulture,
+            Arsonist,Empiric,Jackal,Jester,Opportunist,Vulture,
             F_Crewmate,
             Crewmate,Agent,Alien,Bait,Booster,DamnedCrew,Engineer,Mayor,Necromancer,NiceGuesser,NiceTrapper,Provocateur,Psychic,SecurityGuard,Sheriff,Spy,
             Madmate,

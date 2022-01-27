@@ -48,8 +48,9 @@ namespace Nebula
                 __instance.CompletedTasks = 0;
                 for (int i = 0; i < __instance.AllPlayers.Count; i++)
                 {
-                    
                     GameData.PlayerInfo playerInfo = __instance.AllPlayers[i];
+                    
+                    if (playerInfo.GetModData().role.hasFakeTask) continue;
 
                     var (playerCompleted, playerTotal) = taskInfo(playerInfo);
                     __instance.TotalTasks += playerTotal;

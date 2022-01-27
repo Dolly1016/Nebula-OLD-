@@ -10,11 +10,11 @@ using Nebula.Objects;
 
 namespace Nebula.Roles.NeutralRoles
 {
-    public class Jester : Template.Draggable
+    public class Jester : Template.Draggable , Template.HasWinTrigger
     {
         static public Color Color = new Color(253f / 255f, 84f / 255f, 167f / 255f);
 
-        public bool WinTrigger=false;
+        public bool WinTrigger { get; set; } = false;
 
         private Module.CustomOption canUseVentsOption;
 

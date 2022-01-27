@@ -304,6 +304,14 @@ namespace Nebula.Roles
         [RoleGlobalMethod]
         public virtual void GlobalIntroInitialize(PlayerControl __instance) { }
 
+        /// <summary>
+        /// プレイヤーごとの追加勝利を確認します。
+        /// </summary>
+        /// <param name="condition"></param>
+        /// <returns></returns>
+        [RoleGlobalMethod]
+        public virtual bool CheckWin(PlayerControl player, Patches.EndCondition condition) { return false; }
+
         /*--------------------------------------------------------------------------------------*/
         /*--------------------------------------------------------------------------------------*/
 
