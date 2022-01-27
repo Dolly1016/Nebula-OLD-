@@ -134,8 +134,8 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 | [Cleaner](#cleaner) | [Alien](#alien) | [Empiric](#empiric) | [Trilemma](#trilemma) |
 | [Damned](#damned) | [Bait](#bait) | [Jackal](#jackal) ||
 | [Eraser](#eraser) | [Booster](#booster) | [Jester](#jester) ||
-| [Evil Ace](#evil-ace) | [Engineer](#engineer) | [Vulture](#vulture) ||
-| [Evil Guesser](#guesser) | [Mayor](#mayor) |||
+| [Evil Ace](#evil-ace) | [Engineer](#engineer) | [Opportunist](#opportunist) ||
+| [Evil Guesser](#guesser) | [Mayor](#mayor) | [Vulture](#vulture) ||
 | [Evil Trapper](#trapper) | [Necromancer](#necromancer) |||
 | [Morphing](#morphing) | [Nice Guesser](#guesser) |||
 | [Reaper](#reaper) | [Nice Trapper](#trapper) |||
@@ -422,6 +422,16 @@ p5p5next : Damned
 
 ## Jester
  Jesterは投票によって吊られることで勝利します。
+ 
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+
+-----------------------
+
+## Opportunist
+ Opportunistは、ゲーム終了時に自身が生きていて、タスクをすべて完了している場合に追加勝利します。\
+ ただし、Jester勝利の場合は自身が生きていても追加勝利にはなりません。\
  
  ### オプション
 | オプション名 | 設定内容 |
