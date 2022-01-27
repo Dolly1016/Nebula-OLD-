@@ -143,6 +143,12 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 -----------------------
 
+# 拡張MODの制作方法
+
+BasePluginに以下の属性を新たに付与することで、Nebula on the Shipを前提としたMODを制作することができます。\
+\
+　[BepInDependency("jp.dreamingpig.amongus.nebula",BepInDependency.DependencyFlags.HardDependency)]
+
 # クレジットとリソース
 
 [BepInEx](https://github.com/BepInEx) ゲームの関数をフックするために使用しています。\
