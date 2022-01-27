@@ -260,6 +260,7 @@
 "role.opportunist.name" : "Opportunist"
 "role.opportunist.description" : "Wait for Opportunity"
 "role.opportunist.exemptTasks" : "Cut Tasks"
+"role.opportunist.canUseVents" : "Can Use Vents"
 "role.opportunist.additionalEndText" : " <color=#ffffffff>with</color> <color=#6afc2dff>Opportunist</color>"
 
 "role.vulture.name" : "Vulture"

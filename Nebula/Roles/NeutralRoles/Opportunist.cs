@@ -17,6 +17,21 @@ namespace Nebula.Roles.NeutralRoles
 
 
         private Module.CustomOption cutTasksOption;
+        private Module.CustomOption canUseVentsOption;
+
+        public override void GlobalInitialize(PlayerControl __instance)
+        {
+            base.GlobalInitialize(__instance);
+
+            canMoveInVents = canUseVents = canUseVentsOption.getBool();
+        }
+
+        public override void LoadOptionData()
+        {
+            base.LoadOptionData();
+
+            canUseVentsOption = CreateOption(Color.white, "canUseVents", true);
+        }
 
         public override bool CheckWin(PlayerControl player, EndCondition condition)
         {
@@ -41,6 +56,7 @@ namespace Nebula.Roles.NeutralRoles
                  true, true, true, false, false)
         {
             fakeTaskIsExecutable = true;
+            ventColor = Color;
         }
     }
 }
