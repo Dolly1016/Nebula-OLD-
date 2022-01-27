@@ -9,6 +9,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 # ダウンロード
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| Alpha 1.8.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.8.1,2021.12.15/Nebula.zip)|
 | Alpha 1.8.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.8.0,2021.12.15/Nebula.zip)|
 | Alpha 1.7.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.7.1,2021.12.15/Nebula.zip)|
 | Alpha 1.7.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.7.0,2021.12.15/Nebula.zip)|
@@ -43,6 +44,10 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+  
+ **Version Alpha 1.8.1**
+ - Opportunist を追加
+ - 第三陣営がホストでないとき、勝利できない問題を修正
   
  **Version Alpha 1.8.0**
  - Sniper, Morphing を追加
