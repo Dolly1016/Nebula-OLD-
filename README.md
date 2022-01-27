@@ -47,7 +47,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
   
  **Version Alpha 1.8.1**
  - Opportunist を追加
- - 第三陣営がホストでないとき、勝利できない問題を修正
+ - 一部の第三陣営がホストでないとき、勝利できない問題を修正
   
  **Version Alpha 1.8.0**
  - Sniper, Morphing を追加
