@@ -51,6 +51,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
  - Spyに、インポスターのキルに関する新たなオプションを追加
  - Sniperの銃声通知が表示される距離に関する新たなオプションを追加
  - 投票による追放が正常に行われない問題を修正
+ - Vulture, Cleanerが死体を消去しても他プレイヤーからは死体が見えてしまう問題を修正
  - インポスターの一部役職が停電の影響を受ける問題を修正
  - 非ホストのAgent, Opportunistのゲーム開始時のタスクが正常でない問題を修正
  - LoverのInviteボタンの範囲が狭い問題を修正
