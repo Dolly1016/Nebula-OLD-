@@ -9,6 +9,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 # ダウンロード
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| Alpha 1.8.2 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.8.2,2021.12.15/Nebula.zip)|
 | Alpha 1.8.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.8.1,2021.12.15/Nebula.zip)|
 | Alpha 1.8.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.8.0,2021.12.15/Nebula.zip)|
 | Alpha 1.7.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.7.1,2021.12.15/Nebula.zip)|
@@ -44,6 +45,23 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+  
+ **Version Alpha 1.8.2**
+ - ゲーム終了時にプレイヤーごとのタスク進捗と生死情報が表示されるように
+ - Spyに、インポスターのキルに関する新たなオプションを追加
+ - Sniperの銃声通知が表示される距離に関する新たなオプションを追加
+ - 投票による追放が正常に行われない問題を修正
+ - インポスターの一部役職が停電の影響を受ける問題を修正
+ - 非ホストのAgent, Opportunistのゲーム開始時のタスクが正常でない問題を修正
+ - LoverのInviteボタンの範囲が狭い問題を修正
+ - Mayorの票数調整が反映されないことがある問題を修正
+ - ゲーム終了時に、Voting Timeの設定が変わってしまう問題が発生しづらくなるよう修正
+ - Guesserによる会議上でのキルがホストと本人以外見た目上反映されない問題を修正
+ - Nice Trapperのログトラップが幽霊に反応する問題を修正
+ - Jackal除く第三陣営が勝利したとき、次回以降のゲームが正常に開始できない問題を修正
+ - Sniperがベントに潜っている時、ライフルが見えてしまう問題を修正
+ - Sniperの射線上に幽霊がいると、その幽霊を撃ってしまう問題を修正
+ - 非ホストからゲーム設定が確認できない問題を修正
   
  **Version Alpha 1.8.1**
  - Opportunist を追加
