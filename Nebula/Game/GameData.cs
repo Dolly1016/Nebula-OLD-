@@ -36,16 +36,8 @@ namespace Nebula.Game
 
     public class DeadPlayerData
     {
-        public enum DeathReason
-        {
-            Killed,
-            Exiled,
-            Suicide,
-        }
-
         public PlayerData Data { get; }
         public byte MurderId { get; }
-        public DeathReason Reason { get; }
         public bool existDeadBody { get; private set; }
         //死亡場所
         public Vector3 deathLocation { get; }
@@ -54,10 +46,9 @@ namespace Nebula.Game
         //復活希望場所(同じプレイヤーの復活希望場所も人によって違う)
         public SystemTypes RespawnRoom { get; }
 
-        public DeadPlayerData(PlayerData playerData,DeathReason deathReason,byte murderId)
+        public DeadPlayerData(PlayerData playerData,byte murderId)
         {
             this.Data = playerData;
-            this.Reason = deathReason;
             this.MurderId = murderId;
             this.existDeadBody = true;
             this.deathLocation = Helpers.allPlayersById()[playerData.id].transform.position;
@@ -196,6 +187,38 @@ namespace Nebula.Game
 
     public class PlayerData
     {
+        public class PlayerStatus
+        {
+            static private byte AvailableId = 0;
+            static Dictionary<byte, PlayerStatus> StatusMap = new System.Collections.Generic.Dictionary<byte, PlayerStatus>();
+
+            public static PlayerStatus Alive = new PlayerStatus("alive");
+            public static PlayerStatus Dead = new PlayerStatus("dead");
+            public static PlayerStatus Exiled = new PlayerStatus("exiled");
+            public static PlayerStatus Suicide = new PlayerStatus("suicide");
+            public static PlayerStatus Revived = new PlayerStatus("revived");
+            public static PlayerStatus Burned=new PlayerStatus("burned");
+            public static PlayerStatus Embroiled = new PlayerStatus("embroiled");
+            public static PlayerStatus Guessed = new PlayerStatus("guessed");
+            public static PlayerStatus Trapped = new PlayerStatus("trapped");
+            public static PlayerStatus Sniped = new PlayerStatus("sniped");
+
+            public string Status { get; private set; }
+            public byte Id;
+
+            private PlayerStatus(string Status)
+            {
+                this.Status = Status;
+                this.Id = AvailableId;
+                AvailableId++;
+                StatusMap[Id] = this;
+            }
+
+            static public PlayerStatus GetStatusById(byte Id)
+            {
+                return StatusMap[Id];
+            }
+        }
         public class PlayerOutfitData
         {
             public int ColorId { get; }
@@ -247,6 +270,8 @@ namespace Nebula.Game
 
         public TaskData Tasks { get; }
 
+        public PlayerStatus Status { get; set; }
+
         public PlayerData(byte playerId, string name,PlayerOutfit outfit,Role role)
         {
             
@@ -264,6 +289,7 @@ namespace Nebula.Game
             this.Speed = new SpeedFactorManager(playerId) ;
             this.Tasks = new TaskData(role.side == Roles.Side.Impostor || role.hasFakeTask, role.fakeTaskIsExecutable);
             this.MouseAngle = 0f;
+            this.Status = PlayerStatus.Alive;
         }
 
         public int GetRoleData(int id)
@@ -366,7 +392,7 @@ namespace Nebula.Game
             IsAlive = true;
         }
 
-        private void Die(DeadPlayerData.DeathReason deathReason,byte murderId)
+        public void Die(PlayerStatus status, byte murderId)
         {
             IsAlive = false;
 
@@ -377,17 +403,18 @@ namespace Nebula.Game
             }
             */
 
-            Game.GameData.data.deadPlayers.Add(id, new DeadPlayerData(this, deathReason, murderId));
+            Game.GameData.data.deadPlayers.Add(id, new DeadPlayerData(this, murderId));
+            Status = status;
         }
 
-        public void Die(DeadPlayerData.DeathReason deathReason)
+        public void Die(PlayerStatus status)
         {
-            Die(deathReason,Byte.MaxValue);
+            Die(status,Byte.MaxValue);
         }
 
-        public void Die(byte murderId)
+        public void Die()
         {
-            Die(DeadPlayerData.DeathReason.Killed, murderId);
+            Die(PlayerStatus.Dead,Byte.MaxValue);
         }
 
         public bool IsMyPlayerData()

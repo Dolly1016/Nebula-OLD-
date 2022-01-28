@@ -40,7 +40,6 @@ namespace Nebula.Roles.CrewmateRoles
 
         public override void UniqueAction(byte actionId)
         {
-            RPCEventInvoker.MultipleVote(PlayerControl.LocalPlayer, numOfVote);
             RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, votesId, -numOfVote);
         }
 
@@ -65,7 +64,10 @@ namespace Nebula.Roles.CrewmateRoles
                 passiveButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
                 {
                     if (numOfVote > 0)
+                    {
                         numOfVote--;
+                        RPCEventInvoker.MultipleVote(PlayerControl.LocalPlayer, numOfVote);
+                    }
                 }));
 
                 template = __instance.SkipVoteButton.Buttons.transform.Find("CancelButton").gameObject;
@@ -79,7 +81,10 @@ namespace Nebula.Roles.CrewmateRoles
                 passiveButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
                 {
                     if (numOfVote < maxVoteOption.getFloat() && numOfVote < Game.GameData.data.myData.getGlobalData().GetRoleData(votesId))
+                    {
                         numOfVote++;
+                        RPCEventInvoker.MultipleVote(PlayerControl.LocalPlayer, numOfVote);
+                    }
                 }));
 
 

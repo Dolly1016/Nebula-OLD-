@@ -300,12 +300,12 @@ namespace Nebula
 
             return MurderAttemptResult.PerformKill;
         }
-        public static MurderAttemptResult checkMuderAttemptAndKill(PlayerControl killer, PlayerControl target, bool isMeetingStart = false, bool showAnimation = true)
+        public static MurderAttemptResult checkMuderAttemptAndKill(PlayerControl killer, PlayerControl target,Game.PlayerData.PlayerStatus status, bool isMeetingStart = false, bool showAnimation = true)
         {
             MurderAttemptResult murder = checkMuderAttempt(killer, target, isMeetingStart);
             if (murder == MurderAttemptResult.PerformKill)
             {
-                RPCEventInvoker.UncheckedMurderPlayer(killer.PlayerId,target.PlayerId, showAnimation);
+                RPCEventInvoker.UncheckedMurderPlayer(killer.PlayerId,target.PlayerId, status.Id, showAnimation);
             }
             return murder;
         }

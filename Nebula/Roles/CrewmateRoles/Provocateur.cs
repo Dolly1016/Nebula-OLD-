@@ -17,7 +17,7 @@ namespace Nebula.Roles.CrewmateRoles
             //相手も殺す
             if (PlayerControl.LocalPlayer.PlayerId == murderId) return;
             if (Helpers.playerById(murderId).Data.IsDead) return;
-            RPCEventInvoker.UncheckedMurderPlayer(PlayerControl.LocalPlayer.PlayerId, murderId,false);
+            RPCEventInvoker.UncheckedMurderPlayer(PlayerControl.LocalPlayer.PlayerId, murderId, Game.PlayerData.PlayerStatus.Embroiled.Id, false);
         }
 
         public override void OnExiledPre(byte[] voters)
@@ -25,7 +25,7 @@ namespace Nebula.Roles.CrewmateRoles
             if (voters.Length == 0) return;
 
             //ランダムに相手を選んで追放する
-            RPCEventInvoker.UncheckedExilePlayer(voters[NebulaPlugin.rnd.Next(voters.Length)]);
+            RPCEventInvoker.UncheckedExilePlayer(voters[NebulaPlugin.rnd.Next(voters.Length)],Game.PlayerData.PlayerStatus.Embroiled.Id);
         }
 
         public Provocateur()

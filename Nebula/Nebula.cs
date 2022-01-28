@@ -22,10 +22,10 @@ namespace Nebula
         public const string AmongUsVersion = "2021.12.15";
         public const string PluginGuid = "jp.dreamingpig.amongus.nebula";
         public const string PluginName = "TheNebula";
-        public const string PluginVersion = "1.8.1";
+        public const string PluginVersion = "1.8.2";
         public const string PluginStage = "ALPHA";
-        public const string PluginVersionForFetch = "0.1.8.1";
-        public byte[] PluginVersionData = new byte[] { 0, 1, 8, 1 };
+        public const string PluginVersionForFetch = "0.1.8.2";
+        public byte[] PluginVersionData = new byte[] { 0, 1, 8, 2 };
 
         public static NebulaPlugin Instance;
 
@@ -138,7 +138,7 @@ namespace Nebula
             // Suiside
             if (Input.GetKeyDown(KeyCode.F9))
             {
-                Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, PlayerControl.LocalPlayer, false, false);
+                Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, PlayerControl.LocalPlayer,Game.PlayerData.PlayerStatus.Suicide, false, false);
             }
 
             // Kill nearest player
@@ -147,7 +147,7 @@ namespace Nebula
                 PlayerControl target = Patches.PlayerControlPatch.SetMyTarget();
                 if (target == null) return;
 
-                Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, target, false, false);
+                Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, target, Game.PlayerData.PlayerStatus.Dead, false, false);
 
             }
 

@@ -150,7 +150,7 @@ namespace Nebula.Roles.ImpostorRoles
         public Morphing()
                 : base("Morphing", "morphing", Palette.ImpostorRed, RoleCategory.Impostor, Side.Impostor, Side.Impostor,
                      Impostor.impostorSideSet, Impostor.impostorSideSet, Impostor.impostorEndSet,
-                     false, true, true, false, true)
+                     false, true, true, true, true)
         {
             morphButton = null;
         }

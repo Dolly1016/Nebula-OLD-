@@ -11,19 +11,19 @@ namespace Nebula.Patches
 
     public class EndCondition
     {
-        public static EndCondition CrewmateWinByVote = new EndCondition(GameOverReason.HumansByVote, Palette.CrewmateBlue, "crewmate");
-        public static EndCondition CrewmateWinByTask = new EndCondition(GameOverReason.HumansByTask, Palette.CrewmateBlue, "crewmate");
-        public static EndCondition CrewmateWinDisconnect = new EndCondition(GameOverReason.HumansDisconnect, Palette.CrewmateBlue, "crewmate");
-        public static EndCondition ImpostorWinByKill = new EndCondition(GameOverReason.ImpostorByKill, Palette.ImpostorRed, "impostor");
-        public static EndCondition ImpostorWinBySabotage = new EndCondition(GameOverReason.ImpostorBySabotage, Palette.ImpostorRed, "impostor");
-        public static EndCondition ImpostorWinByVote = new EndCondition(GameOverReason.ImpostorByVote, Palette.ImpostorRed, "impostor");
-        public static EndCondition ImpostorWinDisconnect = new EndCondition(GameOverReason.ImpostorDisconnect, Palette.ImpostorRed, "impostor");
-        public static EndCondition JesterWin = new EndCondition(16, Roles.NeutralRoles.Jester.Color, "jester", () => { });
-        public static EndCondition JackalWin = new EndCondition(17, Roles.NeutralRoles.Jackal.Color, "jackal", () => { });
-        public static EndCondition ArsonistWin = new EndCondition(18, Roles.NeutralRoles.Arsonist.Color, "arsonist", () => { PlayerControl.AllPlayerControls.ForEach((Action<PlayerControl>)((p) => { if (!p.Data.IsDead && p.GetModData().role.side != Roles.Side.Arsonist) p.MurderPlayer(p); })); });
-        public static EndCondition EmpiricWin = new EndCondition(19, Roles.NeutralRoles.Empiric.Color, "empiric", () => { });
-        public static EndCondition VultureWin = new EndCondition(20, Roles.NeutralRoles.Vulture.Color, "vulture", () => { });
-        public static EndCondition TrilemmaWin = new EndCondition(32, new Color(209f / 255f, 63f / 255f, 138f / 255f), "trilemma",()=> { });
+        public static EndCondition CrewmateWinByVote = new EndCondition(GameOverReason.HumansByVote, Palette.CrewmateBlue, "crewmate", 16);
+        public static EndCondition CrewmateWinByTask = new EndCondition(GameOverReason.HumansByTask, Palette.CrewmateBlue, "crewmate", 16);
+        public static EndCondition CrewmateWinDisconnect = new EndCondition(GameOverReason.HumansDisconnect, Palette.CrewmateBlue, "crewmate", 16);
+        public static EndCondition ImpostorWinByKill = new EndCondition(GameOverReason.ImpostorByKill, Palette.ImpostorRed, "impostor", 16);
+        public static EndCondition ImpostorWinBySabotage = new EndCondition(GameOverReason.ImpostorBySabotage, Palette.ImpostorRed, "impostor", 16);
+        public static EndCondition ImpostorWinByVote = new EndCondition(GameOverReason.ImpostorByVote, Palette.ImpostorRed, "impostor", 16);
+        public static EndCondition ImpostorWinDisconnect = new EndCondition(GameOverReason.ImpostorDisconnect, Palette.ImpostorRed, "impostor",16);
+        public static EndCondition JesterWin = new EndCondition(16, Roles.NeutralRoles.Jester.Color, "jester", 1,() => { });
+        public static EndCondition JackalWin = new EndCondition(17, Roles.NeutralRoles.Jackal.Color, "jackal", 2,() => { });
+        public static EndCondition ArsonistWin = new EndCondition(18, Roles.NeutralRoles.Arsonist.Color, "arsonist", 1,() => { PlayerControl.AllPlayerControls.ForEach((Action<PlayerControl>)((p) => { if (!p.Data.IsDead && p.GetModData().role.side != Roles.Side.Arsonist) p.MurderPlayer(p); })); });
+        public static EndCondition EmpiricWin = new EndCondition(19, Roles.NeutralRoles.Empiric.Color, "empiric", 1,() => { });
+        public static EndCondition VultureWin = new EndCondition(20, Roles.NeutralRoles.Vulture.Color, "vulture", 1,() => { });
+        public static EndCondition TrilemmaWin = new EndCondition(32, new Color(209f / 255f, 63f / 255f, 138f / 255f), "trilemma",0,()=> { });
 
         public static HashSet<EndCondition> AllEnds = new HashSet<EndCondition>() {
             CrewmateWinByVote ,CrewmateWinByTask,CrewmateWinDisconnect,
@@ -48,15 +48,17 @@ namespace Nebula.Patches
         public Color Color { get; }
         public String Identifier { get; }
         public Action EndAction { get; }
-        public EndCondition(GameOverReason Id,Color Color,String Identifier)
+        public byte Priority { get; }
+        public EndCondition(GameOverReason Id,Color Color,String EndText, byte Priority)
         {
             this.Id = Id;
             this.Color = Color;
-            this.Identifier = Identifier;
+            this.Identifier = EndText;
             this.EndAction = ()=> { };
+            this.Priority = Priority;
         }
 
-        public EndCondition(int Id, Color Color, String EndText, System.Action EndAction) : this((GameOverReason)Id,Color,EndText)
+        public EndCondition(int Id, Color Color, String EndText, byte Priority, System.Action EndAction) : this((GameOverReason)Id,Color,EndText,Priority)
         {
             this.EndAction=EndAction;
         }
@@ -71,13 +73,15 @@ namespace Nebula.Patches
             public Roles.Role role { get; private set; }
             public int totalTasks { get; private set; }
             public int completedTasks { get; private set; }
+            public Game.PlayerData.PlayerStatus status { get; private set; }
 
-            public FinalPlayer(string name, Roles.Role role, int totalTasks, int completedTasks)
+            public FinalPlayer(string name, Roles.Role role, Game.PlayerData.PlayerStatus status,int totalTasks, int completedTasks)
             {
                 this.name = name;
                 this.role = role;
                 this.totalTasks = totalTasks;
                 this.completedTasks = completedTasks;
+                this.status = status;
             }
         }
 
@@ -94,7 +98,7 @@ namespace Nebula.Patches
                 Helpers.RoleAction(player.id,(role)=> { role.EditDisplayNameForcely(player.id, ref name); });
 
                 players.Add(new FinalPlayer(name,
-                    player.role, 0, 0));
+                    player.role, player.Status, player.Tasks.AllTasks, player.Tasks.Completed));
             }
         }
     }
@@ -152,11 +156,19 @@ namespace Nebula.Patches
 
         public static void Postfix(EndGameManager __instance)
         {
-            // Delete and readd PoolablePlayers always showing the name and role of the player
+            //勝利トリガをもどす
+            Roles.Roles.ResetWinTrigger();
+
+            //変更したオプションを元に戻す
+            PlayerControl.GameOptions.VotingTime = Game.GameData.data.GameRule.vanillaVotingTime;
+
+            //元の勝利チームを削除する
             foreach (PoolablePlayer pb in __instance.transform.GetComponentsInChildren<PoolablePlayer>())
             {
                 UnityEngine.Object.Destroy(pb.gameObject);
             }
+
+            //勝利メンバーを載せる
             int num = Mathf.CeilToInt(7.5f);
             List<WinningPlayerData> list = TempData.winners.ToArray().ToList().OrderBy(delegate (WinningPlayerData b)
             {
@@ -197,7 +209,7 @@ namespace Nebula.Patches
                 poolablePlayer.NameText.text = winningPlayerData2.PlayerName;
             }
 
-            // Additional code
+            // テキストを追加する
             GameObject bonusText = UnityEngine.Object.Instantiate(__instance.WinText.gameObject);
             bonusText.transform.position = new Vector3(__instance.WinText.transform.position.x, __instance.WinText.transform.position.y - 0.5f, __instance.WinText.transform.position.z);
             bonusText.transform.localScale = new Vector3(0.7f, 0.7f, 1f);
@@ -217,13 +229,19 @@ namespace Nebula.Patches
             roleSummary.transform.position = new Vector3(__instance.Navigation.ExitButton.transform.position.x + 0.1f, position.y - 0.1f, -14f);
             roleSummary.transform.localScale = new Vector3(1f, 1f, 1f);
 
+            //結果表示
             var roleSummaryText = new StringBuilder();
             roleSummaryText.AppendLine("Roles breakdown:");
 
             foreach (FinalPlayerData.FinalPlayer player in OnGameEndPatch.FinalData.players)
             {
                 var roles = string.Join(" ", Helpers.cs(player.role.Color, Language.Language.GetString("role." + player.role.LocalizeName + ".name")));
-                roleSummaryText.AppendLine($"{player.name} - {roles}");
+
+                var status = string.Join(" ", Language.Language.GetString("status." + player.status.Status));
+
+                var tasks = player.totalTasks > 0 ? $"<color=#FAD934FF>({player.completedTasks}/{player.totalTasks})</color>" : "";
+
+                roleSummaryText.AppendLine($"{player.name} - {roles} {status}{tasks}");
             }
 
             TMPro.TMP_Text roleSummaryTextMesh = roleSummary.GetComponent<TMPro.TMP_Text>();
@@ -245,23 +263,34 @@ namespace Nebula.Patches
     {
         public static bool Prefix(ShipStatus __instance)
         {
+            if (ExileController.Instance != null) return false;
+
             if (!GameData.Instance) return false;
             if (DestroyableSingleton<TutorialManager>.InstanceExists) // InstanceExists | Don't check Custom Criteria when in Tutorial
                 return true;
             var statistics = new PlayerStatistics(__instance);
 
-            Patches.EndCondition endCondition;
+            Patches.EndCondition endCondition = null, temp;
+            byte priority=Byte.MaxValue;
 
             foreach(Roles.Side side in Roles.Side.AllSides)
-            {
-                endCondition = side.endCriteriaChecker(statistics, __instance);
-                if (endCondition != null)
+            {   
+
+                temp= side.endCriteriaChecker(statistics, __instance);
+                if (temp != null && priority>=temp.Priority)
                 {
-                    __instance.enabled = false;
-                    ShipStatus.RpcEndGame(endCondition.Id, false);
-                    return false;
+                    endCondition = temp;
+                    priority = temp.Priority;
                 }
             }
+
+            if (endCondition != null)
+            {
+                __instance.enabled = false;
+                ShipStatus.RpcEndGame(endCondition.Id, false);
+                return false;
+            }
+
             return false;
         }
     }

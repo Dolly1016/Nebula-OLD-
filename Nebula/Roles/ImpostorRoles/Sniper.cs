@@ -20,6 +20,7 @@ namespace Nebula.Roles.ImpostorRoles
         private Module.CustomOption shotSizeOption;
         private Module.CustomOption shotEffectiveRangeOption;
         private Module.CustomOption canKillImpostorsOption;
+        public Module.CustomOption noticeRangeOption;
 
         public override void LoadOptionData()
         {
@@ -27,9 +28,11 @@ namespace Nebula.Roles.ImpostorRoles
             snipeCoolDownOption.suffix = "second";
             shotSizeOption = CreateOption(Color.white, "shotSize", 1f, 0.5f, 4f, 0.25f);
             shotSizeOption.suffix = "cross";
-            shotEffectiveRangeOption = CreateOption(Color.white, "shotEffectiveRange", 12f, 2f, 40f, 2f);
+            shotEffectiveRangeOption = CreateOption(Color.white, "shotEffectiveRange", 20f, 2f, 40f, 2f);
             shotEffectiveRangeOption.suffix = "cross";
             canKillImpostorsOption = CreateOption(Color.white, "canKillImpostors", false);
+
+            noticeRangeOption = CreateOption(Color.white, "shotEffectiveRange", 20f, 2f, 50f, 2f);
         }
 
 
@@ -43,6 +46,8 @@ namespace Nebula.Roles.ImpostorRoles
             {
                 //自分自身は撃ち抜かれない
                 if (player.PlayerId == PlayerControl.LocalPlayer.PlayerId) continue;
+
+                if (player.Data.IsDead) continue;
 
                 if (onlyWhiteName)
                 {
@@ -104,7 +109,7 @@ namespace Nebula.Roles.ImpostorRoles
                     PlayerControl target = GetShootPlayer(shotSizeOption.getFloat()*0.1f,shotEffectiveRangeOption.getFloat(), !canKillImpostorsOption.getBool());
                     if (target!=null)
                     {
-                        Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, target, false, false);
+                        Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, target, Game.PlayerData.PlayerStatus.Sniped, false, false);
                     }
 
                     RPCEventInvoker.SniperShot();

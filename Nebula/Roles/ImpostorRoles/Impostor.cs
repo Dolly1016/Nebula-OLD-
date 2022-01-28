@@ -18,7 +18,7 @@ namespace Nebula.Roles.ImpostorRoles
         public Impostor()
                 : base("Impostor", "impostor", Palette.ImpostorRed, RoleCategory.Impostor, Side.Impostor, Side.Impostor,
                      impostorSideSet, impostorSideSet,impostorEndSet,
-                     false,true, true, false, true)
+                     false,true, true, true, true)
         {
 
         }

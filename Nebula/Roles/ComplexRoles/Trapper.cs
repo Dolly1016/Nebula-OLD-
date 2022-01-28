@@ -127,7 +127,7 @@ namespace Nebula.Roles.ComplexRoles
                      isImpostor ? ImpostorRoles.Impostor.impostorSideSet : CrewmateRoles.Crewmate.crewmateSideSet,
                      isImpostor ? ImpostorRoles.Impostor.impostorSideSet : CrewmateRoles.Crewmate.crewmateSideSet,
                      isImpostor ? ImpostorRoles.Impostor.impostorEndSet : CrewmateRoles.Crewmate.crewmateEndSet,
-                     false, isImpostor, isImpostor, false, isImpostor)
+                     false, isImpostor, isImpostor, isImpostor, isImpostor)
         {
             IsHideRole = true;
 
@@ -170,7 +170,7 @@ namespace Nebula.Roles.ComplexRoles
                     PlayerControl player = Patches.PlayerControlPatch.GetTarget(obj.GameObject.transform.position, Roles.F_Trapper.invisibleTrapRangeOption.getFloat() / 2, side == Side.Impostor);
                     if (player != null)
                     {
-                        Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, player, false, false);
+                        Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, player, Game.PlayerData.PlayerStatus.Trapped, false, false);
                         deleteObjects.Add(obj);
 
                         PlayerControl.LocalPlayer.killTimer = PlayerControl.GameOptions.KillCooldown;
@@ -181,6 +181,7 @@ namespace Nebula.Roles.ComplexRoles
                 {
                     foreach (PlayerControl player in PlayerControl.AllPlayerControls)
                     {
+                        if (player.Data.IsDead) continue;
                         if (detectedPlayers.Contains(player.PlayerId)) continue;
 
                         if (player.transform.position.Distance(obj.GameObject.transform.position) < Roles.F_Trapper.invisibleTrapRangeOption.getFloat() / 2)

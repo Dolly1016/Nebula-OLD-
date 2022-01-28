@@ -184,7 +184,6 @@ namespace Nebula.Patches
 
         public static void UpdateImpostorKillButton(HudManager __instance)
         {
-            __instance.KillButton.SetTarget(PlayerControlPatch.SetMyTarget(true));
 
 
             if (MeetingHud.Instance != null) return;
@@ -197,6 +196,8 @@ namespace Nebula.Patches
                 else
                 {
                     __instance.KillButton.Show();
+
+                    __instance.KillButton.SetTarget(PlayerControlPatch.SetMyTarget(!Roles.Roles.Spy.CanKillImpostor()));
                 }
             }
         }

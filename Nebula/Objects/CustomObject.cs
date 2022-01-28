@@ -74,6 +74,12 @@ namespace Nebula.Objects
                     if (obj.Renderer.transform.localScale.y < 0)
                         obj.Renderer.transform.localScale = new Vector3(1f, 1f);
                 }
+
+                if (Helpers.playerById(obj.OwnerId).inVent)
+                    obj.GameObject.active = false;
+                else
+                    obj.GameObject.active = true;
+
             }, false);
 
             static private byte AvailableId = 0;

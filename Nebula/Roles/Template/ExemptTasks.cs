@@ -25,10 +25,8 @@ namespace Nebula.Roles.Template
         {
             int exempt = (int)exemptTasksOption.getFloat();
             byte result = 0;
-            int tasks = PlayerControl.LocalPlayer.myTasks.Count;
-            tasks -= exempt;
-            if (tasks < 0) tasks = 0;
-            RPCEventInvoker.ExemptTasks(__instance.PlayerId, tasks, hasFakeTask ? 0 : tasks);
+            int cutTasks = PlayerControl.LocalPlayer.myTasks.Count<exempt? PlayerControl.LocalPlayer.myTasks.Count:exempt;
+            RPCEventInvoker.ExemptTasks(__instance.PlayerId, cutTasks, hasFakeTask ? 0 : cutTasks);
         }
 
         public override void LoadOptionData()

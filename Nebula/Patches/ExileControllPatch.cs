@@ -59,7 +59,7 @@ namespace Nebula.Patches
                         Helpers.RoleAction(exiled.PlayerId, (role) => { role.OnDied(); });
                     }
 
-                    Game.GameData.data.players[exiled.PlayerId].Die(Game.DeadPlayerData.DeathReason.Exiled);
+                    Game.GameData.data.players[exiled.PlayerId].Die(Game.PlayerData.PlayerStatus.Exiled);
                 }
                 else
                 {

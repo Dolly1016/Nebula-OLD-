@@ -53,6 +53,8 @@ namespace Nebula.Patches
             
             Game.GameData.data.LoadMapData();
 
+            Roles.Roles.StaticInitialize();
+
             foreach (Game.PlayerData player in Game.GameData.data.players.Values)
             {
                 Helpers.RoleAction(player, (role) => {

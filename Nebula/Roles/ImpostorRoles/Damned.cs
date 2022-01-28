@@ -19,7 +19,7 @@ namespace Nebula.Roles.ImpostorRoles
         public Damned()
                 : base("Damned", "damned", Palette.ImpostorRed, RoleCategory.Impostor, Side.Impostor, Side.Impostor,
                      impostorSideSet, impostorSideSet, impostorEndSet,
-                     false, true, true, false, true)
+                     false, true, true, true, true)
         {
             IsHideRole = true;
         }

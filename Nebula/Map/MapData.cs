@@ -11,9 +11,9 @@ namespace Nebula.Map
 
         public static Dictionary<int, MapData> MapDatabase = new Dictionary<int, MapData>();
 
-        protected List<byte> CommonTaskIdList { get; set; }
-        protected List<byte> ShortTaskIdList { get; set; }
-        protected List<byte> LongTaskIdList { get; set; }
+        public List<byte> CommonTaskIdList { get; protected set; }
+        public List<byte> ShortTaskIdList { get; protected set; }
+        public List<byte> LongTaskIdList { get; protected set; }
 
         public static void Load()
         {

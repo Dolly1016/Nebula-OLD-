@@ -57,7 +57,7 @@ namespace Nebula.Roles.ComplexRoles
                      isImpostor ? ImpostorRoles.Impostor.impostorSideSet : CrewmateRoles.Crewmate.crewmateSideSet,
                      isImpostor ? ImpostorRoles.Impostor.impostorSideSet : CrewmateRoles.Crewmate.crewmateSideSet,
                      isImpostor ? ImpostorRoles.Impostor.impostorEndSet : CrewmateRoles.Crewmate.crewmateEndSet,
-                     false, isImpostor, isImpostor, false, isImpostor)
+                     false, isImpostor, isImpostor, isImpostor, isImpostor)
         {
             IsGuessableRole = false;
             IsHideRole = true;

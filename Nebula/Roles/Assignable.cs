@@ -312,6 +312,12 @@ namespace Nebula.Roles
         [RoleGlobalMethod]
         public virtual bool CheckWin(PlayerControl player, Patches.EndCondition condition) { return false; }
 
+        /// <summary>
+        /// どのゲームでも必ず最初に呼び出されます。
+        /// </summary>
+        /// <returns></returns>
+        public virtual void StaticInitialize(){}
+
         /*--------------------------------------------------------------------------------------*/
         /*--------------------------------------------------------------------------------------*/
 

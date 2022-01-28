@@ -67,7 +67,7 @@ namespace Nebula.Roles.ExtraRoles
         public override void OnExiledPre(byte[] voters) {
             ActionForMyLover((player) =>
             {
-                if(!player.Data.IsDead)RPCEventInvoker.UncheckedExilePlayer(player.PlayerId);
+                if(!player.Data.IsDead)RPCEventInvoker.UncheckedExilePlayer(player.PlayerId, Game.PlayerData.PlayerStatus.Suicide.Id);
             }
             );
         }
@@ -75,7 +75,7 @@ namespace Nebula.Roles.ExtraRoles
         public override void OnMurdered(byte murderId) {
             ActionForMyLover((player) =>
             {
-                if (!player.Data.IsDead) RPCEventInvoker.UncheckedMurderPlayer(player.PlayerId, player.PlayerId, false);
+                if (!player.Data.IsDead) RPCEventInvoker.UncheckedMurderPlayer(player.PlayerId, player.PlayerId, Game.PlayerData.PlayerStatus.Suicide.Id, false);
             }
             );
         }
@@ -160,7 +160,7 @@ namespace Nebula.Roles.ExtraRoles
 
         public override void MyPlayerControlUpdate()
         {
-            trilemmaTarget = Patches.PlayerControlPatch.SetMyTarget();
+            trilemmaTarget = Patches.PlayerControlPatch.SetMyTarget(2.5f);
             
             if (IsMyLover(trilemmaTarget)) {
                 trilemmaTarget = null;

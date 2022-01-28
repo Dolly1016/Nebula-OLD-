@@ -667,13 +667,6 @@ namespace Nebula.Module
 
         private static void Postfix(ref string __result)
         {
-
-            bool hideSettings = AmongUsClient.Instance?.AmHost == false;
-            if (hideSettings)
-            {
-                return;
-            }
-
             List<string> pages = new List<string>();
             pages.Add(__result);
 

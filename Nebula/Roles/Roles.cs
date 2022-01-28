@@ -11,7 +11,7 @@ namespace Nebula.Roles
     static public class Roles
     {
 
-        public static CrewmateRoles.Crewmate Crewmate=new CrewmateRoles.Crewmate();
+        public static CrewmateRoles.Crewmate Crewmate = new CrewmateRoles.Crewmate();
         public static CrewmateRoles.Agent Agent = new CrewmateRoles.Agent();
         public static CrewmateRoles.Alien Alien = new CrewmateRoles.Alien();
         public static CrewmateRoles.Bait Bait = new CrewmateRoles.Bait();
@@ -73,9 +73,36 @@ namespace Nebula.Roles
             Lover,Trilemma
         };
 
-        public static void RegisterAddonRoles(Role role)
+        public static void ResetWinTrigger()
         {
+            foreach(Role role in AllRoles)
+            {
+                if(role is Template.HasWinTrigger)
+                {
+                    ((Template.HasWinTrigger)role).WinTrigger = false;
+                }
+            }
 
+            foreach (ExtraRole role in AllExtraRoles)
+            {
+                if (role is Template.HasWinTrigger)
+                {
+                    ((Template.HasWinTrigger)role).WinTrigger = false;
+                }
+            }
+        }
+
+        public static void StaticInitialize()
+        {
+            foreach (Role role in AllRoles)
+            {
+                role.StaticInitialize();
+            }
+
+            foreach (ExtraRole role in AllExtraRoles)
+            {
+                role.StaticInitialize();
+            }
         }
     }
 }

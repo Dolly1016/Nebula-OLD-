@@ -39,7 +39,7 @@ namespace Nebula.Roles.ExtraRoles
         {
             ActionForMyLover((player) =>
             {
-                if (!player.Data.IsDead) RPCEventInvoker.UncheckedExilePlayer(player.PlayerId);
+                if (!player.Data.IsDead) RPCEventInvoker.UncheckedExilePlayer(player.PlayerId, Game.PlayerData.PlayerStatus.Suicide.Id);
             }
             );
         }
@@ -48,7 +48,7 @@ namespace Nebula.Roles.ExtraRoles
         {
             ActionForMyLover((player) =>
             {
-                if (!player.Data.IsDead) RPCEventInvoker.UncheckedMurderPlayer(player.PlayerId, player.PlayerId, false);
+                if (!player.Data.IsDead) RPCEventInvoker.UncheckedMurderPlayer(player.PlayerId, player.PlayerId, Game.PlayerData.PlayerStatus.Suicide.Id, false);
             }
             );
         }

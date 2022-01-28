@@ -35,28 +35,29 @@ namespace Nebula.Patches
         [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.CheckForEndVoting))]
         class MeetingCalculateVotesPatch
         {
-            private static void CalculateVotes(ref Dictionary<byte, int> dictionary, MeetingHud __instance)
+            public static void CalculateVotes(ref Dictionary<byte, int> dictionary, MeetingHud __instance)
             {
 
                 for (int i = 0; i < __instance.playerStates.Length; i++)
                 {
                     PlayerVoteArea playerVoteArea = __instance.playerStates[i];
-                    if (playerVoteArea.VotedFor != 252 && playerVoteArea.VotedFor != 255 && playerVoteArea.VotedFor != 254)
+
+                    if (playerVoteArea.VotedFor == 252 || playerVoteArea.VotedFor == 255 | playerVoteArea.VotedFor == 254) continue;
+
+                    PlayerControl player = Helpers.playerById((byte)playerVoteArea.TargetPlayerId);
+                    if (player == null || player.Data == null || player.Data.IsDead || player.Data.Disconnected) continue;
+
+                    if (!dictionary.ContainsKey(playerVoteArea.VotedFor)) dictionary[playerVoteArea.VotedFor] = 0;
+
+                    if (VoteWeight.ContainsKey(playerVoteArea.TargetPlayerId))
                     {
-                        PlayerControl player = Helpers.playerById((byte)playerVoteArea.TargetPlayerId);
-                        if (player == null || player.Data == null || player.Data.IsDead || player.Data.Disconnected) continue;
-
-                        if (!dictionary.ContainsKey(playerVoteArea.VotedFor)) dictionary[playerVoteArea.VotedFor] = 0;
-
-                        if (VoteWeight.ContainsKey(playerVoteArea.TargetPlayerId))
-                        {
-                            dictionary[playerVoteArea.VotedFor] += VoteWeight[playerVoteArea.TargetPlayerId];
-                        }
-                        else
-                        {
-                            dictionary[playerVoteArea.VotedFor]++;
-                        }
+                        dictionary[playerVoteArea.VotedFor] += VoteWeight[playerVoteArea.TargetPlayerId];
                     }
+                    else
+                    {
+                        dictionary[playerVoteArea.VotedFor]++;
+                    }
+
                 }
             }
 
@@ -65,6 +66,7 @@ namespace Nebula.Patches
             {
                 if (__instance.playerStates.All((PlayerVoteArea ps) => ps.AmDead || ps.DidVote))
                 {
+                    VoteHistory.Clear();
                     CalculateVotes(ref VoteHistory,__instance);
                     bool tie;
                     KeyValuePair<byte, int> max = VoteHistory.MaxPair(out tie);
@@ -144,23 +146,12 @@ namespace Nebula.Patches
                 if (meetingInfoText != null)meetingInfoText.gameObject.SetActive(false);
 
                 VoteHistory.Clear();
+                MeetingCalculateVotesPatch.CalculateVotes(ref VoteHistory,__instance);
+
                 Voters.Clear();
 
                 foreach (PlayerVoteArea player in __instance.playerStates)
                 {
-                    if (!VoteHistory.ContainsKey(player.VotedFor))
-                    {
-                        VoteHistory[player.VotedFor] = 0;
-                    }
-
-                    if (VoteWeight.ContainsKey(player.TargetPlayerId))
-                    {
-                        VoteHistory[player.VotedFor] += VoteWeight[player.TargetPlayerId];
-                    }
-                    else {
-                        VoteHistory[player.VotedFor]++;
-                    }
-
                     if (!Voters.ContainsKey(player.VotedFor))
                     {
                         Voters[player.VotedFor] = new List<byte>();
