@@ -61,12 +61,14 @@
 
 "role.guesser.name" : "Guesser"
 "role.guesser.chanceToSpawnAsSecondarySide" : "Chance to Spawn as Impostor"
+"role.guesser.definitiveAssignment" : "Definitive Assignment"
 "role.guesser.canShotSeveralTimes" : "Can Shot Several Times In The Same Meeting"
 "role.guesser.guesserShots" : "Guesser Shots"
 "role.guesser.guessesLeft" : "Guesses Left"
 
 "role.trapper.name" : "Trapper"
 "role.trapper.chanceToSpawnAsSecondarySide" : "Chance to Spawn as Impostor"
+"role.trapper.definitiveAssignment" : "Definitive Assignment"
 "role.trapper.maxTraps" : "Max Traps"
 "role.trapper.accelSpeed" : "Accel Speed"
 "role.trapper.decelSpeed" : "Decel Speed"

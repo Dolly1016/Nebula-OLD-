@@ -15,6 +15,8 @@ namespace Nebula.Roles.Template
     public class HasBilateralness : Role
     {
         public Module.CustomOption chanceToSpawnAsSecondarySide;
+        public Module.CustomOption definitiveAssignmentOption;
+
         protected Role FirstRole=null, SecondaryRole=null;
 
         public int ChanceOfSecondarySide()
@@ -29,12 +31,28 @@ namespace Nebula.Roles.Template
 
             Patches.AssignRoles.RoleAllocation[] result = new Patches.AssignRoles.RoleAllocation[(int)RoleCountOption.getFloat()];
 
-            int secondary = Helpers.CalcProbabilityCount(ChanceOfSecondarySide(), result.Length);
-
             int chance = RoleChanceOption.getSelection();
+            int secondary;
+
+            if (definitiveAssignmentOption.getBool())
+            {
+                //決定的な割り当て
+                if (result.Length == 1)
+                {
+                    //1人の場合確率の高い方を選択
+                    result[0]= new Patches.AssignRoles.RoleAllocation(ChanceOfSecondarySide() > 0.5f ? SecondaryRole : FirstRole, chance);
+                }
+                secondary = (int)((float)result.Length * (float)ChanceOfSecondarySide() + 0.5f);
+            }
+            else
+            {
+                //ランダム性のある割り当て
+                secondary = Helpers.CalcProbabilityCount(ChanceOfSecondarySide(), result.Length);   
+            }
+
             for (int i = 0; i < result.Length; i++)
             {
-                result[i] = new Patches.AssignRoles.RoleAllocation(i < secondary ? SecondaryRole: FirstRole , chance);
+                result[i] = new Patches.AssignRoles.RoleAllocation(i < secondary ? SecondaryRole : FirstRole, chance);
             }
 
             return result;
@@ -43,6 +61,7 @@ namespace Nebula.Roles.Template
         public override void LoadOptionData()
         {
             chanceToSpawnAsSecondarySide = CreateOption(Color.white, "chanceToSpawnAsSecondarySide", CustomOptionHolder.rates);
+            definitiveAssignmentOption=CreateOption(Color.white, "definitiveAssignment", false);
         }
 
         public HasBilateralness(string name, string localizeName, Color color) :
