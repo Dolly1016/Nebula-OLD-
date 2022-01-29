@@ -4,11 +4,13 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 **Nebula on the Ship (NoS)** は Among Us に新たなロールを追加するModです。
 
-また、このModの一部コードは The Other Roles および The Other Roles GM Edition のものを継承しています。
+また、このModの一部コードは The Other Roles および The Other Roles GM Edition のものをしています使用しています。
 
 # ダウンロード
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| Alpha 1.8.2 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.8.2,2021.12.15/Nebula.zip)|
+| Alpha 1.8.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.8.1,2021.12.15/Nebula.zip)|
 | Alpha 1.8.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.8.0,2021.12.15/Nebula.zip)|
 | Alpha 1.7.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.7.1,2021.12.15/Nebula.zip)|
 | Alpha 1.7.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.7.0,2021.12.15/Nebula.zip)|
@@ -43,6 +45,28 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+  
+ **Version Alpha 1.8.2**
+ - ゲーム終了時にプレイヤーごとのタスク進捗と生死情報が表示されるように
+ - Spyに、インポスターのキルに関する新たなオプションを追加
+ - Sniperの銃声通知が表示される距離に関する新たなオプションを追加
+ - 投票による追放が正常に行われない問題を修正
+ - Vulture, Cleanerが死体を消去しても他プレイヤーからは死体が見えてしまう問題を修正
+ - インポスターの一部役職が停電の影響を受ける問題を修正
+ - 非ホストのAgent, Opportunistのゲーム開始時のタスクが正常でない問題を修正
+ - LoverのInviteボタンの範囲が狭い問題を修正
+ - Mayorの票数調整が反映されないことがある問題を修正
+ - ゲーム終了時に、Voting Timeの設定が変わってしまう問題が発生しづらくなるよう修正
+ - Guesserによる会議上でのキルがホストと本人以外見た目上反映されない問題を修正
+ - Nice Trapperのログトラップが幽霊に反応する問題を修正
+ - Jackal除く第三陣営が勝利したとき、次回以降のゲームが正常に開始できない問題を修正
+ - Sniperがベントに潜っている時、ライフルが見えてしまう問題を修正
+ - Sniperの射線上に幽霊がいると、その幽霊を撃ってしまう問題を修正
+ - 非ホストからゲーム設定が確認できない問題を修正
+  
+ **Version Alpha 1.8.1**
+ - Opportunist を追加
+ - 一部の第三陣営がホストでないとき、勝利できない問題を修正
   
  **Version Alpha 1.8.0**
  - Sniper, Morphing を追加
@@ -129,8 +153,8 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 | [Cleaner](#cleaner) | [Alien](#alien) | [Empiric](#empiric) | [Trilemma](#trilemma) |
 | [Damned](#damned) | [Bait](#bait) | [Jackal](#jackal) ||
 | [Eraser](#eraser) | [Booster](#booster) | [Jester](#jester) ||
-| [Evil Ace](#evil-ace) | [Engineer](#engineer) | [Vulture](#vulture) ||
-| [Evil Guesser](#guesser) | [Mayor](#mayor) |||
+| [Evil Ace](#evil-ace) | [Engineer](#engineer) | [Opportunist](#opportunist) ||
+| [Evil Guesser](#guesser) | [Mayor](#mayor) | [Vulture](#vulture) ||
 | [Evil Trapper](#trapper) | [Necromancer](#necromancer) |||
 | [Morphing](#morphing) | [Nice Guesser](#guesser) |||
 | [Reaper](#reaper) | [Nice Trapper](#trapper) |||
@@ -163,20 +187,38 @@ p5p5next : Damned
 -----------------------
 
 ## Guesser
- Guesserは、会議中に役職を言い当てたプレイヤーをキルすることができます。
+ Guesserは、会議中に役職を言い当てたプレイヤーをキルすることができます。\
+ ただし、間違えてしまうと自分が死んでしまいます。
  
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
+| Chance to Spawn as Impostor | インポスターとしてスポーンする確率
+| Can Shot Several Times In The Same Meeting | 同じ会議で複数回撃つことができるかどうかの設定
+| Guesser Shots | 全体を通して撃つことができる回数
 
 -----------------------
 
 ## Trapper
- Trapperは、加減速やプレイヤー検知、キルができるトラップを仕掛けることができます。
+ Trapperは、加減速やプレイヤー検知、キルができるトラップを仕掛けることができます。\
+ Nice Trapper, Evil Trapperともども加速トラップ・減速トラップを設置することができます。\
+ Evil Trapperの場合、追加でキルトラップを、Nice Trapperの場合追加でログトラップを設置できます。\
+ キルトラップは、上を通り過ぎたプレイヤーをキルすることができ、ログトラップは上を通り過ぎたプレイヤーの色が分かります。\
+ キルトラップとログトラップは他人からは見えません。
  
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
+| Chance to Spawn as Impostor | インポスターとしてスポーンする確率
+| Max Traps | 設置できるトラップの数
+| Accel Speed | 加速トラップの加速倍率
+| Decel Speed | 減速トラップの減速倍率
+| Accel Duration | 加速トラップの効果時間
+| Decel Duration | 減速トラップの効果時間
+| Visible Trap Range | 可視なトラップの当たり判定
+| Invisible Trap Range | 不可視なトラップの当たり判定
+| Log Trap Cost | ログトラップの設置コスト
+| Kill Trap Cost | キルトラップの設置コスト
 
 -----------------------
 
@@ -186,26 +228,33 @@ p5p5next : Damned
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
+| Camouflage Cool Down | カモフラージュのクールダウン
+| Camouflage Duration | カモフラージュの効果時間
 
 -----------------------
 
 ## Cleaner
  Cleanerは、プレイヤーの死体を消去して証拠隠滅を図ることができます。
+ ただし、死体消去とキルのクールダウンは同期しています。
  
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
+| Clean Cool Down | 死体消去のクールダウン
 
 -----------------------
 
 ## Damned
  DamnedはCrewmateとしてスポーンしますが、一度キルされてもガードされ、\
  二度目のキルをされる前に会議が始まるとインポスターになります。\
- キルされるまで、Crewmateは自身がDamnedになれるかどうかを知るすべはありません。
+ キルされるまで、Crewmateは自身がDamnedになれるかどうかを知るすべはありません。\
+ 下記オプションはCrewmateタブ内にあります。
  
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
+| Max Count Of Damned | Damnedに変化するCrewmateの最大人数
+| Chance Of Damned | CrewmateがDamnedに変化しうる確率
 
 -----------------------
 
@@ -215,6 +264,8 @@ p5p5next : Damned
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
+| Erase Cool Down | 役職消去のクールダウン
+| Erase Cool Down Addition | 役職消去をするごとに加算されるクールダウン
 
 -----------------------
 
@@ -234,15 +285,8 @@ p5p5next : Damned
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
-
------------------------
-
-## Sniper
- Sniperは通常のキルは行えませんが、狙撃銃を繰り出すことで壁を隔てた先からも相手を殺すことができます。
- 
- ### オプション
-| オプション名 | 設定内容 |
-|----------|:-------------:|
+| Morph Cool Down | モーフィングのクールダウン
+| Morph Duration | モーフィングの効果時間
 
 -----------------------
 
@@ -252,6 +296,19 @@ p5p5next : Damned
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
+
+-----------------------
+
+## Sniper
+ Sniperは通常のキルは行えませんが、狙撃銃を繰り出すことで壁を隔てた先からも相手を殺すことができます。
+ 
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+| Snipe Cool Down | キルクールダウン
+| Shot Size | 狙撃銃の弾の当たり判定
+| Shot Effective Range | 銃弾でキルできる範囲
+| Can Kill Impostors | 射線上のインポスターを誤殺できるかどうか
 
 -----------------------
 
@@ -278,12 +335,15 @@ p5p5next : Damned
 -----------------------
 
 ## Alien
- Alienは、周囲のプレイヤーのクールダウンの進みを妨げることができます。\
+ Alienは、E.M.Iを起こして周囲のプレイヤーのクールダウンの進みを妨げることができます。\
  効果は敵味方なく及ぼされます。
  
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
+| E.M.I. Cool Down | E.M.I.の発生クールダウン
+| E.M.I. Duration | E.M.I.の効果時間
+| E.M.I. Range | E.M.I.の効果範囲
 
 -----------------------
 
@@ -298,7 +358,7 @@ p5p5next : Damned
 
 ## Booster
  Boosterは一時的に加速することができます。\
- 身を守るためには、加速しているところを見られてはなりません。
+ 加速トラップをもつTrapperと同時に起用することを推奨します。
  
  ### オプション
 | オプション名 | 設定内容 |
@@ -341,7 +401,8 @@ p5p5next : Damned
 -----------------------
 
 ## Provocateur
- Provocateurは自身を追放させたプレイヤーやキルしたプレイヤーを呪い返し、死へ追いやります。
+ Provocateurは自身を追放させたプレイヤーやキルしたプレイヤーを呪い返し、死へ追いやります。\
+ 追放させられた場合、自身に票を投じたプレイヤーの中からランダムに一人を道連れにします。
  
  ### オプション
 | オプション名 | 設定内容 |
@@ -350,7 +411,8 @@ p5p5next : Damned
 -----------------------
 
 ## Psychic
- Psychicは死体の近くに立つと様々な情報を得ることができます。
+ Psychicは死体の近くに立つと様々な情報を得ることができます。\
+ 死んだ次の会議が始まるまで有効で、会議を挟んだ後からでは情報は得られません。
  
  ### オプション
 | オプション名 | 設定内容 |
@@ -393,6 +455,8 @@ p5p5next : Damned
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
+| Douse Cool Down | 油をかけるクールダウン
+| Douse Duration | 油をかけるのに要する時間
 
 -----------------------
 
@@ -403,6 +467,10 @@ p5p5next : Damned
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
+| Max Infected by Myself | 自己感染できるプレイヤー数
+| Infect Duration | 感染にかかる時間
+| Infect Range | 感染させられる範囲
+| Coasting Phase After Meetings | 会議後の感染の停滞期
 
 -----------------------
 
@@ -421,6 +489,19 @@ p5p5next : Damned
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
+| Can Use Vents | ベントを使えるかどうかの設定
+
+-----------------------
+
+## Opportunist
+ Opportunistは、ゲーム終了時に自身が生きていて、タスクをすべて完了している場合に追加勝利します。\
+ ただし、Jester勝利の場合は自身が生きていても追加勝利にはなりません。\
+ 
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+| Cut Tasks | Crewmateと比較したタスクの免除数
+| Can Use Vents | ベントを使えるかどうかの設定
 
 -----------------------
 
@@ -443,6 +524,7 @@ p5p5next : Damned
 | オプション名 | 設定内容 |
 |----------|:-------------:|
 | Max Couples | Loversが発生する最大組数
+| Can Change Trilemma | 第三者を巻き込んでTrilemmaになれるかどうかの設定
 
 -----------------------
 
