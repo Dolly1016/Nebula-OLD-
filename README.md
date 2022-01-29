@@ -9,6 +9,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 # ダウンロード
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| Alpha 1.8.4 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.8.4,2021.12.15/Nebula.zip)|
 | Alpha 1.8.3 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.8.3,2021.12.15/Nebula.zip)|
 | Alpha 1.8.2 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.8.2,2021.12.15/Nebula.zip)|
 | Alpha 1.8.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.8.1,2021.12.15/Nebula.zip)|
@@ -46,6 +47,9 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+ 
+ **Version Alpha 1.8.3**
+ - 決定的な陣営配分が正常に動作していなかった問題を修正
   
  **Version Alpha 1.8.3**
  - Guesser, Trapperの陣営決定に新たな方式を追加
