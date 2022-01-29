@@ -96,10 +96,28 @@ namespace Nebula
         public static CustomOption canUseEmergencyWithoutReport;
         public static CustomOption severeEmergencyLock;
 
+        public static CustomOption exclusiveAssignmentParent;
+        public static List<Tuple<CustomOption,List<CustomOption>>> exclusiveAssignmentList;
+        public static List<Roles.Role> exclusiveAssignmentRoles;
+        public static void AddExclusiveAssignment(ref List<ExclusiveAssignment> exclusiveAssignments)
+        {
+            if (!exclusiveAssignmentParent.getBool()) return;
+
+            foreach(var tuple in exclusiveAssignmentList)
+            {
+                if (!tuple.Item1.getBool()) continue;
+
+                exclusiveAssignments.Add(new ExclusiveAssignment(
+                    tuple.Item2[0].getSelection() > 0 ? exclusiveAssignmentRoles[tuple.Item2[0].getSelection() - 1] : null,
+                    tuple.Item2[1].getSelection() > 0 ? exclusiveAssignmentRoles[tuple.Item2[1].getSelection() - 1] : null,
+                    tuple.Item2[2].getSelection() > 0 ? exclusiveAssignmentRoles[tuple.Item2[2].getSelection() - 1] : null
+                    ));
+            }
+        }
 
         public static void Load()
         {
-            presetSelection = CustomOption.Create(0, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.preset", presets, null, true).HiddenOnDisplay(true);
+            presetSelection = CustomOption.Create(0, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.preset", presets, presets[0], null, true).HiddenOnDisplay(true);
 
             activateRoles = CustomOption.Create(5, Color.white, "option.activeRoles", true, null, true);
             crewmateRolesCountMin = CustomOption.Create(1001, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.minimumCrewmateRoles", 0f, 0f, 15f, 1f, activateRoles, false).HiddenOnDisplay(true);
@@ -126,6 +144,35 @@ namespace Nebula
             //ロールのオプションを読み込む
             Roles.Role.LoadAllOptionData();
             Roles.ExtraRole.LoadAllOptionData();
+
+            exclusiveAssignmentParent = CustomOption.Create(1200, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.exclusiveAssignment", false, null, true);
+            exclusiveAssignmentRoles = new List<Roles.Role>();
+            foreach(Roles.Role role in Roles.Roles.AllRoles)
+            {
+                if (!role.HideInExclusiveAssignmentOption)
+                {
+                    exclusiveAssignmentRoles.Add(role);
+                }
+            }
+            string[] roleList = new string[exclusiveAssignmentRoles.Count + 1];
+            for(int i = 0; i < roleList.Length - 1; i++)
+            {
+                roleList[1 + i] = "role." + exclusiveAssignmentRoles[i].LocalizeName + ".name";
+            }
+            roleList[0] = "option.exclusiveAssignmentRole.none";
+
+            exclusiveAssignmentList = new List<Tuple<CustomOption, List<CustomOption>>>();
+            for(int i = 0; i < 5; i++)
+            {
+                exclusiveAssignmentList.Add(new Tuple<CustomOption, List<CustomOption>>(CustomOption.Create(1210+i*10, new Color(180f / 255f, 180f / 255f, 0, 1f), "option.exclusiveAssignment"+(i+1), false, exclusiveAssignmentParent, false), new List<CustomOption>()));
+
+                for (int r = 0; r < 3; r++)
+                {
+                    exclusiveAssignmentList[exclusiveAssignmentList.Count - 1].Item2.Add(CustomOption.Create(1210 + i * 10 + r, Color.white, "option.exclusiveAssignmentRole" + (r + 1), roleList, "option.exclusiveAssignmentRole.none", exclusiveAssignmentList[exclusiveAssignmentList.Count - 1].Item1, false));
+                }
+            }
+
+
         }
 
     }

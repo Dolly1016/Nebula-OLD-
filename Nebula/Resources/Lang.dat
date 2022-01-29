@@ -49,6 +49,17 @@
 "option.playRandomMaps" : "Play Random Maps"
 "option.additionalVents" : "Additional Vents"
 
+"option.exclusiveAssignment" : "Exclusive Assignment"
+"option.exclusiveAssignment1" : "Assignment Set 1"
+"option.exclusiveAssignment2" : "Assignment Set 2"
+"option.exclusiveAssignment3" : "Assignment Set 3"
+"option.exclusiveAssignment4" : "Assignment Set 4"
+"option.exclusiveAssignment5" : "Assignment Set 5"
+"option.exclusiveAssignmentRole1" : "Exclusive Role 1"
+"option.exclusiveAssignmentRole2" : "Exclusive Role 2"
+"option.exclusiveAssignmentRole3" : "Exclusive Role 3"
+"option.exclusiveAssignmentRole.none" : "None"
+
 "option.roleCount" : "Max Players"
 
 "option.suffix.cross" : "x"
@@ -170,6 +181,9 @@
 
 "role.provocateur.name" : "Provocateur"
 "role.provocateur.description" : "Go To The Grave Together"
+"role.provocateur.embroilCoolDown" : "Embroil Cool Down"
+"role.provocateur.embroilCoolDownAddition" : "Embroil Cool Down Addition"
+"role.provocateur.embroilDuration" : "Embroil Duration"
 
 "role.psychic.name" : "Psychic"
 "role.psychic.description" : "Gather Testimony"
@@ -190,6 +204,7 @@
 
 "role.spy.name" : "Spy"
 "role.spy.description" : "Confuse the <color=#ff1919ff>Impostors</color>"
+"role.spy.impostorCanKillImpostor" : "Impostors Can Kill Everyone"
 
 "role.madmate.name" : "Madmate"
 "role.madmate.description" : "Assist the <color=#ff1919ff>Impostors</color>"

@@ -94,21 +94,23 @@ namespace Nebula.Roles.ComplexRoles
 
             Objects.CustomObject.RegisterUpdater((player) =>
             {
-                CustomObject trap = Objects.CustomObject.GetTarget(visibleTrapRangeOption.getFloat()/2, player, (obj) => { return obj.PassedMeetings > 0; }, CustomObject.Type.AccelTrap, CustomObject.Type.DecelTrap);
+                CustomObject trap = Objects.CustomObject.GetTarget(visibleTrapRangeOption.getFloat() / 2, player, (obj) => { return obj.PassedMeetings > 0; }, CustomObject.Type.AccelTrap, CustomObject.Type.DecelTrap);
                 if (trap == null) return;
 
                 if (trap.ObjectType == CustomObject.Type.AccelTrap)
                 {
-                    RPCEventInvoker.EmitSpeedFactor(player, 
-                        new Game.SpeedFactor(1,accelTrapDurationOption.getFloat(),accelTrapSpeedOption.getFloat(),false)) ;
+                    RPCEventInvoker.EmitSpeedFactor(player,
+                        new Game.SpeedFactor(1, accelTrapDurationOption.getFloat(), accelTrapSpeedOption.getFloat(), false));
                 }
                 else
                 {
-                    RPCEventInvoker.EmitSpeedFactor(player, 
+                    RPCEventInvoker.EmitSpeedFactor(player,
                         new Game.SpeedFactor(1, decelTrapDurationOption.getFloat(), decelTrapSpeedOption.getFloat(), false));
                 }
             });
         }
+
+        public override List<Role> GetImplicateRoles() { return new List<Role>() { Roles.EvilTrapper, Roles.NiceTrapper }; }
     }
 
     public class Trapper : Role

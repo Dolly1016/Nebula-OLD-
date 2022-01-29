@@ -51,6 +51,7 @@ namespace Nebula.Roles.CrewmateRoles
         {
             guardLeftId = Game.GameData.RegisterRoleDataId("damnedCrew.guardLeft");
             IsGuessableRole = false;
+            HideInExclusiveAssignmentOption = true;
         }
     }
 }

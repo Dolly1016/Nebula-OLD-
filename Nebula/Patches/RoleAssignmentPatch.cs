@@ -141,6 +141,20 @@ namespace Nebula.Patches
                     }
                 }
             }
+
+            //そのロールは排出される可能性があるかどうか
+            public bool Contains(Role role)
+            {
+                if (firstRoles.Contains(role)) return true;
+                if (secondaryRoles.Any((allocation) => { return allocation.role == role; })) return true;
+                return false;
+            }
+
+            public void Remove(Role role)
+            {
+                firstRoles.RemoveAll((r) => { return r == role; });
+                secondaryRoles.RemoveAll((allocation) => { return allocation.role == role; });
+            }
         }
 
         public CategoryData neutralData { get; }
@@ -190,6 +204,69 @@ namespace Nebula.Patches
                         neutralData.RegisterRoleChance(allocation);
                     }
                 }
+            }
+
+            //排他的割り当て
+            List<Module.ExclusiveAssignment> exclusiveAssignmentList = new List<Module.ExclusiveAssignment>();
+            CustomOptionHolder.AddExclusiveAssignment(ref exclusiveAssignmentList);
+            
+            foreach(var assignment in exclusiveAssignmentList)
+            {
+                assignment.ExclusiveAssign(this);
+            }
+
+        }
+
+        public bool Contains(Role role)
+        {
+            switch (role.category)
+            {
+                case RoleCategory.Crewmate:
+                    return crewmateData.Contains(role);
+                    break;
+                case RoleCategory.Impostor:
+                    return impostorData.Contains(role);
+                    break;
+                case RoleCategory.Neutral:
+                    return neutralData.Contains(role);
+                    break;
+            }
+            return false;
+        }
+
+        public bool FuzzyContains(Role role)
+        {
+            if (Contains(role)) return true;
+
+            foreach(Role fuzzy in role.GetImplicateRoles())
+            {
+                if (Contains(fuzzy)) return true;
+            }
+            return false;
+        }
+
+        public void RemoveRole(Role role)
+        {
+            switch (role.category)
+            {
+                case RoleCategory.Crewmate:
+                    crewmateData.Remove(role);
+                    break;
+                case RoleCategory.Impostor:
+                    impostorData.Remove(role);
+                    break;
+                case RoleCategory.Neutral:
+                    neutralData.Remove(role);
+                    break;
+            }
+        }
+        public void FuzzyRemoveRole(Role role)
+        {
+            RemoveRole(role);
+
+            foreach (Role fuzzy in role.GetImplicateRoles())
+            {
+                RemoveRole(fuzzy);
             }
         }
     }

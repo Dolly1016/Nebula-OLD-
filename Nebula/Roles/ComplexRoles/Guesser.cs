@@ -44,6 +44,8 @@ namespace Nebula.Roles.ComplexRoles
         {
             remainShotsId = Game.GameData.RegisterRoleDataId("guesser.remainShots");
         }
+
+        public override List<Role> GetImplicateRoles() { return new List<Role>() { Roles.EvilGuesser, Roles.NiceGuesser }; }
     }
 
     public class Guesser : Role

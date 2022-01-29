@@ -73,6 +73,13 @@ namespace Nebula.Roles
 
         public bool HideKillButtonEvenImpostor { get; protected set; }
 
+
+        public virtual List<Role> GetImplicateRoles() { return new List<Role>(); }
+        /// <summary>
+        /// 排他的割り当てオプションに表示しない場合true
+        /// </summary>
+        public bool HideInExclusiveAssignmentOption;
+
         //使用済みロールID
         static private byte maxId = 0;
 
@@ -134,6 +141,8 @@ namespace Nebula.Roles
 
             this.CanCallEmergencyMeeting = true;
             this.HideKillButtonEvenImpostor = false;
+
+            this.HideInExclusiveAssignmentOption = false;
         }
 
         public static Role GetRoleById(byte id)

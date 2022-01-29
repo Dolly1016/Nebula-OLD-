@@ -92,9 +92,9 @@ namespace Nebula.Module
             this.prerequisiteOptions = new List<CustomOption>();
         }
 
-        public static CustomOption Create(int id, Color color,string name, string[] selections, CustomOption parent = null, bool isHeader = false, bool isHidden = false, string format = "")
+        public static CustomOption Create(int id, Color color,string name, string[] selections,string defaultValue, CustomOption parent = null, bool isHeader = false, bool isHidden = false, string format = "")
         {
-            return new CustomOption(id, color,name, selections, "", parent, isHeader, isHidden, format);
+            return new CustomOption(id, color,name, selections, defaultValue, parent, isHeader, isHidden, format);
         }
 
         public static CustomOption Create(int id, Color color, string name, float defaultValue, float min, float max, float step, CustomOption parent = null, bool isHeader = false, bool isHidden = false, string format = "")
@@ -699,15 +699,15 @@ namespace Nebula.Module
 
             entries.Add(entry.ToString().Trim('\r', '\n'));
 
-            void addChildren(CustomOption option, ref StringBuilder builder, bool indent = true)
+            void addChildren(CustomOption option, ref StringBuilder builder, bool indent = true,string inheritIndent = "")
             {
                 if (!option.enabled) return;
 
                 foreach (var child in option.children)
                 {
                     if (!(child.isHidden||child.isHiddenOnDisplay))
-                        builder.AppendLine((indent ? "    " : "") + optionToString(child));
-                    addChildren(child, ref builder, indent);
+                        builder.AppendLine((indent ? "    " : "") + inheritIndent+ optionToString(child));
+                    addChildren(child, ref builder, indent, inheritIndent + (indent ? "    " : ""));
                 }
             }
 

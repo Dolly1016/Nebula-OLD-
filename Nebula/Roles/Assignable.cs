@@ -37,7 +37,7 @@ namespace Nebula.Roles
 
         public void SetupRoleOptionData()
         {
-            RoleChanceOption = Module.CustomOption.Create(OptionAvailableId, Color, "role." + LocalizeName + ".name", CustomOptionHolder.rates, null, true);
+            RoleChanceOption = Module.CustomOption.Create(OptionAvailableId, Color, "role." + LocalizeName + ".name", CustomOptionHolder.rates, CustomOptionHolder.rates[0], null, true);
             OptionId = OptionAvailableId + 1;
             OptionAvailableId += 10;
 

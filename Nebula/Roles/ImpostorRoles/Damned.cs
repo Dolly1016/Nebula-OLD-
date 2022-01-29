@@ -15,6 +15,8 @@ namespace Nebula.Roles.ImpostorRoles
         public static HashSet<EndCondition> impostorEndSet =
            new HashSet<EndCondition>() { EndCondition.ImpostorWinByKill, EndCondition.ImpostorWinBySabotage, EndCondition.ImpostorWinByVote, EndCondition.ImpostorWinDisconnect };
 
+        public override List<Role> GetImplicateRoles() { return new List<Role>() { Roles.DamnedCrew }; }
+
         //インポスターはModで操作するFakeTaskは所持していない
         public Damned()
                 : base("Damned", "damned", Palette.ImpostorRed, RoleCategory.Impostor, Side.Impostor, Side.Impostor,
