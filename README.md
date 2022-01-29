@@ -4,7 +4,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 **Nebula on the Ship (NoS)** は Among Us に新たなロールを追加するModです。
 
-また、このModの一部コードは The Other Roles および The Other Roles GM Edition のものをしています使用しています。
+また、このModの一部コードは The Other Roles および The Other Roles GM Edition のものを使用しています。
 
 # ダウンロード
 | Version | Among Us Version | Download |
