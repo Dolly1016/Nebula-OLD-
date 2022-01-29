@@ -40,9 +40,12 @@ namespace Nebula.Roles.Template
                 if (result.Length == 1)
                 {
                     //1人の場合確率の高い方を選択
-                    result[0]= new Patches.AssignRoles.RoleAllocation(ChanceOfSecondarySide() > 0.5f ? SecondaryRole : FirstRole, chance);
+                    secondary = ChanceOfSecondarySide() > 0.5f ? 1 : 0;
                 }
-                secondary = (int)((float)result.Length * (float)ChanceOfSecondarySide() + 0.5f);
+                else
+                {
+                    secondary = (int)((float)result.Length * (float)ChanceOfSecondarySide() / 10f + 0.5f);
+                }
             }
             else
             {
