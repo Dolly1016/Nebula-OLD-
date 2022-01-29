@@ -86,6 +86,10 @@ namespace Nebula
 
         public static CustomOption mapOptions;
         public static CustomOption dynamicMap;
+        public static CustomOption exceptSkeld;
+        public static CustomOption exceptMIRA;
+        public static CustomOption exceptPolus;
+        public static CustomOption exceptAirship;
         public static CustomOption additionalVents;
 
         public static CustomOption emergencyOptions;
@@ -127,8 +131,8 @@ namespace Nebula
             impostorRolesCountMin = CustomOption.Create(1005, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.minimumImpostorRoles", 0f, 0f, 3f, 1f, activateRoles, false).HiddenOnDisplay(true);
             impostorRolesCountMax = CustomOption.Create(1006, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.maximumImpostorRoles", 0f, 0f, 3f, 1f, activateRoles, false).HiddenOnDisplay(true);
 
-           
-            emergencyOptions = CustomOption.Create(1100, Color.white, "option.emergencyOptions", true, null, false);
+
+            emergencyOptions = CustomOption.Create(1100, Color.white, "option.emergencyOptions", false, null, true);
             maxNumberOfMeetings = CustomOption.Create(1101, Color.white, "option.maxNumberOfMeetings", 10, 0, 15, 1, emergencyOptions);
             deathPenaltyForDiscussionTime = CustomOption.Create(1102, Color.white, "option.deathPenaltyForDiscussionTime", 5f, 0f, 30f, 5f, emergencyOptions);
             deathPenaltyForDiscussionTime.suffix = "second";
@@ -137,9 +141,13 @@ namespace Nebula
             canUseEmergencyWithoutReport = CustomOption.Create(1105, Color.white, "option.canUseEmergencyWithoutReport", false, emergencyOptions);
             severeEmergencyLock = CustomOption.Create(1109, Color.white, "option.severeEmergencyLock", false, emergencyOptions);
 
-            mapOptions = CustomOption.Create(1120, Color.white, "option.mapOptions", false, null, isHeader: true);
+            mapOptions = CustomOption.Create(1120, Color.white, "option.mapOptions", false, null, true);
             dynamicMap = CustomOption.Create(1121, Color.white, "option.playRandomMaps", false, mapOptions);
-            additionalVents = CustomOption.Create(1122, Color.white, "option.additionalVents", false, mapOptions);
+            exceptSkeld = CustomOption.Create(1122, Color.white, "option.exceptSkeld", false, dynamicMap);
+            exceptMIRA = CustomOption.Create(1123, Color.white, "option.exceptMIRA", false, dynamicMap);
+            exceptPolus = CustomOption.Create(1124, Color.white, "option.exceptPolus", false, dynamicMap);
+            exceptAirship = CustomOption.Create(1125, Color.white, "option.exceptAirship", false, dynamicMap);
+            additionalVents = CustomOption.Create(1130, Color.white, "option.additionalVents", false, mapOptions);
 
             //ロールのオプションを読み込む
             Roles.Role.LoadAllOptionData();

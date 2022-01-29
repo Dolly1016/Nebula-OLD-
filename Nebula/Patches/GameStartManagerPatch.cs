@@ -230,7 +230,15 @@ namespace Nebula.Patches
                     // 2 = Polus
                     // 3 = Dleks - deactivated
                     // 4 = Airship
-                    List<byte> possibleMaps = new List<byte>() { 0, 1, 2, 4 };
+                    List<byte> possibleMaps = new List<byte>();
+                    if (!CustomOptionHolder.exceptSkeld.getBool()) possibleMaps.Add(0);
+                    if (!CustomOptionHolder.exceptMIRA.getBool()) possibleMaps.Add(1);
+                    if (!CustomOptionHolder.exceptPolus.getBool()) possibleMaps.Add(2);
+                    if (!CustomOptionHolder.exceptAirship.getBool()) possibleMaps.Add(4);
+                    
+                    //候補が無い場合はSkeldにする
+                    if (possibleMaps.Count == 0) possibleMaps.Add(0);
+
                     PlayerControl.GameOptions.MapId = possibleMaps[NebulaPlugin.rnd.Next(possibleMaps.Count)];
                 }
 

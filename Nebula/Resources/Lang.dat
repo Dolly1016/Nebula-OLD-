@@ -47,6 +47,10 @@
 
 "option.mapOptions" : "Map Option"
 "option.playRandomMaps" : "Play Random Maps"
+"option.exceptSkeld" : "Except The Skeld"
+"option.exceptMIRA" : "Except MIRA HQ"
+"option.exceptPolus" : "Except Polus"
+"option.exceptAirship" : "Except The Airship"
 "option.additionalVents" : "Additional Vents"
 
 "option.exclusiveAssignment" : "Exclusive Assignment"
@@ -58,7 +62,7 @@
 "option.exclusiveAssignmentRole1" : "Exclusive Role 1"
 "option.exclusiveAssignmentRole2" : "Exclusive Role 2"
 "option.exclusiveAssignmentRole3" : "Exclusive Role 3"
-"option.exclusiveAssignmentRole.none" : "None"
+"option.exclusiveAssignmentRole.none" : "<color=#505050ff>None</color>"
 
 "option.roleCount" : "Max Players"
 
