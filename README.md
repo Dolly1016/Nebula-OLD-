@@ -9,6 +9,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 # ダウンロード
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| Alpha 1.8.6 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.8.6,2021.12.15/Nebula.zip)|
 | Alpha 1.8.5 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.8.5,2021.12.15/Nebula.zip)|
 | Alpha 1.8.4 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.8.4,2021.12.15/Nebula.zip)|
 | Alpha 1.8.3 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.8.3,2021.12.15/Nebula.zip)|
@@ -49,6 +50,17 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 <details>
   <summary>クリックで展開</summary>
  
+ **Version Alpha 1.8.6**
+ - 追加役職としてのGuesserを追加
+ - 各種アビリティボタンが正常に描画されない問題を修正
+ - 役職割り当てに関する変更
+ - Opportunistがゲームを正常に開始できない問題を修正
+ - Trapperのトラップがマップ下方で表示されない問題を修正
+ - Opportunist, Agentがタスクを4つ以上免除された場合にゲームが開始できない問題を修正
+ - 一つの死体を複数人が掴めないように
+ - 死体消去に関わる問題を修正
+ - Guesserの推察によるキルが会議終了後に死体を残す問題を修正
+  
  **Version Alpha 1.8.5**
  - ダイナミックマップに条件を付与
  - オプションの配置を調整
