@@ -178,7 +178,7 @@ namespace Nebula.Patches
 
                 EmergencyPatch.MeetingUpdate();
 
-                PlayerControl.LocalPlayer.GetModData().role.SetupMeetingButton(MeetingHud.Instance);
+                Helpers.RoleAction(PlayerControl.LocalPlayer, (role) => { role.SetupMeetingButton(MeetingHud.Instance); });
 
                 Game.GameData.data.myData.getGlobalData().role.OnMeetingStart();
 

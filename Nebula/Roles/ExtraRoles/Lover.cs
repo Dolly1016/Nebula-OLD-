@@ -80,19 +80,19 @@ namespace Nebula.Roles.ExtraRoles
             );
         }
 
-        public override void Assignment(Game.GameData gameData)
+        public override void Assignment(Patches.AssignMap assignMap)
         {
             int maxPairs = maxPairsOption.getSelection();
-            if (maxPairs * 2 > gameData.players.Count) maxPairs = gameData.players.Count / 2;
+            if (maxPairs * 2 > Game.GameData.data.players.Count) maxPairs = Game.GameData.data.players.Count / 2;
 
             int pairs = Helpers.CalcProbabilityCount(RoleChanceOption.getSelection(), maxPairs);
 
-            byte[] playerArray = Helpers.GetRandomArray(gameData.players.Keys);
+            byte[] playerArray = Helpers.GetRandomArray(Game.GameData.data.players.Keys);
 
             for (int i = 0; i < pairs; i++)
             {
                 for (int p = 0; p < 2; p++) {
-                    RPCEventInvoker.SetExtraRole(Helpers.playerById(playerArray[i * 2 + p]), this, (ulong)(i+1));
+                    assignMap.Assign(playerArray[i * 2 + p],this.id, (ulong)(i + 1));
                 }
             }
         }

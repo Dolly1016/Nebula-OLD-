@@ -18,7 +18,7 @@ namespace Nebula
         ForceEnd,
         WinTrigger,
         ShareOptions,
-        SetRole,
+        SetRoles,
         SetExtraRole,
         UnsetExtraRole,
         ChangeExtraRole,
@@ -87,11 +87,20 @@ namespace Nebula
                 case (byte)CustomRPC.ShareOptions:
                     RPCEvents.ShareOptions((int)reader.ReadPackedUInt32(), reader);
                     break;
-                case (byte)CustomRPC.SetRole:
-                    RPCEvents.SetRole(Roles.Role.GetRoleById(reader.ReadByte()), reader.ReadByte());
+                case (byte)CustomRPC.SetRoles:
+                    int num=reader.ReadInt32();
+                    for (int i= 0;i<num;i++)
+                    {
+                        RPCEvents.SetRole(reader.ReadByte(),Roles.Role.GetRoleById(reader.ReadByte()));
+                    }
+                    num = reader.ReadInt32();
+                    for (int i= 0; i < num; i++)
+                    {
+                        RPCEvents.SetExtraRole(reader.ReadByte(), Roles.ExtraRole.GetRoleById(reader.ReadByte()), reader.ReadUInt64());
+                    }
                     break;
                 case (byte)CustomRPC.SetExtraRole:
-                    RPCEvents.SetExtraRole(Roles.ExtraRole.GetRoleById(reader.ReadByte()), reader.ReadUInt64(), reader.ReadByte());
+                    RPCEvents.SetExtraRole(reader.ReadByte(),Roles.ExtraRole.GetRoleById(reader.ReadByte()), reader.ReadUInt64());
                     break;
                 case (byte)CustomRPC.UnsetExtraRole:
                     RPCEvents.UnsetExtraRole(Roles.ExtraRole.GetRoleById(reader.ReadByte()), reader.ReadByte());
@@ -109,7 +118,7 @@ namespace Nebula
                     RPCEvents.UncheckedCmdReportDeadBody(reader.ReadByte(), reader.ReadByte());
                     break;
                 case (byte)CustomRPC.CloseUpKill:
-                    RPCEvents.CloseUpKill(reader.ReadByte(), reader.ReadByte());
+                    RPCEvents.CloseUpKill(reader.ReadByte());
                     break;
                 case (byte)CustomRPC.UpdateRoleData:
                     RPCEvents.UpdateRoleData(reader.ReadByte(), reader.ReadInt32(), reader.ReadInt32());
@@ -225,7 +234,7 @@ namespace Nebula
             Helpers.playerById(playerId).GetModData().MouseAngle = mouseAngle;
         }
 
-        public static void SetRole(Roles.Role role, byte playerId)
+        public static void SetRole(byte playerId,Roles.Role role)
         {
             Game.GameData.data.RegisterPlayer(playerId, role);
         }
@@ -236,7 +245,7 @@ namespace Nebula
         /// <param name="role"></param>
         /// <param name="initializeValue"></param>
         /// <param name="playerId"></param>
-        public static void SetExtraRole(Roles.ExtraRole role, ulong initializeValue,byte playerId)
+        public static void SetExtraRole(byte playerId,Roles.ExtraRole role, ulong initializeValue)
         {
             Game.GameData.data.players[playerId].extraRole.Add(role);
             Game.GameData.data.players[playerId].SetExtraRoleData(role.id,initializeValue);
@@ -262,7 +271,7 @@ namespace Nebula
             {
                 UnsetExtraRole(removeRole, playerId);
             }
-            SetExtraRole(addRole, initializeValue, playerId);
+            SetExtraRole(playerId,addRole, initializeValue);
 
 
             PlayerControl player = Helpers.playerById(playerId);
@@ -365,9 +374,9 @@ namespace Nebula
             }
         }
 
-        public static void CloseUpKill(byte murdererId, byte targetId)
+        public static void CloseUpKill(byte targetId)
         {
-            UncheckedMurderPlayer(murdererId, targetId,Game.PlayerData.PlayerStatus.Guessed.Id, 0);
+            UncheckedExilePlayer(targetId,Game.PlayerData.PlayerStatus.Guessed.Id);
 
             if (Constants.ShouldPlaySfx()) SoundManager.Instance.PlaySound(Helpers.playerById(targetId).KillSfx, false, 0.8f);
         }
@@ -564,12 +573,14 @@ namespace Nebula
         {
             Game.GameData.data.players[playerId].Tasks.AllTasks -= cutTasks;
             Game.GameData.data.players[playerId].Tasks.DisplayTasks -= cutTasks;
-            Game.GameData.data.players[playerId].Tasks.Quota = cutQuota;
+            Game.GameData.data.players[playerId].Tasks.Quota -= cutQuota;
 
             if (Game.GameData.data.players[playerId].Tasks.AllTasks < 0)
                 Game.GameData.data.players[playerId].Tasks.AllTasks = 0;
             if (Game.GameData.data.players[playerId].Tasks.DisplayTasks < 0)
                 Game.GameData.data.players[playerId].Tasks.DisplayTasks = 0;
+            if (Game.GameData.data.players[playerId].Tasks.Quota < 0)
+                Game.GameData.data.players[playerId].Tasks.Quota = 0;
         }
 
         public static void RefreshTasks(byte playerId, int displayTasks, int addQuota)
@@ -668,6 +679,26 @@ namespace Nebula
 
     public class RPCEventInvoker
     {
+        public static void SetRoles(Patches.AssignMap assignMap)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetRoles, Hazel.SendOption.Reliable, -1);
+            writer.Write(assignMap.RoleMap.Count);
+            foreach(var entry in assignMap.RoleMap)
+            {
+                writer.Write(entry.Key);
+                writer.Write(entry.Value);
+            }
+            writer.Write(assignMap.ExtraRoleList.Count);
+            foreach (var tuple in assignMap.ExtraRoleList)
+            {
+                writer.Write(tuple.Item1);
+                writer.Write(tuple.Item2.Item1);
+                writer.Write(tuple.Item2.Item2);
+            }
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            //自分自身はもう割り当て済みなので何もしない
+        }
+
         public static void WinTrigger(Roles.Role role)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.WinTrigger, Hazel.SendOption.Reliable, -1);
@@ -737,10 +768,9 @@ namespace Nebula
         public static void CloseUpKill(PlayerControl murder, PlayerControl target)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.CloseUpKill, Hazel.SendOption.Reliable, -1);
-            writer.Write(murder.PlayerId);
             writer.Write(target.PlayerId);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
-            RPCEvents.CloseUpKill(murder.PlayerId, target.PlayerId);
+            RPCEvents.CloseUpKill(target.PlayerId);
         }
 
         public static void AddAndUpdateRoleData(byte playerId, int dataId, int addData)
@@ -779,11 +809,11 @@ namespace Nebula
         public static void SetExtraRole(PlayerControl player, Roles.ExtraRole role, ulong initializeValue)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetExtraRole, Hazel.SendOption.Reliable, -1);
+            writer.Write(player.PlayerId);
             writer.Write(role.id);
             writer.Write(initializeValue);
-            writer.Write(player.PlayerId);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
-            RPCEvents.SetExtraRole(role, initializeValue, player.PlayerId);
+            RPCEvents.SetExtraRole(player.PlayerId, role, initializeValue);
         }
 
         public static void UnsetExtraRole(PlayerControl player, Roles.ExtraRole role)
@@ -868,6 +898,7 @@ namespace Nebula
             int phase = 0;
             while (surplus > 0)
             {
+                NebulaPlugin.Instance.Logger.Print("surplus:"+surplus);
                 switch (phase)
                 {
                     case 0:
@@ -880,7 +911,7 @@ namespace Nebula
                         if (commonTasks > 0) { commonTasks--; surplus--; }
                         break;
                 }
-                phase++;
+                phase=(phase+1)%3;
             }
 
             int[] array;
@@ -890,7 +921,7 @@ namespace Nebula
             {
                 if (i < array.Length)
                 {
-                    tasks.Add(new GameData.TaskInfo((byte)array[i], (uint)(tasks.Count + 1)));
+                    tasks.Add(new GameData.TaskInfo(Map.MapData.MapDatabase[PlayerControl.GameOptions.MapId].CommonTaskIdList[array[i]], (uint)(tasks.Count + 1)));
                 }
                 else
                 {
@@ -903,7 +934,7 @@ namespace Nebula
             {
                 if (i < array.Length)
                 {
-                    tasks.Add(new GameData.TaskInfo((byte)array[i], (uint)(tasks.Count + 1)));
+                    tasks.Add(new GameData.TaskInfo(Map.MapData.MapDatabase[PlayerControl.GameOptions.MapId].LongTaskIdList[array[i]], (uint)(tasks.Count + 1)));
                 }
                 else
                 {
@@ -916,7 +947,7 @@ namespace Nebula
             {
                 if (i < array.Length)
                 {
-                    tasks.Add(new GameData.TaskInfo((byte)array[i], (uint)(tasks.Count + 1)));
+                    tasks.Add(new GameData.TaskInfo(Map.MapData.MapDatabase[PlayerControl.GameOptions.MapId].ShortTaskIdList[array[i]], (uint)(tasks.Count + 1)));
                 }
                 else
                 {

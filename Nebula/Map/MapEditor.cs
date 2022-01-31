@@ -45,6 +45,7 @@ namespace Nebula.Map
             ShipStatus.Instance.AllVents = allVentsList.ToArray();
             vent.gameObject.SetActive(true);
             vent.name = ventName;
+            vent.gameObject.name = ventName;
 
             Game.GameData.data.VentMap[ventName] = new Game.VentData(vent);
 

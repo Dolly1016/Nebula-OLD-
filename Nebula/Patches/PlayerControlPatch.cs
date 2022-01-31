@@ -109,12 +109,20 @@ namespace Nebula.Patches
 
             Vector2 truePosition = PlayerControl.LocalPlayer.GetTruePosition();
 
+            bool invalidFlag;
             foreach (DeadBody deadBody in Helpers.AllDeadBodies())
             {
                 if (!deadBody.bodyRenderer.enabled)
                 {
                     continue;
                 }
+
+                invalidFlag = false;
+                foreach (Game.PlayerData data in Game.GameData.data.players.Values)
+                {
+                    if (data.dragPlayerId == deadBody.ParentId) { invalidFlag = true; break; }
+                }
+                if (invalidFlag) continue;
 
                 if (CheckTargetable(deadBody.transform.position, truePosition,ref num) ||
                     CheckTargetable(deadBody.transform.position + new Vector3(0.1f,0.1f), truePosition, ref num))
@@ -168,7 +176,7 @@ namespace Nebula.Patches
 
             foreach (PlayerControl p in PlayerControl.AllPlayerControls)
             {
-                if (p == PlayerControl.LocalPlayer || PlayerControl.LocalPlayer.Data.IsDead)
+                if (p == PlayerControl.LocalPlayer || !PlayerControl.LocalPlayer.GetModData().IsAlive)
                 {
                     Transform playerInfoTransform = p.nameText.transform.parent.FindChild("Info");
                     TMPro.TextMeshPro playerInfo = playerInfoTransform != null ? playerInfoTransform.GetComponent<TMPro.TextMeshPro>() : null;

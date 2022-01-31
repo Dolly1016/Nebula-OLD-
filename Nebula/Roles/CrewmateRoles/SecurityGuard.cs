@@ -102,7 +102,8 @@ namespace Nebula.Roles.CrewmateRoles
                     if (ventTarget != null)
                     { // Seal vent
                         MessageWriter writer = AmongUsClient.Instance.StartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SealVent, Hazel.SendOption.Reliable);
-                        writer.WritePacked(ventTarget.Id);
+                        writer.Write(PlayerControl.LocalPlayer.PlayerId);
+                        writer.Write(ventTarget.Id);
                         writer.EndMessage();
                         RPCEvents.SealVent(PlayerControl.LocalPlayer.PlayerId,ventTarget.Id);
 

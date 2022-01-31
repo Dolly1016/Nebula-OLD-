@@ -8,6 +8,29 @@ using static Nebula.NebulaPlugin;
 
 namespace Nebula.Patches
 {
+    public class AssignMap
+    {
+        public Dictionary<byte, byte> RoleMap;
+        public List<Tuple<byte,Tuple<byte,ulong>>> ExtraRoleList;
+
+        public AssignMap()
+        {
+            RoleMap = new Dictionary<byte, byte>();
+            ExtraRoleList = new List<Tuple<byte, Tuple<byte, ulong>>>();
+        }
+
+        public void Assign(byte playerId,byte roleId)
+        {
+            RoleMap[playerId] = roleId;
+            RPCEvents.SetRole(playerId, Roles.Role.GetRoleById(roleId));
+        }
+
+        public void Assign(byte playerId,byte extraRoleId,ulong initializeValue)
+        {
+            ExtraRoleList.Add(new Tuple<byte, Tuple<byte, ulong>>(playerId,new Tuple<byte, ulong>(extraRoleId,initializeValue)));
+            RPCEvents.SetExtraRole(playerId,Roles.ExtraRole.GetRoleById(extraRoleId),initializeValue);
+        }
+    }
 
     [HarmonyPatch(typeof(RoleOptionsData), nameof(RoleOptionsData.GetNumPerGame))]
     class RoleOptionsDataGetNumPerGamePatch
@@ -91,7 +114,7 @@ namespace Nebula.Patches
                 }
             }
 
-            public void Assign(List<PlayerControl> players)
+            public void Assign(AssignMap assignMap, List<PlayerControl> players)
             {
                 int left = roles;
 
@@ -101,7 +124,7 @@ namespace Nebula.Patches
                 while ((left > 0) && (firstRoles.Count > 0)&&(players.Count>0))
                 {
                     rand = NebulaPlugin.rnd.Next(firstRoles.Count);
-                    RoleAssignmentPatch.setRoleToRandomPlayer(firstRoles[rand], players, true);
+                    RoleAssignmentPatch.setRoleToRandomPlayer(assignMap, firstRoles[rand], players, true);
                     firstRoles.RemoveAt(rand);
                     left--;
                 }
@@ -126,7 +149,7 @@ namespace Nebula.Patches
                     {
                         if (secondaryRoles[i].expected > sum)
                         {
-                            RoleAssignmentPatch.setRoleToRandomPlayer(secondaryRoles[i].role, players, true);
+                            RoleAssignmentPatch.setRoleToRandomPlayer(assignMap, secondaryRoles[i].role, players, true);
                             secondaryRoles.RemoveAt(i);
                             left--;
                             sum = 0;
@@ -281,24 +304,25 @@ namespace Nebula.Patches
             RPCEvents.ResetVaribles();
 
 
-
+            AssignMap assignMap = new AssignMap();
 
             if (!DestroyableSingleton<TutorialManager>.InstanceExists)
             {
                 if (!CustomOptionHolder.activateRoles.getBool())
                 {
                     //ModRoleが無効化されているなら標準ロールを割り当てる
-                    assignDefaultRoles();
+                    assignDefaultRoles(assignMap);
                 }
                 else
                 {
-                    assignRoles();
+                    assignRoles(assignMap);
                 }
             }
 
+            RPCEventInvoker.SetRoles(assignMap);
         }
 
-        private static void assignRoles()
+        private static void assignRoles(AssignMap assignMap)
         {
             List<PlayerControl> crewmates = PlayerControl.AllPlayerControls.ToArray().ToList().OrderBy(x => Guid.NewGuid()).ToList();
             crewmates.RemoveAll(x => x.Data.Role.IsImpostor);
@@ -308,18 +332,18 @@ namespace Nebula.Patches
             /* ロールの割り当て */
             AssignRoles roleData = new AssignRoles(crewmates.Count, impostors.Count);
 
-            roleData.neutralData.Assign(crewmates);
-            roleData.crewmateData.Assign(crewmates);
-            roleData.impostorData.Assign(impostors);
+            roleData.neutralData.Assign(assignMap, crewmates);
+            roleData.crewmateData.Assign(assignMap, crewmates);
+            roleData.impostorData.Assign(assignMap, impostors);
 
             //余ったプレイヤーは標準ロールを割り当てる
             while (crewmates.Count > 0)
             {
-                setRoleToRandomPlayer(Roles.Roles.Crewmate, crewmates, true);
+                setRoleToRandomPlayer(assignMap,Roles.Roles.Crewmate, crewmates, true);
             }
             while (impostors.Count > 0)
             {
-                setRoleToRandomPlayer(Roles.Roles.Impostor, impostors, true);
+                setRoleToRandomPlayer(assignMap, Roles.Roles.Impostor, impostors, true);
             }
 
             /* ExtraRoleの割り当て */
@@ -334,7 +358,7 @@ namespace Nebula.Patches
                     if (role.assignmentPriority == currentPriority)
                     {
                         //ロールを割り当てる
-                        role.Assignment(Game.GameData.data);
+                        role.Assignment(assignMap);
                     }
                     else if (role.assignmentPriority > currentPriority && role.assignmentPriority < nextPriority)
                     {
@@ -348,7 +372,7 @@ namespace Nebula.Patches
         }
 
         //ModRoleが有効でない場合標準ロールを割り当てます
-        private static void assignDefaultRoles()
+        private static void assignDefaultRoles(AssignMap assignMap)
         {
             List<PlayerControl> crewmates = PlayerControl.AllPlayerControls.ToArray().ToList().OrderBy(x => Guid.NewGuid()).ToList();
             crewmates.RemoveAll(x => x.Data.Role.IsImpostor);
@@ -357,16 +381,16 @@ namespace Nebula.Patches
 
             while (crewmates.Count > 0)
             {
-                setRoleToRandomPlayer(Roles.Roles.Crewmate, crewmates, true);
+                setRoleToRandomPlayer(assignMap, Roles.Roles.Crewmate, crewmates, true);
 
             }
             while (impostors.Count > 0)
             {
-                setRoleToRandomPlayer(Roles.Roles.Impostor, impostors, true);
+                setRoleToRandomPlayer(assignMap, Roles.Roles.Impostor, impostors, true);
             }
         }
 
-        public static byte setRoleToRandomPlayer(Role role, List<PlayerControl> playerList,bool removePlayerFlag)
+        public static byte setRoleToRandomPlayer(AssignMap assignMap,Role role, List<PlayerControl> playerList,bool removePlayerFlag)
         {
             if (playerList.Count == 0)
             {
@@ -380,11 +404,7 @@ namespace Nebula.Patches
                 playerList.RemoveAt(index);
             }
 
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetRole, Hazel.SendOption.Reliable, -1);
-            writer.Write(role.id);
-            writer.Write(playerId);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
-            RPCEvents.SetRole(role,playerId);
+            assignMap.Assign(playerId, role.id);
 
             return playerId;
         }

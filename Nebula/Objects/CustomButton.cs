@@ -215,6 +215,7 @@ namespace Nebula.Objects
             }
 
             actionButton.SetCoolDown(Timer, (HasEffect && isEffectActive) ? EffectDuration : MaxTimer);
+            CooldownHelpers.SetCooldownNormalizedUvs(actionButton.graphic);
 
             // Trigger OnClickEvent if the hotkey is being pressed down
             if (hotkey.HasValue && Input.GetKeyDown(hotkey.Value)) onClickEvent();

@@ -69,7 +69,7 @@ namespace Nebula.Roles
         /// ExtraRoleを割り振ります。割り振りアルゴリズムは各ロールに委ねられています。
         /// </summary>
         /// <param name="gameData"></param>
-        public virtual void Assignment(Game.GameData gameData){}
+        public virtual void Assignment(Patches.AssignMap assignMap){}
 
         /// <summary>
         /// ロールを設定します。

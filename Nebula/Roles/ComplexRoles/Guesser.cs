@@ -13,10 +13,20 @@ namespace Nebula.Roles.ComplexRoles
 {
     public class FGuesser : Template.HasBilateralness
     {
+        public Module.CustomOption secondoryRoleOption;
         public Module.CustomOption guesserShots;
         public Module.CustomOption canShotSeveralTimesInTheSameMeeting;
 
         static public Color Color = new Color(255f / 255f, 255f / 255f, 0f / 255f);
+
+        public override Patches.AssignRoles.RoleAllocation[] GetComplexAllocations()
+        {
+            if (!secondoryRoleOption.getBool())
+            {
+                return base.GetComplexAllocations();
+            }
+            return null;
+        }
 
         public int remainShotsId { get; private set; }
 
@@ -31,6 +41,7 @@ namespace Nebula.Roles.ComplexRoles
         public override void LoadOptionData()
         {
             base.LoadOptionData();
+            secondoryRoleOption= CreateOption(Color.white, "isSecondaryRole", false);
             canShotSeveralTimesInTheSameMeeting = CreateOption(Color.white,"canShotSeveralTimes",false);
             guesserShots = CreateOption(Color.white, "guesserShots",3f,1f,15f,1f);
 
@@ -48,24 +59,9 @@ namespace Nebula.Roles.ComplexRoles
         public override List<Role> GetImplicateRoles() { return new List<Role>() { Roles.EvilGuesser, Roles.NiceGuesser }; }
     }
 
-    public class Guesser : Role
+    static public class GuesserSystem
     {
-        //インポスターはModで操作するFakeTaskは所持していない
-        public Guesser(string name, string localizeName, bool isImpostor)
-                : base(name, localizeName,
-                     isImpostor ? Palette.ImpostorRed : FGuesser.Color,
-                     isImpostor ? RoleCategory.Impostor : RoleCategory.Crewmate,
-                     isImpostor ? Side.Impostor : Side.Crewmate, isImpostor ? Side.Impostor : Side.Crewmate,
-                     isImpostor ? ImpostorRoles.Impostor.impostorSideSet : CrewmateRoles.Crewmate.crewmateSideSet,
-                     isImpostor ? ImpostorRoles.Impostor.impostorSideSet : CrewmateRoles.Crewmate.crewmateSideSet,
-                     isImpostor ? ImpostorRoles.Impostor.impostorEndSet : CrewmateRoles.Crewmate.crewmateEndSet,
-                     false, isImpostor, isImpostor, isImpostor, isImpostor)
-        {
-            IsGuessableRole = false;
-            IsHideRole = true;
-        }
-
-        public override void GlobalInitialize(PlayerControl __instance)
+        public static void GlobalInitialize(PlayerControl __instance)
         {
             Game.GameData.data.myData.getGlobalData().SetRoleData(Roles.F_Guesser.remainShotsId, (int)Roles.F_Guesser.guesserShots.getFloat());
         }
@@ -116,7 +112,7 @@ namespace Nebula.Roles.ComplexRoles
                 int row = i / 5, col = i % 5;
                 buttonParent.localPosition = new Vector3(-3.47f + 1.75f * col, 1.5f - 0.45f * row, -5);
                 buttonParent.localScale = new Vector3(0.55f, 0.55f, 1f);
-                label.text = Helpers.cs(role.Color, Language.Language.GetString("role."+role.LocalizeName+".name"));
+                label.text = Helpers.cs(role.Color, Language.Language.GetString("role." + role.LocalizeName + ".name"));
                 label.alignment = TMPro.TextAlignmentOptions.Center;
                 label.transform.localPosition = new Vector3(0, 0, label.transform.localPosition.z);
                 label.transform.localScale *= 1.7f;
@@ -140,13 +136,13 @@ namespace Nebula.Roles.ComplexRoles
                         __instance.playerStates.ToList().ForEach(x => x.gameObject.SetActive(true));
                         UnityEngine.Object.Destroy(container.gameObject);
 
-                        RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId,Roles.F_Guesser.remainShotsId,-1);
+                        RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, Roles.F_Guesser.remainShotsId, -1);
 
                         if (Roles.F_Guesser.canShotSeveralTimesInTheSameMeeting.getBool() &&
                         Game.GameData.data.myData.getGlobalData().GetRoleData(Roles.F_Guesser.remainShotsId) > 1 && dyingTarget != PlayerControl.LocalPlayer)
                             __instance.playerStates.ToList().ForEach(x => { if (x.TargetPlayerId == dyingTarget.PlayerId && x.transform.FindChild("ShootButton") != null) UnityEngine.Object.Destroy(x.transform.FindChild("ShootButton").gameObject); });
                         else
-                           __instance.playerStates.ToList().ForEach(x => { if (x.transform.FindChild("ShootButton") != null) UnityEngine.Object.Destroy(x.transform.FindChild("ShootButton").gameObject); });
+                            __instance.playerStates.ToList().ForEach(x => { if (x.transform.FindChild("ShootButton") != null) UnityEngine.Object.Destroy(x.transform.FindChild("ShootButton").gameObject); });
 
                         // Shoot player and send chat info if activated
                         RPCEventInvoker.CloseUpKill(PlayerControl.LocalPlayer, dyingTarget);
@@ -158,7 +154,7 @@ namespace Nebula.Roles.ComplexRoles
             container.transform.localScale *= 0.75f;
         }
 
-        public override void SetupMeetingButton(MeetingHud __instance)
+        public static void SetupMeetingButton(MeetingHud __instance)
         {
             if (!PlayerControl.LocalPlayer.Data.IsDead && Game.GameData.data.myData.getGlobalData().GetRoleData(Roles.F_Guesser.remainShotsId) > 0)
             {
@@ -181,11 +177,142 @@ namespace Nebula.Roles.ComplexRoles
             }
         }
 
-        public override void MeetingUpdate(MeetingHud __instance, TMPro.TextMeshPro meetingInfo) {
+        public static void MeetingUpdate(MeetingHud __instance, TMPro.TextMeshPro meetingInfo)
+        {
             int left = Game.GameData.data.myData.getGlobalData().GetRoleData(Roles.F_Guesser.remainShotsId);
             if (left <= 0) return;
             meetingInfo.text = Language.Language.GetString("role.guesser.guessesLeft") + ": " + left;
             meetingInfo.gameObject.SetActive(true);
+        }
+    }
+
+    public class Guesser : Role
+    {
+        //インポスターはModで操作するFakeTaskは所持していない
+        public Guesser(string name, string localizeName, bool isImpostor)
+                : base(name, localizeName,
+                     isImpostor ? Palette.ImpostorRed : FGuesser.Color,
+                     isImpostor ? RoleCategory.Impostor : RoleCategory.Crewmate,
+                     isImpostor ? Side.Impostor : Side.Crewmate, isImpostor ? Side.Impostor : Side.Crewmate,
+                     isImpostor ? ImpostorRoles.Impostor.impostorSideSet : CrewmateRoles.Crewmate.crewmateSideSet,
+                     isImpostor ? ImpostorRoles.Impostor.impostorSideSet : CrewmateRoles.Crewmate.crewmateSideSet,
+                     isImpostor ? ImpostorRoles.Impostor.impostorEndSet : CrewmateRoles.Crewmate.crewmateEndSet,
+                     false, isImpostor, isImpostor, isImpostor, isImpostor)
+        {
+            IsGuessableRole = false;
+            IsHideRole = true;
+        }
+
+        public override void GlobalInitialize(PlayerControl __instance)
+        {
+            GuesserSystem.GlobalInitialize(__instance);
+        }
+
+        public override void SetupMeetingButton(MeetingHud __instance)
+        {
+            GuesserSystem.SetupMeetingButton(__instance);
+        }
+
+        public override void MeetingUpdate(MeetingHud __instance, TMPro.TextMeshPro meetingInfo) {
+            GuesserSystem.MeetingUpdate(__instance,meetingInfo);
+        }
+    }
+
+    public class SecondaryGuesser : ExtraRole
+    {
+        //インポスターはModで操作するFakeTaskは所持していない
+        public SecondaryGuesser()
+                : base("Guesser", "guesser" ,FGuesser.Color,0)
+        {
+            IsHideRole = true;
+        }
+        public override void Assignment(Patches.AssignMap assignMap)
+        {
+            if (!Roles.F_Guesser.secondoryRoleOption.getBool()) return;
+
+
+            List<byte> impostors = new List<byte>();
+            //第三陣営含む
+            List<byte> crewmates = new List<byte>();
+
+            foreach(PlayerControl player in PlayerControl.AllPlayerControls)
+            {
+                if (player.Data.Role.IsImpostor)
+                {
+                    impostors.Add(player.PlayerId);
+                }
+                else
+                {
+                    crewmates.Add(player.PlayerId);
+                }
+            }
+
+            FGuesser guesser=Roles.F_Guesser;
+            int max = (int)guesser.RoleCountOption.getFloat();
+            int chance = guesser.RoleChanceOption.getSelection();
+            float impostorChance;
+            byte playerId;
+            for(int i = 0; i < max; i++)
+            {
+                if (chance < NebulaPlugin.rnd.Next(10)) continue;
+
+                if (guesser.definitiveAssignmentOption.getBool())
+                {
+                    impostorChance = (float)i / (float)max;
+                }
+                else
+                {
+                    impostorChance = (float)NebulaPlugin.rnd.NextDouble();
+                }
+
+                if ((float)guesser.chanceToSpawnAsSecondarySide.getSelection() / 10 > impostorChance)
+                {
+                    //Impostorとして湧く
+                    if (impostors.Count == 0) continue;
+                    playerId = impostors[NebulaPlugin.rnd.Next(impostors.Count)];
+                    assignMap.Assign(playerId,id,0);
+                    impostors.Remove(playerId);
+                }
+                else
+                {
+                    //Impostor以外として湧く
+                    if (crewmates.Count == 0) continue;
+                    playerId = crewmates[NebulaPlugin.rnd.Next(crewmates.Count)];
+                    assignMap.Assign(playerId, id, 0);
+                    crewmates.Remove(playerId);
+                }
+            }
+        }
+
+        public override void GlobalInitialize(PlayerControl __instance)
+        {
+            GuesserSystem.GlobalInitialize(__instance);
+        }
+
+        public override void SetupMeetingButton(MeetingHud __instance)
+        {
+            GuesserSystem.SetupMeetingButton(__instance);
+        }
+
+        public override void MeetingUpdate(MeetingHud __instance, TMPro.TextMeshPro meetingInfo)
+        {
+            GuesserSystem.MeetingUpdate(__instance, meetingInfo);
+        }
+
+        public override void EditDescriptionString(ref string desctiption)
+        {
+            desctiption += "\n" + Language.Language.GetString("role.secondaryGuesser.description");
+        }
+
+        public override void EditDisplayName(byte playerId, ref string displayName, bool hideFlag)
+        {
+            if (playerId==PlayerControl.LocalPlayer.PlayerId || PlayerControl.LocalPlayer.Data.IsDead) 
+                EditDisplayNameForcely(playerId, ref displayName);
+        }
+
+        public override void EditDisplayNameForcely(byte playerId, ref string displayName)
+        {
+            displayName += Helpers.cs(Color, "⊕");
         }
     }
 }

@@ -53,6 +53,7 @@ namespace Nebula.Roles
         public static ComplexRoles.FGuesser F_Guesser = new ComplexRoles.FGuesser();
         public static ComplexRoles.FTrapper F_Trapper = new ComplexRoles.FTrapper();
 
+        public static ComplexRoles.SecondaryGuesser SecondaryGuesser = new ComplexRoles.SecondaryGuesser();
         public static ExtraRoles.Lover Lover = new ExtraRoles.Lover();
         public static ExtraRoles.Trilemma Trilemma = new ExtraRoles.Trilemma();
 
@@ -70,7 +71,7 @@ namespace Nebula.Roles
 
         public static List<ExtraRole> AllExtraRoles = new List<ExtraRole>()
         {
-            Lover,Trilemma
+            SecondaryGuesser,Lover,Trilemma
         };
 
         public static void ResetWinTrigger()

@@ -34,9 +34,7 @@ namespace Nebula.Roles.ImpostorRoles
                     byte targetId = deadBodyId;
 
                     MessageWriter eatWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.CleanDeadBody, Hazel.SendOption.Reliable, -1);
-                    eatWriter.Write(PlayerControl.LocalPlayer.PlayerId);
                     eatWriter.Write(targetId);
-                    eatWriter.Write(byte.MaxValue);
                     AmongUsClient.Instance.FinishRpcImmediately(eatWriter);
                     RPCEvents.CleanDeadBody(targetId);
 

@@ -163,24 +163,11 @@ namespace Nebula.Game
         public TaskData(bool hasFakeTask,bool fakeTaskIsExecutable){
             int tasks= PlayerControl.GameOptions.NumCommonTasks + PlayerControl.GameOptions.NumShortTasks + PlayerControl.GameOptions.NumLongTasks; ;
 
-            if (hasFakeTask) Quota = 0;
+            if (hasFakeTask && !fakeTaskIsExecutable) Quota = 0;
             else Quota = tasks;
 
-            if (hasFakeTask && !fakeTaskIsExecutable)
-            {
-                AllTasks = 0;
-                DisplayTasks = 0;
-            }
-            else
-            {
-                if (hasFakeTask)
-                    AllTasks = 0;
-                else
-                    AllTasks = Quota;
-
-
-                DisplayTasks = Quota;
-            }
+            AllTasks = Quota;
+            DisplayTasks = Quota;
             Completed = 0;
         }
     }

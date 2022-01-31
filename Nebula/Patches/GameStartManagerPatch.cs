@@ -102,11 +102,6 @@ namespace Nebula.Patches
                     Helpers.shareGameVersion();
                 }
 
-                if (NebulaPlugin.DebugMode)
-                {
-                    return;
-                }
-
                 // Host update with version handshake infos
                 if (AmongUsClient.Instance.AmHost)
                 {

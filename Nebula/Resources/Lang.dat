@@ -62,7 +62,7 @@
 "option.exclusiveAssignmentRole1" : "Exclusive Role 1"
 "option.exclusiveAssignmentRole2" : "Exclusive Role 2"
 "option.exclusiveAssignmentRole3" : "Exclusive Role 3"
-"option.exclusiveAssignmentRole.none" : "<color=#505050ff>None</color>"
+"option.exclusiveAssignmentRole.none" : "None"
 
 "option.roleCount" : "Max Players"
 
@@ -78,8 +78,10 @@
 "role.guesser.chanceToSpawnAsSecondarySide" : "Chance to Spawn as Impostor"
 "role.guesser.definitiveAssignment" : "Definitive Assignment"
 "role.guesser.canShotSeveralTimes" : "Can Shot Several Times In The Same Meeting"
+"role.guesser.isSecondaryRole" : "Assign As Secondary Role"
 "role.guesser.guesserShots" : "Guesser Shots"
 "role.guesser.guessesLeft" : "Guesses Left"
+"role.secondaryGuesser.description" : "and You Can Guess Anyone"
 
 "role.trapper.name" : "Trapper"
 "role.trapper.chanceToSpawnAsSecondarySide" : "Chance to Spawn as Impostor"
@@ -93,7 +95,6 @@
 "role.trapper.invisibleTrapRange" : "Invisible Trap Range"
 "role.trapper.commTrapCost" : "Log Trap Cost"
 "role.trapper.killTrapCost" : "Kill Trap Cost"
-
 
 "role.agent.name" : "Agent"
 "role.agent.description" : "Do Your Tasks More"
@@ -257,6 +258,7 @@
 "role.sniper.snipeCoolDown" : "Snipe Cool Down"
 "role.sniper.shotSize" : "Shot Size"
 "role.sniper.shotEffectiveRange" : "Shot Effective Range"
+"role.sniper.canKillImpostors" : "Can Kill Impostors"
 "role.sniper.canKillImpostors" : "Can Kill Impostors"
 
 "role.arsonist.name" : "Arsonist"

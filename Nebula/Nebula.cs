@@ -13,6 +13,24 @@ using Hazel;
 
 namespace Nebula
 {
+    public class DebugMode
+    {
+        HashSet<string> DebugToken;
+
+        public bool IsValid { get; private set; }
+        public DebugMode()
+        {
+            DebugToken = new HashSet<string>();
+
+            if (File.Exists("patches/DebugMode.patch")) IsValid = true;
+        }
+
+        public static implicit operator bool(DebugMode debugMode)
+        {
+            return debugMode.IsValid;
+        }
+    }
+
     [BepInPlugin(PluginGuid, PluginName, PluginVersion)]
     [BepInProcess("Among Us.exe")]
     public class NebulaPlugin : BasePlugin
@@ -22,10 +40,10 @@ namespace Nebula
         public const string AmongUsVersion = "2021.12.15";
         public const string PluginGuid = "jp.dreamingpig.amongus.nebula";
         public const string PluginName = "TheNebula";
-        public const string PluginVersion = "1.8.5";
+        public const string PluginVersion = "1.8.6";
         public const string PluginStage = "ALPHA";
-        public const string PluginVersionForFetch = "0.1.8.5";
-        public byte[] PluginVersionData = new byte[] { 0, 1, 8, 5 };
+        public const string PluginVersionForFetch = "0.1.8.6";
+        public byte[] PluginVersionData = new byte[] { 0, 1, 8, 6 };
 
         public static NebulaPlugin Instance;
 
@@ -33,15 +51,15 @@ namespace Nebula
 
         public static Sprite ModStamp;
 
-        public static bool DebugMode=false;
+        public static DebugMode DebugMode;
 
         public Logger.Logger Logger;
 
         override public void Load()
         {
-            if (File.Exists("patches/DebugMode.patch"))DebugMode = true;
+            DebugMode = new DebugMode();
 
-            Logger = new Logger.Logger(DebugMode);
+            Logger = new Logger.Logger(true);
 
             Instance = this;
 

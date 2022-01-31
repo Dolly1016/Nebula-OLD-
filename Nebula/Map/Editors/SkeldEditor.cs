@@ -12,8 +12,6 @@ namespace Nebula.Map.Editors
 
         public override void AddVents()
         {
-            Dictionary<string, Game.VentData> ventMap = Game.GameData.data.VentMap;
-
             CreateVent("CafeUpperVent", new UnityEngine.Vector3(-2.3f, 5.6f));
             CreateVent("StorageVent", new UnityEngine.Vector3(-1f, -17.2f));
         }

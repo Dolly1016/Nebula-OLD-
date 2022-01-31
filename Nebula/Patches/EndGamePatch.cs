@@ -232,7 +232,7 @@ namespace Nebula.Patches
             //結果表示
             var roleSummaryText = new StringBuilder();
             roleSummaryText.AppendLine("Roles breakdown:");
-
+            
             foreach (FinalPlayerData.FinalPlayer player in OnGameEndPatch.FinalData.players)
             {
                 var roles = string.Join(" ", Helpers.cs(player.role.Color, Language.Language.GetString("role." + player.role.LocalizeName + ".name")));
