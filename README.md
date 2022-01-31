@@ -178,9 +178,9 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Impostors | Crewmates | Neutral | Secondary
 | ---------- | ---------- | ---------- | ---------- |
-| [Camouflager](#camouflager) | [Agent](#agent) | [Arsonist](#arsonist) | [Lover](#lover) |
-| [Cleaner](#cleaner) | [Alien](#alien) | [Empiric](#empiric) | [Trilemma](#trilemma) |
-| [Damned](#damned) | [Bait](#bait) | [Jackal](#jackal) ||
+| [Camouflager](#camouflager) | [Agent](#agent) | [Arsonist](#arsonist) | [Guesser](#guesser) |
+| [Cleaner](#cleaner) | [Alien](#alien) | [Empiric](#empiric) | [Lover](#lover) |
+| [Damned](#damned) | [Bait](#bait) | [Jackal](#jackal) | [Trilemma](#trilemma) |
 | [Eraser](#eraser) | [Booster](#booster) | [Jester](#jester) ||
 | [Evil Ace](#evil-ace) | [Engineer](#engineer) | [Opportunist](#opportunist) ||
 | [Evil Guesser](#guesser) | [Mayor](#mayor) | [Vulture](#vulture) ||
@@ -217,13 +217,15 @@ p5p5next : Damned
 
 ## Guesser
  Guesserは、会議中に役職を言い当てたプレイヤーをキルすることができます。\
- ただし、間違えてしまうと自分が死んでしまいます。
+ ただし、間違えてしまうと自分が死んでしまいます。\
+ 設定によって、追加役職として割り当てることも可能です。
  
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
 | Chance to Spawn as Impostor | インポスターとしてスポーンする確率
 | Can Shot Several Times In The Same Meeting | 同じ会議で複数回撃つことができるかどうかの設定
+| Assign As Secondary Role | 追加役職として割り当てるかどうかの設定
 | Guesser Shots | 全体を通して撃つことができる回数
 
 -----------------------
