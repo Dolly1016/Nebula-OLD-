@@ -9,6 +9,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 # ダウンロード
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| Alpha 1.9.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.9.0,2021.12.15/Nebula.zip)|
 | Alpha 1.8.6 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.8.6,2021.12.15/Nebula.zip)|
 | Alpha 1.8.5 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.8.5,2021.12.15/Nebula.zip)|
 | Alpha 1.8.4 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.8.4,2021.12.15/Nebula.zip)|
@@ -50,6 +51,10 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 <details>
   <summary>クリックで展開</summary>
  
+ **Version Alpha 1.9.0**
+ - DynamicColorsを実装
+ - Guesserの推察によるキルが正常に行われなくなってしまった問題を再修正
+  
  **Version Alpha 1.8.6**
  - 追加役職としてのGuesserを追加
  - 各種アビリティボタンが正常に描画されない問題を修正
