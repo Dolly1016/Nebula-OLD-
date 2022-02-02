@@ -42,6 +42,15 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 | Alpha 1.1.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.1.0/Nebula.zip)|
 | Alpha 1.0.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.0.0/Nebula.zip)|
 
+# ご利用に関する留意点
+このMODはオリジナルの要素もありながら、The Other Rolesをはじめ多くのMODのアイデアを継承しているものです。\
+クレジットはこのページに掲載しておりますので、ご紹介下さる際には、\
+直のダウンロードリンクではなく、このページへのリンクを掲載していただくようお願いいたします。\
+
+動画や配信でご使用下さる際は、VanillaのAmong Usであるとの誤解を生まないよう、MODを使用している旨を分かりやすくご掲載のうえお使いください。\
+また、このMODについてもご紹介下さいましたら幸いです。\
+併用しているMODがあれば、その使用許諾等についてもそれぞれご確認ください。\
+
 # 言語サポート
 言語パックは自動では更新されませんので、最新版の言語パックをダウンロードして、Languageフォルダ内に入れてお使いください。\
 形式上、言語パックには下位互換があります。\
