@@ -51,8 +51,12 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 <details>
   <summary>クリックで展開</summary>
  
+ **Version Alpha 1.9.1**
+ - Dynamic Colorsの全ての色に色名が表示されるように
+ - Dynamic Colorsに関するいくつかの問題を修正
+  
  **Version Alpha 1.9.0**
- - DynamicColorsを実装
+ - Dynamic Colorsを実装
  - Guesserの推察によるキルが正常に行われなくなってしまった問題を再修正
   
  **Version Alpha 1.8.6**
