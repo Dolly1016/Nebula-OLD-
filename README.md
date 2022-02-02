@@ -3,12 +3,17 @@
 This mod is not affiliated with Among Us or Innersloth LLC, and the content contained therein is not endorsed or otherwise sponsored by Innersloth LLC. Portions of the materials contained herein are property of Innersloth LLC. © Innersloth LLC.</p>
 
 **Nebula on the Ship (NoS)** は Among Us に新たなロールを追加するModです。
+また、1万を超える数の色からプレイヤーのスキンを選ぶことができます。
 
 また、このModの一部コードは The Other Roles および The Other Roles GM Edition のものを使用しています。
+
+# Discord
+バグ報告などの情報交換は[こちら](https://discord.gg/kHNZD4pq9E)でお願いいたします。
 
 # ダウンロード
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| Alpha 1.9.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.9.1,2021.12.15/Nebula.zip)|
 | Alpha 1.9.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.9.0,2021.12.15/Nebula.zip)|
 | Alpha 1.8.6 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.8.6,2021.12.15/Nebula.zip)|
 | Alpha 1.8.5 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.8.5,2021.12.15/Nebula.zip)|
