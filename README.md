@@ -43,7 +43,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 | Alpha 1.0.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.0.0/Nebula.zip)|
 
 # ご利用に関する留意点
-このMODはオリジナルの要素もありながら、The Other Rolesをはじめ多くのMODのアイデアを継承しているものです。\
+このMODはオリジナルの要素もありながら、The Other Rolesをはじめ多くのMODのアイデアを継承しています。\
 クレジットはこのページに掲載しておりますので、ご紹介下さる際には、\
 直のダウンロードリンクではなく、このページへのリンクを掲載していただくようお願いいたします。
 
