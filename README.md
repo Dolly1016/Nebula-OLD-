@@ -2,10 +2,10 @@
 <p align="center">
 This mod is not affiliated with Among Us or Innersloth LLC, and the content contained therein is not endorsed or otherwise sponsored by Innersloth LLC. Portions of the materials contained herein are property of Innersloth LLC. © Innersloth LLC.</p>
 
-**Nebula on the Ship (NoS)** は Among Us に新たなロールを追加するModです。
+**Nebula on the Ship (NoS)** は Among Us に新たなロールを追加するModです。\
 また、1万を超える数の色からプレイヤーのスキンを選ぶことができます。
 
-また、このModの一部コードは The Other Roles および The Other Roles GM Edition のものを使用しています。
+このModの一部コードは The Other Roles および The Other Roles GM Edition のものを使用しています。
 
 # Discord
 バグ報告などの情報交換は[こちら](https://discord.gg/kHNZD4pq9E)でお願いいたします。
