@@ -43,6 +43,7 @@ namespace Nebula.Language
 
         public static void Load(string lang)
         {
+
             language = new Language();
 
             if (lang != null)
@@ -50,18 +51,50 @@ namespace Nebula.Language
                 language.entry.Value = lang;
             }
 
+
+            language.deserialize(GetDefaultColorStream());
+            Dictionary<string, string> defaultColorSet = language.languageSet;
+
+
+            Dictionary<string, string> ColorSet = defaultColorSet;
+            if (language.deserialize(@"language\" + language.entry.Value + "_Color.dat"))
+            {
+                //翻訳セットに不足データがある場合デフォルト言語セットで補う
+                foreach (KeyValuePair<string, string> pair in defaultColorSet)
+                {
+                    if (!language.languageSet.ContainsKey(pair.Key))
+                    {
+                        language.languageSet.Add(pair.Key, pair.Value);
+                    }
+                }
+                ColorSet = language.languageSet;
+            }
+
+
             language.deserialize(GetDefaultLanguageStream());
             Dictionary<string, string> defaultSet = language.languageSet;
-            language.deserialize(@"language\" + language.entry.Value + ".dat");
 
-            //翻訳セットに不足データがある場合デフォルト言語セットで補う
-            foreach (KeyValuePair<string, string> pair in defaultSet)
+
+            if (language.deserialize(@"language\" + language.entry.Value + ".dat"))
             {
-                if (!language.languageSet.ContainsKey(pair.Key))
+                //翻訳セットに不足データがある場合デフォルト言語セットで補う
+                foreach (KeyValuePair<string, string> pair in defaultSet)
                 {
-                    language.languageSet.Add(pair.Key, pair.Value);
+                    if (!language.languageSet.ContainsKey(pair.Key))
+                    {
+                        language.languageSet.Add(pair.Key, pair.Value);
+                    }
                 }
             }
+
+
+            //色データを足しこむ
+            foreach (KeyValuePair<string, string> pair in ColorSet)
+            {
+                language.languageSet.Add(pair.Key, pair.Value);
+            }
+
+
         }
 
         public static void Load()
@@ -72,6 +105,11 @@ namespace Nebula.Language
         public static Stream GetDefaultLanguageStream()
         {
             return Assembly.GetExecutingAssembly().GetManifestResourceStream("Nebula.Resources.Lang.dat");
+        }
+
+        public static Stream GetDefaultColorStream()
+        {
+            return Assembly.GetExecutingAssembly().GetManifestResourceStream("Nebula.Resources.Color.dat");
         }
 
         public bool deserialize(string path)

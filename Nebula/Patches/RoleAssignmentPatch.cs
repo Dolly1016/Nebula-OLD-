@@ -299,8 +299,6 @@ namespace Nebula.Patches
     {
         public static void Postfix()
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ResetVaribles, Hazel.SendOption.Reliable, -1);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.ResetVaribles();
 
 

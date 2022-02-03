@@ -56,7 +56,7 @@ namespace Nebula.Roles.ExtraRoles
         public override void EditDisplayName(byte playerId, ref string displayName, bool hideFlag)
         {
             bool showFlag = false;
-            if (PlayerControl.LocalPlayer.Data.IsDead) showFlag = true;
+            if (Game.GameData.data.myData.CanSeeEveryoneInfo) showFlag = true;
             else if (Game.GameData.data.myData.getGlobalData().extraRole.Contains(this))
             {
                 ulong pairId = Game.GameData.data.myData.getGlobalData().GetExtraRoleData(this);

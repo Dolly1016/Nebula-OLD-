@@ -40,10 +40,10 @@ namespace Nebula
         public const string AmongUsVersion = "2021.12.15";
         public const string PluginGuid = "jp.dreamingpig.amongus.nebula";
         public const string PluginName = "TheNebula";
-        public const string PluginVersion = "1.8.6";
+        public const string PluginVersion = "1.9.3";
         public const string PluginStage = "ALPHA";
-        public const string PluginVersionForFetch = "0.1.8.6";
-        public byte[] PluginVersionData = new byte[] { 0, 1, 8, 6 };
+        public const string PluginVersionForFetch = "0.1.9.3";
+        public byte[] PluginVersionData = new byte[] { 0, 1, 9, 3 };
 
         public static NebulaPlugin Instance;
 
@@ -64,7 +64,7 @@ namespace Nebula
             Instance = this;
 
             //色データを読み込む
-            Module.CustomColors.Load();
+            Module.DynamicColors.Load();
 
             //言語データを読み込む
             Language.Language.Load();
@@ -89,6 +89,16 @@ namespace Nebula
         {
             if (ModStamp) return ModStamp;
             return ModStamp = Helpers.loadSpriteFromResources("Nebula.Resources.ModStamp.png", 150f);
+        }
+    }
+
+    // Deactivate bans
+    [HarmonyPatch(typeof(StatsManager), nameof(StatsManager.AmBanned), MethodType.Getter)]
+    public static class AmBannedPatch
+    {
+        public static void Postfix(out bool __result)
+        {
+            __result = false;
         }
     }
 

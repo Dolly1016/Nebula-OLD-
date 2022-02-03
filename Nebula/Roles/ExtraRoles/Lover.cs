@@ -106,7 +106,7 @@ namespace Nebula.Roles.ExtraRoles
         public override void EditDisplayName(byte playerId, ref string displayName, bool hideFlag)
         {
             bool showFlag = false;
-            if (PlayerControl.LocalPlayer.Data.IsDead) showFlag = true;
+            if (Game.GameData.data.myData.CanSeeEveryoneInfo) showFlag = true;
             else if (Game.GameData.data.myData.getGlobalData().extraRole.Contains(this))
             {
                 ulong pairId = Game.GameData.data.myData.getGlobalData().GetExtraRoleData(this);
@@ -200,6 +200,23 @@ namespace Nebula.Roles.ExtraRoles
                             RPCEventInvoker.UnsetExtraRole(Helpers.playerById(data.id),this);
 
                             break;
+                        }
+                    }
+
+                    //巻き込まれるのがトリレマであった場合
+                    if (target.GetModData().extraRole.Contains(Roles.Trilemma))
+                    {
+                        ulong removeId = target.GetModData().GetExtraRoleData(Roles.Trilemma.id);
+
+                        foreach (Game.PlayerData data in Game.GameData.data.players.Values)
+                        {
+                            if (data.GetExtraRoleData(Roles.Trilemma.id) != removeId) continue;
+
+                            //鞍替えする側はなにもしない
+                            if (data.id == target.PlayerId) continue;
+
+                            //ロール消去
+                            RPCEventInvoker.UnsetExtraRole(Helpers.playerById(data.id), Roles.Trilemma);
                         }
                     }
 

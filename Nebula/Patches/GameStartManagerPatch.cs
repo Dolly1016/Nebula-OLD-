@@ -59,7 +59,16 @@ namespace Nebula.Patches
                 if (PlayerControl.LocalPlayer != null)
                 {
                     Helpers.shareGameVersion();
+                    PlayerControl.LocalPlayer.SetColor(PlayerControl.LocalPlayer.PlayerId);
+                    RPCEventInvoker.SetMyColor();
                 }
+
+                
+                foreach(PlayerControl player in PlayerControl.AllPlayerControls)
+                {
+                    player.SetColor(player.PlayerId);
+                }
+                
             }
         }
 
@@ -89,7 +98,14 @@ namespace Nebula.Patches
 
             public static void Prefix(GameStartManager __instance)
             {
-                if (!AmongUsClient.Instance.AmHost || !GameData.Instance) return; // Not host or no instance
+                if (!GameData.Instance) return;
+
+                foreach(PlayerControl player in PlayerControl.AllPlayerControls)
+                {
+                    player.SetColor(player.PlayerId);
+                }
+
+                if (!AmongUsClient.Instance.AmHost) return; // Not host or no instance
                 update = GameData.Instance.PlayerCount != __instance.LastPlayerCount;
             }
 
@@ -100,6 +116,10 @@ namespace Nebula.Patches
                 {
                     versionSent = true;
                     Helpers.shareGameVersion();
+
+                    PlayerControl.LocalPlayer.SetColor(PlayerControl.LocalPlayer.PlayerId);
+                    SaveManager.BodyColor=PlayerControl.LocalPlayer.PlayerId;
+                    RPCEventInvoker.SetMyColor();
                 }
 
                 // Host update with version handshake infos
@@ -234,7 +254,7 @@ namespace Nebula.Patches
                     //候補が無い場合はSkeldにする
                     if (possibleMaps.Count == 0) possibleMaps.Add(0);
 
-                    PlayerControl.GameOptions.MapId = possibleMaps[NebulaPlugin.rnd.Next(possibleMaps.Count)];
+                    RPCEventInvoker.SetRandomMap(possibleMaps[NebulaPlugin.rnd.Next(possibleMaps.Count)]);
                 }
 
                 return continueStart;

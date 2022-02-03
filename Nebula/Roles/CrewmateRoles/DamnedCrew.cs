@@ -26,7 +26,7 @@ namespace Nebula.Roles.CrewmateRoles
             if (Game.GameData.data.players[playerId].GetRoleData(guardLeftId) > 0)
             {
                 RPCEventInvoker.AddAndUpdateRoleData(playerId,guardLeftId,-1);
-                return Helpers.MurderAttemptResult.SuppressKill;
+                return Helpers.MurderAttemptResult.BlankKill;
             }
             return Helpers.MurderAttemptResult.PerformKill; 
         }

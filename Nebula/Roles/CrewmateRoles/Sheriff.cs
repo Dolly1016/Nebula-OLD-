@@ -38,10 +38,11 @@ namespace Nebula.Roles.CrewmateRoles
                     {
                         target = PlayerControl.LocalPlayer;
                     }
-                    Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, target,Game.PlayerData.PlayerStatus.Dead, false,true);
-
-                    killButton.Timer = killButton.MaxTimer;
+                    var res=Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, target,Game.PlayerData.PlayerStatus.Dead, false,true);
+                    if (res != Helpers.MurderAttemptResult.SuppressKill)
+                        killButton.Timer = killButton.MaxTimer;
                     Game.GameData.data.myData.currentTarget = null;
+
                 },
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
                 () => { return Game.GameData.data.myData.currentTarget && PlayerControl.LocalPlayer.CanMove; },

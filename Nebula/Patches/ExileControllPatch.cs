@@ -57,6 +57,11 @@ namespace Nebula.Patches
                     {
                         Helpers.RoleAction(exiled.PlayerId, (role) => { role.OnExiledPost(voters); });
                         Helpers.RoleAction(exiled.PlayerId, (role) => { role.OnDied(); });
+
+                        Events.Schedule.RegisterPostMeetingAction(() => {
+                            if (!PlayerControl.LocalPlayer.GetModData().IsAlive)
+                                Game.GameData.data.myData.CanSeeEveryoneInfo = true;
+                        });
                     }
 
                     Game.GameData.data.players[exiled.PlayerId].Die(Game.PlayerData.PlayerStatus.Exiled);

@@ -13,7 +13,9 @@ namespace Nebula
         // Main Controls
 
         ResetVaribles = 60,
+        SetRandomMap,
         VersionHandshake,
+        SetMyColor,
         UpdatePlayerControl,
         ForceEnd,
         WinTrigger,
@@ -59,14 +61,18 @@ namespace Nebula
         static void Postfix([HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
         {
             byte packetId = callId;
+            int length;
             switch (packetId)
             {
 
                 case (byte)CustomRPC.ResetVaribles:
                     RPCEvents.ResetVaribles();
                     break;
+                case (byte)CustomRPC.SetRandomMap:
+                    RPCEvents.SetRandomMap(reader.ReadByte());
+                    break;
                 case (byte)CustomRPC.VersionHandshake:
-                    int length = reader.ReadInt32();
+                    length = reader.ReadInt32();
                     byte[] version = new byte[length];
                     for (byte i = 0; i < length; i++)
                     {
@@ -74,6 +80,9 @@ namespace Nebula
                     }
                     int clientId = reader.ReadPackedInt32();
                     RPCEvents.VersionHandshake(version, new Guid(reader.ReadBytes(16)), clientId);
+                    break;
+                case (byte)CustomRPC.SetMyColor:
+                    RPCEvents.SetMyColor(reader.ReadByte(), new Color(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(),1f),reader.ReadByte());
                     break;
                 case (byte)CustomRPC.UpdatePlayerControl:
                     RPCEvents.UpdatePlayerControl(reader.ReadByte(),reader.ReadSingle());
@@ -88,6 +97,7 @@ namespace Nebula
                     RPCEvents.ShareOptions((int)reader.ReadPackedUInt32(), reader);
                     break;
                 case (byte)CustomRPC.SetRoles:
+                    RPCEvents.ResetVaribles();
                     int num=reader.ReadInt32();
                     for (int i= 0;i<num;i++)
                     {
@@ -200,6 +210,17 @@ namespace Nebula
             Objects.CustomObject.Initialize();
             Patches.MeetingHudPatch.Initialize();
             Patches.EmergencyPatch.Initialize();
+        }
+            
+        public static void SetMyColor(byte playerId, Color color, byte shadowType)
+        {
+            DynamicColors.SetOthersColor(color, DynamicColors.GetShadowColor(color, shadowType), playerId);
+        }
+
+
+        public static void SetRandomMap(byte mapId)
+        {
+            PlayerControl.GameOptions.MapId = mapId;
         }
 
         public static void VersionHandshake(byte[] version, Guid guid, int clientId)
@@ -317,28 +338,14 @@ namespace Nebula
                 if (target.PlayerId == PlayerControl.LocalPlayer.PlayerId)
                 {
                     Helpers.RoleAction(target, (role) => { role.OnDied(); });
+
+                    Events.Schedule.RegisterPostMeetingAction(()=> {
+                        if (!PlayerControl.LocalPlayer.GetModData().IsAlive)
+                            Game.GameData.data.myData.CanSeeEveryoneInfo = true;
+                    });
                 }
 
                 Game.GameData.data.players[target.PlayerId].Die(Game.PlayerData.PlayerStatus.GetStatusById(statusId), source.PlayerId);
-
-                if (MeetingHud.Instance != null)
-                {
-                    foreach (PlayerVoteArea pva in MeetingHud.Instance.playerStates)
-                    {
-                        if (pva.TargetPlayerId == targetId)
-                        {
-                            pva.SetDead(pva.DidReport, true);
-                            pva.Overlay.gameObject.SetActive(true);
-                        }
-
-                        //Give players back their vote if target is shot dead
-                        if (pva.VotedFor != targetId) continue;
-                        pva.UnsetVote();
-                        var voteAreaPlayer = Helpers.playerById(pva.TargetPlayerId);
-                        if (!voteAreaPlayer.AmOwner) continue;
-                        MeetingHud.Instance.ClearVote();
-                    }
-                }
             }
         }
 
@@ -357,6 +364,30 @@ namespace Nebula
                     {
                         player.GetModData().role.OnExiledPost(new byte[0]);
                         player.GetModData().role.OnDied();
+
+                        Events.Schedule.RegisterPostMeetingAction(() => {
+                            if (!PlayerControl.LocalPlayer.GetModData().IsAlive)
+                                Game.GameData.data.myData.CanSeeEveryoneInfo = true;
+                        });
+                    }
+
+                    if (MeetingHud.Instance != null)
+                    {
+                        foreach (PlayerVoteArea pva in MeetingHud.Instance.playerStates)
+                        {
+                            if (pva.TargetPlayerId == playerId)
+                            {
+                                pva.SetDead(pva.DidReport, true);
+                                pva.Overlay.gameObject.SetActive(true);
+                            }
+
+                            //Give players back their vote if target is shot dead
+                            if (pva.VotedFor != playerId) continue;
+                            pva.UnsetVote();
+                            var voteAreaPlayer = Helpers.playerById(pva.TargetPlayerId);
+                            if (!voteAreaPlayer.AmOwner) continue;
+                            MeetingHud.Instance.ClearVote();
+                        }
                     }
 
                     Game.GameData.data.players[playerId].Die(Game.PlayerData.PlayerStatus.GetStatusById(statusId));
@@ -679,6 +710,13 @@ namespace Nebula
 
     public class RPCEventInvoker
     {
+        public static void SetRandomMap(byte mapId)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetRandomMap, Hazel.SendOption.Reliable, -1);
+            writer.Write(mapId);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.SetRandomMap(mapId);
+        }
         public static void SetRoles(Patches.AssignMap assignMap)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetRoles, Hazel.SendOption.Reliable, -1);
@@ -697,6 +735,18 @@ namespace Nebula
             }
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             //自分自身はもう割り当て済みなので何もしない
+        }
+
+        public static void SetMyColor()
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetMyColor, Hazel.SendOption.Reliable, -1);
+            writer.Write(PlayerControl.LocalPlayer.PlayerId);
+            writer.Write(DynamicColors.MyColor.Color.r);
+            writer.Write(DynamicColors.MyColor.Color.g);
+            writer.Write(DynamicColors.MyColor.Color.b);
+            writer.Write(DynamicColors.MyColor.GetShadowType());
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.SetMyColor(PlayerControl.LocalPlayer.PlayerId, DynamicColors.MyColor.Color, DynamicColors.MyColor.GetShadowType());
         }
 
         public static void WinTrigger(Roles.Role role)
@@ -1040,5 +1090,7 @@ namespace Nebula
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.Morph(PlayerControl.LocalPlayer.PlayerId, targetId);
         }
+
+
     }
 }

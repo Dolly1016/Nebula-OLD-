@@ -176,7 +176,7 @@ namespace Nebula.Patches
 
             foreach (PlayerControl p in PlayerControl.AllPlayerControls)
             {
-                if (p == PlayerControl.LocalPlayer || !PlayerControl.LocalPlayer.GetModData().IsAlive)
+                if (p == PlayerControl.LocalPlayer || Game.GameData.data.myData.CanSeeEveryoneInfo)
                 {
                     Transform playerInfoTransform = p.nameText.transform.parent.FindChild("Info");
                     TMPro.TextMeshPro playerInfo = playerInfoTransform != null ? playerInfoTransform.GetComponent<TMPro.TextMeshPro>() : null;

@@ -63,7 +63,7 @@ namespace Nebula.Patches
                 __instance.text.alignment = TMPro.TextAlignmentOptions.TopRight;
                 if (AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started)
                 {
-                    __instance.text.text = $"<size=130%><color=#ff351f>TheNebula</color></size> v{NebulaPlugin.PluginVersion}\n" + __instance.text.text;
+                    __instance.text.text = $"<size=130%><color=#ff351f>Nebula on the Ship</color></size> v{NebulaPlugin.PluginVersion}\n" + __instance.text.text;
                     if (PlayerControl.LocalPlayer.Data.IsDead)
                     {
                         __instance.transform.localPosition = new Vector3(3.45f, __instance.transform.localPosition.y, __instance.transform.localPosition.z);

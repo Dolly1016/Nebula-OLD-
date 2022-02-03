@@ -5,6 +5,10 @@
 "update.failed" : "Update has failed."
 "title.button.updateNebula" : "Update NoS"
 
+"lobby.hasNoNebula" : "%NAME% has a different or no version of Nebula on the Ship"
+"lobby.hasDifferentNebula" : "%NAME% has a different version of Nebula on the Ship"
+"lobby.willEliminatedByMismatchVersion" : "The host has no or a different version of Nebula on the Ship\nYou will be kicked in %STAY%s"
+
 "option.display.pressTabForMore" : "Press Tab For More"
 "option.display.percentage.0" : "0%"
 "option.display.percentage.10" : "10%"

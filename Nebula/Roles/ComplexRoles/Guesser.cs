@@ -306,7 +306,7 @@ namespace Nebula.Roles.ComplexRoles
 
         public override void EditDisplayName(byte playerId, ref string displayName, bool hideFlag)
         {
-            if (playerId==PlayerControl.LocalPlayer.PlayerId || PlayerControl.LocalPlayer.Data.IsDead) 
+            if (playerId==PlayerControl.LocalPlayer.PlayerId || Game.GameData.data.myData.CanSeeEveryoneInfo) 
                 EditDisplayNameForcely(playerId, ref displayName);
         }
 

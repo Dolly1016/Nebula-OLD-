@@ -109,7 +109,9 @@ namespace Nebula.Roles.ImpostorRoles
                     PlayerControl target = GetShootPlayer(shotSizeOption.getFloat()*0.1f,shotEffectiveRangeOption.getFloat(), !canKillImpostorsOption.getBool());
                     if (target!=null)
                     {
-                        Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, target, Game.PlayerData.PlayerStatus.Sniped, false, false);
+                        var res=Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, target, Game.PlayerData.PlayerStatus.Sniped, false, false);
+                        if (res != Helpers.MurderAttemptResult.SuppressKill)
+                            killButton.Timer = killButton.MaxTimer;
                     }
 
                     RPCEventInvoker.SniperShot();
@@ -138,6 +140,11 @@ namespace Nebula.Roles.ImpostorRoles
 
         public byte deadBodyId;
 
+        public override void OnMeetingStart()
+        {
+            RPCEventInvoker.SniperSettleRifle();
+            equipRifleFlag = false;
+        }
 
         /* 画像 */
         private Sprite snipeButtonSprite = null;

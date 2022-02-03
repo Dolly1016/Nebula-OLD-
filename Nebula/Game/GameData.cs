@@ -14,6 +14,7 @@ namespace Nebula.Game
     {
         public PlayerControl currentTarget { get; set; }
         private PlayerData globalData { get; set; }
+        public bool CanSeeEveryoneInfo { get; set; }
 
         public PlayerData getGlobalData()
         {
@@ -31,6 +32,7 @@ namespace Nebula.Game
         {
             this.currentTarget = null;
             this.globalData = null;
+            this.CanSeeEveryoneInfo = false;
         }
     }
 
@@ -237,7 +239,7 @@ namespace Nebula.Game
         public string name { get; }
 
         public Role role { get; set; }
-        public List<ExtraRole> extraRole { get; }
+        public HashSet<ExtraRole> extraRole { get; }
 
         //自身のロールがもつデータ
         private Dictionary<int, int> roleData { get; set; }
@@ -265,7 +267,7 @@ namespace Nebula.Game
             this.id = playerId;
             this.name = name;
             this.role = role;
-            this.extraRole = new List<ExtraRole>();
+            this.extraRole = new HashSet<ExtraRole>();
             this.roleData = new Dictionary<int, int>();
             this.extraRoleData = new Dictionary<byte, ulong>();
             this.IsAlive = true;
