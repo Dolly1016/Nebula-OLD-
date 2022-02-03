@@ -2,13 +2,25 @@
 <p align="center">
 This mod is not affiliated with Among Us or Innersloth LLC, and the content contained therein is not endorsed or otherwise sponsored by Innersloth LLC. Portions of the materials contained herein are property of Innersloth LLC. © Innersloth LLC.</p>
 
-**Nebula on the Ship (NoS)** は Among Us に新たなロールを追加するModです。
+**Nebula on the Ship (NoS)** は Among Us に新たなロールを追加するModです。\
+また、1万を超える数の色からプレイヤーのスキンを選ぶことができます。
 
-また、このModの一部コードは The Other Roles および The Other Roles GM Edition のものをしています使用しています。
+このModの一部コードは The Other Roles および The Other Roles GM Edition のものを使用しています。
+
+# Discord
+バグ報告などの情報交換は[こちら](https://discord.gg/kHNZD4pq9E)でお願いいたします。
 
 # ダウンロード
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| Alpha 1.9.3 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.9.3,2021.12.15/Nebula.zip)|
+| Alpha 1.9.2 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.9.2,2021.12.15/Nebula.zip)|
+| Alpha 1.9.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.9.1,2021.12.15/Nebula.zip)|
+| Alpha 1.9.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.9.0,2021.12.15/Nebula.zip)|
+| Alpha 1.8.6 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.8.6,2021.12.15/Nebula.zip)|
+| Alpha 1.8.5 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.8.5,2021.12.15/Nebula.zip)|
+| Alpha 1.8.4 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.8.4,2021.12.15/Nebula.zip)|
+| Alpha 1.8.3 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.8.3,2021.12.15/Nebula.zip)|
 | Alpha 1.8.2 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.8.2,2021.12.15/Nebula.zip)|
 | Alpha 1.8.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.8.1,2021.12.15/Nebula.zip)|
 | Alpha 1.8.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.8.0,2021.12.15/Nebula.zip)|
@@ -32,6 +44,16 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 | Alpha 1.1.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.1.0/Nebula.zip)|
 | Alpha 1.0.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.0.0/Nebula.zip)|
 
+# ご利用に関する留意点
+このMODはオリジナルの要素もありながら、The Other Rolesをはじめ多くのMODのアイデアを継承しています。\
+クレジットはこのページに掲載しておりますので、ご紹介下さる際には、\
+直のダウンロードリンクではなく、このページへのリンクを掲載していただくようお願いいたします。
+
+動画や配信でご使用下さる際は、VanillaのAmong Usであるとの誤解を生まないよう、\
+MODを使用している旨を分かりやすくご掲載のうえお使いください。\
+また、このMODについてもご紹介下さいましたら幸いです。\
+併用しているMODがあれば、その使用許諾等についてもそれぞれご確認ください。
+
 # 言語サポート
 言語パックは自動では更新されませんので、最新版の言語パックをダウンロードして、Languageフォルダ内に入れてお使いください。\
 形式上、言語パックには下位互換があります。\
@@ -45,11 +67,51 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+ 
+ **Version Alpha 1.9.3**
+ - Dynamic Colorsの影の色にバリエーションを追加
+ - 5色まで作った色を保存できるように
+  
+ **Version Alpha 1.9.2**
+ - GLOBALでゲームができなくなっていた問題を修正
+  
+ **Version Alpha 1.9.1**
+ - Dynamic Colorsの全ての色に色名が表示されるように
+ - Dynamic Colorsに関するいくつかの問題を修正
+  
+ **Version Alpha 1.9.0**
+ - Dynamic Colorsを実装
+ - Guesserの推察によるキルが正常に行われなくなってしまった問題を再修正
+  
+ **Version Alpha 1.8.6**
+ - 追加役職としてのGuesserを追加
+ - 各種アビリティボタンが正常に描画されない問題を修正
+ - 役職割り当てに関する変更
+ - Opportunistがゲームを正常に開始できない問題を修正
+ - Trapperのトラップがマップ下方で表示されない問題を修正
+ - Opportunist, Agentがタスクを4つ以上免除された場合にゲームが開始できない問題を修正
+ - 一つの死体を複数人が掴めないように
+ - 死体消去に関わる問題を修正
+ - Guesserの推察によるキルが会議終了後に死体を残す問題を修正
+  
+ **Version Alpha 1.8.5**
+ - ダイナミックマップに条件を付与
+ - オプションの配置を調整
+ - 役職の排他的割り当ての視覚的な調整
+  
+ **Version Alpha 1.8.4**
+ - 決定的な陣営配分が正常に動作していなかった問題を修正
+  
+ **Version Alpha 1.8.3**
+ - Guesser, Trapperの陣営決定に新たな方式を追加
+ - 役職の排他的割り当てを実装
+ - Provocateurの道連れをボタン式に変更
   
  **Version Alpha 1.8.2**
  - ゲーム終了時にプレイヤーごとのタスク進捗と生死情報が表示されるように
  - Spyに、インポスターのキルに関する新たなオプションを追加
  - Sniperの銃声通知が表示される距離に関する新たなオプションを追加
+ - 勝利条件の判定アルゴリズムを修正
  - 投票による追放が正常に行われない問題を修正
  - Vulture, Cleanerが死体を消去しても他プレイヤーからは死体が見えてしまう問題を修正
  - インポスターの一部役職が停電の影響を受ける問題を修正
@@ -149,9 +211,9 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Impostors | Crewmates | Neutral | Secondary
 | ---------- | ---------- | ---------- | ---------- |
-| [Camouflager](#camouflager) | [Agent](#agent) | [Arsonist](#arsonist) | [Lover](#lover) |
-| [Cleaner](#cleaner) | [Alien](#alien) | [Empiric](#empiric) | [Trilemma](#trilemma) |
-| [Damned](#damned) | [Bait](#bait) | [Jackal](#jackal) ||
+| [Camouflager](#camouflager) | [Agent](#agent) | [Arsonist](#arsonist) | [Guesser](#guesser) |
+| [Cleaner](#cleaner) | [Alien](#alien) | [Empiric](#empiric) | [Lover](#lover) |
+| [Damned](#damned) | [Bait](#bait) | [Jackal](#jackal) | [Trilemma](#trilemma) |
 | [Eraser](#eraser) | [Booster](#booster) | [Jester](#jester) ||
 | [Evil Ace](#evil-ace) | [Engineer](#engineer) | [Opportunist](#opportunist) ||
 | [Evil Guesser](#guesser) | [Mayor](#mayor) | [Vulture](#vulture) ||
@@ -176,25 +238,29 @@ BasePluginに以下の属性を新たに付与することで、Nebula on the Sh
 # クレジットとリソース
 
 [BepInEx](https://github.com/BepInEx) ゲームの関数をフックするために使用しています。\
-[TheOtherRoles](https://github.com/Eisbison/TheOtherRoles) このMODの着想の根源はすべてここからのものです。ソースを一部使用しています。\
+[The Other Roles](https://github.com/Eisbison/TheOtherRoles) このMODの着想の根源はすべてここからのものです。ソースを一部使用しています。\
 [TheOtherRoles: GM Edition](https://github.com/yukinogatari/TheOtherRoles-GM) ソースを一部使用しています。Empiric,MadmateのアイデアはこのMODからのものです。\
+[Town Of Impostors](https://github.com/Town-of-Impostors/TownOfImpostors) Sniper,Doctor,MayorのアイデアはこのMODからのものです。\
 \
 その他ロールアイデアのご提供等\
 \
 龍 : Reaper, Provocateur, Booster, Alien\
+Alps : Guesser(Secondary)\
 p5p5next : Damned
 
 -----------------------
 
 ## Guesser
  Guesserは、会議中に役職を言い当てたプレイヤーをキルすることができます。\
- ただし、間違えてしまうと自分が死んでしまいます。
+ ただし、間違えてしまうと自分が死んでしまいます。\
+ 設定によって、追加役職として割り当てることも可能です。
  
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
 | Chance to Spawn as Impostor | インポスターとしてスポーンする確率
 | Can Shot Several Times In The Same Meeting | 同じ会議で複数回撃つことができるかどうかの設定
+| Assign As Secondary Role | 追加役職として割り当てるかどうかの設定
 | Guesser Shots | 全体を通して撃つことができる回数
 
 -----------------------
@@ -206,6 +272,12 @@ p5p5next : Damned
  キルトラップは、上を通り過ぎたプレイヤーをキルすることができ、ログトラップは上を通り過ぎたプレイヤーの色が分かります。\
  キルトラップとログトラップは他人からは見えません。
  
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| F | トラップの設置
+| LShift | トラップ種類の切り替え
+
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
@@ -224,7 +296,12 @@ p5p5next : Damned
 
 ## Camouflager
  Camouflagerは、プレイヤーを判別できないようにして場を混乱させます。
- 
+  
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| F | カモフラージュ
+
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
@@ -237,6 +314,12 @@ p5p5next : Damned
  Cleanerは、プレイヤーの死体を消去して証拠隠滅を図ることができます。
  ただし、死体消去とキルのクールダウンは同期しています。
  
+ 
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| F | 死体の除去
+
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
@@ -261,6 +344,11 @@ p5p5next : Damned
 ## Eraser
  Eraserは相手の役職を消してCrewmateにすることができます。
  
+  ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| F | 役職の消去
+
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
@@ -282,6 +370,12 @@ p5p5next : Damned
 ## Morphing
  Morphingは、サンプルを採取したプレイヤーに化けることができます。
  
+ 
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| F | サンプルの採取/モーフ
+
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
@@ -291,8 +385,14 @@ p5p5next : Damned
 -----------------------
 
 ## Reaper
- Reaperは、死体を引きずることができるインポスターです。
+ Reaperは、死体を引きずることができるインポスターです。\
+ マップ中のベントが全てのベントに通じているほか、The Skeldでは追加ベントが使用できます。\
  
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| F | 死体を掴む/離す
+
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
@@ -301,6 +401,11 @@ p5p5next : Damned
 
 ## Sniper
  Sniperは通常のキルは行えませんが、狙撃銃を繰り出すことで壁を隔てた先からも相手を殺すことができます。
+ 
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| F | ライフルの出し入れ
  
  ### オプション
 | オプション名 | 設定内容 |
@@ -326,6 +431,11 @@ p5p5next : Damned
  Agentは、他人の代わりにタスクを行うことができます。\
  また、自身が最低限こなすべきタスクの数は減少しています。
  
+  ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| F | 追加タスクの呼び出し(全タスク完了時)
+
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
@@ -338,6 +448,11 @@ p5p5next : Damned
  Alienは、E.M.Iを起こして周囲のプレイヤーのクールダウンの進みを妨げることができます。\
  効果は敵味方なく及ぼされます。
  
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| F | E.M.I.
+
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
@@ -360,6 +475,11 @@ p5p5next : Damned
  Boosterは一時的に加速することができます。\
  加速トラップをもつTrapperと同時に起用することを推奨します。
  
+  ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| F | 速度ブースト
+
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
@@ -371,6 +491,11 @@ p5p5next : Damned
 
 ## Engineer
  Engineerはベントを使うことのできるクルーメイトで、一度だけサボタージュを遠隔で直すことができます。
+ 
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| F | サボタージュ復旧
  
  ### オプション
 | オプション名 | 設定内容 |
@@ -392,6 +517,12 @@ p5p5next : Damned
 ## Necromancer
  Necromancerは死体を希望する部屋につれていくことで蘇らせることができます。
  
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| F | 死体を掴む/離す
+| G | 掴んでいるプレイヤーの復活
+
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
@@ -404,6 +535,11 @@ p5p5next : Damned
  Provocateurは自身を追放させたプレイヤーやキルしたプレイヤーを呪い返し、死へ追いやります。\
  追放させられた場合、自身に票を投じたプレイヤーの中からランダムに一人を道連れにします。
  
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| F | 巻き込みの有効化
+
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
@@ -423,6 +559,11 @@ p5p5next : Damned
 ## Security Guard
  Security Guardはベントを封鎖し、インポスターの行動を制限します。
  
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| F | ベント封鎖
+
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
@@ -436,6 +577,7 @@ p5p5next : Damned
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
+| Kill Cool Down | キルクールダウン
 
 -----------------------
 
@@ -452,6 +594,11 @@ p5p5next : Damned
 ## Arsonist
  Arsonistは全員に油をかけて点火させることが勝利条件です。
  
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| F | 油をかける/点火する
+ 
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
@@ -464,6 +611,11 @@ p5p5next : Damned
  Empiricは自身が選択した感染者の周囲にいるプレイヤーを徐々に感染させます。\
  全ての生存プレイヤーが感染することが勝利条件です。
  
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| F | 感染させる
+
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
@@ -484,8 +636,13 @@ p5p5next : Damned
 -----------------------
 
 ## Jester
- Jesterは投票によって吊られることで勝利します。
+ Jesterは投票によって吊られることで勝利します。ベントを使用できるほか、死体を運ぶことができます。
  
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| F | 死体を掴む/離す
+
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
@@ -508,6 +665,11 @@ p5p5next : Damned
 ## Vulture
  Vultureは指定数の死体をレポートされる前に食べることで勝利します。
  
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| F | 死体を食べる
+
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
@@ -518,8 +680,13 @@ p5p5next : Damned
 ## Lover
  Loverは2人1組として発生する付加的なロールです。\
  相方が死ぬと自分も後追いして死にます。最後まで生存して相方が勝利すれば自分も勝利します。\
- 二人組のどちらかが、第三者を巻き込むと[Triremma](#triremma)に変化します。
+ 二人組のどちらかが、第三者を巻き込むと[Trilemma](#trilemma)に変化します。
  
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| Z | 第三者を巻き込んでTrilemmaになる
+
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
