@@ -13,6 +13,8 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 # ダウンロード
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| Alpha 1.9.3 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.9.3,2021.12.15/Nebula.zip)|
+| Alpha 1.9.2 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.9.2,2021.12.15/Nebula.zip)|
 | Alpha 1.9.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.9.1,2021.12.15/Nebula.zip)|
 | Alpha 1.9.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.9.0,2021.12.15/Nebula.zip)|
 | Alpha 1.8.6 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.8.6,2021.12.15/Nebula.zip)|
@@ -66,6 +68,13 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 <details>
   <summary>クリックで展開</summary>
  
+ **Version Alpha 1.9.3**
+ - Dynamic Colorsの影の色にバリエーションを追加
+ - 5色まで作った色を保存できるように
+  
+ **Version Alpha 1.9.2**
+ - GLOBALでゲームができなくなっていた問題を修正
+  
  **Version Alpha 1.9.1**
  - Dynamic Colorsの全ての色に色名が表示されるように
  - Dynamic Colorsに関するいくつかの問題を修正
