@@ -261,36 +261,40 @@ namespace Nebula.Module
         {
             var PlayerColors = Enumerable.ToList<Color32>(Palette.PlayerColors);
             var ShadowColors = Enumerable.ToList<Color32>(Palette.ShadowColors);
+            
             while (PlayerColors.Count < 25)
             {
                 PlayerColors.Add(new Color32());
             }
-
+            
             while (ShadowColors.Count < 25)
             {
                 ShadowColors.Add(new Color32());
             }
-
+            
             Palette.PlayerColors = PlayerColors.ToArray();
             Palette.ShadowColors = ShadowColors.ToArray();
-
+            
             MyColor = new CustomColor("Color");
             SaveColor = new CustomColor[5];
-            for(int i = 0; i < SaveColor.Length; i++)
+
+            for (int i = 0; i < SaveColor.Length; i++)
             {
                 SaveColor[i] = new CustomColor("SaveColor" + i);
                 Palette.PlayerColors[20 + i] = SaveColor[i].Color;
                 Palette.ShadowColors[20 + i] = SaveColor[i].ShadowColor;
             }
-
+            
+            if (SaveManager.BodyColor >= Palette.PlayerColors.Count) SaveManager.BodyColor = 0;
             Palette.PlayerColors[SaveManager.BodyColor] = MyColor.Color;
             Palette.ShadowColors[SaveManager.BodyColor] = MyColor.ShadowColor;
-
+            
             for (int i = 0; i < 2; i++)
             {
                 Palette.PlayerColors[16 + i] = MyColor.Color;
                 Palette.ShadowColors[16 + i] = GetShadowColor(MyColor.Color,(byte)i);
             }
+            
         }
 
         static public void SaveAndSetColor(Color color,byte h, byte d,byte shadowType,byte playerId)
