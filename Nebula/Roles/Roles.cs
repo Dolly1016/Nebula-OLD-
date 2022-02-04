@@ -45,6 +45,7 @@ namespace Nebula.Roles
         public static NeutralRoles.Arsonist Arsonist = new NeutralRoles.Arsonist();
         public static NeutralRoles.Empiric Empiric = new NeutralRoles.Empiric();
         public static NeutralRoles.Jackal Jackal = new NeutralRoles.Jackal();
+        public static NeutralRoles.Sidekick Sidekick = new NeutralRoles.Sidekick();
         public static NeutralRoles.Jester Jester = new NeutralRoles.Jester();
         public static NeutralRoles.Opportunist Opportunist = new NeutralRoles.Opportunist();
         public static NeutralRoles.Vulture Vulture = new NeutralRoles.Vulture();
@@ -54,6 +55,7 @@ namespace Nebula.Roles
         public static ComplexRoles.FTrapper F_Trapper = new ComplexRoles.FTrapper();
 
         public static ComplexRoles.SecondaryGuesser SecondaryGuesser = new ComplexRoles.SecondaryGuesser();
+        public static NeutralRoles.SecondarySidekick SecondarySidekick = new NeutralRoles.SecondarySidekick();
         public static ExtraRoles.Lover Lover = new ExtraRoles.Lover();
         public static ExtraRoles.Trilemma Trilemma = new ExtraRoles.Trilemma();
 
@@ -63,7 +65,7 @@ namespace Nebula.Roles
         {
             Impostor,Camouflager,Cleaner,Damned,Eraser,EvilAce,EvilGuesser,EvilTrapper,Morphing,Reaper,Sniper,
             F_Guesser,F_Trapper,
-            Arsonist,Empiric,Jackal,Jester,Opportunist,Vulture,
+            Arsonist,Empiric,Jackal,Jester,Opportunist,Sidekick,Vulture,
             F_Crewmate,
             Crewmate,Agent,Alien,Bait,Booster,DamnedCrew,Engineer,Mayor,Necromancer,NiceGuesser,NiceTrapper,Provocateur,Psychic,SecurityGuard,Sheriff,Spy,
             Madmate,
@@ -71,7 +73,7 @@ namespace Nebula.Roles
 
         public static List<ExtraRole> AllExtraRoles = new List<ExtraRole>()
         {
-            SecondaryGuesser,Lover,Trilemma
+            SecondaryGuesser,SecondarySidekick,Lover,Trilemma
         };
 
         public static void ResetWinTrigger()

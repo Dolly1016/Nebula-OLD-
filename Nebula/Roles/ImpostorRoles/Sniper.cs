@@ -32,7 +32,7 @@ namespace Nebula.Roles.ImpostorRoles
             shotEffectiveRangeOption.suffix = "cross";
             canKillImpostorsOption = CreateOption(Color.white, "canKillImpostors", false);
 
-            noticeRangeOption = CreateOption(Color.white, "shotEffectiveRange", 20f, 2f, 50f, 2f);
+            noticeRangeOption = CreateOption(Color.white, "soundEffectiveRange", 20f, 2f, 50f, 2f);
         }
 
 

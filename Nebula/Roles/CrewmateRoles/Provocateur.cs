@@ -95,6 +95,15 @@ namespace Nebula.Roles.CrewmateRoles
             embroilButton.setActive(false);
         }
 
+        public override void CleanUp()
+        {
+            if (embroilButton != null)
+            {
+                embroilButton.Destroy();
+                embroilButton = null;
+            }
+        }
+
         public override void LoadOptionData()
         {
             embroilCoolDownOption = CreateOption(Color.white, "embroilCoolDown", 25f, 10f, 60f, 5f);

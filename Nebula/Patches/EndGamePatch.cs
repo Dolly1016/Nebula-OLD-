@@ -91,12 +91,15 @@ namespace Nebula.Patches
             players = new HashSet<FinalPlayer>();
 
             string name;
-            foreach(Game.PlayerData player in Game.GameData.data.players.Values)
+            foreach (Game.PlayerData player in Game.GameData.data.players.Values)
             {
                 //名前に表示を追加する
-                name=player.name;
-                Helpers.RoleAction(player.id,(role)=> { role.EditDisplayNameForcely(player.id, ref name); });
-
+                name = "";
+                Helpers.RoleAction(player.id, (role) => { role.EditDisplayNameForcely(player.id, ref name); });
+                if (name.Equals(""))
+                    name = player.name;
+                else
+                    name = player.name + " " + name;
                 players.Add(new FinalPlayer(name,
                     player.role, player.Status, player.Tasks.AllTasks, player.Tasks.Completed));
             }
@@ -263,7 +266,11 @@ namespace Nebula.Patches
     {
         public static bool Prefix(ShipStatus __instance)
         {
-            if (ExileController.Instance != null) return false;
+            if (ExileController.Instance != null)
+            {
+                if(SpawnInMinigame.Instance==null)
+                    return false;
+            }
 
             if (!GameData.Instance) return false;
             if (DestroyableSingleton<TutorialManager>.InstanceExists) // InstanceExists | Don't check Custom Criteria when in Tutorial

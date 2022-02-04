@@ -95,7 +95,7 @@ namespace Nebula.Roles.ImpostorRoles
 
         public override void GlobalInitialize(PlayerControl __instance)
         {
-            Game.GameData.data.myData.getGlobalData().SetRoleData(eraseCountId, 0);
+            __instance.GetModData().SetRoleData(eraseCountId, 0);
         }
 
         //インポスターはModで操作するFakeTaskは所持していない

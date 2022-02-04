@@ -66,12 +66,12 @@ namespace Nebula.Patches
                 playerData = Game.GameData.data.players[player.PlayerId];
 
                 /* 名前を編集する */
-                name = playerData.currentName;
+                name = "";
                 hideFlag = playerData.currentName.Length == 0;
 
                 Helpers.RoleAction(player, (role) => { role.EditDisplayName(player.PlayerId, ref name, hideFlag); });
-
-                player.nameText.text = name;
+                if(!name.Equals(""))
+                player.nameText.text = playerData.currentName+" " +name;
                 if (player == PlayerControl.LocalPlayer)
                 {
                     //自分自身ならロールの色にする
@@ -82,6 +82,11 @@ namespace Nebula.Patches
                     player.nameText.color = Color.white;
                 }
                 player.nameText.color = rewriteImpostorColor(player.Data, player.nameText.color, (Color)impostorColor);
+
+                //ロールによる色の変更
+                Color color = player.nameText.color;
+                Helpers.RoleAction(player.PlayerId, (role) => { role.EditDisplayNameColor(player.PlayerId, ref color); });
+                player.nameText.color = color;
             }
 
             if (MeetingHud.Instance != null)
@@ -96,9 +101,10 @@ namespace Nebula.Patches
                     playerData = Game.GameData.data.players[player.TargetPlayerId];
 
                     /* 名前を編集する */
-                    name = playerData.name;
+                    name = "";
                     Helpers.RoleAction(player.TargetPlayerId, (role) => { role.EditDisplayName(player.TargetPlayerId, ref name, false); });
-                    player.NameText.text = name;
+                    if (!name.Equals(""))
+                        player.NameText.text = playerData.currentName + " " + name;
                     
                     if (player.TargetPlayerId == PlayerControl.LocalPlayer.PlayerId)
                     {
@@ -110,6 +116,11 @@ namespace Nebula.Patches
                         player.NameText.color = Color.white;
                     }
                     player.NameText.color = rewriteImpostorColor(Helpers.allPlayersById()[player.TargetPlayerId].Data, player.NameText.color, (Color)impostorColor);
+
+                    //色の変更
+                    Color color = player.NameText.color;
+                    Helpers.RoleAction(player.TargetPlayerId, (role) => { role.EditDisplayNameColor(player.TargetPlayerId, ref color); });
+                    player.NameText.color = color;
 
                 }
             }

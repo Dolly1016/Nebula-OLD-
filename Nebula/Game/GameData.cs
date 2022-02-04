@@ -340,6 +340,11 @@ namespace Nebula.Game
             SetExtraRoleData(role.id, newValue);
         }
 
+        public bool HasExtraRole(Roles.ExtraRole role)
+        {
+            return extraRole.Contains(role);
+        }
+
         /// <summary>
         /// ロールデータを差し替えます。ゲーム中に実行できます。
         /// </summary>

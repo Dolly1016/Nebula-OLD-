@@ -51,7 +51,8 @@ namespace Nebula
         MultipleVote,
         SniperSettleRifle,
         SniperShot,
-        Morph
+        Morph,
+        CreateSidekick
     }
 
     //RPCを受け取ったときのイベント
@@ -193,6 +194,9 @@ namespace Nebula
                     break;
                 case (byte)CustomRPC.Morph:
                     RPCEvents.Morph(reader.ReadByte(),reader.ReadByte());
+                    break;
+                case (byte)CustomRPC.CreateSidekick:
+                    RPCEvents.CreateSidekick(reader.ReadByte(), reader.ReadByte());
                     break;
             }
         }
@@ -506,6 +510,7 @@ namespace Nebula
             if (playerId == PlayerControl.LocalPlayer.PlayerId)
             {
                 data.role.FinalizeInGame(PlayerControl.LocalPlayer);
+                data.role.CleanUp();
             }
 
             //ロールを変更
@@ -705,6 +710,20 @@ namespace Nebula
         public static void Morph(byte playerId,byte targetId)
         {
             Events.LocalEvent.Activate(new Roles.ImpostorRoles.Morphing.MorphEvent(playerId,targetId));
+        }
+
+        public static void CreateSidekick(byte playerId, byte jackalId)
+        {
+            if (Roles.NeutralRoles.Jackal.SidekickTakeOverOriginalRoleOption.getBool())
+            {
+                RPCEvents.ImmediatelyChangeRole(playerId, Roles.Roles.Sidekick.id);
+                RPCEvents.UpdateRoleData(playerId, Roles.Roles.Jackal.jackalDataId, jackalId);
+            }
+            else
+            {
+                RPCEvents.SetExtraRole(playerId, Roles.Roles.SecondarySidekick, (ulong)jackalId);
+            }
+            
         }
     }
 
@@ -1091,6 +1110,13 @@ namespace Nebula
             RPCEvents.Morph(PlayerControl.LocalPlayer.PlayerId, targetId);
         }
 
-
+        public static void CreateSidekick(byte targetId,byte jackalId)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.CreateSidekick, Hazel.SendOption.Reliable, -1);
+            writer.Write(targetId);
+            writer.Write(jackalId);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.CreateSidekick(targetId, jackalId);
+        }
     }
 }

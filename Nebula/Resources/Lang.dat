@@ -263,7 +263,7 @@
 "role.sniper.shotSize" : "Shot Size"
 "role.sniper.shotEffectiveRange" : "Shot Effective Range"
 "role.sniper.canKillImpostors" : "Can Kill Impostors"
-"role.sniper.canKillImpostors" : "Can Kill Impostors"
+"role.sniper.soundEffectiveRange" : "Sound Effective Range"
 
 "role.arsonist.name" : "Arsonist"
 "role.arsonist.description" : "Let Them Burn"
@@ -279,6 +279,12 @@
 
 "role.jackal.name" : "Jackal"
 "role.jackal.description" : "Kill all Crewmates and <color=#ff1919ff>Impostors</color> to Win"
+"role.jackal.canCreateSidekick" : "Can Create Sidekick"
+"role.jackal.killCoolDown" : "Kill Cool Down"
+"role.jackal.sidekickCanKill" : "Sidekick Can Kill"
+"role.jackal.sidekickKillCoolDown" : "Sidekick Kill Cool Down"
+"role.jackal.sidekickTakeOverOriginalRole" : "Sidekick Take Over Original Role"
+"role.jackal.sidekickCanCreateSidekick" : "Sidekick Can Create Sidekick"
 
 "role.jester.name" : "Jester"
 "role.jester.description" : "Get Voted Out"
@@ -289,6 +295,8 @@
 "role.opportunist.exemptTasks" : "Cut Tasks"
 "role.opportunist.canUseVents" : "Can Use Vents"
 "role.opportunist.additionalEndText" : " <color=#ffffffff>with</color> <color=#6afc2dff>Opportunist</color>"
+
+"role.sidekick.name" : "Sidekick"
 
 "role.vulture.name" : "Vulture"
 "role.vulture.description" : "Eat Corpses to Win"

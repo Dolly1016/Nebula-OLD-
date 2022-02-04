@@ -70,8 +70,8 @@ namespace Nebula.Roles.CrewmateRoles
 
         public override void GlobalInitialize(PlayerControl __instance) {
             int value = (int)maxScrewsOption.getFloat();
-            Game.GameData.data.myData.getGlobalData().SetRoleData(totalScrewsDataId, value);
-            Game.GameData.data.myData.getGlobalData().SetRoleData(remainingScrewsDataId, value);
+            __instance.GetModData().SetRoleData(totalScrewsDataId, value);
+            __instance.GetModData().SetRoleData(remainingScrewsDataId, value);
         }
 
         public void SetSealedVentSprite(Vent vent,float alpha)

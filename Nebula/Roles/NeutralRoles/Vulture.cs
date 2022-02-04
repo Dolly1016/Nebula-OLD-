@@ -164,7 +164,7 @@ namespace Nebula.Roles.NeutralRoles
 
         public override void GlobalInitialize(PlayerControl __instance)
         {
-            Game.GameData.data.myData.getGlobalData().SetRoleData(eatLeftId, (int)eatOption.getFloat());
+            __instance.GetModData().SetRoleData(eatLeftId, (int)eatOption.getFloat());
         }
 
         public override void CleanUp()

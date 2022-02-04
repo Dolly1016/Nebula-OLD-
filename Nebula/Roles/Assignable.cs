@@ -237,6 +237,14 @@ namespace Nebula.Roles
         public virtual void OnDied() { }
 
         /// <summary>
+        /// 名前の色を編集します。
+        /// </summary>
+        [RoleGlobalMethod]
+        public virtual void EditDisplayNameColor(byte playerId, ref Color displayColor)
+        {
+        }
+
+        /// <summary>
         /// 表示名を編集します。
         /// </summary>
         /// <param name="displayName"></param>

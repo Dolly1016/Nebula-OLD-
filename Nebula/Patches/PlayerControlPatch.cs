@@ -47,13 +47,30 @@ namespace Nebula.Patches
             return result;
         }
 
+        static public PlayerControl SetMyTarget(float range, bool onlyWhiteNames = false, bool targetPlayersInVents = false, List<byte> untargetablePlayers = null, PlayerControl targetingPlayer = null)
+        {
+            return SetMyTarget(range,
+                    (player)=> {
+                        if (onlyWhiteNames && (player.Role.IsImpostor || Game.GameData.data.players[player.PlayerId].role.deceiveImpostorInNameDisplay)) return false;
+                        if (player.Object.inVent && !targetPlayersInVents) return false;
+                        if (untargetablePlayers != null && untargetablePlayers.Any(x => x == player.Object.PlayerId)) return false;
+                        return true;
+                    }, targetingPlayer);
+        }
+
         static public PlayerControl SetMyTarget(bool onlyWhiteNames = false, bool targetPlayersInVents = false, List<byte> untargetablePlayers = null, PlayerControl targetingPlayer = null) 
         { 
             return SetMyTarget(GameOptionsData.KillDistances[Mathf.Clamp(PlayerControl.GameOptions.KillDistance, 0, 2)],
                     onlyWhiteNames,targetPlayersInVents,untargetablePlayers,targetingPlayer);
         }
 
-        static public PlayerControl SetMyTarget(float range,bool onlyWhiteNames = false, bool targetPlayersInVents = false, List<byte> untargetablePlayers = null, PlayerControl targetingPlayer = null)
+        static public PlayerControl SetMyTarget(System.Predicate<GameData.PlayerInfo> untargetablePlayers, PlayerControl targetingPlayer = null)
+        {
+            return SetMyTarget(GameOptionsData.KillDistances[Mathf.Clamp(PlayerControl.GameOptions.KillDistance, 0, 2)],
+                untargetablePlayers);
+        }
+
+        static public PlayerControl SetMyTarget(float range, System.Predicate<GameData.PlayerInfo> untargetablePlayers, PlayerControl targetingPlayer = null)
         {
             PlayerControl result = null;
             float num = range;
@@ -72,16 +89,10 @@ namespace Nebula.Patches
                     continue;
                 }
 
-                if (!playerInfo.Disconnected && !playerInfo.IsDead && (!onlyWhiteNames || !(playerInfo.Role.IsImpostor||Game.GameData.data.players[playerInfo.PlayerId].role.deceiveImpostorInNameDisplay)))
+                if (!playerInfo.Disconnected && !playerInfo.IsDead )
                 {
                     PlayerControl @object = playerInfo.Object;
-                    if (untargetablePlayers != null && untargetablePlayers.Any(x => x == @object.PlayerId))
-                    {
-                        // if that player is not targetable: skip check
-                        continue;
-                    }
-
-                    if (@object && (!@object.inVent || targetPlayersInVents))
+                    if (@object && untargetablePlayers.Invoke(playerInfo))
                     {
                         if(CheckTargetable(@object.GetTruePosition(),truePosition,ref num))
                         {

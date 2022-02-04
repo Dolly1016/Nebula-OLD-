@@ -172,6 +172,8 @@ namespace Nebula.Roles.ComplexRoles
                     PlayerControl player = Patches.PlayerControlPatch.GetTarget(obj.GameObject.transform.position, Roles.F_Trapper.invisibleTrapRangeOption.getFloat() / 2, side == Side.Impostor);
                     if (player != null)
                     {
+                        if (player.Data.IsDead) continue;
+
                         Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, player, Game.PlayerData.PlayerStatus.Trapped, false, false);
                         deleteObjects.Add(obj);
 

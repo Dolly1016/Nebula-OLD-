@@ -102,7 +102,10 @@ namespace Nebula.Patches
 
                 foreach(PlayerControl player in PlayerControl.AllPlayerControls)
                 {
-                    player.SetColor(player.PlayerId);
+                    if (player != null)
+                    {
+                        player.SetColor(player.PlayerId);
+                    }
                 }
 
                 if (!AmongUsClient.Instance.AmHost) return; // Not host or no instance
