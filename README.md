@@ -13,6 +13,8 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 # ダウンロード
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| Alpha 1.10.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.10.0,2021.12.15/Nebula.zip)|
+| Alpha 1.9.4 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.9.4,2021.12.15/Nebula.zip)|
 | Alpha 1.9.3 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.9.3,2021.12.15/Nebula.zip)|
 | Alpha 1.9.2 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.9.2,2021.12.15/Nebula.zip)|
 | Alpha 1.9.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.9.1,2021.12.15/Nebula.zip)|
@@ -68,6 +70,14 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 <details>
   <summary>クリックで展開</summary>
  
+ **Version Alpha 1.10.0**
+ - Sidekickを追加
+ - 幽霊がキルトラップに反応してしまう問題を修正
+ - Airshipで追放によって勝利する場合のタイミングが不自然な問題を修正
+  
+ **Version Alpha 1.9.4**
+ - MOD導入時の設定によってMODが使用できなくなる問題を修正
+  
  **Version Alpha 1.9.3**
  - Dynamic Colorsの影の色にバリエーションを追加
  - 5色まで作った色を保存できるように
@@ -216,8 +226,8 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 | [Damned](#damned) | [Bait](#bait) | [Jackal](#jackal) | [Trilemma](#trilemma) |
 | [Eraser](#eraser) | [Booster](#booster) | [Jester](#jester) ||
 | [Evil Ace](#evil-ace) | [Engineer](#engineer) | [Opportunist](#opportunist) ||
-| [Evil Guesser](#guesser) | [Mayor](#mayor) | [Vulture](#vulture) ||
-| [Evil Trapper](#trapper) | [Necromancer](#necromancer) |||
+| [Evil Guesser](#guesser) | [Mayor](#mayor) | [Sidekick](#sidekick) ||
+| [Evil Trapper](#trapper) | [Necromancer](#necromancer) | [Vulture](#vulture) ||
 | [Morphing](#morphing) | [Nice Guesser](#guesser) |||
 | [Reaper](#reaper) | [Nice Trapper](#trapper) |||
 | [Sniper](#sniper) | [Provocateur](#provocateur) |||
@@ -629,9 +639,21 @@ p5p5next : Damned
 ## Jackal
  Jackalはキルをすることができる第三陣営で、自身以外全員の死亡が勝利条件です。
  
+  ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| F | サイドキックにする
+| Q | キル
+
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
+| Can Create Sidekick | Sidekickを生み出せるかどうか
+| Kill Cool Down | 自身のキルクールダウン
+| Sidekick Can Kill | Sidekickがキルできるかどうか
+| Sidekick Kill Cool Down | Sidekickのキルクールダウン
+| Sidekick Take Over Original Role | Sidekickが元の役職を保持するかどうか
+| Sidekick Can Create Sidekick | SidekickがJackalになったとき、Sidekickを生み出すことができるかどうか
 
 -----------------------
 
@@ -642,6 +664,23 @@ p5p5next : Damned
 | 操作キー | アクション |
 |----------|:-------------:|
 | F | 死体を掴む/離す
+
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+| Can Use Vents | ベントを使えるかどうかの設定
+
+-----------------------
+
+## Sidekick
+ SidekickはJackalによって生み出されます。設定によっては、Sidekickになる前の役職を保持することもできます。\
+ 以前の役職を保持する場合、Sidekickの間は勝利条件が元の勝利条件に加えてJackalとしての勝利条件も対象になります。
+ 自身をSidekickにしたJackalが死亡すると自身がJackalになります。
+ 
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| Q | (Sidekickがキル可能な場合)キル
 
  ### オプション
 | オプション名 | 設定内容 |
