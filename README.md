@@ -11,6 +11,13 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 バグ報告などの情報交換は[こちら](https://discord.gg/kHNZD4pq9E)でお願いいたします。
 
 # ダウンロード
+
+| Version | Among Us Version | Download |
+| ---------- | ---------- | ---------- |
+| 1.0.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.0,2021.12.15/Nebula.zip)|
+
+<details>
+  <summary>ALPHA Versions</summary>
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
 | Alpha 1.10.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.10.1,2021.12.15/Nebula.zip)|
@@ -46,7 +53,8 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 | Alpha 1.2.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.2.0/Nebula.zip)|
 | Alpha 1.1.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.1.0/Nebula.zip)|
 | Alpha 1.0.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.0.0/Nebula.zip)|
-
+</details>
+  
 # ご利用に関する留意点
 このMODはオリジナルの要素もありながら、The Other Rolesをはじめ多くのMODのアイデアを継承しています。\
 クレジットはこのページに掲載しておりますので、ご紹介下さる際には、\
@@ -71,6 +79,9 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 <details>
   <summary>クリックで展開</summary>
  
+ **Version 1.0.0**
+ - 最初のリリース
+  
  **Version Alpha 1.10.1**
  - Seerを追加
   
