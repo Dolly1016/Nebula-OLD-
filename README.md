@@ -238,6 +238,7 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 | [Sniper](#sniper) | [Provocateur](#provocateur) |||
 || [Psychic](#psychic) |||
 || [Security Guard](#security-guard) |||
+|| [Seer](#seer) |||
 || [Sheriff](#sheriff) |||
 || [Spy](#spy) |||
 || [Madmate](#madmate) |||
@@ -583,6 +584,17 @@ p5p5next : Damned
 | オプション名 | 設定内容 |
 |----------|:-------------:|
 | Max Screws Vents | 封鎖できるベントの最大数 
+
+-----------------------
+
+## Seer
+ Seerは他プレイヤーのキルの瞬間を知ることができ、\
+ その後しばらく死亡場所にとどまる幽霊を見ることができます。
+ 
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+| Ghost's Revelation Duration | 幽霊が顕現する時間
 
 -----------------------
 
