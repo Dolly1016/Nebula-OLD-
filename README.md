@@ -13,6 +13,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 # ダウンロード
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| Alpha 1.10.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.10.1,2021.12.15/Nebula.zip)|
 | Alpha 1.10.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.10.0,2021.12.15/Nebula.zip)|
 | Alpha 1.9.4 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.9.4,2021.12.15/Nebula.zip)|
 | Alpha 1.9.3 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.9.3,2021.12.15/Nebula.zip)|
@@ -70,6 +71,9 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 <details>
   <summary>クリックで展開</summary>
  
+ **Version Alpha 1.10.1**
+ - Seerを追加
+  
  **Version Alpha 1.10.0**
  - Sidekickを追加
  - 追加役職が名前の末尾に付与するマークの表示に軽微な変更
