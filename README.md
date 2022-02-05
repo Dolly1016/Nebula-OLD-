@@ -72,7 +72,7 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 
 | Language | Translator | Full Support Version | Download |
 | --- | --- | --- | --- |
-| 日本語 | - | ALPHA 1.8.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.8.0,2021.12.15/Japanese.dat)|
+| 日本語 | - | 1.0.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.0,2021.12.15/Japanese.dat)|
 | English | - | 1.0.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.0,2021.12.15/English.dat)|
 
 # 更新履歴
