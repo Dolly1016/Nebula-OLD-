@@ -11,8 +11,18 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 バグ報告などの情報交換は[こちら](https://discord.gg/kHNZD4pq9E)でお願いいたします。
 
 # ダウンロード
+
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.0.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.0,2021.12.15/Nebula.zip)|
+
+<details>
+  <summary>ALPHA Versions</summary>
+| Version | Among Us Version | Download |
+| ---------- | ---------- | ---------- |
+| Alpha 1.10.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.10.1,2021.12.15/Nebula.zip)|
+| Alpha 1.10.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.10.0,2021.12.15/Nebula.zip)|
+| Alpha 1.9.4 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.9.4,2021.12.15/Nebula.zip)|
 | Alpha 1.9.3 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.9.3,2021.12.15/Nebula.zip)|
 | Alpha 1.9.2 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.9.2,2021.12.15/Nebula.zip)|
 | Alpha 1.9.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.9.1,2021.12.15/Nebula.zip)|
@@ -43,7 +53,8 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 | Alpha 1.2.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.2.0/Nebula.zip)|
 | Alpha 1.1.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.1.0/Nebula.zip)|
 | Alpha 1.0.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.0.0/Nebula.zip)|
-
+</details>
+  
 # ご利用に関する留意点
 このMODはオリジナルの要素もありながら、The Other Rolesをはじめ多くのMODのアイデアを継承しています。\
 クレジットはこのページに掲載しておりますので、ご紹介下さる際には、\
@@ -61,13 +72,28 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 
 | Language | Translator | Full Support Version | Download |
 | --- | --- | --- | --- |
-| 日本語 | - | ALPHA 1.8.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.8.0,2021.12.15/Japanese.dat)|
-| English | - | ALPHA 1.8.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.8.0,2021.12.15/English.dat)|
+| 日本語 | - | 1.0.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.0,2021.12.15/Japanese.dat)|
+| English | - | 1.0.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.0,2021.12.15/English.dat)|
 
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
  
+ **Version 1.0.0**
+ - 最初のリリース
+  
+ **Version Alpha 1.10.1**
+ - Seerを追加
+  
+ **Version Alpha 1.10.0**
+ - Sidekickを追加
+ - 追加役職が名前の末尾に付与するマークの表示に軽微な変更
+ - 幽霊がキルトラップに反応してしまう問題を修正
+ - Airshipで追放によって勝利する場合のタイミングが不自然な問題を修正
+  
+ **Version Alpha 1.9.4**
+ - MOD導入時の設定によってMODが使用できなくなる問題を修正
+  
  **Version Alpha 1.9.3**
  - Dynamic Colorsの影の色にバリエーションを追加
  - 5色まで作った色を保存できるように
@@ -216,13 +242,14 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 | [Damned](#damned) | [Bait](#bait) | [Jackal](#jackal) | [Trilemma](#trilemma) |
 | [Eraser](#eraser) | [Booster](#booster) | [Jester](#jester) ||
 | [Evil Ace](#evil-ace) | [Engineer](#engineer) | [Opportunist](#opportunist) ||
-| [Evil Guesser](#guesser) | [Mayor](#mayor) | [Vulture](#vulture) ||
-| [Evil Trapper](#trapper) | [Necromancer](#necromancer) |||
+| [Evil Guesser](#guesser) | [Mayor](#mayor) | [Sidekick](#sidekick) ||
+| [Evil Trapper](#trapper) | [Necromancer](#necromancer) | [Vulture](#vulture) ||
 | [Morphing](#morphing) | [Nice Guesser](#guesser) |||
 | [Reaper](#reaper) | [Nice Trapper](#trapper) |||
 | [Sniper](#sniper) | [Provocateur](#provocateur) |||
 || [Psychic](#psychic) |||
 || [Security Guard](#security-guard) |||
+|| [Seer](#seer) |||
 || [Sheriff](#sheriff) |||
 || [Spy](#spy) |||
 || [Madmate](#madmate) |||
@@ -240,7 +267,7 @@ BasePluginに以下の属性を新たに付与することで、Nebula on the Sh
 [BepInEx](https://github.com/BepInEx) ゲームの関数をフックするために使用しています。\
 [The Other Roles](https://github.com/Eisbison/TheOtherRoles) このMODの着想の根源はすべてここからのものです。ソースを一部使用しています。\
 [TheOtherRoles: GM Edition](https://github.com/yukinogatari/TheOtherRoles-GM) ソースを一部使用しています。Empiric,MadmateのアイデアはこのMODからのものです。\
-[Town Of Impostors](https://github.com/Town-of-Impostors/TownOfImpostors) Sniper,Doctor,MayorのアイデアはこのMODからのものです。\
+[Town Of Impostors](https://github.com/Town-of-Impostors/TownOfImpostors) Sniper,Necromancer,MayorのアイデアはこのMODからのものです。\
 \
 その他ロールアイデアのご提供等\
 \
@@ -571,6 +598,17 @@ p5p5next : Damned
 
 -----------------------
 
+## Seer
+ Seerは他プレイヤーのキルの瞬間を知ることができ、\
+ その後しばらく死亡場所にとどまる幽霊を見ることができます。
+ 
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+| Ghost's Revelation Duration | 幽霊が顕現する時間
+
+-----------------------
+
 ## Sheriff
  Sheriffはキルをすることができるクルーメイトです。
  
@@ -629,9 +667,21 @@ p5p5next : Damned
 ## Jackal
  Jackalはキルをすることができる第三陣営で、自身以外全員の死亡が勝利条件です。
  
+  ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| F | サイドキックにする
+| Q | キル
+
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
+| Can Create Sidekick | Sidekickを生み出せるかどうか
+| Kill Cool Down | 自身のキルクールダウン
+| Sidekick Can Kill | Sidekickがキルできるかどうか
+| Sidekick Kill Cool Down | Sidekickのキルクールダウン
+| Sidekick Take Over Original Role | Sidekickが元の役職を保持するかどうか
+| Sidekick Can Create Sidekick | SidekickがJackalになったとき、Sidekickを生み出すことができるかどうか
 
 -----------------------
 
@@ -647,6 +697,22 @@ p5p5next : Damned
 | オプション名 | 設定内容 |
 |----------|:-------------:|
 | Can Use Vents | ベントを使えるかどうかの設定
+
+-----------------------
+
+## Sidekick
+ SidekickはJackalによって生み出されます。設定によっては、Sidekickになる前の役職を保持することもできます。\
+ 以前の役職を保持する場合、Sidekickの間は勝利条件が元の勝利条件に加えてJackalとしての勝利条件も対象になります。
+ 自身をSidekickにしたJackalが死亡すると自身がJackalになります。
+ 
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| Q | (Sidekickがキル可能な場合)キル
+
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
 
 -----------------------
 
