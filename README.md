@@ -82,6 +82,7 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
  
  **Version 1.0.1**
  - タイムリミット設定を追加
+ - Jackalに新たな設定を追加
  - ゲーム開始時のカウントダウンが全員から見えるように
  - 排他的割り当ての表示に軽微な変更
  - ゲーム終了時のタスク数表示の分母をタスク総量からタスクノルマに変更
@@ -689,6 +690,7 @@ p5p5next : Damned
 | Sidekick Kill Cool Down | Sidekickのキルクールダウン
 | Sidekick Take Over Original Role | Sidekickが元の役職を保持するかどうか
 | Sidekick Can Create Sidekick | SidekickがJackalになったとき、Sidekickを生み出すことができるかどうか
+| Sidekick Can Use Vents | Sidekickがベントを使用できるかどうか
 
 -----------------------
 
