@@ -14,6 +14,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.0.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.1,2021.12.15/Nebula.zip)|
 | 1.0.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.0,2021.12.15/Nebula.zip)|
 
 <details>
@@ -79,6 +80,12 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 <details>
   <summary>クリックで展開</summary>
  
+ **Version 1.0.1**
+ - タイムリミット設定を追加
+ - ゲーム開始時のカウントダウンが全員から見えるように
+ - 排他的割り当ての表示に軽微な変更
+ - ゲーム終了時のタスク数表示の分母をタスク総量からタスクノルマに変更
+  
  **Version 1.0.0**
  - 最初のリリース
   
