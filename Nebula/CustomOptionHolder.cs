@@ -100,6 +100,9 @@ namespace Nebula
         public static CustomOption canUseEmergencyWithoutReport;
         public static CustomOption severeEmergencyLock;
 
+        public static CustomOption limiterOptions;
+        public static CustomOption timeLimitOption;
+
         public static CustomOption exclusiveAssignmentParent;
         public static List<Tuple<CustomOption,List<CustomOption>>> exclusiveAssignmentList;
         public static List<Roles.Role> exclusiveAssignmentRoles;
@@ -148,6 +151,10 @@ namespace Nebula
             exceptPolus = CustomOption.Create(1124, Color.white, "option.exceptPolus", false, dynamicMap);
             exceptAirship = CustomOption.Create(1125, Color.white, "option.exceptAirship", false, dynamicMap);
             additionalVents = CustomOption.Create(1130, Color.white, "option.additionalVents", false, mapOptions);
+
+            limiterOptions = CustomOption.Create(1140, Color.white, "option.limitOptions", false, null, true);
+            timeLimitOption = CustomOption.Create(1141, Color.white, "option.timeLimitOption", 20f, 1f, 80f, 1f, limiterOptions);
+            timeLimitOption.suffix = "minute";
 
             //ロールのオプションを読み込む
             Roles.Role.LoadAllOptionData();

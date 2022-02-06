@@ -25,6 +25,7 @@ namespace Nebula.Roles
         public static CrewmateRoles.Provocateur Provocateur = new CrewmateRoles.Provocateur();
         public static CrewmateRoles.Psychic Psychic = new CrewmateRoles.Psychic();
         public static CrewmateRoles.SecurityGuard SecurityGuard = new CrewmateRoles.SecurityGuard();
+        public static CrewmateRoles.Seer Seer = new CrewmateRoles.Seer();
         public static CrewmateRoles.Sheriff Sheriff = new CrewmateRoles.Sheriff();
         public static CrewmateRoles.Spy Spy = new CrewmateRoles.Spy();
 
@@ -67,7 +68,7 @@ namespace Nebula.Roles
             F_Guesser,F_Trapper,
             Arsonist,Empiric,Jackal,Jester,Opportunist,Sidekick,Vulture,
             F_Crewmate,
-            Crewmate,Agent,Alien,Bait,Booster,DamnedCrew,Engineer,Mayor,Necromancer,NiceGuesser,NiceTrapper,Provocateur,Psychic,SecurityGuard,Sheriff,Spy,
+            Crewmate,Agent,Alien,Bait,Booster,DamnedCrew,Engineer,Mayor,Necromancer,NiceGuesser,NiceTrapper,Provocateur,Psychic,SecurityGuard,Seer,Sheriff,Spy,
             Madmate,
         };
 

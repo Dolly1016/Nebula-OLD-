@@ -13,6 +13,11 @@ namespace Nebula
 {
     public static class Helpers
     {
+        public static Sprite loadSpriteFromResources(Texture2D texture, float pixelsPerUnit, Rect textureRect)
+        {
+            return Sprite.Create(texture, textureRect, new Vector2(0.5f, 0.5f), pixelsPerUnit);
+        }
+
         public static Sprite loadSpriteFromResources(string path, float pixelsPerUnit)
         {
             try
@@ -471,6 +476,27 @@ namespace Nebula
                     ShipStatus.Instance.RpcRepairSystem(SystemTypes.Reactor, 1 | 16);
                 }
             }
+        }
+
+        static public Texture2D CreateReadabeTexture2D(Texture2D texture2d)
+        {
+            RenderTexture renderTexture = RenderTexture.GetTemporary(
+                        texture2d.width,
+                        texture2d.height,
+                        0,
+                        RenderTextureFormat.Default,
+                        RenderTextureReadWrite.Linear);
+
+            Graphics.Blit(texture2d, renderTexture);
+            RenderTexture previous = RenderTexture.active;
+            RenderTexture.active = renderTexture;
+            Texture2D readableTextur2D = new Texture2D(texture2d.width, texture2d.height);
+            readableTextur2D.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
+            readableTextur2D.Apply();
+            RenderTexture.active = previous;
+            RenderTexture.ReleaseTemporary(renderTexture);
+            
+            return readableTextur2D;
         }
     }
 }

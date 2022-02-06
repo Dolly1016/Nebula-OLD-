@@ -481,7 +481,11 @@ namespace Nebula.Game
 
         public float OriginalSpeed;
 
+        public float Timer;
+
         public GameRule GameRule;
+
+        public Module.TimeLimit LimitRenderer;
 
         public GameData()
         {
@@ -494,11 +498,17 @@ namespace Nebula.Game
             OriginalSpeed=PlayerControl.LocalPlayer.MyPhysics.Speed;
 
             GameRule = new GameRule();
+
+            LimitRenderer = null;
+
+            Timer = 300f;
         }
 
         //データを消去します。
         private void Clear()
         {
+            if (LimitRenderer != null) LimitRenderer.Destroy();
+
             players.Clear();
             deadPlayers.Clear();
 
@@ -596,6 +606,13 @@ namespace Nebula.Game
                 }
             }
             return null;
+        }
+
+        public void TimerUpdate()
+        {
+            if (Timer > 0f) Timer -= Time.deltaTime;
+
+            if (LimitRenderer != null) LimitRenderer.Update();
         }
     }
     

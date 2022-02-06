@@ -87,6 +87,11 @@ namespace Nebula.Roles.NeutralRoles
 
         }
 
+        public override void GlobalInitialize(PlayerControl __instance)
+        {
+            canMoveInVents = canUseVents = Jackal.SidekickCanUseVentsOption.getBool();
+        }
+
         public override void EditDisplayNameColor(byte playerId, ref Color displayColor)
         {
             if (PlayerControl.LocalPlayer.GetModData().role == Roles.Jackal)

@@ -50,6 +50,14 @@ namespace Nebula.Patches
         public static void Postfix(IntroCutscene __instance)
         {
             PlayerPrefab = __instance.PlayerPrefab;
+
+            if (CustomOptionHolder.limiterOptions.getBool())
+            {
+                Game.GameData.data.Timer = CustomOptionHolder.timeLimitOption.getFloat() * 60;
+                Game.GameData.data.LimitRenderer = new Module.TimeLimit(HudManager.Instance);
+                RPCEventInvoker.SynchronizeTimer();
+            }
+
             
             Game.GameData.data.LoadMapData();
 

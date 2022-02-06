@@ -16,6 +16,7 @@ namespace Nebula
         SetRandomMap,
         VersionHandshake,
         SetMyColor,
+        SynchronizeTimer,
         UpdatePlayerControl,
         ForceEnd,
         WinTrigger,
@@ -84,6 +85,9 @@ namespace Nebula
                     break;
                 case (byte)CustomRPC.SetMyColor:
                     RPCEvents.SetMyColor(reader.ReadByte(), new Color(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(),1f),reader.ReadByte());
+                    break;
+                case (byte)CustomRPC.SynchronizeTimer:
+                    RPCEvents.SynchronizeTimer(reader.ReadSingle());
                     break;
                 case (byte)CustomRPC.UpdatePlayerControl:
                     RPCEvents.UpdatePlayerControl(reader.ReadByte(),reader.ReadSingle());
@@ -214,11 +218,17 @@ namespace Nebula
             Objects.CustomObject.Initialize();
             Patches.MeetingHudPatch.Initialize();
             Patches.EmergencyPatch.Initialize();
+            Objects.Ghost.Initialize();
         }
             
         public static void SetMyColor(byte playerId, Color color, byte shadowType)
         {
             DynamicColors.SetOthersColor(color, DynamicColors.GetShadowColor(color, shadowType), playerId);
+        }
+        public static void SynchronizeTimer(float timer)
+        {
+            if(Game.GameData.data!=null)
+                Game.GameData.data.Timer = timer;
         }
 
 
@@ -333,6 +343,8 @@ namespace Nebula
                 {
                     Helpers.RoleAction(target, (role) => { role.OnMurdered(source.PlayerId); });
                 }
+
+                Helpers.RoleAction(PlayerControl.LocalPlayer, (role) => { role.OnAnyoneMurdered(source.PlayerId, target.PlayerId); });
 
 
                 //GlobalMethod
@@ -729,6 +741,15 @@ namespace Nebula
 
     public class RPCEventInvoker
     {
+        public static void SynchronizeTimer()
+        {
+            if (!AmongUsClient.Instance.AmHost) return;
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SynchronizeTimer, Hazel.SendOption.Reliable, -1);
+            writer.Write(Game.GameData.data.Timer);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            //自信は何もしなくてよい
+        }
+
         public static void SetRandomMap(byte mapId)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetRandomMap, Hazel.SendOption.Reliable, -1);

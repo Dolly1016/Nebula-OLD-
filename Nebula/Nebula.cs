@@ -40,10 +40,10 @@ namespace Nebula
         public const string AmongUsVersion = "2021.12.15";
         public const string PluginGuid = "jp.dreamingpig.amongus.nebula";
         public const string PluginName = "TheNebula";
-        public const string PluginVersion = "1.10.0";
-        public const string PluginStage = "ALPHA";
-        public const string PluginVersionForFetch = "0.1.10.0";
-        public byte[] PluginVersionData = new byte[] { 0, 1, 10, 0 };
+        public const string PluginVersion = "1.0.1";
+        public const string PluginStage = "";
+        public const string PluginVersionForFetch = "1.0.1";
+        public byte[] PluginVersionData = new byte[] { 1, 0, 1, 0 };
 
         public static NebulaPlugin Instance;
 
@@ -71,8 +71,6 @@ namespace Nebula
 
             //オプションを読み込む
             CustomOptionHolder.Load();
-
-            
 
             //GlobalEventデータを読み込む
             Events.Events.Load();
@@ -150,19 +148,11 @@ namespace Nebula
                 GameData.Instance.RpcSetTasks(playerControl.PlayerId, new byte[0]);
             }
 
-            // オブジェクトチェック
             if (Input.GetKeyDown(KeyCode.F5))
             {
-                //Input.GetKeyDownInt(KeyCode.Y)
-                var objects = GameObject.FindObjectsOfType<SabotageTask>();
-                string message = "";
-                foreach (SabotageTask obj in objects)
-                {
-                    message += obj.name + "\n";
-                    obj.Complete();
-                }
-
-                Objects.CustomMessage.Create(new Vector3(-2, 0), false, message, 5, 0, 1f, 1f, Color.white);
+                byte[] bytes = UnityEngine.ImageConversion.EncodeToPNG(Helpers.CreateReadabeTexture2D(Game.GameData.data.VentMap.Values.First().Vent.gameObject.GetComponent<SpriteRenderer>().sprite.texture));
+                //保存
+                File.WriteAllBytes("vent.png", bytes);
             }
 
             // Suiside

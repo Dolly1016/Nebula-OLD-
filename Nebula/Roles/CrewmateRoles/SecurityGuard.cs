@@ -36,7 +36,7 @@ namespace Nebula.Roles.CrewmateRoles
         public Sprite getVentSealedSprite()
         {
             if (ventSealedSprite) return ventSealedSprite;
-            ventSealedSprite = Helpers.loadSpriteFromResources("Nebula.Resources.VentSealed.png", 160f);
+            ventSealedSprite = Helpers.loadSpriteFromResources("Nebula.Resources.VentSealed.png", 100f);
             return ventSealedSprite;
         }
 
@@ -44,7 +44,7 @@ namespace Nebula.Roles.CrewmateRoles
         public Sprite getCaveSealedSprite()
         {
             if (caveSealedSprite) return caveSealedSprite;
-            caveSealedSprite = Helpers.loadSpriteFromResources("Nebula.Resources.CaveSealed.png", 160f);
+            caveSealedSprite = Helpers.loadSpriteFromResources("Nebula.Resources.CaveSealed.png", 100f);
             return caveSealedSprite;
         }
 

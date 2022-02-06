@@ -24,12 +24,17 @@ namespace Nebula.Patches
         public static EndCondition EmpiricWin = new EndCondition(19, Roles.NeutralRoles.Empiric.Color, "empiric", 1,() => { });
         public static EndCondition VultureWin = new EndCondition(20, Roles.NeutralRoles.Vulture.Color, "vulture", 1,() => { });
         public static EndCondition TrilemmaWin = new EndCondition(32, new Color(209f / 255f, 63f / 255f, 138f / 255f), "trilemma",0,()=> { });
+        public static EndCondition NobodySkeldWin = new EndCondition(64, new Color(72f / 255f, 78f / 255f, 84f / 255f), "nobody.skeld", 32, () => { });
+        public static EndCondition NobodyMiraWin = new EndCondition(65, new Color(72f / 255f, 78f / 255f, 84f / 255f), "nobody.mira", 32, () => { });
+        public static EndCondition NobodyPolusWin = new EndCondition(66, new Color(72f / 255f, 78f / 255f, 84f / 255f), "nobody.polus", 32, () => { });
+        public static EndCondition NobodyAirshipWin = new EndCondition(67, new Color(72f / 255f, 78f / 255f, 84f / 255f), "nobody.airship", 32, () => { });
 
         public static HashSet<EndCondition> AllEnds = new HashSet<EndCondition>() {
             CrewmateWinByVote ,CrewmateWinByTask,CrewmateWinDisconnect,
             ImpostorWinByKill,ImpostorWinBySabotage,ImpostorWinByVote,ImpostorWinDisconnect,
             JesterWin,JackalWin,ArsonistWin,EmpiricWin,VultureWin,
-            TrilemmaWin
+            TrilemmaWin,
+            NobodySkeldWin,NobodyMiraWin,NobodyPolusWin,NobodyAirshipWin
         };
     
         public static EndCondition GetEndCondition(GameOverReason gameOverReason)
@@ -101,7 +106,7 @@ namespace Nebula.Patches
                 else
                     name = player.name + " " + name;
                 players.Add(new FinalPlayer(name,
-                    player.role, player.Status, player.Tasks.AllTasks, player.Tasks.Completed));
+                    player.role, player.Status, player.Tasks.Quota, player.Tasks.Completed));
             }
         }
     }
@@ -143,6 +148,9 @@ namespace Nebula.Patches
                 }
             }
 
+            //変更したオプションを元に戻す
+            PlayerControl.GameOptions.VotingTime = Game.GameData.data.GameRule.vanillaVotingTime;
+
             // Reset Settings
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ResetVaribles, Hazel.SendOption.Reliable, -1);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -161,9 +169,6 @@ namespace Nebula.Patches
         {
             //勝利トリガをもどす
             Roles.Roles.ResetWinTrigger();
-
-            //変更したオプションを元に戻す
-            PlayerControl.GameOptions.VotingTime = Game.GameData.data.GameRule.vanillaVotingTime;
 
             //元の勝利チームを削除する
             foreach (PoolablePlayer pb in __instance.transform.GetComponentsInChildren<PoolablePlayer>())

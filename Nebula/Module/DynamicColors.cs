@@ -16,6 +16,10 @@ namespace Nebula.Module
     [HarmonyPatch]
     public static class DynamicColors
     {
+        static public bool IsLightColor(Color color) {
+            return (color.r + color.g + color.b > 1.5);
+        }
+
         public class CustomColor
         {
             private ConfigEntry<float> EntryR;

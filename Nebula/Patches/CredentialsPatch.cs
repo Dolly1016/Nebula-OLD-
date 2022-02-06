@@ -40,9 +40,10 @@ namespace Nebula.Patches
         }
 
         [HarmonyPatch(typeof(PingTracker), nameof(PingTracker.Update))]
-        private static class PingTrackerPatch
+        public static class PingTrackerPatch
         {
-            private static GameObject modStamp;
+            public static GameObject modStamp { get; private set; }
+
             static void Prefix(PingTracker __instance)
             {
                 if (modStamp == null)
@@ -51,7 +52,7 @@ namespace Nebula.Patches
                     var rend = modStamp.AddComponent<SpriteRenderer>();
                     rend.sprite = NebulaPlugin.GetModStamp();
                     rend.color = new Color(1, 1, 1, 0.5f);
-                    modStamp.transform.parent = __instance.transform.parent;
+                    modStamp.transform.SetParent(__instance.transform);
                     modStamp.transform.localScale *= 0.6f;
                 }
                 float offset = (AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started) ? 0.75f : 0f;
@@ -81,6 +82,7 @@ namespace Nebula.Patches
         {
             static void Postfix(PingTracker __instance)
             {
+
                 var amongUsLogo = GameObject.Find("bannerLogo_AmongUs");
                 if (amongUsLogo != null)
                 {

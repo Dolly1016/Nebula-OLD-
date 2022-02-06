@@ -39,6 +39,10 @@ namespace Nebula.Roles.NeutralRoles
             if (condition == EndCondition.ArsonistWin) return false;
             if (condition == EndCondition.EmpiricWin) return false;
             if (condition == EndCondition.JesterWin) return false;
+            if (condition == EndCondition.NobodySkeldWin) return false;
+            if (condition == EndCondition.NobodyMiraWin) return false;
+            if (condition == EndCondition.NobodyPolusWin) return false;
+            if (condition == EndCondition.NobodyAirshipWin) return false;
 
             if (player.GetModData().Tasks.AllTasks == player.GetModData().Tasks.Completed)
             {

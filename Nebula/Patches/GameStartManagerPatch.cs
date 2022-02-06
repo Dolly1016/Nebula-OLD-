@@ -263,5 +263,22 @@ namespace Nebula.Patches
                 return continueStart;
             }
         }
+
+        [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.SetStartCounter))]
+        public static class SetStartCounterPatch
+        {
+            public static void Postfix(GameStartManager __instance, sbyte sec)
+            {
+                if (sec > 0)
+                {
+                    __instance.startState = GameStartManager.StartingStates.Countdown;
+                }
+
+                if (sec <= 0)
+                {
+                    __instance.startState = GameStartManager.StartingStates.NotStarting;
+                }
+            }
+        }
     }
 }

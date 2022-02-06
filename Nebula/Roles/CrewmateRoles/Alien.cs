@@ -54,9 +54,17 @@ namespace Nebula.Roles.CrewmateRoles
                 {
                     if (button.isEffectActive) continue;
 
-                    if (button.MaxTimer > 0f)
+                    if (PlayerControl.LocalPlayer.GetModData().role.category == RoleCategory.Crewmate)
+                    {
                         if (button.Timer > 0f)
-                            button.Timer += Time.deltaTime;
+                            button.Timer -= Time.deltaTime*0.5f;
+                    }
+                    else
+                    {
+                        if (button.MaxTimer > 0f)
+                            if (button.Timer > 0f)
+                                button.Timer += Time.deltaTime;
+                    }
                 }
             }
         }

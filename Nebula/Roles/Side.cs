@@ -132,6 +132,26 @@ namespace Nebula.Roles
                 }
                 return EndCondition.TrilemmaWin;
             }
+
+            if (CustomOptionHolder.limiterOptions.getBool())
+            {
+                if (Game.GameData.data.Timer <= 0f)
+                {
+                    switch (PlayerControl.GameOptions.MapId)
+                    {
+                        case 0:
+                        case 3:
+                            return EndCondition.NobodySkeldWin;
+                        case 1:
+                            return EndCondition.NobodyMiraWin;
+                        case 2:
+                            return EndCondition.NobodyPolusWin;
+                        case 4:
+                            return EndCondition.NobodyAirshipWin;
+                    }
+                
+                }
+            }
             return null;
         });
 

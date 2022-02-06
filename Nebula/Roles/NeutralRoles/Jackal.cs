@@ -23,6 +23,7 @@ namespace Nebula.Roles.NeutralRoles
         static public Module.CustomOption KillCoolDownOption;
         static public Module.CustomOption SidekickCanCreateSidekickOption;
         static public Module.CustomOption CanCreateSidekickOption;
+        static public Module.CustomOption SidekickCanUseVentsOption;
 
         private Sprite sidekickButtonSprite = null;
         public Sprite getSidekickButtonSprite()
@@ -43,6 +44,7 @@ namespace Nebula.Roles.NeutralRoles
             SidekickKillCoolDownOption = CreateOption(Color.white, "sidekickKillCoolDown", 20f, 10f, 60f, 2.5f);
             SidekickTakeOverOriginalRoleOption = CreateOption(Color.white, "sidekickTakeOverOriginalRole", true);
             SidekickCanCreateSidekickOption = CreateOption(Color.white, "sidekickCanCreateSidekick", false);
+            SidekickCanUseVentsOption = CreateOption(Color.white, "sidekickCanUseVents", false);
         }
 
         public override void MyPlayerControlUpdate()

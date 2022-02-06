@@ -275,7 +275,9 @@ namespace Nebula.Patches
             Events.GlobalEvent.Update();
             Events.LocalEvent.Update();
 
+            Objects.Ghost.Update();
 
+            Game.GameData.data.TimerUpdate();
         }
     }
     
