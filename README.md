@@ -14,6 +14,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.0.3 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.3,2021.12.15/Nebula.zip)|
 | 1.0.2 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.2,2021.12.15/Nebula.zip)|
 | 1.0.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.1,2021.12.15/Nebula.zip)|
 | 1.0.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.0,2021.12.15/Nebula.zip)|
@@ -75,7 +76,8 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 | Language | Translator | Full Support Version | Download |
 | --- | --- | --- | --- |
 | 日本語 | - | 1.0.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.1,2021.12.15/Japanese.dat)|
-| English | - | 1.0.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.1,2021.12.15/English.dat)|
+| English | - | 1.0.3 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.3,2021.12.15/English.dat)|
+| 日本語 | Rey | ALPHA 1.9.4 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.4,2021.12.15/Japanese.dat)|
 
 # 更新履歴
 <details>
