@@ -138,16 +138,18 @@ namespace Nebula.Patches
                     {
                         sum+=allocation.expected;
                     }
-                    rand= NebulaPlugin.rnd.Next(sum);
 
                     if (sum == 0)
                     {
                         break;
                     }
 
+                    rand = NebulaPlugin.rnd.Next(sum);
+
+                    
                     for (int i=0; i< secondaryRoles.Count;i++)
                     {
-                        if (secondaryRoles[i].expected > sum)
+                        if (secondaryRoles[i].expected > rand)
                         {
                             RoleAssignmentPatch.setRoleToRandomPlayer(assignMap, secondaryRoles[i].role, players, true);
                             secondaryRoles.RemoveAt(i);
@@ -155,12 +157,7 @@ namespace Nebula.Patches
                             sum = 0;
                             break;
                         }
-                        sum -= secondaryRoles[i].expected;
-                    }
-
-                    if (sum != 0)
-                    {
-                        break;
+                        rand -= secondaryRoles[i].expected;
                     }
                 }
             }
