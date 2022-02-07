@@ -206,7 +206,6 @@
 "role.psychic.message.killerColor" : "My murder's color is %COLOR%."
 "role.psychic.message.killerRole" : "My murder's role is %ROLE%."
 "role.psychic.message.myRole" : "I am %MYROLE%."
-"role.psychic.message.losing" : "Remember me."
 
 "role.sheriff.name" : "Sheriff"
 "role.sheriff.description" : "Shoot the <color=#ff1919ff>Impostors</color>"
@@ -294,7 +293,7 @@
 "role.jackal.sidekickKillCoolDown" : "Sidekick Kill Cool Down"
 "role.jackal.sidekickTakeOverOriginalRole" : "Sidekick Take Over Original Role"
 "role.jackal.sidekickCanCreateSidekick" : "Sidekick Can Create Sidekick"
-"role.jackal.sidekickCanUseVent" : "Sidekick Can Use Vents"
+"role.jackal.sidekickCanUseVents" : "Sidekick Can Use Vents"
 
 "role.jester.name" : "Jester"
 "role.jester.description" : "Get Voted Out"

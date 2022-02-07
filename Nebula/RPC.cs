@@ -355,7 +355,7 @@ namespace Nebula
                 {
                     Helpers.RoleAction(target, (role) => { role.OnDied(); });
 
-                    Events.Schedule.RegisterPostMeetingAction(()=> {
+                    Events.Schedule.RegisterPreMeetingAction(() => {
                         if (!PlayerControl.LocalPlayer.GetModData().IsAlive)
                             Game.GameData.data.myData.CanSeeEveryoneInfo = true;
                     });
@@ -372,42 +372,40 @@ namespace Nebula
             {
                 player.Exiled();
 
-                if (player.GetModData().role.OnExiledPost(new byte[0], playerId))
+                player.GetModData().role.OnDied(playerId);
+
+                if (player.PlayerId == PlayerControl.LocalPlayer.PlayerId)
                 {
-                    player.GetModData().role.OnDied(playerId);
+                    player.GetModData().role.OnDied();
 
-                    if (player.PlayerId == PlayerControl.LocalPlayer.PlayerId)
+                    Events.Schedule.RegisterPostMeetingAction(() =>
                     {
-                        player.GetModData().role.OnExiledPost(new byte[0]);
-                        player.GetModData().role.OnDied();
-
-                        Events.Schedule.RegisterPostMeetingAction(() => {
-                            if (!PlayerControl.LocalPlayer.GetModData().IsAlive)
-                                Game.GameData.data.myData.CanSeeEveryoneInfo = true;
-                        });
-                    }
-
-                    if (MeetingHud.Instance != null)
-                    {
-                        foreach (PlayerVoteArea pva in MeetingHud.Instance.playerStates)
-                        {
-                            if (pva.TargetPlayerId == playerId)
-                            {
-                                pva.SetDead(pva.DidReport, true);
-                                pva.Overlay.gameObject.SetActive(true);
-                            }
-
-                            //Give players back their vote if target is shot dead
-                            if (pva.VotedFor != playerId) continue;
-                            pva.UnsetVote();
-                            var voteAreaPlayer = Helpers.playerById(pva.TargetPlayerId);
-                            if (!voteAreaPlayer.AmOwner) continue;
-                            MeetingHud.Instance.ClearVote();
-                        }
-                    }
-
-                    Game.GameData.data.players[playerId].Die(Game.PlayerData.PlayerStatus.GetStatusById(statusId));
+                        if (!PlayerControl.LocalPlayer.GetModData().IsAlive)
+                            Game.GameData.data.myData.CanSeeEveryoneInfo = true;
+                    });
                 }
+
+                if (MeetingHud.Instance != null)
+                {
+                    foreach (PlayerVoteArea pva in MeetingHud.Instance.playerStates)
+                    {
+                        if (pva.TargetPlayerId == playerId)
+                        {
+                            pva.SetDead(pva.DidReport, true);
+                            pva.Overlay.gameObject.SetActive(true);
+                        }
+
+                        //Give players back their vote if target is shot dead
+                        if (pva.VotedFor != playerId) continue;
+                        pva.UnsetVote();
+                        var voteAreaPlayer = Helpers.playerById(pva.TargetPlayerId);
+                        if (!voteAreaPlayer.AmOwner) continue;
+                        MeetingHud.Instance.ClearVote();
+                    }
+                }
+
+                Game.GameData.data.players[playerId].Die(Game.PlayerData.PlayerStatus.GetStatusById(statusId));
+
             }
         }
 

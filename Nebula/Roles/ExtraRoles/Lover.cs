@@ -50,10 +50,6 @@ namespace Nebula.Roles.ExtraRoles
                 {
                     target = Helpers.playerById(data.id);
 
-                    //自身であれば特に何もしない
-                    if (target == PlayerControl.LocalPlayer) continue;
-
-                    //指定の方法で自殺する
                     action.Invoke(target);
                 }
             }
@@ -61,13 +57,22 @@ namespace Nebula.Roles.ExtraRoles
 
         private void ActionForMyLover(System.Action<PlayerControl> action)
         {
-            ActionForLover(PlayerControl.LocalPlayer,action);
+            ActionForLover(PlayerControl.LocalPlayer, (player) =>
+            {
+                //自身であれば特に何もしない
+                if (player == PlayerControl.LocalPlayer) return;
+
+                action.Invoke(player);
+            });
         }
 
         public override void OnExiledPre(byte[] voters) {
             ActionForMyLover((player) =>
             {
-                if(!player.Data.IsDead)RPCEventInvoker.UncheckedExilePlayer(player.PlayerId, Game.PlayerData.PlayerStatus.Suicide.Id);
+                //自身であれば特に何もしない
+                if (player == PlayerControl.LocalPlayer) return;
+
+                if (!player.Data.IsDead)RPCEventInvoker.UncheckedExilePlayer(player.PlayerId, Game.PlayerData.PlayerStatus.Suicide.Id);
             }
             );
         }
@@ -75,6 +80,9 @@ namespace Nebula.Roles.ExtraRoles
         public override void OnMurdered(byte murderId) {
             ActionForMyLover((player) =>
             {
+                //自身であれば特に何もしない
+                if (player == PlayerControl.LocalPlayer) return;
+
                 if (!player.Data.IsDead) RPCEventInvoker.UncheckedMurderPlayer(player.PlayerId, player.PlayerId, Game.PlayerData.PlayerStatus.Suicide.Id, false);
             }
             );
@@ -126,7 +134,7 @@ namespace Nebula.Roles.ExtraRoles
         {
             string partner="";
             ActionForMyLover((player)=> {
-                partner=player.name;
+                partner =player.name;
             });
             partner = Helpers.cs(Color, partner);
             desctiption += "\n" + Language.Language.GetString("role.lover.description").Replace("%NAME%",partner);

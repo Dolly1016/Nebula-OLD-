@@ -17,9 +17,12 @@ namespace Nebula.Roles.NeutralRoles
 
         /* オプション */
         private Module.CustomOption eatOption;
+        private Module.CustomOption eatCoolDownOption;
+
         public override void LoadOptionData()
         {
             eatOption = CreateOption(Color.white, "eatenCountNeeded", 3f, 1f, 5f, 1f);
+            eatCoolDownOption = CreateOption(Color.white, "eatCoolDown", 10f, 5f, 40f, 2.5f);
         }
 
         public bool WinTrigger { get; set; } = false;
@@ -59,8 +62,7 @@ namespace Nebula.Roles.NeutralRoles
                 __instance,
                 KeyCode.F
             );
-            eatButton.MaxTimer = 5;
-            eatButton.Timer = 5;
+            eatButton.MaxTimer = eatButton.Timer = eatCoolDownOption.getFloat();
         }
 
         public override void ButtonActivate()

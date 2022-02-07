@@ -70,7 +70,7 @@ namespace Nebula.Patches
                 hideFlag = playerData.currentName.Length == 0;
 
                 Helpers.RoleAction(player, (role) => { role.EditDisplayName(player.PlayerId, ref name, hideFlag); });
-                if(!name.Equals(""))
+                
                 player.nameText.text = playerData.currentName+" " +name;
                 if (player == PlayerControl.LocalPlayer)
                 {

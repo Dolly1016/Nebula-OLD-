@@ -24,10 +24,10 @@ namespace Nebula.Patches
         public static EndCondition EmpiricWin = new EndCondition(19, Roles.NeutralRoles.Empiric.Color, "empiric", 1,() => { });
         public static EndCondition VultureWin = new EndCondition(20, Roles.NeutralRoles.Vulture.Color, "vulture", 1,() => { });
         public static EndCondition TrilemmaWin = new EndCondition(32, new Color(209f / 255f, 63f / 255f, 138f / 255f), "trilemma",0,()=> { });
-        public static EndCondition NobodySkeldWin = new EndCondition(64, new Color(72f / 255f, 78f / 255f, 84f / 255f), "nobody.skeld", 32, () => { });
-        public static EndCondition NobodyMiraWin = new EndCondition(65, new Color(72f / 255f, 78f / 255f, 84f / 255f), "nobody.mira", 32, () => { });
-        public static EndCondition NobodyPolusWin = new EndCondition(66, new Color(72f / 255f, 78f / 255f, 84f / 255f), "nobody.polus", 32, () => { });
-        public static EndCondition NobodyAirshipWin = new EndCondition(67, new Color(72f / 255f, 78f / 255f, 84f / 255f), "nobody.airship", 32, () => { });
+        public static EndCondition NobodySkeldWin = new EndCondition(48, new Color(72f / 255f, 78f / 255f, 84f / 255f), "nobody.skeld", 32, () => { });
+        public static EndCondition NobodyMiraWin = new EndCondition(49, new Color(72f / 255f, 78f / 255f, 84f / 255f), "nobody.mira", 32, () => { });
+        public static EndCondition NobodyPolusWin = new EndCondition(50, new Color(72f / 255f, 78f / 255f, 84f / 255f), "nobody.polus", 32, () => { });
+        public static EndCondition NobodyAirshipWin = new EndCondition(51, new Color(72f / 255f, 78f / 255f, 84f / 255f), "nobody.airship", 32, () => { });
 
         public static HashSet<EndCondition> AllEnds = new HashSet<EndCondition>() {
             CrewmateWinByVote ,CrewmateWinByTask,CrewmateWinDisconnect,

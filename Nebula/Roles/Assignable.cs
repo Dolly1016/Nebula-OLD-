@@ -39,7 +39,7 @@ namespace Nebula.Roles
         {
             RoleChanceOption = Module.CustomOption.Create(OptionAvailableId, Color, "role." + LocalizeName + ".name", CustomOptionHolder.rates, CustomOptionHolder.rates[0], null, true);
             OptionId = OptionAvailableId + 1;
-            OptionAvailableId += 10;
+            OptionAvailableId += 20;
 
             if (!FixedRoleCount)
             {

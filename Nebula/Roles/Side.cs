@@ -135,7 +135,7 @@ namespace Nebula.Roles
 
             if (CustomOptionHolder.limiterOptions.getBool())
             {
-                if (Game.GameData.data.Timer <= 0f)
+                if (Game.GameData.data.Timer < 1f)
                 {
                     switch (PlayerControl.GameOptions.MapId)
                     {
