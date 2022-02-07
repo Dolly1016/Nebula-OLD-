@@ -83,6 +83,9 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 <details>
   <summary>クリックで展開</summary>
  
+ **Version 1.0.3**
+ - AlienのE.M.I.が味方に及ぼす効果に関する設定を追加
+  
  **Version 1.0.2**
  - JesterがGuesserによって撃たれた、或いは追放の道連れにされた場合に勝利してしまう問題を修正
  - Camoflage中にプレイヤー名が隠れない問題を修正
@@ -507,6 +510,7 @@ p5p5next : Damned
 | E.M.I. Cool Down | E.M.I.の発生クールダウン
 | E.M.I. Duration | E.M.I.の効果時間
 | E.M.I. Range | E.M.I.の効果範囲
+| E.M.I. Inhibits Crewmates Too | E.M.I.がクルーメイトにも負の効果を及ぼすかどうか
 
 -----------------------
 
