@@ -40,10 +40,10 @@ namespace Nebula
         public const string AmongUsVersion = "2021.12.15";
         public const string PluginGuid = "jp.dreamingpig.amongus.nebula";
         public const string PluginName = "TheNebula";
-        public const string PluginVersion = "1.0.2";
+        public const string PluginVersion = "1.1.0";
         public const string PluginStage = "";
-        public const string PluginVersionForFetch = "1.0.2";
-        public byte[] PluginVersionData = new byte[] { 1, 0, 2, 0 };
+        public const string PluginVersionForFetch = "1.1.0";
+        public byte[] PluginVersionData = new byte[] { 1, 1, 0, 0 };
 
         public static NebulaPlugin Instance;
 
@@ -69,6 +69,9 @@ namespace Nebula
             //言語データを読み込む
             Language.Language.Load();
 
+            //ゲームモードデータを読み込む
+            Game.GameModeProperty.Load();
+
             //オプションを読み込む
             CustomOptionHolder.Load();
 
@@ -78,6 +81,10 @@ namespace Nebula
             //マップ関連のデータを読み込む
             Map.MapEditor.Load();
             Map.MapData.Load();
+
+            //ゴースト情報を読み込む
+            Ghost.GhostInfo.Load();
+            Ghost.Ghost.Load();
 
             // Harmonyパッチ全てを適用する
             Harmony.PatchAll();

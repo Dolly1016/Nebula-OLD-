@@ -91,6 +91,8 @@ namespace Nebula.Patches
             __instance.BackgroundBar.material.color = role.introMainDisplaySide.color;
             __instance.TeamTitle.text = Language.Language.GetString("side." + role.introMainDisplaySide.localizeSide + ".name");
             __instance.TeamTitle.color = role.introMainDisplaySide.color;
+
+            __instance.ImpostorText.text = "";
         }
 
         public static void setupIntroTeamMembers(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> yourTeam)

@@ -121,18 +121,13 @@ namespace Nebula.Roles
             return null;
         });
 
+        public static Side Investigator = new Side("Investigator", "investigator", true, Palette.CrewmateBlue, (PlayerStatistics statistics, ShipStatus status) =>
+        {
+            return null;
+        });
+
         public static Side Extra = new Side("Extra", "extra", false, new Color(150, 150, 150), (PlayerStatistics statistics, ShipStatus side) =>
         {
-            if (statistics.TotalAlive == 3)
-            {
-                foreach(Game.PlayerData player in Game.GameData.data.players.Values)
-                {
-                    if (!player.IsAlive) continue;
-                    if (!player.extraRole.Contains(Roles.Trilemma)) return null;
-                }
-                return EndCondition.TrilemmaWin;
-            }
-
             if (CustomOptionHolder.limiterOptions.getBool())
             {
                 if (Game.GameData.data.Timer < 1f)
@@ -149,8 +144,34 @@ namespace Nebula.Roles
                         case 4:
                             return EndCondition.NobodyAirshipWin;
                     }
-                
+
                 }
+            }
+
+            //Hostのゴーストがnullの場合
+            if ((int)(Game.GameData.data.GameMode & Module.CustomGameMode.Investigators) != 0)
+            {
+                if (Game.GameData.data.Ghost == null)
+                {
+                    return EndCondition.HostDisconnected;
+                }
+            }
+
+
+
+            if (statistics.TotalAlive == 3)
+            {
+                foreach(Game.PlayerData player in Game.GameData.data.players.Values)
+                {
+                    if (!player.IsAlive) continue;
+                    if (!player.extraRole.Contains(Roles.Trilemma)) return null;
+                }
+                return EndCondition.TrilemmaWin;
+            }
+
+            if (statistics.TotalAlive == 0)
+            {
+                return EndCondition.NobodyWin;
             }
             return null;
         });
@@ -159,6 +180,7 @@ namespace Nebula.Roles
         {
             Crewmate, Impostor,
             Jackal, Jester, Vulture, Empiric, Arsonist, 
+            Investigator,
             Extra
         };
 

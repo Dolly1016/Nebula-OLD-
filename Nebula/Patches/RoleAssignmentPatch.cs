@@ -38,7 +38,7 @@ namespace Nebula.Patches
         public static void Postfix(ref int __result)
         {
             //バニラロールの無効化設定
-            if (CustomOptionHolder.activateRoles.getBool()) __result = 0;
+            __result = 0;
         }
     }
 
@@ -71,6 +71,9 @@ namespace Nebula.Patches
                 foreach (Role role in Roles.Roles.AllRoles)
                 {
                     //対象外のロールと非表示ロールはスキップする
+                    //無効なロールは入れない
+                    if ((int)(CustomOptionHolder.GetCustomGameMode() & role.ValidGamemode) == 0) continue;
+
                     if (role.category != category)
                     {
                         continue;
@@ -206,6 +209,9 @@ namespace Nebula.Patches
             RoleAllocation[] allocations;
             foreach(Role role in Roles.Roles.AllRoles)
             {
+                //無効なロールは入れない
+                if ((int)(CustomOptionHolder.GetCustomGameMode() & role.ValidGamemode) == 0) continue;
+
                 if (role.category != RoleCategory.Complex) continue;
 
                 allocations = role.GetComplexAllocations();
@@ -303,26 +309,38 @@ namespace Nebula.Patches
 
             if (!DestroyableSingleton<TutorialManager>.InstanceExists)
             {
-                if (!CustomOptionHolder.activateRoles.getBool())
-                {
-                    //ModRoleが無効化されているなら標準ロールを割り当てる
-                    assignDefaultRoles(assignMap);
-                }
-                else
-                {
-                    assignRoles(assignMap);
-                }
+                //標準ロールを割り当てるならこれ
+                //assignDefaultRoles(assignMap);
+                assignRoles(assignMap);
+                
             }
 
             RPCEventInvoker.SetRoles(assignMap);
+
+            //Ghostをランダムに選択するオプションをここに付けたい
+            if (Game.GameModeProperty.GetProperty(CustomOptionHolder.GetCustomGameMode()).RequireGhosts)
+            {
+                Game.GameData.data.Ghost = new Ghost.Ghosts.TestGhost();
+            }
         }
 
         private static void assignRoles(AssignMap assignMap)
         {
+            Game.GameModeProperty property = Game.GameModeProperty.GetProperty(CustomOptionHolder.GetCustomGameMode());
+
             List<PlayerControl> crewmates = PlayerControl.AllPlayerControls.ToArray().ToList().OrderBy(x => Guid.NewGuid()).ToList();
-            crewmates.RemoveAll(x => x.Data.Role.IsImpostor);
+
             List<PlayerControl> impostors = PlayerControl.AllPlayerControls.ToArray().ToList().OrderBy(x => Guid.NewGuid()).ToList();
-            impostors.RemoveAll(x => !x.Data.Role.IsImpostor);
+
+            if (property.RequireImpostors)
+            {
+                crewmates.RemoveAll(x => x.Data.Role.IsImpostor);
+                impostors.RemoveAll(x => !x.Data.Role.IsImpostor);
+            }
+            else
+            {
+                impostors.Clear();
+            }
 
             /* ロールの割り当て */
             AssignRoles roleData = new AssignRoles(crewmates.Count, impostors.Count);
@@ -334,11 +352,11 @@ namespace Nebula.Patches
             //余ったプレイヤーは標準ロールを割り当てる
             while (crewmates.Count > 0)
             {
-                setRoleToRandomPlayer(assignMap,Roles.Roles.Crewmate, crewmates, true);
+                setRoleToRandomPlayer(assignMap, property.DefaultCrewmateRole, crewmates, true);
             }
             while (impostors.Count > 0)
             {
-                setRoleToRandomPlayer(assignMap, Roles.Roles.Impostor, impostors, true);
+                setRoleToRandomPlayer(assignMap, property.DefaultImpostorRole, impostors, true);
             }
 
             /* ExtraRoleの割り当て */
@@ -350,6 +368,9 @@ namespace Nebula.Patches
 
                 foreach (ExtraRole role in Roles.Roles.AllExtraRoles)
                 {
+                    //無効なロールは入れない
+                    if ((int)(CustomOptionHolder.GetCustomGameMode() & role.ValidGamemode) == 0) continue;
+
                     if (role.assignmentPriority == currentPriority)
                     {
                         //ロールを割り当てる
@@ -369,19 +390,31 @@ namespace Nebula.Patches
         //ModRoleが有効でない場合標準ロールを割り当てます
         private static void assignDefaultRoles(AssignMap assignMap)
         {
+            Game.GameModeProperty property = Game.GameModeProperty.GetProperty(CustomOptionHolder.GetCustomGameMode());
+
             List<PlayerControl> crewmates = PlayerControl.AllPlayerControls.ToArray().ToList().OrderBy(x => Guid.NewGuid()).ToList();
-            crewmates.RemoveAll(x => x.Data.Role.IsImpostor);
+            
             List<PlayerControl> impostors = PlayerControl.AllPlayerControls.ToArray().ToList().OrderBy(x => Guid.NewGuid()).ToList();
-            impostors.RemoveAll(x => !x.Data.Role.IsImpostor);
+
+            if (property.RequireImpostors)
+            {
+                crewmates.RemoveAll(x => x.Data.Role.IsImpostor);
+                impostors.RemoveAll(x => !x.Data.Role.IsImpostor);
+            }
+            else
+            {
+                impostors.Clear();
+            }
+            
 
             while (crewmates.Count > 0)
             {
-                setRoleToRandomPlayer(assignMap, Roles.Roles.Crewmate, crewmates, true);
+                setRoleToRandomPlayer(assignMap, property.DefaultCrewmateRole, crewmates, true);
 
             }
             while (impostors.Count > 0)
             {
-                setRoleToRandomPlayer(assignMap, Roles.Roles.Impostor, impostors, true);
+                setRoleToRandomPlayer(assignMap, property.DefaultImpostorRole, impostors, true);
             }
         }
 

@@ -16,6 +16,7 @@ namespace Nebula.Roles.CrewmateRoles
         private Module.CustomOption emiCoolDownOption;
         private Module.CustomOption emiDurationOption;
         private Module.CustomOption emiRangeOption;
+        private Module.CustomOption emiInhibitsCrewmatesOption;
 
         public override void LoadOptionData()
         {
@@ -27,6 +28,8 @@ namespace Nebula.Roles.CrewmateRoles
 
             emiRangeOption = CreateOption(Color.white, "emiRange", 1f, 0.5f, 5f, 0.5f);
             emiRangeOption.suffix = "cross";
+
+            emiInhibitsCrewmatesOption = CreateOption(Color.white, "emiInhibitsCrewmates", true);
         }
 
 
@@ -54,7 +57,7 @@ namespace Nebula.Roles.CrewmateRoles
                 {
                     if (button.isEffectActive) continue;
 
-                    if (PlayerControl.LocalPlayer.GetModData().role.category == RoleCategory.Crewmate)
+                    if (!emiInhibitsCrewmatesOption.getBool() && PlayerControl.LocalPlayer.GetModData().role.category == RoleCategory.Crewmate)
                     {
                         if (button.Timer > 0f)
                             button.Timer -= Time.deltaTime*0.5f;

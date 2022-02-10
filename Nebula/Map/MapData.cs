@@ -1,9 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using UnityEngine;
 
 namespace Nebula.Map
 {
+    public class SabotageData
+    {
+        public SystemTypes Room { get; private set; }
+        public Vector3 Position { get; private set; }
+        public bool IsLeadingSabotage { get; private set; }
+        public bool IsUrgent { get; private set; }
+
+        public SabotageData(SystemTypes Room,Vector3 Position,bool IsLeadingSabotage,bool IsUrgent)
+        {
+            this.Room = Room;
+            this.Position = Position;
+            this.IsLeadingSabotage = IsLeadingSabotage;
+            this.IsUrgent = IsUrgent;
+        }
+    }
+
     public class MapData
     {
         //Skeld=0,MIRA=1,Polus=2,AirShip=4
@@ -15,12 +32,34 @@ namespace Nebula.Map
         public List<byte> ShortTaskIdList { get; protected set; }
         public List<byte> LongTaskIdList { get; protected set; }
 
+        public Dictionary<SystemTypes, SabotageData> SabotageMap;
+
+        //部屋の関連性
+        public Dictionary<SystemTypes, HashSet<SystemTypes>> RoomsRelation;
+        //ドアを持つ部屋
+        public HashSet<SystemTypes> DoorRooms;
+
+        //ドアサボタージュがサボタージュの発生を阻止するかどうか
+        public bool DoorHackingCanBlockSabotage;
+        //ドアサボタージュの有効時間
+        public float DoorHackingDuration;
+
+        //マップの端から端までの距離
+        public float MapScale;
+
+        
+
         public static void Load()
         {
             new Database.SkeldData();
             new Database.MIRAData();
             new Database.PolusData();
             new Database.AirshipData();
+        }
+
+        public static Map.MapData GetCurrentMapData()
+        {
+            return MapDatabase[PlayerControl.GameOptions.MapId];
         }
 
         public static byte GetRandomCommonTaskId(byte mapId)
@@ -45,6 +84,15 @@ namespace Nebula.Map
         {
             MapId = mapId;
             MapDatabase[mapId] = this;
+
+            SabotageMap = new Dictionary<SystemTypes, SabotageData>();
+            RoomsRelation = new Dictionary<SystemTypes, HashSet<SystemTypes>>();
+            DoorRooms = new HashSet<SystemTypes>();
+
+            DoorHackingCanBlockSabotage = false;
+
+            MapScale = 1f;
+            DoorHackingDuration = 10f;
         }
 
         public byte GetRandomCommonTaskId() { return CommonTaskIdList[NebulaPlugin.rnd.Next(CommonTaskIdList.Count)]; }

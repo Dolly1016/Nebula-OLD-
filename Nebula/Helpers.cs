@@ -319,7 +319,7 @@ namespace Nebula
         {
             HudManager.Instance.FullScreen.color = color;
             HudManager.Instance.FullScreen.enabled = true;
-            HudManager.Instance.StartCoroutine(Effects.Lerp(0.5f, new Action<float>((p) =>
+            HudManager.Instance.StartCoroutine(Effects.Lerp(0.75f, new Action<float>((p) =>
             {
                 var renderer = HudManager.Instance.FullScreen;
                 if (p < 0.5)

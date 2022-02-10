@@ -278,6 +278,8 @@ namespace Nebula.Patches
             Objects.Ghost.Update();
 
             Game.GameData.data.TimerUpdate();
+
+            if (Game.GameData.data.Ghost != null) Game.GameData.data.Ghost.Update();
         }
     }
     

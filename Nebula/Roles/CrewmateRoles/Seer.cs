@@ -7,19 +7,20 @@ using UnityEngine;
 using HarmonyLib;
 using Hazel;
 using Nebula.Objects;
+
 namespace Nebula.Roles.CrewmateRoles
 {
     public class Seer : Role
     {
         static public Color Color = new Color(60f / 255f, 181f / 255f, 101f / 255f);
 
-        static public HashSet<Ghost> Ghosts=new HashSet<Ghost>();
+        static public HashSet<Objects.Ghost> Ghosts=new HashSet<Objects.Ghost>();
 
         public override void OnAnyoneMurdered(byte murderId,byte targetId)
         {
             if (targetId == PlayerControl.LocalPlayer.PlayerId) return;
 
-            Ghost ghost = new Ghost(Helpers.playerById(targetId).transform.position);
+            Objects.Ghost ghost = new Objects.Ghost(Helpers.playerById(targetId).transform.position);
             Ghosts.Add(ghost);
 
             Helpers.PlayFlash(Color);
@@ -35,7 +36,7 @@ namespace Nebula.Roles.CrewmateRoles
 
         public override void Initialize(PlayerControl __instance)
         {
-            foreach(Ghost g in Ghosts)
+            foreach(Objects.Ghost g in Ghosts)
             {
                 g.Remove();
             }
@@ -44,7 +45,7 @@ namespace Nebula.Roles.CrewmateRoles
 
         public override void MyUpdate()
         {
-            foreach (Ghost g in Ghosts)
+            foreach (Objects.Ghost g in Ghosts)
             {
                 if (g.Timer > GhostDurationOption.getFloat())
                 {

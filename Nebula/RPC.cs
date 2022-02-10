@@ -271,6 +271,14 @@ namespace Nebula
 
         public static void SetRole(byte playerId,Roles.Role role)
         {
+            if (role.category == Roles.RoleCategory.Impostor)
+            {
+                DestroyableSingleton<RoleManager>.Instance.SetRole(Helpers.playerById(playerId), RoleTypes.Impostor);
+            }
+            else
+            {
+                DestroyableSingleton<RoleManager>.Instance.SetRole(Helpers.playerById(playerId), RoleTypes.Crewmate);
+            }
             Game.GameData.data.RegisterPlayer(playerId, role);
         }
 
@@ -562,6 +570,7 @@ namespace Nebula
                 PlayerControl player = Helpers.playerById(playerId);
                 player.transform.position = body.transform.position;
                 player.Revive(false);
+                player.Data.IsDead = false;
                 Game.GameData.data.deadPlayers.Remove(playerId);
 
                 UnityEngine.Object.Destroy(body.gameObject);

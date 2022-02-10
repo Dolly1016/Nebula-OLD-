@@ -17,10 +17,6 @@ namespace Nebula.Roles.CrewmateRoles
         public static HashSet<EndCondition> crewmateEndSet =
             new HashSet<EndCondition>() { EndCondition.CrewmateWinByTask, EndCondition.CrewmateWinByVote, EndCondition.CrewmateWinDisconnect };
 
-        public override void MoveSpeedUpdate(byte playerId, ref float speed)
-        {
-            speed = 3f;
-        }
 
         public Crewmate()
                 : base("Crewmate", "crewmate", Palette.CrewmateBlue, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
@@ -28,6 +24,7 @@ namespace Nebula.Roles.CrewmateRoles
                      false,false, false, false, false)
         {
             IsHideRole = true;
+            ValidGamemode = Module.CustomGameMode.Standard;
         }
     }
 }

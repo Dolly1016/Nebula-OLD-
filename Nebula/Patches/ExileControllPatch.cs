@@ -76,9 +76,13 @@ namespace Nebula.Patches
             Objects.CustomObject.OnMeetingEnd();
             Game.GameData.data.myData.getGlobalData().role.OnMeetingEnd();
 
+            if (Game.GameData.data.GameMode == Module.CustomGameMode.Investigators)
+            {
+                Ghost.InvestigatorMeetingUI.EndMeeting();
+            }
 
             //死体はすべて消去される
-            foreach(Game.DeadPlayerData deadPlayerData in Game.GameData.data.deadPlayers.Values)
+            foreach (Game.DeadPlayerData deadPlayerData in Game.GameData.data.deadPlayers.Values)
             {
                 deadPlayerData.EraseBody();
             }

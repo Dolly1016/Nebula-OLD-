@@ -12,9 +12,34 @@ using Nebula.Language;
 
 namespace Nebula.Module
 {
+    [Flags]
+    public enum CustomGameMode
+    {
+        Standard=0x01,
+        Investigators=0x02,
+        All=int.MaxValue
+    }
+
+    public static class CustomGameModes
+    {
+        static public List<CustomGameMode> AllGameModes = new List<CustomGameMode>()
+        {
+            CustomGameMode.Standard,CustomGameMode.Investigators
+        };
+
+        static public CustomGameMode GetGameMode(int GameModeIndex)
+        {
+            if (AllGameModes.Count > GameModeIndex && GameModeIndex>=0)
+            {
+                return AllGameModes[GameModeIndex];
+            }
+            return AllGameModes[0];
+        }
+    }
+    
+
     public class CustomOption
     {
-
         public static List<CustomOption> options = new List<CustomOption>();
         public static int preset = 0;
 
@@ -34,6 +59,9 @@ namespace Nebula.Module
         public bool isHeader;
         public bool isHidden;
         public bool isHiddenOnDisplay;
+        public CustomGameMode GameMode;
+
+        static public CustomGameMode CurrentGameMode;
 
         public List<CustomOption> prerequisiteOptions;
 
@@ -49,6 +77,22 @@ namespace Nebula.Module
         {
             isHiddenOnDisplay = Hidden;
             return this;
+        }
+
+        public CustomOption SetGameMode(CustomGameMode gameMode)
+        {
+            GameMode = gameMode;
+            return this;
+        }
+
+        public bool IsHidden(CustomGameMode gameMode)
+        {
+            return isHidden || (0 == (int)(gameMode & GameMode));
+        }
+
+        public bool IsHiddenOnDisplay(CustomGameMode gameMode)
+        {
+            return isHidden || isHiddenOnDisplay || (0 == (int)(gameMode & GameMode));
         }
 
         // Option creation
@@ -90,6 +134,7 @@ namespace Nebula.Module
             options.Add(this);
 
             this.prerequisiteOptions = new List<CustomOption>();
+            this.GameMode = CustomGameMode.Standard;
         }
 
         public static CustomOption Create(int id, Color color,string name, string[] selections,string defaultValue, CustomOption parent = null, bool isHeader = false, bool isHidden = false, string format = "")
@@ -526,7 +571,7 @@ namespace Nebula.Module
                         enabled = false;
                     }
 
-                    if (option.isHidden)
+                    if (option.IsHidden(CustomOption.CurrentGameMode))
                     {
                         enabled = false;
                     }
@@ -653,7 +698,7 @@ namespace Nebula.Module
             if (option == null) return "";
 
             List<string> options = new List<string>();
-            if (!option.isHidden && !skipFirst) options.Add(optionToString(option));
+            if (!option.IsHiddenOnDisplay(CustomOption.CurrentGameMode) && !skipFirst) options.Add(optionToString(option));
             if (option.enabled)
             {
                 foreach (CustomOption op in option.children)
@@ -667,6 +712,8 @@ namespace Nebula.Module
 
         private static void Postfix(ref string __result)
         {
+            CustomOption.CurrentGameMode = CustomGameModes.GetGameMode(CustomOptionHolder.gameMode.getSelection());
+
             List<string> pages = new List<string>();
             pages.Add(__result);
 
@@ -705,7 +752,7 @@ namespace Nebula.Module
 
                 foreach (var child in option.children)
                 {
-                    if (!(child.isHidden||child.isHiddenOnDisplay))
+                    if (!(child.IsHidden(CustomOption.CurrentGameMode)))
                         builder.AppendLine((indent ? "    " : "") + inheritIndent+ optionToString(child));
                     addChildren(child, ref builder, indent, inheritIndent + (indent ? "    " : ""));
                 }
@@ -726,7 +773,7 @@ namespace Nebula.Module
                     }
 
                     entry = new StringBuilder();
-                    if (!option.isHidden)
+                    if (!option.IsHiddenOnDisplay(CustomOption.CurrentGameMode))
                         entry.AppendLine(optionToString(option));
 
                     addChildren(option, ref entry, !option.isHidden);

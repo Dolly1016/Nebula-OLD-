@@ -9,6 +9,9 @@
 "lobby.hasDifferentNebula" : "%NAME% has a different version of Nebula on the Ship"
 "lobby.willEliminatedByMismatchVersion" : "The host has no or a different version of Nebula on the Ship\nYou will be kicked in %STAY%s"
 
+"gamemode.standard" : "Standard"
+"gamemode.investigators" : "Coming Soon!"
+
 "option.display.pressTabForMore" : "Press Tab For More"
 "option.display.percentage.0" : "0%"
 "option.display.percentage.10" : "10%"
@@ -30,6 +33,7 @@
 "option.switch.off" : "Off"
 
 "option.preset" : "Preset"
+"option.gameMode" : "Game Mode"
 "option.activeRoles" : "Active Mod Roles and Block Vanilla Roles"
 "option.crewmateRoles" : "Crewmate Roles"
 "option.minimumCrewmateRoles" : "Minimum Crewmate Roles"
@@ -114,6 +118,7 @@
 "role.alien.emiCoolDown" : "E.M.I. Cool Down"
 "role.alien.emiDuration" : "E.M.I. Duration"
 "role.alien.emiRange" : "E.M.I. Range"
+"role.alien.emiInhibitsCrewmates" : "E.M.I. Inhibits Crewmates Too"
 
 "role.bait.name" : "Bait"
 "role.bait.description" : "Bait Your Enemies"
@@ -206,6 +211,11 @@
 "role.psychic.message.killerColor" : "My murder's color is %COLOR%."
 "role.psychic.message.killerRole" : "My murder's role is %ROLE%."
 "role.psychic.message.myRole" : "I am %MYROLE%."
+
+"role.pursuer.name" : "Pursuer"
+"role.pursuer.description" : "Find Dead Body"
+"role.pursuer.searchCoolDown" : "Search Cool Down"
+"role.pursuer.searchDuration" : "Search Duration"
 
 "role.sheriff.name" : "Sheriff"
 "role.sheriff.description" : "Shoot the <color=#ff1919ff>Impostors</color>"
@@ -310,6 +320,7 @@
 "role.vulture.name" : "Vulture"
 "role.vulture.description" : "Eat Corpses to Win"
 "role.vulture.eatenCountNeeded" : "Count of Eaten Needed"
+"role.vulture.eatCoolDown" : "Eat Cool Down"
 
 "role.lover.name" : "Lover"
 "role.lover.description" : "You're in <color=#fc04bdff>Love</color> with %NAME%"
@@ -319,6 +330,9 @@
 
 "role.trilemma.name" : "Trilemma"
 
+"role.investigator.name" : "Investigator"
+"role.investigator.description" : "Find Out What It Is"
+
 "side.crewmate.name" : "Crewmate"
 "side.impostor.name" : "Impostor"
 "side.arsonist.name" : "Arsonist"
@@ -327,6 +341,7 @@
 "side.jester.name" : "Jester"
 "side.opportunist.name" : "Opportunist"
 "side.vulture.name" : "Vulture"
+"side.investigator.name" : "Investigator"
 
 "game.endText.crewmate" : "Team Crewmate Wins"
 "game.endText.impostor" : "Team Impostor Wins"
@@ -336,10 +351,14 @@
 "game.endText.jester" : "Jester Wins"
 "game.endText.vulture" : "Vulture Wins"
 "game.endText.trilemma" : "Trilemma Wins"
+"game.endText.rightGuess" : "Mission Complete"
+"game.endText.wrongGuess" : "Mission Failure..."
+"game.endText.nobody" : "And Then There Were None"
 "game.endText.nobody.skeld" : "The Skeld, The Wandering Ship In The Cosmos"
 "game.endText.nobody.mira" : "<color=#ff1919ff>S.O.S.</color> HQ Is Out Of Control"
 "game.endText.nobody.polus" : "At The Fogotten Planet POLUS..."
 "game.endText.nobody.airship" : "In The Sky That Nobody Owns"
+"game.endText.hostDisconnected" : "The Host Has Been Disconnected"
 
 "status.alive" : "Alive"
 "status.dead" : "Dead"
@@ -351,3 +370,6 @@
 "status.guessed" : "Guessed"
 "status.trapped" : "Trapped"
 "status.sniped" : "Sniped"
+"status.cursed" : "Cursed"
+
+"investigators.ui.title" : "What Is The Identity?"

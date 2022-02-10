@@ -32,18 +32,22 @@ namespace Nebula.Roles
         //オプションで使用するID
         static private int OptionAvailableId = 10;
 
+        public Module.CustomGameMode ValidGamemode { get; set; }
+
         /*--------------------------------------------------------------------------------------*/
         /*--------------------------------------------------------------------------------------*/
 
         public void SetupRoleOptionData()
         {
             RoleChanceOption = Module.CustomOption.Create(OptionAvailableId, Color, "role." + LocalizeName + ".name", CustomOptionHolder.rates, CustomOptionHolder.rates[0], null, true);
+            RoleChanceOption.GameMode = ValidGamemode;
             OptionId = OptionAvailableId + 1;
             OptionAvailableId += 20;
 
             if (!FixedRoleCount)
             {
                 RoleCountOption = Module.CustomOption.Create(OptionId, Color.white, "option.roleCount", 0f, 0f, 15f, 1f, RoleChanceOption, false);
+                RoleCountOption.GameMode = ValidGamemode;
                 OptionId++;
             }
         }
@@ -64,6 +68,8 @@ namespace Nebula.Roles
                 return null;
             }
             Module.CustomOption option = new Module.CustomOption(OptionId, color, "role." + this.LocalizeName + "." + name, selections, defaultValue, RoleChanceOption, false, false, "");
+            option.GameMode = ValidGamemode;
+            
             OptionId++;
             return option;
         }
@@ -262,13 +268,6 @@ namespace Nebula.Roles
         {
         }
 
-        /// <summary>
-        /// プレイヤー速度に掛ける倍率を設定します。
-        /// </summary>
-        /// <param name="playerId"></param>
-        [RoleGlobalMethod]
-        public virtual void MoveSpeedUpdate(byte playerId,ref float speed) { }
-
         /*--------------------------------------------------------------------------------------*/
         /*--------------------------------------------------------------------------------------*/
 
@@ -356,6 +355,8 @@ namespace Nebula.Roles
             this.OptionId = -1;
 
             this.IsHideRole = false;
+
+            this.ValidGamemode = Module.CustomGameMode.Standard;
         }
     }
 }

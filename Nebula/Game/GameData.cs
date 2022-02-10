@@ -487,6 +487,10 @@ namespace Nebula.Game
 
         public Module.TimeLimit LimitRenderer;
 
+        public Module.CustomGameMode GameMode;
+
+        public Ghost.Ghost Ghost;
+
         public GameData()
         {
             players = new Dictionary<byte, PlayerData>();
@@ -498,8 +502,11 @@ namespace Nebula.Game
             OriginalSpeed=PlayerControl.LocalPlayer.MyPhysics.Speed;
 
             GameRule = new GameRule();
+            GameMode = Module.CustomGameModes.GetGameMode(CustomOptionHolder.gameMode.getSelection());
 
             LimitRenderer = null;
+
+            Ghost = null;
 
             Timer = 300f;
         }

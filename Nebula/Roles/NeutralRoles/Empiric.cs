@@ -38,10 +38,10 @@ namespace Nebula.Roles.NeutralRoles
             infectRangeOption = CreateOption(Color.white, "infectRange", 1f, 0.25f, 3f, 0.25f);
             infectRangeOption.suffix = "cross";
 
-            infectDurationOption = CreateOption(Color.white, "infectDuration", 20f, 5f, 120f, 5f);
+            infectDurationOption = CreateOption(Color.white, "infectDuration", 20f, 5f, 60f, 1f);
             infectDurationOption.suffix = "second";
 
-            coastingPhaseOption = CreateOption(Color.white, "coastingPhase", 10f, 0f, 30f, 5f);
+            coastingPhaseOption = CreateOption(Color.white, "coastingPhase", 10f, 0f, 30f, 1f);
             coastingPhaseOption.suffix = "second";
         }
 

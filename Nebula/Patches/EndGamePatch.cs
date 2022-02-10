@@ -11,30 +11,41 @@ namespace Nebula.Patches
 
     public class EndCondition
     {
-        public static EndCondition CrewmateWinByVote = new EndCondition(GameOverReason.HumansByVote, Palette.CrewmateBlue, "crewmate", 16);
-        public static EndCondition CrewmateWinByTask = new EndCondition(GameOverReason.HumansByTask, Palette.CrewmateBlue, "crewmate", 16);
-        public static EndCondition CrewmateWinDisconnect = new EndCondition(GameOverReason.HumansDisconnect, Palette.CrewmateBlue, "crewmate", 16);
-        public static EndCondition ImpostorWinByKill = new EndCondition(GameOverReason.ImpostorByKill, Palette.ImpostorRed, "impostor", 16);
-        public static EndCondition ImpostorWinBySabotage = new EndCondition(GameOverReason.ImpostorBySabotage, Palette.ImpostorRed, "impostor", 16);
-        public static EndCondition ImpostorWinByVote = new EndCondition(GameOverReason.ImpostorByVote, Palette.ImpostorRed, "impostor", 16);
-        public static EndCondition ImpostorWinDisconnect = new EndCondition(GameOverReason.ImpostorDisconnect, Palette.ImpostorRed, "impostor",16);
-        public static EndCondition JesterWin = new EndCondition(16, Roles.NeutralRoles.Jester.Color, "jester", 1,() => { });
-        public static EndCondition JackalWin = new EndCondition(17, Roles.NeutralRoles.Jackal.Color, "jackal", 2,() => { });
-        public static EndCondition ArsonistWin = new EndCondition(18, Roles.NeutralRoles.Arsonist.Color, "arsonist", 1,() => { PlayerControl.AllPlayerControls.ForEach((Action<PlayerControl>)((p) => { if (!p.Data.IsDead && p.GetModData().role.side != Roles.Side.Arsonist) p.MurderPlayer(p); })); });
-        public static EndCondition EmpiricWin = new EndCondition(19, Roles.NeutralRoles.Empiric.Color, "empiric", 1,() => { });
-        public static EndCondition VultureWin = new EndCondition(20, Roles.NeutralRoles.Vulture.Color, "vulture", 1,() => { });
-        public static EndCondition TrilemmaWin = new EndCondition(32, new Color(209f / 255f, 63f / 255f, 138f / 255f), "trilemma",0,()=> { });
-        public static EndCondition NobodySkeldWin = new EndCondition(48, new Color(72f / 255f, 78f / 255f, 84f / 255f), "nobody.skeld", 32, () => { });
-        public static EndCondition NobodyMiraWin = new EndCondition(49, new Color(72f / 255f, 78f / 255f, 84f / 255f), "nobody.mira", 32, () => { });
-        public static EndCondition NobodyPolusWin = new EndCondition(50, new Color(72f / 255f, 78f / 255f, 84f / 255f), "nobody.polus", 32, () => { });
-        public static EndCondition NobodyAirshipWin = new EndCondition(51, new Color(72f / 255f, 78f / 255f, 84f / 255f), "nobody.airship", 32, () => { });
+        public static EndCondition CrewmateWinByVote = new EndCondition(GameOverReason.HumansByVote, Palette.CrewmateBlue, "crewmate", 16,Module.CustomGameMode.Standard);
+        public static EndCondition CrewmateWinByTask = new EndCondition(GameOverReason.HumansByTask, Palette.CrewmateBlue, "crewmate", 16, Module.CustomGameMode.Standard);
+        public static EndCondition CrewmateWinDisconnect = new EndCondition(GameOverReason.HumansDisconnect, Palette.CrewmateBlue, "crewmate", 16, Module.CustomGameMode.Standard);
+        public static EndCondition ImpostorWinByKill = new EndCondition(GameOverReason.ImpostorByKill, Palette.ImpostorRed, "impostor", 16, Module.CustomGameMode.Standard);
+        public static EndCondition ImpostorWinBySabotage = new EndCondition(GameOverReason.ImpostorBySabotage, Palette.ImpostorRed, "impostor", 16, Module.CustomGameMode.Standard);
+        public static EndCondition ImpostorWinByVote = new EndCondition(GameOverReason.ImpostorByVote, Palette.ImpostorRed, "impostor", 16, Module.CustomGameMode.Standard);
+        public static EndCondition ImpostorWinDisconnect = new EndCondition(GameOverReason.ImpostorDisconnect, Palette.ImpostorRed, "impostor",16, Module.CustomGameMode.Standard);
+        public static EndCondition JesterWin = new EndCondition(16, Roles.NeutralRoles.Jester.Color, "jester", 1, Module.CustomGameMode.Standard, () => { });
+        public static EndCondition JackalWin = new EndCondition(17, Roles.NeutralRoles.Jackal.Color, "jackal", 2, Module.CustomGameMode.Standard, () => { });
+        public static EndCondition ArsonistWin = new EndCondition(18, Roles.NeutralRoles.Arsonist.Color, "arsonist", 1, Module.CustomGameMode.Standard, () => { PlayerControl.AllPlayerControls.ForEach((Action<PlayerControl>)((p) => { if (!p.Data.IsDead && p.GetModData().role.side != Roles.Side.Arsonist) p.MurderPlayer(p); })); });
+        public static EndCondition EmpiricWin = new EndCondition(19, Roles.NeutralRoles.Empiric.Color, "empiric", 1, Module.CustomGameMode.Standard, () => { });
+        public static EndCondition VultureWin = new EndCondition(20, Roles.NeutralRoles.Vulture.Color, "vulture", 1, Module.CustomGameMode.Standard, () => { });
+        public static EndCondition TrilemmaWin = new EndCondition(24, new Color(209f / 255f, 63f / 255f, 138f / 255f), "trilemma",0, Module.CustomGameMode.Standard, ()=> { });
+
+        public static EndCondition InvestigatorRightGuess = new EndCondition(32, Palette.CrewmateBlue, "rightGuess", 0, Module.CustomGameMode.Investigators, () => { });
+        public static EndCondition InvestigatorWrongGuess = new EndCondition(33, Palette.ImpostorRed, "wrongGuess", 0, Module.CustomGameMode.Investigators, () => { });
+        public static EndCondition InvestigatorDeathBySabotage = new EndCondition(34, Palette.ImpostorRed, "ghost", 0, Module.CustomGameMode.Investigators, () => { });
+
+        public static EndCondition NobodyWin = new EndCondition(48, new Color(72f / 255f, 78f / 255f, 84f / 255f), "nobody", 0, Module.CustomGameMode.All, () => { });
+        public static EndCondition NobodySkeldWin = new EndCondition(49, new Color(72f / 255f, 78f / 255f, 84f / 255f), "nobody.skeld", 32, Module.CustomGameMode.All, () => { });
+        public static EndCondition NobodyMiraWin = new EndCondition(50, new Color(72f / 255f, 78f / 255f, 84f / 255f), "nobody.mira", 32, Module.CustomGameMode.All, () => { });
+        public static EndCondition NobodyPolusWin = new EndCondition(51, new Color(72f / 255f, 78f / 255f, 84f / 255f), "nobody.polus", 32, Module.CustomGameMode.All, () => { });
+        public static EndCondition NobodyAirshipWin = new EndCondition(52, new Color(72f / 255f, 78f / 255f, 84f / 255f), "nobody.airship", 32, Module.CustomGameMode.All, () => { });
+
+        public static EndCondition HostDisconnected = new EndCondition(64, new Color(72f / 255f, 78f / 255f, 84f / 255f), "hostDisconnected", 0, Module.CustomGameMode.Investigators, () => { });
+
+
 
         public static HashSet<EndCondition> AllEnds = new HashSet<EndCondition>() {
             CrewmateWinByVote ,CrewmateWinByTask,CrewmateWinDisconnect,
             ImpostorWinByKill,ImpostorWinBySabotage,ImpostorWinByVote,ImpostorWinDisconnect,
             JesterWin,JackalWin,ArsonistWin,EmpiricWin,VultureWin,
             TrilemmaWin,
-            NobodySkeldWin,NobodyMiraWin,NobodyPolusWin,NobodyAirshipWin
+            NobodyWin,NobodySkeldWin,NobodyMiraWin,NobodyPolusWin,NobodyAirshipWin,
+            InvestigatorRightGuess,InvestigatorWrongGuess,HostDisconnected
         };
     
         public static EndCondition GetEndCondition(GameOverReason gameOverReason)
@@ -54,16 +65,19 @@ namespace Nebula.Patches
         public String Identifier { get; }
         public Action EndAction { get; }
         public byte Priority { get; }
-        public EndCondition(GameOverReason Id,Color Color,String EndText, byte Priority)
+
+        public Module.CustomGameMode GameMode { get; set; }
+        public EndCondition(GameOverReason Id,Color Color,String EndText, byte Priority,Module.CustomGameMode GameMode)
         {
             this.Id = Id;
             this.Color = Color;
             this.Identifier = EndText;
             this.EndAction = ()=> { };
             this.Priority = Priority;
+            this.GameMode = GameMode;
         }
 
-        public EndCondition(int Id, Color Color, String EndText, byte Priority, System.Action EndAction) : this((GameOverReason)Id,Color,EndText,Priority)
+        public EndCondition(int Id, Color Color, String EndText, byte Priority, Module.CustomGameMode GameMode, System.Action EndAction) : this((GameOverReason)Id,Color,EndText,Priority, GameMode)
         {
             this.EndAction=EndAction;
         }
@@ -291,6 +305,8 @@ namespace Nebula.Patches
                 temp= side.endCriteriaChecker(statistics, __instance);
                 if (temp != null && priority>=temp.Priority)
                 {
+                    if ((temp.GameMode & Game.GameData.data.GameMode) == 0) continue;
+
                     endCondition = temp;
                     priority = temp.Priority;
                 }

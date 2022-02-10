@@ -24,6 +24,7 @@ namespace Nebula.Roles
         public static ComplexRoles.Trapper NiceTrapper = new ComplexRoles.Trapper("NiceTrapper", "niceTrapper", false);
         public static CrewmateRoles.Provocateur Provocateur = new CrewmateRoles.Provocateur();
         public static CrewmateRoles.Psychic Psychic = new CrewmateRoles.Psychic();
+        public static CrewmateRoles.Pursuer Pursuer = new CrewmateRoles.Pursuer();
         public static CrewmateRoles.SecurityGuard SecurityGuard = new CrewmateRoles.SecurityGuard();
         public static CrewmateRoles.Seer Seer = new CrewmateRoles.Seer();
         public static CrewmateRoles.Sheriff Sheriff = new CrewmateRoles.Sheriff();
@@ -51,6 +52,8 @@ namespace Nebula.Roles
         public static NeutralRoles.Opportunist Opportunist = new NeutralRoles.Opportunist();
         public static NeutralRoles.Vulture Vulture = new NeutralRoles.Vulture();
 
+        public static InvestigatorRoles.Investigator Investigator = new InvestigatorRoles.Investigator();
+
         public static ComplexRoles.FCrewmate F_Crewmate = new ComplexRoles.FCrewmate();
         public static ComplexRoles.FGuesser F_Guesser = new ComplexRoles.FGuesser();
         public static ComplexRoles.FTrapper F_Trapper = new ComplexRoles.FTrapper();
@@ -68,8 +71,9 @@ namespace Nebula.Roles
             F_Guesser,F_Trapper,
             Arsonist,Empiric,Jackal,Jester,Opportunist,Sidekick,Vulture,
             F_Crewmate,
-            Crewmate,Agent,Alien,Bait,Booster,DamnedCrew,Engineer,Mayor,Necromancer,NiceGuesser,NiceTrapper,Provocateur,Psychic,SecurityGuard,Seer,Sheriff,Spy,
+            Crewmate,Agent,Alien,Bait,Booster,DamnedCrew,Engineer,Mayor,Necromancer,NiceGuesser,NiceTrapper,Provocateur,Psychic,Pursuer,SecurityGuard,Seer,Sheriff,Spy,
             Madmate,
+            Investigator,
         };
 
         public static List<ExtraRole> AllExtraRoles = new List<ExtraRole>()

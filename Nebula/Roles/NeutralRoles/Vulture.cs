@@ -111,31 +111,38 @@ namespace Nebula.Roles.NeutralRoles
 
             /* 矢印の更新 */
 
-            DeadBody[] deadBodys = Helpers.AllDeadBodies();
-            //削除するキーをリストアップする
-            var removeList = Arrows.Where(entry =>
+            if (PlayerControl.LocalPlayer.Data.IsDead)
             {
+                if (Arrows.Count > 0) ClearArrows();
+            }
+            else
+            {
+                DeadBody[] deadBodys = Helpers.AllDeadBodies();
+                //削除するキーをリストアップする
+                var removeList = Arrows.Where(entry =>
+                {
+                    foreach (DeadBody body in deadBodys)
+                    {
+                        if (body.ParentId == entry.Key) return false;
+                    }
+                    return true;
+                });
+                foreach (var entry in removeList)
+                {
+                    UnityEngine.Object.Destroy(entry.Value.arrow);
+                    Arrows.Remove(entry.Key);
+                }
+                //残った矢印を最新の状態へ更新する
                 foreach (DeadBody body in deadBodys)
                 {
-                    if (body.ParentId == entry.Key) return false;
+                    if (!Arrows.ContainsKey(body.ParentId))
+                    {
+                        Arrows[body.ParentId] = new Arrow(Color.blue);
+                        Arrows[body.ParentId].arrow.SetActive(true);
+                    }
+                    Arrows[body.ParentId].Update(body.transform.position);
                 }
-                return true;
-            });
-            foreach (var entry in removeList)
-            {
-                UnityEngine.Object.Destroy(entry.Value.arrow);
-                Arrows.Remove(entry.Key);
             }
-            //残った矢印を最新の状態へ更新する
-            foreach (DeadBody body in deadBodys)
-            {
-                if (!Arrows.ContainsKey(body.ParentId)) {
-                    Arrows[body.ParentId] = new Arrow(Color.blue);
-                    Arrows[body.ParentId].arrow.SetActive(true);
-                }
-                Arrows[body.ParentId].Update(body.transform.position);
-            }
-
         }
 
         private void ClearArrows()

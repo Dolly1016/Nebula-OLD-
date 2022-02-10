@@ -211,6 +211,7 @@ namespace Nebula.Objects
             {
                 isEffectActive = false;
                 actionButton.cooldownTimerText.color = Palette.EnabledColor;
+                Timer = MaxTimer;
                 OnEffectEnds();
             }
 

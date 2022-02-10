@@ -20,7 +20,7 @@ namespace Nebula.Roles.ImpostorRoles
                      impostorSideSet, impostorSideSet,impostorEndSet,
                      false,true, true, true, true)
         {
-
+            ValidGamemode = Module.CustomGameMode.Standard;
         }
     }
 }
