@@ -14,6 +14,9 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.0.3 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.3,2021.12.15/Nebula.zip)|
+| 1.0.2 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.2,2021.12.15/Nebula.zip)|
+| 1.0.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.1,2021.12.15/Nebula.zip)|
 | 1.0.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.0,2021.12.15/Nebula.zip)|
 
 <details>
@@ -72,13 +75,33 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 
 | Language | Translator | Full Support Version | Download |
 | --- | --- | --- | --- |
-| 日本語 | - | 1.0.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.0,2021.12.15/Japanese.dat)|
-| English | - | 1.0.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.0,2021.12.15/English.dat)|
+| 日本語 | - | 1.0.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.1,2021.12.15/Japanese.dat)|
+| English | - | 1.0.3 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.3,2021.12.15/English.dat)|
+| 日本語 | Rey | ALPHA 1.9.4 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.4,2021.12.15/Japanese.dat)|
 
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
  
+ **Version 1.0.3**
+ - AlienのE.M.I.が味方に及ぼす効果に関する設定を追加
+  
+ **Version 1.0.2**
+ - JesterがGuesserによって撃たれた、或いは追放の道連れにされた場合に勝利してしまう問題を修正
+ - Camoflage中にプレイヤー名が隠れない問題を修正
+ - 割り当て確率が10%~90%の役職をあてがう必要がある場合にゲームが開始できない問題を修正
+ - 一部オプションがホスト以外で正常に表示されない問題を修正
+ - Loversが追加勝利した際に、Lovers本人の画面でのみ勝利者の表示が異常な問題を修正
+ - 追放された際に他人の役職が見れない問題を修正
+ - 死んでから、他人の役職が見れるようになるタイミングを調整
+  
+ **Version 1.0.1**
+ - タイムリミット設定を追加
+ - Jackalに新たな設定を追加
+ - ゲーム開始時のカウントダウンが全員から見えるように
+ - 排他的割り当ての表示に軽微な変更
+ - ゲーム終了時のタスク数表示の分母をタスク総量からタスクノルマに変更
+  
  **Version 1.0.0**
  - 最初のリリース
   
@@ -472,7 +495,8 @@ p5p5next : Damned
 -----------------------
 
 ## Alien
- Alienは、E.M.Iを起こして周囲のプレイヤーのクールダウンの進みを妨げることができます。\
+ Alienは、E.M.Iを起こして周囲のプレイヤーのクールダウンの進みを歪ませることができます。\
+ 敵のクールダウンは停滞し、味方のクールダウンは短縮されます。\
  効果は敵味方なく及ぼされます。
  
  ### 操作方法
@@ -486,6 +510,7 @@ p5p5next : Damned
 | E.M.I. Cool Down | E.M.I.の発生クールダウン
 | E.M.I. Duration | E.M.I.の効果時間
 | E.M.I. Range | E.M.I.の効果範囲
+| E.M.I. Inhibits Crewmates Too | E.M.I.がクルーメイトにも負の効果を及ぼすかどうか
 
 -----------------------
 
@@ -682,6 +707,7 @@ p5p5next : Damned
 | Sidekick Kill Cool Down | Sidekickのキルクールダウン
 | Sidekick Take Over Original Role | Sidekickが元の役職を保持するかどうか
 | Sidekick Can Create Sidekick | SidekickがJackalになったとき、Sidekickを生み出すことができるかどうか
+| Sidekick Can Use Vents | Sidekickがベントを使用できるかどうか
 
 -----------------------
 
