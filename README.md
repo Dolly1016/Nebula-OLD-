@@ -14,6 +14,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.1.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.0,2021.12.15/Nebula.zip)|
 | 1.0.3 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.3,2021.12.15/Nebula.zip)|
 | 1.0.2 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.2,2021.12.15/Nebula.zip)|
 | 1.0.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.1,2021.12.15/Nebula.zip)|
@@ -75,9 +76,9 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 
 | Language | Translator | Full Support Version | Download |
 | --- | --- | --- | --- |
+| 日本語 | Rey | 1.0.3 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.3,2021.12.15/Japanese.dat)|
 | 日本語 | - | 1.0.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.1,2021.12.15/Japanese.dat)|
-| English | - | 1.0.3 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.3,2021.12.15/English.dat)|
-| 日本語 | Rey | ALPHA 1.9.4 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.4,2021.12.15/Japanese.dat)|
+| English | - | 1.1.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.0,2021.12.15/English.dat)|
 
 # 更新履歴
 <details>
@@ -275,6 +276,7 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 | [Reaper](#reaper) | [Nice Trapper](#trapper) |||
 | [Sniper](#sniper) | [Provocateur](#provocateur) |||
 || [Psychic](#psychic) |||
+|| [Pursuer](#pursuer) |||
 || [Security Guard](#security-guard) |||
 || [Seer](#seer) |||
 || [Sheriff](#sheriff) |||
@@ -609,6 +611,22 @@ p5p5next : Damned
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
+
+-----------------------
+
+## Pursuer
+ Pursuerは死体の位置を探査することができます。
+ 
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| F | 死体の探索
+
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+| Search Cool Down | 探索のクールダウン
+| Search Duration | 探索時間
 
 -----------------------
 
