@@ -83,6 +83,10 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 <details>
   <summary>クリックで展開</summary>
  
+ **Version 1.1.0**
+ - Pursuerを追加
+ - Empiricのオプション設定に軽微な変更
+  
  **Version 1.0.3**
  - AlienのE.M.I.が味方に及ぼす効果に関する設定を追加
   
