@@ -14,6 +14,8 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.1.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.1,2021.12.15/Nebula.zip)|
+| 1.1.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.0,2021.12.15/Nebula.zip)|
 | 1.0.3 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.3,2021.12.15/Nebula.zip)|
 | 1.0.2 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.2,2021.12.15/Nebula.zip)|
 | 1.0.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.1,2021.12.15/Nebula.zip)|
@@ -75,14 +77,26 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 
 | Language | Translator | Full Support Version | Download |
 | --- | --- | --- | --- |
+| 日本語 | Rey | 1.0.3 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.3,2021.12.15/Japanese.dat)|
 | 日本語 | - | 1.0.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.1,2021.12.15/Japanese.dat)|
-| English | - | 1.0.3 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.3,2021.12.15/English.dat)|
-| 日本語 | Rey | ALPHA 1.9.4 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.4,2021.12.15/Japanese.dat)|
+| English | - | 1.1.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.0,2021.12.15/English.dat)|
 
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
  
+ **Version 1.1.1**
+ - Drunkを追加
+ - MadmateをImpostor陣営の人数として数えないように
+ - AirshipでOpportunist, Agentのタスクが正常に設定されない問題を修正
+ - Guesser, Trapperが最高一人出現する際、決定的な陣営割り当てが10~40%で予期しない結果をもたらす問題を修正
+ - Damnedがタスクを残していた場合、タスク勝利ができなくなる問題を修正
+ - フェイクタスクの表示に関する軽微な修正
+  
+ **Version 1.1.0**
+ - Pursuerを追加
+ - Empiricのオプション設定に軽微な変更
+  
  **Version 1.0.3**
  - AlienのE.M.I.が味方に及ぼす効果に関する設定を追加
   
@@ -260,10 +274,10 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 
 | Impostors | Crewmates | Neutral | Secondary
 | ---------- | ---------- | ---------- | ---------- |
-| [Camouflager](#camouflager) | [Agent](#agent) | [Arsonist](#arsonist) | [Guesser](#guesser) |
-| [Cleaner](#cleaner) | [Alien](#alien) | [Empiric](#empiric) | [Lover](#lover) |
-| [Damned](#damned) | [Bait](#bait) | [Jackal](#jackal) | [Trilemma](#trilemma) |
-| [Eraser](#eraser) | [Booster](#booster) | [Jester](#jester) ||
+| [Camouflager](#camouflager) | [Agent](#agent) | [Arsonist](#arsonist) | [Drunk](#drunk) |
+| [Cleaner](#cleaner) | [Alien](#alien) | [Empiric](#empiric) | [Guesser](#guesser) |
+| [Damned](#damned) | [Bait](#bait) | [Jackal](#jackal) | [Lover](#lover) |
+| [Eraser](#eraser) | [Booster](#booster) | [Jester](#jester) | [Trilemma](#trilemma) |
 | [Evil Ace](#evil-ace) | [Engineer](#engineer) | [Opportunist](#opportunist) ||
 | [Evil Guesser](#guesser) | [Mayor](#mayor) | [Sidekick](#sidekick) ||
 | [Evil Trapper](#trapper) | [Necromancer](#necromancer) | [Vulture](#vulture) ||
@@ -271,6 +285,7 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 | [Reaper](#reaper) | [Nice Trapper](#trapper) |||
 | [Sniper](#sniper) | [Provocateur](#provocateur) |||
 || [Psychic](#psychic) |||
+|| [Pursuer](#pursuer) |||
 || [Security Guard](#security-guard) |||
 || [Seer](#seer) |||
 || [Sheriff](#sheriff) |||
@@ -496,8 +511,7 @@ p5p5next : Damned
 
 ## Alien
  Alienは、E.M.Iを起こして周囲のプレイヤーのクールダウンの進みを歪ませることができます。\
- 敵のクールダウンは停滞し、味方のクールダウンは短縮されます。\
- 効果は敵味方なく及ぼされます。
+ 敵のクールダウンは停滞し、味方のクールダウンは設定によって停滞あるいは短縮されます。
  
  ### 操作方法
 | 操作キー | アクション |
@@ -605,6 +619,22 @@ p5p5next : Damned
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
+
+-----------------------
+
+## Pursuer
+ Pursuerは死体の位置を探査することができます。
+ 
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| F | 死体の探索
+
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+| Search Cool Down | 探索のクールダウン
+| Search Duration | 探索時間
 
 -----------------------
 
@@ -766,6 +796,20 @@ p5p5next : Damned
 | オプション名 | 設定内容 |
 |----------|:-------------:|
 | Count of Eaten Needed | 勝利に必要な死体の捕食数 
+
+-----------------------
+
+## Drunk
+ Drunkは操作が逆転するおまけロールです。\
+ 一風変わったアモアスを楽しみたい方へ。
+ 
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
 
 -----------------------
 
