@@ -87,6 +87,7 @@ namespace Nebula.Ghost
                         {
                             Agent.SabotageManager.BeginSabotage(sabotage.Value.Key);
                             SabotageCoolDown = 20f;
+                            InSabotage = true;
                         }
                     }
                 }

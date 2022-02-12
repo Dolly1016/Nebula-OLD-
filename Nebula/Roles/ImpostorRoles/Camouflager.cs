@@ -89,11 +89,10 @@ namespace Nebula.Roles.ImpostorRoles
             }
         }
 
-        //インポスターはModで操作するFakeTaskは所持していない
         public Camouflager()
                 : base("Camouflager", "camouflager", Palette.ImpostorRed, RoleCategory.Impostor, Side.Impostor, Side.Impostor,
                      Impostor.impostorSideSet, Impostor.impostorSideSet, Impostor.impostorEndSet,
-                     false, true, true, true, true)
+                     true, true, true, true, true)
         {
             camouflageButton = null;
         }

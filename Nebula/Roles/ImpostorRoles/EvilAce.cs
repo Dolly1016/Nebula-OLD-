@@ -18,11 +18,10 @@ namespace Nebula.Roles.ImpostorRoles
             killCoolDownMultiplierOption.suffix = "cross";
         }
 
-        //インポスターはModで操作するFakeTaskは所持していない
         public EvilAce()
                 : base("EvilAce", "evilAce", Palette.ImpostorRed, RoleCategory.Impostor, Side.Impostor, Side.Impostor,
                      Impostor.impostorSideSet, Impostor.impostorSideSet, Impostor.impostorEndSet,
-                     false, true, true, true, true)
+                     true, true, true, true, true)
         {
 
         }

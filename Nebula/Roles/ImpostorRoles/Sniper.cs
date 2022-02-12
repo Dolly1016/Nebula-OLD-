@@ -215,7 +215,7 @@ namespace Nebula.Roles.ImpostorRoles
             : base("Sniper", "sniper", Palette.ImpostorRed, RoleCategory.Impostor, Side.Impostor, Side.Impostor,
                  Impostor.impostorSideSet, Impostor.impostorSideSet,
                  Impostor.impostorEndSet,
-                 false, true, true, true, true)
+                 true, true, true, true, true)
         {
             sniperButton = null;
             killButton = null;

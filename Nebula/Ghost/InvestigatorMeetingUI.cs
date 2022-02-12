@@ -71,11 +71,28 @@ namespace Nebula.Ghost
 
                 button.GetComponent<PassiveButton>().OnClick.RemoveAllListeners();
                 button.GetComponent<PassiveButton>().OnClick.AddListener((System.Action)(() => {
-                    
+                    if (selectedButton != button)
+                    {
+                        selectedButton = button;
+                        buttons.ForEach(x => x.GetComponent<SpriteRenderer>().color = x == selectedButton ? Color.red : Color.white);
+                    }
+                    else
+                    {
+                        button.GetComponent<SpriteRenderer>().color = Color.white;
+                        
+                        //
+                    }
                 }));
 
                 i++;
             }
+
+            __instance.SkipVoteButton.GetComponent<PassiveButton>().OnClick.AddListener((System.Action)(() =>
+            {
+                selectedButton = null;
+                buttons.ForEach(x => x.GetComponent<SpriteRenderer>().color = Color.white);
+            }));
+            
 
             var players = __instance.playerStates.ToList();
             int index = 0;

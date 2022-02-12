@@ -322,6 +322,8 @@
 "role.vulture.eatenCountNeeded" : "Count of Eaten Needed"
 "role.vulture.eatCoolDown" : "Eat Cool Down"
 
+"role.drunk.name" : "Drunk"
+
 "role.lover.name" : "Lover"
 "role.lover.description" : "You're in <color=#fc04bdff>Love</color> with %NAME%"
 "role.lover.maxPairs" : "Max Couples"

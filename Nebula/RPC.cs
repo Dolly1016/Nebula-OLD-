@@ -995,7 +995,6 @@ namespace Nebula
             int phase = 0;
             while (surplus > 0)
             {
-                NebulaPlugin.Instance.Logger.Print("surplus:"+surplus);
                 switch (phase)
                 {
                     case 0:
@@ -1018,11 +1017,11 @@ namespace Nebula
             {
                 if (i < array.Length)
                 {
-                    tasks.Add(new GameData.TaskInfo(Map.MapData.MapDatabase[PlayerControl.GameOptions.MapId].CommonTaskIdList[array[i]], (uint)(tasks.Count + 1)));
+                    tasks.Add(new GameData.TaskInfo(Map.MapData.MapDatabase[PlayerControl.GameOptions.MapId].CommonTaskIdList[array[i]], (uint)(tasks.Count)));
                 }
                 else
                 {
-                    tasks.Add(new GameData.TaskInfo(Map.MapData.GetRandomCommonTaskId(PlayerControl.GameOptions.MapId), (uint)(tasks.Count + 1)));
+                    tasks.Add(new GameData.TaskInfo(Map.MapData.GetRandomCommonTaskId(PlayerControl.GameOptions.MapId), (uint)(tasks.Count)));
                 }
             }
 
@@ -1053,7 +1052,14 @@ namespace Nebula
             }
 
             PlayerControl.LocalPlayer.clearAllTasks();
-            PlayerControl.LocalPlayer.SetTasks(tasks);
+            if (PlayerControl.GameOptions.MapId == 4)
+            {
+                Patches.CloseSpawnGUIPatch.Actions.Add(() => { PlayerControl.LocalPlayer.SetTasks(tasks); });
+            }
+            else
+            {
+                PlayerControl.LocalPlayer.SetTasks(tasks);
+            }
             PlayerControl.LocalPlayer.Data.Tasks = tasks;
         }
 

@@ -124,7 +124,7 @@ namespace Nebula.Roles.ImpostorRoles
             : base("Cleaner", "cleaner", Palette.ImpostorRed, RoleCategory.Impostor, Side.Impostor, Side.Impostor,
                  Impostor.impostorSideSet, Impostor.impostorSideSet,
                  Impostor.impostorEndSet,
-                 false, true, true, true, true)
+                 true, true, true, true, true)
         {
             cleanButton = null;
         }

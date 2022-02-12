@@ -261,7 +261,11 @@ namespace Nebula.Patches
 
                 var status = string.Join(" ", Language.Language.GetString("status." + player.status.Status));
 
-                var tasks = player.totalTasks > 0 ? $"<color=#FAD934FF>({player.completedTasks}/{player.totalTasks})</color>" : "";
+                string tasks;
+                if (player.role.hasFakeTask)
+                    tasks = player.totalTasks > 0 ? $"<color=#868686FF>({player.completedTasks}/{player.totalTasks})</color>" : "";
+                else
+                    tasks = player.totalTasks > 0 ? $"<color=#FAD934FF>({player.completedTasks}/{player.totalTasks})</color>" : "";
 
                 roleSummaryText.AppendLine($"{player.name} - {roles} {status}{tasks}");
             }

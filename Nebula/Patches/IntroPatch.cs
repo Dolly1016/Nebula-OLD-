@@ -49,6 +49,8 @@ namespace Nebula.Patches
         public static PoolablePlayer PlayerPrefab=null;
         public static void Postfix(IntroCutscene __instance)
         {
+            CloseSpawnGUIPatch.Actions.Clear();
+
             PlayerPrefab = __instance.PlayerPrefab;
 
             if (CustomOptionHolder.limiterOptions.getBool())
@@ -77,7 +79,7 @@ namespace Nebula.Patches
                 role.IntroInitialize(PlayerControl.LocalPlayer);
                 role.ButtonInitialize(HudManagerStartPatch.Manager);
                 role.ButtonActivate();
-            });            
+            });
         }
     }
 
@@ -150,6 +152,20 @@ namespace Nebula.Patches
             {
                 setupIntroTeamText(__instance, ref yourTeam);
             }
+        }
+    }
+
+    [HarmonyPatch(typeof(SpawnInMinigame), nameof(SpawnInMinigame.Close))]
+    public class CloseSpawnGUIPatch
+    {
+        public static HashSet<System.Action> Actions = new HashSet<System.Action>();
+        public static void Postfix(SpawnInMinigame __instance)
+        {
+            foreach (var action in Actions)
+            {
+                action.Invoke();
+            }
+            Actions.Clear();
         }
     }
 }

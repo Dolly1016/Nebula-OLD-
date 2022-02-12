@@ -14,7 +14,7 @@ namespace Nebula.Roles.CrewmateRoles
     {
 
         public Madmate()
-                : base("Madmate", "madmate", Palette.ImpostorRed, RoleCategory.Crewmate, Side.Impostor, Side.Crewmate,
+                : base("Madmate", "madmate", Palette.ImpostorRed, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                      Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, ImpostorRoles.Impostor.impostorEndSet,
                      true, true, true, false, false)
         {

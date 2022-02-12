@@ -12,6 +12,7 @@ namespace Nebula.Roles.ExtraRoles
     public class Lover : ExtraRole
     {
         private Module.CustomOption maxPairsOption;
+        //private Module.CustomOption chanceThatOneLoverIsImpostorOption;
         private Module.CustomOption canChangeTrilemmaOption;
 
         private PlayerControl trilemmaTarget=null;

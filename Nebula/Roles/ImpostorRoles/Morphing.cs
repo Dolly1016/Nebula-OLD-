@@ -146,11 +146,10 @@ namespace Nebula.Roles.ImpostorRoles
             }
         }
 
-        //インポスターはModで操作するFakeTaskは所持していない
         public Morphing()
                 : base("Morphing", "morphing", Palette.ImpostorRed, RoleCategory.Impostor, Side.Impostor, Side.Impostor,
                      Impostor.impostorSideSet, Impostor.impostorSideSet, Impostor.impostorEndSet,
-                     false, true, true, true, true)
+                     true, true, true, true, true)
         {
             morphButton = null;
         }

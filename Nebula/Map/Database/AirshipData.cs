@@ -10,8 +10,8 @@ namespace Nebula.Map.Database
         public AirshipData() : base(4)
         {
             CommonTaskIdList = new List<byte>() { 0, 1 };
-            ShortTaskIdList = new List<byte>() { 19, 20, 24, 27, 28, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42 };
-            LongTaskIdList = new List<byte>() { 2, 3, 5, 8, 9, 10, 13, 14, 15, 16, 18 };
+            ShortTaskIdList = new List<byte>() { 19, 20, 24, 25, 27, 28, 29, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42 };
+            LongTaskIdList = new List<byte>() { 2, 3, 5, 7, 8, 9, 10, 11,13, 14, 15, 16, 18 };
 
             SabotageMap[SystemTypes.GapRoom] = new SabotageData(SystemTypes.GapRoom, new Vector3(8f, 8.3f), true, true);
             SabotageMap[SystemTypes.Electrical] = new SabotageData(SystemTypes.Electrical, new Vector3(0f, 0f), false, false);

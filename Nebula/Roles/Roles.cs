@@ -60,6 +60,7 @@ namespace Nebula.Roles
 
         public static ComplexRoles.SecondaryGuesser SecondaryGuesser = new ComplexRoles.SecondaryGuesser();
         public static NeutralRoles.SecondarySidekick SecondarySidekick = new NeutralRoles.SecondarySidekick();
+        public static ExtraRoles.Drunk Drunk = new ExtraRoles.Drunk();
         public static ExtraRoles.Lover Lover = new ExtraRoles.Lover();
         public static ExtraRoles.Trilemma Trilemma = new ExtraRoles.Trilemma();
 
@@ -78,7 +79,7 @@ namespace Nebula.Roles
 
         public static List<ExtraRole> AllExtraRoles = new List<ExtraRole>()
         {
-            SecondaryGuesser,SecondarySidekick,Lover,Trilemma
+            SecondaryGuesser,SecondarySidekick,Drunk,Lover,Trilemma
         };
 
         public static void ResetWinTrigger()

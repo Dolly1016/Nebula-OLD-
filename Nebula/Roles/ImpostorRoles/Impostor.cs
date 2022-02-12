@@ -14,11 +14,10 @@ namespace Nebula.Roles.ImpostorRoles
         public static HashSet<EndCondition> impostorEndSet =
            new HashSet<EndCondition>() { EndCondition.ImpostorWinByKill, EndCondition.ImpostorWinBySabotage, EndCondition.ImpostorWinByVote,EndCondition.ImpostorWinDisconnect };
 
-        //インポスターはModで操作するFakeTaskは所持していない
         public Impostor()
                 : base("Impostor", "impostor", Palette.ImpostorRed, RoleCategory.Impostor, Side.Impostor, Side.Impostor,
                      impostorSideSet, impostorSideSet,impostorEndSet,
-                     false,true, true, true, true)
+                     true, true, true, true, true)
         {
             ValidGamemode = Module.CustomGameMode.Standard;
         }

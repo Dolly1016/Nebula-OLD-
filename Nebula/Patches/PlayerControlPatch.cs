@@ -223,7 +223,11 @@ namespace Nebula.Patches
                     string roleNames = Helpers.cs(p.GetModData().role.Color, Language.Language.GetString("role." + p.GetModData().role.LocalizeName + ".name"));
 
                     var completedStr = commsActive ? "?" : tasksCompleted.ToString();
-                    string taskInfo = tasksTotal > 0 ? $"<color=#FAD934FF>({completedStr}/{tasksTotal})</color>" : "";
+                    string taskInfo;
+                    if(p.GetModData().role.hasFakeTask)
+                        taskInfo= tasksTotal > 0 ? $"<color=#868686FF>({completedStr}/{tasksTotal})</color>" : "";
+                    else
+                        taskInfo = tasksTotal > 0 ? $"<color=#FAD934FF>({completedStr}/{tasksTotal})</color>" : "";
 
                     string playerInfoText = "";
                     string meetingInfoText = "";
