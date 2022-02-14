@@ -80,7 +80,7 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 | --- | --- | --- | --- |
 | 日本語 | Rey | 1.0.3 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.3,2021.12.15/Japanese.dat)|
 | 日本語 | - | 1.0.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.1,2021.12.15/Japanese.dat)|
-| English | - | 1.1.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.0,2021.12.15/English.dat)|
+| English | - | 1.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.2,2021.12.15/English.dat)|
 
 # 更新履歴
 <details>
