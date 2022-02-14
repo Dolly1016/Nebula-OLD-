@@ -310,7 +310,7 @@ BasePluginに以下の属性を新たに付与することで、Nebula on the Sh
 その他ロールアイデアのご提供等\
 \
 龍 : Reaper, Provocateur, Booster, Alien\
-Alps : Guesser(Secondary)\
+Alps : Guesser(Secondary), Drunk\
 p5p5next : Damned
 
 -----------------------
@@ -465,7 +465,8 @@ p5p5next : Damned
 -----------------------
 
 ## Sniper
- Sniperは通常のキルは行えませんが、狙撃銃を繰り出すことで壁を隔てた先からも相手を殺すことができます。
+ Sniperは通常のキルは行えませんが、狙撃銃を繰り出すことで壁を隔てた先からも相手を殺すことができます。\
+ 狙撃すると、当たったかどうかに関わらず、発砲地点にアイコンが表示されます。
  
  ### 操作方法
 | 操作キー | アクション |
@@ -479,6 +480,7 @@ p5p5next : Damned
 | Shot Size | 狙撃銃の弾の当たり判定
 | Shot Effective Range | 銃弾でキルできる範囲
 | Can Kill Impostors | 射線上のインポスターを誤殺できるかどうか
+| Sound Effective Range | 銃声の可聴範囲
 
 -----------------------
 
@@ -610,6 +612,9 @@ p5p5next : Damned
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
+| Embroil Cool Down | 巻き込みのクールダウン
+| Embroil Cool Down Addition | 巻き込みの追加クールダウン
+| Embroil Duration | 巻き込みの有効時間
 
 -----------------------
 
