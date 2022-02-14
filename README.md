@@ -14,6 +14,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.1.2 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.2,2021.12.15/Nebula.zip)|
 | 1.1.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.1,2021.12.15/Nebula.zip)|
 | 1.1.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.0,2021.12.15/Nebula.zip)|
 | 1.0.3 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.3,2021.12.15/Nebula.zip)|
@@ -85,6 +86,14 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 <details>
   <summary>クリックで展開</summary>
  
+ **Version 1.1.2**
+ - 言語パックについて、起動後に使用する言語を再設定しなくとも選択していた言語を使用するように
+ - Loversに陣営別の割り当てに関わる新たな設定を追加
+ - Sheriffが例外的にキルできるクルーメイト役職に関する設定を追加
+ - Madmateのベント使用可否と、視界の広さを設定できるように
+ - Drunkの陣営別割り当て設定を追加
+ - ゲーム終了時のプレイヤー状態表示に「Revived」を追加
+  
  **Version 1.1.1**
  - Drunkを追加
  - MadmateをImpostor陣営の人数として数えないように
@@ -491,6 +500,8 @@ p5p5next : Damned
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
+| Has Impostor Vision | インポスターと同じ視界を持つかどうか
+| Can Invoke Sabotage | サボタージュを起こせるかどうか
 
 -----------------------
 
@@ -671,12 +682,15 @@ p5p5next : Damned
 -----------------------
 
 ## Sheriff
- Sheriffはキルをすることができるクルーメイトです。
+ Sheriffはクルーメイト陣営以外のプレイヤーをキルをすることができるクルーメイトです。
  
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
 | Kill Cool Down | キルクールダウン
+| Can Kill Madmate | Madmateをキルできるかどうか
+| Can Kill Spy | Spyをキルできるかどうか
+| Can Kill Necromancer | Necromancerをキルできるかどうか
 
 -----------------------
 
@@ -759,6 +773,7 @@ p5p5next : Damned
 | オプション名 | 設定内容 |
 |----------|:-------------:|
 | Can Use Vents | ベントを使えるかどうかの設定
+| Can Invoke Sabotage | サボタージュを起こせるかどうかの設定
 
 -----------------------
 
@@ -806,8 +821,11 @@ p5p5next : Damned
 -----------------------
 
 ## Drunk
- Drunkは操作が逆転するおまけロールです。\
- 一風変わったアモアスを楽しみたい方へ。
+ Drunkはプレイヤーの操作が逆転するおまけ役職です。\
+ 一風変わったアモアスを楽しみたい方へ。\
+ しかし、割り当てる陣営を限定させれば、新たな推理の材料にもなります。
+ 
+ 割り当てる陣営は確率とともに複数選択することができます。
  
  ### 操作方法
 | 操作キー | アクション |
@@ -816,11 +834,13 @@ p5p5next : Damned
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
+| Assignment Category | 割り当てる陣営
+| Assignment Chance | 割り当てられる確率
 
 -----------------------
 
 ## Lover
- Loverは2人1組として発生する付加的なロールです。\
+ Loverは2人1組として発生する付加的なロールで、基本はクルーメイト陣営あるいは第三陣営から選ばれます。\
  相方が死ぬと自分も後追いして死にます。最後まで生存して相方が勝利すれば自分も勝利します。\
  二人組のどちらかが、第三者を巻き込むと[Trilemma](#trilemma)に変化します。\
  巻き込みボタン自体は両者ともに使用可能です。(一方が第三者を巻き込むと役職が変化するため押せない)
@@ -834,6 +854,7 @@ p5p5next : Damned
 | オプション名 | 設定内容 |
 |----------|:-------------:|
 | Max Couples | Loversが発生する最大組数
+| Chance That One Lover Is Impostor | Loversの片方がインポスター陣営から選ばれる確率
 | Can Change Trilemma | 第三者を巻き込んでTrilemmaになれるかどうかの設定
 
 -----------------------
