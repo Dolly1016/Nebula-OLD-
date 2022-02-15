@@ -14,6 +14,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.1.3 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.3,2021.12.15/Nebula.zip)|
 | 1.1.2 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.2,2021.12.15/Nebula.zip)|
 | 1.1.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.1,2021.12.15/Nebula.zip)|
 | 1.1.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.0,2021.12.15/Nebula.zip)|
@@ -86,6 +87,11 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 <details>
   <summary>クリックで展開</summary>
  
+ **Version 1.1.3**
+ - Arsonist, Empiric, Jester, Vultureが複数人居る場合、ゲーム開始時に自身以外同陣営として表示されず、かつ単独勝利するように
+ - Arsonist, Empiricで、左下に自分自身や死んだプレイヤーのホログラムが現れてしまう問題を修正
+ - Boosterの効果時間が正常にゲームに反映されない問題を修正
+  
  **Version 1.1.2**
  - Jester, Madmateがサボタージュを起こせる設定を追加
  - 言語パックについて、起動後に使用する言語を再設定しなくとも選択していた言語を使用するように
