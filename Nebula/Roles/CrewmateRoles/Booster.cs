@@ -38,8 +38,6 @@ namespace Nebula.Roles.CrewmateRoles
                 () =>
                 {
                     RPCEventInvoker.EmitSpeedFactor(PlayerControl.LocalPlayer, new Game.SpeedFactor(0,boostDurationOption.getFloat(), boostSpeedOption.getFloat(), false));
-
-                    boostButton.Timer = boostButton.MaxTimer;
                 },
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
                 () => { return PlayerControl.LocalPlayer.CanMove; },

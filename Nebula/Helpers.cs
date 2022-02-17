@@ -13,6 +13,16 @@ namespace Nebula
 {
     public static class Helpers
     {
+        public static bool ShowButtons
+        {
+            get
+            {
+                return !(MapBehaviour.Instance && MapBehaviour.Instance.IsOpen) &&
+                      !MeetingHud.Instance &&
+                      !ExileController.Instance;
+            }
+        }
+
         public static Sprite loadSpriteFromResources(Texture2D texture, float pixelsPerUnit, Rect textureRect)
         {
             return Sprite.Create(texture, textureRect, new Vector2(0.5f, 0.5f), pixelsPerUnit);

@@ -50,7 +50,8 @@ namespace Nebula.Patches
         static public PlayerControl SetMyTarget(float range, bool onlyWhiteNames = false, bool targetPlayersInVents = false, List<byte> untargetablePlayers = null, PlayerControl targetingPlayer = null)
         {
             return SetMyTarget(range,
-                    (player)=> {
+                    (player) =>
+                    {
                         if (onlyWhiteNames && (player.Role.IsImpostor || Game.GameData.data.players[player.PlayerId].role.deceiveImpostorInNameDisplay)) return false;
                         if (player.Object.inVent && !targetPlayersInVents) return false;
                         if (untargetablePlayers != null && untargetablePlayers.Any(x => x == player.Object.PlayerId)) return false;
@@ -58,10 +59,10 @@ namespace Nebula.Patches
                     }, targetingPlayer);
         }
 
-        static public PlayerControl SetMyTarget(bool onlyWhiteNames = false, bool targetPlayersInVents = false, List<byte> untargetablePlayers = null, PlayerControl targetingPlayer = null) 
-        { 
+        static public PlayerControl SetMyTarget(bool onlyWhiteNames = false, bool targetPlayersInVents = false, List<byte> untargetablePlayers = null, PlayerControl targetingPlayer = null)
+        {
             return SetMyTarget(GameOptionsData.KillDistances[Mathf.Clamp(PlayerControl.GameOptions.KillDistance, 0, 2)],
-                    onlyWhiteNames,targetPlayersInVents,untargetablePlayers,targetingPlayer);
+                    onlyWhiteNames, targetPlayersInVents, untargetablePlayers, targetingPlayer);
         }
 
         static public PlayerControl SetMyTarget(System.Predicate<GameData.PlayerInfo> untargetablePlayers, PlayerControl targetingPlayer = null)
@@ -89,12 +90,12 @@ namespace Nebula.Patches
                     continue;
                 }
 
-                if (!playerInfo.Disconnected && !playerInfo.IsDead )
+                if (!playerInfo.Disconnected && !playerInfo.IsDead)
                 {
                     PlayerControl @object = playerInfo.Object;
                     if (@object && untargetablePlayers.Invoke(playerInfo))
                     {
-                        if(CheckTargetable(@object.GetTruePosition(),truePosition,ref num))
+                        if (CheckTargetable(@object.GetTruePosition(), truePosition, ref num))
                         {
                             result = @object;
                         }
@@ -135,8 +136,8 @@ namespace Nebula.Patches
                 }
                 if (invalidFlag) continue;
 
-                if (CheckTargetable(deadBody.transform.position, truePosition,ref num) ||
-                    CheckTargetable(deadBody.transform.position + new Vector3(0.1f,0.1f), truePosition, ref num))
+                if (CheckTargetable(deadBody.transform.position, truePosition, ref num) ||
+                    CheckTargetable(deadBody.transform.position + new Vector3(0.1f, 0.1f), truePosition, ref num))
                 {
                     result = deadBody;
                 }
@@ -224,8 +225,8 @@ namespace Nebula.Patches
 
                     var completedStr = commsActive ? "?" : tasksCompleted.ToString();
                     string taskInfo;
-                    if(p.GetModData().role.hasFakeTask)
-                        taskInfo= tasksTotal > 0 ? $"<color=#868686FF>({completedStr}/{tasksTotal})</color>" : "";
+                    if (p.GetModData().role.hasFakeTask)
+                        taskInfo = tasksTotal > 0 ? $"<color=#868686FF>({completedStr}/{tasksTotal})</color>" : "";
                     else
                         taskInfo = tasksTotal > 0 ? $"<color=#FAD934FF>({completedStr}/{tasksTotal})</color>" : "";
 
@@ -243,13 +244,14 @@ namespace Nebula.Patches
                     }
                     playerInfoText = $"{roleNames} {taskInfo}".Trim();
                     meetingInfoText = playerInfoText;
-                    
+
                     playerInfo.text = playerInfoText;
                     playerInfo.gameObject.SetActive(p.Visible);
                     if (meetingInfo != null) meetingInfo.text = MeetingHud.Instance.state == MeetingHud.VoteStates.Results ? "" : meetingInfoText;
                 }
             }
         }
+
 
         public static void Postfix(PlayerControl __instance)
         {
@@ -281,7 +283,6 @@ namespace Nebula.Patches
                  });
             }
 
-            //全てのプレイヤーに対して実行
             __instance.GetModData().Speed.Update();
         }
     }
@@ -323,7 +324,7 @@ namespace Nebula.Patches
             //キルクールを設定する
             if (__instance.PlayerId == PlayerControl.LocalPlayer.PlayerId)
             {
-                Game.GameData.data.myData.getGlobalData().role.SetKillCoolDown(ref multiplier,ref addition);    
+                Game.GameData.data.myData.getGlobalData().role.SetKillCoolDown(ref multiplier, ref addition);
             }
 
             __instance.killTimer = Mathf.Clamp(time, 0f, PlayerControl.GameOptions.KillCooldown * multiplier + addition);
@@ -341,6 +342,65 @@ namespace Nebula.Patches
             if (hideNextAnimation)
                 source = target;
             hideNextAnimation = false;
+        }
+    }
+
+    //ベント移動その他
+    [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.WalkPlayerTo))]
+    class WalkPatch
+    {
+        public static void Prefix(PlayerPhysics __instance)
+        {
+            if (Helpers.HasModData(__instance.myPlayer.PlayerId))
+            {
+                __instance.myPlayer.GetModData().Speed.Reflect();
+            }
+            if (__instance.Speed < 0f) __instance.Speed *= -1f;
+        }
+
+        public static void Postfix(PlayerPhysics __instance)
+        {
+            if (Helpers.HasModData(__instance.myPlayer.PlayerId))
+            {
+                __instance.myPlayer.GetModData().Speed.Reflect();
+            }
+        }
+    }
+
+    //入力による移動
+    [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.FixedUpdate))]
+    class MyWalkPatch
+    {
+        public static void Prefix(PlayerPhysics __instance)
+        {
+            if (Helpers.HasModData(__instance.myPlayer.PlayerId))
+            {
+                __instance.myPlayer.GetModData().Speed.Reflect();
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(CustomNetworkTransform), nameof(CustomNetworkTransform.FixedUpdate))]
+    class WalkMagnitudePatch
+    {
+        public static void Prefix(CustomNetworkTransform __instance)
+        {
+            if (Game.GameData.data != null)
+            {
+                var player = __instance.gameObject.GetComponent<PlayerControl>();
+                Game.GameData.data.players[player.PlayerId].Speed.Reflect();
+
+                PlayerControl.LocalPlayer.MyPhysics.Speed=Helpers.playerById(player.PlayerId).MyPhysics.Speed;
+                if (PlayerControl.LocalPlayer.MyPhysics.Speed < 0f) PlayerControl.LocalPlayer.MyPhysics.Speed *= -1f;
+            }
+        }
+
+        public static void Postfix(CustomNetworkTransform __instance)
+        {
+            if (Game.GameData.data != null)
+            {
+                Game.GameData.data.myData.getGlobalData().Speed.Reflect();
+            }
         }
     }
 }

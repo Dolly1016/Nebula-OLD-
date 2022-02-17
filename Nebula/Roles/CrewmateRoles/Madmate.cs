@@ -12,6 +12,24 @@ namespace Nebula.Roles.CrewmateRoles
 {
     public class Madmate : Role
     {
+        private Module.CustomOption CanUseVentsOption;
+        private Module.CustomOption HasImpostorVisionOption;
+        private Module.CustomOption CanInvokeSabotageOption;
+
+        public override void LoadOptionData()
+        {
+            CanUseVentsOption = CreateOption(Color.white, "canUseVents", true);
+            CanInvokeSabotageOption = CreateOption(Color.white, "canInvokeSabotage", true);
+
+            HasImpostorVisionOption = CreateOption(Color.white, "hasImpostorVision", false);
+        }
+
+        public override void GlobalInitialize(PlayerControl __instance)
+        {
+            canMoveInVents = canUseVents = CanUseVentsOption.getBool();
+            canInvokeSabotage = CanInvokeSabotageOption.getBool();
+            useImpostorLightRadius = HasImpostorVisionOption.getBool();
+        }
 
         public Madmate()
                 : base("Madmate", "madmate", Palette.ImpostorRed, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,

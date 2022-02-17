@@ -54,6 +54,8 @@ namespace Nebula.Roles
 
         public static InvestigatorRoles.Investigator Investigator = new InvestigatorRoles.Investigator();
 
+        public static ParlourRoles.Gambler Gambler = new ParlourRoles.Gambler();
+
         public static ComplexRoles.FCrewmate F_Crewmate = new ComplexRoles.FCrewmate();
         public static ComplexRoles.FGuesser F_Guesser = new ComplexRoles.FGuesser();
         public static ComplexRoles.FTrapper F_Trapper = new ComplexRoles.FTrapper();
@@ -75,6 +77,7 @@ namespace Nebula.Roles
             Crewmate,Agent,Alien,Bait,Booster,DamnedCrew,Engineer,Mayor,Necromancer,NiceGuesser,NiceTrapper,Provocateur,Psychic,Pursuer,SecurityGuard,Seer,Sheriff,Spy,
             Madmate,
             Investigator,
+            Gambler
         };
 
         public static List<ExtraRole> AllExtraRoles = new List<ExtraRole>()

@@ -26,11 +26,11 @@ namespace Nebula.Patches
 
                 if (Nebula.NebulaPlugin.PluginStage != null)
                 {
-                    credentials.SetText(Nebula.NebulaPlugin.PluginStage + " v" + Nebula.NebulaPlugin.PluginVersion);
+                    credentials.SetText(Nebula.NebulaPlugin.PluginStage + " v" + Nebula.NebulaPlugin.PluginVisualVersion);
                 }
                 else
                 {
-                    credentials.SetText($"v{Nebula.NebulaPlugin.PluginVersion}");
+                    credentials.SetText($"v{Nebula.NebulaPlugin.PluginVisualVersion}");
                 }
                 credentials.alignment = TMPro.TextAlignmentOptions.Center;
                 credentials.fontSize *= 0.75f;
@@ -62,25 +62,28 @@ namespace Nebula.Patches
             static void Postfix(PingTracker __instance)
             {
                 __instance.text.alignment = TMPro.TextAlignmentOptions.TopRight;
-                if (AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started)
+
+                __instance.text.text = $"<size=130%><color=#ff351f>Nebula on the Ship</color></size> v" + NebulaPlugin.PluginVisualVersion + "\n" + __instance.text.text;
+                if (AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Started)
                 {
-                    __instance.text.text = $"<size=130%><color=#ff351f>Nebula on the Ship</color></size> v{NebulaPlugin.PluginVersion}\n" + __instance.text.text;
-                    if (PlayerControl.LocalPlayer.Data.IsDead)
-                    {
-                        __instance.transform.localPosition = new Vector3(3.45f, __instance.transform.localPosition.y, __instance.transform.localPosition.z);
-                    }
-                    else
-                    {
-                        __instance.transform.localPosition = new Vector3(4.2f, __instance.transform.localPosition.y, __instance.transform.localPosition.z);
-                    }
+                    __instance.transform.localPosition = new Vector3(3.5f, __instance.transform.localPosition.y, __instance.transform.localPosition.z);
                 }
+                else if (PlayerControl.LocalPlayer!=null && PlayerControl.LocalPlayer.Data.IsDead)
+                {
+                    __instance.transform.localPosition = new Vector3(3.45f, __instance.transform.localPosition.y, __instance.transform.localPosition.z);
+                }
+                else
+                {
+                    __instance.transform.localPosition = new Vector3(4.2f, __instance.transform.localPosition.y, __instance.transform.localPosition.z);
+                }
+
             }
         }
 
         [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start))]
         private static class LogoPatch
         {
-            static void Postfix(PingTracker __instance)
+            static void Postfix(MainMenuManager __instance)
             {
 
                 var amongUsLogo = GameObject.Find("bannerLogo_AmongUs");

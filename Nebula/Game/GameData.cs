@@ -146,6 +146,10 @@ namespace Nebula.Game
             {
                 player.MyPhysics.Speed *= speed.SpeedRate;
             }
+            if(!player.CanMove && player.MyPhysics.Speed < 0)
+            {
+                player.MyPhysics.Speed *= -1f;
+            }
         }
     }
 
@@ -384,6 +388,7 @@ namespace Nebula.Game
         public void Revive()
         {
             IsAlive = true;
+            Status = PlayerStatus.Revived;
         }
 
         public void Die(PlayerStatus status, byte murderId)

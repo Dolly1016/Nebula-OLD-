@@ -25,7 +25,7 @@ namespace Nebula.Logger
 
             using (var writer= new StreamWriter(Path, true))
             {
-                writer.WriteLine(" - Nebula on the Ship  "+ NebulaPlugin.PluginStage + " v" + NebulaPlugin.PluginVersion +"  Log File - ");
+                writer.WriteLine(" - Nebula on the Ship  "+ NebulaPlugin.PluginStage + " v" + NebulaPlugin.PluginVisualVersion + "  Log File - ");
             }
         }
 

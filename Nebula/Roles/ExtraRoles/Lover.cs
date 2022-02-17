@@ -12,7 +12,7 @@ namespace Nebula.Roles.ExtraRoles
     public class Lover : ExtraRole
     {
         private Module.CustomOption maxPairsOption;
-        //private Module.CustomOption chanceThatOneLoverIsImpostorOption;
+        private Module.CustomOption chanceThatOneLoverIsImpostorOption;
         private Module.CustomOption canChangeTrilemmaOption;
 
         private PlayerControl trilemmaTarget=null;
@@ -96,12 +96,44 @@ namespace Nebula.Roles.ExtraRoles
 
             int pairs = Helpers.CalcProbabilityCount(RoleChanceOption.getSelection(), maxPairs);
 
-            byte[] playerArray = Helpers.GetRandomArray(Game.GameData.data.players.Keys);
+            List<PlayerControl> crewmates = PlayerControl.AllPlayerControls.ToArray().ToList().OrderBy(x => Guid.NewGuid()).ToList();
+            List<PlayerControl> impostors = PlayerControl.AllPlayerControls.ToArray().ToList().OrderBy(x => Guid.NewGuid()).ToList();
+            crewmates.RemoveAll(x => x.Data.Role.IsImpostor);
+            impostors.RemoveAll(x => !x.Data.Role.IsImpostor);
+
+            int[] crewmateIndex = Helpers.GetRandomArray(crewmates.Count);
+            int[] impostorIndex = Helpers.GetRandomArray(impostors.Count);
+            int crewmateUsed = 0, impostorUsed = 0;
 
             for (int i = 0; i < pairs; i++)
             {
-                for (int p = 0; p < 2; p++) {
-                    assignMap.Assign(playerArray[i * 2 + p],this.id, (ulong)(i + 1));
+                //割り当てられるインポスターがいない場合確率に依らずクルー同士をあてがう
+
+                if (impostorUsed < impostorIndex.Length && NebulaPlugin.rnd.NextDouble() * 10 < chanceThatOneLoverIsImpostorOption.getSelection())
+                {
+                    //片方がインポスターの場合
+
+                    //割り当てられない場合終了
+                    if (crewmateUsed >= crewmateIndex.Length) break;
+
+                    assignMap.Assign(crewmates[crewmateIndex[crewmateUsed]].PlayerId, this.id, (ulong)(i + 1));
+                    assignMap.Assign(impostors[impostorIndex[impostorUsed]].PlayerId, this.id, (ulong)(i + 1));
+
+                    crewmateUsed++;
+                    impostorUsed++;
+                }
+                else
+                {
+                    //両方ともインポスターでない場合
+
+                    //割り当てられない場合終了
+                    if (crewmateUsed+1 >= crewmateIndex.Length) break;
+
+                    for (int p = 0; p < 2; p++)
+                    {
+                        assignMap.Assign(crewmates[crewmateIndex[crewmateUsed]].PlayerId, this.id, (ulong)(i + 1));
+                        crewmateUsed++;
+                    }
                 }
             }
         }
@@ -109,6 +141,7 @@ namespace Nebula.Roles.ExtraRoles
         public override void LoadOptionData()
         {
             maxPairsOption = CreateOption(Color.white, "maxPairs", 1f, 0f, 5f, 1f);
+            chanceThatOneLoverIsImpostorOption = CreateOption(Color.white, "chanceThatOneLoverIsImpostor", CustomOptionHolder.rates);
             canChangeTrilemmaOption = CreateOption(Color.white, "canChangeTrilemma", true);
         }
 

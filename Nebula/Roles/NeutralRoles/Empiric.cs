@@ -30,6 +30,7 @@ namespace Nebula.Roles.NeutralRoles
         private float coasting;
 
         public bool WinTrigger { get; set; } = false;
+        public byte Winner { get; set; } = Byte.MaxValue;
 
         public override void LoadOptionData()
         {
@@ -246,6 +247,8 @@ namespace Nebula.Roles.NeutralRoles
             infectButton = null;
             infectProgress = new Dictionary<byte, float>();
             coasting = 0f;
+
+            Patches.EndCondition.EmpiricWin.TriggerRole = this;
         }
     }
 }

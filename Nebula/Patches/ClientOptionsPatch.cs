@@ -13,7 +13,7 @@ namespace Nebula.Patches
     {
         public static void Postfix(LanguageSetter __instance, [HarmonyArgument(0)] LanguageButton selected)
         {
-            Language.Language.Load(selected.Language.name);
+            Language.Language.Load();
         }
     }
 }

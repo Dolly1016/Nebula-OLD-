@@ -37,13 +37,20 @@ namespace Nebula
     {
         public static System.Random rnd = new System.Random((int)DateTime.Now.Ticks);
 
-        public const string AmongUsVersion = "2021.12.15";
+        public const string AmongUsVersion = "2021.2.8";
         public const string PluginGuid = "jp.dreamingpig.amongus.nebula";
         public const string PluginName = "TheNebula";
-        public const string PluginVersion = "1.1.1";
+        public const string PluginVersion = "1.1.4";
+        /*
+        public const string PluginVisualVersion = "22.02.14a";
+        public const string PluginStage = "Snapshot";
+        */
+        // /*
+        public const string PluginVisualVersion = PluginVersion;
         public const string PluginStage = "";
-        public const string PluginVersionForFetch = "1.1.1";
-        public byte[] PluginVersionData = new byte[] { 1, 1, 1, 0 };
+        // */
+        public const string PluginVersionForFetch = "1.1.4";
+        public byte[] PluginVersionData = new byte[] { 1, 1, 4, 0 };
 
         public static NebulaPlugin Instance;
 

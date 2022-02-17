@@ -16,7 +16,8 @@ namespace Nebula.Module
     public enum CustomGameMode
     {
         Standard=0x01,
-        Investigators=0x02,
+        Parlour = 0x02,
+        Investigators =0x04,
         All=int.MaxValue
     }
 
@@ -24,7 +25,7 @@ namespace Nebula.Module
     {
         static public List<CustomGameMode> AllGameModes = new List<CustomGameMode>()
         {
-            CustomGameMode.Standard,CustomGameMode.Investigators
+            CustomGameMode.Standard,CustomGameMode.Parlour,CustomGameMode.Investigators
         };
 
         static public CustomGameMode GetGameMode(int GameModeIndex)
@@ -64,6 +65,7 @@ namespace Nebula.Module
         static public CustomGameMode CurrentGameMode;
 
         public List<CustomOption> prerequisiteOptions;
+        public List<CustomOption> prerequisiteOptionsInv;
 
         public virtual bool enabled
         {
@@ -87,12 +89,14 @@ namespace Nebula.Module
 
         public bool IsHidden(CustomGameMode gameMode)
         {
-            return isHidden || (0 == (int)(gameMode & GameMode));
+            return isHidden || (0 == (int)(gameMode & GameMode))
+                || prerequisiteOptions.Count > 0 && prerequisiteOptions.All((option) => { return !option.enabled; })
+                || prerequisiteOptionsInv.Count > 0 && prerequisiteOptionsInv.All((option) => { return option.enabled; });
         }
 
         public bool IsHiddenOnDisplay(CustomGameMode gameMode)
         {
-            return isHidden || isHiddenOnDisplay || (0 == (int)(gameMode & GameMode));
+            return isHiddenOnDisplay || IsHidden(gameMode);
         }
 
         // Option creation
@@ -134,6 +138,7 @@ namespace Nebula.Module
             options.Add(this);
 
             this.prerequisiteOptions = new List<CustomOption>();
+            this.prerequisiteOptionsInv = new List<CustomOption>();
             this.GameMode = CustomGameMode.Standard;
         }
 
@@ -191,6 +196,11 @@ namespace Nebula.Module
         public void AddPrerequisite(CustomOption option)
         {
             prerequisiteOptions.Add(option);
+        }
+
+        public void AddInvPrerequisite(CustomOption option)
+        {
+            prerequisiteOptionsInv.Add(option);
         }
 
         // Getter
@@ -273,6 +283,20 @@ namespace Nebula.Module
 
                     ShareOptionSelections();// Share all selections
                 }
+            }
+        }
+
+        public void SetParent(CustomOption newParent)
+        {
+            if (parent != null)
+            {
+                parent.children.Remove(this);
+            }
+
+            parent = newParent;
+            if (parent != null)
+            {
+                parent.children.Add(this);
             }
         }
     }
@@ -573,10 +597,6 @@ namespace Nebula.Module
 
                     if (option.IsHidden(CustomOption.CurrentGameMode))
                     {
-                        enabled = false;
-                    }
-
-                    if(option.prerequisiteOptions.Count>0 && option.prerequisiteOptions.All((option) => { return !enabled; })){
                         enabled = false;
                     }
 

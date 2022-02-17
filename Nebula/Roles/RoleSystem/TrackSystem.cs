@@ -9,14 +9,19 @@ namespace Nebula.Roles.RoleSystem
     {
         static public Objects.CustomButton ButtonInitialize(HudManager __instance, Dictionary<byte,Objects.Arrow> arrows,Sprite buttonSprite, float duration, float coolDown)
         {
-            Objects.CustomButton result;
+            Objects.CustomButton result = null;
             result = new Objects.CustomButton(
                 () => { 
 
                 },
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
                 () => { return PlayerControl.LocalPlayer.CanMove; },
-                () => { },
+                () => {
+                    foreach (var arrow in arrows.Values) UnityEngine.Object.Destroy(arrow.arrow);
+                    arrows.Clear();
+                    result.isEffectActive = false;
+                    result.Timer = result.MaxTimer;
+                },
                 buttonSprite,
                 new Vector3(-1.8f, -0.06f, 0),
                 __instance,
@@ -62,9 +67,14 @@ namespace Nebula.Roles.RoleSystem
                             existFlag = true; break;
                         }
                     }
-                    if (!existFlag) removeKeys.Add(entry.Key);
+                    if (!existFlag)
+                    {
+                        removeKeys.Add(entry.Key);
+                        UnityEngine.Object.Destroy(entry.Value.arrow);
+                    }
                 }
-                foreach (var id in removeKeys) arrows.Remove(id);
+                foreach (var id in removeKeys)arrows.Remove(id);
+                
 
                 //あらたな死体を追加
                 foreach (var body in deadBodies)

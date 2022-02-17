@@ -11,7 +11,14 @@ namespace Nebula.Roles
 {
     public class Side
     {
-        public static Side Crewmate = new Side("Crewmate", "crewmate", true, Palette.CrewmateBlue, (PlayerStatistics statistics, ShipStatus status) =>
+        public enum IntroDisplayOption
+        {
+            STANDARD,
+            SHOW_ALL,
+            SHOW_ONLY_ME
+        }
+
+        public static Side Crewmate = new Side("Crewmate", "crewmate", IntroDisplayOption.SHOW_ALL, Palette.CrewmateBlue, (PlayerStatistics statistics, ShipStatus status) =>
         {
             if (statistics.GetAlivePlayers(Impostor) == 0 && statistics.GetAlivePlayers(Jackal) == 0)
             {
@@ -25,7 +32,7 @@ namespace Nebula.Roles
             return null;
         });
 
-        public static Side Impostor = new Side("Impostor", "impostor", false, Palette.ImpostorRed, (PlayerStatistics statistics, ShipStatus status) =>
+        public static Side Impostor = new Side("Impostor", "impostor", IntroDisplayOption.STANDARD, Palette.ImpostorRed, (PlayerStatistics statistics, ShipStatus status) =>
         {
             //Sabotage
             if (status.Systems != null)
@@ -71,7 +78,7 @@ namespace Nebula.Roles
             return null;
         });
 
-        public static Side Jackal = new Side("Jackal", "jackal", false, NeutralRoles.Jackal.Color, (PlayerStatistics statistics, ShipStatus status) =>
+        public static Side Jackal = new Side("Jackal", "jackal", IntroDisplayOption.SHOW_ONLY_ME, NeutralRoles.Jackal.Color, (PlayerStatistics statistics, ShipStatus status) =>
         {
             if (statistics.GetAlivePlayers(Jackal)*2 >= statistics.TotalAlive && statistics.GetAlivePlayers(Impostor)==0)
             {
@@ -80,7 +87,7 @@ namespace Nebula.Roles
             return null;
         });
 
-        public static Side Jester = new Side("Jester", "jester", false, NeutralRoles.Jester.Color, (PlayerStatistics statistics, ShipStatus status) =>
+        public static Side Jester = new Side("Jester", "jester", IntroDisplayOption.SHOW_ONLY_ME, NeutralRoles.Jester.Color, (PlayerStatistics statistics, ShipStatus status) =>
         {
             if (Roles.Jester.WinTrigger)
             {
@@ -89,7 +96,7 @@ namespace Nebula.Roles
             return null;
         });
 
-        public static Side Vulture = new Side("Vulture", "vulture", false, NeutralRoles.Vulture.Color, (PlayerStatistics statistics, ShipStatus status) =>
+        public static Side Vulture = new Side("Vulture", "vulture", IntroDisplayOption.SHOW_ONLY_ME, NeutralRoles.Vulture.Color, (PlayerStatistics statistics, ShipStatus status) =>
         {
             if (Roles.Vulture.WinTrigger)
             {
@@ -98,7 +105,7 @@ namespace Nebula.Roles
             return null;
         });
 
-        public static Side Arsonist = new Side("Arsonist", "arsonist", false, NeutralRoles.Arsonist.Color, (PlayerStatistics statistics, ShipStatus side) =>
+        public static Side Arsonist = new Side("Arsonist", "arsonist", IntroDisplayOption.SHOW_ONLY_ME, NeutralRoles.Arsonist.Color, (PlayerStatistics statistics, ShipStatus side) =>
         {
             if (Roles.Arsonist.WinTrigger)
             {
@@ -107,7 +114,7 @@ namespace Nebula.Roles
             return null;
         });
 
-        public static Side Empiric = new Side("Empiric", "empiric", false, NeutralRoles.Empiric.Color, (PlayerStatistics statistics, ShipStatus side) =>
+        public static Side Empiric = new Side("Empiric", "empiric", IntroDisplayOption.SHOW_ONLY_ME, NeutralRoles.Empiric.Color, (PlayerStatistics statistics, ShipStatus side) =>
         {
             if (Roles.Empiric.WinTrigger)
             {
@@ -116,17 +123,22 @@ namespace Nebula.Roles
             return null;
         });
 
-        public static Side Opportunist = new Side("Opportunist", "opportunist", false, NeutralRoles.Opportunist.Color, (PlayerStatistics statistics, ShipStatus side) =>
+        public static Side Opportunist = new Side("Opportunist", "opportunist", IntroDisplayOption.SHOW_ONLY_ME, NeutralRoles.Opportunist.Color, (PlayerStatistics statistics, ShipStatus side) =>
         {
             return null;
         });
 
-        public static Side Investigator = new Side("Investigator", "investigator", true, Palette.CrewmateBlue, (PlayerStatistics statistics, ShipStatus status) =>
+        public static Side Investigator = new Side("Investigator", "investigator", IntroDisplayOption.SHOW_ALL, Palette.CrewmateBlue, (PlayerStatistics statistics, ShipStatus status) =>
         {
             return null;
         });
 
-        public static Side Extra = new Side("Extra", "extra", false, new Color(150, 150, 150), (PlayerStatistics statistics, ShipStatus side) =>
+        public static Side Gambler = new Side("Gambler", "gambler", IntroDisplayOption.SHOW_ONLY_ME, ParlourRoles.Gambler.Color , (PlayerStatistics statistics, ShipStatus status) =>
+          {
+              return null;
+          });
+
+        public static Side Extra = new Side("Extra", "extra", IntroDisplayOption.STANDARD, new Color(150, 150, 150), (PlayerStatistics statistics, ShipStatus side) =>
         {
             if (CustomOptionHolder.limiterOptions.getBool())
             {
@@ -181,22 +193,22 @@ namespace Nebula.Roles
             Crewmate, Impostor,
             Jackal, Jester, Vulture, Empiric, Arsonist, 
             Investigator,
+            Gambler,
             Extra
         };
 
-        //ロールの設定関わりなく全てのプレイヤーを同陣営として表示するフラグ
-        public bool showFullMemberAtIntro { get; }
+        public IntroDisplayOption ShowOption { get; }
         public Color color { get; }
         public string side { get; }
         public string localizeSide { get; }
 
         public EndCriteriaChecker endCriteriaChecker { get; }
 
-        private Side(string side, string localizeSide, bool showFullMemberAtIntro, Color color, EndCriteriaChecker endCriteriaChecker)
+        private Side(string side, string localizeSide, IntroDisplayOption displayOption, Color color, EndCriteriaChecker endCriteriaChecker)
         {
             this.side = side;
             this.localizeSide = localizeSide;
-            this.showFullMemberAtIntro = showFullMemberAtIntro;
+            this.ShowOption = displayOption;
             this.color = color;
             this.endCriteriaChecker = endCriteriaChecker;
         }

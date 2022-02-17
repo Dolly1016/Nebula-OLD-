@@ -78,9 +78,9 @@ namespace Nebula.Roles.ComplexRoles
             invisibleTrapRangeOption = CreateOption(Color.white, "invisibleTrapRange", 0.5f, 0.125f, 2f, 0.125f);
             invisibleTrapRangeOption.suffix = "cross";
 
-            commButtonCostOption = CreateOption(Color.white, "commTrapCost", 2f, 1f, 5f, 1f);
+            commButtonCostOption = CreateOption(Color.white, "commTrapCost", 2f, 1f, 15f, 1f);
             commButtonCostOption.suffix = "cross";
-            killButtonCostOption = CreateOption(Color.white, "killTrapCost", 2f, 1f, 5f, 1f);
+            killButtonCostOption = CreateOption(Color.white, "killTrapCost", 2f, 1f, 15f, 1f);
             killButtonCostOption.suffix = "cross";
 
             FirstRole = Roles.NiceTrapper;
@@ -282,7 +282,28 @@ namespace Nebula.Roles.ComplexRoles
 
                     trapButton.Timer = trapButton.MaxTimer;                   
                 },
-                () => { return !PlayerControl.LocalPlayer.Data.IsDead && Game.GameData.data.myData.getGlobalData().GetRoleData(Roles.F_Trapper.remainTrapsId) > 0; },
+                () => {
+                    if (PlayerControl.LocalPlayer.Data.IsDead) return false;
+
+                    int left = Game.GameData.data.myData.getGlobalData().GetRoleData(Roles.F_Trapper.remainTrapsId);
+
+                    switch (trapKind)
+                    {
+                        case 0:
+                        case 1:
+                            return left >= 1;
+                        case 2:
+                            if (side == Side.Impostor)
+                            {
+                                return left >= (int)Roles.F_Trapper.killButtonCostOption.getFloat();
+                            }
+                            else
+                            {
+                                return left >= (int)Roles.F_Trapper.commButtonCostOption.getFloat();
+                            }
+                    }
+                    return false;
+                },
                 () => {
                     int total = (int)Roles.F_Trapper.maxTrapsOption.getFloat();
                     int remain = Game.GameData.data.myData.getGlobalData().GetRoleData(Roles.F_Trapper.remainTrapsId);

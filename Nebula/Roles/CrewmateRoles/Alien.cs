@@ -59,13 +59,13 @@ namespace Nebula.Roles.CrewmateRoles
 
                     if (!emiInhibitsCrewmatesOption.getBool() && PlayerControl.LocalPlayer.GetModData().role.category == RoleCategory.Crewmate)
                     {
-                        if (button.Timer > 0f)
+                        if (button.Timer > 1f)
                             button.Timer -= Time.deltaTime*0.5f;
                     }
                     else
                     {
                         if (button.MaxTimer > 0f)
-                            if (button.Timer > 0f)
+                            if (button.Timer > 1f)
                                 button.Timer += Time.deltaTime;
                     }
                 }

@@ -35,4 +35,32 @@ namespace Nebula.Patches
                     RPCEventInvoker.CompleteTask(__instance.Owner.PlayerId);
         }
     }
+
+    [HarmonyPatch(typeof(SabotageButton), nameof(SabotageButton.Refresh))]
+    class SabotageButtonRefreshPatch
+    {
+        static void Postfix()
+        {
+            if (HudManager.Instance==null) return;
+            if (Game.GameData.data == null) return;
+
+            if (!Game.GameData.data.myData.getGlobalData().role.canInvokeSabotage)
+            {
+                HudManager.Instance.SabotageButton.SetDisabled();
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(SabotageButton), nameof(SabotageButton.DoClick))]
+    public static class SabotageButtonDoClickPatch
+    {
+        public static bool Prefix(SabotageButton __instance)
+        {
+            //インポスターなら特段何もしない
+            if (PlayerControl.LocalPlayer.Data.Role.TeamType == RoleTeamTypes.Impostor) return true;
+
+            DestroyableSingleton<HudManager>.Instance.ShowMap((Il2CppSystem.Action<MapBehaviour>)((m) => { m.ShowSabotageMap(); }));
+            return false;
+        }
+    }
 }

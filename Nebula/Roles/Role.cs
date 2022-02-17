@@ -43,11 +43,16 @@ namespace Nebula.Roles
         protected HashSet<Patches.EndCondition> winReasons { get; }
         public virtual bool CheckWin(Patches.EndCondition winReason)
         {
+            //単独勝利ロール
+            if (winReason.TriggerRole != null)
+                return winReason.TriggerRole.Winner == PlayerControl.LocalPlayer.PlayerId;
+            
             return winReasons.Contains(winReason);
         }
 
         public Color ventColor { get; set; }
         public bool canUseVents { get; set; }
+        public bool canInvokeSabotage { get; set; }
         public bool canMoveInVents { get; set; }
         /// <summary>
         /// 停電が効かない場合true
@@ -143,6 +148,8 @@ namespace Nebula.Roles
             this.HideKillButtonEvenImpostor = false;
 
             this.HideInExclusiveAssignmentOption = false;
+
+            this.canInvokeSabotage = (category == RoleCategory.Impostor);
         }
 
         public static Role GetRoleById(byte id)
@@ -164,30 +171,33 @@ namespace Nebula.Roles
 
             Game.PlayerData data;
             Game.PlayerData myData = Game.GameData.data.myData.getGlobalData();
+
+            //SHOW_ONLY_MEは自信を最初に追加しているのでこれ以上何もしない
             foreach (PlayerControl player in PlayerControl.AllPlayerControls)
             {
-                if (myData.role.introMainDisplaySide.showFullMemberAtIntro)
+                switch (myData.role.introMainDisplaySide.ShowOption)
                 {
-                    if (!players.Contains(player))
-                    {
-                        players.Add(player);
-                    }
-                }
-                else
-                {
-                    data = Game.GameData.data.players[player.PlayerId];
+                    case Side.IntroDisplayOption.STANDARD:
+                        data = Game.GameData.data.players[player.PlayerId];
 
-                    foreach (Side side in data.role.introInfluenceSides)
-                    {
-                        if (myData.role.introDisplaySides.Contains(side))
+                        foreach (Side side in data.role.introInfluenceSides)
                         {
-                            if (!players.Contains(player))
+                            if (myData.role.introDisplaySides.Contains(side))
                             {
-                                players.Add(player);
+                                if (!players.Contains(player))
+                                {
+                                    players.Add(player);
+                                }
+                                break;
                             }
-                            break;
                         }
-                    }
+                        break;
+                    case Side.IntroDisplayOption.SHOW_ALL:
+                        if (!players.Contains(player))
+                        {
+                            players.Add(player);
+                        }
+                        break;
                 }
             }
         }

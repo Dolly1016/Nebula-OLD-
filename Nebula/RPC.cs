@@ -96,7 +96,7 @@ namespace Nebula
                     RPCEvents.ForceEnd(reader.ReadByte());
                     break;
                 case (byte)CustomRPC.WinTrigger:
-                    RPCEvents.WinTrigger(reader.ReadByte());
+                    RPCEvents.WinTrigger(reader.ReadByte(),reader.ReadByte());
                     break;
                 case (byte)CustomRPC.ShareOptions:
                     RPCEvents.ShareOptions((int)reader.ReadPackedUInt32(), reader);
@@ -133,7 +133,7 @@ namespace Nebula
                     RPCEvents.UncheckedCmdReportDeadBody(reader.ReadByte(), reader.ReadByte());
                     break;
                 case (byte)CustomRPC.CloseUpKill:
-                    RPCEvents.CloseUpKill(reader.ReadByte());
+                    RPCEvents.CloseUpKill(reader.ReadByte(),reader.ReadByte());
                     break;
                 case (byte)CustomRPC.UpdateRoleData:
                     RPCEvents.UpdateRoleData(reader.ReadByte(), reader.ReadInt32(), reader.ReadInt32());
@@ -255,12 +255,13 @@ namespace Nebula
             }
         }
 
-        public static void WinTrigger(byte roleId)
+        public static void WinTrigger(byte roleId,byte winnerId)
         {
             Roles.Role role = Roles.Role.GetRoleById(roleId);
             if(role is Roles.Template.HasWinTrigger)
             {
                 ((Roles.Template.HasWinTrigger)role).WinTrigger=true;
+                ((Roles.Template.HasWinTrigger)role).Winner = winnerId;
             }
         }
 
@@ -336,6 +337,8 @@ namespace Nebula
                 if (showAnimation == 0) Patches.KillAnimationCoPerformKillPatch.hideNextAnimation = true;
                 source.MurderPlayer(target);
 
+                Game.GameData.data.players[target.PlayerId].Die(Game.PlayerData.PlayerStatus.GetStatusById(statusId), source.PlayerId);
+
                 if (Game.GameData.data.players[target.PlayerId].role.hasFakeTask)
                 {
                     target.clearAllTasks();
@@ -368,8 +371,6 @@ namespace Nebula
                             Game.GameData.data.myData.CanSeeEveryoneInfo = true;
                     });
                 }
-
-                Game.GameData.data.players[target.PlayerId].Die(Game.PlayerData.PlayerStatus.GetStatusById(statusId), source.PlayerId);
             }
         }
 
@@ -427,11 +428,14 @@ namespace Nebula
             }
         }
 
-        public static void CloseUpKill(byte targetId)
+        public static void CloseUpKill(byte killerId,byte targetId)
         {
             UncheckedExilePlayer(targetId,Game.PlayerData.PlayerStatus.Guessed.Id);
 
             if (Constants.ShouldPlaySfx()) SoundManager.Instance.PlaySound(Helpers.playerById(targetId).KillSfx, false, 0.8f);
+
+            if (PlayerControl.LocalPlayer.PlayerId == targetId)
+                HudManager.Instance.KillOverlay.ShowKillAnimation(Helpers.playerById(killerId).Data, PlayerControl.LocalPlayer.Data);
         }
 
         public static void UpdateRoleData(byte playerId, int dataId, int newData)
@@ -801,7 +805,7 @@ namespace Nebula
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.WinTrigger, Hazel.SendOption.Reliable, -1);
             writer.Write(role.id);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
-            RPCEvents.WinTrigger(role.id);
+            RPCEvents.WinTrigger(role.id,PlayerControl.LocalPlayer.PlayerId);
         }
 
         public static void UpdatePlayerControl()
@@ -865,9 +869,10 @@ namespace Nebula
         public static void CloseUpKill(PlayerControl murder, PlayerControl target)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.CloseUpKill, Hazel.SendOption.Reliable, -1);
+            writer.Write(murder.PlayerId);
             writer.Write(target.PlayerId);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
-            RPCEvents.CloseUpKill(target.PlayerId);
+            RPCEvents.CloseUpKill(murder.PlayerId,target.PlayerId);
         }
 
         public static void AddAndUpdateRoleData(byte playerId, int dataId, int addData)

@@ -169,7 +169,7 @@ namespace Nebula.Objects
 
         private void Update()
         {
-            if (PlayerControl.LocalPlayer.Data == null || MeetingHud.Instance || ExileController.Instance || !HasButton())
+            if (PlayerControl.LocalPlayer.Data == null || !Helpers.ShowButtons || !HasButton())
             {
                 temporaryHide(true);
                 return;

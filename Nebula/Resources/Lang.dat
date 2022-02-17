@@ -10,6 +10,7 @@
 "lobby.willEliminatedByMismatchVersion" : "The host has no or a different version of Nebula on the Ship\nYou will be kicked in %STAY%s"
 
 "gamemode.standard" : "Standard"
+"gamemode.parlour" : "Coming Soon!"
 "gamemode.investigators" : "Coming Soon!"
 
 "option.display.pressTabForMore" : "Press Tab For More"
@@ -220,6 +221,10 @@
 "role.sheriff.name" : "Sheriff"
 "role.sheriff.description" : "Shoot the <color=#ff1919ff>Impostors</color>"
 "role.sheriff.killCoolDown" : "Kill Cool Down"
+"role.sheriff.canKillMadmate" : "Can Kill Madmate"
+"role.sheriff.canKillSpy" : "Can Kill Spy"
+"role.sheriff.canKillNecromancer" : "Can Kill Necromancer"
+"role.sheriff.canKillSheriff" : "Can Kill Sheriff"
 
 "role.securityGuard.name" : "Security Guard"
 "role.securityGuard.description" : "Seal Vent to Inhibit Barbarism"
@@ -235,6 +240,9 @@
 
 "role.madmate.name" : "Madmate"
 "role.madmate.description" : "Assist the <color=#ff1919ff>Impostors</color>"
+"role.madmate.canUseVents" : "Can Use Vents"
+"role.madmate.hasImpostorVision" : "Has Impostor Vision"
+"role.madmate.canInvokeSabotage" : "Can Invoke Sabotage"
 
 "role.impostor.name" : "Impostor"
 "role.impostor.description" : "Kill the Crewmates"
@@ -287,6 +295,7 @@
 "role.arsonist.description" : "Let Them Burn"
 "role.arsonist.douseDuration" : "Douse Duration"
 "role.arsonist.douseCoolDown" : "Douse Cool Down"
+"role.arsonist.douseRange" : "Douse Range"
 
 "role.empiric.name" : "Empiric"
 "role.empiric.description" : "Spread a Disease"
@@ -308,6 +317,7 @@
 "role.jester.name" : "Jester"
 "role.jester.description" : "Get Voted Out"
 "role.jester.canUseVents" : "Can Use Vents"
+"role.jester.canInvokeSabotage" : "Can Invoke Sabotage"
 
 "role.opportunist.name" : "Opportunist"
 "role.opportunist.description" : "Wait for Opportunity"
@@ -323,10 +333,17 @@
 "role.vulture.eatCoolDown" : "Eat Cool Down"
 
 "role.drunk.name" : "Drunk"
+"role.drunk.chanceCategory1" : "Assignment Category"
+"role.drunk.chanceCategory2" : "Assignment Category 2"
+"role.drunk.chanceCategory3" : "Assignment Category 3"
+"role.drunk.chanceCategory4" : "Assignment Category 4"
+"role.drunk.chanceCategory5" : "Assignment Category 5"
+"role.drunk.chanceRate" : "Assignment Chance"
 
 "role.lover.name" : "Lover"
 "role.lover.description" : "You're in <color=#fc04bdff>Love</color> with %NAME%"
 "role.lover.maxPairs" : "Max Couples"
+"role.lover.chanceThatOneLoverIsImpostor" : "Chance That One Lover Is Impostor"
 "role.lover.canChangeTrilemma" : "Can Change Trilemma"
 "role.lover.additionalEndText" : " <color=#ffffffff>with</color> <color=#fb02beff>Lovers</color>"
 
@@ -334,6 +351,9 @@
 
 "role.investigator.name" : "Investigator"
 "role.investigator.description" : "Find Out What It Is"
+
+"role.gambler.name" : "Gambler"
+"role.gambler.description" : "Find Out What It Is"
 
 "side.crewmate.name" : "Crewmate"
 "side.impostor.name" : "Impostor"
@@ -344,6 +364,14 @@
 "side.opportunist.name" : "Opportunist"
 "side.vulture.name" : "Vulture"
 "side.investigator.name" : "Investigator"
+
+"roles.category.default" : "Default"
+"roles.category.crewmate" : "Crewmate"
+"roles.category.impostor" : "Impostor"
+"roles.category.neutral" : "Neutral"
+"roles.category.lover" : "Lover"
+"roles.category.jackal" : "Jackal"
+"roles.category.vulture" : "Vulture"
 
 "game.endText.crewmate" : "Team Crewmate Wins"
 "game.endText.impostor" : "Team Impostor Wins"

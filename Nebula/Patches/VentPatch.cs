@@ -106,10 +106,22 @@ namespace Nebula.Patches
                 return;
             }
 
-            if (__instance.AmOwner && Game.GameData.data.players[__instance.PlayerId].role.canUseVents && HudManager.Instance.ReportButton.isActiveAndEnabled)
-            {
+            if (!__instance.AmOwner) return;
+
+
+            var role = Game.GameData.data.players[__instance.PlayerId].role;
+            var showFlag = HudManager.Instance.ReportButton.isActiveAndEnabled;
+
+            if (role.canUseVents && showFlag)
                 HudManager.Instance.ImpostorVentButton.Show();
-            }
+            else
+                HudManager.Instance.ImpostorVentButton.Hide();
+
+            if (role.canInvokeSabotage && showFlag)
+                HudManager.Instance.SabotageButton.Show();
+            else
+                HudManager.Instance.SabotageButton.Hide();
+
         }
     }
 }

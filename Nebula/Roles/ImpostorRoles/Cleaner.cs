@@ -18,6 +18,7 @@ namespace Nebula.Roles.ImpostorRoles
         public override void LoadOptionData()
         {
             cleanCoolDownOption = CreateOption(Color.white, "cleanCoolDown", 30f, 10f, 60f, 5f);
+            cleanCoolDownOption.suffix = "second";
         }
 
         /* ボタン */

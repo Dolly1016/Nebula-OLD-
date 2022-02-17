@@ -117,7 +117,8 @@ namespace Nebula.Module
             }
             else if (Timer < 180)
             {
-                Color = new Color(0.7f + 0.3f * (float)(Timer - 60) / 120f, 0, 0);
+                Color = new Color(0.7f + 0.3f * (float)(Timer - 60) / 120f,
+                    (float)(Timer - 60) / 120f, (float)(Timer - 60) / 120f);
             }
             else
             {

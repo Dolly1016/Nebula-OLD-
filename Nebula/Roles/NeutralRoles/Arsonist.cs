@@ -20,8 +20,10 @@ namespace Nebula.Roles.NeutralRoles
 
         private Module.CustomOption douseDurationOption;
         private Module.CustomOption douseCoolDownOption;
+        private Module.CustomOption douseRangeOption;
 
         public bool WinTrigger { get; set; } = false;
+        public byte Winner { get; set; } = Byte.MaxValue;
 
         public override void LoadOptionData()
         {
@@ -30,6 +32,9 @@ namespace Nebula.Roles.NeutralRoles
 
             douseCoolDownOption = CreateOption(Color.white, "douseCoolDown", 10f, 0f, 60f, 5f);
             douseCoolDownOption.suffix = "second";
+
+            douseRangeOption = CreateOption(Color.white, "douseRange", 1f, 0.5f, 2f, 0.125f);
+            douseRangeOption.suffix = "cross";
         }
 
 
@@ -153,7 +158,7 @@ namespace Nebula.Roles.NeutralRoles
             base.MyPlayerControlUpdate();
 
             Game.MyPlayerData data = Game.GameData.data.myData;
-            data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(1.2f, false, false, activePlayers);
+            data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(2.4f*douseRangeOption.getFloat(), false, false, activePlayers);
             Patches.PlayerControlPatch.SetPlayerOutline(data.currentTarget, Color.yellow);
         }
 
@@ -164,6 +169,8 @@ namespace Nebula.Roles.NeutralRoles
                  true, true, true, false, false)
         {
             arsonistButton = null;
+
+            Patches.EndCondition.ArsonistWin.TriggerRole = this;
         }
     }
 }

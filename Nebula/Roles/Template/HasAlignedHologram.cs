@@ -48,8 +48,8 @@ namespace Nebula.Roles.Template
             {
                 if (!PlayerIcons.ContainsKey(p.PlayerId)) continue;
 
+                //半透明表示の切り替え
                 bool isActive = activePlayers.Any(x => x == p.PlayerId);
-                
                 PlayerIcons[p.PlayerId].setSemiTransparent(!isActive);
 
                 if (!PlayerIcons[p.PlayerId].gameObject.active)
@@ -76,7 +76,7 @@ namespace Nebula.Roles.Template
 
             foreach (PlayerControl p in PlayerControl.AllPlayerControls)
             {
-                if (p.PlayerId == PlayerControl.LocalPlayer.PlayerId) { PlayerIcons[p.PlayerId].NameText.SetActiveSubMeshes(false); continue; }
+                if (p.PlayerId == PlayerControl.LocalPlayer.PlayerId) { PlayerIcons[p.PlayerId].gameObject.SetActive(false); continue; }
                 if (!PlayerIcons.ContainsKey(p.PlayerId)) continue;
 
                 if (p.Data.IsDead || p.Data.Disconnected)

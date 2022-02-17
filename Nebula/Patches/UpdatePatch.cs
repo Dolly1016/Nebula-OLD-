@@ -13,24 +13,23 @@ namespace Nebula.Patches
     [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
     public static class UpdatePatch
     {
-        static private Color rewriteImpostorColor(GameData.PlayerInfo Info, Color currentColor, Color impostorColor)
+        static private Color rewriteImpostorColor(Game.PlayerData player, Color currentColor, Color impostorColor)
         {
-            if (Info.Role.IsImpostor)
+            if (player.role.category==Roles.RoleCategory.Impostor)
             {
                 return impostorColor;
             }
             else
             {
-                Game.PlayerData data = Game.GameData.data.players[Info.PlayerId];
-                if (data.IsMyPlayerData())
+                if (player.IsMyPlayerData())
                 {
-                    if (data.role.deceiveImpostorInNameDisplay)
+                    if (player.role.deceiveImpostorInNameDisplay)
                     {
                         return Palette.ImpostorRed;
                     }
                 }
 
-                if (data.role.deceiveImpostorInNameDisplay)
+                if (player.role.deceiveImpostorInNameDisplay)
                 {
                     return impostorColor;
                 }
@@ -81,7 +80,7 @@ namespace Nebula.Patches
                 {
                     player.nameText.color = Color.white;
                 }
-                player.nameText.color = rewriteImpostorColor(player.Data, player.nameText.color, (Color)impostorColor);
+                player.nameText.color = rewriteImpostorColor(playerData, player.nameText.color, (Color)impostorColor);
 
                 //ロールによる色の変更
                 Color color = player.nameText.color;
@@ -115,7 +114,8 @@ namespace Nebula.Patches
                     {
                         player.NameText.color = Color.white;
                     }
-                    player.NameText.color = rewriteImpostorColor(Helpers.allPlayersById()[player.TargetPlayerId].Data, player.NameText.color, (Color)impostorColor);
+
+                    player.NameText.color = rewriteImpostorColor(playerData, player.NameText.color, (Color)impostorColor);
 
                     //色の変更
                     Color color = player.NameText.color;

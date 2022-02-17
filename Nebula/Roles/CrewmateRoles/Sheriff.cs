@@ -17,6 +17,10 @@ namespace Nebula.Roles.CrewmateRoles
         private CustomButton killButton;
 
         private Module.CustomOption killCooldownOption;
+        private Module.CustomOption canKillMadmateOption;
+        private Module.CustomOption canKillSpyOption;
+        private Module.CustomOption canKillNecromancerOption;
+        private Module.CustomOption canKillSheriffOption;
 
         public override void MyPlayerControlUpdate()
         {
@@ -24,6 +28,19 @@ namespace Nebula.Roles.CrewmateRoles
             data.currentTarget = Patches.PlayerControlPatch.SetMyTarget();
             Patches.PlayerControlPatch.SetPlayerOutline(data.currentTarget, Color.yellow);
         }
+
+        //キルできる相手かどうか調べる
+        private bool CanKill(PlayerControl target)
+        {
+            if (Game.GameData.data.players[target.PlayerId].role.category != RoleCategory.Crewmate) return true;
+            if (target.GetModData().role == Roles.Madmate && canKillMadmateOption.getBool()) return true;
+            if (target.GetModData().role == Roles.Spy && canKillSpyOption.getBool()) return true;
+            if (target.GetModData().role == Roles.Necromancer && canKillNecromancerOption.getBool()) return true;
+            if (target.GetModData().role == Roles.Sheriff && canKillSheriffOption.getBool()) return true;
+
+            return false;
+        }
+
         public override void ButtonInitialize(HudManager __instance)
         {
             if (killButton != null)
@@ -34,10 +51,8 @@ namespace Nebula.Roles.CrewmateRoles
                 () =>
                 {
                     PlayerControl target = Game.GameData.data.myData.currentTarget;
-                    if (Game.GameData.data.players[target.PlayerId].role.category == RoleCategory.Crewmate)
-                    {
-                        target = PlayerControl.LocalPlayer;
-                    }
+                    if (!CanKill(target))target = PlayerControl.LocalPlayer;
+                    
                     var res=Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, target,Game.PlayerData.PlayerStatus.Dead, false,true);
                     if (res != Helpers.MurderAttemptResult.SuppressKill)
                         killButton.Timer = killButton.MaxTimer;
@@ -78,6 +93,14 @@ namespace Nebula.Roles.CrewmateRoles
         {
             killCooldownOption = CreateOption(Color.white, "killCoolDown", 30f, 10f, 60f, 2.5f);
             killCooldownOption.suffix = "second";
+
+            canKillMadmateOption = CreateOption(Color.white, "canKillMadmate", true);
+
+            canKillSpyOption = CreateOption(Color.white, "canKillSpy", false);
+
+            canKillNecromancerOption = CreateOption(Color.white, "canKillNecromancer", false);
+
+            canKillSheriffOption = CreateOption(Color.white, "canKillSheriff", false);
         }
 
         public Sheriff()

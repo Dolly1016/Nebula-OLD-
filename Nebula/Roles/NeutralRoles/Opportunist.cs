@@ -36,9 +36,7 @@ namespace Nebula.Roles.NeutralRoles
         public override bool CheckWin(PlayerControl player, EndCondition condition)
         {
             if (player.Data.IsDead) return false;
-            if (condition == EndCondition.ArsonistWin) return false;
-            if (condition == EndCondition.EmpiricWin) return false;
-            if (condition == EndCondition.JesterWin) return false;
+            if (condition.TriggerRole!=null) return false;
             if (condition == EndCondition.NobodySkeldWin) return false;
             if (condition == EndCondition.NobodyMiraWin) return false;
             if (condition == EndCondition.NobodyPolusWin) return false;

@@ -26,11 +26,13 @@ namespace Nebula.Game
         static public Dictionary<Module.CustomGameMode, GameModeProperty> Properties = new Dictionary<Module.CustomGameMode, GameModeProperty>();
 
         static public GameModeProperty StandardMode;
+        static public GameModeProperty ParlourMode;
         static public GameModeProperty InvestigatorsMode;
 
         static public void Load()
         {
             StandardMode = new GameModeProperty(Module.CustomGameMode.Standard, true, false, Roles.Roles.Crewmate, Roles.Roles.Impostor);
+            ParlourMode = new GameModeProperty(Module.CustomGameMode.Parlour, false, false, Roles.Roles.Gambler, Roles.Roles.Impostor);
             InvestigatorsMode = new GameModeProperty(Module.CustomGameMode.Investigators, false, true, Roles.Roles.Investigator, Roles.Roles.Impostor);
         }
 

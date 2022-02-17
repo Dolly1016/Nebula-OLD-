@@ -22,7 +22,7 @@ namespace Nebula.Patches
         public static EndCondition JackalWin = new EndCondition(17, Roles.NeutralRoles.Jackal.Color, "jackal", 2, Module.CustomGameMode.Standard, () => { });
         public static EndCondition ArsonistWin = new EndCondition(18, Roles.NeutralRoles.Arsonist.Color, "arsonist", 1, Module.CustomGameMode.Standard, () => { PlayerControl.AllPlayerControls.ForEach((Action<PlayerControl>)((p) => { if (!p.Data.IsDead && p.GetModData().role.side != Roles.Side.Arsonist) p.MurderPlayer(p); })); });
         public static EndCondition EmpiricWin = new EndCondition(19, Roles.NeutralRoles.Empiric.Color, "empiric", 1, Module.CustomGameMode.Standard, () => { });
-        public static EndCondition VultureWin = new EndCondition(20, Roles.NeutralRoles.Vulture.Color, "vulture", 1, Module.CustomGameMode.Standard, () => { });
+        public static EndCondition VultureWin = new EndCondition(20, Roles.NeutralRoles.Vulture.Color, "vulture", 1, Module.CustomGameMode.Standard,() => { });
         public static EndCondition TrilemmaWin = new EndCondition(24, new Color(209f / 255f, 63f / 255f, 138f / 255f), "trilemma",0, Module.CustomGameMode.Standard, ()=> { });
 
         public static EndCondition InvestigatorRightGuess = new EndCondition(32, Palette.CrewmateBlue, "rightGuess", 0, Module.CustomGameMode.Investigators, () => { });
@@ -37,6 +37,8 @@ namespace Nebula.Patches
 
         public static EndCondition HostDisconnected = new EndCondition(64, new Color(72f / 255f, 78f / 255f, 84f / 255f), "hostDisconnected", 0, Module.CustomGameMode.Investigators, () => { });
 
+        public static EndCondition ShowDownWin = new EndCondition(128, new Color(255f / 255f, 213f / 255f, 0f / 255f), "showDown", 0, Module.CustomGameMode.Parlour, () => { });
+
 
 
         public static HashSet<EndCondition> AllEnds = new HashSet<EndCondition>() {
@@ -45,7 +47,8 @@ namespace Nebula.Patches
             JesterWin,JackalWin,ArsonistWin,EmpiricWin,VultureWin,
             TrilemmaWin,
             NobodyWin,NobodySkeldWin,NobodyMiraWin,NobodyPolusWin,NobodyAirshipWin,
-            InvestigatorRightGuess,InvestigatorWrongGuess,HostDisconnected
+            InvestigatorRightGuess,InvestigatorWrongGuess,HostDisconnected,
+            ShowDownWin
         };
     
         public static EndCondition GetEndCondition(GameOverReason gameOverReason)
@@ -65,6 +68,7 @@ namespace Nebula.Patches
         public String Identifier { get; }
         public Action EndAction { get; }
         public byte Priority { get; }
+        public Roles.Template.HasWinTrigger TriggerRole { get; set; }
 
         public Module.CustomGameMode GameMode { get; set; }
         public EndCondition(GameOverReason Id,Color Color,String EndText, byte Priority,Module.CustomGameMode GameMode)
@@ -75,12 +79,14 @@ namespace Nebula.Patches
             this.EndAction = ()=> { };
             this.Priority = Priority;
             this.GameMode = GameMode;
+            this.TriggerRole = null;
         }
 
         public EndCondition(int Id, Color Color, String EndText, byte Priority, Module.CustomGameMode GameMode, System.Action EndAction) : this((GameOverReason)Id,Color,EndText,Priority, GameMode)
         {
             this.EndAction=EndAction;
         }
+
 
     }
 
@@ -143,22 +149,32 @@ namespace Nebula.Patches
             //勝利者を消去する
             TempData.winners.Clear();
 
-            bool addedFlag = false ;
-            foreach(PlayerControl player in PlayerControl.AllPlayerControls){
-                if (Game.GameData.data.players[player.PlayerId].role.CheckWin(EndCondition))
+            if (EndCondition.TriggerRole != null && EndCondition.TriggerRole.Winner != Byte.MaxValue)
+            {
+                //単独勝利の場合
+                TempData.winners.Add(new WinningPlayerData(Helpers.playerById(EndCondition.TriggerRole.Winner).Data));
+            }
+            else
+            {
+                bool addedFlag = false;
+                foreach (PlayerControl player in PlayerControl.AllPlayerControls)
                 {
-                    TempData.winners.Add(new WinningPlayerData(player.Data));
-                }
-                else
-                {
-                    addedFlag = false;
-                    Helpers.RoleAction(player,(role)=> {
-                        if ((!addedFlag) && role.CheckWin(player, EndCondition))
+                    if (Game.GameData.data.players[player.PlayerId].role.CheckWin(EndCondition))
+                    {
+                        TempData.winners.Add(new WinningPlayerData(player.Data));
+                    }
+                    else
+                    {
+                        addedFlag = false;
+                        Helpers.RoleAction(player, (role) =>
                         {
-                            TempData.winners.Add(new WinningPlayerData(player.Data));
-                            addedFlag = true;
-                        }
-                    });
+                            if ((!addedFlag) && role.CheckWin(player, EndCondition))
+                            {
+                                TempData.winners.Add(new WinningPlayerData(player.Data));
+                                addedFlag = true;
+                            }
+                        });
+                    }
                 }
             }
 

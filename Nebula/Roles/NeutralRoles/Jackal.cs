@@ -40,8 +40,10 @@ namespace Nebula.Roles.NeutralRoles
         {
             CanCreateSidekickOption = CreateOption(Color.white, "canCreateSidekick", true);
             KillCoolDownOption = CreateOption(Color.white, "killCoolDown", 20f, 10f, 60f, 2.5f);
+            KillCoolDownOption.suffix = "second";
             SidekickCanKillOption = CreateOption(Color.white, "sidekickCanKill", false);
             SidekickKillCoolDownOption = CreateOption(Color.white, "sidekickKillCoolDown", 20f, 10f, 60f, 2.5f);
+            SidekickKillCoolDownOption.suffix = "second";
             SidekickTakeOverOriginalRoleOption = CreateOption(Color.white, "sidekickTakeOverOriginalRole", true);
             SidekickCanCreateSidekickOption = CreateOption(Color.white, "sidekickCanCreateSidekick", false);
             SidekickCanUseVentsOption = CreateOption(Color.white, "sidekickCanUseVents", false);

@@ -26,6 +26,7 @@ namespace Nebula.Roles.NeutralRoles
         }
 
         public bool WinTrigger { get; set; } = false;
+        public byte Winner { get; set; } = Byte.MaxValue;
 
         /* ボタン */
         static private CustomButton eatButton;
@@ -196,6 +197,8 @@ namespace Nebula.Roles.NeutralRoles
             eatButton = null;
 
             eatLeftId = Game.GameData.RegisterRoleDataId("vulture.eatLeft");
+
+            Patches.EndCondition.VultureWin.TriggerRole = this;
         }
     }
 }

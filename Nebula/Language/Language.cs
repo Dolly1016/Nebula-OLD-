@@ -22,8 +22,6 @@ namespace Nebula.Language
 
         public Dictionary<string, string> languageSet;
 
-        public ConfigEntry<string> entry;
-        public string LangageConfig;
 
         public static string GetString(string key)
         {
@@ -37,27 +35,62 @@ namespace Nebula.Language
         public Language()
         {
             languageSet = new Dictionary<string, string>();
-
-            entry = NebulaPlugin.Instance.Config.Bind("Language","Language", "English");
         }
 
-        public static void Load(string lang)
+        public static string GetLanguage(uint language)
         {
+            switch (language)
+            {
+                case 0:
+                    return "English";
+                case 1:
+                    return "Latam";
+                case 2:
+                    return "Brazilian";
+                case 3:
+                    return "Portuguese";
+                case 4:
+                    return "Korean";
+                case 5:
+                    return "Russian";
+                case 6:
+                    return "Dutch";
+                case 7:
+                    return "Filipino";
+                case 8:
+                    return "French";
+                case 9:
+                    return "German";
+                case 10:
+                    return "Italian";
+                case 11:
+                    return "Japanese";
+                case 12:
+                    return "Spanish";
+                case 13:
+                    return "SChinese";
+                case 14:
+                    return "TChinese";
+                case 15:
+                    return "Irish";
+            }
+            return "English";
+        }
+
+        public static void Load()
+        {
+            string lang = GetLanguage(SaveManager.LastLanguage);
+            
 
             language = new Language();
-
-            if (lang != null)
-            {
-                language.entry.Value = lang;
-            }
-
 
             language.deserialize(GetDefaultColorStream());
             Dictionary<string, string> defaultColorSet = language.languageSet;
 
 
             Dictionary<string, string> ColorSet = defaultColorSet;
-            if (language.deserialize(@"language\" + language.entry.Value + "_Color.dat"))
+            
+            if (language.deserialize(@"language\" + lang + "_Color.dat"))
             {
                 //翻訳セットに不足データがある場合デフォルト言語セットで補う
                 foreach (KeyValuePair<string, string> pair in defaultColorSet)
@@ -75,7 +108,7 @@ namespace Nebula.Language
             Dictionary<string, string> defaultSet = language.languageSet;
 
 
-            if (language.deserialize(@"language\" + language.entry.Value + ".dat"))
+            if (language.deserialize(@"language\" + lang + ".dat"))
             {
                 //翻訳セットに不足データがある場合デフォルト言語セットで補う
                 foreach (KeyValuePair<string, string> pair in defaultSet)
@@ -95,11 +128,6 @@ namespace Nebula.Language
             }
 
 
-        }
-
-        public static void Load()
-        {
-            Load(null);
         }
 
         public static Stream GetDefaultLanguageStream()
