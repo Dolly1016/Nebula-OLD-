@@ -12,8 +12,12 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 # ダウンロード
 
+当ModにはAmong Us内でアップデートができる機能がありますが、対応するVanillaのバージョンが変わる場合最新版への更新ができませんので、\
+こちらから手動でのアップデートをお願いいたします。
+
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.1.4 | 2022.2.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.4,2022.2.8/Nebula.zip)|
 | 1.1.3 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.3,2021.12.15/Nebula.zip)|
 | 1.1.2 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.2,2021.12.15/Nebula.zip)|
 | 1.1.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.1,2021.12.15/Nebula.zip)|
@@ -87,6 +91,21 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 <details>
   <summary>クリックで展開</summary>
  
+ **Version 1.1.4**
+ - Among Us本体の対応バージョンを v2022.2.8s に引き上げ
+ - Arsonistに新たなオプション「Douse Range」を追加
+ - Sheriffに新たなオプション「Can Kill Sheriff」を追加
+ - Vulture勝利でOpportunistが追加勝利できないように
+ - Jester勝利で対象のJesterが勝利できない問題を修正
+ - Pursuerが死体検知中に会議を挟んだ時の挙動を修正
+ - なんらかの理由で他プレイヤーの接続が切れた場合、会議中の挙動が意図しないものになる問題を修正
+ - Booster, Trapperの加速でプレイヤーがワープするように移動してしまう問題を修正
+ - Drunkがベントに入ろうとすると逆方向へ進んでしまう問題を修正
+ - Drunkの視点だと他人の挙動がおかしくなってしまう問題を修正
+ - Trapperがマルチコストのトラップを、コスト不足にもかかわらず置けてしまう問題を修正
+ - Trilemmaが死亡した際に死体が複数生成される問題を修正
+ - 追放されたプレイヤーが次の会議終了まで他人の役職を見ることができない問題を修正
+  
  **Version 1.1.3**
  - Arsonist, Empiric, Jester, Vultureが複数人居る場合、ゲーム開始時に自身以外同陣営として表示されず、かつ単独勝利するように
  - Arsonist, Empiricで、左下に自分自身や死んだプレイヤーのホログラムが現れてしまう問題を修正
