@@ -17,7 +17,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
-| 1.1.6 | 2022.2.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.6.,2022.2.8/Nebula.zip)|
+| 1.1.5.1 | 2022.2.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.5.1,2022.2.8/Nebula.zip)|
 | 1.1.5 | 2022.2.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.5,2022.2.8/Nebula.zip)|
 | 1.1.4 | 2022.2.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.4,2022.2.8/Nebula.zip)|
 | 1.1.3 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.3,2021.12.15/Nebula.zip)|
@@ -93,9 +93,11 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 <details>
   <summary>クリックで展開</summary>
  
- **Version 1.1.6**
+ **Version 1.1.5.1**
  - 2回目のゲーム以降、ロビーで自分以外のプレイヤーが動かなくなる問題を修正
  - 単独勝利の勝利画面でホストのプレイヤーが表示される問題を修正
+  
+ ※2022.02.18 2:00 バージョン名を1.1.6から1.1.5.1に改めました
   
  **Version 1.1.5**
  - Navvyを追加
