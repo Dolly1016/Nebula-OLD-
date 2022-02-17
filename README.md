@@ -12,8 +12,8 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 # ダウンロード
 
-当ModにはAmong Us内でアップデートができる機能がありますが、対応するVanillaのバージョンが変わる場合最新版への更新ができませんので、\
-こちらから手動でのアップデートをお願いいたします。
+当ModにはAmong Us内でアップデートができる機能がありますが、対応するVanillaのバージョンが変わる場合\
+最新版への更新ができませんので、こちらから手動でのアップデートをお願いいたします。
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
