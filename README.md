@@ -17,6 +17,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.1.5 | 2022.2.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.5,2022.2.8/Nebula.zip)|
 | 1.1.4 | 2022.2.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.4,2022.2.8/Nebula.zip)|
 | 1.1.3 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.3,2021.12.15/Nebula.zip)|
 | 1.1.2 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.2,2021.12.15/Nebula.zip)|
@@ -91,6 +92,11 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 <details>
   <summary>クリックで展開</summary>
  
+ **Version 1.1.5**
+ - Navvyを追加
+ - Engineer, Security Guardを削除
+ - 追加役職としてのGuesserが付与された際のゲーム開始画面の表示に軽微な変更
+  
  **Version 1.1.4**
  - Among Us本体の対応バージョンを v2022.2.8s に引き上げ
  - Arsonistに新たなオプション「Douse Range」を追加
@@ -313,15 +319,14 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 | [Cleaner](#cleaner) | [Alien](#alien) | [Empiric](#empiric) | [Guesser](#guesser) |
 | [Damned](#damned) | [Bait](#bait) | [Jackal](#jackal) | [Lover](#lover) |
 | [Eraser](#eraser) | [Booster](#booster) | [Jester](#jester) | [Trilemma](#trilemma) |
-| [Evil Ace](#evil-ace) | [Engineer](#engineer) | [Opportunist](#opportunist) ||
-| [Evil Guesser](#guesser) | [Mayor](#mayor) | [Sidekick](#sidekick) ||
+| [Evil Ace](#evil-ace) | [Mayor](#mayor) | [Opportunist](#opportunist) ||
+| [Evil Guesser](#guesser) | [Navvy](#navvy) | [Sidekick](#sidekick) ||
 | [Evil Trapper](#trapper) | [Necromancer](#necromancer) | [Vulture](#vulture) ||
 | [Morphing](#morphing) | [Nice Guesser](#guesser) |||
 | [Reaper](#reaper) | [Nice Trapper](#trapper) |||
 | [Sniper](#sniper) | [Provocateur](#provocateur) |||
 || [Psychic](#psychic) |||
 || [Pursuer](#pursuer) |||
-|| [Security Guard](#security-guard) |||
 || [Seer](#seer) |||
 || [Sheriff](#sheriff) |||
 || [Spy](#spy) |||
@@ -594,20 +599,6 @@ p5p5next : Damned
 
 -----------------------
 
-## Engineer
- Engineerはベントを使うことのできるクルーメイトで、一度だけサボタージュを遠隔で直すことができます。
- 
- ### 操作方法
-| 操作キー | アクション |
-|----------|:-------------:|
-| F | サボタージュ復旧
- 
- ### オプション
-| オプション名 | 設定内容 |
-|----------|:-------------:|
-
------------------------
-
 ## Mayor
  Mayorは票をストックすることができ、好きな場面で持っている票を一人に注ぎ込むことができます。\
  投票数を0にして好きなところに票を投じるか、会議終了まで票を投じないことでストックすることができます。
@@ -617,6 +608,22 @@ p5p5next : Damned
 |----------|:-------------:|
 | Max Vote | 一回の会議で同時に投じることのできる票数
 | Max Vote Stock | 保持することができる票の最大数
+
+-----------------------
+
+## Navvy
+ Navvyはベントを使ったり封鎖することができ、またサボタージュを遠隔で直すことができます。\
+ サボタージュ復旧とベントの使用は、ベントを可能な限り封鎖したあと、会議を一度挟むことで解禁されます。
+ 
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| F | ベント封鎖、サボタージュ復旧
+
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+| Max Screws Vents | 封鎖できるベントの最大数 
 
 -----------------------
 
@@ -678,21 +685,6 @@ p5p5next : Damned
 |----------|:-------------:|
 | Search Cool Down | 探索のクールダウン
 | Search Duration | 探索時間
-
------------------------
-
-## Security Guard
- Security Guardはベントを封鎖し、インポスターの行動を制限します。
- 
- ### 操作方法
-| 操作キー | アクション |
-|----------|:-------------:|
-| F | ベント封鎖
-
- ### オプション
-| オプション名 | 設定内容 |
-|----------|:-------------:|
-| Max Screws Vents | 封鎖できるベントの最大数 
 
 -----------------------
 
