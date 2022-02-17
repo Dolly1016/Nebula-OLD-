@@ -14,6 +14,8 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.1.3 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.3,2021.12.15/Nebula.zip)|
+| 1.1.2 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.2,2021.12.15/Nebula.zip)|
 | 1.1.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.1,2021.12.15/Nebula.zip)|
 | 1.1.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.0,2021.12.15/Nebula.zip)|
 | 1.0.3 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.3,2021.12.15/Nebula.zip)|
@@ -77,14 +79,28 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 
 | Language | Translator | Full Support Version | Download |
 | --- | --- | --- | --- |
-| 日本語 | Rey | 1.0.3 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.3,2021.12.15/Japanese.dat)|
+| 日本語 | Rey | 1.1.3 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.3,2021.12.15/Japanese.dat)|
 | 日本語 | - | 1.0.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.1,2021.12.15/Japanese.dat)|
-| English | - | 1.1.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.0,2021.12.15/English.dat)|
+| English | - | 1.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.2,2021.12.15/English.dat)|
 
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
  
+ **Version 1.1.3**
+ - Arsonist, Empiric, Jester, Vultureが複数人居る場合、ゲーム開始時に自身以外同陣営として表示されず、かつ単独勝利するように
+ - Arsonist, Empiricで、左下に自分自身や死んだプレイヤーのホログラムが現れてしまう問題を修正
+ - Boosterの効果時間が正常にゲームに反映されない問題を修正
+  
+ **Version 1.1.2**
+ - Jester, Madmateがサボタージュを起こせる設定を追加
+ - 言語パックについて、起動後に使用する言語を再設定しなくとも選択していた言語を使用するように
+ - Loversに陣営別の割り当てに関わる新たな設定を追加
+ - Sheriffが例外的にキルできるクルーメイト役職に関する設定を追加
+ - Madmateのベント使用可否と、視界の広さを設定できるように
+ - Drunkの陣営別割り当て設定を追加
+ - ゲーム終了時のプレイヤー状態表示に「Revived」を追加
+  
  **Version 1.1.1**
  - Drunkを追加
  - MadmateをImpostor陣営の人数として数えないように
@@ -310,7 +326,7 @@ BasePluginに以下の属性を新たに付与することで、Nebula on the Sh
 その他ロールアイデアのご提供等\
 \
 龍 : Reaper, Provocateur, Booster, Alien\
-Alps : Guesser(Secondary)\
+Alps : Guesser(Secondary), Drunk\
 p5p5next : Damned
 
 -----------------------
@@ -451,7 +467,7 @@ p5p5next : Damned
 
 ## Reaper
  Reaperは、死体を引きずることができるインポスターです。\
- マップ中のベントが全てのベントに通じているほか、The Skeldでは追加ベントが使用できます。\
+ マップ中のベントが全てのベントに通じているほか、The Skeldでは追加ベントが使用できます。
  
  ### 操作方法
 | 操作キー | アクション |
@@ -465,7 +481,8 @@ p5p5next : Damned
 -----------------------
 
 ## Sniper
- Sniperは通常のキルは行えませんが、狙撃銃を繰り出すことで壁を隔てた先からも相手を殺すことができます。
+ Sniperは通常のキルは行えませんが、狙撃銃を繰り出すことで壁を隔てた先からも相手を殺すことができます。\
+ 狙撃すると、当たったかどうかに関わらず、発砲地点にアイコンが表示されます。
  
  ### 操作方法
 | 操作キー | アクション |
@@ -479,16 +496,19 @@ p5p5next : Damned
 | Shot Size | 狙撃銃の弾の当たり判定
 | Shot Effective Range | 銃弾でキルできる範囲
 | Can Kill Impostors | 射線上のインポスターを誤殺できるかどうか
+| Sound Effective Range | 銃声の可聴範囲
 
 -----------------------
 
 ## Madmate
- Madmateはクルーメイト陣営に属しますが、インポスターの肩を持つ狂人です。\
- インポスターの勝利条件に与します。
+ Madmateはインポスターの肩を持つ狂人です。\
+ 人数上ではクルーメイトとして数えられますが、勝利条件はインポスターと同様です。
  
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
+| Has Impostor Vision | インポスターと同じ視界を持つかどうか
+| Can Invoke Sabotage | サボタージュを起こせるかどうか
 
 -----------------------
 
@@ -570,7 +590,8 @@ p5p5next : Damned
 -----------------------
 
 ## Mayor
- Mayorは票をストックすることができ、好きな場面で持っている票を一人に注ぎ込むことができます。
+ Mayorは票をストックすることができ、好きな場面で持っている票を一人に注ぎ込むことができます。\
+ 投票数を0にして好きなところに票を投じるか、会議終了まで票を投じないことでストックすることができます。
  
  ### オプション
 | オプション名 | 設定内容 |
@@ -609,6 +630,9 @@ p5p5next : Damned
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
+| Embroil Cool Down | 巻き込みのクールダウン
+| Embroil Cool Down Addition | 巻き込みの追加クールダウン
+| Embroil Duration | 巻き込みの有効時間
 
 -----------------------
 
@@ -665,12 +689,15 @@ p5p5next : Damned
 -----------------------
 
 ## Sheriff
- Sheriffはキルをすることができるクルーメイトです。
+ Sheriffはクルーメイト陣営以外のプレイヤーをキルをすることができるクルーメイトです。
  
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
 | Kill Cool Down | キルクールダウン
+| Can Kill Madmate | Madmateをキルできるかどうか
+| Can Kill Spy | Spyをキルできるかどうか
+| Can Kill Necromancer | Necromancerをキルできるかどうか
 
 -----------------------
 
@@ -753,6 +780,7 @@ p5p5next : Damned
 | オプション名 | 設定内容 |
 |----------|:-------------:|
 | Can Use Vents | ベントを使えるかどうかの設定
+| Can Invoke Sabotage | サボタージュを起こせるかどうかの設定
 
 -----------------------
 
@@ -800,8 +828,11 @@ p5p5next : Damned
 -----------------------
 
 ## Drunk
- Drunkは操作が逆転するおまけロールです。\
- 一風変わったアモアスを楽しみたい方へ。
+ Drunkはプレイヤーの操作が逆転するおまけ役職です。\
+ 一風変わったアモアスを楽しみたい方へ。\
+ しかし、割り当てる陣営を限定させれば、新たな推理の材料にもなります。
+ 
+ 割り当てる陣営は確率とともに複数選択することができます。
  
  ### 操作方法
 | 操作キー | アクション |
@@ -810,13 +841,16 @@ p5p5next : Damned
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
+| Assignment Category | 割り当てる陣営
+| Assignment Chance | 割り当てられる確率
 
 -----------------------
 
 ## Lover
- Loverは2人1組として発生する付加的なロールです。\
+ Loverは2人1組として発生する付加的なロールで、基本はクルーメイト陣営あるいは第三陣営から選ばれます。\
  相方が死ぬと自分も後追いして死にます。最後まで生存して相方が勝利すれば自分も勝利します。\
- 二人組のどちらかが、第三者を巻き込むと[Trilemma](#trilemma)に変化します。
+ 二人組のどちらかが、第三者を巻き込むと[Trilemma](#trilemma)に変化します。\
+ 巻き込みボタン自体は両者ともに使用可能です。(一方が第三者を巻き込むと役職が変化するため押せない)
  
  ### 操作方法
 | 操作キー | アクション |
@@ -827,6 +861,7 @@ p5p5next : Damned
 | オプション名 | 設定内容 |
 |----------|:-------------:|
 | Max Couples | Loversが発生する最大組数
+| Chance That One Lover Is Impostor | Loversの片方がインポスター陣営から選ばれる確率
 | Can Change Trilemma | 第三者を巻き込んでTrilemmaになれるかどうかの設定
 
 -----------------------
