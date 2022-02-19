@@ -17,6 +17,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.2.0 | 2022.2.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.2.0,2022.2.8/Nebula.zip)|
 | 1.1.5.1 | 2022.2.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.5.1,2022.2.8/Nebula.zip)|
 | 1.1.5 | 2022.2.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.5,2022.2.8/Nebula.zip)|
 | 1.1.4 | 2022.2.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.4,2022.2.8/Nebula.zip)|
@@ -93,6 +94,16 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 <details>
   <summary>クリックで展開</summary>
  
+ **Version 1.2.0**
+ - 新ゲームモード「Escape」を追加
+ - ゲームモード「Escape」専用役職としてPlayer, Escapee, Hunterを追加
+ - ボディカラーにAmong Us既存の18色が新たに選択可能に
+ ⁻ 時間制限を5秒単位で設定できるように
+ ⁻ Mayorの投票数を固定にするための新たなオプション「Vote Assignment」「Min Vote」を追加
+ - Navvyに新たなオプション「Seal Cool Down」を追加
+ - Necromancerに新たなオプション「Max Revive Room Distance」を追加
+ - Guesserの推察役職から、別ゲームモードの役職を排除
+  
  **Version 1.1.5.1**
  - 2回目のゲーム以降、ロビーで自分以外のプレイヤーが動かなくなる問題を修正
  - 単独勝利の勝利画面でホストのプレイヤーが表示される問題を修正
@@ -319,9 +330,31 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
   
 </details>
 
+-----------------------
+
+# ゲームモード
+
+## Standard
+
+#### 推奨プレイ人数: 9 ~ 15人
+
+VanillaのAmong Usと同じルールです。Modによる追加役職を使用して多様な遊び方ができます。
+
+## Escape
+
+#### 推奨プレイ人数: 4 ~ 8人
+
+いわゆる鬼ごっこです。ゲーム開始から10秒後に、1人がHunterに、その他全員がEscapeeになります。\
+制限時間いっぱいまでHunterから逃げ切るか、タスクをこなせばEscapeeの勝利です。\
+Hunterは、逃げるEscapee全員を捕まえられたら勝利します。\
+ゲーム参加者を待つ間のちょっとしたミニゲームにどうぞ。\
+
+-----------------------
+
 # ロール一覧
 
-| Impostors | Crewmates | Neutral | Secondary
+## Standard
+| Impostors | Crewmates | Neutral | Secondary |
 | ---------- | ---------- | ---------- | ---------- |
 | [Camouflager](#camouflager) | [Agent](#agent) | [Arsonist](#arsonist) | [Drunk](#drunk) |
 | [Cleaner](#cleaner) | [Alien](#alien) | [Empiric](#empiric) | [Guesser](#guesser) |
@@ -339,6 +372,13 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 || [Sheriff](#sheriff) |||
 || [Spy](#spy) |||
 || [Madmate](#madmate) |||
+
+## Escape
+| Players |
+| ---------- |
+| [Escapee](#escapee) |
+| [Hunter](#hunter) |
+| [Player](#player) |
 
 -----------------------
 
@@ -614,8 +654,10 @@ p5p5next : Damned
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
-| Max Vote | 一回の会議で同時に投じることのできる票数
+| Min Vote | 一回の会議で同時に投じることのできる最小票数
+| Max Vote | 一回の会議で同時に投じることのできる最大票数
 | Max Vote Stock | 保持することができる票の最大数
+| Vote Assignment | 会議ごとに割り当てられる票数
 
 -----------------------
 
@@ -632,6 +674,7 @@ p5p5next : Damned
 | オプション名 | 設定内容 |
 |----------|:-------------:|
 | Max Screws Vents | 封鎖できるベントの最大数 
+| Seal Cool Down | ベント封鎖のクールダウン
 
 -----------------------
 
@@ -649,6 +692,7 @@ p5p5next : Damned
 |----------|:-------------:|
 | Revive Cool Down | 復活させられるクールダウン
 | Revive Duration | 復活に要する時間
+| Max Revive Room Distance | 死亡位置から死体復活部屋までの最大距離
 
 -----------------------
 
@@ -888,6 +932,39 @@ p5p5next : Damned
 ## Trilemma
  TrilemmaはLoverが第三者を巻き込んだ三位一体のチームです。\
  三人だけが生き残ることで勝利します。
+ 
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+
+-----------------------
+
+## Escapee
+ EscapeeはHunterから逃げるか、タスクをすべてこなすことで勝利できます。
+ 
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+
+-----------------------
+
+## Hunter
+ Hunterは、制限時間内にEscapeeを全員捕まえることで勝利します。
+ 
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| Q | 捕まえる
+
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+
+-----------------------
+
+## Player
+ Escapeモードでは、はじめ全員がPlayerを割り振られます。
+ ゲーム開始から10秒後に、Escapee, Hunterに変化します。
  
  ### オプション
 | オプション名 | 設定内容 |
