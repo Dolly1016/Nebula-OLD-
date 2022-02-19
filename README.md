@@ -98,8 +98,8 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
  - 新ゲームモード「Escape」を追加
  - ゲームモード「Escape」専用役職としてPlayer, Escapee, Hunterを追加
  - ボディカラーにAmong Us既存の18色が新たに選択可能に
- ⁻ 時間制限を5秒単位で設定できるように
- ⁻ Mayorの投票数を固定にするための新たなオプション「Vote Assignment」「Min Vote」を追加
+ - 時間制限を5秒単位で設定できるように
+ - Mayorの投票数を固定にするための新たなオプション「Vote Assignment」「Min Vote」を追加
  - Navvyに新たなオプション「Seal Cool Down」を追加
  - Necromancerに新たなオプション「Max Revive Room Distance」を追加
  - Guesserの推察役職から、別ゲームモードの役職を排除
