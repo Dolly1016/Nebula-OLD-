@@ -17,6 +17,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.2.1 | 2022.2.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.2.1,2022.2.8/Nebula.zip)|
 | 1.2.0.1 | 2022.2.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.2.0.1,2022.2.8/Nebula.zip)|
 | 1.2.0 | 2022.2.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.2.0,2022.2.8/Nebula.zip)|
 | 1.1.5.1 | 2022.2.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.5.1,2022.2.8/Nebula.zip)|
@@ -101,6 +102,11 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+  
+ **Version 1.2.1**
+ - Empiricに新たなオプション「Can Infect My Killer」を追加
+ - Lovers, TrilemmaがGuesserに撃たれたとき、相方が死なない問題を修正
+ - 不足していた言語データを追加
   
  **Version 1.2.0.1**
  - 不足していた言語データを追加
