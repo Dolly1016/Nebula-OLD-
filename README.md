@@ -390,7 +390,8 @@ Hunterは、逃げるEscapee全員を捕まえられたら勝利します。\
 | [Evil Trapper](#trapper) | [Necromancer](#necromancer) | [Vulture](#vulture) ||
 | [Morphing](#morphing) | [Nice Guesser](#guesser) |||
 | [Reaper](#reaper) | [Nice Trapper](#trapper) |||
-| [Sniper](#sniper) | [Provocateur](#provocateur) |||
+| [Sniper](#sniper) | [Oracle](#oracle) |||
+|| [Provocateur](#provocateur) |||
 || [Psychic](#psychic) |||
 || [Pursuer](#pursuer) |||
 || [Seer](#seer) |||
