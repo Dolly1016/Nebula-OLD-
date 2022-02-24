@@ -17,6 +17,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.3.0 | 2022.2.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.3.0,2022.2.8/Nebula.zip)|
 | 1.2.1 | 2022.2.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.2.1,2022.2.8/Nebula.zip)|
 | 1.2.0.1 | 2022.2.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.2.0.1,2022.2.8/Nebula.zip)|
 | 1.2.0 | 2022.2.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.2.0,2022.2.8/Nebula.zip)|
@@ -102,6 +103,13 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+  
+ **Version 1.3.0**
+ - Oracleを追加
+ - ゲーム中にHキーを押すことで役職の説明が見られるように
+ - Guesserによる推察によって、最後1名の未投票者がキルされた場合、その時点で投票終了とならない問題を修正
+ - 殺されたらDamedになるCrewmateをGuesserがCrewmateとして撃つことができない問題を修正
+ - Hunterのプレイヤー名が全員から赤色に表示されるように
   
  **Version 1.2.1**
  - Empiricに新たなオプション「Can Infect My Killer」を追加
