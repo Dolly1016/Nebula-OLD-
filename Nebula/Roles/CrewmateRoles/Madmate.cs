@@ -26,9 +26,9 @@ namespace Nebula.Roles.CrewmateRoles
 
         public override void GlobalInitialize(PlayerControl __instance)
         {
-            canMoveInVents = canUseVents = CanUseVentsOption.getBool();
+            CanMoveInVents = CanUseVents = CanUseVentsOption.getBool();
             canInvokeSabotage = CanInvokeSabotageOption.getBool();
-            useImpostorLightRadius = HasImpostorVisionOption.getBool();
+            UseImpostorLightRadius = HasImpostorVisionOption.getBool();
         }
 
         public Madmate()

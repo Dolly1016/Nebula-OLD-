@@ -30,10 +30,14 @@ namespace Nebula.Objects
         private bool mirror;
         private KeyCode? hotkey;
         private string buttonText;
+        private ImageNames textType;
         //ボタンの有効化フラグと、一時的な隠しフラグ
         private bool activeFlag,hideFlag;
 
-        public CustomButton(Action OnClick, Func<bool> HasButton, Func<bool> CouldUse, Action OnMeetingEnds, Sprite Sprite, Vector3 PositionOffset, HudManager hudManager, KeyCode? hotkey, bool HasEffect, float EffectDuration, Action OnEffectEnds, bool mirror = false, string buttonText = "")
+        public bool IsValid { get { return activeFlag; } }
+        public bool IsShown { get { return activeFlag && !hideFlag; } }
+
+        public CustomButton(Action OnClick, Func<bool> HasButton, Func<bool> CouldUse, Action OnMeetingEnds, Sprite Sprite, Vector3 PositionOffset, HudManager hudManager, KeyCode? hotkey, bool HasEffect, float EffectDuration, Action OnEffectEnds, bool mirror = false, string buttonText = "", ImageNames labelType= ImageNames.UseButton)
         {
             this.hudManager = hudManager;
             this.OnClick = OnClick;
@@ -47,22 +51,32 @@ namespace Nebula.Objects
             this.Sprite = Sprite;
             this.mirror = mirror;
             this.hotkey = hotkey;
-            this.buttonText = buttonText;
             this.activeFlag = false;
+            this.textType = labelType;
 
             Timer = 16.2f;
             buttons.Add(this);
             actionButton = UnityEngine.Object.Instantiate(hudManager.KillButton, hudManager.KillButton.transform.parent);
             PassiveButton button = actionButton.GetComponent<PassiveButton>();
-            this.showButtonText = (actionButton.graphic.sprite == Sprite || buttonText != "");
+            
+            SetLabel(buttonText);
+            
             button.OnClick = new Button.ButtonClickedEvent();
             button.OnClick.AddListener((UnityEngine.Events.UnityAction)onClickEvent);
+
 
             setActive(true);
         }
 
-        public CustomButton(Action OnClick, Func<bool> HasButton, Func<bool> CouldUse, Action OnMeetingEnds, Sprite Sprite, Vector3 PositionOffset, HudManager hudManager, KeyCode? hotkey, bool mirror = false, string buttonText = "")
-        : this(OnClick, HasButton, CouldUse, OnMeetingEnds, Sprite, PositionOffset, hudManager, hotkey, false, 0f, () => { }, mirror, buttonText) { }
+        public CustomButton(Action OnClick, Func<bool> HasButton, Func<bool> CouldUse, Action OnMeetingEnds, Sprite Sprite, Vector3 PositionOffset, HudManager hudManager, KeyCode? hotkey, bool mirror = false, string buttonText = "", ImageNames labelType = ImageNames.UseButton)
+        : this(OnClick, HasButton, CouldUse, OnMeetingEnds, Sprite, PositionOffset, hudManager, hotkey, false, 0f, () => { }, mirror, buttonText,labelType) { }
+
+        public void SetLabel(string label)
+        {
+            buttonText = label != "" ? Language.Language.GetString(label) : "";
+            
+            this.showButtonText = (actionButton.graphic.sprite == Sprite || buttonText != "");
+        }
 
         public void onClickEvent()
         {
@@ -176,10 +190,14 @@ namespace Nebula.Objects
             }
             temporaryHide(false);
 
+            if (hideFlag) return;
+
             actionButton.graphic.sprite = Sprite;
             if (showButtonText && buttonText != "")
             {
                 actionButton.OverrideText(buttonText);
+
+                actionButton.buttonLabelText.SetSharedMaterial(HudManager.Instance.UseButton.fastUseSettings[textType].FontMaterial);  
             }
             actionButton.buttonLabelText.enabled = showButtonText; // Only show the text if it's a kill button
             if (hudManager.UseButton != null)

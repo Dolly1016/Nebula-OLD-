@@ -9,6 +9,7 @@ namespace Nebula.Objects
     {
 
         private TMPro.TMP_Text text;
+        private string currentText;
         private static List<CustomMessage> customMessages = new List<CustomMessage>();
 
         public Vector3? velocity;
@@ -92,7 +93,7 @@ namespace Nebula.Objects
                 text = gameObject.GetComponent<TMPro.TMP_Text>();
 
                 String originalText = message;
-                String currentText=originalText;
+                currentText=originalText;
                 text.text = originalText;
 
                 text.transform.localScale *= fontSizeRate;
@@ -166,6 +167,14 @@ namespace Nebula.Objects
                         customMessages.Remove(this);
                     }
                 })));
+            }
+        }
+
+        public void SetText(string text)
+        {
+            if (this.text)
+            {
+                currentText = text;
             }
         }
     }

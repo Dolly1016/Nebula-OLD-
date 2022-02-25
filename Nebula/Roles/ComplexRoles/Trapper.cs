@@ -113,7 +113,7 @@ namespace Nebula.Roles.ComplexRoles
         public override List<Role> GetImplicateRoles() { return new List<Role>() { Roles.EvilTrapper, Roles.NiceTrapper }; }
     }
 
-    public class Trapper : Role
+    public class Trapper : Template.BilateralnessRole
     {
         private CustomButton trapButton;
         private TMPro.TMP_Text trapButtonString;
@@ -129,10 +129,9 @@ namespace Nebula.Roles.ComplexRoles
                      isImpostor ? ImpostorRoles.Impostor.impostorSideSet : CrewmateRoles.Crewmate.crewmateSideSet,
                      isImpostor ? ImpostorRoles.Impostor.impostorSideSet : CrewmateRoles.Crewmate.crewmateSideSet,
                      isImpostor ? ImpostorRoles.Impostor.impostorEndSet : CrewmateRoles.Crewmate.crewmateEndSet,
-                     false, isImpostor, isImpostor, isImpostor, isImpostor)
+                     false, isImpostor, isImpostor, isImpostor, isImpostor, () => { return Roles.F_Trapper; }, isImpostor)
         {
             IsHideRole = true;
-
             trapButton = null;
         }
 
@@ -355,6 +354,12 @@ namespace Nebula.Roles.ComplexRoles
                 trapButtonString.DestroySubMeshObjects();
                 trapButtonString = null;
             }
+        }
+
+        public override void OnRoleRelationSetting()
+        {
+            RelatedRoles.Add(Roles.Navvy);
+            RelatedRoles.Add(Roles.Vulture);
         }
     }
 }

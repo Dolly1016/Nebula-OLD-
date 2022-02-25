@@ -37,10 +37,10 @@ namespace Nebula
     {
         public static System.Random rnd = new System.Random((int)DateTime.Now.Ticks);
 
-        public const string AmongUsVersion = "2021.2.8";
+        public const string AmongUsVersion = "2022.2.23";
         public const string PluginGuid = "jp.dreamingpig.amongus.nebula";
         public const string PluginName = "TheNebula";
-        public const string PluginVersion = "1.1.4";
+        public const string PluginVersion = "1.4.0";
         /*
         public const string PluginVisualVersion = "22.02.14a";
         public const string PluginStage = "Snapshot";
@@ -49,8 +49,8 @@ namespace Nebula
         public const string PluginVisualVersion = PluginVersion;
         public const string PluginStage = "";
         // */
-        public const string PluginVersionForFetch = "1.1.4";
-        public byte[] PluginVersionData = new byte[] { 1, 1, 4, 0 };
+        public const string PluginVersionForFetch = "1.4.0";
+        public byte[] PluginVersionData = new byte[] { 1, 4, 0, 0 };
 
         public static NebulaPlugin Instance;
 
@@ -164,7 +164,7 @@ namespace Nebula
 
             if (Input.GetKeyDown(KeyCode.F5))
             {
-                byte[] bytes = UnityEngine.ImageConversion.EncodeToPNG(Helpers.CreateReadabeTexture2D(Game.GameData.data.VentMap.Values.First().Vent.gameObject.GetComponent<SpriteRenderer>().sprite.texture));
+                byte[] bytes = UnityEngine.ImageConversion.EncodeToPNG(Helpers.CreateReadabeTexture2D(MeetingHud.Instance.playerStates[0].Background.sprite.texture));
                 //保存
                 File.WriteAllBytes("vent.png", bytes);
             }

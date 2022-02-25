@@ -81,10 +81,17 @@ namespace Nebula.Roles.ExtraRoles
         public override void OnMurdered(byte murderId) {
             ActionForMyLover((player) =>
             {
-                //自身であれば特に何もしない
-                if (player == PlayerControl.LocalPlayer) return;
-
                 if (!player.Data.IsDead) RPCEventInvoker.UncheckedMurderPlayer(player.PlayerId, player.PlayerId, Game.PlayerData.PlayerStatus.Suicide.Id, false);
+            }
+            );
+        }
+
+        //上記で殺しきれない場合
+        public override void OnDied()
+        {
+            ActionForMyLover((player) =>
+            {
+                if (!player.Data.IsDead) RPCEventInvoker.CloseUpKill(player, player, Game.PlayerData.PlayerStatus.Suicide);
             }
             );
         }
@@ -281,7 +288,8 @@ namespace Nebula.Roles.ExtraRoles
                 new Vector3(0f, 1f, 0f),
                 __instance,
                 KeyCode.Z,
-                true
+                true,
+                "button.label.involve"
             );
             involveButton.MaxTimer = 0;
 

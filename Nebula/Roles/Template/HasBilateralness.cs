@@ -75,4 +75,48 @@ namespace Nebula.Roles.Template
         {
         }
     }
+
+    public class BilateralnessRole : Role
+    {
+        private bool IsSecondaryRole;
+        HasBilateralness FRole;
+        Func<HasBilateralness> GetFRoleFunc;
+
+        protected BilateralnessRole(string name, string localizeName, Color color, RoleCategory category,
+            Side side, Side introMainDisplaySide, HashSet<Side> introDisplaySides, HashSet<Side> introInfluenceSides,
+            HashSet<Patches.EndCondition> winReasons,
+            bool hasFakeTask, bool canUseVents, bool canMoveInVents,
+            bool ignoreBlackout, bool useImpostorLightRadius, Func<HasBilateralness> bilateralness,bool isSecondary) :
+            base(name, localizeName, color, category,
+                side, introMainDisplaySide, introDisplaySides, introInfluenceSides,
+                winReasons,
+                hasFakeTask, canUseVents, canMoveInVents,
+                ignoreBlackout, useImpostorLightRadius)
+        {
+            IsSecondaryRole = isSecondary;
+            GetFRoleFunc = bilateralness;
+        }
+
+        public override void LoadOptionData()
+        {
+            FRole = GetFRoleFunc.Invoke();    
+        }
+
+        public override bool IsSpawnable()
+        {
+            if (FRole.RoleChanceOption.getSelection() == 0) return false;
+            if (FRole.RoleCountOption.getFloat() == 0f) return false;
+
+            if (FRole.definitiveAssignmentOption.getBool())
+            {
+                return FRole.GetComplexAllocations().Any(role => role.role == this);
+            }
+            else
+            {
+                return FRole.chanceToSpawnAsSecondarySide.getSelection() != (IsSecondaryRole ? 0 : 10);
+            }
+
+            return true;
+        }
+    }
 }

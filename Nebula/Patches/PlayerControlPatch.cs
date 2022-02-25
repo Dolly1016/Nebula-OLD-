@@ -33,7 +33,7 @@ namespace Nebula.Patches
 
             foreach (PlayerControl player in PlayerControl.AllPlayerControls)
             {
-                if (onlyWhiteNames && (player.Data.Role.IsImpostor || player.GetModData().role.deceiveImpostorInNameDisplay)) continue;
+                if (onlyWhiteNames && (player.Data.Role.IsImpostor || player.GetModData().role.DeceiveImpostorInNameDisplay)) continue;
                 if (untargetablePlayers != null && untargetablePlayers.Contains(player.PlayerId)) continue;
 
                 num = player.transform.position.Distance(position);
@@ -52,7 +52,7 @@ namespace Nebula.Patches
             return SetMyTarget(range,
                     (player) =>
                     {
-                        if (onlyWhiteNames && (player.Role.IsImpostor || Game.GameData.data.players[player.PlayerId].role.deceiveImpostorInNameDisplay)) return false;
+                        if (onlyWhiteNames && (player.Role.IsImpostor || Game.GameData.data.players[player.PlayerId].role.DeceiveImpostorInNameDisplay)) return false;
                         if (player.Object.inVent && !targetPlayersInVents) return false;
                         if (untargetablePlayers != null && untargetablePlayers.Any(x => x == player.Object.PlayerId)) return false;
                         return true;
@@ -225,7 +225,7 @@ namespace Nebula.Patches
 
                     var completedStr = commsActive ? "?" : tasksCompleted.ToString();
                     string taskInfo;
-                    if (p.GetModData().role.hasFakeTask)
+                    if (p.GetModData().role.HasFakeTask)
                         taskInfo = tasksTotal > 0 ? $"<color=#868686FF>({completedStr}/{tasksTotal})</color>" : "";
                     else
                         taskInfo = tasksTotal > 0 ? $"<color=#FAD934FF>({completedStr}/{tasksTotal})</color>" : "";
@@ -287,6 +287,18 @@ namespace Nebula.Patches
         }
     }
 
+    [HarmonyPatch(typeof(GameData), nameof(GameData.HandleDisconnect),typeof(PlayerControl),typeof(DisconnectReasons))]
+    class PlayerDisconnectPatch
+    {
+        public static void Postfix(GameData __instance, [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] DisconnectReasons reason)
+        {
+            if (!AmongUsClient.Instance.IsGameStarted) return;
+            if (Game.GameData.data == null) return;
+            if (player.GetModData() == null) return;
+            player.GetModData().Die(Game.PlayerData.PlayerStatus.Disconnected);
+        }
+    }
+
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.MurderPlayer))]
     public static class MurderPlayerPatch
     {
@@ -345,6 +357,16 @@ namespace Nebula.Patches
         }
     }
 
+    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CompleteTask))]
+    public static class CompleteTaskPatch
+    {
+
+        public static void Postfix(PlayerControl __instance)
+        {
+            Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId,(role)=>role.OnTaskComplete());
+        }
+    }
+
     //ベント移動その他
     [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.WalkPlayerTo))]
     class WalkPatch
@@ -355,6 +377,10 @@ namespace Nebula.Patches
             {
                 __instance.myPlayer.GetModData().Speed.Reflect();
             }
+            else
+            {
+                __instance.Speed = 2.5f;
+            }
             if (__instance.Speed < 0f) __instance.Speed *= -1f;
         }
 
@@ -363,6 +389,10 @@ namespace Nebula.Patches
             if (Helpers.HasModData(__instance.myPlayer.PlayerId))
             {
                 __instance.myPlayer.GetModData().Speed.Reflect();
+            }
+            else
+            {
+                __instance.Speed = 2.5f;
             }
         }
     }
@@ -377,6 +407,10 @@ namespace Nebula.Patches
             {
                 __instance.myPlayer.GetModData().Speed.Reflect();
             }
+            else
+            {
+                __instance.Speed = 2.5f;
+            }
         }
     }
 
@@ -388,9 +422,18 @@ namespace Nebula.Patches
             if (Game.GameData.data != null)
             {
                 var player = __instance.gameObject.GetComponent<PlayerControl>();
-                Game.GameData.data.players[player.PlayerId].Speed.Reflect();
+                if (Game.GameData.data.players.ContainsKey(player.PlayerId))
+                {
+                    Game.GameData.data.players[player.PlayerId].Speed.Reflect();
+                    PlayerControl.LocalPlayer.MyPhysics.Speed = Helpers.playerById(player.PlayerId).MyPhysics.Speed;
+                }
+                else
+                {
+                    PlayerControl.LocalPlayer.MyPhysics.Speed = 2.5f;
+                }
 
-                PlayerControl.LocalPlayer.MyPhysics.Speed=Helpers.playerById(player.PlayerId).MyPhysics.Speed;
+
+               
                 if (PlayerControl.LocalPlayer.MyPhysics.Speed < 0f) PlayerControl.LocalPlayer.MyPhysics.Speed *= -1f;
             }
         }
@@ -399,7 +442,10 @@ namespace Nebula.Patches
         {
             if (Game.GameData.data != null)
             {
-                Game.GameData.data.myData.getGlobalData().Speed.Reflect();
+                if (Game.GameData.data.players.Count > 0)
+                {
+                    Game.GameData.data.myData.getGlobalData().Speed.Reflect();
+                }
             }
         }
     }

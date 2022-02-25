@@ -40,6 +40,11 @@ namespace Nebula.Roles
         /// </summary>
         private HashSet<Side> introInfluenceSides { get; }
 
+        /// <summary>
+        /// 関連性のあるロール
+        /// </summary>
+        public HashSet<Role> RelatedRoles { get; set; }
+
         protected HashSet<Patches.EndCondition> winReasons { get; }
         public virtual bool CheckWin(Patches.EndCondition winReason)
         {
@@ -50,28 +55,28 @@ namespace Nebula.Roles
             return winReasons.Contains(winReason);
         }
 
-        public Color ventColor { get; set; }
-        public bool canUseVents { get; set; }
+        public Color VentColor { get; set; }
+        public bool CanUseVents { get; set; }
         public bool canInvokeSabotage { get; set; }
-        public bool canMoveInVents { get; set; }
+        public bool CanMoveInVents { get; set; }
         /// <summary>
         /// 停電が効かない場合true
         /// </summary>
-        public bool ignoreBlackout { get; set; }
+        public bool IgnoreBlackout { get; set; }
         /// <summary>
         /// ライトの最小範囲　停電が効かない場合無効
         /// </summary>
-        public float lightRadiusMin { get; set; }
+        public float LightRadiusMin { get; set; }
         /// <summary>
         /// 通常のライト範囲
         /// </summary>
-        public float lightRadiusMax { get; set; }
-        public bool useImpostorLightRadius { get; set; }
+        public float LightRadiusMax { get; set; }
+        public bool UseImpostorLightRadius { get; set; }
         //Modで管理するFakeTaskを所持しているかどうか(Impostorは対象外)
-        public bool hasFakeTask { get; }
+        public bool HasFakeTask { get; }
         //FakeTaskは実行可能かどうか
-        public bool fakeTaskIsExecutable { get; protected set; }
-        public bool deceiveImpostorInNameDisplay { get; set; }
+        public bool FakeTaskIsExecutable { get; protected set; }
+        public bool DeceiveImpostorInNameDisplay { get; set; }
         public bool IsGuessableRole { get; protected set; }
 
         public bool CanCallEmergencyMeeting { get; protected set; }
@@ -92,6 +97,14 @@ namespace Nebula.Roles
         /*--------------------------------------------------------------------------------------*/
 
         /// <summary>
+        /// 誰かの役職が変化したときに呼び出されます。
+        /// プレイヤー自身のロールについてのみ呼び出されます。
+        /// </summary>
+        /// <param name="playerId">ロールが変化したプレイヤーのプレイヤーID</param>
+        [RoleLocalMethod]
+        public virtual void OnAnyoneRoleChanged(byte playerId) { }
+
+        /// <summary>
         /// ホストが受け取ったイベントをイベントに関わるプレイヤーに委譲します
         /// </summary>
         /// <param name="actionId"></param>
@@ -103,6 +116,26 @@ namespace Nebula.Roles
         /// </summary>
         [RoleLocalMethod]
         public virtual void OnUpdateRoleData(int dataId, int newData) { }
+
+        /// <summary>
+        /// ロール読み込み後、ロールの関連性を設定する際に呼び出されます。
+        /// </summary>
+        [RoleLocalMethod]
+        public virtual void OnRoleRelationSetting() { }
+
+        /// <summary>
+        /// この役職が発生しうるかどうか調べます
+        /// </summary>
+        public virtual bool IsSpawnable()
+        {
+            if (category == RoleCategory.Complex) return false;
+            if (IsHideRole) return false;
+
+            if (RoleChanceOption.getSelection() == 0) return false;
+            if (!FixedRoleCount && RoleCountOption.getFloat() == 0f) return false;
+
+            return true;
+        }
 
         //Complexなロールカテゴリーについてのみ呼ばれます。
         public virtual AssignRoles.RoleAllocation[] GetComplexAllocations()
@@ -127,20 +160,20 @@ namespace Nebula.Roles
             this.introDisplaySides = introDisplaySides;
             this.introInfluenceSides = introInfluenceSides;
 
-            this.canUseVents = canUseVents;
-            this.canMoveInVents = canMoveInVents;
-            this.ignoreBlackout = ignoreBlackout;
+            this.CanUseVents = canUseVents;
+            this.CanMoveInVents = canMoveInVents;
+            this.IgnoreBlackout = ignoreBlackout;
 
-            this.useImpostorLightRadius = useImpostorLightRadius;
+            this.UseImpostorLightRadius = useImpostorLightRadius;
 
-            this.hasFakeTask = hasFakeTask;
+            this.HasFakeTask = hasFakeTask;
 
-            this.lightRadiusMin = 1.0f;
-            this.lightRadiusMax = 1.0f;
+            this.LightRadiusMin = 1.0f;
+            this.LightRadiusMax = 1.0f;
 
-            this.deceiveImpostorInNameDisplay = false;
+            this.DeceiveImpostorInNameDisplay = false;
             this.IsGuessableRole = true;
-            this.ventColor = Palette.ImpostorRed;
+            this.VentColor = Palette.ImpostorRed;
 
             this.winReasons = winReasons;
 
@@ -150,6 +183,8 @@ namespace Nebula.Roles
             this.HideInExclusiveAssignmentOption = false;
 
             this.canInvokeSabotage = (category == RoleCategory.Impostor);
+
+            this.RelatedRoles = new HashSet<Role>();
         }
 
         public static Role GetRoleById(byte id)
@@ -209,8 +244,8 @@ namespace Nebula.Roles
                 if (!role.IsHideRole)
                 {
                     role.SetupRoleOptionData();
-                    role.LoadOptionData();
                 }
+                role.LoadOptionData();
             }
         }
     }

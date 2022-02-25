@@ -31,7 +31,7 @@ namespace Nebula.Roles.NeutralRoles
         public override void GlobalInitialize(PlayerControl __instance)
         {
             WinTrigger = false;
-            canMoveInVents = canUseVents = canUseVentsOption.getBool();
+            CanMoveInVents = CanUseVents = canUseVentsOption.getBool();
             canInvokeSabotage = canInvokeSabotageOption.getBool();
         }
 
@@ -39,6 +39,12 @@ namespace Nebula.Roles.NeutralRoles
         {
             canUseVentsOption = CreateOption(Color.white, "canUseVents", true);
             canInvokeSabotageOption = CreateOption(Color.white, "canInvokeSabotage", true);
+        }
+
+        public override void OnRoleRelationSetting()
+        {
+            RelatedRoles.Add(Roles.Necromancer);
+            RelatedRoles.Add(Roles.Reaper);
         }
 
         public Jester()

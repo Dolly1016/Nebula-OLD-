@@ -128,6 +128,22 @@ namespace Nebula.Roles
             return null;
         });
 
+        public static Side GamePlayer = new Side("GamePlayer", "gamePlayer", IntroDisplayOption.SHOW_ONLY_ME, Palette.CrewmateBlue, (PlayerStatistics statistics, ShipStatus status) =>
+        {
+            if (Game.GameData.data.GameMode == Module.CustomGameMode.Minigame)
+            {
+                if (GameData.Instance.TotalTasks <= GameData.Instance.CompletedTasks)
+                {
+                    return EndCondition.MinigameEscapeesWin;
+                }
+                if (statistics.TotalAlive == 1)
+                {
+                    return EndCondition.MinigameHunterWin;
+                }
+            }
+            return null;
+        });
+
         public static Side Investigator = new Side("Investigator", "investigator", IntroDisplayOption.SHOW_ALL, Palette.CrewmateBlue, (PlayerStatistics statistics, ShipStatus status) =>
         {
             return null;
@@ -144,19 +160,25 @@ namespace Nebula.Roles
             {
                 if (Game.GameData.data.Timer < 1f)
                 {
-                    switch (PlayerControl.GameOptions.MapId)
+                    if (Game.GameData.data.GameMode == Module.CustomGameMode.Minigame)
                     {
-                        case 0:
-                        case 3:
-                            return EndCondition.NobodySkeldWin;
-                        case 1:
-                            return EndCondition.NobodyMiraWin;
-                        case 2:
-                            return EndCondition.NobodyPolusWin;
-                        case 4:
-                            return EndCondition.NobodyAirshipWin;
+                        return EndCondition.MinigameEscapeesWin;
                     }
-
+                    else
+                    {
+                        switch (PlayerControl.GameOptions.MapId)
+                        {
+                            case 0:
+                            case 3:
+                                return EndCondition.NobodySkeldWin;
+                            case 1:
+                                return EndCondition.NobodyMiraWin;
+                            case 2:
+                                return EndCondition.NobodyPolusWin;
+                            case 4:
+                                return EndCondition.NobodyAirshipWin;
+                        }
+                    }
                 }
             }
 
@@ -194,6 +216,7 @@ namespace Nebula.Roles
             Jackal, Jester, Vulture, Empiric, Arsonist, 
             Investigator,
             Gambler,
+            GamePlayer,
             Extra
         };
 

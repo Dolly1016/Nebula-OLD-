@@ -32,7 +32,9 @@ namespace Nebula.Module
     {
         private static void Prefix(MainMenuManager __instance)
         {
-            UnityEngine.Debug.Log("Prefix Update Check.");
+            //ハット更新
+            CustomHatLoader.LaunchHatFetcher();
+
             ModUpdater.LaunchUpdater();
             if (!ModUpdater.hasUpdate) return;
 

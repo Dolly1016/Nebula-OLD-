@@ -146,6 +146,11 @@ namespace Nebula.Roles.ImpostorRoles
             }
         }
 
+        public override void OnRoleRelationSetting()
+        {
+            RelatedRoles.Add(Roles.Arsonist);
+        }
+
         public Morphing()
                 : base("Morphing", "morphing", Palette.ImpostorRed, RoleCategory.Impostor, Side.Impostor, Side.Impostor,
                      Impostor.impostorSideSet, Impostor.impostorSideSet, Impostor.impostorEndSet,

@@ -17,11 +17,11 @@ namespace Nebula.Patches
             float num = float.MaxValue;
             PlayerControl @object = pc.Object;
 
-            bool roleCouldUse = Game.GameData.data.players[@object.PlayerId].role.canUseVents;
+            bool roleCouldUse = Game.GameData.data.players[@object.PlayerId].role.CanUseVents;
 
             var usableDistance = __instance.UsableDistance;
             
-            if (__instance.GetVentData().Sealed)
+            if (__instance.GetVentData()!=null && __instance.GetVentData().Sealed)
             {
                 canUse = couldUse = false;
                 __result = num;
@@ -65,8 +65,8 @@ namespace Nebula.Patches
 
             __instance.CanUse(PlayerControl.LocalPlayer.Data, out canUse, out couldUse);
 
-            canUse = Game.GameData.data.players[PlayerControl.LocalPlayer.PlayerId].role.canUseVents;
-            canMoveInVents = Game.GameData.data.players[PlayerControl.LocalPlayer.PlayerId].role.canMoveInVents;
+            canUse = Game.GameData.data.players[PlayerControl.LocalPlayer.PlayerId].role.CanUseVents;
+            canMoveInVents = Game.GameData.data.players[PlayerControl.LocalPlayer.PlayerId].role.CanMoveInVents;
             
             if (!canUse) return false; // No need to execute the native method as using is disallowed anyways
 
@@ -112,7 +112,7 @@ namespace Nebula.Patches
             var role = Game.GameData.data.players[__instance.PlayerId].role;
             var showFlag = HudManager.Instance.ReportButton.isActiveAndEnabled;
 
-            if (role.canUseVents && showFlag)
+            if (role.CanUseVents && showFlag)
                 HudManager.Instance.ImpostorVentButton.Show();
             else
                 HudManager.Instance.ImpostorVentButton.Hide();

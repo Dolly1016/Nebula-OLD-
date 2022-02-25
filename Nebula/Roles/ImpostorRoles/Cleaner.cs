@@ -49,7 +49,9 @@ namespace Nebula.Roles.ImpostorRoles
                 getCleanButtonSprite(),
                 new Vector3(-1.8f, -0.06f, 0),
                 __instance,
-                KeyCode.F
+                KeyCode.F,
+                false,
+                "button.label.clean"
             );
             cleanButton.MaxTimer=cleanCoolDownOption.getFloat();
             cleanButton.Timer = cleanButton.MaxTimer;
@@ -119,6 +121,11 @@ namespace Nebula.Roles.ImpostorRoles
                 cleanButton.Destroy();
                 cleanButton = null;
             }
+        }
+
+        public override void OnRoleRelationSetting()
+        {
+            RelatedRoles.Add(Roles.Vulture);
         }
 
         public Cleaner()

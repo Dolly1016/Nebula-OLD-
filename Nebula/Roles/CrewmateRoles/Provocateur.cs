@@ -116,6 +116,12 @@ namespace Nebula.Roles.CrewmateRoles
             embroilDurationOption.suffix = "second";
         }
 
+        public override void OnRoleRelationSetting()
+        {
+            RelatedRoles.Add(Roles.Spy);
+            RelatedRoles.Add(Roles.Madmate);
+        }
+
         public Provocateur()
             : base("Provocateur", "provocateur", Color, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                  Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Crewmate.crewmateEndSet,

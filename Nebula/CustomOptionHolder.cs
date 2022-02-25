@@ -60,7 +60,7 @@ namespace Nebula
             "option.display.percentage.0" , "option.display.percentage.10", "option.display.percentage.20", "option.display.percentage.30", "option.display.percentage.40",
             "option.display.percentage.50", "option.display.percentage.60", "option.display.percentage.70", "option.display.percentage.80", "option.display.percentage.90", "option.display.percentage.100" };
         public static string[] presets = new string[] { "option.display.preset.1", "option.display.preset.2", "option.display.preset.3", "option.display.preset.4", "option.display.preset.5" };
-        public static string[] gamemodes = new string[] { "gamemode.standard", "gamemode.parlour", "gamemode.investigators" };
+        public static string[] gamemodes = new string[] { "gamemode.standard", "gamemode.minigame", "gamemode.parlour", "gamemode.investigators" };
 
         private static byte ToByte(float f)
         {
@@ -104,6 +104,7 @@ namespace Nebula
 
         public static CustomOption limiterOptions;
         public static CustomOption timeLimitOption;
+        public static CustomOption timeLimitSecondOption;
 
         public static CustomOption exclusiveAssignmentParent;
         public static List<Tuple<CustomOption,List<CustomOption>>> exclusiveAssignmentList;
@@ -143,26 +144,28 @@ namespace Nebula
             impostorRolesCountMax = CustomOption.Create(10006, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.maximumImpostorRoles", 0f, 0f, 3f, 1f, null, false).HiddenOnDisplay(true);
 
 
-            emergencyOptions = CustomOption.Create(10100, Color.white, "option.emergencyOptions", false, null, true).SetGameMode(CustomGameMode.All);
-            maxNumberOfMeetings = CustomOption.Create(10101, Color.white, "option.maxNumberOfMeetings", 10, 0, 15, 1, emergencyOptions).SetGameMode(CustomGameMode.All);
-            deathPenaltyForDiscussionTime = CustomOption.Create(10102, Color.white, "option.deathPenaltyForDiscussionTime", 5f, 0f, 30f, 5f, emergencyOptions).SetGameMode(CustomGameMode.All);
+            emergencyOptions = CustomOption.Create(10100, Color.white, "option.emergencyOptions", false, null, true).SetGameMode(~CustomGameMode.Minigame);
+            maxNumberOfMeetings = CustomOption.Create(10101, Color.white, "option.maxNumberOfMeetings", 10, 0, 15, 1, emergencyOptions).SetGameMode(~CustomGameMode.Minigame);
+            deathPenaltyForDiscussionTime = CustomOption.Create(10102, Color.white, "option.deathPenaltyForDiscussionTime", 5f, 0f, 30f, 5f, emergencyOptions).SetGameMode(~CustomGameMode.Minigame);
             deathPenaltyForDiscussionTime.suffix = "second";
-            canUseEmergencyWithoutDeath = CustomOption.Create(10103, Color.white, "option.canUseEmergencyWithoutDeath", false, emergencyOptions).SetGameMode(CustomGameMode.All);
-            canUseEmergencyWithoutSabotage = CustomOption.Create(10104, Color.white, "option.canUseEmergencyWithoutSabotage", false, emergencyOptions).SetGameMode(CustomGameMode.All);
-            canUseEmergencyWithoutReport = CustomOption.Create(10105, Color.white, "option.canUseEmergencyWithoutReport", false, emergencyOptions).SetGameMode(CustomGameMode.All);
-            severeEmergencyLock = CustomOption.Create(10109, Color.white, "option.severeEmergencyLock", false, emergencyOptions).SetGameMode(CustomGameMode.All);
+            canUseEmergencyWithoutDeath = CustomOption.Create(10103, Color.white, "option.canUseEmergencyWithoutDeath", false, emergencyOptions).SetGameMode(~CustomGameMode.Minigame);
+            canUseEmergencyWithoutSabotage = CustomOption.Create(10104, Color.white, "option.canUseEmergencyWithoutSabotage", false, emergencyOptions).SetGameMode(~CustomGameMode.Minigame);
+            canUseEmergencyWithoutReport = CustomOption.Create(10105, Color.white, "option.canUseEmergencyWithoutReport", false, emergencyOptions).SetGameMode(~CustomGameMode.Minigame);
+            severeEmergencyLock = CustomOption.Create(10109, Color.white, "option.severeEmergencyLock", false, emergencyOptions).SetGameMode(~CustomGameMode.Minigame);
 
-            mapOptions = CustomOption.Create(10120, Color.white, "option.mapOptions", false, null, true).SetGameMode(CustomGameMode.All);
-            dynamicMap = CustomOption.Create(10121, Color.white, "option.playRandomMaps", false, mapOptions).SetGameMode(CustomGameMode.All);
-            exceptSkeld = CustomOption.Create(10122, Color.white, "option.exceptSkeld", false, dynamicMap).SetGameMode(CustomGameMode.All);
-            exceptMIRA = CustomOption.Create(10123, Color.white, "option.exceptMIRA", false, dynamicMap).SetGameMode(CustomGameMode.All);
-            exceptPolus = CustomOption.Create(10124, Color.white, "option.exceptPolus", false, dynamicMap).SetGameMode(CustomGameMode.All);
-            exceptAirship = CustomOption.Create(10125, Color.white, "option.exceptAirship", false, dynamicMap).SetGameMode(CustomGameMode.All);
-            additionalVents = CustomOption.Create(10130, Color.white, "option.additionalVents", false, mapOptions); 
+            mapOptions = CustomOption.Create(10120, Color.white, "option.mapOptions", false, null, true).SetGameMode(~CustomGameMode.Minigame);
+            dynamicMap = CustomOption.Create(10121, Color.white, "option.playRandomMaps", false, mapOptions).SetGameMode(~CustomGameMode.Minigame);
+            exceptSkeld = CustomOption.Create(10122, Color.white, "option.exceptSkeld", false, dynamicMap).SetGameMode(~CustomGameMode.Minigame);
+            exceptMIRA = CustomOption.Create(10123, Color.white, "option.exceptMIRA", false, dynamicMap).SetGameMode(~CustomGameMode.Minigame);
+            exceptPolus = CustomOption.Create(10124, Color.white, "option.exceptPolus", false, dynamicMap).SetGameMode(~CustomGameMode.Minigame);
+            exceptAirship = CustomOption.Create(10125, Color.white, "option.exceptAirship", false, dynamicMap).SetGameMode(~CustomGameMode.Minigame);
+            additionalVents = CustomOption.Create(10130, Color.white, "option.additionalVents", false, mapOptions).SetGameMode(~CustomGameMode.Minigame);
 
             limiterOptions = CustomOption.Create(10140, Color.white, "option.limitOptions", false, null, true).SetGameMode(CustomGameMode.All);
             timeLimitOption = CustomOption.Create(10141, Color.white, "option.timeLimitOption", 20f, 1f, 80f, 1f, limiterOptions).SetGameMode(CustomGameMode.All);
+            timeLimitSecondOption = CustomOption.Create(10142, Color.white, "option.timeLimitSecondOption", 0f, 0f, 55f, 5f, limiterOptions).SetGameMode(CustomGameMode.All);
             timeLimitOption.suffix = "minute";
+            timeLimitSecondOption.suffix = "second";
 
             //ロールのオプションを読み込む
             Roles.Role.LoadAllOptionData();

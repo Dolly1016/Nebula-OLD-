@@ -52,7 +52,7 @@ namespace Nebula
 
                     if (!Helpers.HasModData(playerInfo.PlayerId)) continue;
 
-                    if (playerInfo.GetModData().role.hasFakeTask) continue;
+                    if (playerInfo.GetModData().role.HasFakeTask) continue;
 
                     var (playerCompleted, playerTotal) = taskInfo(playerInfo);
                     __instance.TotalTasks += playerTotal;

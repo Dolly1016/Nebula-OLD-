@@ -42,6 +42,8 @@ namespace Nebula.Roles.NeutralRoles
             infectDurationOption = CreateOption(Color.white, "infectDuration", 20f, 5f, 60f, 1f);
             infectDurationOption.suffix = "second";
 
+            canInfectMyKillerOption = CreateOption(Color.white, "canInfectMyKiller", true);
+
             coastingPhaseOption = CreateOption(Color.white, "coastingPhase", 10f, 0f, 30f, 1f);
             coastingPhaseOption.suffix = "second";
         }
@@ -144,6 +146,14 @@ namespace Nebula.Roles.NeutralRoles
             
             //停滞期
             coasting = coastingPhaseOption.getFloat();
+        }
+
+        public override void OnMurdered(byte murderId)
+        {
+            base.OnMurdered(murderId);
+
+            if(canInfectMyKillerOption.getBool())
+                activePlayers.Add(murderId);
         }
 
         public override void MyPlayerControlUpdate()

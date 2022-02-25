@@ -29,6 +29,11 @@ namespace Nebula.Roles.ImpostorRoles
             return buttonSprite;
         }
 
+        public override void OnRoleRelationSetting()
+        {
+            RelatedRoles.Add(Roles.Arsonist);
+        }
+
         public override void LoadOptionData()
         {
             eraseCoolDownOption = CreateOption(Color.white, "eraseCoolDown", 25f, 10f, 60f, 5f);

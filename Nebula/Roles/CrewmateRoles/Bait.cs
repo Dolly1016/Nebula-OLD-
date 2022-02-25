@@ -32,6 +32,12 @@ namespace Nebula.Roles.CrewmateRoles
             Events.LocalEvent.Activate(new BaitEvent(murderId));
         }
 
+        public override void OnRoleRelationSetting()
+        {
+            RelatedRoles.Add(Roles.Spy);
+            RelatedRoles.Add(Roles.Madmate);
+        }
+
         public Bait()
             : base("Bait", "bait", Color, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                  Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Crewmate.crewmateEndSet,

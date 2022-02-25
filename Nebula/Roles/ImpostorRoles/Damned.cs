@@ -17,6 +17,21 @@ namespace Nebula.Roles.ImpostorRoles
 
         public override List<Role> GetImplicateRoles() { return new List<Role>() { Roles.DamnedCrew }; }
 
+        public override void OnRoleRelationSetting()
+        {
+            RelatedRoles.Add(Roles.Crewmate);
+        }
+
+        public virtual bool IsSpawnable()
+        {
+            if (category == RoleCategory.Complex) return false;
+
+            if (RoleChanceOption.getFloat() == 0f) return false;
+            if (!FixedRoleCount && RoleCountOption.getFloat() == 0f) return false;
+
+            return true;
+        }
+
         public Damned()
                 : base("Damned", "damned", Palette.ImpostorRed, RoleCategory.Impostor, Side.Impostor, Side.Impostor,
                      impostorSideSet, impostorSideSet, impostorEndSet,

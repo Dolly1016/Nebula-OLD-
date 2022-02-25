@@ -75,6 +75,13 @@ namespace Nebula.Roles.CrewmateRoles
             base.IntroInitialize(__instance);
         }
 
+        public override void OnRoleRelationSetting()
+        {
+            RelatedRoles.Add(Roles.EvilGuesser);
+            RelatedRoles.Add(Roles.NiceGuesser);
+            RelatedRoles.Add(Roles.EvilAce);
+        }
+
         public Agent()
             : base("Agent", "agent", Color, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                  Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Crewmate.crewmateEndSet,

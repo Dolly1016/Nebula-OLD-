@@ -441,6 +441,8 @@ namespace Nebula
 
         static public Game.VentData GetVentData(this Vent vent)
         {
+            if (vent == null) return null;
+            if (Game.GameData.data == null) return null;
             return Game.GameData.data.GetVentData(vent.gameObject.name);
         }
         
@@ -508,6 +510,25 @@ namespace Nebula
             
             return readableTextur2D;
         }
+
+        public static void destroyList<T>(Il2CppSystem.Collections.Generic.List<T> items) where T : UnityEngine.Object
+        {
+            if (items == null) return;
+            foreach (T item in items)
+            {
+                UnityEngine.Object.Destroy(item);
+            }
+        }
+
+        public static void destroyList<T>(List<T> items) where T : UnityEngine.Object
+        {
+            if (items == null) return;
+            foreach (T item in items)
+            {
+                UnityEngine.Object.Destroy(item);
+            }
+        }
+
     }
 }
 

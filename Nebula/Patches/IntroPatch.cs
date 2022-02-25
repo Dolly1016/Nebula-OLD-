@@ -55,31 +55,57 @@ namespace Nebula.Patches
 
             if (CustomOptionHolder.limiterOptions.getBool())
             {
-                Game.GameData.data.Timer = CustomOptionHolder.timeLimitOption.getFloat() * 60;
+                Game.GameData.data.Timer = CustomOptionHolder.timeLimitOption.getFloat() * 60 + CustomOptionHolder.timeLimitSecondOption.getFloat();
                 Game.GameData.data.LimitRenderer = new Module.TimeLimit(HudManager.Instance);
                 RPCEventInvoker.SynchronizeTimer();
             }
 
-            
+
             Game.GameData.data.LoadMapData();
 
             Roles.Roles.StaticInitialize();
+            
+            //役職予測を初期化
+            Game.GameData.data.EstimationAI.Initialize();
 
             foreach (Game.PlayerData player in Game.GameData.data.players.Values)
             {
-                Helpers.RoleAction(player, (role) => {
+                Helpers.RoleAction(player, (role) =>
+                {
                     PlayerControl pc = Helpers.playerById(player.id);
                     role.GlobalInitialize(pc);
                     role.GlobalIntroInitialize(pc);
                 });
             }
 
-            Helpers.RoleAction(PlayerControl.LocalPlayer, (role) => {
+            Helpers.RoleAction(PlayerControl.LocalPlayer, (role) =>
+            {
                 role.Initialize(PlayerControl.LocalPlayer);
                 role.IntroInitialize(PlayerControl.LocalPlayer);
                 role.ButtonInitialize(HudManagerStartPatch.Manager);
                 role.ButtonActivate();
             });
+
+            if (AmongUsClient.Instance.AmHost)
+            {
+                if (Game.GameModeProperty.GetProperty(Game.GameData.data.GameMode).RequireStartCountDown)
+                {
+                    byte count = 10;
+                    HudManager.Instance.StartCoroutine(Effects.Lerp(10f, new System.Action<float>((p) =>
+                    {
+                        if ((byte)((1f - p) * 10f) < count)
+                        {
+                            RPCEventInvoker.CountDownMessage(count);
+                            count = (byte)((1f - p) * 10f);
+                        }
+                        if (p == 1f)
+                        {
+                            RPCEventInvoker.CountDownMessage(0);
+                            Game.GameModeProperty.GetProperty(Game.GameData.data.GameMode).OnCountFinished.Invoke();
+                        }
+                    })));
+                }
+            }
         }
     }
 
@@ -125,6 +151,27 @@ namespace Nebula.Patches
                     exRole.EditDescriptionString(ref description);
                 }
                 __instance.RoleBlurbText.text = description;
+            }
+        }
+
+        [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.CoBegin))]
+        class BeginPatch
+        {
+            public static void Prefix(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> yourTeam,ref bool isImpostor)
+            {
+                foreach(PlayerControl player in PlayerControl.AllPlayerControls)
+                {
+                    if (Game.GameData.data.players[player.PlayerId].role.category == Roles.RoleCategory.Impostor)
+                    {
+                        DestroyableSingleton<RoleManager>.Instance.SetRole(player, RoleTypes.Impostor);
+                    }
+                    else
+                    {
+                        DestroyableSingleton<RoleManager>.Instance.SetRole(player, RoleTypes.Crewmate);
+                    }
+                }
+
+                isImpostor = (Game.GameData.data.myData.getGlobalData().role.category == Roles.RoleCategory.Impostor);
             }
         }
 

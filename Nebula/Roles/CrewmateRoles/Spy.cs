@@ -33,12 +33,21 @@ namespace Nebula.Roles.CrewmateRoles
             validSpyFlag = false;
         }
 
+        public override void OnRoleRelationSetting()
+        {
+            RelatedRoles.Add(Roles.Pursuer);
+            RelatedRoles.Add(Roles.Seer);
+            RelatedRoles.Add(Roles.Empiric);
+            RelatedRoles.Add(Roles.Bait);
+            RelatedRoles.Add(Roles.Provocateur);
+        }
+
         public Spy()
                 : base("Spy", "spy", Palette.ImpostorRed, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                      Crewmate.crewmateSideSet, ImpostorRoles.Impostor.impostorSideSet, Crewmate.crewmateEndSet,
                      false, true, false, false, true)
         {
-            deceiveImpostorInNameDisplay = true;
+            DeceiveImpostorInNameDisplay = true;
         }
     }
 }

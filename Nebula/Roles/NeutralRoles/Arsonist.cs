@@ -158,8 +158,14 @@ namespace Nebula.Roles.NeutralRoles
             base.MyPlayerControlUpdate();
 
             Game.MyPlayerData data = Game.GameData.data.myData;
-            data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(2.4f*douseRangeOption.getFloat(), false, false, activePlayers);
+            data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(1.8f*douseRangeOption.getFloat(), false, false, activePlayers);
             Patches.PlayerControlPatch.SetPlayerOutline(data.currentTarget, Color.yellow);
+        }
+
+        public override void OnRoleRelationSetting()
+        {
+            RelatedRoles.Add(Roles.Empiric);
+            RelatedRoles.Add(Roles.EvilAce);
         }
 
         public Arsonist()

@@ -48,12 +48,14 @@ namespace Nebula.Roles.CrewmateRoles
                     boostButton.actionButton.cooldownTimerText.color = Palette.EnabledColor;
                 },
                 getButtonSprite(),
-                new Vector3(0f, 1f, 0),
+                new Vector3(-1.8f, 0f, 0),
                 __instance,
                 KeyCode.F,
                 true,
                boostDurationOption.getFloat(),
-               () => { boostButton.Timer = boostButton.MaxTimer; }
+               () => { boostButton.Timer = boostButton.MaxTimer; },
+                false,
+                "button.label.boost"
             );
             boostButton.MaxTimer = boostCooldownOption.getFloat();
         }

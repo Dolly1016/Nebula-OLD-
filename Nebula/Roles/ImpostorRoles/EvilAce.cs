@@ -18,6 +18,11 @@ namespace Nebula.Roles.ImpostorRoles
             killCoolDownMultiplierOption.suffix = "cross";
         }
 
+        public override void OnRoleRelationSetting()
+        {
+            RelatedRoles.Add(Roles.Jackal);
+        }
+
         public EvilAce()
                 : base("EvilAce", "evilAce", Palette.ImpostorRed, RoleCategory.Impostor, Side.Impostor, Side.Impostor,
                      Impostor.impostorSideSet, Impostor.impostorSideSet, Impostor.impostorEndSet,

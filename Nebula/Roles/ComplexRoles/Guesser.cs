@@ -101,7 +101,7 @@ namespace Nebula.Roles.ComplexRoles
             foreach (Role role in Roles.AllRoles)
             {
                 //撃てないロールを除外する
-                if (!role.IsGuessableRole || role.category == RoleCategory.Complex) continue;
+                if (!role.IsGuessableRole || role.category == RoleCategory.Complex||(int)(role.ValidGamemode&Game.GameData.data.GameMode)==0) continue;
                 Transform buttonParent = (new GameObject()).transform;
                 buttonParent.SetParent(container);
                 Transform button = UnityEngine.Object.Instantiate(buttonTemplate, buttonParent);
@@ -130,7 +130,7 @@ namespace Nebula.Roles.ComplexRoles
                         PlayerControl focusedTarget = Helpers.playerById((byte)__instance.playerStates[buttonTarget].TargetPlayerId);
                         if (!(__instance.state == MeetingHud.VoteStates.Voted || __instance.state == MeetingHud.VoteStates.NotVoted) || focusedTarget == null) return;
 
-                        PlayerControl dyingTarget = (focusedTarget.GetModData().role == role) ? focusedTarget : PlayerControl.LocalPlayer;
+                        PlayerControl dyingTarget = (focusedTarget.GetModData().role == role || focusedTarget.GetModData().role.GetImplicateRoles().Contains(role)) ? focusedTarget : PlayerControl.LocalPlayer;
 
                         // Reset the GUI
                         __instance.playerStates.ToList().ForEach(x => x.gameObject.SetActive(true));
@@ -145,7 +145,8 @@ namespace Nebula.Roles.ComplexRoles
                             __instance.playerStates.ToList().ForEach(x => { if (x.transform.FindChild("ShootButton") != null) UnityEngine.Object.Destroy(x.transform.FindChild("ShootButton").gameObject); });
 
                         // Shoot player and send chat info if activated
-                        RPCEventInvoker.CloseUpKill(PlayerControl.LocalPlayer, dyingTarget);
+                        RPCEventInvoker.CloseUpKill(PlayerControl.LocalPlayer, dyingTarget, 
+                            dyingTarget.PlayerId == PlayerControl.LocalPlayer.PlayerId ? Game.PlayerData.PlayerStatus.Misguessed : Game.PlayerData.PlayerStatus.Guessed);
                     }
                 }));
 
@@ -186,7 +187,7 @@ namespace Nebula.Roles.ComplexRoles
         }
     }
 
-    public class Guesser : Role
+    public class Guesser : Template.BilateralnessRole
     {
         //インポスターはModで操作するFakeTaskは所持していない
         public Guesser(string name, string localizeName, bool isImpostor)
@@ -197,7 +198,7 @@ namespace Nebula.Roles.ComplexRoles
                      isImpostor ? ImpostorRoles.Impostor.impostorSideSet : CrewmateRoles.Crewmate.crewmateSideSet,
                      isImpostor ? ImpostorRoles.Impostor.impostorSideSet : CrewmateRoles.Crewmate.crewmateSideSet,
                      isImpostor ? ImpostorRoles.Impostor.impostorEndSet : CrewmateRoles.Crewmate.crewmateEndSet,
-                     false, isImpostor, isImpostor, isImpostor, isImpostor)
+                     false, isImpostor, isImpostor, isImpostor, isImpostor,()=> { return Roles.F_Guesser; },isImpostor)
         {
             IsGuessableRole = false;
             IsHideRole = true;
@@ -215,6 +216,18 @@ namespace Nebula.Roles.ComplexRoles
 
         public override void MeetingUpdate(MeetingHud __instance, TMPro.TextMeshPro meetingInfo) {
             GuesserSystem.MeetingUpdate(__instance,meetingInfo);
+        }
+
+        public override void OnRoleRelationSetting()
+        {
+            RelatedRoles.Add(Roles.Agent);
+            RelatedRoles.Add(Roles.EvilAce);
+        }
+
+        public override bool IsSpawnable()
+        {
+            if (Roles.F_Guesser.secondoryRoleOption.getBool()) return false;
+            return base.IsSpawnable();
         }
     }
 

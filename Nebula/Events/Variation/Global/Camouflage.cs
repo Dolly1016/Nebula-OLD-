@@ -17,9 +17,12 @@ namespace Nebula.Events.Variation
         {
             if (GlobalEvent.IsActive(GlobalEvent.Type.Camouflage)) return;
 
+            //Camouflagerを確定させる
+            Game.GameData.data.EstimationAI.Determine(Roles.Roles.Camouflager);
+
             foreach (PlayerControl player in PlayerControl.AllPlayerControls)
             {
-                player.SetLook("", 6, "", "", "", "");
+                player.SetLook("", 38, "", "", "", "");
             }
         }
 

@@ -109,6 +109,12 @@ namespace Nebula.Roles.ImpostorRoles
             ConnectVent(false);
         }
 
+        public override void OnRoleRelationSetting()
+        {
+            RelatedRoles.Add(Roles.Jester);
+            RelatedRoles.Add(Roles.Necromancer);
+        }
+
         public Reaper()
                 : base("Reaper", "reaper", Palette.ImpostorRed, RoleCategory.Impostor, Side.Impostor, Side.Impostor,
                      Impostor.impostorSideSet, Impostor.impostorSideSet, Impostor.impostorEndSet,

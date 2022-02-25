@@ -56,7 +56,29 @@ namespace Nebula.Game
             this.deathLocation = Helpers.allPlayersById()[playerData.id].transform.position;
             this.Elapsed = 0f;
 
-            this.RespawnRoom = Game.GameData.data.Rooms[NebulaPlugin.rnd.Next(Game.GameData.data.Rooms.Count)];
+            List<SystemTypes> candidate = new List<SystemTypes>();
+            float dis = Roles.Roles.Necromancer.maxReviveRoomDistanceOption.getFloat(),nearestDis=100f;
+            SystemTypes? nearest = null;
+            foreach (var room in Game.GameData.data.Rooms)
+            {
+                float d = ShipStatus.Instance.FastRooms[room].roomArea.Distance(Helpers.allPlayersById()[playerData.id].Collider).distance;
+                if (d > 0.2f)
+                {
+                    if (dis > d)
+                    {
+                        candidate.Add(room);
+                    }
+                    if (nearest == null || nearestDis > d)
+                    {
+                        nearestDis = d;
+                        nearest = room;
+                    }
+                }
+            }
+            if (candidate.Count > 0)
+                this.RespawnRoom = candidate[NebulaPlugin.rnd.Next(candidate.Count)];
+            else
+                this.RespawnRoom = nearest.Value;
         }
 
         public void EraseBody()
@@ -188,13 +210,19 @@ namespace Nebula.Game
             public static PlayerStatus Alive = new PlayerStatus("alive");
             public static PlayerStatus Dead = new PlayerStatus("dead");
             public static PlayerStatus Exiled = new PlayerStatus("exiled");
+            public static PlayerStatus Disconnected = new PlayerStatus("disconnected");
             public static PlayerStatus Suicide = new PlayerStatus("suicide");
             public static PlayerStatus Revived = new PlayerStatus("revived");
             public static PlayerStatus Burned=new PlayerStatus("burned");
             public static PlayerStatus Embroiled = new PlayerStatus("embroiled");
             public static PlayerStatus Guessed = new PlayerStatus("guessed");
+            public static PlayerStatus Misguessed = new PlayerStatus("misguessed");
             public static PlayerStatus Trapped = new PlayerStatus("trapped");
             public static PlayerStatus Sniped = new PlayerStatus("sniped");
+            public static PlayerStatus Arrested = new PlayerStatus("arrested");
+            public static PlayerStatus Punished = new PlayerStatus("punished");
+            public static PlayerStatus Misfire = new PlayerStatus("misfire");
+            
 
             public string Status { get; private set; }
             public byte Id;
@@ -280,7 +308,7 @@ namespace Nebula.Game
             this.currentName = name;
             this.dragPlayerId = Byte.MaxValue;
             this.Speed = new SpeedFactorManager(playerId) ;
-            this.Tasks = new TaskData(role.side == Roles.Side.Impostor || role.hasFakeTask, role.fakeTaskIsExecutable);
+            this.Tasks = new TaskData(role.side == Roles.Side.Impostor || role.HasFakeTask, role.FakeTaskIsExecutable);
             this.MouseAngle = 0f;
             this.Status = PlayerStatus.Alive;
         }
@@ -496,6 +524,10 @@ namespace Nebula.Game
 
         public Ghost.Ghost Ghost;
 
+        public Objects.CustomMessage CountDownMessage;
+
+        public Roles.RoleAI.EstimationAI EstimationAI;
+
         public GameData()
         {
             players = new Dictionary<byte, PlayerData>();
@@ -504,7 +536,9 @@ namespace Nebula.Game
             TotalTasks = 0;
             CompleteTasks = 0;
 
-            OriginalSpeed=PlayerControl.LocalPlayer.MyPhysics.Speed;
+            VentMap = new Dictionary<string, VentData>();
+
+            OriginalSpeed =PlayerControl.LocalPlayer.MyPhysics.Speed;
 
             GameRule = new GameRule();
             GameMode = Module.CustomGameModes.GetGameMode(CustomOptionHolder.gameMode.getSelection());
@@ -512,6 +546,9 @@ namespace Nebula.Game
             LimitRenderer = null;
 
             Ghost = null;
+            CountDownMessage = null;
+
+            EstimationAI = new Roles.RoleAI.EstimationAI();
 
             Timer = 300f;
         }
@@ -583,7 +620,6 @@ namespace Nebula.Game
 
         public void LoadMapData()
         {
-            VentMap = new Dictionary<string, VentData>();
             foreach (Vent vent in ShipStatus.Instance.AllVents)
             {
                 VentMap.Add(vent.gameObject.name, new VentData(vent));

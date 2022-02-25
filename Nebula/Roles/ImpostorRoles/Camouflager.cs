@@ -89,6 +89,13 @@ namespace Nebula.Roles.ImpostorRoles
             }
         }
 
+        public override void OnRoleRelationSetting()
+        {
+            RelatedRoles.Add(Roles.Opportunist);
+            RelatedRoles.Add(Roles.Empiric);
+            RelatedRoles.Add(Roles.Alien);
+        }
+
         public Camouflager()
                 : base("Camouflager", "camouflager", Palette.ImpostorRed, RoleCategory.Impostor, Side.Impostor, Side.Impostor,
                      Impostor.impostorSideSet, Impostor.impostorSideSet, Impostor.impostorEndSet,

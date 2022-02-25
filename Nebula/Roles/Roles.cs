@@ -17,15 +17,16 @@ namespace Nebula.Roles
         public static CrewmateRoles.Bait Bait = new CrewmateRoles.Bait();
         public static CrewmateRoles.Booster Booster = new CrewmateRoles.Booster();
         public static CrewmateRoles.DamnedCrew DamnedCrew = new CrewmateRoles.DamnedCrew();
-        public static CrewmateRoles.Engineer Engineer = new CrewmateRoles.Engineer();
+        public static CrewmateRoles.Doctor Doctor = new CrewmateRoles.Doctor();
         public static CrewmateRoles.Mayor Mayor = new CrewmateRoles.Mayor();
         public static CrewmateRoles.Necromancer Necromancer = new CrewmateRoles.Necromancer();
         public static ComplexRoles.Guesser NiceGuesser = new ComplexRoles.Guesser("NiceGuesser", "niceGuesser", false);
         public static ComplexRoles.Trapper NiceTrapper = new ComplexRoles.Trapper("NiceTrapper", "niceTrapper", false);
+        public static CrewmateRoles.Oracle Oracle = new CrewmateRoles.Oracle();
         public static CrewmateRoles.Provocateur Provocateur = new CrewmateRoles.Provocateur();
         public static CrewmateRoles.Psychic Psychic = new CrewmateRoles.Psychic();
         public static CrewmateRoles.Pursuer Pursuer = new CrewmateRoles.Pursuer();
-        public static CrewmateRoles.SecurityGuard SecurityGuard = new CrewmateRoles.SecurityGuard();
+        public static CrewmateRoles.Navvy Navvy = new CrewmateRoles.Navvy();
         public static CrewmateRoles.Seer Seer = new CrewmateRoles.Seer();
         public static CrewmateRoles.Sheriff Sheriff = new CrewmateRoles.Sheriff();
         public static CrewmateRoles.Spy Spy = new CrewmateRoles.Spy();
@@ -56,6 +57,10 @@ namespace Nebula.Roles
 
         public static ParlourRoles.Gambler Gambler = new ParlourRoles.Gambler();
 
+        public static MinigameRoles.Player Player = new MinigameRoles.Player();
+        public static MinigameRoles.Escapee Escapee = new MinigameRoles.Escapee();
+        public static MinigameRoles.Hunter Hunter = new MinigameRoles.Hunter();
+
         public static ComplexRoles.FCrewmate F_Crewmate = new ComplexRoles.FCrewmate();
         public static ComplexRoles.FGuesser F_Guesser = new ComplexRoles.FGuesser();
         public static ComplexRoles.FTrapper F_Trapper = new ComplexRoles.FTrapper();
@@ -74,10 +79,12 @@ namespace Nebula.Roles
             F_Guesser,F_Trapper,
             Arsonist,Empiric,Jackal,Jester,Opportunist,Sidekick,Vulture,
             F_Crewmate,
-            Crewmate,Agent,Alien,Bait,Booster,DamnedCrew,Engineer,Mayor,Necromancer,NiceGuesser,NiceTrapper,Provocateur,Psychic,Pursuer,SecurityGuard,Seer,Sheriff,Spy,
+            Crewmate,Agent,Alien,Bait,Booster,DamnedCrew,Doctor,Mayor,Navvy,Necromancer,NiceGuesser,NiceTrapper,Oracle,Provocateur,Psychic,Pursuer,Seer,Sheriff,Spy,
             Madmate,
-            Investigator,
-            Gambler
+            Player,Escapee,Hunter,
+            Gambler,
+            Investigator
+            
         };
 
         public static List<ExtraRole> AllExtraRoles = new List<ExtraRole>()
@@ -114,6 +121,11 @@ namespace Nebula.Roles
             foreach (ExtraRole role in AllExtraRoles)
             {
                 role.StaticInitialize();
+            }
+
+            foreach (Role role in AllRoles)
+            {
+                role.OnRoleRelationSetting();
             }
         }
     }

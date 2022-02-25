@@ -14,6 +14,8 @@ namespace Nebula.Roles.CrewmateRoles
 
         public int votesId { get; private set; }
 
+        private Module.CustomOption voteAssignmentOption;
+        private Module.CustomOption minVoteOption;
         private Module.CustomOption maxVoteOption;
         private Module.CustomOption maxVoteStockOption;
 
@@ -30,7 +32,7 @@ namespace Nebula.Roles.CrewmateRoles
 
         public override void OnMeetingStart()
         {
-            PlayerControl.LocalPlayer.GetModData().AddRoleData(votesId, 1);
+            PlayerControl.LocalPlayer.GetModData().AddRoleData(votesId, (int)voteAssignmentOption.getFloat());
         }
 
         public override void OnVote(byte playerId, byte targetId)
@@ -47,55 +49,70 @@ namespace Nebula.Roles.CrewmateRoles
         {
             numOfVote = 1;
 
-            if (!PlayerControl.LocalPlayer.Data.IsDead)
+            if ((int)minVoteOption.getFloat() >= (int)maxVoteOption.getFloat())
             {
-                GameObject template, button;
-                PassiveButton passiveButton;
-                SpriteRenderer renderer;
-
-                template = __instance.SkipVoteButton.Buttons.transform.Find("CancelButton").gameObject;
-                button = UnityEngine.Object.Instantiate(template, __instance.SkipVoteButton.transform);
-                button.name = "MayorButton";
-                button.transform.position += new Vector3(1.5f, 0f);
-                renderer = button.GetComponent<SpriteRenderer>();
-                renderer.sprite = Images.GlobalImage.GetMeetingButtonLeft();
-                passiveButton = button.GetComponent<PassiveButton>();
-                passiveButton.OnClick.RemoveAllListeners();
-                passiveButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
+                //入れうる票が固定になる場合
+                numOfVote = (byte)maxVoteOption.getFloat();
+                if(numOfVote> Game.GameData.data.myData.getGlobalData().GetRoleData(votesId))
                 {
-                    if (numOfVote > 0)
-                    {
-                        numOfVote--;
-                        RPCEventInvoker.MultipleVote(PlayerControl.LocalPlayer, numOfVote);
-                    }
-                }));
+                    numOfVote = (byte)Game.GameData.data.myData.getGlobalData().GetRoleData(votesId);
+                }
+            }
+            else
+            {
+                if (numOfVote < (byte)minVoteOption.getFloat())
+                    numOfVote = (byte)minVoteOption.getFloat();
 
-                template = __instance.SkipVoteButton.Buttons.transform.Find("CancelButton").gameObject;
-                button = UnityEngine.Object.Instantiate(template, __instance.SkipVoteButton.transform);
-                button.name = "MayorButton";
-                button.transform.position += new Vector3(2.7f, 0f);
-                renderer = button.GetComponent<SpriteRenderer>();
-                renderer.sprite = Images.GlobalImage.GetMeetingButtonRight();
-                passiveButton = button.GetComponent<PassiveButton>();
-                passiveButton.OnClick.RemoveAllListeners();
-                passiveButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
+                if (!PlayerControl.LocalPlayer.Data.IsDead)
                 {
-                    if (numOfVote < maxVoteOption.getFloat() && numOfVote < Game.GameData.data.myData.getGlobalData().GetRoleData(votesId))
+                    GameObject template, button;
+                    PassiveButton passiveButton;
+                    SpriteRenderer renderer;
+
+                    template = __instance.SkipVoteButton.Buttons.transform.Find("CancelButton").gameObject;
+                    button = UnityEngine.Object.Instantiate(template, __instance.SkipVoteButton.transform);
+                    button.name = "MayorButton";
+                    button.transform.position += new Vector3(1.5f, 0f);
+                    renderer = button.GetComponent<SpriteRenderer>();
+                    renderer.sprite = Images.GlobalImage.GetMeetingButtonLeft();
+                    passiveButton = button.GetComponent<PassiveButton>();
+                    passiveButton.OnClick.RemoveAllListeners();
+                    passiveButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
                     {
-                        numOfVote++;
-                        RPCEventInvoker.MultipleVote(PlayerControl.LocalPlayer, numOfVote);
-                    }
-                }));
+                        if (numOfVote > 0)
+                        {
+                            numOfVote--;
+                            RPCEventInvoker.MultipleVote(PlayerControl.LocalPlayer, numOfVote);
+                        }
+                    }));
+
+                    template = __instance.SkipVoteButton.Buttons.transform.Find("CancelButton").gameObject;
+                    button = UnityEngine.Object.Instantiate(template, __instance.SkipVoteButton.transform);
+                    button.name = "MayorButton";
+                    button.transform.position += new Vector3(2.7f, 0f);
+                    renderer = button.GetComponent<SpriteRenderer>();
+                    renderer.sprite = Images.GlobalImage.GetMeetingButtonRight();
+                    passiveButton = button.GetComponent<PassiveButton>();
+                    passiveButton.OnClick.RemoveAllListeners();
+                    passiveButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
+                    {
+                        if (numOfVote < maxVoteOption.getFloat() && numOfVote < Game.GameData.data.myData.getGlobalData().GetRoleData(votesId))
+                        {
+                            numOfVote++;
+                            RPCEventInvoker.MultipleVote(PlayerControl.LocalPlayer, numOfVote);
+                        }
+                    }));
 
 
 
-                countText = UnityEngine.Object.Instantiate(__instance.TitleText, __instance.SkipVoteButton.transform);
-                countText.alignment = TMPro.TextAlignmentOptions.Center;
-                countText.transform.position = __instance.SkipVoteButton.CancelButton.transform.position;
-                countText.transform.position += new Vector3(1.54f, 0f);
-                countText.color = Palette.White;
-                countText.transform.localScale *= 0.8f;
-                countText.text = "";
+                    countText = UnityEngine.Object.Instantiate(__instance.TitleText, __instance.SkipVoteButton.transform);
+                    countText.alignment = TMPro.TextAlignmentOptions.Center;
+                    countText.transform.position = __instance.SkipVoteButton.CancelButton.transform.position;
+                    countText.transform.position += new Vector3(1.54f, 0f);
+                    countText.color = Palette.White;
+                    countText.transform.localScale *= 0.8f;
+                    countText.text = "";
+                }
             }
         }
 
@@ -111,8 +128,15 @@ namespace Nebula.Roles.CrewmateRoles
 
         public override void LoadOptionData()
         {
+            voteAssignmentOption = CreateOption(Color.white, "voteAssignment", 1f, 1f, 5f, 1f);
+            minVoteOption = CreateOption(Color.white, "minVote", 0f, 0f, 20f, 1f);
             maxVoteOption = CreateOption(Color.white, "maxVote", 5f, 0f, 20f, 1f);
             maxVoteStockOption = CreateOption(Color.white, "maxVoteStock", 5f, 0f, 20f, 1f);
+        }
+
+        public override void OnRoleRelationSetting()
+        {
+            RelatedRoles.Add(Roles.Opportunist);
         }
 
         public Mayor()

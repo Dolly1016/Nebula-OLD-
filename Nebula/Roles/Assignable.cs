@@ -96,6 +96,27 @@ namespace Nebula.Roles
         /*--------------------------------------------------------------------------------------*/
         /*--------------------------------------------------------------------------------------*/
 
+        /// <summary>
+        /// バイタルを開いた時に呼び出されます。
+        /// </summary>
+        /// <param name="__instance"></param>
+        [RoleLocalMethod]
+        public virtual void OnVitalsOpen(VitalsMinigame __instance)
+        {
+
+        }
+
+        /// <summary>
+        /// バイタルを開いている時に呼び出されます。
+        /// </summary>
+        /// <param name="__instance"></param>
+        [RoleLocalMethod]
+        public virtual void VitalsUpdate(VitalsMinigame __instance)
+        {
+
+        }
+
+        /*--------------------------------------------------------------------------------------*/
 
         /// <summary>
         /// ボタン設定を初期化します。全ロールに対して行います。
@@ -115,6 +136,8 @@ namespace Nebula.Roles
         [RoleLocalMethod]
         public virtual void ButtonDeactivate() { }
 
+        /*--------------------------------------------------------------------------------------*/
+
         /// <summary>
         /// 初期化時に呼び出されます。
         /// </summary>
@@ -128,12 +151,22 @@ namespace Nebula.Roles
         [RoleLocalMethod]
         public virtual void IntroInitialize(PlayerControl __instance) { }
 
+        /*--------------------------------------------------------------------------------------*/
+
         /// <summary>
         /// ゲーム中にロールが変更される際に呼ばれます。
         /// </summary>
         /// <param name="__instance"></param>
         [RoleLocalMethod]
         public virtual void FinalizeInGame(PlayerControl __instance) { }
+
+        /// <summary>
+        ///ゲーム終了時に呼び出されます。 
+        /// </summary>
+        [RoleLocalMethod]
+        public virtual void CleanUp() { }
+
+        /*--------------------------------------------------------------------------------------*/
 
         /// <summary>
         /// プレイヤーが更新されるたびに呼び出されます。
@@ -148,10 +181,12 @@ namespace Nebula.Roles
         public virtual void MyUpdate() { }
 
         /// <summary>
-        ///ゲーム終了時に呼び出されます。 
+        /// タスクを完了すると呼び出されます。
         /// </summary>
         [RoleLocalMethod]
-        public virtual void CleanUp() { }
+        public virtual void OnTaskComplete() { }
+
+        /*--------------------------------------------------------------------------------------*/
 
         /// <summary>
         /// //明かりの大きさを調整します。毎ティック呼び出されます。
@@ -160,6 +195,8 @@ namespace Nebula.Roles
         [RoleLocalMethod]
         public virtual void GetLightRadius(ref float radius) { }
 
+        /*--------------------------------------------------------------------------------------*/
+
         /// <summary>
         /// キルクールダウンを設定する際に呼び出されます。
         /// </summary>
@@ -167,6 +204,8 @@ namespace Nebula.Roles
         /// <param name="addition">クールダウンに足しこむ値</param>
         [RoleLocalMethod]
         public virtual void SetKillCoolDown(ref float multiplier, ref float addition) { }
+
+        /*--------------------------------------------------------------------------------------*/
 
         /// <summary>
         /// 会議で表示するボタンを設定します。
@@ -183,20 +222,22 @@ namespace Nebula.Roles
         [RoleLocalMethod]
         public virtual void OnMeetingStart() { }
 
+        [RoleLocalMethod]
+        public virtual void MeetingUpdate(MeetingHud __instance, TMPro.TextMeshPro meetingInfo) { }
+
         /// <summary>
         /// 投票した際に呼び出されます。
         /// </summary>
         [RoleIndefiniteMethod]
-        public virtual void OnVote(byte playerId,byte targetId) { }
-
-        [RoleLocalMethod]
-        public virtual void MeetingUpdate(MeetingHud __instance, TMPro.TextMeshPro meetingInfo) { }
+        public virtual void OnVote(byte playerId, byte targetId) { }
 
         /// <summary>
         /// 会議が終了した際に呼び出されます。
         /// </summary>
         [RoleLocalMethod]
         public virtual void OnMeetingEnd() { }
+
+        /*--------------------------------------------------------------------------------------*/
 
         /// <summary>
         /// 誰かが殺害されたときに呼び出されます。
@@ -241,6 +282,8 @@ namespace Nebula.Roles
         /// </summary>
         [RoleLocalMethod]
         public virtual void OnDied() { }
+
+        /*--------------------------------------------------------------------------------------*/
 
         /// <summary>
         /// 名前の色を編集します。

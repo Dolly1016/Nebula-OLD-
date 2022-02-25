@@ -89,7 +89,7 @@ namespace Nebula.Roles.NeutralRoles
 
         public override void GlobalInitialize(PlayerControl __instance)
         {
-            canMoveInVents = canUseVents = Jackal.SidekickCanUseVentsOption.getBool();
+            CanMoveInVents = CanUseVents = Jackal.SidekickCanUseVentsOption.getBool();
         }
 
         public override void EditDisplayNameColor(byte playerId, ref Color displayColor)
@@ -101,6 +101,15 @@ namespace Nebula.Roles.NeutralRoles
                     displayColor = Color;
                 }
             }
+        }
+
+        public override bool IsSpawnable()
+        {
+            if (!Roles.Jackal.IsSpawnable()) return false;
+            if (!Jackal.CanCreateSidekickOption.getBool()) return false;
+            if (!Jackal.SidekickTakeOverOriginalRoleOption.getBool()) return false;
+
+            return true;
         }
 
         public Sidekick()

@@ -52,7 +52,7 @@ namespace Nebula.Roles.ImpostorRoles
 
                 if (onlyWhiteName)
                 {
-                    if (player.GetModData().role.side == Side.Impostor || player.GetModData().role.deceiveImpostorInNameDisplay) continue;
+                    if (player.GetModData().role.side == Side.Impostor || player.GetModData().role.DeceiveImpostorInNameDisplay) continue;
                 }
 
                 pos = player.transform.position - PlayerControl.LocalPlayer.transform.position;
@@ -132,11 +132,13 @@ namespace Nebula.Roles.ImpostorRoles
         public override void ButtonActivate()
         {
             sniperButton.setActive(true);
+            killButton.setActive(true);
         }
 
         public override void ButtonDeactivate()
         {
             sniperButton.setActive(false);
+            killButton.setActive(false);
         }
 
         public byte deadBodyId;

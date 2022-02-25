@@ -23,13 +23,13 @@ namespace Nebula.Patches
             {
                 if (player.IsMyPlayerData())
                 {
-                    if (player.role.deceiveImpostorInNameDisplay)
+                    if (player.role.DeceiveImpostorInNameDisplay)
                     {
                         return Palette.ImpostorRed;
                     }
                 }
 
-                if (player.role.deceiveImpostorInNameDisplay)
+                if (player.role.DeceiveImpostorInNameDisplay)
                 {
                     return impostorColor;
                 }
@@ -218,6 +218,7 @@ namespace Nebula.Patches
             if (AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Started) return;
             if (!Helpers.HasModData(PlayerControl.LocalPlayer.PlayerId)) return;
 
+
             /* サボタージュを確認 */
             if (Helpers.SabotageIsActive())
             {
@@ -228,7 +229,7 @@ namespace Nebula.Patches
             CustomButton.HudUpdate();
 
             Helpers.RoleAction(PlayerControl.LocalPlayer, (role) => { role.MyUpdate(); });
-            if (!PlayerControl.LocalPlayer.Data.Role.IsImpostor && PlayerControl.LocalPlayer.GetModData().role.canUseVents)
+            if (!PlayerControl.LocalPlayer.Data.Role.IsImpostor && PlayerControl.LocalPlayer.GetModData().role.CanUseVents)
             {
                 if (Input.GetKeyDown(KeyCode.V))
                 HudManagerStartPatch.Manager.ImpostorVentButton.DoClick();
@@ -257,13 +258,13 @@ namespace Nebula.Patches
                 UpdateImpostorKillButton(__instance);
             }
 
-            if (PlayerControl.LocalPlayer.GetModData().role.canUseVents)
+            if (PlayerControl.LocalPlayer.GetModData().role.CanUseVents)
             {
                 //ベントの色の設定
                 Color ventColor;
                 foreach (Vent vent in ShipStatus.Instance.AllVents)
                 {
-                    ventColor = PlayerControl.LocalPlayer.GetModData().role.ventColor;
+                    ventColor = PlayerControl.LocalPlayer.GetModData().role.VentColor;
                     vent.myRend.material.SetColor("_OutlineColor", ventColor);
 
                     if (vent.myRend.material.GetColor("_AddColor").a > 0f)

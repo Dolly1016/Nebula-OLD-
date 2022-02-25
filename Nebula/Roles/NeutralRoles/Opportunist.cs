@@ -23,7 +23,7 @@ namespace Nebula.Roles.NeutralRoles
         {
             base.GlobalInitialize(__instance);
 
-            canMoveInVents = canUseVents = canUseVentsOption.getBool();
+            CanMoveInVents = CanUseVents = canUseVentsOption.getBool();
         }
 
         public override void LoadOptionData()
@@ -57,8 +57,8 @@ namespace Nebula.Roles.NeutralRoles
                  new HashSet<Patches.EndCondition>(),
                  true, true, true, false, false)
         {
-            fakeTaskIsExecutable = true;
-            ventColor = Color;
+            FakeTaskIsExecutable = true;
+            VentColor = Color;
         }
     }
 }

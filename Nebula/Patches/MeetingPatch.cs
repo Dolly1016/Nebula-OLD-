@@ -169,10 +169,44 @@ namespace Nebula.Patches
             }
         }
 
+        [HarmonyPatch(typeof(HudManager), nameof(HudManager.OpenMeetingRoom))]
+        class OpenMeetingPatch
+        {
+            public static void Prefix(HudManager __instance)
+            {
+                CustomOverlays.OnMeetingStart();
+            }
+        }
+
+        [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CoStartMeeting))]
+        class StartMeetingPatch
+        {
+            public static void Prefix(PlayerControl __instance, [HarmonyArgument(0)] GameData.PlayerInfo meetingTarget)
+            {
+                CustomOverlays.OnMeetingStart();
+            }
+        }
 
         [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Start))]
         class MeetingServerStartPatch
         {
+            static private Sprite LightColorSprite;
+            static private Sprite DarkColorSprite;
+
+            static private Sprite GetLightColorSprite()
+            {
+                if (LightColorSprite) return LightColorSprite;
+                LightColorSprite = Helpers.loadSpriteFromResources("Nebula.Resources.ColorLight.png", 100f);
+                return LightColorSprite;
+            }
+
+            static private Sprite GetDarkColorSprite()
+            {
+                if (DarkColorSprite) return DarkColorSprite;
+                DarkColorSprite = Helpers.loadSpriteFromResources("Nebula.Resources.ColorDark.png", 100f);
+                return DarkColorSprite;
+            }
+
             static void Postfix(MeetingHud __instance) { 
                 //票の重み設定をリセット
                 VoteWeight.Clear();
@@ -194,6 +228,20 @@ namespace Nebula.Patches
                 foreach (Game.PlayerData player in Game.GameData.data.players.Values)
                 {
                     player.Speed.OnMeeting();
+                }
+
+                //色の明暗を表示
+                foreach(var player in __instance.playerStates)
+                {
+                    bool isLightColor = Module.DynamicColors.IsLightColor(Palette.PlayerColors[player.TargetPlayerId]);
+
+                    GameObject template = player.Buttons.transform.Find("CancelButton").gameObject;
+                    GameObject targetBox = UnityEngine.Object.Instantiate(template, player.transform);
+                    targetBox.name = "Color";
+                    targetBox.transform.localPosition = new Vector3(-0.55f, 0.03f, -1f);
+                    SpriteRenderer renderer = targetBox.GetComponent<SpriteRenderer>();
+                    renderer.sprite = isLightColor ? GetLightColorSprite() : GetDarkColorSprite();
+                    UnityEngine.GameObject.Destroy(targetBox.GetComponent<PassiveButton>());
                 }
 
                 PlayerControl.GameOptions.VotingTime = EmergencyPatch.GetVotingTime(Game.GameData.data.GameRule.vanillaVotingTime);

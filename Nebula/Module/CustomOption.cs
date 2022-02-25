@@ -16,16 +16,17 @@ namespace Nebula.Module
     public enum CustomGameMode
     {
         Standard=0x01,
-        Parlour = 0x02,
-        Investigators =0x04,
-        All=int.MaxValue
+        Minigame = 0x02,
+        Parlour = 0x04,
+        Investigators = 0x08,
+        All =int.MaxValue
     }
 
     public static class CustomGameModes
     {
         static public List<CustomGameMode> AllGameModes = new List<CustomGameMode>()
         {
-            CustomGameMode.Standard,CustomGameMode.Parlour,CustomGameMode.Investigators
+            CustomGameMode.Standard,CustomGameMode.Minigame,CustomGameMode.Parlour,CustomGameMode.Investigators
         };
 
         static public CustomGameMode GetGameMode(int GameModeIndex)

@@ -45,6 +45,7 @@ namespace Nebula
         RefreshTasks,
         CompleteTask,
         ObjectInstantiate,
+        CountDownMessage,
 
         // Role functionality
 
@@ -133,7 +134,7 @@ namespace Nebula
                     RPCEvents.UncheckedCmdReportDeadBody(reader.ReadByte(), reader.ReadByte());
                     break;
                 case (byte)CustomRPC.CloseUpKill:
-                    RPCEvents.CloseUpKill(reader.ReadByte(),reader.ReadByte());
+                    RPCEvents.CloseUpKill(reader.ReadByte(),reader.ReadByte(), reader.ReadByte());
                     break;
                 case (byte)CustomRPC.UpdateRoleData:
                     RPCEvents.UpdateRoleData(reader.ReadByte(), reader.ReadInt32(), reader.ReadInt32());
@@ -183,6 +184,9 @@ namespace Nebula
                 case (byte)CustomRPC.CleanDeadBody:
                     RPCEvents.CleanDeadBody(reader.ReadByte());
                     break;
+                case (byte)CustomRPC.CountDownMessage:
+                    RPCEvents.CountDownMessage(reader.ReadByte());
+                    break;
 
                 case (byte)CustomRPC.SealVent:
                     RPCEvents.SealVent(reader.ReadByte(), reader.ReadInt32());
@@ -219,6 +223,7 @@ namespace Nebula
             Patches.MeetingHudPatch.Initialize();
             Patches.EmergencyPatch.Initialize();
             Objects.Ghost.Initialize();
+            Patches.CustomOverlays.Reset();
         }
             
         public static void SetMyColor(byte playerId, Color color, byte shadowType)
@@ -339,7 +344,7 @@ namespace Nebula
 
                 Game.GameData.data.players[target.PlayerId].Die(Game.PlayerData.PlayerStatus.GetStatusById(statusId), source.PlayerId);
 
-                if (Game.GameData.data.players[target.PlayerId].role.hasFakeTask)
+                if (Game.GameData.data.players[target.PlayerId].role.HasFakeTask)
                 {
                     target.clearAllTasks();
                 }
@@ -411,6 +416,10 @@ namespace Nebula
                         if (!voteAreaPlayer.AmOwner) continue;
                         MeetingHud.Instance.ClearVote();
                     }
+
+                    //ホストは投票終了を今一度調べる
+                    if(AmongUsClient.Instance.AmHost)
+                        MeetingHud.Instance.CheckForEndVoting();
                 }
 
                 Game.GameData.data.players[playerId].Die(Game.PlayerData.PlayerStatus.GetStatusById(statusId));
@@ -428,14 +437,21 @@ namespace Nebula
             }
         }
 
-        public static void CloseUpKill(byte killerId,byte targetId)
+        public static void CloseUpKill(byte killerId,byte targetId,byte statusId)
         {
-            UncheckedExilePlayer(targetId,Game.PlayerData.PlayerStatus.Guessed.Id);
+            UncheckedExilePlayer(targetId, statusId);
 
             if (Constants.ShouldPlaySfx()) SoundManager.Instance.PlaySound(Helpers.playerById(targetId).KillSfx, false, 0.8f);
 
             if (PlayerControl.LocalPlayer.PlayerId == targetId)
                 HudManager.Instance.KillOverlay.ShowKillAnimation(Helpers.playerById(killerId).Data, PlayerControl.LocalPlayer.Data);
+
+            if (!Roles.Roles.F_Guesser.secondoryRoleOption.getBool())
+            {
+                //ゲッサーの存在を加味する
+                Game.GameData.data.EstimationAI.Presume(Roles.Roles.NiceGuesser, 0.25f);
+                Game.GameData.data.EstimationAI.Presume(Roles.Roles.EvilGuesser, 0.25f);
+            }
         }
 
         public static void UpdateRoleData(byte playerId, int dataId, int newData)
@@ -537,6 +553,8 @@ namespace Nebula
 
             //ロールを変更
             SetUpRole(data, Helpers.playerById(playerId), Roles.Role.GetRoleById(roleId));
+
+            Game.GameData.data.myData.getGlobalData().role.OnAnyoneRoleChanged(playerId);
         }
 
         public static void SwapRole(byte playerId_1, byte playerId_2)
@@ -566,7 +584,10 @@ namespace Nebula
 
         public static void RevivePlayer(byte playerId)
         {
-            foreach(DeadBody body in Helpers.AllDeadBodies())
+            //Necromancerを確定させる
+            Game.GameData.data.EstimationAI.Determine(Roles.Roles.Necromancer);
+
+            foreach (DeadBody body in Helpers.AllDeadBodies())
             {
                 if (body.ParentId != playerId) continue;
 
@@ -628,6 +649,33 @@ namespace Nebula
             }
         }
 
+        public static void CountDownMessage(byte count)
+        {
+            if (Game.GameData.data == null) return;
+
+            string text = "";
+            if (count > 0)
+            {
+                text = Language.Language.GetString("game.message.countDown").Replace("%COUNT%", count.ToString());
+            }
+            else
+            {
+                text = Language.Language.GetString("game.message.start");
+            }
+
+
+            if (Game.GameData.data.CountDownMessage == null)
+            {
+                Game.GameData.data.CountDownMessage=
+                    Objects.CustomMessage.Create(text,
+                    (float)count+1f,0f,1f,Color.white);
+            }
+            else
+            {
+                Game.GameData.data.CountDownMessage.SetText(text);
+            }
+        }
+
         public static void ExemptTasks(byte playerId, int cutTasks, int cutQuota)
         {
             Game.GameData.data.players[playerId].Tasks.AllTasks -= cutTasks;
@@ -673,11 +721,14 @@ namespace Nebula
                 Vent vent = ShipStatus.Instance.AllVents.FirstOrDefault((x) => x != null && x.Id == ventId);
                 if (vent == null) return;
 
-                Roles.Roles.SecurityGuard.SetSealedVentSprite(vent, 1f);
+                Roles.Roles.Navvy.SetSealedVentSprite(vent, 1f);
                 vent.GetVentData().Sealed = true;
+
+                //Navvyを確定させる
+                Game.GameData.data.EstimationAI.Determine(Roles.Roles.Navvy);
             });
 
-            Game.GameData.data.players[playerId].AddRoleData(Roles.Roles.SecurityGuard.remainingScrewsDataId, -1);
+            Game.GameData.data.players[playerId].AddRoleData(Roles.Roles.Navvy.remainingScrewsDataId, -1);
         }
 
         public static void MultipleVote(byte playerId, byte count)
@@ -705,6 +756,9 @@ namespace Nebula
 
         public static void SniperShot(byte murderId)
         {
+            //Sniperを確定させる
+            Game.GameData.data.EstimationAI.Determine(Roles.Roles.Sniper);
+
             //通知距離を超えていたら何もしない
             if (Helpers.playerById(murderId).transform.position.Distance(PlayerControl.LocalPlayer.transform.position) > Roles.Roles.Sniper.noticeRangeOption.getFloat()) 
                 return;
@@ -732,6 +786,9 @@ namespace Nebula
 
         public static void Morph(byte playerId,byte targetId)
         {
+            //Morphingを確定させる
+            Game.GameData.data.EstimationAI.Determine(Roles.Roles.Morphing);
+
             Events.LocalEvent.Activate(new Roles.ImpostorRoles.Morphing.MorphEvent(playerId,targetId));
         }
 
@@ -804,6 +861,7 @@ namespace Nebula
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.WinTrigger, Hazel.SendOption.Reliable, -1);
             writer.Write(role.id);
+            writer.Write(PlayerControl.LocalPlayer.PlayerId);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.WinTrigger(role.id,PlayerControl.LocalPlayer.PlayerId);
         }
@@ -866,13 +924,14 @@ namespace Nebula
             RPCEvents.UpdateExtraRoleData(playerId, roleId, newData);
         }
 
-        public static void CloseUpKill(PlayerControl murder, PlayerControl target)
+        public static void CloseUpKill(PlayerControl murder, PlayerControl target,Game.PlayerData.PlayerStatus status)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.CloseUpKill, Hazel.SendOption.Reliable, -1);
             writer.Write(murder.PlayerId);
             writer.Write(target.PlayerId);
+            writer.Write(status.Id);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
-            RPCEvents.CloseUpKill(murder.PlayerId,target.PlayerId);
+            RPCEvents.CloseUpKill(murder.PlayerId,target.PlayerId, status.Id);
         }
 
         public static void AddAndUpdateRoleData(byte playerId, int dataId, int addData)
@@ -1122,6 +1181,14 @@ namespace Nebula
             writer.Write(position.y);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.ObjectInstantiate(PlayerControl.LocalPlayer.PlayerId,objectType.Id,id,position.x,position.y);
+        }
+
+        public static void CountDownMessage(byte count)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.CountDownMessage, Hazel.SendOption.Reliable, -1);
+            writer.Write(count);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.CountDownMessage(count);
         }
 
         public static void SniperSettleRifle()

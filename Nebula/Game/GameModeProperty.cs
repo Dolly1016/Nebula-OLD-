@@ -9,14 +9,27 @@ namespace Nebula.Game
         public Module.CustomGameMode RelatedGameMode { private set; get; }
         public bool RequireImpostors { private set; get; }
         public bool RequireGhosts { private set; get; }
+        public bool RequireStartCountDown { private set; get; }
 
         public Roles.Role DefaultImpostorRole { private set; get; }
         public Roles.Role DefaultCrewmateRole { private set; get; }
 
-        public GameModeProperty(Module.CustomGameMode RelatedMode,bool RequireImpostors, bool RequireGhosts,Roles.Role DefaultCrewmate, Roles.Role DefaultImpostor) {
+        public System.Action OnCountFinished { private set; get; }
+
+        public GameModeProperty(Module.CustomGameMode RelatedMode,bool RequireImpostors, bool RequireGhosts,System.Action? RequireStartCountDown,Roles.Role DefaultCrewmate, Roles.Role DefaultImpostor) {
             this.RelatedGameMode = RelatedMode;
             this.RequireImpostors = RequireImpostors;
             this.RequireGhosts = RequireGhosts;
+            if (RequireStartCountDown == null)
+            {
+                this.OnCountFinished = () => { };
+                this.RequireStartCountDown = false;
+            }
+            else
+            {
+                this.OnCountFinished = RequireStartCountDown;
+                this.RequireStartCountDown = true;
+            }
             this.DefaultCrewmateRole = DefaultCrewmate;
             this.DefaultImpostorRole = DefaultImpostor;
 
@@ -26,14 +39,16 @@ namespace Nebula.Game
         static public Dictionary<Module.CustomGameMode, GameModeProperty> Properties = new Dictionary<Module.CustomGameMode, GameModeProperty>();
 
         static public GameModeProperty StandardMode;
+        static public GameModeProperty MinigameMode;
         static public GameModeProperty ParlourMode;
         static public GameModeProperty InvestigatorsMode;
 
         static public void Load()
         {
-            StandardMode = new GameModeProperty(Module.CustomGameMode.Standard, true, false, Roles.Roles.Crewmate, Roles.Roles.Impostor);
-            ParlourMode = new GameModeProperty(Module.CustomGameMode.Parlour, false, false, Roles.Roles.Gambler, Roles.Roles.Impostor);
-            InvestigatorsMode = new GameModeProperty(Module.CustomGameMode.Investigators, false, true, Roles.Roles.Investigator, Roles.Roles.Impostor);
+            StandardMode = new GameModeProperty(Module.CustomGameMode.Standard, true, false, null, Roles.Roles.Crewmate, Roles.Roles.Impostor);
+            MinigameMode = new GameModeProperty(Module.CustomGameMode.Minigame, false, false, ()=> { Roles.MinigameRoles.MinigameRoleAssignment.Assign(); }, Roles.Roles.Player, Roles.Roles.Impostor);
+            ParlourMode = new GameModeProperty(Module.CustomGameMode.Parlour, false, false, null, Roles.Roles.Gambler, Roles.Roles.Impostor);
+            InvestigatorsMode = new GameModeProperty(Module.CustomGameMode.Investigators, false, true, null, Roles.Roles.Investigator, Roles.Roles.Impostor);
         }
 
         static public GameModeProperty GetProperty(Module.CustomGameMode gameMode)

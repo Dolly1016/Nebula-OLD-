@@ -46,10 +46,12 @@ namespace Nebula.Roles.Template
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
                 () => { return PlayerControl.LocalPlayer.CanMove && (Game.GameData.data.myData.getGlobalData().dragPlayerId != Byte.MaxValue|| deadBodyId!=Byte.MaxValue); },
                 () => { },
-                getDragButtonSprite(),
-                new Vector3(-1.8f, -0.06f, 0),
+                getButtonSprite(),
+                new Vector3(-1.8f, 0f, 0),
                 __instance,
-                KeyCode.F
+                KeyCode.F,
+                false,
+                "button.label.drag"
             );
 
             dragButton.MaxTimer = 0;
@@ -78,20 +80,12 @@ namespace Nebula.Roles.Template
 
         /* 画像 */
 
-        private Sprite dragButtonSprite = null;
-        public Sprite getDragButtonSprite()
+        private Sprite ButtonSprite = null;
+        public Sprite getButtonSprite()
         {
-            if (dragButtonSprite) return dragButtonSprite;
-            dragButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.DragButton.png", 115f);
-            return dragButtonSprite;
-        }
-
-        private Sprite dropButtonSprite = null;
-        public Sprite getDropButtonSprite()
-        {
-            if (dropButtonSprite) return dropButtonSprite;
-            dropButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.DropButton.png", 115f);
-            return dropButtonSprite;
+            if (ButtonSprite) return ButtonSprite;
+            ButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.DragAndDropButton.png", 115f);
+            return ButtonSprite;
         }
 
         /* 各種変数 */
@@ -101,23 +95,24 @@ namespace Nebula.Roles.Template
         public override void MyPlayerControlUpdate()
         {
             if (Game.GameData.data.myData.getGlobalData() == null) return;
+
             if (Game.GameData.data.myData.getGlobalData().dragPlayerId == byte.MaxValue)
             {
-                dragButton.Sprite = getDragButtonSprite();
+                dragButton.SetLabel("button.label.drag");
                 DeadBody body = Patches.PlayerControlPatch.SetMyDeadTarget();
-                if (body)
+                if (body!=null)
                 {
                     deadBodyId = body.ParentId;
+                    Patches.PlayerControlPatch.SetDeadBodyOutline(body, Color.yellow);
                 }
                 else
                 {
                     deadBodyId = byte.MaxValue;
                 }
-                Patches.PlayerControlPatch.SetDeadBodyOutline(body, Color.yellow);
             }
             else
             {
-                dragButton.Sprite = getDropButtonSprite();
+                dragButton.SetLabel("button.label.drop");
             }
         }
 

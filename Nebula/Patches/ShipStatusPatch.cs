@@ -50,16 +50,16 @@ namespace Nebula.Patches
                 return true;
             }
 
-            if (role.ignoreBlackout)
+            if (role.IgnoreBlackout)
             {
-                rate = __instance.MaxLightRadius * role.lightRadiusMax;
+                rate = __instance.MaxLightRadius * role.LightRadiusMax;
             }
             else
             {
-                rate = Mathf.Lerp(__instance.MinLightRadius * role.lightRadiusMin, __instance.MaxLightRadius * role.lightRadiusMax, rate);
+                rate = Mathf.Lerp(__instance.MinLightRadius * role.LightRadiusMin, __instance.MaxLightRadius * role.LightRadiusMax, rate);
             }
 
-            if (role.useImpostorLightRadius)
+            if (role.UseImpostorLightRadius)
             {
                 __result = rate * PlayerControl.GameOptions.ImpostorLightMod;
             }

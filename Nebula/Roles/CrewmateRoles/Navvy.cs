@@ -10,26 +10,38 @@ using Nebula.Objects;
 
 namespace Nebula.Roles.CrewmateRoles
 {
-    public class SecurityGuard : Role
+    public class Navvy : Role
     {
-        static public Color Color = new Color(171f / 255f, 153f / 255f, 67f / 255f);
+        static public Color Color = new Color(71f / 255f, 93f / 255f, 206f / 255f);
 
+        private CustomButton repairButton;
         private CustomButton sealButton;
         private TMPro.TMP_Text sealButtonString;
 
         private Vent ventTarget = null;
+        //直したことがあるかどうか
+        private bool hasBeenRepaired = false;
 
         public int remainingScrewsDataId { get; private set; }
         public int totalScrewsDataId { get; private set; }
 
         private Module.CustomOption maxScrewsOption;
+        private Module.CustomOption sealCoolDownOption;
 
-        private Sprite buttonSprite=null;
-        public Sprite getButtonSprite()
+        private Sprite sealButtonSprite=null;
+        public Sprite getSealButtonSprite()
         {
-            if (buttonSprite) return buttonSprite;
-            buttonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.CloseVentButton.png", 115f);
-            return buttonSprite;
+            if (sealButtonSprite) return sealButtonSprite;
+            sealButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.CloseVentButton.png", 115f);
+            return sealButtonSprite;
+        }
+
+        private Sprite repairButtonSprite = null;
+        public Sprite getRepairButtonSprite()
+        {
+            if (repairButtonSprite) return repairButtonSprite;
+            repairButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.RepairButton.png", 115f);
+            return repairButtonSprite;
         }
 
         private Sprite ventSealedSprite=null;
@@ -68,10 +80,29 @@ namespace Nebula.Roles.CrewmateRoles
         }
 
 
-        public override void GlobalInitialize(PlayerControl __instance) {
+        public override void GlobalInitialize(PlayerControl __instance)
+        {
             int value = (int)maxScrewsOption.getFloat();
             __instance.GetModData().SetRoleData(totalScrewsDataId, value);
             __instance.GetModData().SetRoleData(remainingScrewsDataId, value);
+        }
+
+        public override void Initialize(PlayerControl __instance)
+        {
+            //最初からは使用できない
+            CanUseVents = CanMoveInVents = false;
+            hasBeenRepaired = false;
+        }
+
+        public override void OnMeetingEnd()
+        {
+            base.OnMeetingEnd();
+
+            //設置後はベント使用可能
+            if (Game.GameData.data.myData.getGlobalData().GetRoleData(remainingScrewsDataId) == 0)
+            {
+                CanUseVents = CanMoveInVents = true;
+            }
         }
 
         public void SetSealedVentSprite(Vent vent,float alpha)
@@ -125,28 +156,52 @@ namespace Nebula.Roles.CrewmateRoles
                     
                 },
                 () => { sealButton.Timer = sealButton.MaxTimer; },
-                getButtonSprite(),
+                getSealButtonSprite(),
                 new Vector3(-1.8f, -0.06f, 0),
                 __instance,
                 KeyCode.F
             );
-            sealButton.MaxTimer = 20;
+            sealButton.Timer = sealButton.MaxTimer = sealCoolDownOption.getFloat();
 
             sealButtonString = GameObject.Instantiate(sealButton.actionButton.cooldownTimerText, sealButton.actionButton.cooldownTimerText.transform.parent);
             sealButtonString.text = "";
             sealButtonString.enableWordWrapping = false;
             sealButtonString.transform.localScale = Vector3.one * 0.5f;
             sealButtonString.transform.localPosition += new Vector3(-0.05f, 0.7f, 0);
+
+            if (repairButton != null)
+            {
+                repairButton.Destroy();
+            }
+            repairButton = new CustomButton(
+                () => {
+                    Helpers.RepairSabotage();
+                    hasBeenRepaired = true;
+                },
+                () => { return !PlayerControl.LocalPlayer.Data.IsDead && CanUseVents && !hasBeenRepaired; },
+                () => {
+                    return Helpers.SabotageIsActive() && PlayerControl.LocalPlayer.CanMove;
+
+                },
+                () => { repairButton.Timer = 0; },
+                getRepairButtonSprite(),
+                new Vector3(-1.8f, -0.06f, 0),
+                __instance,
+                KeyCode.F
+            );
+            repairButton.MaxTimer = repairButton.Timer = 0;
         }
 
         public override void ButtonActivate()
         {
             sealButton.setActive(true);
+            repairButton.setActive(true);
         }
 
         public override void ButtonDeactivate()
         {
             sealButton.setActive(false);
+            repairButton.setActive(false);
         }
 
         public override void CleanUp()
@@ -162,22 +217,38 @@ namespace Nebula.Roles.CrewmateRoles
                 sealButtonString.DestroySubMeshObjects();
                 sealButtonString = null;
             }
+
+            if (repairButton != null)
+            {
+                repairButton.Destroy();
+                repairButton = null;
+            }
         }
 
         public override void LoadOptionData()
         {
             maxScrewsOption = CreateOption(Color.white, "maxScrews", 5f, 0f, 7f, 1f);
+            sealCoolDownOption = CreateOption(Color.white, "sealCoolDown", 5f, 0f, 40f, 2.5f);
         }
 
-        public SecurityGuard()
-            : base("SecurityGuard", "securityGuard", Color, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
+        public override void OnRoleRelationSetting()
+        {
+            RelatedRoles.Add(Roles.Opportunist);
+            RelatedRoles.Add(Roles.Vulture);
+            RelatedRoles.Add(Roles.Reaper);
+        }
+
+        public Navvy()
+            : base("Navvy", "navvy", Color, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                  Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Crewmate.crewmateEndSet,
                  false, false, false, false, false)
         {
             sealButton = null;
 
-            totalScrewsDataId=Game.GameData.RegisterRoleDataId("securityGuard.totalScrew");
-            remainingScrewsDataId=Game.GameData.RegisterRoleDataId("securityGuard.remainScrew");
+            totalScrewsDataId=Game.GameData.RegisterRoleDataId("navvy.totalScrew");
+            remainingScrewsDataId=Game.GameData.RegisterRoleDataId("navvy.remainScrew");
+
+            VentColor = Palette.CrewmateBlue;
         }
     }
 }

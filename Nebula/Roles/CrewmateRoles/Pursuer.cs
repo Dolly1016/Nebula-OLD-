@@ -79,6 +79,12 @@ namespace Nebula.Roles.CrewmateRoles
             Arrows.Clear();
         }
 
+        public override void OnRoleRelationSetting()
+        {
+            RelatedRoles.Add(Roles.Vulture);
+            RelatedRoles.Add(Roles.Reaper);
+        }
+
         public Pursuer()
             : base("Pursuer", "pursuer", Color, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                  Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Crewmate.crewmateEndSet,

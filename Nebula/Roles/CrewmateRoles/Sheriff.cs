@@ -52,8 +52,8 @@ namespace Nebula.Roles.CrewmateRoles
                 {
                     PlayerControl target = Game.GameData.data.myData.currentTarget;
                     if (!CanKill(target))target = PlayerControl.LocalPlayer;
-                    
-                    var res=Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, target,Game.PlayerData.PlayerStatus.Dead, false,true);
+
+                    var res = Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, target, (target == PlayerControl.LocalPlayer) ? Game.PlayerData.PlayerStatus.Misfire : Game.PlayerData.PlayerStatus.Dead, false, true);
                     if (res != Helpers.MurderAttemptResult.SuppressKill)
                         killButton.Timer = killButton.MaxTimer;
                     Game.GameData.data.myData.currentTarget = null;
@@ -87,6 +87,11 @@ namespace Nebula.Roles.CrewmateRoles
                 killButton.Destroy();
                 killButton = null;
             }
+        }
+
+        public override void OnRoleRelationSetting()
+        {
+            RelatedRoles.Add(Roles.Jackal);
         }
 
         public override void LoadOptionData()

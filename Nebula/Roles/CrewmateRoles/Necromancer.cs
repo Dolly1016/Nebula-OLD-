@@ -14,6 +14,7 @@ namespace Nebula.Roles.CrewmateRoles
 
         private Module.CustomOption reviveCoolDownOption;
         private Module.CustomOption reviveDurationOption;
+        public Module.CustomOption maxReviveRoomDistanceOption;
 
         private Sprite buttonSprite = null;
 
@@ -34,6 +35,9 @@ namespace Nebula.Roles.CrewmateRoles
 
             reviveDurationOption = CreateOption(Color.white, "reviveDuration", 5f, 1f, 10f, 1f);
             reviveDurationOption.suffix = "second";
+
+            maxReviveRoomDistanceOption = CreateOption(Color.white, "maxReviveRoomDistance", 25f, 5f, 40f, 2.5f);
+            maxReviveRoomDistanceOption.suffix = "cross";
         }
 
         public override void OnDropPlayer()
@@ -129,7 +133,10 @@ namespace Nebula.Roles.CrewmateRoles
 
                     CleanArrow();
                     RPCEventInvoker.RevivePlayer(Helpers.playerById(PlayerControl.LocalPlayer.GetModData().dragPlayerId));
-                }
+                },
+                false,
+                "button.label.revive",
+                ImageNames.VitalsButton
             );
             reviveButton.MaxTimer = reviveCoolDownOption.getFloat();
         }
@@ -193,6 +200,11 @@ namespace Nebula.Roles.CrewmateRoles
             {
                 reviveArrow.Update(ShipStatus.Instance.FastRooms[targetRoom].roomArea.transform.position);
             }
+        }
+
+        public override void OnRoleRelationSetting() {
+            RelatedRoles.Add(Roles.Jester);
+            RelatedRoles.Add(Roles.Reaper);
         }
 
         public Necromancer()

@@ -10,8 +10,11 @@
 "lobby.willEliminatedByMismatchVersion" : "The host has no or a different version of Nebula on the Ship\nYou will be kicked in %STAY%s"
 
 "gamemode.standard" : "Standard"
+"gamemode.minigame" : "Escape"
 "gamemode.parlour" : "Coming Soon!"
 "gamemode.investigators" : "Coming Soon!"
+
+"cosmic.package.innerslothHats" : "Innersloth Hats"
 
 "option.display.pressTabForMore" : "Press Tab For More"
 "option.display.percentage.0" : "0%"
@@ -35,7 +38,6 @@
 
 "option.preset" : "Preset"
 "option.gameMode" : "Game Mode"
-"option.activeRoles" : "Active Mod Roles and Block Vanilla Roles"
 "option.crewmateRoles" : "Crewmate Roles"
 "option.minimumCrewmateRoles" : "Minimum Crewmate Roles"
 "option.maximumCrewmateRoles" : "Maximum Crewmate Roles"
@@ -74,7 +76,8 @@
 "option.exclusiveAssignmentRole.none" : "<color=#606060ff>None</color>"
 
 "option.limitOptions" : "Limit Option"
-"option.timeLimitOption" : "Time Limit"
+"option.timeLimitOption" : "Time Limit (Min)"
+"option.timeLimitSecondOption" : "Time Limit (Sec)"
 
 "option.roleCount" : "Max Players"
 
@@ -84,10 +87,12 @@
 
 "role.crewmate.name" : "Crewmate"
 "role.crewmate.description" : "Find the <color=#ff1919ff>Impostors</color>"
+"role.crewmate.info" : "You have no special abilities.\nThe key to win is just your own brain."
 "role.crewmate.maxCountOfDamned" : "Max Count Of Damned"
 "role.crewmate.chanceOfDamned" : "Chance Of Damned"
 
 "role.guesser.name" : "Guesser"
+"role.guesser.info" : "You can guess other alive players.\nIf your guess is correct, guessed player will die."
 "role.guesser.chanceToSpawnAsSecondarySide" : "Chance to Spawn as Impostor"
 "role.guesser.definitiveAssignment" : "Definitive Assignment"
 "role.guesser.canShotSeveralTimes" : "Can Shot Several Times In The Same Meeting"
@@ -111,11 +116,13 @@
 
 "role.agent.name" : "Agent"
 "role.agent.description" : "Do Your Tasks More"
+"role.agent.info" : "You can do tasks on behalf other crewmates.\n\n - F : Get extra task"
 "role.agent.exemptTasks" : "Exempt Tasks"
 "role.agent.actOverTasks" : "Act Over Tasks"
 
 "role.alien.name" : "Alien"
 "role.alien.description" : "Mediate The Ship"
+"role.alien.info" : "Your E.M.I. can stop of your surroundings' button.\n\n - F : Cause E.M.I."
 "role.alien.emiCoolDown" : "E.M.I. Cool Down"
 "role.alien.emiDuration" : "E.M.I. Duration"
 "role.alien.emiRange" : "E.M.I. Range"
@@ -123,24 +130,42 @@
 
 "role.bait.name" : "Bait"
 "role.bait.description" : "Bait Your Enemies"
+"role.bait.info" : "If you killed, your killer will report your body instantly."
+
+"role.doctor.name" : "Doctor"
+"role.doctor.description" : "Thus They Died"
+"role.doctor.info" : "You can know why players died at the vital."
+"role.doctor.mobileGadgetCharges" : "Mobile Gadget Charges"
+"role.doctor.maxMobileGadgetCharges" : "Max Mobile Gadget Charges"
+"role.doctor.chargesPerTasks" : "Charges Per Tasks"
+"role.doctor.gadgetLeft" : "%SECOND%s"
+"role.doctor.batteryIsEmpty" : "BATTERY LOW"
 
 "role.booster.name" : "Booster"
 "role.booster.description" : "Run Through"
+"role.booster.info" : "You can move fastly.\nBut you must not forget that the high speed movement can reveal your role to <color=#ffff00ff>Guesser</color>."
 "role.booster.boostCoolDown" : "Boost Cool Down"
 "role.booster.boostDuration" : "Boost Duration"
 "role.booster.boostSpeed" : "Boost Strength"
 
-"role.engineer.name" : "Engineer"
-"role.engineer.description" : "Maintain Important Systems on The Ship"
-
 "role.mayor.name" : "Mayor"
 "role.mayor.description" : "Find and Vote out the <color=#ff1919ff>Impostors</color>"
+"role.mayor.info" : "You can save vote on meetings.\nYou can use saved votes anytime.\n\nIn meetings, you will see two button at the bottom of window.\nThe buttons use to change number of votes. For saving votes, you have to set number of votes to 0."
 "role.mayor.voteStockLeft" : "Vote Stock Left"
+"role.mayor.voteAssignment" : "Vote Assignment"
+"role.mayor.minVote" : "Min Vote"
 "role.mayor.maxVote" : "Max Vote"
 "role.mayor.maxVoteStock" : "Max Vote Stock"
 
+"role.navvy.name" : "Navvy"
+"role.navvy.description" : "Maintain Important Systems on The Ship"
+"role.navvy.info" : "You can seal vents. If you seal vents as much as possible, you'll be able to use vents. \n\n - F : Seal the vent\n\n - V : Use the vent"
+"role.navvy.maxScrews" : "Max Screws Vents"
+"role.navvy.sealCoolDown" : "Seal Cool Down"
+
 "role.necromancer.name" : "Necromancer"
 "role.necromancer.description" : "Revive Phantoms"
+"role.necromancer.info" : "You can drag dead bodies to revive in the room that the dragging body requests. \n\n - F : Drag and drop dead bodies\n\n - G : Revive players"
 "role.necromancer.phantomMessage" : "Please take me to %ROOM%..."
 "role.necromancer.room.Hallway" : "Hallway"
 "role.necromancer.room.Storage" : "Storage"
@@ -191,21 +216,36 @@
 "role.necromancer.room.Medical" : "Medical"
 "role.necromancer.reviveCoolDown" : "Revive Cool Down"
 "role.necromancer.reviveDuration" : "Revive Duration"
+"role.necromancer.maxReviveRoomDistance" : "Max Revive Room Distance"
 
 "role.niceGuesser.name" : "Nice Guesser"
 "role.niceGuesser.description" : "Guess and Shoot"
+"role.guesser.info" : "You can guess other alive players.\nIf your guess is correct, guessed player will die."
 
 "role.niceTrapper.name" : "Nice Trapper"
 "role.niceTrapper.description" : "Entrap and Find the <color=#ff1919ff>Impostors</color>"
+"role.niceTrapper.info" : "You can place some traps.\nKinds of traps can change.\n\n - F : Place trap\n\n - LShift : Change kind of trap"
+
+"role.oracle.name" : "Oracle"
+"role.oracle.description" : "Find Out What It Is"
+"role.oracle.info" : "You can divine other players. when you divine, you can see candidates of divined player's role. \n\n - F : Devine the player"
+"role.oracle.message" : "%PLAYER% seems %ROLES%."
+"role.oracle.divineCoolDown" : "Divine Cool Down"
+"role.oracle.divineCoolDownAddition" : "Divine Cool Down Addition"
+"role.oracle.countOfCandidates" : "Count Of Candidates"
+"role.oracle.dieWhenDiviningOpportunist" : "Die When Divining Opportunist"
+"role.oracle.dieWhenDiviningOracle" : "Die When Divining Oracle"
 
 "role.provocateur.name" : "Provocateur"
 "role.provocateur.description" : "Go To The Grave Together"
+"role.provocateur.info" : "You can embroil when your ability is active. \n\n - F : Activate embroiling"
 "role.provocateur.embroilCoolDown" : "Embroil Cool Down"
 "role.provocateur.embroilCoolDownAddition" : "Embroil Cool Down Addition"
 "role.provocateur.embroilDuration" : "Embroil Duration"
 
 "role.psychic.name" : "Psychic"
 "role.psychic.description" : "Gather Testimony"
+"role.psychic.info" : "You can see the message of the dead.\nThis messages disappear when a meeting start."
 "role.psychic.color.dark" : "dark"
 "role.psychic.color.light" : "light"
 "role.psychic.message.elapsedTime" : "It's been %TIME% seconds since I was killed."
@@ -215,76 +255,88 @@
 
 "role.pursuer.name" : "Pursuer"
 "role.pursuer.description" : "Find Dead Body"
+"role.pursuer.info" : "You can search dead bodies.\n\n - F : Search dead bodies"
 "role.pursuer.searchCoolDown" : "Search Cool Down"
 "role.pursuer.searchDuration" : "Search Duration"
 
 "role.sheriff.name" : "Sheriff"
 "role.sheriff.description" : "Shoot the <color=#ff1919ff>Impostors</color>"
+"role.sheriff.info" : "You can kill the suspicious.\nIf you try to kill crewmates, you will die instead.\n\n - Q : Kill"
 "role.sheriff.killCoolDown" : "Kill Cool Down"
 "role.sheriff.canKillMadmate" : "Can Kill Madmate"
 "role.sheriff.canKillSpy" : "Can Kill Spy"
 "role.sheriff.canKillNecromancer" : "Can Kill Necromancer"
 "role.sheriff.canKillSheriff" : "Can Kill Sheriff"
 
-"role.securityGuard.name" : "Security Guard"
-"role.securityGuard.description" : "Seal Vent to Inhibit Barbarism"
-"role.securityGuard.maxScrews" : "Max Screws Vents"
-
 "role.seer.name" : "Seer"
 "role.seer.description" : "You Will See Players Die"
+"role.seer.info" : "You can know the moment of deathes by flash.\nAnd you can see ghosts."
 "role.seer.ghostDuration" : "Ghost's Revelation Duration"
 
 "role.spy.name" : "Spy"
 "role.spy.description" : "Confuse the <color=#ff1919ff>Impostors</color>"
+"role.spy.info" : "You are the member of crewmates, but you seems an impostor to other impostors. \n\n - V : Use vents but cannot move in a vent"
 "role.spy.impostorCanKillImpostor" : "Impostors Can Kill Everyone"
 
 "role.madmate.name" : "Madmate"
 "role.madmate.description" : "Assist the <color=#ff1919ff>Impostors</color>"
+"role.madmate.info" : "Your winning condition equals that of impostors.\nBut you are counted as a crewmate.\n\n - V : Use vents"
 "role.madmate.canUseVents" : "Can Use Vents"
 "role.madmate.hasImpostorVision" : "Has Impostor Vision"
 "role.madmate.canInvokeSabotage" : "Can Invoke Sabotage"
 
 "role.impostor.name" : "Impostor"
 "role.impostor.description" : "Kill the Crewmates"
+"role.impostor.info" : "You're standard impostor. You have no special abilities."
 
 "role.camouflager.name" : "Camouflager"
 "role.camouflager.description" : "Camouflage and Kill the Crewmates"
+"role.camouflager.info" : "The camouflage changes the look of all players to the same.\n\n - F : Cause camouflage"
 "role.camouflager.camouflageCoolDown" : "Camouflage Cool Down"
 "role.camouflager.camouflageDuration" : "Camouflage Duration"
 
 "role.cleaner.name" : "Cleaner"
 "role.cleaner.description" : "Kill Everyone and Leave No Traces"
+"role.cleaner.info" : "You can remove the dead bodies.\nWhen you kill or clean anyone, both of clean cool down and kill cool down start.\n\n - F : Clean dead body"
 "role.cleaner.cleanCoolDown" : "Clean Cool Down"
 
 "role.damned.name" : "Damned"
 "role.damned.description" : "Kill the Crewmates"
+"role.damned.info" : "You were cursed. You became an impostor.\nNow is the time of rebellion."
 "role.damned.message.killed" : "You'll be an impostor at the end of the next meeting..."
 
 "role.eraser.name" : "Eraser"
 "role.eraser.description" : "Kill the Crewmates and Erase Their Roles"
+"role.eraser.info" : "You can remove other player's role.\n\n - F : Erase the role"
 "role.eraser.eraseCoolDown" : "Erase Cool Down"
 "role.eraser.eraseCoolDownAddition" : "Erase Cool Down Addition"
 
 "role.evilAce.name" : "Evil Ace"
 "role.evilAce.description" : "Kill the Crewmates"
+"role.evilAce.info" : "If you're the last impostor, your kill cooldown will be shorter."
 "role.evilAce.killCoolDown" : "Kill Cool Down Multiplier"
 
 "role.evilGuesser.name" : "Evil Guesser"
 "role.evilGuesser.description" : "Guess and Shoot"
+"role.evilGuesser.info" : "You can guess other alive players.\nIf your guess is correct, guessed player will die."
 
 "role.evilTrapper.name" : "Evil Trapper"
 "role.evilTrapper.description" : "Entrap and Kill Crewmates"
+"role.evilTrapper.info" : "You can place some traps.\nKinds of traps can change.\n\n - F : Place trap\n\n - LShift : Change kind of trap"
 
 "role.morphing.name" : "Morphing"
 "role.morphing.description" : "Change Your Look to Not Get Caught"
+"role.morphing.info" : "You can morph other player by getting the sample.\n\n - F : Sample or morph"
 "role.morphing.morphCoolDown" : "Morph Cool Down"
 "role.morphing.morphDuration" : "Morph Duration"
 
 "role.reaper.name" : "Reaper"
+"role.reaper.info" : "You can drag dead bodies, and all vents connect each other.\n\n - F : Drag and drop dead bodies"
 "role.reaper.description" : "Kill and Deceive the Crewmates"
 
 "role.sniper.name" : "Sniper"
 "role.sniper.description" : "Snipe and Shoot"
+"role.sniper.info" : "You can snipe crewmates with sniper rifle.\nBut you cannot kill by standard way.\n\n - F : Hold or hide the rifle\n\n - Q : Kill with rifle"
 "role.sniper.snipeCoolDown" : "Snipe Cool Down"
 "role.sniper.shotSize" : "Shot Size"
 "role.sniper.shotEffectiveRange" : "Shot Effective Range"
@@ -293,19 +345,23 @@
 
 "role.arsonist.name" : "Arsonist"
 "role.arsonist.description" : "Let Them Burn"
+"role.arsonist.info" : "You have to douse the alive with oil to win.\n\n - F : Douse the alives, or ignite to win"
 "role.arsonist.douseDuration" : "Douse Duration"
 "role.arsonist.douseCoolDown" : "Douse Cool Down"
 "role.arsonist.douseRange" : "Douse Range"
 
 "role.empiric.name" : "Empiric"
 "role.empiric.description" : "Spread a Disease"
+"role.empiric.info" : "Your winning condition is all alive players infect. You have to do your best to win.\n\n - F : Infect"
 "role.empiric.maxInfectMyself" : "Max Infected by Myself"
 "role.empiric.infectDuration" : "Infect Duration"
 "role.empiric.infectRange" : "Infect Range"
+"role.empiric.canInfectMyKiller" : "Can Infect My Killer"
 "role.empiric.coastingPhase" : "Coasting Phase After Meetings"
 
 "role.jackal.name" : "Jackal"
 "role.jackal.description" : "Kill all Crewmates and <color=#ff1919ff>Impostors</color> to Win"
+"role.jackal.info" : "You must kill everyone.\n\n - F : Create a sidekick"
 "role.jackal.canCreateSidekick" : "Can Create Sidekick"
 "role.jackal.killCoolDown" : "Kill Cool Down"
 "role.jackal.sidekickCanKill" : "Sidekick Can Kill"
@@ -316,23 +372,28 @@
 
 "role.jester.name" : "Jester"
 "role.jester.description" : "Get Voted Out"
+"role.jester.info" : "You have to voted out to win.\n\n - V : Use vents"
 "role.jester.canUseVents" : "Can Use Vents"
 "role.jester.canInvokeSabotage" : "Can Invoke Sabotage"
 
 "role.opportunist.name" : "Opportunist"
 "role.opportunist.description" : "Wait for Opportunity"
+"role.opportunist.info" : "You have to do your best to survive.\nIf all your task are completed, you can win with other players.\nBe careful. You cannot win with Arsonist, Empiric Vulture, Jester."
 "role.opportunist.exemptTasks" : "Cut Tasks"
 "role.opportunist.canUseVents" : "Can Use Vents"
 "role.opportunist.additionalEndText" : " <color=#ffffffff>with</color> <color=#6afc2dff>Opportunist</color>"
 
 "role.sidekick.name" : "Sidekick"
+"role.sidekick.info" : "You became Jackal when Jackal dies."
 
 "role.vulture.name" : "Vulture"
 "role.vulture.description" : "Eat Corpses to Win"
+"role.vulture.info" : "You have to eat dead bodies to win.\nYou can see the bodies' location.\n\n - F : Eat a dead body"
 "role.vulture.eatenCountNeeded" : "Count of Eaten Needed"
 "role.vulture.eatCoolDown" : "Eat Cool Down"
 
 "role.drunk.name" : "Drunk"
+"role.drunk.info" : "Your control is reversed."
 "role.drunk.chanceCategory1" : "Assignment Category"
 "role.drunk.chanceCategory2" : "Assignment Category 2"
 "role.drunk.chanceCategory3" : "Assignment Category 3"
@@ -342,18 +403,27 @@
 
 "role.lover.name" : "Lover"
 "role.lover.description" : "You're in <color=#fc04bdff>Love</color> with %NAME%"
+"role.lover.info" : "You have the partner. When one of yours, another follows someone into death.\nYou can choose any player to change to Trilemma. \n\n - Z : Change to Trilemma with your chosen"
 "role.lover.maxPairs" : "Max Couples"
 "role.lover.chanceThatOneLoverIsImpostor" : "Chance That One Lover Is Impostor"
 "role.lover.canChangeTrilemma" : "Can Change Trilemma"
 "role.lover.additionalEndText" : " <color=#ffffffff>with</color> <color=#fb02beff>Lovers</color>"
 
 "role.trilemma.name" : "Trilemma"
+"role.lover.info" : "You're the team of 3 players. When one of yours, others follow someone into death.\nWhen only the members of the team, your team will win."
 
 "role.investigator.name" : "Investigator"
 "role.investigator.description" : "Find Out What It Is"
 
 "role.gambler.name" : "Gambler"
 "role.gambler.description" : "Find Out What It Is"
+
+"role.player.name" : "Player"
+"role.player.description" : "The Game Is About To Start"
+
+"role.escapee.name" : "Escapee"
+
+"role.hunter.name" : "Hunter"
 
 "side.crewmate.name" : "Crewmate"
 "side.impostor.name" : "Impostor"
@@ -364,6 +434,7 @@
 "side.opportunist.name" : "Opportunist"
 "side.vulture.name" : "Vulture"
 "side.investigator.name" : "Investigator"
+"side.gamePlayer.name" : "Game Player"
 
 "roles.category.default" : "Default"
 "roles.category.crewmate" : "Crewmate"
@@ -372,6 +443,9 @@
 "roles.category.lover" : "Lover"
 "roles.category.jackal" : "Jackal"
 "roles.category.vulture" : "Vulture"
+
+"game.message.countDown" : "Starting in %COUNT%s"
+"game.message.start" : "Game Start!"
 
 "game.endText.crewmate" : "Team Crewmate Wins"
 "game.endText.impostor" : "Team Impostor Wins"
@@ -389,17 +463,35 @@
 "game.endText.nobody.polus" : "At The Fogotten Planet POLUS..."
 "game.endText.nobody.airship" : "In The Sky That Nobody Owns"
 "game.endText.hostDisconnected" : "The Host Has Been Disconnected"
+"game.endText.players" : "Players Win"
+"game.endText.hunter" : "Hunter Wins"
+"game.endText.escapees" : "Escapees Win"
 
 "status.alive" : "Alive"
 "status.dead" : "Dead"
 "status.exiled" : "Exiled"
+"status.disconnected" : "<color=#A0A0A0ff>Disconnected</color>"
 "status.suicide" : "Suicide"
 "status.revived" : "Revived"
 "status.burned" : "Burned"
 "status.embroiled" : "Embroiled"
 "status.guessed" : "Guessed"
+"status.misguessed" : "Misguessed"
 "status.trapped" : "Trapped"
 "status.sniped" : "Sniped"
 "status.cursed" : "Cursed"
+"status.arrested" : "Arrested"
+"status.punished" : "Punished"
+"status.misfire" : "Misfire"
 
 "investigators.ui.title" : "What Is The Identity?"
+
+"button.label.arrest" : "arrest"
+"button.label.boost" : "boost"
+"button.label.clean" : "clean"
+"button.label.drag" : "drag"
+"button.label.drop" : "drop"
+"button.label.involve" : "involve"
+"button.label.oracle" : "oracle"
+"button.label.revive" : "revive"
+"button.label.vital" : "vitals"

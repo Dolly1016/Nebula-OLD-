@@ -23,6 +23,15 @@ namespace Nebula.Patches
     [HarmonyPatch]
     class ExileControllerWrapUpPatch
     {
+        [HarmonyPatch(typeof(ExileController), nameof(ExileController.ReEnableGameplay))]
+        class ExileControllerReEnableGameplayPatch
+        {
+            public static void Postfix(ExileController __instance)
+            {
+                CustomOverlays.OnMeetingEnd();
+            }
+        }
+
         [HarmonyPatch(typeof(ExileController), nameof(ExileController.WrapUp))]
         class BaseExileControllerPatch
         {
@@ -58,10 +67,7 @@ namespace Nebula.Patches
                         Helpers.RoleAction(exiled.PlayerId, (role) => { role.OnExiledPost(voters); });
                         Helpers.RoleAction(exiled.PlayerId, (role) => { role.OnDied(); });
 
-                        Events.Schedule.RegisterPostMeetingAction(() => {
-                            if (!PlayerControl.LocalPlayer.GetModData().IsAlive)
-                                Game.GameData.data.myData.CanSeeEveryoneInfo = true;
-                        });
+                        Game.GameData.data.myData.CanSeeEveryoneInfo = true;
                     }
 
                     Game.GameData.data.players[exiled.PlayerId].Die(Game.PlayerData.PlayerStatus.Exiled);

@@ -56,6 +56,7 @@ namespace Nebula.Roles.CrewmateRoles
             Ghosts.RemoveWhere((g) =>{ return g.IsRemoved; });
         }
 
+
         public Seer()
             : base("Seer", "seer", Color, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                  Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Crewmate.crewmateEndSet,

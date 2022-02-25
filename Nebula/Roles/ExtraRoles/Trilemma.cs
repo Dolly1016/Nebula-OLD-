@@ -61,6 +61,19 @@ namespace Nebula.Roles.ExtraRoles
             );
         }
 
+        //上記で殺しきれない場合
+        public override void OnDied()
+        {
+            //自殺側はなにもしない
+            if (Game.GameData.data.myData.getGlobalData().Status == Game.PlayerData.PlayerStatus.Suicide) return;
+
+            ActionForMyLover((player) =>
+            {
+                if (!player.Data.IsDead) RPCEventInvoker.CloseUpKill(player, player, Game.PlayerData.PlayerStatus.Suicide);
+            }
+            );
+        }
+
         public override void EditDisplayName(byte playerId, ref string displayName, bool hideFlag)
         {
             bool showFlag = false;
