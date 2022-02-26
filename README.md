@@ -12,8 +12,19 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 # ダウンロード
 
+当ModにはAmong Us内でアップデートができる機能がありますが、対応するVanillaのバージョンが変わる場合\
+最新版への更新ができませんので、こちらから手動でのアップデートをお願いいたします。
+
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.4.0 | 2022.2.23s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.0,2022.2.23/Nebula.zip)|
+| 1.3.0 | 2022.2.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.3.0,2022.2.8/Nebula.zip)|
+| 1.2.1 | 2022.2.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.2.1,2022.2.8/Nebula.zip)|
+| 1.2.0.1 | 2022.2.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.2.0.1,2022.2.8/Nebula.zip)|
+| 1.2.0 | 2022.2.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.2.0,2022.2.8/Nebula.zip)|
+| 1.1.5.1 | 2022.2.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.5.1,2022.2.8/Nebula.zip)|
+| 1.1.5 | 2022.2.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.5,2022.2.8/Nebula.zip)|
+| 1.1.4 | 2022.2.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.4,2022.2.8/Nebula.zip)|
 | 1.1.3 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.3,2021.12.15/Nebula.zip)|
 | 1.1.2 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.2,2021.12.15/Nebula.zip)|
 | 1.1.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.1,2021.12.15/Nebula.zip)|
@@ -72,6 +83,13 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 また、このMODについてもご紹介下さいましたら幸いです。\
 併用しているMODがあれば、その使用許諾等についてもそれぞれご確認ください。
 
+# 他Modとの競合情報
+ - Better Crew Link\
+    Better Crew Linkを起動 → Among Usを起動\
+    の順番で立ち上げることで競合を回避できる可能性があります。\
+    Among Usから起動した場合、自身に!のアイコンが表示されるなど、\
+    Better Crew Linkが正常に動作しなくなるようです。
+    
 # 言語サポート
 言語パックは自動では更新されませんので、最新版の言語パックをダウンロードして、Languageフォルダ内に入れてお使いください。\
 形式上、言語パックには下位互換があります。\
@@ -79,14 +97,77 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 
 | Language | Translator | Full Support Version | Download |
 | --- | --- | --- | --- |
-| 日本語 | Rey | 1.1.3 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.3,2021.12.15/Japanese.dat)|
-| 日本語 | - | 1.0.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.1,2021.12.15/Japanese.dat)|
-| English | - | 1.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.1.2,2021.12.15/English.dat)|
+| 日本語 | - | 1.4.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.0,2022.2.23/Japanese.dat)|
+| 日本語 | Rey | 1.2.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.2.1%2CRey/Japanese.dat)|
+| 日本語 | kihi | 1.2.1 (一部1.3.0対応) | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.2.1%2Ckihi/Japanese.dat)|
+| English | - | 1.4.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.0,2022.2.23/English.dat)|
 
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
- 
+  
+ **Version 1.4.0**
+ - Doctorを追加
+ - ゲーム終了時のプレイヤー状態表示に「Misfire」「Disconnected」を追加、これに伴い、切断されたプレイヤーが「Alive」と表示されないように
+ - Oracleの占い候補抽出に新たな絞り込みイベントを追加(トラップの出現、会議中の死亡、死体の消滅)
+ - Boosterの加速ボタンの位置を変更
+ - 一部ボタンの文字を変更
+ - 追加役職でないSidekickに変化した際に以前の役職のボタンが残ったままになる問題を修正
+ - 追加役職でないSidekickがキルできない設定の場合、Jackalに変化できない問題を修正
+ - Spyをキルできない設定にもかかわらずインポスターのキルボタンがSpyに反応する問題を修正
+  
+ **Version 1.3.0**
+ - Oracleを追加
+ - ゲーム中にHキーを押すことで役職の説明が見られるように
+ - Guesserによる推察によって、最後1名の未投票者がキルされた場合、その時点で投票終了とならない問題を修正
+ - 殺されたらDamedになるCrewmateをGuesserがCrewmateとして撃つことができない問題を修正
+ - Hunterのプレイヤー名が全員から赤色に表示されるように
+  
+ **Version 1.2.1**
+ - Empiricに新たなオプション「Can Infect My Killer」を追加
+ - Lovers, TrilemmaがGuesserに撃たれたとき、相方が死なない問題を修正
+ - 不足していた言語データを追加
+  
+ **Version 1.2.0.1**
+ - 不足していた言語データを追加
+  
+ **Version 1.2.0**
+ - 新ゲームモード「Escape」を追加
+ - ゲームモード「Escape」専用役職としてPlayer, Escapee, Hunterを追加
+ - ボディカラーにAmong Us既存の18色が新たに選択可能に
+ - 時間制限を5秒単位で設定できるように
+ - Mayorの投票数を固定にするための新たなオプション「Vote Assignment」「Min Vote」を追加
+ - Navvyに新たなオプション「Seal Cool Down」を追加
+ - Necromancerに新たなオプション「Max Revive Room Distance」を追加
+ - Guesserの推察役職から、別ゲームモードの役職を排除
+  
+ **Version 1.1.5.1**
+ - 2回目のゲーム以降、ロビーで自分以外のプレイヤーが動かなくなる問題を修正
+ - 単独勝利の勝利画面でホストのプレイヤーが表示される問題を修正
+  
+ ※2022.02.18 2:00 バージョン名を1.1.6から1.1.5.1に改めました
+  
+ **Version 1.1.5**
+ - Navvyを追加
+ - Engineer, Security Guardを削除
+ - 追加役職としてのGuesserが付与された際のゲーム開始画面の表示に軽微な変更
+ - 会議画面で、プレイヤーの色が明色か暗色か分かるように
+  
+ **Version 1.1.4**
+ - Among Us本体の対応バージョンを v2022.2.8s に引き上げ
+ - Arsonistに新たなオプション「Douse Range」を追加
+ - Sheriffに新たなオプション「Can Kill Sheriff」を追加
+ - Vulture勝利でOpportunistが追加勝利できないように
+ - Jester勝利で対象のJesterが勝利できない問題を修正
+ - Pursuerが死体検知中に会議を挟んだ時の挙動を修正
+ - なんらかの理由で他プレイヤーの接続が切れた場合、会議中の挙動が意図しないものになる問題を修正
+ - Booster, Trapperの加速でプレイヤーがワープするように移動してしまう問題を修正
+ - Drunkがベントに入ろうとすると逆方向へ進んでしまう問題を修正
+ - Drunkの視点だと他人の挙動がおかしくなってしまう問題を修正
+ - Trapperがマルチコストのトラップを、コスト不足にもかかわらず置けてしまう問題を修正
+ - Trilemmaが死亡した際に死体が複数生成される問題を修正
+ - 追放されたプレイヤーが次の会議終了まで他人の役職を見ることができない問題を修正
+  
  **Version 1.1.3**
  - Arsonist, Empiric, Jester, Vultureが複数人居る場合、ゲーム開始時に自身以外同陣営として表示されず、かつ単独勝利するように
  - Arsonist, Empiricで、左下に自分自身や死んだプレイヤーのホログラムが現れてしまう問題を修正
@@ -286,27 +367,57 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
   
 </details>
 
+-----------------------
+
+# ゲームモード
+
+## Standard
+
+#### 推奨プレイ人数: 9 ~ 15人
+
+VanillaのAmong Usと同じルールです。Modによる追加役職を使用して多様な遊び方ができます。
+
+## Escape
+
+#### 推奨プレイ人数: 4 ~ 8人
+
+いわゆる鬼ごっこです。ゲーム開始から10秒後に、1人がHunterに、その他全員がEscapeeになります。\
+制限時間いっぱいまでHunterから逃げ切るか、タスクをこなせばEscapeeの勝利です。\
+Hunterは、逃げるEscapee全員を捕まえられたら勝利します。\
+ゲーム参加者を待つ間のちょっとしたミニゲームにどうぞ。
+
+-----------------------
+
 # ロール一覧
 
-| Impostors | Crewmates | Neutral | Secondary
+## Standard
+| Impostors | Crewmates | Neutral | Secondary |
 | ---------- | ---------- | ---------- | ---------- |
 | [Camouflager](#camouflager) | [Agent](#agent) | [Arsonist](#arsonist) | [Drunk](#drunk) |
 | [Cleaner](#cleaner) | [Alien](#alien) | [Empiric](#empiric) | [Guesser](#guesser) |
 | [Damned](#damned) | [Bait](#bait) | [Jackal](#jackal) | [Lover](#lover) |
 | [Eraser](#eraser) | [Booster](#booster) | [Jester](#jester) | [Trilemma](#trilemma) |
-| [Evil Ace](#evil-ace) | [Engineer](#engineer) | [Opportunist](#opportunist) ||
+| [Evil Ace](#evil-ace) | [Doctor](#doctor) | [Opportunist](#opportunist) ||
 | [Evil Guesser](#guesser) | [Mayor](#mayor) | [Sidekick](#sidekick) ||
-| [Evil Trapper](#trapper) | [Necromancer](#necromancer) | [Vulture](#vulture) ||
-| [Morphing](#morphing) | [Nice Guesser](#guesser) |||
-| [Reaper](#reaper) | [Nice Trapper](#trapper) |||
-| [Sniper](#sniper) | [Provocateur](#provocateur) |||
+| [Evil Trapper](#trapper) | [Navvy](#navvy) | [Vulture](#vulture) ||
+| [Morphing](#morphing) | [Necromancer](#necromancer) |||
+| [Reaper](#reaper) | [Nice Guesser](#guesser) |||
+| [Sniper](#sniper) | [Nice Trapper](#trapper) |||
+|| [Oracle](#oracle) |||
+|| [Provocateur](#provocateur) |||
 || [Psychic](#psychic) |||
 || [Pursuer](#pursuer) |||
-|| [Security Guard](#security-guard) |||
 || [Seer](#seer) |||
 || [Sheriff](#sheriff) |||
 || [Spy](#spy) |||
 || [Madmate](#madmate) |||
+
+## Escape
+| Players |
+| ---------- |
+| [Escapee](#escapee) |
+| [Hunter](#hunter) |
+| [Player](#player) |
 
 -----------------------
 
@@ -575,17 +686,20 @@ p5p5next : Damned
 
 -----------------------
 
-## Engineer
- Engineerはベントを使うことのできるクルーメイトで、一度だけサボタージュを遠隔で直すことができます。
+## Doctor
+ Doctorはバイタルで、プレイヤーの死因を知ることができ、遠隔でバイタルをみることができます。\
  
- ### 操作方法
+  ### 操作方法
 | 操作キー | アクション |
 |----------|:-------------:|
-| F | サボタージュ復旧
- 
+| F | 遠隔でバイタルを見る
+
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
+| Mobile Gadget Charges | バイタルガジェットの初期充電量
+| Max Mobile Gadget Charges | バイタルガジェットの最大充電量
+| Charges Per Tasks | タスクあたりのバイタルガジェット充電量
 
 -----------------------
 
@@ -596,8 +710,27 @@ p5p5next : Damned
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
-| Max Vote | 一回の会議で同時に投じることのできる票数
+| Min Vote | 一回の会議で同時に投じることのできる最小票数
+| Max Vote | 一回の会議で同時に投じることのできる最大票数
 | Max Vote Stock | 保持することができる票の最大数
+| Vote Assignment | 会議ごとに割り当てられる票数
+
+-----------------------
+
+## Navvy
+ Navvyはベントを使ったり封鎖することができ、またサボタージュを遠隔で直すことができます。\
+ サボタージュ復旧とベントの使用は、ベントを可能な限り封鎖したあと、会議を一度挟むことで解禁されます。
+ 
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| F | ベント封鎖、サボタージュ復旧
+
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+| Max Screws Vents | 封鎖できるベントの最大数 
+| Seal Cool Down | ベント封鎖のクールダウン
 
 -----------------------
 
@@ -615,6 +748,28 @@ p5p5next : Damned
 |----------|:-------------:|
 | Revive Cool Down | 復活させられるクールダウン
 | Revive Duration | 復活に要する時間
+| Max Revive Room Distance | 死亡位置から死体復活部屋までの最大距離
+
+-----------------------
+
+## Oracle
+ Oracleは他プレイヤーの役職を占うことができます。\
+ 占うといくつかの役職の候補が現れます。\
+ 役職の候補はゲームの進行に合わせて、推理の必要性を壊し過ぎないように選ばれます。
+ 
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| F | 役職を占う
+
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+| Divine Cool Down | 占いのクールダウン
+| Divine Cool Down Addition | 占いの追加クールダウン
+| Count Of Candidates | 占いによる役職候補の数
+| Die When Divining Opportunist | Opportunistを占ったときに自身が死ぬかどうか
+| Die When Divining Oracle | Oracleを占ったときに自身が死ぬかどうか
 
 -----------------------
 
@@ -659,21 +814,6 @@ p5p5next : Damned
 |----------|:-------------:|
 | Search Cool Down | 探索のクールダウン
 | Search Duration | 探索時間
-
------------------------
-
-## Security Guard
- Security Guardはベントを封鎖し、インポスターの行動を制限します。
- 
- ### 操作方法
-| 操作キー | アクション |
-|----------|:-------------:|
-| F | ベント封鎖
-
- ### オプション
-| オプション名 | 設定内容 |
-|----------|:-------------:|
-| Max Screws Vents | 封鎖できるベントの最大数 
 
 -----------------------
 
@@ -869,6 +1009,39 @@ p5p5next : Damned
 ## Trilemma
  TrilemmaはLoverが第三者を巻き込んだ三位一体のチームです。\
  三人だけが生き残ることで勝利します。
+ 
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+
+-----------------------
+
+## Escapee
+ EscapeeはHunterから逃げるか、タスクをすべてこなすことで勝利できます。
+ 
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+
+-----------------------
+
+## Hunter
+ Hunterは、制限時間内にEscapeeを全員捕まえることで勝利します。
+ 
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| Q | 捕まえる
+
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+
+-----------------------
+
+## Player
+ Escapeモードでは、はじめ全員がPlayerを割り振られます。
+ ゲーム開始から10秒後に、Escapee, Hunterに変化します。
  
  ### オプション
 | オプション名 | 設定内容 |
