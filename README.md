@@ -108,6 +108,7 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
   
  **Version 1.4.0**
  - Doctorを追加
+ - Arsonistの「Douse Duration」「Douse Cool Down」をそれぞれ0.5秒、2.5秒単位で設定できるように
  - ゲーム終了時のプレイヤー状態表示に「Misfire」「Disconnected」を追加、これに伴い、切断されたプレイヤーが「Alive」と表示されないように
  - Oracleの占い候補抽出に新たな絞り込みイベントを追加(トラップの出現、会議中の死亡、死体の消滅)
  - Boosterの加速ボタンの位置を変更
