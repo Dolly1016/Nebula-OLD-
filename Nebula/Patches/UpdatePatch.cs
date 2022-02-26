@@ -208,7 +208,9 @@ namespace Nebula.Patches
                 {
                     __instance.KillButton.Show();
 
-                    __instance.KillButton.SetTarget(PlayerControlPatch.SetMyTarget(!Roles.Roles.Spy.CanKillImpostor()));
+                    PlayerControl target = PlayerControlPatch.SetMyTarget(!Roles.Roles.Spy.CanKillImpostor());
+                    __instance.KillButton.SetTarget(target);
+                    __instance.KillButton.enabled = target != null;
                 }
             }
         }

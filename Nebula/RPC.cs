@@ -448,9 +448,8 @@ namespace Nebula
 
             if (!Roles.Roles.F_Guesser.secondoryRoleOption.getBool())
             {
-                //ゲッサーの存在を加味する
-                Game.GameData.data.EstimationAI.Presume(Roles.Roles.NiceGuesser, 0.25f);
-                Game.GameData.data.EstimationAI.Presume(Roles.Roles.EvilGuesser, 0.25f);
+                //Guesserを考慮に入れる
+                Game.GameData.data.EstimationAI.DetermineMultiply(new Roles.Role[] { Roles.Roles.NiceGuesser, Roles.Roles.EvilGuesser });
             }
         }
 
@@ -647,6 +646,9 @@ namespace Nebula
                     break;
                 }
             }
+
+            //Cleaner,Vultureを考慮に入れる
+            Game.GameData.data.EstimationAI.DetermineMultiply(new Roles.Role[] { Roles.Roles.Vulture, Roles.Roles.Cleaner });
         }
 
         public static void CountDownMessage(byte count)

@@ -16,6 +16,9 @@ namespace Nebula.Objects
             static public Type AccelTrap = new Type("AccelTrap", "Nebula.Resources.AccelTrap.png",(obj)=> {},(obj)=> {
                 if (obj.PassedMeetings == 0)
                 {
+                    //Trapperを考慮に入れる
+                    Game.GameData.data.EstimationAI.DetermineMultiply(new Roles.Role[] { Roles.Roles.NiceTrapper, Roles.Roles.EvilTrapper });
+
                     if (obj.OwnerId != PlayerControl.LocalPlayer.PlayerId)
                     {
                         if (obj.Renderer.color.a != 0f) obj.Renderer.color = new Color(1f, 1f, 1f, 0f);
@@ -30,6 +33,9 @@ namespace Nebula.Objects
             static public Type DecelTrap = new Type("DecelTrap", "Nebula.Resources.DecelTrap.png", (obj) => { }, (obj) => {
                 if (obj.PassedMeetings == 0)
                 {
+                    //Trapperを考慮に入れる
+                    Game.GameData.data.EstimationAI.DetermineMultiply(new Roles.Role[] { Roles.Roles.NiceTrapper, Roles.Roles.EvilTrapper });
+
                     if (obj.OwnerId != PlayerControl.LocalPlayer.PlayerId)
                     {
                         if (obj.Renderer.color.a != 0f) obj.Renderer.color = new Color(1f, 1f, 1f, 0f);

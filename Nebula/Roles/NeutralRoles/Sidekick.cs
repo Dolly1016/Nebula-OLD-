@@ -43,8 +43,10 @@ namespace Nebula.Roles.NeutralRoles
         {
             if (killButton != null)
             {
-                killButton.Destroy();
+                killButton.Destroy();    
             }
+            killButton = null;
+
             if (NeutralRoles.Jackal.SidekickCanKillOption.getBool())
             {
                 killButton = new CustomButton(
@@ -69,12 +71,18 @@ namespace Nebula.Roles.NeutralRoles
 
         public override void ButtonActivate()
         {
-            killButton.setActive(true);
+            if (killButton != null)
+            {
+                killButton.setActive(true);
+            }
         }
 
         public override void ButtonDeactivate()
         {
-            killButton.setActive(false);
+            if (killButton != null)
+            {
+                killButton.setActive(false);
+            }
         }
 
         public override void CleanUp()

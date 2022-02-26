@@ -282,6 +282,14 @@ namespace Nebula.Roles.ComplexRoles
                     trapButton.Timer = trapButton.MaxTimer;                   
                 },
                 () => {
+                    int total = (int)Roles.F_Trapper.maxTrapsOption.getFloat();
+                    int remain = Game.GameData.data.myData.getGlobalData().GetRoleData(Roles.F_Trapper.remainTrapsId);
+                    trapButtonString.text = $"{remain}/{total}";
+
+                    return remain > 0 && PlayerControl.LocalPlayer.CanMove;
+
+                },
+                () => {
                     if (PlayerControl.LocalPlayer.Data.IsDead) return false;
 
                     int left = Game.GameData.data.myData.getGlobalData().GetRoleData(Roles.F_Trapper.remainTrapsId);
@@ -302,14 +310,6 @@ namespace Nebula.Roles.ComplexRoles
                             }
                     }
                     return false;
-                },
-                () => {
-                    int total = (int)Roles.F_Trapper.maxTrapsOption.getFloat();
-                    int remain = Game.GameData.data.myData.getGlobalData().GetRoleData(Roles.F_Trapper.remainTrapsId);
-                    trapButtonString.text = $"{remain}/{total}";
-
-                    return remain > 0 && PlayerControl.LocalPlayer.CanMove;
-
                 },
                 () => { trapButton.Timer = trapButton.MaxTimer; },
                 FTrapper.getAccelButtonSprite(),

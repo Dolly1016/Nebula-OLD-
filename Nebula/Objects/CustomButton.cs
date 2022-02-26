@@ -96,6 +96,7 @@ namespace Nebula.Objects
         }
         public void Destroy()
         {
+            setActive(false);
             UnityEngine.Object.Destroy(actionButton);
             actionButton = null;
             buttons.Remove(this);
@@ -127,6 +128,8 @@ namespace Nebula.Objects
                 {
                     buttons[i].OnMeetingEnds();
                     buttons[i].Update();
+
+                    buttons[i].actionButton.cooldownTimerText.color = Palette.DisabledClear;
                 }
                 catch (NullReferenceException)
                 {

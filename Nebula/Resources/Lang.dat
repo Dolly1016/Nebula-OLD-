@@ -4,6 +4,7 @@
 "update.restart" : "Updated successfully! Please restart game."
 "update.failed" : "Update has failed."
 "title.button.updateNebula" : "Update NoS"
+"title.button.existNewerNebula" : "Exist Newer Nos\nFor Newer Among Us"
 
 "lobby.hasNoNebula" : "%NAME% has a different or no version of Nebula on the Ship"
 "lobby.hasDifferentNebula" : "%NAME% has a different version of Nebula on the Ship"
@@ -132,21 +133,21 @@
 "role.bait.description" : "Bait Your Enemies"
 "role.bait.info" : "If you killed, your killer will report your body instantly."
 
+"role.booster.name" : "Booster"
+"role.booster.description" : "Run Through"
+"role.booster.info" : "You can move fastly.\nBut you must not forget that the high speed movement can reveal your role to <color=#ffff00ff>Guesser</color>.\n\n - F : Boost"
+"role.booster.boostCoolDown" : "Boost Cool Down"
+"role.booster.boostDuration" : "Boost Duration"
+"role.booster.boostSpeed" : "Boost Strength"
+
 "role.doctor.name" : "Doctor"
 "role.doctor.description" : "Thus They Died"
-"role.doctor.info" : "You can know why players died at the vital."
+"role.doctor.info" : "You can know why players died at the vital.\nAnd you can use vitals anywhere with gadget charges."
 "role.doctor.mobileGadgetCharges" : "Mobile Gadget Charges"
 "role.doctor.maxMobileGadgetCharges" : "Max Mobile Gadget Charges"
 "role.doctor.chargesPerTasks" : "Charges Per Tasks"
 "role.doctor.gadgetLeft" : "%SECOND%s"
 "role.doctor.batteryIsEmpty" : "BATTERY LOW"
-
-"role.booster.name" : "Booster"
-"role.booster.description" : "Run Through"
-"role.booster.info" : "You can move fastly.\nBut you must not forget that the high speed movement can reveal your role to <color=#ffff00ff>Guesser</color>."
-"role.booster.boostCoolDown" : "Boost Cool Down"
-"role.booster.boostDuration" : "Boost Duration"
-"role.booster.boostSpeed" : "Boost Strength"
 
 "role.mayor.name" : "Mayor"
 "role.mayor.description" : "Find and Vote out the <color=#ff1919ff>Impostors</color>"

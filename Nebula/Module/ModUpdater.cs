@@ -36,7 +36,7 @@ namespace Nebula.Module
             CustomHatLoader.LaunchHatFetcher();
 
             ModUpdater.LaunchUpdater();
-            if (!ModUpdater.hasUpdate) return;
+            if (!ModUpdater.hasUpdate  && !ModUpdater.hasUnprocessableUpdate) return;
 
             var template = GameObject.Find("ExitGameButton");
             if (template == null) return;
@@ -46,11 +46,12 @@ namespace Nebula.Module
 
             PassiveButton passiveButton = button.GetComponent<PassiveButton>();
             passiveButton.OnClick = new Button.ButtonClickedEvent();
-            passiveButton.OnClick.AddListener((UnityEngine.Events.UnityAction)onClick);
+            if(ModUpdater.hasUpdate)
+                passiveButton.OnClick.AddListener((UnityEngine.Events.UnityAction)onClick);
 
             var text = button.transform.GetChild(0).GetComponent<TMPro.TMP_Text>();
             __instance.StartCoroutine(Effects.Lerp(0.1f, new System.Action<float>((p) => {
-                text.SetText(Language.Language.GetString("title.button.updateNebula"));
+                text.SetText(Language.Language.GetString(ModUpdater.hasUnprocessableUpdate ? "title.button.existNewerNebula":"title.button.updateNebula")); ;
             })));
 
             TwitchManager man = DestroyableSingleton<TwitchManager>.Instance;
@@ -70,6 +71,7 @@ namespace Nebula.Module
     {
         public static bool running = false;
         public static bool hasUpdate = false;
+        public static bool hasUnprocessableUpdate = false;
         public static string updateURI = null;
         private static Task updateTask = null;
         public static GenericPopup InfoPopup;
@@ -174,6 +176,10 @@ namespace Nebula.Module
                             }
                         }
                     }
+                }
+                else if ((modDiff != 0) && (amoDiff != 0))
+                {
+                    hasUnprocessableUpdate = true;
                 }
             }
             catch (System.Exception ex)

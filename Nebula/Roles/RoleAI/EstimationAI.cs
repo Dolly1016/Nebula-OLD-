@@ -20,6 +20,8 @@ namespace Nebula.Roles.RoleAI
         /// </summary>
         private Dictionary<RoleCategory,int> CountEstimateMap { get; }
 
+        private HashSet<Role[]> MultipleEstimates { get; }
+
         public EstimationAI()
         {
             EstimateMap = new Dictionary<Role, float>();
@@ -35,6 +37,8 @@ namespace Nebula.Roles.RoleAI
             CountEstimateMap[RoleCategory.Impostor] = 0;
             CountEstimateMap[RoleCategory.Crewmate] = 0;
             CountEstimateMap[RoleCategory.Neutral] = 0;
+
+            MultipleEstimates = new HashSet<Role[]>();
         }
 
         /// <summary>
@@ -97,6 +101,14 @@ namespace Nebula.Roles.RoleAI
             Elimination(role.category);
         }
 
+        public void DetermineMultiply(params Role[] roles)
+        {
+            MultipleEstimates.Add(roles);
+
+            //弾ける役職がないか調べる
+            EliminationByMultipleSet();
+        }
+
         //0.5のロールが存在する場合、確定役職数+1で人数条件をみたすなら確定させる
         public void Presume(Role role,float probability)
         {
@@ -135,6 +147,51 @@ namespace Nebula.Roles.RoleAI
                     }
                 }
             }
+
+            EliminationByMultipleSet();
+        }
+
+        private void EliminationByMultipleSet()
+        {
+            bool result;
+
+            do
+            {
+                result = false;
+
+                foreach (var roles in MultipleEstimates)
+                {
+                    Role lastRole = null;
+                    foreach (var role in roles)
+                    {
+                        if (GetRoleProbability(role) < 0f) continue;
+
+                        if (role != null) { lastRole = null; break; }
+
+                        lastRole = role;
+                    }
+
+                    if (lastRole == null) continue;
+
+                    //確定させる
+                    EstimateMap[lastRole] = 1f;
+
+                    result = true;
+                }
+
+                //不要な条件は捨てる
+                MultipleEstimates.RemoveWhere((roles) =>
+                {
+                    int counter = 0;
+                    foreach (var role in roles)
+                    {
+                        if (GetRoleProbability(role) < 0f) continue;
+
+                        counter++;
+                    }
+                    return counter <= 1;
+                });
+            } while (result);
         }
 
         /// <summary>

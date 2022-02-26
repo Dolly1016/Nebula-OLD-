@@ -27,10 +27,10 @@ namespace Nebula.Roles.NeutralRoles
 
         public override void LoadOptionData()
         {
-            douseDurationOption = CreateOption(Color.white, "douseDuration", 3f, 1f, 10f, 1f);
+            douseDurationOption = CreateOption(Color.white, "douseDuration", 3f, 1f, 10f, 0.5f);
             douseDurationOption.suffix = "second";
 
-            douseCoolDownOption = CreateOption(Color.white, "douseCoolDown", 10f, 0f, 60f, 5f);
+            douseCoolDownOption = CreateOption(Color.white, "douseCoolDown", 10f, 0f, 60f, 2.5f);
             douseCoolDownOption.suffix = "second";
 
             douseRangeOption = CreateOption(Color.white, "douseRange", 1f, 0.5f, 2f, 0.125f);
