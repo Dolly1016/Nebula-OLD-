@@ -17,6 +17,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.4.0 | 2022.2.23s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.0,2022.2.23/Nebula.zip)|
 | 1.3.0 | 2022.2.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.3.0,2022.2.8/Nebula.zip)|
 | 1.2.1 | 2022.2.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.2.1,2022.2.8/Nebula.zip)|
 | 1.2.0.1 | 2022.2.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.2.0.1,2022.2.8/Nebula.zip)|
@@ -96,14 +97,24 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 
 | Language | Translator | Full Support Version | Download |
 | --- | --- | --- | --- |
-| 日本語 | - | 1.2.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.2.1,2022.2.8/Japanese.dat)|
+| 日本語 | - | 1.4.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.0,2022.2.23/Japanese.dat)|
 | 日本語 | Rey | 1.2.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.2.1%2CRey/Japanese.dat)|
 | 日本語 | kihi | 1.2.1 (一部1.3.0対応) | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.2.1%2Ckihi/Japanese.dat)|
-| English | - | 1.2.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.2.1,2022.2.8/English.dat)|
+| English | - | 1.4.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.0,2022.2.23/English.dat)|
 
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+  
+ **Version 1.4.0**
+ - Doctorを追加
+ - ゲーム終了時のプレイヤー状態表示に「Misfire」「Disconnected」を追加、これに伴い、切断されたプレイヤーが「Alive」と表示されないように
+ - Oracleの占い候補抽出に新たな絞り込みイベントを追加(トラップの出現、会議中の死亡、死体の消滅)
+ - Boosterの加速ボタンの位置を変更
+ - 一部ボタンの文字を変更
+ - 追加役職でないSidekickに変化した際に以前の役職のボタンが残ったままになる問題を修正
+ - 追加役職でないSidekickがキルできない設定の場合、Jackalに変化できない問題を修正
+ - Spyをキルできない設定にもかかわらずインポスターのキルボタンがSpyに反応する問題を修正
   
  **Version 1.3.0**
  - Oracleを追加
@@ -386,12 +397,13 @@ Hunterは、逃げるEscapee全員を捕まえられたら勝利します。\
 | [Cleaner](#cleaner) | [Alien](#alien) | [Empiric](#empiric) | [Guesser](#guesser) |
 | [Damned](#damned) | [Bait](#bait) | [Jackal](#jackal) | [Lover](#lover) |
 | [Eraser](#eraser) | [Booster](#booster) | [Jester](#jester) | [Trilemma](#trilemma) |
-| [Evil Ace](#evil-ace) | [Mayor](#mayor) | [Opportunist](#opportunist) ||
-| [Evil Guesser](#guesser) | [Navvy](#navvy) | [Sidekick](#sidekick) ||
-| [Evil Trapper](#trapper) | [Necromancer](#necromancer) | [Vulture](#vulture) ||
-| [Morphing](#morphing) | [Nice Guesser](#guesser) |||
-| [Reaper](#reaper) | [Nice Trapper](#trapper) |||
-| [Sniper](#sniper) | [Oracle](#oracle) |||
+| [Evil Ace](#evil-ace) | [Doctor](#doctor) | [Opportunist](#opportunist) ||
+| [Evil Guesser](#guesser) | [Mayor](#mayor) | [Sidekick](#sidekick) ||
+| [Evil Trapper](#trapper) | [Navvy](#navvy) | [Vulture](#vulture) ||
+| [Morphing](#morphing) | [Necromancer](#necromancer) |||
+| [Reaper](#reaper) | [Nice Guesser](#guesser) |||
+| [Sniper](#sniper) | [Nice Trapper](#trapper) |||
+|| [Oracle](#oracle) |||
 || [Provocateur](#provocateur) |||
 || [Psychic](#psychic) |||
 || [Pursuer](#pursuer) |||
@@ -671,6 +683,23 @@ p5p5next : Damned
 | Boost Cool Down | 速度上昇のクールダウン
 | Boost Duration | 速度上昇の持続時間
 | Boost Strength | 速度上昇の強度
+
+-----------------------
+
+## Doctor
+ Doctorはバイタルで、プレイヤーの死因を知ることができ、遠隔でバイタルをみることができます。\
+ 
+  ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| F | 遠隔でバイタルを見る
+
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+| Mobile Gadget Charges | バイタルガジェットの初期充電量
+| Max Mobile Gadget Charges | バイタルガジェットの最大充電量
+| Charges Per Tasks | タスクあたりのバイタルガジェット充電量
 
 -----------------------
 
