@@ -97,14 +97,20 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 
 | Language | Translator | Full Support Version | Download |
 | --- | --- | --- | --- |
-| 日本語 | - | 1.4.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.0,2022.2.23/Japanese.dat)|
-| 日本語 | Rey | 1.2.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.2.1%2CRey/Japanese.dat)|
+| 日本語 | - | 1.4.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.1,2022.2.23/Japanese.dat)|
+| 日本語 | Rey | 1.4.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.4.0%2CRey/Japanese.dat)|
 | 日本語 | kihi | 1.2.1 (一部1.3.0対応) | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.2.1%2Ckihi/Japanese.dat)|
 | English | - | 1.4.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.0,2022.2.23/English.dat)|
 
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+  
+ **Version 1.4.1**
+ - Dynamic Paletteに明度の設定を追加
+ - 他プレイヤーに対して使用するボタンの有効範囲がより広くなるように
+ - ホストに限り、LCtrl+F5でゲームを強制終了できるように
+ - 2試合目からボタンが表示されない問題を修正
   
  **Version 1.4.0**
  - Doctorを追加
