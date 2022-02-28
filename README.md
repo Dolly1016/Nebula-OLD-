@@ -17,6 +17,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.4.2 | 2022.2.23s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.2,2022.2.23/Nebula.zip)|
 | 1.4.1 | 2022.2.23s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.1,2022.2.23/Nebula.zip)|
 | 1.4.0 | 2022.2.23s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.0,2022.2.23/Nebula.zip)|
 | 1.3.0 | 2022.2.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.3.0,2022.2.8/Nebula.zip)|
@@ -106,6 +107,12 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+  
+ **Version 1.4.2**
+ - Dynamic Paletteで、今選んでいる色の位置や明度が分かるように
+ - Jackalの設定を最適化
+ - ロビー画面で他プレイヤーが退出したときに人数表示が更新されない問題を修正
+ - Provocateurによる巻き込みでLoversが死ぬ場合、もう片方が道連れにされない問題を修正
   
  **Version 1.4.1**
  - Dynamic Paletteに明度の設定を追加
