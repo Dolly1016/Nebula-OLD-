@@ -17,6 +17,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.4.3 | 2022.2.23s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.3,2022.2.23/Nebula_v1.4.3.zip)|
 | 1.4.2 | 2022.2.23s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.2,2022.2.23/Nebula_v1.4.2.zip)|
 | 1.4.1 | 2022.2.23s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.1,2022.2.23/Nebula_v1.4.1.zip)|
 | 1.4.0 | 2022.2.23s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.0,2022.2.23/Nebula.zip)|
@@ -107,6 +108,11 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+  
+ **Version 1.4.3**
+ - テスト用の新ゲームモード「Free Play」を追加 Coming Soonを挟んだ右(あるいはStandardのすぐ左)にあります。
+ - 「Escape」モードを2人から遊べるように
+ - ホストによる強制終了の挙動に微細な変更
   
  **Version 1.4.2**
  - Dynamic Paletteで、今選んでいる色の位置や明度が分かるように
@@ -389,18 +395,32 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 
 ## Standard
 
+#### プレイ可能人数: 4 ~ 15人
 #### 推奨プレイ人数: 9 ~ 15人
 
 VanillaのAmong Usと同じルールです。Modによる追加役職を使用して多様な遊び方ができます。
 
 ## Escape
 
+#### プレイ可能人数: 2 ~ 15人
 #### 推奨プレイ人数: 4 ~ 8人
 
 いわゆる鬼ごっこです。ゲーム開始から10秒後に、1人がHunterに、その他全員がEscapeeになります。\
 制限時間いっぱいまでHunterから逃げ切るか、タスクをこなせばEscapeeの勝利です。\
 Hunterは、逃げるEscapee全員を捕まえられたら勝利します。\
 ゲーム参加者を待つ間のちょっとしたミニゲームにどうぞ。
+
+## Free Play
+
+#### プレイ可能人数: 1 ~ 15人
+#### 推奨プレイ人数: 1 ~ 15人
+
+現状、1キーで原点を設定して、その点から現在位置までの距離を見ることができます。\
+Sniperの弾の当たり判定やEmpiric,Alienなどの効果範囲を調べる際にお使いください。\
+一部、大きさが異なるものもありますので、当たり判定算出の式はDiscordでご確認ください。
+
+今後、様々な役職のテストプレイができるよう整備する予定です。\
+
 
 -----------------------
 
