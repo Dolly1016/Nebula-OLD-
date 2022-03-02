@@ -17,6 +17,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.4.4 | 2022.2.23s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.4,2022.2.23/Nebula_v1.4.4.zip)|
 | 1.4.3 | 2022.2.23s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.3,2022.2.23/Nebula_v1.4.3.zip)|
 | 1.4.2 | 2022.2.23s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.2,2022.2.23/Nebula_v1.4.2.zip)|
 | 1.4.1 | 2022.2.23s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.1,2022.2.23/Nebula_v1.4.1.zip)|
@@ -108,6 +109,15 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+  
+ **Version 1.4.4**
+ - Sniperにエイムアシストとそれに関わる新たなオプション「Show Aim Assist」「Aim Assist Delay」「Aim Assist Duration」を追加
+ - Oracleの占い結果が名前の傍に表示されるように
+ - Dynamic Paletteの影色を微調整
+ - 排他的役職割り当てで、出現しないロールとの排他設定を無視するように
+ - Oracleの絞り込みについて、ゲーム開始時の絞り込みで出現確率と最大人数を考慮するように
+ - Dynamic Paletteで明るさの幅が想定以上に狭かった問題を修正
+ - Sniperのライフルの表示位置が射線上からずれている問題を修正
   
  **Version 1.4.3**
  - テスト用の新ゲームモード「Free Play」を追加 Coming Soonを挟んだ右(あるいはStandardのすぐ左)にあります。
