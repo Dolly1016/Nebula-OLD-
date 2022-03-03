@@ -24,18 +24,18 @@ namespace Nebula.Roles.ImpostorRoles
 
         public virtual bool IsSpawnable()
         {
-            if (category == RoleCategory.Complex) return false;
+            return false;
+        }
 
-            if (RoleChanceOption.getFloat() == 0f) return false;
-            if (!FixedRoleCount && RoleCountOption.getFloat() == 0f) return false;
+        public override void SpawnableTest(ref Dictionary<Role,int> DefinitiveRoles, ref HashSet<Role> SpawnableRoles)
+        {
 
-            return true;
         }
 
         public Damned()
                 : base("Damned", "damned", Palette.ImpostorRed, RoleCategory.Impostor, Side.Impostor, Side.Impostor,
                      impostorSideSet, impostorSideSet, impostorEndSet,
-                     true, true, true, true, true)
+                     true, VentPermission.CanUseUnlimittedVent, true, true, true)
         {
             IsHideRole = true;
         }

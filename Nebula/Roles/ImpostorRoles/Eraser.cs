@@ -46,7 +46,7 @@ namespace Nebula.Roles.ImpostorRoles
         public override void MyPlayerControlUpdate()
         {
             Game.MyPlayerData data = Game.GameData.data.myData;
-            data.currentTarget = Patches.PlayerControlPatch.SetMyTarget();
+            data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(2.5f);
             Patches.PlayerControlPatch.SetPlayerOutline(data.currentTarget, Color.yellow);
         }
 
@@ -106,7 +106,7 @@ namespace Nebula.Roles.ImpostorRoles
         public Eraser()
                 : base("Eraser", "eraser", Palette.ImpostorRed, RoleCategory.Impostor, Side.Impostor, Side.Impostor,
                      Impostor.impostorSideSet, Impostor.impostorSideSet, Impostor.impostorEndSet,
-                     true, true, true, true, true)
+                     true, VentPermission.CanUseUnlimittedVent, true, true, true)
         {
             eraserButton = null;
 

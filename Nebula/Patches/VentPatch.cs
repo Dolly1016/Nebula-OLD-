@@ -9,6 +9,26 @@ using Hazel;
 
 namespace Nebula.Patches
 {
+    [HarmonyPatch(typeof(Vent), nameof(Vent.EnterVent))]
+    public static class VentEnterPatch
+    {
+        public static void Postfix(Vent __instance, [HarmonyArgument(0)] PlayerControl pc)
+        {
+            if (pc != PlayerControl.LocalPlayer) return;
+            Game.GameData.data.myData.VentDurationTimer = pc.GetModData().role.VentDurationMaxTimer;
+        }
+    }
+
+    [HarmonyPatch(typeof(Vent), nameof(Vent.ExitVent))]
+    public static class VentExitPatch
+    {
+        public static void Postfix(Vent __instance, [HarmonyArgument(0)] PlayerControl pc)
+        {
+            if (pc != PlayerControl.LocalPlayer) return;
+            Game.GameData.data.myData.VentCoolDownTimer = pc.GetModData().role.VentCoolDownMaxTimer;
+        }
+    }
+
     [HarmonyPatch(typeof(Vent), nameof(Vent.CanUse))]
     public static class VentCanUsePatch
     {
@@ -17,7 +37,9 @@ namespace Nebula.Patches
             float num = float.MaxValue;
             PlayerControl @object = pc.Object;
 
-            bool roleCouldUse = Game.GameData.data.players[@object.PlayerId].role.CanUseVents;
+            bool roleCouldUse = false;
+            if (Game.GameData.data.players[PlayerControl.LocalPlayer.PlayerId].role.VentPermission != Roles.VentPermission.CanNotUse)
+                roleCouldUse = !HudManager.Instance.ImpostorVentButton.isCoolingDown;
 
             var usableDistance = __instance.UsableDistance;
             
@@ -59,13 +81,15 @@ namespace Nebula.Patches
     {
         public static bool Prefix(Vent __instance)
         {
-            bool canUse;
+            bool canUse=false;
             bool couldUse;
             bool canMoveInVents;
 
             __instance.CanUse(PlayerControl.LocalPlayer.Data, out canUse, out couldUse);
 
-            canUse = Game.GameData.data.players[PlayerControl.LocalPlayer.PlayerId].role.CanUseVents;
+            if (Game.GameData.data.players[PlayerControl.LocalPlayer.PlayerId].role.VentPermission != Roles.VentPermission.CanNotUse)
+                canUse = !HudManager.Instance.ImpostorVentButton.isCoolingDown;
+            
             canMoveInVents = Game.GameData.data.players[PlayerControl.LocalPlayer.PlayerId].role.CanMoveInVents;
             
             if (!canUse) return false; // No need to execute the native method as using is disallowed anyways
@@ -108,20 +132,61 @@ namespace Nebula.Patches
 
             if (!__instance.AmOwner) return;
 
-
-            var role = Game.GameData.data.players[__instance.PlayerId].role;
+            var data = Game.GameData.data.players[__instance.PlayerId];
+            var role = data.role;
             var showFlag = HudManager.Instance.ReportButton.isActiveAndEnabled;
 
-            if (role.CanUseVents && showFlag)
+            if (__instance.CanMove) Game.GameData.data.myData.VentCoolDownTimer -= Time.deltaTime;
+            Game.GameData.data.myData.VentDurationTimer -= Time.deltaTime;
+
+            if (Game.GameData.data.myData.VentCoolDownTimer < 0f) Game.GameData.data.myData.VentCoolDownTimer = 0f;
+            if (Game.GameData.data.myData.VentDurationTimer < 0f) Game.GameData.data.myData.VentDurationTimer = 0f;
+
+            if (role.VentPermission != Roles.VentPermission.CanNotUse && showFlag)
+            {
                 HudManager.Instance.ImpostorVentButton.Show();
+
+                if (role.VentPermission == Roles.VentPermission.CanUseLimittedVent)
+                {
+                    if (!HudManager.Instance.ImpostorVentButton.cooldownTimerText)
+                    {
+                        HudManager.Instance.ImpostorVentButton.cooldownTimerText =
+                            UnityEngine.Object.Instantiate(HudManager.Instance.AbilityButton.cooldownTimerText, HudManager.Instance.ImpostorVentButton.transform);
+                    }
+
+                    if (__instance.inVent)
+                    {
+                        HudManager.Instance.ImpostorVentButton.cooldownTimerText.text = Mathf.CeilToInt(Game.GameData.data.myData.VentDurationTimer).ToString();
+                        HudManager.Instance.ImpostorVentButton.cooldownTimerText.gameObject.SetActive(true);
+                    }
+                    else
+                    {
+                        HudManager.Instance.ImpostorVentButton.SetCoolDown(Game.GameData.data.myData.VentCoolDownTimer, role.VentCoolDownMaxTimer);
+                    }
+                }
+                else
+                {
+                    HudManager.Instance.ImpostorVentButton.SetCoolDown(0f,10f);
+                }
+            }
             else
                 HudManager.Instance.ImpostorVentButton.Hide();
-
+            
             if (role.canInvokeSabotage && showFlag)
                 HudManager.Instance.SabotageButton.Show();
             else
                 HudManager.Instance.SabotageButton.Hide();
 
+            if(__instance.inVent && role.VentPermission == Roles.VentPermission.CanUseLimittedVent &&
+                !(Game.GameData.data.myData.VentDurationTimer > 0f))
+            {
+                Vent vent = HudManager.Instance.ImpostorVentButton.currentTarget;
+                if (!vent.GetVentData().Sealed)
+                {
+                    __instance.MyPhysics.RpcExitVent(vent.Id);
+                    vent.SetButtons(false);
+                }
+            }
         }
     }
 }

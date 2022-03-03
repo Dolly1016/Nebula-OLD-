@@ -21,6 +21,13 @@ namespace Nebula.Roles.ImpostorRoles
         private Module.CustomOption shotEffectiveRangeOption;
         private Module.CustomOption canKillImpostorsOption;
         public Module.CustomOption noticeRangeOption;
+        public Module.CustomOption showAimAssistOption;
+        public Module.CustomOption aimAssistDelayOption;
+        public Module.CustomOption aimAssistDurationOption;
+
+        private Dictionary<byte,SpriteRenderer> Guides=new Dictionary<byte,SpriteRenderer>();
+        private float rifleCounter = 0f;
+        
 
         public override void LoadOptionData()
         {
@@ -34,6 +41,14 @@ namespace Nebula.Roles.ImpostorRoles
 
             noticeRangeOption = CreateOption(Color.white, "soundEffectiveRange", 20f, 2f, 50f, 2f);
             noticeRangeOption.suffix = "cross";
+
+            showAimAssistOption = CreateOption(Color.white, "showAimAssist", false);
+            aimAssistDelayOption = CreateOption(Color.white, "aimAssistDelay", 2f, 1f, 10f, 1f);
+            aimAssistDelayOption.suffix = "second";
+            aimAssistDelayOption.AddPrerequisite(showAimAssistOption);
+            aimAssistDurationOption = CreateOption(Color.white, "aimAssistDuration", 10f, 2.5f, 60f, 2.5f);
+            aimAssistDurationOption.suffix = "second";
+            aimAssistDurationOption.AddPrerequisite(showAimAssistOption);
         }
 
 
@@ -88,6 +103,7 @@ namespace Nebula.Roles.ImpostorRoles
                     {
                         RPCEventInvoker.ObjectInstantiate(CustomObject.Type.SniperRifle, PlayerControl.LocalPlayer.transform.position);
                     }
+                    rifleCounter = 0f;
                     equipRifleFlag = !equipRifleFlag;
                 },
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
@@ -107,7 +123,7 @@ namespace Nebula.Roles.ImpostorRoles
             killButton = new CustomButton(
                 () =>
                 {
-                    PlayerControl target = GetShootPlayer(shotSizeOption.getFloat()*0.1f,shotEffectiveRangeOption.getFloat(), !canKillImpostorsOption.getBool());
+                    PlayerControl target = GetShootPlayer(shotSizeOption.getFloat()*0.2f,shotEffectiveRangeOption.getFloat(), !canKillImpostorsOption.getBool());
                     if (target!=null)
                     {
                         var res=Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, target, Game.PlayerData.PlayerStatus.Sniped, false, false);
@@ -166,11 +182,89 @@ namespace Nebula.Roles.ImpostorRoles
             return snipeArrowSprite;
         }
 
+        private static Sprite guideSprite=null;
+        public static Sprite getGuideSprite()
+        {
+            if (guideSprite) return guideSprite;
+            guideSprite = Helpers.loadSpriteFromResources("Nebula.Resources.SniperGuide.png", 100f);
+            return guideSprite;
+        }
+
+        private void UpdateGuide(SpriteRenderer guide,Vector3 pos,Color color)
+        {
+            guide.color = color;
+            Vector3 dir = pos - PlayerControl.LocalPlayer.transform.position;
+            float angle = Mathf.Atan2(dir.y, dir.x);
+
+            float oldAng = guide.transform.eulerAngles.z * (float)Math.PI / 180f;
+            Vector2 newPos = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+            Vector2 oldPos = new Vector2(Mathf.Cos(oldAng), Mathf.Sin(oldAng));
+            newPos = oldPos + (newPos - oldPos) * 0.15f;
+
+            angle = Mathf.Atan2(newPos.y, newPos.x);
+            guide.transform.eulerAngles = new Vector3(0, 0, angle * 180f / (float)Math.PI);
+            guide.transform.localPosition = new Vector3(Mathf.Cos(angle) * 2f, Mathf.Sin(angle) * 2f, -30f);
+        }
+
         public override void MyPlayerControlUpdate()
         {
             if (PlayerControl.LocalPlayer.Data.IsDead) return;
 
-            if (equipRifleFlag) RPCEventInvoker.UpdatePlayerControl();
+            if (equipRifleFlag)
+            {
+                RPCEventInvoker.UpdatePlayerControl();
+            }
+
+            if (!showAimAssistOption.getBool()) return;
+            if (equipRifleFlag)
+            {
+                rifleCounter += Time.deltaTime;
+
+                float r = 0f, g = 0f, b = 0f, a = 0f;
+
+                if (rifleCounter > aimAssistDelayOption.getFloat()) {
+                    float value = 1f - (rifleCounter - aimAssistDelayOption.getFloat());
+                    if ( value > 0)r = g = b = a = value;
+                    r = 0.2f + 0.8f * r;
+                    g = 0.4f + 0.6f * g;
+                    g = 0.8f + 0.2f * b;
+                    a = 0.6f + 0.4f * a;
+
+                    if (rifleCounter > aimAssistDelayOption.getFloat() + aimAssistDurationOption.getFloat())
+                    {
+                        value = rifleCounter - aimAssistDelayOption.getFloat() - aimAssistDurationOption.getFloat();
+                        if (value < 0) value = 0f;
+                        a *= 1f-value;
+                    }
+                }
+
+                Color color = new Color(r,g,b,a);
+
+                foreach (var guide in Guides)
+                {
+                    guide.Value.color = Color.clear;
+                }
+
+                foreach(PlayerControl player in PlayerControl.AllPlayerControls)
+                {
+                    if (player.Data.IsDead) continue;
+                    if (!Guides.ContainsKey(player.PlayerId)) continue;
+
+                    UpdateGuide(Guides[player.PlayerId],player.transform.position,color);
+                }
+
+                foreach(var deadBody in Helpers.AllDeadBodies())
+                {
+                    UpdateGuide(Guides[deadBody.ParentId], deadBody.transform.position, color);
+                }
+            }
+            else
+            {
+                foreach (var guide in Guides)
+                {
+                    guide.Value.color *= 0.7f;
+                }
+            }
         }
 
         public override void OnDied()
@@ -185,12 +279,22 @@ namespace Nebula.Roles.ImpostorRoles
         public override void Initialize(PlayerControl __instance)
         {
             equipRifleFlag = false;
+
+            foreach (var player in Game.GameData.data.players.Values)
+            {
+                if (player.id == PlayerControl.LocalPlayer.PlayerId) continue;
+
+                var obj = new GameObject("SniperGuide");
+                var renderer = obj.AddComponent<SpriteRenderer>();
+
+                renderer.sprite = getGuideSprite();
+                renderer.transform.parent = HudManager.Instance.transform;
+                renderer.color = new Color(0, 0, 0, 0);
+                renderer.transform.position = new Vector3(0, 0,-30f);
+                Guides[player.id]=renderer;
+            }
         }
 
-        public override void GlobalInitialize(PlayerControl __instance)
-        {
-
-        }
 
         public override void CleanUp()
         {
@@ -211,13 +315,20 @@ namespace Nebula.Roles.ImpostorRoles
                 killButton.Destroy();
                 killButton = null;
             }
+
+
+            foreach(var sprite in Guides)
+            {
+                UnityEngine.Object.Destroy(sprite.Value);
+            }
+            Guides.Clear();
         }
 
         public Sniper()
             : base("Sniper", "sniper", Palette.ImpostorRed, RoleCategory.Impostor, Side.Impostor, Side.Impostor,
                  Impostor.impostorSideSet, Impostor.impostorSideSet,
                  Impostor.impostorEndSet,
-                 true, true, true, true, true)
+                 true, VentPermission.CanUseUnlimittedVent, true, true, true)
         {
             sniperButton = null;
             killButton = null;

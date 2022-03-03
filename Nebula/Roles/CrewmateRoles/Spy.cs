@@ -12,6 +12,8 @@ namespace Nebula.Roles.CrewmateRoles
         public bool validSpyFlag;
 
         private Module.CustomOption impostorCanKillImpostorOption;
+        private Module.CustomOption ventCoolDownOption;
+        private Module.CustomOption ventDurationOption;
 
         public bool CanKillImpostor()
         {
@@ -21,6 +23,16 @@ namespace Nebula.Roles.CrewmateRoles
         public override void LoadOptionData()
         {
             impostorCanKillImpostorOption = CreateOption(Color.white, "impostorCanKillImpostor", true);
+            ventCoolDownOption = CreateOption(Color.white, "ventCoolDown", 20f, 5f, 60f, 2.5f);
+            ventCoolDownOption.suffix = "second";
+            ventDurationOption = CreateOption(Color.white, "ventDuration", 10f, 5f, 60f, 2.5f);
+            ventDurationOption.suffix = "second";
+        }
+
+        public override void Initialize(PlayerControl __instance)
+        {
+            VentCoolDownMaxTimer = ventCoolDownOption.getFloat();
+            VentDurationMaxTimer = ventDurationOption.getFloat();
         }
 
         public override void GlobalInitialize(PlayerControl __instance)
@@ -45,7 +57,7 @@ namespace Nebula.Roles.CrewmateRoles
         public Spy()
                 : base("Spy", "spy", Palette.ImpostorRed, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                      Crewmate.crewmateSideSet, ImpostorRoles.Impostor.impostorSideSet, Crewmate.crewmateEndSet,
-                     false, true, false, false, true)
+                     false, VentPermission.CanUseLimittedVent, false, false, true)
         {
             DeceiveImpostorInNameDisplay = true;
         }

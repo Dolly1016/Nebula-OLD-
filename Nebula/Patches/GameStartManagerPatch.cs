@@ -113,7 +113,7 @@ namespace Nebula.Patches
             }
 
             public static void Postfix(GameStartManager __instance)
-            {        
+            {   
                 // Send version as soon as PlayerControl.LocalPlayer exists
                 if (PlayerControl.LocalPlayer != null && !versionSent)
                 {
@@ -128,6 +128,8 @@ namespace Nebula.Patches
                 // Host update with version handshake infos
                 if (AmongUsClient.Instance.AmHost)
                 {
+                    __instance.MinPlayers = Game.GameModeProperty.GetProperty(CustomOptionHolder.GetCustomGameMode()).MinPlayers;
+
                     bool blockStart = false;
                     string message = "";
                     foreach (InnerNet.ClientData client in AmongUsClient.Instance.allClients.ToArray())

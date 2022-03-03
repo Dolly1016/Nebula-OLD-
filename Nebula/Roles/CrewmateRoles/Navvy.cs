@@ -27,6 +27,8 @@ namespace Nebula.Roles.CrewmateRoles
 
         private Module.CustomOption maxScrewsOption;
         private Module.CustomOption sealCoolDownOption;
+        private Module.CustomOption ventCoolDownOption;
+        private Module.CustomOption ventDurationOption;
 
         private Sprite sealButtonSprite=null;
         public Sprite getSealButtonSprite()
@@ -90,8 +92,13 @@ namespace Nebula.Roles.CrewmateRoles
         public override void Initialize(PlayerControl __instance)
         {
             //最初からは使用できない
-            CanUseVents = CanMoveInVents = false;
+            CanMoveInVents = false;
+            VentPermission = VentPermission.CanNotUse;
             hasBeenRepaired = false;
+
+
+            VentCoolDownMaxTimer = ventCoolDownOption.getFloat();
+            VentDurationMaxTimer = ventDurationOption.getFloat();
         }
 
         public override void OnMeetingEnd()
@@ -101,7 +108,8 @@ namespace Nebula.Roles.CrewmateRoles
             //設置後はベント使用可能
             if (Game.GameData.data.myData.getGlobalData().GetRoleData(remainingScrewsDataId) == 0)
             {
-                CanUseVents = CanMoveInVents = true;
+                CanMoveInVents = true;
+                VentPermission = VentPermission.CanUseLimittedVent;
             }
         }
 
@@ -178,14 +186,14 @@ namespace Nebula.Roles.CrewmateRoles
                     Helpers.RepairSabotage();
                     hasBeenRepaired = true;
                 },
-                () => { return !PlayerControl.LocalPlayer.Data.IsDead && CanUseVents && !hasBeenRepaired; },
+                () => { return !PlayerControl.LocalPlayer.Data.IsDead && VentPermission!=VentPermission.CanNotUse && !hasBeenRepaired; },
                 () => {
                     return Helpers.SabotageIsActive() && PlayerControl.LocalPlayer.CanMove;
 
                 },
                 () => { repairButton.Timer = 0; },
                 getRepairButtonSprite(),
-                new Vector3(-1.8f, -0.06f, 0),
+                new Vector3(0f, 1f, 0),
                 __instance,
                 KeyCode.F
             );
@@ -229,6 +237,10 @@ namespace Nebula.Roles.CrewmateRoles
         {
             maxScrewsOption = CreateOption(Color.white, "maxScrews", 5f, 0f, 7f, 1f);
             sealCoolDownOption = CreateOption(Color.white, "sealCoolDown", 5f, 0f, 40f, 2.5f);
+            ventCoolDownOption = CreateOption(Color.white, "ventCoolDown", 20f, 5f, 60f, 2.5f);
+            ventCoolDownOption.suffix = "second";
+            ventDurationOption = CreateOption(Color.white, "ventDuration", 10f, 5f, 60f, 2.5f);
+            ventDurationOption.suffix = "second";
         }
 
         public override void OnRoleRelationSetting()
@@ -241,7 +253,7 @@ namespace Nebula.Roles.CrewmateRoles
         public Navvy()
             : base("Navvy", "navvy", Color, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                  Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Crewmate.crewmateEndSet,
-                 false, false, false, false, false)
+                 false, VentPermission.CanNotUse, false, false, false)
         {
             sealButton = null;
 

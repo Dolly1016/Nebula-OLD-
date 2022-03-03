@@ -142,7 +142,7 @@ namespace Nebula.Roles.CrewmateRoles
         public Mayor()
             : base("Mayor", "mayor", Color, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                  Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Crewmate.crewmateEndSet,
-                 false, false, false, false, false)
+                 false, VentPermission.CanNotUse, false, false, false)
         {
             votesId = Game.GameData.RegisterRoleDataId("mayor.votes");
         }

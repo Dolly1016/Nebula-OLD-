@@ -125,7 +125,7 @@ namespace Nebula.Roles.CrewmateRoles
         public Provocateur()
             : base("Provocateur", "provocateur", Color, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                  Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Crewmate.crewmateEndSet,
-                 false, false, false, false, false)
+                 false, VentPermission.CanNotUse, false, false, false)
         {
         }
     }

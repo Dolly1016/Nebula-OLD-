@@ -99,7 +99,7 @@ namespace Nebula.Roles.ImpostorRoles
         public Camouflager()
                 : base("Camouflager", "camouflager", Palette.ImpostorRed, RoleCategory.Impostor, Side.Impostor, Side.Impostor,
                      Impostor.impostorSideSet, Impostor.impostorSideSet, Impostor.impostorEndSet,
-                     true, true, true, true, true)
+                     true, VentPermission.CanUseUnlimittedVent, true, true, true)
         {
             camouflageButton = null;
         }

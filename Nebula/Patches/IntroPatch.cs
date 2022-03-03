@@ -85,6 +85,7 @@ namespace Nebula.Patches
                 role.ButtonInitialize(HudManagerStartPatch.Manager);
                 role.ButtonActivate();
             });
+            Game.GameData.data.myData.VentCoolDownTimer = PlayerControl.LocalPlayer.GetModData().role.VentCoolDownMaxTimer;
 
             if (AmongUsClient.Instance.AmHost)
             {

@@ -111,7 +111,7 @@ namespace Nebula.Roles.CrewmateRoles
         public Sheriff()
             : base("Sheriff", "sheriff", Color, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                  Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Crewmate.crewmateEndSet,
-                 false, false, false, false, false)
+                 false, VentPermission.CanNotUse, false, false, false)
         {
             killButton = null;
         }

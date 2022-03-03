@@ -200,7 +200,7 @@ namespace Nebula.Patches
             if (MeetingHud.Instance != null) return;
             if (Game.GameData.data.myData.getGlobalData().role.side == Roles.Side.Impostor)
             {
-                if (Game.GameData.data.myData.getGlobalData().role.HideKillButtonEvenImpostor)
+                if (Game.GameData.data.myData.getGlobalData().role.HideKillButtonEvenImpostor || !Helpers.ShowButtons)
                 {
                     __instance.KillButton.Hide();
                 }
@@ -217,6 +217,7 @@ namespace Nebula.Patches
 
         public static void Postfix(HudManager __instance)
         {
+            if (AmongUsClient.Instance == null) return;
             if (AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Started) return;
             if (!Helpers.HasModData(PlayerControl.LocalPlayer.PlayerId)) return;
 
@@ -231,7 +232,7 @@ namespace Nebula.Patches
             CustomButton.HudUpdate();
 
             Helpers.RoleAction(PlayerControl.LocalPlayer, (role) => { role.MyUpdate(); });
-            if (!PlayerControl.LocalPlayer.Data.Role.IsImpostor && PlayerControl.LocalPlayer.GetModData().role.CanUseVents)
+            if (!PlayerControl.LocalPlayer.Data.Role.IsImpostor && PlayerControl.LocalPlayer.GetModData().role.VentPermission!=Roles.VentPermission.CanNotUse)
             {
                 if (Input.GetKeyDown(KeyCode.V))
                 HudManagerStartPatch.Manager.ImpostorVentButton.DoClick();
@@ -260,7 +261,7 @@ namespace Nebula.Patches
                 UpdateImpostorKillButton(__instance);
             }
 
-            if (PlayerControl.LocalPlayer.GetModData().role.CanUseVents)
+            if (PlayerControl.LocalPlayer.GetModData().role.VentPermission!=Roles.VentPermission.CanNotUse)
             {
                 //ベントの色の設定
                 Color ventColor;

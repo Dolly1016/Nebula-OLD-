@@ -21,7 +21,7 @@ namespace Nebula.Roles.CrewmateRoles
         public Crewmate()
                 : base("Crewmate", "crewmate", Palette.CrewmateBlue, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                      crewmateSideSet, crewmateSideSet, crewmateEndSet,
-                     false,false, false, false, false)
+                     false, VentPermission.CanNotUse, false, false, false)
         {
             IsHideRole = true;
             ValidGamemode = Module.CustomGameMode.Standard;

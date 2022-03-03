@@ -251,12 +251,9 @@ namespace Nebula
         {
             foreach (PlayerControl player in PlayerControl.AllPlayerControls)
             {
-                if (player.PlayerId != playerId)
-                {
-                    player.RemoveInfected();
-                    player.MurderPlayer(player);
-                    player.Data.IsDead = true;
-                }
+                player.RemoveInfected();
+                player.MurderPlayer(player);
+                player.Data.IsDead = true;
             }
         }
 
@@ -386,11 +383,11 @@ namespace Nebula
             {
                 player.Exiled();
 
-                player.GetModData().role.OnDied(playerId);
+                Helpers.RoleAction(player.PlayerId, (role) => role.OnDied(playerId));
 
                 if (player.PlayerId == PlayerControl.LocalPlayer.PlayerId)
                 {
-                    player.GetModData().role.OnDied();
+                    Helpers.RoleAction(player.PlayerId, (role) => role.OnDied());
 
                     Events.Schedule.RegisterPostMeetingAction(() =>
                     {
@@ -529,6 +526,7 @@ namespace Nebula
                 data.role.Initialize(player);
                 data.role.ButtonInitialize(Patches.HudManagerStartPatch.Manager);
                 data.role.ButtonActivate();
+                Game.GameData.data.myData.VentCoolDownTimer = data.role.VentCoolDownMaxTimer;
             }
         }
 

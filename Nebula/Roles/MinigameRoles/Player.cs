@@ -30,11 +30,11 @@ namespace Nebula.Roles.MinigameRoles
         public Player()
                 : base("Player", "player", Palette.CrewmateBlue, RoleCategory.Crewmate, Side.GamePlayer, Side.GamePlayer,
                      minigameSideSet, minigameSideSet, minigameEndSet,
-                     false, false, false, false, false)
+                     false, VentPermission.CanNotUse, false, false, false)
         {
             IsHideRole = true;
             ValidGamemode = Module.CustomGameMode.Minigame;
-            CanCallEmergencyMeeting = true;
+            CanCallEmergencyMeeting = false;
         }
     }
 }

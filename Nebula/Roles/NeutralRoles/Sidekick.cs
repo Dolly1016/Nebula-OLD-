@@ -97,7 +97,8 @@ namespace Nebula.Roles.NeutralRoles
 
         public override void GlobalInitialize(PlayerControl __instance)
         {
-            CanMoveInVents = CanUseVents = Jackal.SidekickCanUseVentsOption.getBool();
+            CanMoveInVents = Jackal.SidekickCanUseVentsOption.getBool();
+            VentPermission = Jackal.SidekickCanUseVentsOption.getBool() ? VentPermission.CanUseUnlimittedVent : VentPermission.CanNotUse;
         }
 
         public override void EditDisplayNameColor(byte playerId, ref Color displayColor)
@@ -124,7 +125,7 @@ namespace Nebula.Roles.NeutralRoles
             : base("Sidekick", "sidekick", Jackal.Color, RoleCategory.Neutral, Side.Jackal, Side.Jackal,
                  new HashSet<Side>() { Side.Jackal }, new HashSet<Side>() { Side.Jackal },
                  new HashSet<Patches.EndCondition>() { Patches.EndCondition.JackalWin },
-                 false, false, true, true, true)
+                 false, VentPermission.CanNotUse, true, true, true)
         {
             killButton = null;
             IsHideRole = true;

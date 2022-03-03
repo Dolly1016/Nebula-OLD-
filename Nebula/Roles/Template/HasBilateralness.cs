@@ -67,11 +67,57 @@ namespace Nebula.Roles.Template
             definitiveAssignmentOption=CreateOption(Color.white, "definitiveAssignment", false);
         }
 
+        public override void SpawnableTest(ref Dictionary<Role, int> DefinitiveRoles, ref HashSet<Role> SpawnableRoles)
+        {
+            if (RoleChanceOption.getSelection() == 0) return;
+            if (RoleCountOption.getFloat() == 0f) return;
+
+            if (definitiveAssignmentOption.getBool())
+            {
+                if (RoleChanceOption.getSelection() == 10f)
+                {
+                    int countF = 0, countS = 0;
+                    foreach (var role in GetComplexAllocations())
+                    {
+                        if (role.role == FirstRole)
+                            countF++;
+                        else
+                            countS++;
+                    }
+                    if(countF!=0)
+                        DefinitiveRoles[FirstRole]=countF;
+                    if (countS != 0)
+                        DefinitiveRoles[SecondaryRole] = countS;
+                }
+                else
+                    foreach (var role in GetComplexAllocations())
+                        SpawnableRoles.Add(role.role);
+            }
+            else
+            {
+                float chance = chanceToSpawnAsSecondarySide.getSelection();
+                if (chance != 10f)
+                {
+                    if (RoleChanceOption.getSelection() == 10f)
+                        DefinitiveRoles[FirstRole] = 0;
+                    else
+                        SpawnableRoles.Add(FirstRole);
+                }
+                if (chance != 0f)
+                {
+                    if (RoleChanceOption.getSelection() == 10f)
+                        DefinitiveRoles[SecondaryRole] = 0;
+                    else
+                        SpawnableRoles.Add(SecondaryRole);
+                }
+            }
+        }
+
         public HasBilateralness(string name, string localizeName, Color color) :
             base(name, localizeName, color, RoleCategory.Complex,
                 Side.Crewmate, Side.Crewmate, new HashSet<Side>(), new HashSet<Side>(),
                 new HashSet<Patches.EndCondition>(),
-                false, false, false, false, false)
+                false, VentPermission.CanNotUse, false, false, false)
         {
         }
     }
@@ -85,7 +131,7 @@ namespace Nebula.Roles.Template
         protected BilateralnessRole(string name, string localizeName, Color color, RoleCategory category,
             Side side, Side introMainDisplaySide, HashSet<Side> introDisplaySides, HashSet<Side> introInfluenceSides,
             HashSet<Patches.EndCondition> winReasons,
-            bool hasFakeTask, bool canUseVents, bool canMoveInVents,
+            bool hasFakeTask, VentPermission canUseVents, bool canMoveInVents,
             bool ignoreBlackout, bool useImpostorLightRadius, Func<HasBilateralness> bilateralness,bool isSecondary) :
             base(name, localizeName, color, category,
                 side, introMainDisplaySide, introDisplaySides, introInfluenceSides,
@@ -117,6 +163,11 @@ namespace Nebula.Roles.Template
             }
 
             return true;
+        }
+
+        public override void SpawnableTest(ref Dictionary<Role,int> DefinitiveRoles, ref HashSet<Role> SpawnableRoles)
+        {
+            
         }
     }
 }

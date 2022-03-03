@@ -188,7 +188,7 @@ namespace Nebula.Patches
 
             foreach (PlayerControl p in PlayerControl.AllPlayerControls)
             {
-                if (p == PlayerControl.LocalPlayer || Game.GameData.data.myData.CanSeeEveryoneInfo)
+                if (p == PlayerControl.LocalPlayer || p.GetModData().RoleInfo!="" || Game.GameData.data.myData.CanSeeEveryoneInfo)
                 {
                     Transform playerInfoTransform = p.nameText.transform.parent.FindChild("Info");
                     TMPro.TextMeshPro playerInfo = playerInfoTransform != null ? playerInfoTransform.GetComponent<TMPro.TextMeshPro>() : null;
@@ -221,14 +221,22 @@ namespace Nebula.Patches
                     }
 
                     var (tasksCompleted, tasksTotal) = TasksHandler.taskInfo(p.Data);
-                    string roleNames = Helpers.cs(p.GetModData().role.Color, Language.Language.GetString("role." + p.GetModData().role.LocalizeName + ".name"));
+                    string roleNames;
+
+                    if (Game.GameData.data.myData.CanSeeEveryoneInfo || p.GetModData().RoleInfo == "")
+                        roleNames = Helpers.cs(p.GetModData().role.Color, Language.Language.GetString("role." + p.GetModData().role.LocalizeName + ".name"));
+                    else
+                        roleNames = p.GetModData().RoleInfo;
 
                     var completedStr = commsActive ? "?" : tasksCompleted.ToString();
-                    string taskInfo;
-                    if (p.GetModData().role.HasFakeTask)
-                        taskInfo = tasksTotal > 0 ? $"<color=#868686FF>({completedStr}/{tasksTotal})</color>" : "";
-                    else
-                        taskInfo = tasksTotal > 0 ? $"<color=#FAD934FF>({completedStr}/{tasksTotal})</color>" : "";
+                    string taskInfo="";
+                    if (p == PlayerControl.LocalPlayer || Game.GameData.data.myData.CanSeeEveryoneInfo)
+                    {
+                        if (p.GetModData().role.HasFakeTask)
+                            taskInfo = tasksTotal > 0 ? $"<color=#868686FF>({completedStr}/{tasksTotal})</color>" : "";
+                        else
+                            taskInfo = tasksTotal > 0 ? $"<color=#FAD934FF>({completedStr}/{tasksTotal})</color>" : "";
+                    }
 
                     string playerInfoText = "";
                     string meetingInfoText = "";

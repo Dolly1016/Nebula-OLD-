@@ -26,7 +26,8 @@ namespace Nebula.Roles.CrewmateRoles
 
         public override void GlobalInitialize(PlayerControl __instance)
         {
-            CanMoveInVents = CanUseVents = CanUseVentsOption.getBool();
+            CanMoveInVents = CanUseVentsOption.getBool();
+            VentPermission = CanUseVentsOption.getBool() ? VentPermission.CanUseUnlimittedVent : VentPermission.CanNotUse;
             canInvokeSabotage = CanInvokeSabotageOption.getBool();
             UseImpostorLightRadius = HasImpostorVisionOption.getBool();
         }
@@ -34,7 +35,7 @@ namespace Nebula.Roles.CrewmateRoles
         public Madmate()
                 : base("Madmate", "madmate", Palette.ImpostorRed, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                      Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, ImpostorRoles.Impostor.impostorEndSet,
-                     true, true, true, false, false)
+                     true, VentPermission.CanUseUnlimittedVent, true, false, false)
         {
             
         }

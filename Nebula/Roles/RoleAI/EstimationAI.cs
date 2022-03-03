@@ -25,7 +25,9 @@ namespace Nebula.Roles.RoleAI
         public EstimationAI()
         {
             EstimateMap = new Dictionary<Role, float>();
-            foreach (Role role in Roles.AllRoles) EstimateMap[role] = 0f;
+            foreach (Role role in Roles.AllRoles) 
+                if(role.category!=RoleCategory.Complex)
+                    EstimateMap[role] = 0f;
             
             DivEstimateMap = new Dictionary<byte, Dictionary<Role, float>>();
             foreach(var player in PlayerControl.AllPlayerControls)
@@ -41,6 +43,33 @@ namespace Nebula.Roles.RoleAI
             MultipleEstimates = new HashSet<Role[]>();
         }
 
+        private void InitialEliminate(RoleCategory category,ref Dictionary<Role, int> DefinitiveRoles,ref HashSet<Role> SpawnableRoles)
+        {
+            int count = 0;
+            foreach(var entry in DefinitiveRoles)
+            {
+                if (entry.Key.category == category)
+                    count += entry.Value;
+            }
+
+            HashSet<Role> keySet = new HashSet<Role>(EstimateMap.Keys);
+            bool eliminateFlag = false;
+            foreach (Role key in keySet)
+            {
+                if (key.category != category) continue;
+
+                eliminateFlag = false;
+
+                if ((!DefinitiveRoles.ContainsKey(key)) && (!SpawnableRoles.Contains(key)))
+                    eliminateFlag = true;
+                else if (CountEstimateMap[category] <= count && (!DefinitiveRoles.ContainsKey(key)))
+                    eliminateFlag = true;
+            
+                if(eliminateFlag)
+                    EstimateMap[key] = -1f;
+            }
+        }
+
         /// <summary>
         /// 出現しえない役職を排除する
         /// </summary>
@@ -51,7 +80,7 @@ namespace Nebula.Roles.RoleAI
                 if (CountEstimateMap.ContainsKey(player.Value.role.category))
                     CountEstimateMap[player.Value.role.category]++;
 
-            //素インポスター、素クルーメイトが存在するかどうか調べる
+            //配役人数の都合で素インポスター、素クルーメイトが存在するかどうか調べる
             if (CountEstimateMap[RoleCategory.Impostor] > (int)CustomOptionHolder.impostorRolesCountMax.getFloat())
             {
                 EstimateMap[Roles.Impostor] = 1f;
@@ -62,12 +91,16 @@ namespace Nebula.Roles.RoleAI
                 EstimateMap[Roles.Crewmate] = 1f;
             }
 
-            //出現しえない場合、排除
+            Dictionary<Role,int> DefinitiveRoles = new Dictionary<Role,int>();
+            HashSet<Role> SpawnableRoles = new HashSet<Role>();
             foreach (Role role in Roles.AllRoles)
             {
-                if (EstimateMap.ContainsKey(role) &&!role.IsSpawnable() && !(EstimateMap[role]>0))
-                    EstimateMap[role] = -100f;
+                role.SpawnableTest(ref DefinitiveRoles,ref SpawnableRoles);
             }
+
+            InitialEliminate(RoleCategory.Crewmate, ref DefinitiveRoles, ref SpawnableRoles);
+            InitialEliminate(RoleCategory.Impostor,ref DefinitiveRoles,ref SpawnableRoles);
+            InitialEliminate(RoleCategory.Neutral, ref DefinitiveRoles, ref SpawnableRoles);
         }
 
         public float GetRoleProbability(Role role)

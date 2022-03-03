@@ -49,6 +49,12 @@ namespace Nebula.Roles.ComplexRoles
             SecondaryRole = Roles.EvilGuesser;
         }
 
+        public override void SpawnableTest(ref Dictionary<Role, int> DefinitiveRoles, ref HashSet<Role> SpawnableRoles)
+        {
+            if (secondoryRoleOption.getBool()) return;
+            base.SpawnableTest(ref DefinitiveRoles, ref SpawnableRoles);
+        }
+
         public FGuesser()
                 : base("Guesser", "guesser", Color)
                      
@@ -198,7 +204,8 @@ namespace Nebula.Roles.ComplexRoles
                      isImpostor ? ImpostorRoles.Impostor.impostorSideSet : CrewmateRoles.Crewmate.crewmateSideSet,
                      isImpostor ? ImpostorRoles.Impostor.impostorSideSet : CrewmateRoles.Crewmate.crewmateSideSet,
                      isImpostor ? ImpostorRoles.Impostor.impostorEndSet : CrewmateRoles.Crewmate.crewmateEndSet,
-                     false, isImpostor, isImpostor, isImpostor, isImpostor,()=> { return Roles.F_Guesser; },isImpostor)
+                     false, isImpostor ? VentPermission.CanUseUnlimittedVent : VentPermission.CanNotUse,
+                     isImpostor, isImpostor, isImpostor,()=> { return Roles.F_Guesser; },isImpostor)
         {
             IsGuessableRole = false;
             IsHideRole = true;

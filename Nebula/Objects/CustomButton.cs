@@ -156,15 +156,18 @@ namespace Nebula.Objects
 
         public void setActive(bool isActive)
         {
-            if (isActive && !hideFlag)
+            if (actionButton)
             {
-                actionButton.gameObject.SetActive(true);
-                actionButton.graphic.enabled = true;
-            }
-            else
-            {
-                actionButton.gameObject.SetActive(false);
-                actionButton.graphic.enabled = false;
+                if (isActive && !hideFlag)
+                {
+                    actionButton.gameObject.SetActive(true);
+                    actionButton.graphic.enabled = true;
+                }
+                else
+                {
+                    actionButton.gameObject.SetActive(false);
+                    actionButton.graphic.enabled = false;
+                }
             }
             this.activeFlag = isActive;
         }
@@ -186,12 +189,29 @@ namespace Nebula.Objects
 
         private void Update()
         {
+            if (Timer >= 0)
+            {
+                if (HasEffect && isEffectActive)
+                    Timer -= Time.deltaTime;
+                else if (Helpers.ProceedTimer)
+                    Timer -= Time.deltaTime;
+            }
+
+            if (Timer <= 0 && HasEffect && isEffectActive)
+            {
+                isEffectActive = false;
+                actionButton.cooldownTimerText.color = Palette.EnabledColor;
+                Timer = MaxTimer;
+                OnEffectEnds();
+            }
+
             if (PlayerControl.LocalPlayer.Data == null || !Helpers.ShowButtons || !HasButton())
             {
                 temporaryHide(true);
                 return;
             }
             temporaryHide(false);
+
 
             if (hideFlag) return;
 
@@ -218,22 +238,6 @@ namespace Nebula.Objects
             {
                 actionButton.graphic.color = actionButton.buttonLabelText.color = Palette.DisabledClear;
                 actionButton.graphic.material.SetFloat("_Desat", 1f);
-            }
-
-            if (Timer >= 0)
-            {
-                if (HasEffect && isEffectActive)
-                    Timer -= Time.deltaTime;
-                else if (!PlayerControl.LocalPlayer.inVent && PlayerControl.LocalPlayer.moveable)
-                    Timer -= Time.deltaTime;
-            }
-
-            if (Timer <= 0 && HasEffect && isEffectActive)
-            {
-                isEffectActive = false;
-                actionButton.cooldownTimerText.color = Palette.EnabledColor;
-                Timer = MaxTimer;
-                OnEffectEnds();
             }
 
             actionButton.SetCoolDown(Timer, (HasEffect && isEffectActive) ? EffectDuration : MaxTimer);

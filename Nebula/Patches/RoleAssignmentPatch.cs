@@ -88,10 +88,13 @@ namespace Nebula.Patches
 
                     if (role.RoleChanceOption.getSelection() < 10)
                     {
-                        //ランダムロール
-                        for (int i = 0; i < roleCount; i++)
+                        if ((int)role.RoleChanceOption.getSelection() > 0)
                         {
-                            secondaryRoles.Add(new RoleAllocation(role, (int)role.RoleChanceOption.getSelection()));
+                            //ランダムロール
+                            for (int i = 0; i < roleCount; i++)
+                            {
+                                secondaryRoles.Add(new RoleAllocation(role, (int)role.RoleChanceOption.getSelection()));
+                            }
                         }
                     }
                     else
@@ -199,10 +202,6 @@ namespace Nebula.Patches
 
             min = (int)CustomOptionHolder.neutralRolesCountMin.getFloat();
             max = (int)CustomOptionHolder.neutralRolesCountMax.getFloat();
-            if (crewmates - max < impostors + 1)
-            {
-                max = crewmates - impostors - 1;
-            }
             neutralData = new CategoryData(min, max, RoleCategory.Neutral);
 
             //ComplexRoleの割り当て

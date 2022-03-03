@@ -65,11 +65,11 @@ namespace Nebula.Roles.MinigameRoles
         public Hunter()
                 : base("Hunter", "hunter", Palette.ImpostorRed, RoleCategory.Crewmate, Side.GamePlayer, Side.GamePlayer,
                      Player.minigameSideSet, Player.minigameSideSet, new HashSet<EndCondition>() { EndCondition.MinigameHunterWin },
-                     true, false, false, false, true)
+                     true, VentPermission.CanNotUse, false, false, true)
         {
             IsHideRole = true;
             ValidGamemode = Module.CustomGameMode.Minigame;
-            CanCallEmergencyMeeting = true;
+            CanCallEmergencyMeeting = false;
 
             arrestButton = null;
         }

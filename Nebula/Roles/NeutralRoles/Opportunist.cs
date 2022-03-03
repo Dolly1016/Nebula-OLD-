@@ -16,14 +16,16 @@ namespace Nebula.Roles.NeutralRoles
         static public Color Color = new Color(106f / 255f, 252f / 255f, 45f / 255f);
 
 
-        private Module.CustomOption cutTasksOption;
         private Module.CustomOption canUseVentsOption;
+        private Module.CustomOption ventCoolDownOption;
+        private Module.CustomOption ventDurationOption;
 
         public override void GlobalInitialize(PlayerControl __instance)
         {
             base.GlobalInitialize(__instance);
 
-            CanMoveInVents = CanUseVents = canUseVentsOption.getBool();
+            CanMoveInVents = canUseVentsOption.getBool();
+            VentPermission = canUseVentsOption.getBool() ? VentPermission.CanUseLimittedVent : VentPermission.CanNotUse;
         }
 
         public override void LoadOptionData()
@@ -31,8 +33,19 @@ namespace Nebula.Roles.NeutralRoles
             base.LoadOptionData();
 
             canUseVentsOption = CreateOption(Color.white, "canUseVents", true);
+            ventCoolDownOption = CreateOption(Color.white, "ventCoolDown", 20f, 5f, 60f, 2.5f);
+            ventCoolDownOption.suffix = "second";
+            ventCoolDownOption.AddPrerequisite(canUseVentsOption);
+            ventDurationOption = CreateOption(Color.white, "ventDuration", 10f, 5f, 60f, 2.5f);
+            ventDurationOption.suffix = "second";
+            ventDurationOption.AddPrerequisite(canUseVentsOption);
         }
 
+        public override void Initialize(PlayerControl __instance)
+        {
+            VentCoolDownMaxTimer = ventCoolDownOption.getFloat();
+            VentDurationMaxTimer = ventDurationOption.getFloat();
+        }
         public override bool CheckWin(PlayerControl player, EndCondition condition)
         {
             if (player.Data.IsDead) return false;
@@ -55,7 +68,7 @@ namespace Nebula.Roles.NeutralRoles
             : base("Opportunist", "opportunist", Color, RoleCategory.Neutral, Side.Opportunist, Side.Opportunist,
                  new HashSet<Side>() { Side.Opportunist }, new HashSet<Side>() { Side.Opportunist },
                  new HashSet<Patches.EndCondition>(),
-                 true, true, true, false, false)
+                 true, VentPermission.CanUseLimittedVent, true, false, false)
         {
             FakeTaskIsExecutable = true;
             VentColor = Color;

@@ -70,6 +70,7 @@ namespace Nebula.Roles
         public static ExtraRoles.Drunk Drunk = new ExtraRoles.Drunk();
         public static ExtraRoles.Lover Lover = new ExtraRoles.Lover();
         public static ExtraRoles.Trilemma Trilemma = new ExtraRoles.Trilemma();
+        public static MetaRoles.MetaRole MetaRole = new MetaRoles.MetaRole();
 
 
         //全てのロールはこの中に含まれている必要があります
@@ -89,7 +90,7 @@ namespace Nebula.Roles
 
         public static List<ExtraRole> AllExtraRoles = new List<ExtraRole>()
         {
-            SecondaryGuesser,SecondarySidekick,Drunk,Lover,Trilemma
+            SecondaryGuesser,SecondarySidekick,Drunk,Lover,Trilemma,MetaRole
         };
 
         public static void ResetWinTrigger()

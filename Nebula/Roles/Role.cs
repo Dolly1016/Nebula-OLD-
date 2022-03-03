@@ -19,6 +19,13 @@ namespace Nebula.Roles
         Complex
     }
 
+    public enum VentPermission
+    {
+        CanUseUnlimittedVent,
+        CanUseLimittedVent,
+        CanNotUse
+    }
+
     public abstract class Role : Assignable
     {
         public byte id { get; private set; }
@@ -56,9 +63,11 @@ namespace Nebula.Roles
         }
 
         public Color VentColor { get; set; }
-        public bool CanUseVents { get; set; }
-        public bool canInvokeSabotage { get; set; }
+        public VentPermission VentPermission { get; set; }
+        public float VentDurationMaxTimer { get; set; }
+        public float VentCoolDownMaxTimer { get; set; }
         public bool CanMoveInVents { get; set; }
+        public bool canInvokeSabotage { get; set; }
         /// <summary>
         /// 停電が効かない場合true
         /// </summary>
@@ -129,12 +138,25 @@ namespace Nebula.Roles
         public virtual bool IsSpawnable()
         {
             if (category == RoleCategory.Complex) return false;
-            if (IsHideRole) return false;
 
-            if (RoleChanceOption.getSelection() == 0) return false;
-            if (!FixedRoleCount && RoleCountOption.getFloat() == 0f) return false;
+            try
+            {
+                if (RoleChanceOption.getSelection() == 0) return false;
+                if (!FixedRoleCount && RoleCountOption.getFloat() == 0f) return false;
+            }
+            catch (Exception e) { return false; }
 
             return true;
+        }
+
+        public virtual void SpawnableTest(ref Dictionary<Role,int> DefinitiveRoles ,ref HashSet<Role> SpawnableRoles)
+        {
+            if (!IsSpawnable()) return;
+
+            if (RoleChanceOption.getSelection() == 10f)
+                DefinitiveRoles.Add(this, (int)RoleCountOption.getFloat());
+            else
+                SpawnableRoles.Add(this);
         }
 
         //Complexなロールカテゴリーについてのみ呼ばれます。
@@ -146,7 +168,7 @@ namespace Nebula.Roles
         protected Role(string name, string localizeName, Color color, RoleCategory category,
             Side side, Side introMainDisplaySide, HashSet<Side> introDisplaySides, HashSet<Side> introInfluenceSides,
             HashSet<Patches.EndCondition> winReasons,
-            bool hasFakeTask, bool canUseVents, bool canMoveInVents,
+            bool hasFakeTask, VentPermission canUseVents, bool canMoveInVents,
             bool ignoreBlackout, bool useImpostorLightRadius):
             base(name,localizeName,color)
         {
@@ -160,7 +182,7 @@ namespace Nebula.Roles
             this.introDisplaySides = introDisplaySides;
             this.introInfluenceSides = introInfluenceSides;
 
-            this.CanUseVents = canUseVents;
+            this.VentPermission = canUseVents;
             this.CanMoveInVents = canMoveInVents;
             this.IgnoreBlackout = ignoreBlackout;
 
@@ -185,6 +207,9 @@ namespace Nebula.Roles
             this.canInvokeSabotage = (category == RoleCategory.Impostor);
 
             this.RelatedRoles = new HashSet<Role>();
+
+            this.VentDurationMaxTimer = 10f;
+            this.VentCoolDownMaxTimer = 20f;
         }
 
         public static Role GetRoleById(byte id)

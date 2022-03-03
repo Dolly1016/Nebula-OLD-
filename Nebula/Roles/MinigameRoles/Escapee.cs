@@ -22,11 +22,11 @@ namespace Nebula.Roles.MinigameRoles
         public Escapee()
                 : base("Escapee", "escapee", Palette.CrewmateBlue, RoleCategory.Crewmate, Side.GamePlayer, Side.GamePlayer,
                      Player.minigameSideSet, Player.minigameSideSet, new HashSet<EndCondition>() { EndCondition.MinigamePlayersWin },
-                     false, false, false, false, false)
+                     false, VentPermission.CanNotUse, false, false, false)
         {
             IsHideRole = true;
             ValidGamemode = Module.CustomGameMode.Minigame;
-            CanCallEmergencyMeeting = true;
+            CanCallEmergencyMeeting = false;
         }
     }
 }

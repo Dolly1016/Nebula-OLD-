@@ -47,6 +47,12 @@ namespace Nebula.Roles.NeutralRoles
             SidekickTakeOverOriginalRoleOption = CreateOption(Color.white, "sidekickTakeOverOriginalRole", true);
             SidekickCanCreateSidekickOption = CreateOption(Color.white, "sidekickCanCreateSidekick", false);
             SidekickCanUseVentsOption = CreateOption(Color.white, "sidekickCanUseVents", false);
+
+            SidekickTakeOverOriginalRoleOption.AddPrerequisite(CanCreateSidekickOption);
+            SidekickCanKillOption.AddPrerequisite(SidekickTakeOverOriginalRoleOption);
+            SidekickKillCoolDownOption.AddPrerequisite(SidekickCanKillOption);
+            SidekickCanCreateSidekickOption.AddPrerequisite(CanCreateSidekickOption);
+            SidekickCanUseVentsOption.AddPrerequisite(SidekickTakeOverOriginalRoleOption);
         }
 
         public override void MyPlayerControlUpdate()
@@ -200,7 +206,7 @@ namespace Nebula.Roles.NeutralRoles
             : base("Jackal", "jackal", Color, RoleCategory.Neutral, Side.Jackal, Side.Jackal,
                  new HashSet<Side>() { Side.Jackal }, new HashSet<Side>() { Side.Jackal },
                  new HashSet<Patches.EndCondition>() { Patches.EndCondition.JackalWin },
-                 true, true, true, true, true)
+                 true, VentPermission.CanUseUnlimittedVent, true, true, true)
         {
             killButton = null;
             jackalDataId = Game.GameData.RegisterRoleDataId("jackal.identifier");

@@ -22,7 +22,7 @@ namespace Nebula.Roles.ParlourRoles
         public Gambler()
                 : base("Gambler", "gambler", Color, RoleCategory.Crewmate, Side.Gambler, Side.Gambler,
                      gamblerSideSet, gamblerSideSet, gamblerEndSet,
-                     false, false, false, false, false)
+                     false, VentPermission.CanNotUse, false, false, false)
         {
             ValidGamemode = Module.CustomGameMode.Parlour;
         }

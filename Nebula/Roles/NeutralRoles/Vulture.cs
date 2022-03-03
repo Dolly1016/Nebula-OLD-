@@ -18,12 +18,19 @@ namespace Nebula.Roles.NeutralRoles
         /* オプション */
         private Module.CustomOption eatOption;
         private Module.CustomOption eatCoolDownOption;
+        private Module.CustomOption ventCoolDownOption;
+        private Module.CustomOption ventDurationOption;
 
         public override void LoadOptionData()
         {
             eatOption = CreateOption(Color.white, "eatenCountNeeded", 3f, 1f, 5f, 1f);
             eatCoolDownOption = CreateOption(Color.white, "eatCoolDown", 10f, 5f, 40f, 2.5f);
+            ventCoolDownOption = CreateOption(Color.white, "ventCoolDown", 20f, 5f, 60f, 2.5f);
+            ventCoolDownOption.suffix = "second";
+            ventDurationOption = CreateOption(Color.white, "ventDuration", 10f, 5f, 60f, 2.5f);
+            ventDurationOption.suffix = "second";
         }
+
 
         public bool WinTrigger { get; set; } = false;
         public byte Winner { get; set; } = Byte.MaxValue;
@@ -170,6 +177,9 @@ namespace Nebula.Roles.NeutralRoles
         {
             Arrows = new Dictionary<byte, Arrow>();
             WinTrigger = false;
+
+            VentCoolDownMaxTimer = ventCoolDownOption.getFloat();
+            VentDurationMaxTimer = ventDurationOption.getFloat();
         }
 
         public override void GlobalInitialize(PlayerControl __instance)
@@ -192,7 +202,7 @@ namespace Nebula.Roles.NeutralRoles
             : base("Vulture", "vulture", Color, RoleCategory.Neutral, Side.Vulture, Side.Vulture,
                  new HashSet<Side>() { Side.Vulture }, new HashSet<Side>() { Side.Vulture },
                  new HashSet<Patches.EndCondition>() { Patches.EndCondition.VultureWin },
-                 true, true, true, true, true)
+                 true, VentPermission.CanUseLimittedVent, true, true, true)
         {
             eatButton = null;
 

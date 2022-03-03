@@ -14,6 +14,8 @@ namespace Nebula.Roles.ImpostorRoles
 {
     public class Reaper : Template.Draggable
     {
+        private Module.CustomOption ventCoolDownOption;
+        private Module.CustomOption ventDurationOption;
         private void ConnectVent(bool connect)
         {
             Dictionary<string, VentData> ventMap = Game.GameData.data.VentMap;
@@ -98,10 +100,20 @@ namespace Nebula.Roles.ImpostorRoles
             }
         }
 
+        public override void LoadOptionData()
+        {
+            ventCoolDownOption = CreateOption(Color.white, "ventCoolDown", 10f, 10f, 60f, 2.5f);
+            ventCoolDownOption.suffix = "second";
+            ventDurationOption = CreateOption(Color.white, "ventDuration", 10f, 10f, 60f, 2.5f);
+            ventDurationOption.suffix = "second";
+        }
+
         public override void Initialize(PlayerControl __instance)
         {
             base.Initialize(__instance);
             ConnectVent(true);
+            VentCoolDownMaxTimer = ventCoolDownOption.getFloat();
+            VentDurationMaxTimer = ventDurationOption.getFloat();
         }
 
         public override void FinalizeInGame(PlayerControl __instance)
@@ -118,7 +130,7 @@ namespace Nebula.Roles.ImpostorRoles
         public Reaper()
                 : base("Reaper", "reaper", Palette.ImpostorRed, RoleCategory.Impostor, Side.Impostor, Side.Impostor,
                      Impostor.impostorSideSet, Impostor.impostorSideSet, Impostor.impostorEndSet,
-                     true, true, true, true, true)
+                     true, VentPermission.CanUseLimittedVent, true, true, true)
         {
         }
     }

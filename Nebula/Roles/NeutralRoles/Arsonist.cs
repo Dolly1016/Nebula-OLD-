@@ -172,7 +172,7 @@ namespace Nebula.Roles.NeutralRoles
             : base("Arsonist", "arsonist", Color, RoleCategory.Neutral, Side.Arsonist, Side.Arsonist,
                  new HashSet<Side>() { Side.Arsonist }, new HashSet<Side>() { Side.Arsonist },
                  new HashSet<Patches.EndCondition>() { Patches.EndCondition.ArsonistWin },
-                 true, true, true, false, false)
+                 true, VentPermission.CanUseUnlimittedVent, true, false, false)
         {
             arsonistButton = null;
 

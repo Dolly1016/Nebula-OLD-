@@ -211,7 +211,7 @@ namespace Nebula.Roles.CrewmateRoles
             : base("Necromancer", "necromancer", Color, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                  CrewmateRoles.Crewmate.crewmateSideSet, CrewmateRoles.Crewmate.crewmateSideSet,
                  CrewmateRoles.Crewmate.crewmateEndSet,
-                 false, false, false, false, false)
+                 false, VentPermission.CanNotUse, false, false, false)
         {
             reviveArrow = null;
         }

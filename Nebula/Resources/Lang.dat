@@ -14,6 +14,7 @@
 "gamemode.minigame" : "Escape"
 "gamemode.parlour" : "Coming Soon!"
 "gamemode.investigators" : "Coming Soon!"
+"gamemode.freePlay" : "Free Play"
 
 "cosmic.package.innerslothHats" : "Innersloth Hats"
 
@@ -163,6 +164,8 @@
 "role.navvy.info" : "You can seal vents. If you seal vents as much as possible, you'll be able to use vents. \n\n - F : Seal the vent\n\n - V : Use the vent"
 "role.navvy.maxScrews" : "Max Screws Vents"
 "role.navvy.sealCoolDown" : "Seal Cool Down"
+"role.navvy.ventCoolDown" : "Vent Cool Down"
+"role.navvy.ventDuration" : "Vent Duration"
 
 "role.necromancer.name" : "Necromancer"
 "role.necromancer.description" : "Revive Phantoms"
@@ -229,7 +232,7 @@
 
 "role.oracle.name" : "Oracle"
 "role.oracle.description" : "Find Out What It Is"
-"role.oracle.info" : "You can divine other players. when you divine, you can see candidates of divined player's role. \n\n - F : Devine the player"
+"role.oracle.info" : "You can divine other players. \nwhen you divine, you can see candidates of divined player's role. \n\n - F : Devine the player"
 "role.oracle.message" : "%PLAYER% seems %ROLES%."
 "role.oracle.divineCoolDown" : "Divine Cool Down"
 "role.oracle.divineCoolDownAddition" : "Divine Cool Down Addition"
@@ -253,6 +256,7 @@
 "role.psychic.message.killerColor" : "My murder's color is %COLOR%."
 "role.psychic.message.killerRole" : "My murder's role is %ROLE%."
 "role.psychic.message.myRole" : "I am %MYROLE%."
+"role.psychic.message.losing" : "Boo! I'm a ghost."
 
 "role.pursuer.name" : "Pursuer"
 "role.pursuer.description" : "Find Dead Body"
@@ -276,8 +280,10 @@
 
 "role.spy.name" : "Spy"
 "role.spy.description" : "Confuse the <color=#ff1919ff>Impostors</color>"
-"role.spy.info" : "You are the member of crewmates, but you seems an impostor to other impostors. \n\n - V : Use vents but cannot move in a vent"
+"role.spy.info" : "You are the member of crewmates, \nbut you seems an impostor to other impostors. \n\n - V : Use vents but cannot move in a vent"
 "role.spy.impostorCanKillImpostor" : "Impostors Can Kill Everyone"
+"role.spy.ventCoolDown" : "Vent Cool Down"
+"role.spy.ventDuration" : "Vent Duration"
 
 "role.madmate.name" : "Madmate"
 "role.madmate.description" : "Assist the <color=#ff1919ff>Impostors</color>"
@@ -334,6 +340,8 @@
 "role.reaper.name" : "Reaper"
 "role.reaper.info" : "You can drag dead bodies, and all vents connect each other.\n\n - F : Drag and drop dead bodies"
 "role.reaper.description" : "Kill and Deceive the Crewmates"
+"role.reaper.ventCoolDown" : "Vent Cool Down"
+"role.reaper.ventDuration" : "Vent Duration"
 
 "role.sniper.name" : "Sniper"
 "role.sniper.description" : "Snipe and Shoot"
@@ -343,6 +351,9 @@
 "role.sniper.shotEffectiveRange" : "Shot Effective Range"
 "role.sniper.canKillImpostors" : "Can Kill Impostors"
 "role.sniper.soundEffectiveRange" : "Sound Effective Range"
+"role.sniper.showAimAssist" : "Show Aim Assist"
+"role.sniper.aimAssistDelay" : "Aim Assist Delay"
+"role.sniper.aimAssistDuration" : "Aim Assist Duration"
 
 "role.arsonist.name" : "Arsonist"
 "role.arsonist.description" : "Let Them Burn"
@@ -359,6 +370,8 @@
 "role.empiric.infectRange" : "Infect Range"
 "role.empiric.canInfectMyKiller" : "Can Infect My Killer"
 "role.empiric.coastingPhase" : "Coasting Phase After Meetings"
+"role.empiric.ventCoolDown" : "Vent Cool Down"
+"role.empiric.ventDuration" : "Vent Duration"
 
 "role.jackal.name" : "Jackal"
 "role.jackal.description" : "Kill all Crewmates and <color=#ff1919ff>Impostors</color> to Win"
@@ -376,6 +389,8 @@
 "role.jester.info" : "You have to voted out to win.\n\n - V : Use vents"
 "role.jester.canUseVents" : "Can Use Vents"
 "role.jester.canInvokeSabotage" : "Can Invoke Sabotage"
+"role.jester.ventCoolDown" : "Vent Cool Down"
+"role.jester.ventDuration" : "Vent Duration"
 
 "role.opportunist.name" : "Opportunist"
 "role.opportunist.description" : "Wait for Opportunity"
@@ -383,6 +398,8 @@
 "role.opportunist.exemptTasks" : "Cut Tasks"
 "role.opportunist.canUseVents" : "Can Use Vents"
 "role.opportunist.additionalEndText" : " <color=#ffffffff>with</color> <color=#6afc2dff>Opportunist</color>"
+"role.opportunist.ventCoolDown" : "Vent Cool Down"
+"role.opportunist.ventDuration" : "Vent Duration"
 
 "role.sidekick.name" : "Sidekick"
 "role.sidekick.info" : "You became Jackal when Jackal dies."
@@ -392,6 +409,8 @@
 "role.vulture.info" : "You have to eat dead bodies to win.\nYou can see the bodies' location.\n\n - F : Eat a dead body"
 "role.vulture.eatenCountNeeded" : "Count of Eaten Needed"
 "role.vulture.eatCoolDown" : "Eat Cool Down"
+"role.vulture.ventCoolDown" : "Vent Cool Down"
+"role.vulture.ventDuration" : "Vent Duration"
 
 "role.drunk.name" : "Drunk"
 "role.drunk.info" : "Your control is reversed."
@@ -411,7 +430,7 @@
 "role.lover.additionalEndText" : " <color=#ffffffff>with</color> <color=#fb02beff>Lovers</color>"
 
 "role.trilemma.name" : "Trilemma"
-"role.lover.info" : "You're the team of 3 players. When one of yours, others follow someone into death.\nWhen only the members of the team, your team will win."
+"role.trilemma.info" : "You're the team of 3 players. When one of yours, others follow someone into death.\nWhen only the members of the team, your team will win."
 
 "role.investigator.name" : "Investigator"
 "role.investigator.description" : "Find Out What It Is"
@@ -421,10 +440,14 @@
 
 "role.player.name" : "Player"
 "role.player.description" : "The Game Is About To Start"
+"role.player.info" : "You're game player."
 
 "role.escapee.name" : "Escapee"
 
 "role.hunter.name" : "Hunter"
+
+"role.metaRole.name" : "Free Play"
+"role.metaRole.info" : "You can measure the distance.\n\n - 1 : Set origin at the current position"
 
 "side.crewmate.name" : "Crewmate"
 "side.impostor.name" : "Impostor"

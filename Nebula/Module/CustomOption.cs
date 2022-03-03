@@ -19,6 +19,7 @@ namespace Nebula.Module
         Minigame = 0x02,
         Parlour = 0x04,
         Investigators = 0x08,
+        FreePlay = 0x10,
         All =int.MaxValue
     }
 
@@ -26,7 +27,8 @@ namespace Nebula.Module
     {
         static public List<CustomGameMode> AllGameModes = new List<CustomGameMode>()
         {
-            CustomGameMode.Standard,CustomGameMode.Minigame,CustomGameMode.Parlour,CustomGameMode.Investigators
+            CustomGameMode.Standard,CustomGameMode.Minigame,CustomGameMode.Parlour,CustomGameMode.Investigators,
+            CustomGameMode.FreePlay
         };
 
         static public CustomGameMode GetGameMode(int GameModeIndex)
@@ -91,8 +93,8 @@ namespace Nebula.Module
         public bool IsHidden(CustomGameMode gameMode)
         {
             return isHidden || (0 == (int)(gameMode & GameMode))
-                || prerequisiteOptions.Count > 0 && prerequisiteOptions.All((option) => { return !option.enabled; })
-                || prerequisiteOptionsInv.Count > 0 && prerequisiteOptionsInv.All((option) => { return option.enabled; });
+                || prerequisiteOptions.Count > 0 && prerequisiteOptions.Any((option) => { return !option.enabled || option.IsHidden(gameMode); })
+                || prerequisiteOptionsInv.Count > 0 && prerequisiteOptionsInv.Any((option) => { return option.enabled || option.IsHidden(gameMode); });
         }
 
         public bool IsHiddenOnDisplay(CustomGameMode gameMode)

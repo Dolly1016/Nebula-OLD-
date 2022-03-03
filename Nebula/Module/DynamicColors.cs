@@ -27,10 +27,13 @@ namespace Nebula.Module
             private ConfigEntry<float> EntryB;
             //ShadowType
             private ConfigEntry<byte> EntryS;
+            //Luminosity 
+            private ConfigEntry<float> EntryL;
             //ColorName
             private ConfigEntry<byte> EntryH;
             private ConfigEntry<byte> EntryD;
 
+            public Color OriginalColor { get; private set; }
             public Color Color { get; private set; }
             public Color ShadowColor { get; private set; }
 
@@ -40,6 +43,8 @@ namespace Nebula.Module
                 EntryG = NebulaPlugin.Instance.Config.Bind(saveCategory, "G", (float)0f);
                 EntryB = NebulaPlugin.Instance.Config.Bind(saveCategory, "B", (float)0f);
 
+                EntryL = NebulaPlugin.Instance.Config.Bind(saveCategory, "L", (float)1f);
+
                 //陰タイプ
                 EntryS = NebulaPlugin.Instance.Config.Bind(saveCategory, "S", (byte)0);
 
@@ -47,17 +52,20 @@ namespace Nebula.Module
                 EntryH = NebulaPlugin.Instance.Config.Bind(saveCategory, "H", (byte)0);
                 EntryD = NebulaPlugin.Instance.Config.Bind(saveCategory, "D", (byte)8);
 
-                Color = new Color(EntryR.Value,EntryG.Value,EntryB.Value,1f);
+                OriginalColor = new Color(EntryR.Value,EntryG.Value,EntryB.Value,1f);
+                Color = GetColor(OriginalColor, EntryL.Value);
                 ShadowColor = GetShadowColor(Color, EntryS.Value);
             }
 
-            public void SetColor(Color color,byte h,byte d,byte shadowType)
+            public void SetColor(Color color,byte h,byte d,byte shadowType,float luminosity)
             {
                 EntryR.Value = color.r;
                 EntryG.Value = color.g;
                 EntryB.Value = color.b;
 
                 EntryS.Value = shadowType;
+
+                EntryL.Value = luminosity;
 
                 if (h < 80)
                     EntryH.Value = (byte)(h % 64);
@@ -68,8 +76,9 @@ namespace Nebula.Module
                 else
                     EntryD.Value = 23;
 
-                Color = color;
-                ShadowColor= GetShadowColor(Color, EntryS.Value);
+                OriginalColor = color;
+                Color = GetColor(OriginalColor,EntryL.Value);
+                ShadowColor = GetShadowColor(Color, EntryS.Value);
             }
 
             public byte GetHue()
@@ -85,6 +94,11 @@ namespace Nebula.Module
             public byte GetShadowType()
             {
                 return EntryS.Value;
+            }
+
+            public float GetLuminosity()
+            {
+                return EntryL.Value;
             }
         }
 
@@ -240,6 +254,14 @@ namespace Nebula.Module
             return PaletteSprite;
         }
 
+        static private Sprite LPaletteSprite;
+        static private Sprite GetLPalleteSprite()
+        {
+            if (LPaletteSprite) return LPaletteSprite;
+            LPaletteSprite = Helpers.loadSpriteFromResources("Nebula.Resources.PaletteBrightness.png", 100f);
+            return LPaletteSprite;
+        }
+
         static private Sprite BaseButtonSprite;
         static private Sprite GetBaseButtonSprite()
         {
@@ -264,15 +286,42 @@ namespace Nebula.Module
             return SaveButtonSprite;
         }
 
+        static private Sprite ColorTargetSprite;
+        static private Sprite GetColorTargetSprite()
+        {
+            if (ColorTargetSprite) return ColorTargetSprite;
+            ColorTargetSprite = Helpers.loadSpriteFromResources("Nebula.Resources.TargetIcon.png", 140f);
+            return ColorTargetSprite;
+        }
+
+        static private Sprite LTargetSprite;
+        static private Sprite GetLTargetSprite()
+        {
+            if (LTargetSprite) return LTargetSprite;
+            LTargetSprite = Helpers.loadSpriteFromResources("Nebula.Resources.PaletteKnob.png", 100f);
+            return LTargetSprite;
+        }
+
         static private GameObject PaletteObject = null;
         static private SpriteRenderer PaletteRenderer = null;
         static private PassiveButton PalettePassiveButton = null;
         static private CircleCollider2D PaletteCollider = null;
 
+        static private GameObject LPaletteObject = null;
+        static private SpriteRenderer LPaletteRenderer = null;
+        static private PassiveButton LPalettePassiveButton = null;
+        static private BoxCollider2D LPaletteCollider = null;
+
         static private GameObject ChangeModeObject = null;
         static private SpriteRenderer ChangeModeRenderer = null;
         static private PassiveButton ChangeModePassiveButton = null;
         static private BoxCollider2D ChangeModeCollider = null;
+
+        static private GameObject ColorTargetObject = null;
+        static private SpriteRenderer ColorTargetRenderer = null;
+
+        static private GameObject LTargetObject = null;
+        static private SpriteRenderer LTargetRenderer = null;
 
         static private string ColorName;
 
@@ -282,12 +331,21 @@ namespace Nebula.Module
 
         static private bool ShowVanillaColorFlag=false;
 
+        static public Color GetColor(Color originalColor,float l)
+        {
+            originalColor = new Color(
+                originalColor.r > 1f ? 1f : originalColor.r,
+                originalColor.g > 1f ? 1f : originalColor.g,
+                originalColor.b > 1f ? 1f : originalColor.b);
+            return originalColor.RGBMultiplied(l * 0.5f + 0.5f);
+        }
+
         static public Color GetShadowColor(Color myColor,byte shadowType)
         {
             switch (shadowType)
             {
                 case 0:
-                    return myColor.RGBMultiplied(0.5f);
+                    return myColor.RGBMultiplied(0.6f);
                 case 1:
                     return myColor.RGBMultiplied(0.8f) * myColor * myColor * myColor;
                 case 8:
@@ -298,7 +356,7 @@ namespace Nebula.Module
                             return Palette.ShadowColors[32 + i];
                         }
                     }
-                    return myColor.RGBMultiplied(0.5f);
+                    return myColor.RGBMultiplied(0.6f);
             }
             return Color.black;
         }
@@ -337,7 +395,7 @@ namespace Nebula.Module
             for (int i = 0; i < VanillaColor.Length; i++)
             {
                 VanillaColor[i] = new CustomColor("VanillaColor"+i);
-                VanillaColor[i].SetColor(Palette.PlayerColors[i], 100, (byte)i, 8);
+                VanillaColor[i].SetColor(Palette.PlayerColors[i], 100, (byte)i, 8,1f);
             }
 
             for (int i = 0; i < SaveColor.Length; i++)
@@ -359,10 +417,10 @@ namespace Nebula.Module
             
         }
 
-        static public void SaveAndSetColor(Color color,byte h, byte d,byte shadowType,byte playerId)
+        static public void SaveAndSetColor(Color color,float l,byte h, byte d,byte shadowType,byte playerId)
         {
             if (h < 80) { h = (byte)(h % 64); }
-            MyColor.SetColor(color, h, d >= 24 ? (byte)23 : d, shadowType);
+            MyColor.SetColor(color, h, d >= 24 ? (byte)23 : d, shadowType,l);
 
             Palette.PlayerColors[playerId] = MyColor.Color;
             Palette.ShadowColors[playerId] = MyColor.ShadowColor;
@@ -376,7 +434,7 @@ namespace Nebula.Module
 
         static public void SaveCurrentColor(int ColorId)
         {
-            SaveColor[ColorId - 20].SetColor(MyColor.Color,MyColor.GetHue(),MyColor.GetDistance(),MyColor.GetShadowType());
+            SaveColor[ColorId - 20].SetColor(MyColor.OriginalColor,MyColor.GetHue(),MyColor.GetDistance(),MyColor.GetShadowType(),MyColor.GetLuminosity());
             Palette.PlayerColors[ColorId] = SaveColor[ColorId-20].Color;
             Palette.ShadowColors[ColorId] = SaveColor[ColorId - 20].ShadowColor;
         }
@@ -416,36 +474,40 @@ namespace Nebula.Module
             }
         }
 
-        private static void DetectColor(Color color,byte h,byte d,byte shadowType,bool setFlag)
+        private static void DetectColor(Color color,float l,byte h,byte d,byte shadowType,bool setFlag)
         {
             if (setFlag)
             {
                 if (PlayerControl.LocalPlayer != null)
                 {
-                    SaveAndSetColor(color, h, d, shadowType, PlayerControl.LocalPlayer.PlayerId);
+                    SaveAndSetColor(color, l, h, d, shadowType, PlayerControl.LocalPlayer.PlayerId);
                     PlayerControl.LocalPlayer.SetColor(PlayerControl.LocalPlayer.PlayerId);
                     RPCEventInvoker.SetMyColor();
                 }
                 else
                 {
-                    SaveAndSetColor(color, h, d, shadowType, SaveManager.BodyColor);
+                    SaveAndSetColor(color, l, h, d, shadowType, SaveManager.BodyColor);
                 }
             }
             else
             {
-                Palette.PlayerColors[15] = color;
-                Palette.ShadowColors[15] = GetShadowColor(color, MyColor.GetShadowType());
-
-                if (d < 24f)
+                var pos = Camera.current.ScreenToWorldPoint(Input.mousePosition);
+                if (PaletteCollider.OverlapPoint(pos))
                 {
-                    PlayerControl.SetPlayerMaterialColors(15, PlayerCustomizationMenu.Instance.PreviewArea.Body);
+                    Palette.PlayerColors[15] = GetColor(color, MyColor.GetLuminosity());
+                    Palette.ShadowColors[15] = GetShadowColor(Palette.PlayerColors[15], MyColor.GetShadowType());
                     PlayerCustomizationMenu.Instance.SetItemName(GetColorName(h, d));
                 }
-                else if (d < 26f)
+                else if (LPaletteCollider.OverlapPoint(pos))
                 {
-                    PlayerControl.SetPlayerMaterialColors(SaveManager.BodyColor, PlayerCustomizationMenu.Instance.PreviewArea.Body);
-                    PlayerCustomizationMenu.Instance.SetItemName(GetColorName());
+                    Palette.PlayerColors[15] = GetColor(MyColor.OriginalColor,l);
+                    Palette.ShadowColors[15] = GetShadowColor(Palette.PlayerColors[15], MyColor.GetShadowType());
                 }
+                else { return; }
+
+                PlayerControl.SetPlayerMaterialColors(15, PlayerCustomizationMenu.Instance.PreviewArea.Body);
+                
+                
             }
         }
 
@@ -468,12 +530,19 @@ namespace Nebula.Module
             {
                 float s = dis - 1.1f;
                 float sum = (color.r + color.g + color.b) / 3f;
-
-
-
                 color = new Color(sum, sum, sum) * s + color * (1 - s);
             }
-            DetectColor(color, (byte)((h * 64)%64), (byte)((dis / 2.1f) * 24), MyColor.GetShadowType(),setFlag);
+
+            pos = Camera.current.ScreenToWorldPoint(Input.mousePosition) - LPaletteObject.transform.position;
+            float l = pos.y / LPaletteCollider.size.y + 0.5f;
+
+            pos = Camera.current.ScreenToWorldPoint(Input.mousePosition);
+            if (PaletteCollider.OverlapPoint(pos))
+                DetectColor(color, MyColor.GetLuminosity(), (byte)((h * 64) % 64), (byte)((dis / 2.1f) * 24), MyColor.GetShadowType(), setFlag);
+            else if (LPaletteCollider.OverlapPoint(pos))
+                DetectColor(MyColor.OriginalColor, l, MyColor.GetHue(), MyColor.GetDistance(), MyColor.GetShadowType(), setFlag);
+            else
+                DetectColor(MyColor.OriginalColor, MyColor.GetLuminosity(), MyColor.GetHue(), MyColor.GetDistance(), MyColor.GetShadowType(), setFlag);
         }
 
         [HarmonyPatch(typeof(PlayerTab), nameof(PlayerTab.Update))]
@@ -504,14 +573,39 @@ namespace Nebula.Module
                     }
                 }
 
+                if (PaletteRenderer.color.r != MyColor.GetLuminosity() *0.5f + 0.5f)
+                {
+                    float l = MyColor.GetLuminosity() * 0.5f + 0.5f;
+                    PaletteRenderer.color = new Color(l,l,l);
+                }
+                if (LPaletteRenderer.color!=MyColor.OriginalColor)
+                {
+                    LPaletteRenderer.color = MyColor.OriginalColor;
+                }
+
+                {
+                    float angle = MyColor.GetHue() / 64f * 2f*(float)System.Math.PI;
+                    float r = MyColor.GetDistance() / 10f *0.88f;
+                    ColorTargetObject.transform.localPosition=new Vector3(-MathF.Sin(angle) * r, MathF.Cos(angle) * r,-200f);
+
+                    float l = (MyColor.GetLuminosity() - 0.5f) * 2f;
+                    LTargetObject.transform.localPosition = new Vector3(0f, l * 1.35f, -200f);
+                }
+
                 //Vanillaカラーは変化しないのでUpdateは不要
 
                 if (PaletteObject.active != !ShowVanillaColorFlag)
-                    PaletteObject.SetActive(!ShowVanillaColorFlag);
-                foreach (ColorButton button in VanillaVariations)
                 {
-                    if(button.ButtonObject.active!= ShowVanillaColorFlag)
-                    button.ButtonObject.SetActive(ShowVanillaColorFlag);
+                    PaletteObject.SetActive(!ShowVanillaColorFlag);
+                    LPaletteObject.SetActive(!ShowVanillaColorFlag);
+                }
+                else
+                {
+                    foreach (ColorButton button in VanillaVariations)
+                    {
+                        if (button.ButtonObject.active != ShowVanillaColorFlag)
+                            button.ButtonObject.SetActive(ShowVanillaColorFlag);
+                    }
                 }
             }
         }
@@ -538,10 +632,21 @@ namespace Nebula.Module
                     PaletteCollider = PaletteObject.AddComponent<CircleCollider2D>();
                     PalettePassiveButton = PaletteObject.AddComponent<PassiveButton>();
 
+                    LPaletteObject = new GameObject("LuminosityPalette");
+                    LPaletteRenderer = LPaletteObject.AddComponent<SpriteRenderer>();
+                    LPaletteCollider = LPaletteObject.AddComponent<BoxCollider2D>();
+                    LPalettePassiveButton = LPaletteObject.AddComponent<PassiveButton>();
+
                     ChangeModeObject = new GameObject("ChangeButton");
                     ChangeModeRenderer = ChangeModeObject.AddComponent<SpriteRenderer>();
                     ChangeModeCollider = ChangeModeObject.AddComponent<BoxCollider2D>();
                     ChangeModePassiveButton = ChangeModeObject.AddComponent<PassiveButton>();
+
+                    ColorTargetObject = new GameObject("ColorTarget");
+                    ColorTargetRenderer = ColorTargetObject.AddComponent<SpriteRenderer>();
+
+                    LTargetObject = new GameObject("LTarget");
+                    LTargetRenderer = LTargetObject.AddComponent<SpriteRenderer>();
 
                     ShadowVariations = new ColorButton[2];
                     for (int i = 0; i < ShadowVariations.Length; i++)
@@ -551,7 +656,7 @@ namespace Nebula.Module
                             new ColorButton(__instance, new Vector3(1.4f + (float)i * 0.8f, -2.2f, -75f), 16 + i,
                             () =>
                             {
-                                DetectColor(MyColor.Color,MyColor.GetHue(),MyColor.GetDistance(), (byte)index,true);
+                                DetectColor(MyColor.OriginalColor,MyColor.GetLuminosity(),MyColor.GetHue(),MyColor.GetDistance(), (byte)index,true);
                             });
                     }
 
@@ -566,7 +671,7 @@ namespace Nebula.Module
                             new ColorButton(__instance, pos, 20 + i,
                             () =>
                             {
-                                DetectColor(SaveColor[index].Color, SaveColor[index].GetHue(), SaveColor[index].GetDistance(), SaveColor[index].GetShadowType(), true);
+                                DetectColor(SaveColor[index].OriginalColor, SaveColor[index].GetLuminosity(),SaveColor[index].GetHue(), SaveColor[index].GetDistance(), SaveColor[index].GetShadowType(), true);
                             },SaveColor[i]);
                         WriteSaveVariations[i]=new SaveButton(__instance, SaveVariations[i]);
                     }
@@ -579,7 +684,7 @@ namespace Nebula.Module
                             new ColorButton(__instance, new Vector3(1.0f + (float)(i%3) * 0.8f, 1.3f-0.5f*(float)(i/3), -75f), 32+i,
                             () =>
                             {
-                                DetectColor(VanillaColor[index].Color, 100, (byte)index, VanillaColor[index].GetShadowType(), true);
+                                DetectColor(VanillaColor[index].OriginalColor, 1f,100, (byte)index, VanillaColor[index].GetShadowType(), true);
                             },VanillaColor[i]);
                         VanillaVariations[i].Update();
                     }
@@ -593,6 +698,10 @@ namespace Nebula.Module
                 PaletteCollider.radius = 2.1f;
                 PalettePassiveButton.ClickSound = __instance.ColorChips[0].Button.ClickSound;
                 PalettePassiveButton.OnMouseOut = __instance.ColorChips[0].Button.OnMouseOut;
+                PalettePassiveButton.OnMouseOut.AddListener((UnityEngine.Events.UnityAction)(()=>{
+                    PlayerControl.SetPlayerMaterialColors(SaveManager.BodyColor, PlayerCustomizationMenu.Instance.PreviewArea.Body);
+                    PlayerCustomizationMenu.Instance.SetItemName(GetColorName());
+                }));
                 PalettePassiveButton.OnClick.RemoveAllListeners();
                 PalettePassiveButton.OnClick.AddListener((System.Action)(() =>
                 {
@@ -600,13 +709,32 @@ namespace Nebula.Module
                 }));
                 PalettePassiveButton.enabled = true;
 
+                /* ------------------------------------------------------ */
+
+                LPaletteObject.transform.SetParent(__instance.ColorChips[0].transform.parent);
+                LPaletteObject.transform.localPosition = new Vector3(4.5f, 0.35f, -40f);
+                LPaletteObject.layer = __instance.ColorChips[0].gameObject.layer;
+
+                LPaletteRenderer.sprite = GetLPalleteSprite();
+                LPaletteCollider.size = new Vector2(0.3f, 2.7f);
+                LPalettePassiveButton.ClickSound = __instance.ColorChips[0].Button.ClickSound;
+                LPalettePassiveButton.OnMouseOut = __instance.ColorChips[0].Button.OnMouseOut;
+                LPalettePassiveButton.OnClick.RemoveAllListeners();
+                LPalettePassiveButton.OnClick.AddListener((System.Action)(() =>
+                {
+                    DetectColor(true);
+                }));
+                LPalettePassiveButton.enabled = true;
+
+                /* ------------------------------------------------------ */
+
 
                 ChangeModeObject.transform.SetParent(__instance.ColorChips[0].transform.parent);
                 ChangeModeObject.transform.localPosition = new Vector3(3.8f, -1.4f, -40f);
                 ChangeModeObject.layer = __instance.ColorChips[0].gameObject.layer;
 
                 ChangeModeRenderer.sprite = GetModeChangeSprite();
-                ChangeModeCollider.size = new Vector2(0.55f,0.55f);
+                ChangeModeCollider.size = new Vector2(0.55f, 0.55f);
                 ChangeModePassiveButton.ClickSound = __instance.ColorChips[0].Button.ClickSound;
                 ChangeModePassiveButton.OnMouseOut = __instance.ColorChips[0].Button.OnMouseOut;
                 ChangeModePassiveButton.OnClick.RemoveAllListeners();
@@ -616,6 +744,16 @@ namespace Nebula.Module
                     ChangeModeRenderer.sprite = GetModeChangeSprite();
                 }));
                 ChangeModePassiveButton.enabled = true;
+
+                /* ------------------------------------------------------ */
+
+                ColorTargetObject.transform.SetParent(PaletteObject.transform);
+                ColorTargetObject.layer = __instance.ColorChips[0].gameObject.layer;
+                ColorTargetRenderer.sprite = GetColorTargetSprite();
+
+                LTargetObject.transform.SetParent(LPaletteObject.transform);
+                LTargetObject.layer = __instance.ColorChips[0].gameObject.layer;
+                LTargetRenderer.sprite = GetLTargetSprite();
 
                 foreach (ColorButton button in ShadowVariations)
                 {

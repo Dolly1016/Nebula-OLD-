@@ -128,7 +128,7 @@ namespace Nebula.Roles.CrewmateRoles
         public Alien()
             : base("Alien", "alien", Color, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                  Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Crewmate.crewmateEndSet,
-                 false, false, false, false, false)
+                 false, VentPermission.CanNotUse, false, false, false)
         {
             IsGuessableRole = false;
             emiButton = null;

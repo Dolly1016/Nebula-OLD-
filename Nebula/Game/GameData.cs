@@ -15,6 +15,8 @@ namespace Nebula.Game
         public PlayerControl currentTarget { get; set; }
         private PlayerData globalData { get; set; }
         public bool CanSeeEveryoneInfo { get; set; }
+        public float VentDurationTimer { get; set; }
+        public float VentCoolDownTimer { get; set; }
 
         public PlayerData getGlobalData()
         {
@@ -33,6 +35,7 @@ namespace Nebula.Game
             this.currentTarget = null;
             this.globalData = null;
             this.CanSeeEveryoneInfo = false;
+            this.VentDurationTimer = this.VentCoolDownTimer = 10f;
         }
     }
 
@@ -293,6 +296,8 @@ namespace Nebula.Game
 
         public PlayerStatus Status { get; set; }
 
+        public string RoleInfo { get; set; }
+
         public PlayerData(byte playerId, string name,PlayerOutfit outfit,Role role)
         {
             
@@ -311,6 +316,7 @@ namespace Nebula.Game
             this.Tasks = new TaskData(role.side == Roles.Side.Impostor || role.HasFakeTask, role.FakeTaskIsExecutable);
             this.MouseAngle = 0f;
             this.Status = PlayerStatus.Alive;
+            this.RoleInfo = "";
         }
 
         public int GetRoleData(int id)

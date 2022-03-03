@@ -47,7 +47,7 @@ namespace Nebula.Roles.ComplexRoles
         public FCrewmate()
                 : base("Crewmate", "crewmate", Palette.CrewmateBlue, RoleCategory.Complex, Side.Crewmate, Side.Crewmate,
                      new HashSet<Side>(), new HashSet<Side>(), new HashSet<Patches.EndCondition>(),
-                     false, false, false, false, false)
+                     false, VentPermission.CanNotUse, false, false, false)
         {
 
         }

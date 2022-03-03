@@ -94,7 +94,7 @@ namespace Nebula.Roles.CrewmateRoles
         public Booster()
             : base("Booster", "booster", Color, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                  Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Crewmate.crewmateEndSet,
-                 false, false, false, false, false)
+                 false, VentPermission.CanNotUse, false, false, false)
         {
             boostButton = null;
         }

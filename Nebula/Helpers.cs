@@ -8,6 +8,7 @@ using UnityEngine;
 using Hazel;
 using HarmonyLib;
 using System.Linq;
+using System.Text;
 
 namespace Nebula
 {
@@ -20,6 +21,13 @@ namespace Nebula
                 return !(MapBehaviour.Instance && MapBehaviour.Instance.IsOpen) &&
                       !MeetingHud.Instance &&
                       !ExileController.Instance;
+            }
+        }
+        public static bool ProceedTimer
+        {
+            get
+            {
+                return !PlayerControl.LocalPlayer.inVent && !MeetingHud.Instance && (PlayerControl.LocalPlayer.CanMove || (!(MapBehaviour.Instance && MapBehaviour.Instance.IsOpen)  && (!Minigame.Instance || Minigame.Instance.MyNormTask)));
             }
         }
 
@@ -57,6 +65,23 @@ namespace Nebula
             catch
             {
                 System.Console.WriteLine("Error loading texture from resources: " + path);
+            }
+            return null;
+        }
+
+        public static string loadTextFromResources(string path)
+        {
+            try
+            {
+                Assembly assembly = Assembly.GetExecutingAssembly();
+                Stream stream = assembly.GetManifestResourceStream(path);
+                var byteArray = new byte[stream.Length];
+                var read = stream.Read(byteArray, 0, (int)stream.Length);
+                return Encoding.Unicode.GetString(byteArray);
+            }
+            catch
+            {
+                
             }
             return null;
         }

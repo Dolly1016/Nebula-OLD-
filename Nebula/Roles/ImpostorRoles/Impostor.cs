@@ -17,7 +17,7 @@ namespace Nebula.Roles.ImpostorRoles
         public Impostor()
                 : base("Impostor", "impostor", Palette.ImpostorRed, RoleCategory.Impostor, Side.Impostor, Side.Impostor,
                      impostorSideSet, impostorSideSet,impostorEndSet,
-                     true, true, true, true, true)
+                     true, VentPermission.CanUseUnlimittedVent, true, true, true)
         {
             ValidGamemode = Module.CustomGameMode.Standard;
         }

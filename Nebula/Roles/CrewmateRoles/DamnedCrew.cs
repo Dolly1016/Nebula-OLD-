@@ -47,6 +47,11 @@ namespace Nebula.Roles.CrewmateRoles
             RPCEventInvoker.ChangeRole(PlayerControl.LocalPlayer,Roles.Damned);
         }
 
+        public override void SpawnableTest(ref Dictionary<Role,int> DefinitiveRoles, ref HashSet<Role> SpawnableRoles)
+        {
+
+        }
+
         public DamnedCrew():base()
         {
             guardLeftId = Game.GameData.RegisterRoleDataId("damnedCrew.guardLeft");

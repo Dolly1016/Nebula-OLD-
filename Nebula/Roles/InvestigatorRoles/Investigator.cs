@@ -20,7 +20,7 @@ namespace Nebula.Roles.InvestigatorRoles
         public Investigator()
                 : base("Investigator", "investigator", Palette.CrewmateBlue, RoleCategory.Crewmate, Side.Investigator, Side.Investigator,
                      investigatorSideSet, investigatorSideSet, investigatorEndSet,
-                     false, false, false, false, false)
+                     false, VentPermission.CanNotUse, false, false, false)
         {
             IsHideRole = true;
             ValidGamemode = Module.CustomGameMode.Investigators;

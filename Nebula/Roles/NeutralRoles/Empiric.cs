@@ -24,6 +24,8 @@ namespace Nebula.Roles.NeutralRoles
         private Module.CustomOption infectDurationOption;
         private Module.CustomOption canInfectMyKillerOption;
         private Module.CustomOption coastingPhaseOption;
+        private Module.CustomOption ventCoolDownOption;
+        private Module.CustomOption ventDurationOption;
 
         private int leftInfect;
         private Dictionary<byte, float> infectProgress;
@@ -46,8 +48,12 @@ namespace Nebula.Roles.NeutralRoles
 
             coastingPhaseOption = CreateOption(Color.white, "coastingPhase", 10f, 0f, 30f, 1f);
             coastingPhaseOption.suffix = "second";
-        }
 
+            ventCoolDownOption = CreateOption(Color.white, "ventCoolDown", 20f, 5f, 60f, 2.5f);
+            ventCoolDownOption.suffix = "second";
+            ventDurationOption = CreateOption(Color.white, "ventDuration", 10f, 5f, 60f, 2.5f);
+            ventDurationOption.suffix = "second";
+        }
 
         Sprite infectSprite;
         public Sprite getInfectButtonSprite()
@@ -63,6 +69,9 @@ namespace Nebula.Roles.NeutralRoles
 
             leftInfect = (int)maxInfectMyselfOption.getFloat();
             WinTrigger = false;
+
+            VentCoolDownMaxTimer = ventCoolDownOption.getFloat();
+            VentDurationMaxTimer = ventDurationOption.getFloat();
         }
 
         public override void CleanUp()
@@ -161,7 +170,7 @@ namespace Nebula.Roles.NeutralRoles
             base.MyPlayerControlUpdate();
 
             Game.MyPlayerData data = Game.GameData.data.myData;
-            data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(false, false, activePlayers);
+            data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(2.5f,false, false, activePlayers);
             Patches.PlayerControlPatch.SetPlayerOutline(data.currentTarget, Color.yellow);
 
             //感染停滞期を進める
@@ -252,7 +261,7 @@ namespace Nebula.Roles.NeutralRoles
             : base("Empiric", "empiric", Color, RoleCategory.Neutral, Side.Empiric, Side.Empiric,
                  new HashSet<Side>() { Side.Empiric }, new HashSet<Side>() { Side.Empiric },
                  new HashSet<Patches.EndCondition>() { Patches.EndCondition.EmpiricWin },
-                 true, true, true, false, false)
+                 true, VentPermission.CanUseLimittedVent, true, false, false)
         {
             infectButton = null;
             infectProgress = new Dictionary<byte, float>();

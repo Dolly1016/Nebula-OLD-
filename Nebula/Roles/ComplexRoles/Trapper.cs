@@ -129,7 +129,8 @@ namespace Nebula.Roles.ComplexRoles
                      isImpostor ? ImpostorRoles.Impostor.impostorSideSet : CrewmateRoles.Crewmate.crewmateSideSet,
                      isImpostor ? ImpostorRoles.Impostor.impostorSideSet : CrewmateRoles.Crewmate.crewmateSideSet,
                      isImpostor ? ImpostorRoles.Impostor.impostorEndSet : CrewmateRoles.Crewmate.crewmateEndSet,
-                     false, isImpostor, isImpostor, isImpostor, isImpostor, () => { return Roles.F_Trapper; }, isImpostor)
+                     false, isImpostor? VentPermission.CanUseUnlimittedVent: VentPermission.CanNotUse,
+                     isImpostor, isImpostor, isImpostor, () => { return Roles.F_Trapper; }, isImpostor)
         {
             IsHideRole = true;
             trapButton = null;

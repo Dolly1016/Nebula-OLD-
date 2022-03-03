@@ -37,10 +37,10 @@ namespace Nebula
     {
         public static System.Random rnd = new System.Random((int)DateTime.Now.Ticks);
 
-        public const string AmongUsVersion = "2022.2.23";
+        public const string AmongUsVersion = "2022.2.24";
         public const string PluginGuid = "jp.dreamingpig.amongus.nebula";
         public const string PluginName = "TheNebula";
-        public const string PluginVersion = "1.4.0";
+        public const string PluginVersion = "1.4.5";
         /*
         public const string PluginVisualVersion = "22.02.14a";
         public const string PluginStage = "Snapshot";
@@ -49,8 +49,8 @@ namespace Nebula
         public const string PluginVisualVersion = PluginVersion;
         public const string PluginStage = "";
         // */
-        public const string PluginVersionForFetch = "1.4.0";
-        public byte[] PluginVersionData = new byte[] { 1, 4, 0, 0 };
+        public const string PluginVersionForFetch = "1.4.5";
+        public byte[] PluginVersionData = new byte[] { 1, 4, 5, 0 };
 
         public static NebulaPlugin Instance;
 
@@ -115,15 +115,29 @@ namespace Nebula
     }
 
 
-    // Debugging tools
+    // メタコントローラ
     [HarmonyPatch(typeof(KeyboardJoystick), nameof(KeyboardJoystick.Update))]
-    public static class DebugManager
+    public static class MetaControlManager
     {
         private static readonly System.Random random = new System.Random((int)DateTime.Now.Ticks);
         private static List<PlayerControl> bots = new List<PlayerControl>();
 
         public static void Postfix(KeyboardJoystick __instance)
         {
+            /* ホスト専用コマンド */
+            if (AmongUsClient.Instance.AmHost && AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started)
+            {
+                //ゲーム強制終了
+                if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.F5))
+                {
+                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ForceEnd, Hazel.SendOption.Reliable, -1);
+                    writer.WritePacked(PlayerControl.LocalPlayer.PlayerId);
+                    AmongUsClient.Instance.FinishRpcImmediately(writer);
+                    RPCEvents.ForceEnd(PlayerControl.LocalPlayer.PlayerId);
+                }
+            }
+
+            /* 以下デバッグモード専用 */
             if (!NebulaPlugin.DebugMode) return;
 
             // Spawn dummys
@@ -162,9 +176,10 @@ namespace Nebula
                 GameData.Instance.RpcSetTasks(playerControl.PlayerId, new byte[0]);
             }
 
-            if (Input.GetKeyDown(KeyCode.F5))
+            if (Input.GetKeyDown(KeyCode.F8))
             {
-                byte[] bytes = UnityEngine.ImageConversion.EncodeToPNG(Helpers.CreateReadabeTexture2D(MeetingHud.Instance.playerStates[0].Background.sprite.texture));
+                SpriteRenderer r = MapBehaviour.Instance.transform.FindChild("Background").GetComponent<SpriteRenderer>();
+                byte[] bytes = UnityEngine.ImageConversion.EncodeToPNG(Helpers.CreateReadabeTexture2D(r.sprite.texture));
                 //保存
                 File.WriteAllBytes("vent.png", bytes);
             }
@@ -184,32 +199,6 @@ namespace Nebula
                 Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, target, Game.PlayerData.PlayerStatus.Dead, false, false);
 
             }
-
-            // Terminate round
-            if (Input.GetKeyDown(KeyCode.F11))
-            {
-                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ForceEnd, Hazel.SendOption.Reliable, -1);
-                writer.WritePacked(PlayerControl.LocalPlayer.PlayerId);
-                AmongUsClient.Instance.FinishRpcImmediately(writer);
-                RPCEvents.ForceEnd(PlayerControl.LocalPlayer.PlayerId);
-            }
-
-            
-            if (Input.GetKeyDown(KeyCode.Alpha1))
-            {
-                Objects.CustomMessage.Create("test1",5f,1f,2f,Color.white);
-            }
-
-            if (Input.GetKeyDown(KeyCode.Alpha2))
-            {
-                Objects.CustomMessage message = Objects.CustomMessage.Create(1.3f, 3f, 2.3f, null, "test1", 1f, 0.5f, 2f, (float)NebulaPlugin.rnd.NextDouble() * 3.5f +0.8f, new Color(1f, 1f, 1f, 0.4f));
-                message.textSwapDuration = 0.1f;
-                message.textSwapGain = 5;
-
-                float rand = (float)NebulaPlugin.rnd.NextDouble() * 0.2f +0.1f;
-                message.textSizeVelocity = new Vector3(rand,rand);
-            }
-
         }
 
         public static string RandomString(int length)

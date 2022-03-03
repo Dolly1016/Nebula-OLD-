@@ -35,7 +35,7 @@ namespace Nebula.Roles.CrewmateRoles
         public override void MyPlayerControlUpdate()
         {
             Game.MyPlayerData data = Game.GameData.data.myData;
-            data.currentTarget = Patches.PlayerControlPatch.SetMyTarget();
+            data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(2.5f);
             Patches.PlayerControlPatch.SetPlayerOutline(data.currentTarget, Color.yellow);
         }
 
@@ -83,7 +83,9 @@ namespace Nebula.Roles.CrewmateRoles
                     foreach(var role in divineResult[target.PlayerId])
                     {
                         if (!roles.Equals(""))
+                        {
                             roles += ", ";
+                        }
 
                         if (index % 4 == 3) { roles += "\n";  rate *= 1.8f; }
 
@@ -91,6 +93,7 @@ namespace Nebula.Roles.CrewmateRoles
 
                         index++;
                     }
+                    target.GetModData().RoleInfo = roles.Replace("\n","");
                     message = message.Replace("%ROLES%",roles);
                     message = message.Replace("%PLAYER%", target.name);
                     CustomMessage customMessage=CustomMessage.Create(target.transform.position, true, message, 5f, 0.5f, 2f, rate, Color.white);
@@ -243,7 +246,7 @@ namespace Nebula.Roles.CrewmateRoles
         public Oracle()
             : base("Oracle", "oracle", Color, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                  Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Crewmate.crewmateEndSet,
-                 false, false, false, false, false)
+                 false, VentPermission.CanNotUse, false, false, false)
         {
             oracleButton = null;
         }
