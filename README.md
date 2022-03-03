@@ -17,6 +17,10 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.4.4 | 2022.2.23s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.4,2022.2.23/Nebula_v1.4.4.zip)|
+| 1.4.3 | 2022.2.23s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.3,2022.2.23/Nebula_v1.4.3.zip)|
+| 1.4.2 | 2022.2.23s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.2,2022.2.23/Nebula_v1.4.2.zip)|
+| 1.4.1 | 2022.2.23s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.1,2022.2.23/Nebula_v1.4.1.zip)|
 | 1.4.0 | 2022.2.23s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.0,2022.2.23/Nebula.zip)|
 | 1.3.0 | 2022.2.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.3.0,2022.2.8/Nebula.zip)|
 | 1.2.1 | 2022.2.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.2.1,2022.2.8/Nebula.zip)|
@@ -97,19 +101,48 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 
 | Language | Translator | Full Support Version | Download |
 | --- | --- | --- | --- |
-| 日本語 | - | 1.4.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.0,2022.2.23/Japanese.dat)|
-| 日本語 | Rey | 1.2.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.2.1%2CRey/Japanese.dat)|
+| 日本語 | - | 1.4.4 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.4,2022.2.23/Japanese.dat)|
+| 日本語 | Rey | 1.4.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.4.0%2CRey/Japanese.dat)|
 | 日本語 | kihi | 1.2.1 (一部1.3.0対応) | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.2.1%2Ckihi/Japanese.dat)|
-| English | - | 1.4.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.0,2022.2.23/English.dat)|
+| English | - | 1.4.4 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.4,2022.2.23/English.dat)|
 
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
   
+ **Version 1.4.4**
+ - Sniperにエイムアシストとそれに関わる新たなオプション「Show Aim Assist」「Aim Assist Delay」「Aim Assist Duration」を追加
+ - Oracleの占い結果が名前の傍に表示されるように
+ - Dynamic Paletteの影色を微調整
+ - 排他的役職割り当てで、出現しないロールとの排他設定を無視するように
+ - Oracleの絞り込みについて、ゲーム開始時の絞り込みで出現確率と最大人数を考慮するように
+ - Dynamic Paletteで明るさの幅が想定以上に狭かった問題を修正
+ - Sniperのライフルの表示位置が射線上からずれている問題を修正
+  
+ **Version 1.4.3**
+ - テスト用の新ゲームモード「Free Play」を追加 Coming Soonを挟んだ右(あるいはStandardのすぐ左)にあります。
+ - 「Escape」モードを2人から遊べるように
+ - ホストによる強制終了の挙動に微細な変更
+ - Psychicに不足していた言語データを追加
+  
+ **Version 1.4.2**
+ - Dynamic Paletteで、今選んでいる色の位置や明度が分かるように
+ - Jackalの設定を最適化
+ - ロビー画面で他プレイヤーが退出したときに人数表示が更新されない問題を修正
+ - Provocateurによる巻き込みでLoversが死ぬ場合、もう片方が道連れにされない問題を修正
+  
+ **Version 1.4.1**
+ - Dynamic Paletteに明度の設定を追加
+ - 他プレイヤーに対して使用するボタンの有効範囲がより広くなるように
+ - ホストに限り、LCtrl+F5でゲームを強制終了できるように
+ - 2試合目からボタンが表示されない問題を修正
+  
  **Version 1.4.0**
  - Doctorを追加
+ - Arsonistの「Douse Duration」「Douse Cool Down」をそれぞれ0.5秒、2.5秒単位で設定できるように
  - ゲーム終了時のプレイヤー状態表示に「Misfire」「Disconnected」を追加、これに伴い、切断されたプレイヤーが「Alive」と表示されないように
  - Oracleの占い候補抽出に新たな絞り込みイベントを追加(トラップの出現、会議中の死亡、死体の消滅)
+ - Among Us本体の更新が必要なアップデートがあるときに左下に表示が現れるように
  - Boosterの加速ボタンの位置を変更
  - 一部ボタンの文字を変更
  - 追加役職でないSidekickに変化した際に以前の役職のボタンが残ったままになる問題を修正
@@ -373,18 +406,32 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 
 ## Standard
 
+#### プレイ可能人数: 4 ~ 15人
 #### 推奨プレイ人数: 9 ~ 15人
 
 VanillaのAmong Usと同じルールです。Modによる追加役職を使用して多様な遊び方ができます。
 
 ## Escape
 
+#### プレイ可能人数: 2 ~ 15人
 #### 推奨プレイ人数: 4 ~ 8人
 
 いわゆる鬼ごっこです。ゲーム開始から10秒後に、1人がHunterに、その他全員がEscapeeになります。\
 制限時間いっぱいまでHunterから逃げ切るか、タスクをこなせばEscapeeの勝利です。\
 Hunterは、逃げるEscapee全員を捕まえられたら勝利します。\
 ゲーム参加者を待つ間のちょっとしたミニゲームにどうぞ。
+
+## Free Play
+
+#### プレイ可能人数: 1 ~ 15人
+#### 推奨プレイ人数: 1 ~ 15人
+
+現状、1キーで原点を設定して、その点から現在位置までの距離を見ることができます。\
+Sniperの弾の当たり判定やEmpiric,Alienなどの効果範囲を調べる際にお使いください。\
+一部、大きさが異なるものもありますので、当たり判定算出の式はDiscordでご確認ください。
+
+今後、様々な役職のテストプレイができるよう整備する予定です。
+
 
 -----------------------
 
@@ -593,7 +640,8 @@ p5p5next : Damned
 
 ## Sniper
  Sniperは通常のキルは行えませんが、狙撃銃を繰り出すことで壁を隔てた先からも相手を殺すことができます。\
- 狙撃すると、当たったかどうかに関わらず、発砲地点にアイコンが表示されます。
+ 狙撃すると、当たったかどうかに関わらず、発砲地点にアイコンが表示されます。\
+ エイムアシストを有効化すると、全プレイヤーと死体の方向が分かるガイドが表示されます。
  
  ### 操作方法
 | 操作キー | アクション |
@@ -608,6 +656,9 @@ p5p5next : Damned
 | Shot Effective Range | 銃弾でキルできる範囲
 | Can Kill Impostors | 射線上のインポスターを誤殺できるかどうか
 | Sound Effective Range | 銃声の可聴範囲
+| Show Aim Assist | エイムアシストを有効にするかどうか
+| Aim Assist Delay | ライフルを出してからエイムアシストが現れるまでの遅延
+| Aim Assist Duration | エイムアシストの有効時間
 
 -----------------------
 
