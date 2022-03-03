@@ -7,6 +7,10 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 このModの一部コードは The Other Roles および The Other Roles GM Edition のものを使用しています。
 
+# Twitter
+[開発者Twitter](https://twitter.com/NebulaOnTheShip)\
+更新情報やちょっとした裏話などなどを掲載しています。
+
 # Discord
 バグ報告などの情報交換は[こちら](https://discord.gg/kHNZD4pq9E)でお願いいたします。
 
