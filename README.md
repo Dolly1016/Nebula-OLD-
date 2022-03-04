@@ -7,6 +7,10 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 このModの一部コードは The Other Roles および The Other Roles GM Edition のものを使用しています。
 
+# Twitter
+[開発者Twitter](https://twitter.com/NebulaOnTheShip)\
+更新情報やちょっとした裏話などなどを掲載しています。ぜひフォローよろしくお願いいたします！
+
 # Discord
 バグ報告などの情報交換は[こちら](https://discord.gg/kHNZD4pq9E)でお願いいたします。
 
@@ -17,6 +21,8 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.4.5.1 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.5.1,2022.2.24/Nebula_v1.4.5.1.zip)|
+| 1.4.5 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.5,2022.2.24/Nebula_v1.4.5.zip)|
 | 1.4.4 | 2022.2.23s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.4,2022.2.23/Nebula_v1.4.4.zip)|
 | 1.4.3 | 2022.2.23s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.3,2022.2.23/Nebula_v1.4.3.zip)|
 | 1.4.2 | 2022.2.23s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.2,2022.2.23/Nebula_v1.4.2.zip)|
@@ -101,14 +107,23 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 
 | Language | Translator | Full Support Version | Download |
 | --- | --- | --- | --- |
-| 日本語 | - | 1.4.4 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.4,2022.2.23/Japanese.dat)|
-| 日本語 | Rey | 1.4.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.4.0%2CRey/Japanese.dat)|
-| 日本語 | kihi | 1.2.1 (一部1.3.0対応) | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.2.1%2Ckihi/Japanese.dat)|
-| English | - | 1.4.4 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.4,2022.2.23/English.dat)|
+| 日本語 | - | 1.4.5.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.5,2022.2.24/Japanese.dat)|
+| 日本語 | Rey | 1.4.5.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.4.5.1%2CRey/Japanese.dat)|
+| 日本語 | kihi | 1.4.5.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.4.5.1%2Ckihi/Japanese.dat)|
+| English | - | 1.4.5.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.5,2022.2.24/English.dat)|
 
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+  
+ **Version 1.4.5.1**
+ - Sniperのキルボタンが、画面中央付近で左クリックすることでも発動するように
+  
+ **Version 1.4.5**
+ - Among Us本体の対応バージョンを v2022.2.24s に引き上げ
+ - Reaper, Navvy, Spy, Empiric, Jester, Opportunist, Vultureのベントにクールダウン、制限時間を付与
+ - 能力ボタンのクールダウンが適切なタイミングで停止、進行するように
+ - マップ表示時、能力ボタンが隠れない問題を修正
   
  **Version 1.4.4**
  - Sniperにエイムアシストとそれに関わる新たなオプション「Show Aim Assist」「Aim Assist Delay」「Aim Assist Duration」を追加
@@ -635,6 +650,8 @@ p5p5next : Damned
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
+| Vent Cool Down | ベントのクールダウン
+| Vent Duration | ベントでの潜伏可能時間
 
 -----------------------
 
@@ -782,6 +799,8 @@ p5p5next : Damned
 |----------|:-------------:|
 | Max Screws Vents | 封鎖できるベントの最大数 
 | Seal Cool Down | ベント封鎖のクールダウン
+| Vent Cool Down | ベントのクールダウン
+| Vent Duration | ベントでの潜伏可能時間
 
 -----------------------
 
@@ -899,6 +918,8 @@ p5p5next : Damned
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
+| Vent Cool Down | ベントのクールダウン
+| Vent Duration | ベントでの潜伏可能時間
 
 -----------------------
 
@@ -934,6 +955,8 @@ p5p5next : Damned
 | Infect Duration | 感染にかかる時間
 | Infect Range | 感染させられる範囲
 | Coasting Phase After Meetings | 会議後の感染の停滞期
+| Vent Cool Down | ベントのクールダウン
+| Vent Duration | ベントでの潜伏可能時間
 
 -----------------------
 
@@ -972,6 +995,8 @@ p5p5next : Damned
 |----------|:-------------:|
 | Can Use Vents | ベントを使えるかどうかの設定
 | Can Invoke Sabotage | サボタージュを起こせるかどうかの設定
+| Vent Cool Down | ベントのクールダウン
+| Vent Duration | ベントでの潜伏可能時間
 
 -----------------------
 
@@ -1000,6 +1025,8 @@ p5p5next : Damned
 |----------|:-------------:|
 | Cut Tasks | Crewmateと比較したタスクの免除数
 | Can Use Vents | ベントを使えるかどうかの設定
+| Vent Cool Down | ベントのクールダウン
+| Vent Duration | ベントでの潜伏可能時間
 
 -----------------------
 
@@ -1014,7 +1041,9 @@ p5p5next : Damned
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
-| Count of Eaten Needed | 勝利に必要な死体の捕食数 
+| Count of Eaten Needed | 勝利に必要な死体の捕食数
+| Vent Cool Down | ベントのクールダウン
+| Vent Duration | ベントでの潜伏可能時間 
 
 -----------------------
 
