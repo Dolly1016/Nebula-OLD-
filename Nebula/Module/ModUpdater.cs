@@ -49,8 +49,8 @@ namespace Nebula.Module
                 NebulaPlugin.Instance.Logger.Print("C");
                 string json = response.Content.ReadAsStringAsync().Result;
                 JObject jObj = JObject.Parse(json);
-                JToken version = jObj["Version"];
-                if (!version.HasValues) return false;
+                JToken? version = jObj["Version"];
+                if (version == null) return false;
                 NebulaPlugin.Instance.Logger.Print("D");
                 int Version = int.Parse(version.ToString());
 
@@ -66,11 +66,11 @@ namespace Nebula.Module
                 NebulaPlugin.Instance.Logger.Print("F");
 
                 string lang = Language.Language.GetLanguage(SaveManager.LastLanguage);
-                if (jObj[lang].HasValues)
+                if (jObj[lang]!=null)
                     Announcement = jObj[lang].ToString();
-                else if (jObj["English"].HasValues)
+                else if (jObj["English"] != null)
                     Announcement = jObj["English"].ToString();
-                else if (jObj["Japanese"].HasValues)
+                else if (jObj["Japanese"] != null)
                     Announcement = jObj["Japanese"].ToString();
                 else
                 {
