@@ -345,7 +345,7 @@
 
 "role.sniper.name" : "Sniper"
 "role.sniper.description" : "Snipe and Shoot"
-"role.sniper.info" : "You can snipe crewmates with sniper rifle.\nBut you cannot kill by standard way.\n\n - F : Hold or hide the rifle\n\n - Q : Kill with rifle"
+"role.sniper.info" : "You can snipe crewmates with sniper rifle.\nBut you cannot kill by standard way.\n\n - F : Hold or hide the rifle\n\n - Q or Click(near by your player) : Kill with rifle"
 "role.sniper.snipeCoolDown" : "Snipe Cool Down"
 "role.sniper.shotSize" : "Shot Size"
 "role.sniper.shotEffectiveRange" : "Shot Effective Range"

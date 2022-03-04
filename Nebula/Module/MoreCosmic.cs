@@ -23,115 +23,262 @@ using Newtonsoft.Json;
 
 namespace Nebula.Module
 {
-    [HarmonyPatch]
-    public class CustomHats
+    public class CustomVariable
     {
-        public static Material hatShader;
+        public string Id { get; set; }
 
-        public static Dictionary<string, HatExtension> CustomHatRegistry = new Dictionary<string, HatExtension>();
-        public static HatExtension TestExt = null;
-
-        public class HatExtension
+        public void Load(JToken token)
         {
-            public string author { get; set; }
-            public string package { get; set; }
-            public string condition { get; set; }
-            public Sprite FlipImage { get; set; }
-            public Sprite BackFlipImage { get; set; }
+            LoadValue(token[Id]);
+        }
+        protected virtual void LoadValue(JToken? token)
+        {
+
         }
 
-        public class CustomHat
+        public virtual bool DoesResourceRequireDownload(string directoryPath, MD5 md5) { return false; }
+
+        public virtual async Task Download(string repoPath, string directoryPath, HttpClient http) { }
+        public virtual void LoadImage(string parent, bool fromDisk = false) { }
+
+        public CustomVariable(string Id)
         {
-            public string author { get; set; }
-            public string package { get; set; }
-            public string condition { get; set; }
-            public string name { get; set; }
-            public string resource { get; set; }
-            public string flipresource { get; set; }
-            public string backflipresource { get; set; }
-            public string backresource { get; set; }
-            public string climbresource { get; set; }
-            public bool bounce { get; set; }
-            public bool adaptive { get; set; }
-            public bool behind { get; set; }
+            this.Id = Id;
+        }
+    }
+
+    public class CustomVHatImage : CustomVImage
+    {
+        public override void LoadImage(string parent, bool fromDisk = false)
+        {
+            Texture2D texture = fromDisk ? Helpers.loadTextureFromDisk(Path.GetDirectoryName(Application.dataPath) + "/" + parent + "/" + Address) : Helpers.loadTextureFromResources(parent + "." + Address);
+            if (texture == null)
+                return;
+            Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.53f, 0.575f), texture.width * 0.375f);
+            if (sprite == null)
+                return;
+            texture.hideFlags |= HideFlags.HideAndDontSave | HideFlags.DontUnloadUnusedAsset;
+            sprite.hideFlags |= HideFlags.HideAndDontSave | HideFlags.DontUnloadUnusedAsset;
+            Image = sprite;
         }
 
-        private static List<CustomHat> createCustomHatDetails(string[] hats, bool fromDisk = false)
+        public CustomVHatImage(string Id) : base(Id)
         {
-            Dictionary<string, CustomHat> fronts = new Dictionary<string, CustomHat>();
-            Dictionary<string, string> backs = new Dictionary<string, string>();
-            Dictionary<string, string> flips = new Dictionary<string, string>();
-            Dictionary<string, string> backflips = new Dictionary<string, string>();
-            Dictionary<string, string> climbs = new Dictionary<string, string>();
+        }
+    }
 
-            for (int i = 0; i < hats.Length; i++)
+    public class CustomVImage : CustomVariable
+    {
+        public static implicit operator bool(CustomVImage image) { return image.Address != null; }
+        public string Hash { get; set; }
+        public string Address { get; set; }
+        public Sprite Image { get; set; }
+
+        private string SanitizeResourcePath(string res)
+        {
+            if (res == null || !res.EndsWith(".png"))
+                return null;
+
+            res = res.Replace("\\", "")
+                     .Replace("/", "")
+                     .Replace("*", "")
+                     .Replace("..", "");
+            return res;
+        }
+
+        protected override void LoadValue(JToken? token)
+        {
+            Address = SanitizeResourcePath(token?["Address"]?.ToString());
+            Hash = SanitizeResourcePath(token?["Hash"]?.ToString());
+        }
+
+        public override void LoadImage(string parent, bool fromDisk = false)
+        {
+            Texture2D texture = fromDisk ? Helpers.loadTextureFromDisk(Path.GetDirectoryName(Application.dataPath) + "/" + parent + "/" + Address) : Helpers.loadTextureFromResources(parent + "." + Address);
+            if (texture == null)
+                return;
+            Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100f);
+            if (sprite == null)
+                return;
+            texture.hideFlags |= HideFlags.HideAndDontSave | HideFlags.DontUnloadUnusedAsset;
+            sprite.hideFlags |= HideFlags.HideAndDontSave | HideFlags.DontUnloadUnusedAsset;
+            Image = sprite;
+        }
+
+        public override bool DoesResourceRequireDownload(string directoryPath, MD5 md5)
+        {
+            if (NebulaPlugin.DebugMode.HasToken("OutputHash"))
             {
-                string s = fromDisk ? hats[i].Substring(hats[i].LastIndexOf("\\") + 1).Split('.')[0] : hats[i].Split('.')[3];
-                string[] p = s.Split('_');
-
-                HashSet<string> options = new HashSet<string>();
-                for (int j = 1; j < p.Length; j++)
-                    options.Add(p[j]);
-
-                if (options.Contains("back") && options.Contains("flip"))
-                    backflips.Add(p[0], hats[i]);
-                else if (options.Contains("climb"))
-                    climbs.Add(p[0], hats[i]);
-                else if (options.Contains("back"))
-                    backs.Add(p[0], hats[i]);
-                else if (options.Contains("flip"))
-                    flips.Add(p[0], hats[i]);
-                else
+                if (File.Exists(directoryPath + Address))
                 {
-                    CustomHat custom = new CustomHat { resource = hats[i] };
-                    custom.name = p[0].Replace('-', ' ');
-                    custom.bounce = options.Contains("bounce");
-                    custom.adaptive = options.Contains("adaptive");
-                    custom.behind = options.Contains("behind");
-
-                    fronts.Add(p[0], custom);
+                    using (var stream = File.OpenRead(directoryPath + Address))
+                    {
+                        var hash = System.BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "").ToLowerInvariant();
+                        NebulaPlugin.Instance.Logger.Print("HASH: " + hash + " (" + directoryPath + Address + ")");
+                    }
                 }
             }
 
-            List<CustomHat> customhats = new List<CustomHat>();
+            if (!this) return false;
+            if (Hash == null || !File.Exists(directoryPath+Address))
+                return true;
 
-            foreach (string k in fronts.Keys)
+            using (var stream = File.OpenRead(directoryPath + Address))
             {
-                CustomHat hat = fronts[k];
-                string br, cr, fr, bfr;
-                backs.TryGetValue(k, out br);
-                climbs.TryGetValue(k, out cr);
-                flips.TryGetValue(k, out fr);
-                backflips.TryGetValue(k, out bfr);
-                if (br != null)
-                    hat.backresource = br;
-                if (cr != null)
-                    hat.climbresource = cr;
-                if (fr != null)
-                    hat.flipresource = fr;
-                if (bfr != null)
-                    hat.backflipresource = bfr;
-                if (hat.backresource != null)
-                    hat.behind = true;
-
-                customhats.Add(hat);
+                var hash = System.BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "").ToLowerInvariant();
+                return !Hash.Equals(hash);
             }
-
-            return customhats;
         }
 
-        private static Sprite CreateHatSprite(string path, bool fromDisk = false)
+        public override async Task Download(string repoPath,string directoryPath, HttpClient http)
         {
-            Texture2D texture = fromDisk ? Helpers.loadTextureFromDisk(path) : Helpers.loadTextureFromResources(path);
-            if (texture == null)
-                return null;
-            Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.53f, 0.575f), texture.width * 0.375f);
-            if (sprite == null)
-                return null;
-            texture.hideFlags |= HideFlags.HideAndDontSave | HideFlags.DontUnloadUnusedAsset;
-            sprite.hideFlags |= HideFlags.HideAndDontSave | HideFlags.DontUnloadUnusedAsset;
-            return sprite;
+            var hatFileResponse = await http.GetAsync($"{repoPath}{Address}", HttpCompletionOption.ResponseContentRead);
+            if (hatFileResponse.StatusCode != HttpStatusCode.OK) return;
+            using (var responseStream = await hatFileResponse.Content.ReadAsStreamAsync())
+            {
+                using (var fileStream = File.Create($"{directoryPath}{Address}"))
+                {
+                    responseStream.CopyTo(fileStream);
+                }
+            }
         }
+
+        public CustomVImage(string Id):base(Id)
+        {
+            Hash = Address = null;
+            Image = null;
+        }
+    }
+
+    public class CustomVBool : CustomVariable
+    {
+        public bool Value { get; set; }
+
+        protected override void LoadValue(JToken? token)
+        {
+            string str = token?.ToString();
+            if (str != null) Value = bool.Parse(str);
+        }
+
+        public CustomVBool(string Id) : base(Id)
+        {
+            Value = false;
+        }
+    }
+
+    public class CustomVString : CustomVariable
+    {
+        public string Value { get; set; }
+
+        protected override void LoadValue(JToken? token)
+        {
+            Value = token?.ToString();
+        }
+
+        public CustomVString(string Id) : base(Id)
+        {
+            Value = "";
+        }
+
+        public CustomVString(string Id,string initialValue) : base(Id)
+        {
+            Value = initialValue;
+        }
+    }
+
+    public class CustomItem
+    {
+        public CustomVString Author { get; set; }
+        public CustomVString Package { get; set; }
+        public CustomVString Condition { get; set; }
+        public CustomVString Name { get; set; }
+
+        public IEnumerable<CustomVariable> Contents()
+        {
+            yield return Author;
+            yield return Package;
+            yield return Condition;
+            yield return Name;
+            foreach (var content in ExtendedContents()) yield return content;
+            yield break;
+        }
+
+        protected virtual IEnumerable<CustomVariable> ExtendedContents()
+        {
+            yield break;
+        }
+
+        public CustomItem()
+        {
+            Author = new CustomVString("Author","Unknown");
+            Package = new CustomVString("Package","Misc.");
+            Condition = new CustomVString("Condition","none");
+            Name = new CustomVString("Name");
+        }
+    }
+
+    public class CustomHat : CustomItem
+    {
+        public CustomVHatImage I_Main { get; set; }
+        public CustomVHatImage I_Flip { get; set; }
+        public CustomVHatImage I_BackFlip { get; set; }
+        public CustomVHatImage I_Back { get; set; }
+        public CustomVHatImage I_Climb { get; set; }
+        public CustomVBool Bounce { get; set; }
+        public CustomVBool Adaptive { get; set; }
+        public CustomVBool Behind { get; set; }
+
+        protected override IEnumerable<CustomVariable> ExtendedContents()
+        {
+            yield return I_Main;
+            yield return I_Flip;
+            yield return I_BackFlip;
+            yield return I_Back;
+            yield return I_Climb;
+            yield return Bounce;
+            yield return Adaptive;
+            yield return Behind;
+            yield break;
+        }
+
+        public CustomHat():base()
+        {
+            I_Main = new CustomVHatImage("Main");
+            I_Flip = new CustomVHatImage("Flip");
+            I_BackFlip = new CustomVHatImage("BackFlip");
+            I_Back = new CustomVHatImage("Back");
+            I_Climb = new CustomVHatImage("Climb");
+            Bounce = new CustomVBool("Bounce");
+            Adaptive = new CustomVBool("Adaptive");
+            Behind = new CustomVBool("Behind");
+        }
+    }
+
+    public class CustomNamePlate : CustomItem
+    {
+        public CustomVImage I_Plate { get; set; }
+
+        protected override IEnumerable<CustomVariable> ExtendedContents()
+        {
+            yield return I_Plate;
+            yield break;
+        }
+
+        public CustomNamePlate() : base()
+        {
+            I_Plate = new CustomVImage("Plate");
+        }
+    }
+
+    [HarmonyPatch]
+    public class CustomParts
+    {
+        public static Material hatShader;
+
+        public static Dictionary<string, CustomHat> CustomHatRegistry = new Dictionary<string, CustomHat>();
+        public static Dictionary<string, CustomNamePlate> CustomNamePlateRegistry = new Dictionary<string, CustomNamePlate>();
+        public static CustomHat TestHat = null;
+        public static CustomNamePlate TestNamePlate = null;
 
         private static HatBehaviour CreateHatBehaviour(CustomHat ch, bool fromDisk = false, bool testOnly = false)
         {
@@ -147,64 +294,73 @@ namespace Nebula.Module
                 }
             }
 
-            HatBehaviour hat = new HatBehaviour();
-            hat.MainImage = CreateHatSprite(ch.resource, fromDisk);
-            if (ch.backresource != null)
+            foreach(var content in ch.Contents())
             {
-                hat.BackImage = CreateHatSprite(ch.backresource, fromDisk);
-                ch.behind = true; // Required to view backresource
+                content.LoadImage("MoreCosmic/hats", fromDisk);
             }
-            if (ch.climbresource != null)
-                hat.ClimbImage = CreateHatSprite(ch.climbresource, fromDisk);
-            hat.name = ch.name + "\nby " + ch.author;
+
+            HatBehaviour hat = new HatBehaviour();
+            hat.MainImage = ch.I_Main.Image;
+            if (ch.I_Back)
+            {
+                hat.BackImage = ch.I_Back.Image;
+                ch.Behind.Value = true;
+            }
+            if (ch.I_Climb)
+                hat.ClimbImage = ch.I_Climb.Image;
+            hat.name = ch.Name.Value + "\nby " + ch.Author.Value;
             hat.Order = 99;
-            hat.ProductId = "hat_" + ch.name.Replace(' ', '_');
-            hat.InFront = !ch.behind;
-            hat.NoBounce = !ch.bounce;
+            hat.ProductId = "hat_" + ch.Name.Value.Replace(' ', '_');
+            hat.InFront = !ch.Behind.Value;
+            hat.NoBounce = !ch.Bounce.Value;
             hat.ChipOffset = new Vector2(0f, 0.2f);
             hat.Free = true;
             hat.NotInStore = true;
 
 
-            if (ch.adaptive && hatShader != null)
+            if (ch.Adaptive.Value && hatShader != null)
                 hat.AltShader = hatShader;
-
-            HatExtension extend = new HatExtension();
-            extend.author = ch.author != null ? ch.author : "Unknown";
-            extend.package = ch.package != null ? ch.package : "Misc.";
-            extend.condition = ch.condition != null ? ch.condition : "none";
-
-            if (ch.flipresource != null)
-                extend.FlipImage = CreateHatSprite(ch.flipresource, fromDisk);
-            if (ch.backflipresource != null)
-                extend.BackFlipImage = CreateHatSprite(ch.backflipresource, fromDisk);
 
             if (testOnly)
             {
-                TestExt = extend;
-                TestExt.condition = hat.name;
+                TestHat = ch;
+                TestHat.Condition.Value = hat.name;
             }
             else
             {
-                CustomHatRegistry.Add(hat.name, extend);
+                CustomHatRegistry.Add(hat.name, ch);
             }
 
             return hat;
         }
 
-        private static HatBehaviour CreateHatBehaviour(CustomHatLoader.CustomHatOnline chd)
+        private static NamePlateData CreateNamePlateData(CustomNamePlate ch, bool fromDisk = false, bool testOnly = false)
         {
-            string filePath = Path.GetDirectoryName(Application.dataPath) + @"\TheOtherHats\";
-            chd.resource = filePath + chd.resource;
-            if (chd.backresource != null)
-                chd.backresource = filePath + chd.backresource;
-            if (chd.climbresource != null)
-                chd.climbresource = filePath + chd.climbresource;
-            if (chd.flipresource != null)
-                chd.flipresource = filePath + chd.flipresource;
-            if (chd.backflipresource != null)
-                chd.backflipresource = filePath + chd.backflipresource;
-            return CreateHatBehaviour(chd, true);
+            foreach (var content in ch.Contents())
+            {
+                content.LoadImage("MoreCosmic/namePlates", fromDisk);
+            }
+
+            NamePlateData np = new NamePlateData();
+            np.Image = ch.I_Plate.Image;
+            np.name = ch.Name.Value + "\nby " + ch.Author.Value;
+            np.Order = 99;
+            np.ProductId = "hat_" + ch.Name.Value.Replace(' ', '_');
+            np.ChipOffset = new Vector2(0f, 0.2f);
+            np.Free = true;
+            np.NotInStore = true;
+            
+            if (testOnly)
+            {
+                TestNamePlate = ch;
+                TestNamePlate.Condition.Value = np.name;
+            }
+            else
+            {
+                CustomNamePlateRegistry.Add(np.name, ch);
+            }
+
+            return np;
         }
 
         [HarmonyPatch(typeof(HatManager), nameof(HatManager.GetHatById))]
@@ -220,22 +376,42 @@ namespace Nebula.Module
 
                 try
                 {
-                    if (!LOADED)
-                    {
-                        Assembly assembly = Assembly.GetExecutingAssembly();
-                        string hatres = $"{assembly.GetName().Name}.Resources.CustomHats";
-                        string[] hats = (from r in assembly.GetManifestResourceNames()
-                                         where r.StartsWith(hatres) && r.EndsWith(".png")
-                                         select r).ToArray<string>();
-
-                        List<CustomHat> customhats = createCustomHatDetails(hats);
-                        foreach (CustomHat ch in customhats)
-                            __instance.AllHats.Add(CreateHatBehaviour(ch));
-                    }
                     while (CustomHatLoader.hatdetails.Count > 0)
                     {
-                        __instance.AllHats.Add(CreateHatBehaviour(CustomHatLoader.hatdetails[0]));
+                        __instance.AllHats.Add(CreateHatBehaviour(CustomHatLoader.hatdetails[0],true));
                         CustomHatLoader.hatdetails.RemoveAt(0);
+                    }
+                }
+                catch (System.Exception e)
+                {
+                    if (!LOADED)
+                        System.Console.WriteLine("Unable to add Custom Hats\n" + e);
+                }
+                LOADED = true;
+            }
+            static void Postfix(HatManager __instance)
+            {
+                RUNNING = false;
+            }
+        }
+
+        [HarmonyPatch(typeof(HatManager), nameof(HatManager.GetNamePlateById))]
+        private static class NamePlateManagerPatch
+        {
+            private static bool LOADED;
+            private static bool RUNNING;
+
+            static void Prefix(HatManager __instance)
+            {
+                if (RUNNING) return;
+                RUNNING = true; // prevent simultanious execution
+
+                try
+                {
+                    while (CustomHatLoader.namePlatedetails.Count > 0)
+                    {
+                        __instance.AllNamePlates.Add(CreateNamePlateData(CustomHatLoader.namePlatedetails[0], true));
+                        CustomHatLoader.namePlatedetails.RemoveAt(0);
                     }
                 }
                 catch (System.Exception e)
@@ -260,24 +436,24 @@ namespace Nebula.Module
                 if (currentAnimation == __instance.ClimbAnim || currentAnimation == __instance.ClimbDownAnim) return;
                 HatParent hp = __instance.myPlayer.HatRenderer;
                 if (hp.Hat == null) return;
-                HatExtension extend = hp.Hat.getHatExtension();
+                CustomHat extend = hp.Hat.getHatData();
                 if (extend == null) return;
-                if (extend.FlipImage != null)
+                if (extend.I_Flip)
                 {
                     if (__instance.rend.flipX)
                     {
-                        hp.FrontLayer.sprite = extend.FlipImage;
+                        hp.FrontLayer.sprite = extend.I_Flip.Image;
                     }
                     else
                     {
                         hp.FrontLayer.sprite = hp.Hat.MainImage;
                     }
                 }
-                if (extend.BackFlipImage != null)
+                if (extend.I_BackFlip != null)
                 {
                     if (__instance.rend.flipX)
                     {
-                        hp.BackLayer.sprite = extend.BackFlipImage;
+                        hp.BackLayer.sprite = extend.I_BackFlip.Image;
                     }
                     else
                     {
@@ -287,42 +463,19 @@ namespace Nebula.Module
             }
         }
 
-        [HarmonyPatch(typeof(HatParent), nameof(HatParent.SetHat), new System.Type[] { typeof(string), typeof(int) })]
-        private static class HatParentSetHatPatch
-        {
-            static void Postfix(HatParent __instance, string hatId, int color)
-            {
-                if (DestroyableSingleton<TutorialManager>.InstanceExists)
-                {
-                    try
-                    {
-                        string filePath = Path.GetDirectoryName(Application.dataPath) + @"\TheOtherHats\Test";
-                        DirectoryInfo d = new DirectoryInfo(filePath);
-                        string[] filePaths = d.GetFiles("*.png").Select(x => x.FullName).ToArray(); // Getting Text files
-                        List<CustomHat> hats = createCustomHatDetails(filePaths, true);
-                        if (hats.Count > 0)
-                        {
-                            __instance.Hat = CreateHatBehaviour(hats[0], true, true);
-                            __instance.SetHat(color);
-                        }
-                    }
-                    catch (System.Exception e)
-                    {
-                        System.Console.WriteLine("Unable to create test hat\n" + e);
-                    }
-                }
-            }
-        }
 
         private static List<TMPro.TMP_Text> hatsTabCustomTexts = new List<TMPro.TMP_Text>();
-        public static string innerslothPackageName = "innerslothHats";
+        private static List<TMPro.TMP_Text> nameplatesTabCustomTexts = new List<TMPro.TMP_Text>();
+
+        public static string innerslothHatPackageName = "innerslothHats";
+        public static string innerslothNamePlatePackageName = "innerslothNamePlates";
         private static float headerSize = 0.8f;
         private static float headerX = 0.8f;
         private static float inventoryTop = 1.5f;
         private static float inventoryBot = -2.5f;
         private static float inventoryZ = -2f;
 
-        public static void calcItemBounds(HatsTab __instance)
+        public static void calcItemBounds(InventoryTab __instance)
         {
             inventoryTop = __instance.scroller.Inner.position.y - 0.5f;
             inventoryBot = __instance.scroller.Inner.position.y - 4.5f;
@@ -333,7 +486,7 @@ namespace Nebula.Module
         {
             public static TMPro.TMP_Text textTemplate;
 
-            public static float createHatPackage(List<System.Tuple<HatBehaviour, HatExtension>> hats, string packageName, float YStart, HatsTab __instance)
+            public static float createHatPackage(List<System.Tuple<HatBehaviour, CustomHat>> hats, string packageName, float YStart, HatsTab __instance)
             {
                 float offset = YStart;
 
@@ -357,7 +510,7 @@ namespace Nebula.Module
                 for (int i = 0; i < hats.Count; i++)
                 {
                     HatBehaviour hat = hats[i].Item1;
-                    HatExtension ext = hats[i].Item2;
+                    CustomHat ext = hats[i].Item2;
 
                     float xpos = __instance.XRange.Lerp((i % __instance.NumPerRow) / (__instance.NumPerRow - 1f));
                     float ypos = offset - (i / __instance.NumPerRow) * __instance.YOffset;
@@ -392,7 +545,7 @@ namespace Nebula.Module
                 calcItemBounds(__instance);
 
                 HatBehaviour[] unlockedHats = DestroyableSingleton<HatManager>.Instance.GetUnlockedHats();
-                Dictionary<string, List<System.Tuple<HatBehaviour, HatExtension>>> packages = new Dictionary<string, List<System.Tuple<HatBehaviour, HatExtension>>>();
+                Dictionary<string, List<System.Tuple<HatBehaviour, CustomHat>>> packages = new Dictionary<string, List<System.Tuple<HatBehaviour, CustomHat>>>();
 
                 Helpers.destroyList(hatsTabCustomTexts);
                 Helpers.destroyList(__instance.ColorChips);
@@ -404,35 +557,33 @@ namespace Nebula.Module
 
                 foreach (HatBehaviour hatBehaviour in unlockedHats)
                 {
-                    HatExtension ext = hatBehaviour.getHatExtension();
+                    CustomHat ext = hatBehaviour.getHatData();
 
                     if (ext != null)
                     {
-                        if (!packages.ContainsKey(ext.package))
-                            packages[ext.package] = new List<System.Tuple<HatBehaviour, HatExtension>>();
-                        packages[ext.package].Add(new System.Tuple<HatBehaviour, HatExtension>(hatBehaviour, ext));
+                        if (!packages.ContainsKey(ext.Package.Value))
+                            packages[ext.Package.Value] = new List<System.Tuple<HatBehaviour, CustomHat>>();
+                        packages[ext.Package.Value].Add(new System.Tuple<HatBehaviour, CustomHat>(hatBehaviour, ext));
                     }
                     else
                     {
-                        if (!packages.ContainsKey(innerslothPackageName))
-                            packages[innerslothPackageName] = new List<System.Tuple<HatBehaviour, HatExtension>>();
-                        packages[innerslothPackageName].Add(new System.Tuple<HatBehaviour, HatExtension>(hatBehaviour, null));
+                        if (!packages.ContainsKey(innerslothHatPackageName))
+                            packages[innerslothHatPackageName] = new List<System.Tuple<HatBehaviour, CustomHat>>();
+                        packages[innerslothHatPackageName].Add(new System.Tuple<HatBehaviour, CustomHat>(hatBehaviour, null));
                     }
                 }
 
                 float YOffset = __instance.YStart;
 
                 var orderedKeys = packages.Keys.OrderBy((string x) => {
-                    if (x == innerslothPackageName) return 1000;
+                    if (x == innerslothHatPackageName) return 1000;
                     if (x == "developerHats") return 200;
-                    if (x.Contains("gmEdition")) return 100;
-                    if (x.Contains("shiune")) return 0;
                     return 500;
                 });
 
                 foreach (string key in orderedKeys)
                 {
-                    List<System.Tuple<HatBehaviour, HatExtension>> value = packages[key];
+                    List<System.Tuple<HatBehaviour, CustomHat>> value = packages[key];
                     YOffset = createHatPackage(value, key, YOffset, __instance);
                 }
 
@@ -441,16 +592,115 @@ namespace Nebula.Module
             }
         }
 
-        [HarmonyPatch(typeof(HatsTab), nameof(HatsTab.Update))]
-        public class HatsTabUpdatePatch
+        [HarmonyPatch(typeof(NameplatesTab), nameof(NameplatesTab.OnEnable))]
+        public class NamePlatesTabOnEnablePatch
         {
-            public static bool Prefix()
+            public static TMPro.TMP_Text textTemplate;
+
+            public static float createNameplatePackage(List<System.Tuple<NamePlateData, CustomNamePlate>> nameplates, string packageName, float YStart, NameplatesTab __instance)
             {
-                //return false;
-                return true;
+                float offset = YStart;
+
+                if (textTemplate != null)
+                {
+                    TMPro.TMP_Text title = UnityEngine.Object.Instantiate<TMPro.TMP_Text>(textTemplate, __instance.scroller.Inner);
+                    title.transform.parent = __instance.scroller.Inner;
+                    title.transform.localPosition = new Vector3(headerX, YStart, inventoryZ);
+                    title.alignment = TMPro.TextAlignmentOptions.Center;
+                    title.fontSize *= 1.25f;
+                    title.fontWeight = TMPro.FontWeight.Thin;
+                    title.enableAutoSizing = false;
+                    title.autoSizeTextContainer = true;
+                    title.text = Language.Language.GetString("cosmic.package." + packageName);
+                    offset -= headerSize * __instance.YOffset;
+                    nameplatesTabCustomTexts.Add(title);
+                }
+
+                var numNameplates = nameplates.Count;
+
+                for (int i = 0; i < nameplates.Count; i++)
+                {
+                    NamePlateData nameplate = nameplates[i].Item1;
+                    CustomNamePlate ext = nameplates[i].Item2;
+
+                    float xpos = __instance.XRange.Lerp((i % __instance.NumPerRow) / (__instance.NumPerRow - 1f));
+                    float ypos = offset - (i / __instance.NumPerRow) * __instance.YOffset;
+                    ColorChip colorChip = UnityEngine.Object.Instantiate<ColorChip>(__instance.ColorTabPrefab, __instance.scroller.Inner);
+
+                    colorChip.transform.localPosition = new Vector3(xpos, ypos, inventoryZ);
+                    if (ActiveInputManager.currentControlType == ActiveInputManager.InputType.Keyboard)
+                    {
+                        colorChip.Button.OnMouseOver.AddListener((UnityEngine.Events.UnityAction)(() => __instance.SelectNameplate(nameplate)));
+                        colorChip.Button.OnMouseOut.AddListener((UnityEngine.Events.UnityAction)(() => __instance.SelectNameplate(DestroyableSingleton<HatManager>.Instance.GetNamePlateById(SaveManager.LastNamePlate))));
+                        colorChip.Button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => __instance.ClickEquip()));
+                    }
+                    else
+                    {
+                        colorChip.Button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => __instance.SelectNameplate(nameplate)));
+                    }
+
+                    colorChip.gameObject.GetComponent<NameplateChip>().image.sprite = nameplate.Image;
+                    __instance.ColorChips.Add(colorChip);
+                }
+
+                return offset - ((numNameplates - 1) / __instance.NumPerRow) * __instance.YOffset - headerSize;
             }
 
-            public static void Postfix(HatsTab __instance)
+            public static bool Prefix(NameplatesTab __instance)
+            {
+                calcItemBounds(__instance);
+
+                NamePlateData[] unlockedNameplates = DestroyableSingleton<HatManager>.Instance.GetUnlockedNamePlates();
+                Dictionary<string, List<System.Tuple<NamePlateData, CustomNamePlate>>> packages = new Dictionary<string, List<System.Tuple<NamePlateData, CustomNamePlate>>>();
+
+                Helpers.destroyList(nameplatesTabCustomTexts);
+                Helpers.destroyList(__instance.ColorChips);
+
+                nameplatesTabCustomTexts.Clear();
+                __instance.ColorChips.Clear();
+
+                textTemplate = PlayerCustomizationMenu.Instance.itemName;
+
+                foreach (NamePlateData nameplate in unlockedNameplates)
+                {
+                    CustomNamePlate ext = nameplate.getNamePlateData();
+
+                    if (ext != null)
+                    {
+                        if (!packages.ContainsKey(ext.Package.Value))
+                            packages[ext.Package.Value] = new List<System.Tuple<NamePlateData, CustomNamePlate>>();
+                        packages[ext.Package.Value].Add(new System.Tuple<NamePlateData, CustomNamePlate>(nameplate, ext));
+                    }
+                    else
+                    {
+                        if (!packages.ContainsKey(innerslothNamePlatePackageName))
+                            packages[innerslothNamePlatePackageName] = new List<System.Tuple<NamePlateData, CustomNamePlate>>();
+                        packages[innerslothNamePlatePackageName].Add(new System.Tuple<NamePlateData, CustomNamePlate>(nameplate, null));
+                    }
+                }
+
+                float YOffset = __instance.YStart;
+
+                var orderedKeys = packages.Keys.OrderBy((string x) => {
+                    if (x == innerslothNamePlatePackageName) return 1000;
+                    if (x == "developerNamePlates") return 200;
+                    return 500;
+                });
+
+                foreach (string key in orderedKeys)
+                {
+                    List<System.Tuple<NamePlateData, CustomNamePlate>> value = packages[key];
+                    YOffset = createNameplatePackage(value, key, YOffset, __instance);
+                }
+
+                __instance.scroller.ContentYBounds.max = -(YOffset + 3.0f + headerSize);
+                return false;
+            }
+        }
+
+        [HarmonyPatch]
+        public class TabUpdatePatch {
+            private static void TabPostFix(InventoryTab __instance)
             {
                 // Manually hide all custom TMPro.TMP_Text objects that are outside the ScrollRect
                 foreach (TMPro.TMP_Text customText in hatsTabCustomTexts)
@@ -463,7 +713,39 @@ namespace Nebula.Module
                     }
                 }
             }
+
+            [HarmonyPatch(typeof(HatsTab), nameof(HatsTab.Update))]
+            public class HatsTabUpdatePatch
+            {
+                public static bool Prefix()
+                {
+                    //return false;
+                    return true;
+                }
+
+                public static void Postfix(HatsTab __instance)
+                {
+                    TabPostFix(__instance);
+                }
+            }
+
+            [HarmonyPatch(typeof(NameplatesTab), nameof(NameplatesTab.Update))]
+            public class NamePlateTabUpdatePatch
+            {
+                public static bool Prefix()
+                {
+                    //return false;
+                    return true;
+                }
+
+                public static void Postfix(NameplatesTab __instance)
+                {
+                    TabPostFix(__instance);
+                }
+            }
         }
+
+
     }
 
     public class CustomHatLoader
@@ -475,8 +757,12 @@ namespace Nebula.Module
             "https://raw.githubusercontent.com/Dolly1016/MoreCosmic/master"
         };
 
-        public static List<CustomHatOnline> hatdetails = new List<CustomHatOnline>();
+        public static List<CustomHat> hatdetails = new List<CustomHat>();
+        public static List<CustomNamePlate> namePlatedetails = new List<CustomNamePlate>();
+
         private static Task hatFetchTask = null;
+        private static Task namePlateFetchTask = null;
+
         public static void LaunchHatFetcher()
         {
             if (running)
@@ -487,15 +773,23 @@ namespace Nebula.Module
 
         private static async Task LaunchHatFetcherAsync()
         {
-            hatdetails = new List<CustomHatOnline>();
-            List<string> repos = new List<string>(cosmicRepos);
+            System.IO.Directory.CreateDirectory("MoreCosmic");
+            System.IO.Directory.CreateDirectory("MoreCosmic/hats");
+            System.IO.Directory.CreateDirectory("MoreCosmic/namePlates");
 
+            List<string> repos = new List<string>(cosmicRepos);
 
             foreach (string repo in repos)
             {
                 try
                 {
-                    HttpStatusCode status = await FetchHats(repo);
+                    HttpStatusCode status;
+
+                    status = await FetchItems(repo, "hats", hatdetails);
+                    if (status != HttpStatusCode.OK)
+                        System.Console.WriteLine($"Repo was not found. : {repo}\n");
+
+                    status = await FetchItems(repo, "namePlates", namePlatedetails);
                     if (status != HttpStatusCode.OK)
                         System.Console.WriteLine($"Repo was not found. : {repo}\n");
                 }
@@ -507,23 +801,11 @@ namespace Nebula.Module
             running = false;
         }
 
-        private static string sanitizeResourcePath(string res)
-        {
-            if (res == null || !res.EndsWith(".png"))
-                return null;
-
-            res = res.Replace("\\", "")
-                     .Replace("/", "")
-                     .Replace("*", "")
-                     .Replace("..", "");
-            return res;
-        }
-
-        public static async Task<HttpStatusCode> FetchHats(string repo)
+        public static async Task<HttpStatusCode> FetchItems<Cosmic>(string repo,string category,List<Cosmic> cosmics) where Cosmic : CustomItem, new()
         {
             HttpClient http = new HttpClient();
             http.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue { NoCache = true };
-            var response = await http.GetAsync(new System.Uri($"{repo}/Structure.json"), HttpCompletionOption.ResponseContentRead);
+            var response = await http.GetAsync(new System.Uri($"{repo}/Contents.json"), HttpCompletionOption.ResponseContentRead);
             try
             {
                 if (response.StatusCode != HttpStatusCode.OK) return response.StatusCode;
@@ -532,77 +814,42 @@ namespace Nebula.Module
                     System.Console.WriteLine("Server returned no data: " + response.StatusCode.ToString());
                     return HttpStatusCode.ExpectationFailed;
                 }
+
                 string json = await response.Content.ReadAsStringAsync();
-                JToken jobj = JObject.Parse(json)["hats"];
+                JToken jobj = JObject.Parse(json)[category];
                 if (!jobj.HasValues) return HttpStatusCode.ExpectationFailed;
 
-                List<CustomHatOnline> hatdatas = new List<CustomHatOnline>();
+                List<Cosmic> cosList = new List<Cosmic>();
+                
+                List<CustomVariable> markedfordownload = new List<CustomVariable>();
+                string filePath = Path.GetDirectoryName(Application.dataPath) + @"\MoreCosmic\"+ category+@"\";
+                MD5 md5 = MD5.Create();
+
 
                 for (JToken current = jobj.First; current != null; current = current.Next)
                 {
                     if (current.HasValues)
                     {
-                        CustomHatOnline info = new CustomHatOnline();
+                        Cosmic cos = new Cosmic();
 
-                        info.name = current["name"]?.ToString();
-                        info.resource = sanitizeResourcePath(current["resource"]?.ToString());
-                        if (info.resource == null || info.name == null) // required
-                            continue;
-                        info.reshash = current["reshasha"]?.ToString();
-                        info.backresource = sanitizeResourcePath(current["backresource"]?.ToString());
-                        info.reshashb = current["reshashb"]?.ToString();
-                        info.climbresource = sanitizeResourcePath(current["climbresource"]?.ToString());
-                        info.reshashc = current["reshashc"]?.ToString();
-                        info.flipresource = sanitizeResourcePath(current["flipresource"]?.ToString());
-                        info.reshashf = current["reshashf"]?.ToString();
-                        info.backflipresource = sanitizeResourcePath(current["backflipresource"]?.ToString());
-                        info.reshashbf = current["reshashbf"]?.ToString();
-
-                        info.author = current["author"]?.ToString();
-                        info.package = current["package"]?.ToString();
-                        info.condition = current["condition"]?.ToString();
-                        info.bounce = current["bounce"] != null;
-                        info.adaptive = current["adaptive"] != null;
-                        info.behind = current["behind"] != null;
-
-
-                        hatdatas.Add(info);
-                    }
-                }
-
-                List<string> markedfordownload = new List<string>();
-
-                string filePath = Path.GetDirectoryName(Application.dataPath) + @"\TheOtherHats\";
-                MD5 md5 = MD5.Create();
-                foreach (CustomHatOnline data in hatdatas)
-                {
-                    if (doesResourceRequireDownload(filePath + data.resource, data.reshash, md5))
-                        markedfordownload.Add(data.resource);
-                    if (data.backresource != null && doesResourceRequireDownload(filePath + data.backresource, data.reshashb, md5))
-                        markedfordownload.Add(data.backresource);
-                    if (data.climbresource != null && doesResourceRequireDownload(filePath + data.climbresource, data.reshashc, md5))
-                        markedfordownload.Add(data.climbresource);
-                    if (data.flipresource != null && doesResourceRequireDownload(filePath + data.flipresource, data.reshashf, md5))
-                        markedfordownload.Add(data.flipresource);
-                    if (data.backflipresource != null && doesResourceRequireDownload(filePath + data.backflipresource, data.reshashbf, md5))
-                        markedfordownload.Add(data.backflipresource);
-                }
-
-                foreach (var file in markedfordownload)
-                {
-
-                    var hatFileResponse = await http.GetAsync($"{repo}/hats/{file}", HttpCompletionOption.ResponseContentRead);
-                    if (hatFileResponse.StatusCode != HttpStatusCode.OK) continue;
-                    using (var responseStream = await hatFileResponse.Content.ReadAsStreamAsync())
-                    {
-                        using (var fileStream = File.Create($"{filePath}\\{file}"))
+                        foreach (var content in cos.Contents())
                         {
-                            responseStream.CopyTo(fileStream);
+                            content.Load(current);
+                            if (content.DoesResourceRequireDownload(filePath, md5)) markedfordownload.Add(content);
                         }
+                        cosList.Add(cos);
                     }
+                    else break;
+
                 }
 
-                hatdetails.AddRange(hatdatas);
+
+                foreach (var content in markedfordownload)
+                {
+                    await content.Download(repo+"/"+category+"/", filePath,http);
+                }
+
+                cosmics.AddRange(cosList);
             }
             catch (System.Exception ex)
             {
@@ -610,38 +857,28 @@ namespace Nebula.Module
             }
             return HttpStatusCode.OK;
         }
-
-        private static bool doesResourceRequireDownload(string respath, string reshash, MD5 md5)
-        {
-            if (reshash == null || !File.Exists(respath))
-                return true;
-
-            using (var stream = File.OpenRead(respath))
-            {
-                var hash = System.BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "").ToLowerInvariant();
-                return !reshash.Equals(hash);
-            }
-        }
-
-        public class CustomHatOnline : CustomHats.CustomHat
-        {
-            public string reshash { get; set; }
-            public string reshashb { get; set; }
-            public string reshashc { get; set; }
-            public string reshashf { get; set; }
-            public string reshashbf { get; set; }
-        }
     }
-    public static class CustomHatExtensions
+    public static class CustomItemManager
     {
-        public static CustomHats.HatExtension getHatExtension(this HatBehaviour hat)
+        public static CustomHat getHatData(this HatBehaviour hat)
         {
-            CustomHats.HatExtension ret = null;
-            if (CustomHats.TestExt != null && CustomHats.TestExt.condition.Equals(hat.name))
+            CustomHat ret = null;
+            if (CustomParts.TestHat != null && CustomParts.TestHat.Condition.Value.Equals(hat.name))
             {
-                return CustomHats.TestExt;
+                return CustomParts.TestHat;
             }
-            CustomHats.CustomHatRegistry.TryGetValue(hat.name, out ret);
+            CustomParts.CustomHatRegistry.TryGetValue(hat.name, out ret);
+            return ret;
+        }
+
+        public static CustomNamePlate getNamePlateData(this NamePlateData namePlate)
+        {
+            CustomNamePlate ret = null;
+            if (CustomParts.TestNamePlate != null && CustomParts.TestNamePlate.Condition.Value.Equals(namePlate.name))
+            {
+                return CustomParts.TestNamePlate;
+            }
+            CustomParts.CustomNamePlateRegistry.TryGetValue(namePlate.name, out ret);
             return ret;
         }
     }

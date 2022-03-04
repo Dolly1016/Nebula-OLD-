@@ -143,6 +143,7 @@ namespace Nebula.Roles.ImpostorRoles
                 KeyCode.Q
             );
             killButton.MaxTimer = snipeCoolDownOption.getFloat();
+            killButton.FireOnClicked = true;
         }
 
         public override void ButtonActivate()
@@ -208,8 +209,6 @@ namespace Nebula.Roles.ImpostorRoles
 
         public override void MyPlayerControlUpdate()
         {
-            if (PlayerControl.LocalPlayer.Data.IsDead) return;
-
             if (equipRifleFlag)
             {
                 RPCEventInvoker.UpdatePlayerControl();

@@ -15,7 +15,7 @@ namespace Nebula
 {
     public class DebugMode
     {
-        HashSet<string> DebugToken;
+        private HashSet<string> DebugToken;
 
         public bool IsValid { get; private set; }
         public DebugMode()
@@ -23,11 +23,23 @@ namespace Nebula
             DebugToken = new HashSet<string>();
 
             if (File.Exists("patches/DebugMode.patch")) IsValid = true;
+            if (!IsValid) return;
+
+            foreach (string token in System.IO.File.ReadLines("patches/DebugMode.patch"))
+            {
+                DebugToken.Add(token.Replace("\n", ""));
+            }
+
         }
 
         public static implicit operator bool(DebugMode debugMode)
         {
             return debugMode.IsValid;
+        }
+
+        public bool HasToken(string token)
+        {
+            return DebugToken.Contains(token);
         }
     }
 
@@ -40,7 +52,7 @@ namespace Nebula
         public const string AmongUsVersion = "2022.2.24";
         public const string PluginGuid = "jp.dreamingpig.amongus.nebula";
         public const string PluginName = "TheNebula";
-        public const string PluginVersion = "1.4.5";
+        public const string PluginVersion = "1.4.5.1";
         /*
         public const string PluginVisualVersion = "22.02.14a";
         public const string PluginStage = "Snapshot";
@@ -49,8 +61,8 @@ namespace Nebula
         public const string PluginVisualVersion = PluginVersion;
         public const string PluginStage = "";
         // */
-        public const string PluginVersionForFetch = "1.4.5";
-        public byte[] PluginVersionData = new byte[] { 1, 4, 5, 0 };
+        public const string PluginVersionForFetch = "1.4.5.1";
+        public byte[] PluginVersionData = new byte[] { 1, 4, 5, 1 };
 
         public static NebulaPlugin Instance;
 
@@ -138,7 +150,7 @@ namespace Nebula
             }
 
             /* 以下デバッグモード専用 */
-            if (!NebulaPlugin.DebugMode) return;
+            if (!NebulaPlugin.DebugMode.HasToken("GameControl")) return;
 
             // Spawn dummys
             if (Input.GetKeyDown(KeyCode.F1))
@@ -197,7 +209,7 @@ namespace Nebula
                 if (target == null) return;
 
                 Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, target, Game.PlayerData.PlayerStatus.Dead, false, false);
-
+                
             }
         }
 

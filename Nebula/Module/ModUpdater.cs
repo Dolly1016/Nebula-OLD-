@@ -27,6 +27,77 @@ using Twitch;
 
 namespace Nebula.Module
 {
+    [HarmonyPatch(typeof(AnnouncementPopUp), nameof(AnnouncementPopUp.UpdateAnnounceText))]
+    public static class AnnouncementPatch
+    {
+        private static bool ShownFlag = false;
+        private static ConfigEntry<int> AnnounceVersion = NebulaPlugin.Instance.Config.Bind("Announce", "Version", (int)0);
+        private static string Announcement = "";
+
+        public static bool LoadAnnouncement()
+        {
+            HttpClient http = new HttpClient();
+            http.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue { NoCache = true };
+            var task= http.GetAsync(new System.Uri($"https://raw.githubusercontent.com/Dolly1016/MoreCosmic/master/announcement.json"), HttpCompletionOption.ResponseContentRead);
+            task.Wait();
+            var response=task.Result;
+            try
+            {
+                if (response.StatusCode != HttpStatusCode.OK) return false;
+                if (response.Content == null) return false;
+
+                var jsonTask = response.Content.ReadAsStringAsync();
+                jsonTask.Wait();
+                string json = jsonTask.Result;
+                JObject jObj = JObject.Parse(json);
+                JToken version = jObj["Version"];
+                if (!version.HasValues) return false;
+
+                int Version = int.Parse(version.ToString());
+
+                //既にみたことがあれば出さない
+                if (AnnounceVersion.Value == Version)
+                {
+                    ShownFlag = false;
+                    return false;
+                }
+
+                string lang = Language.Language.GetLanguage(SaveManager.LastLanguage);
+                if (jObj[lang].HasValues)
+                    Announcement = jObj[lang].ToString();
+                else if (jObj["English"].HasValues)
+                    Announcement = jObj["English"].ToString();
+                else if (jObj["Japanese"].HasValues)
+                    Announcement = jObj["Japanese"].ToString();
+                else
+                {
+                    Announcement = "-Invalid Announcement-";
+                    return false;
+                }
+            }
+            catch (System.Exception ex)
+            {
+            }
+            return true;
+        }
+
+        public static bool Prefix(AnnouncementPopUp __instance)
+        {
+            if (!ShownFlag)
+            {
+                if (LoadAnnouncement())
+                {
+                    AnnouncementPopUp.UpdateState = AnnouncementPopUp.AnnounceState.Success;
+                    ShownFlag = true;
+                }
+            }
+
+            __instance.AnnounceTextMeshPro.text = Announcement;
+
+            return false;
+        }
+    }
+
     [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start))]
     public class ModUpdaterButton
     {

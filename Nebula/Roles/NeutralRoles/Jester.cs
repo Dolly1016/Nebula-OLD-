@@ -34,7 +34,7 @@ namespace Nebula.Roles.NeutralRoles
         {
             WinTrigger = false;
             CanMoveInVents = canUseVentsOption.getBool();
-            VentPermission = canUseVentsOption.getBool() ? VentPermission.CanUseUnlimittedVent : VentPermission.CanNotUse;
+            VentPermission = canUseVentsOption.getBool() ? VentPermission.CanUseLimittedVent : VentPermission.CanNotUse;
             canInvokeSabotage = canInvokeSabotageOption.getBool();
         }
 

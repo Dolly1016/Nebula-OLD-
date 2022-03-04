@@ -33,6 +33,7 @@ namespace Nebula.Objects
         private ImageNames textType;
         //ボタンの有効化フラグと、一時的な隠しフラグ
         private bool activeFlag,hideFlag;
+        public bool FireOnClicked = false;
 
         public bool IsValid { get { return activeFlag; } }
         public bool IsShown { get { return activeFlag && !hideFlag; } }
@@ -187,6 +188,17 @@ namespace Nebula.Objects
             this.hideFlag = hideFlag;
         }
 
+        private bool MouseClicked()
+        {
+            if (!Input.GetMouseButtonDown(0)) return false;
+
+            //中心からの距離を求める
+            float x = Input.mousePosition.x - (Screen.width)/2;
+            float y = Input.mousePosition.y - (Screen.height)/2;
+
+            return Mathf.Sqrt(x * x + y * y) < 280;
+        }
+
         private void Update()
         {
             if (Timer >= 0)
@@ -244,7 +256,8 @@ namespace Nebula.Objects
             CooldownHelpers.SetCooldownNormalizedUvs(actionButton.graphic);
 
             // Trigger OnClickEvent if the hotkey is being pressed down
-            if (hotkey.HasValue && Input.GetKeyDown(hotkey.Value)) onClickEvent();
+            if ((hotkey.HasValue && Input.GetKeyDown(hotkey.Value)) ||
+                (FireOnClicked && MouseClicked())) onClickEvent();
         }
     }
 }

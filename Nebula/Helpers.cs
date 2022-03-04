@@ -27,7 +27,8 @@ namespace Nebula
         {
             get
             {
-                return !PlayerControl.LocalPlayer.inVent && !MeetingHud.Instance && (PlayerControl.LocalPlayer.CanMove || (!(MapBehaviour.Instance && MapBehaviour.Instance.IsOpen)  && (!Minigame.Instance || Minigame.Instance.MyNormTask)));
+                return !PlayerControl.LocalPlayer.inVent && !MeetingHud.Instance && 
+                    (PlayerControl.LocalPlayer.CanMove || (!(MapBehaviour.Instance && MapBehaviour.Instance.IsOpen))  || ((!Minigame.Instance) || Minigame.Instance.MyNormTask || Minigame.Instance is DoorCardSwipeGame || Minigame.Instance is DoorBreakerGame));
             }
         }
 
