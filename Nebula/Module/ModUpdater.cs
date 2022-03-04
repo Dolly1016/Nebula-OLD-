@@ -51,10 +51,10 @@ namespace Nebula.Module
                 JObject jObj = JObject.Parse(json);
                 JToken version = jObj["Version"];
                 if (!version.HasValues) return false;
-
+                NebulaPlugin.Instance.Logger.Print("D");
                 int Version = int.Parse(version.ToString());
 
-                NebulaPlugin.Instance.Logger.Print("D");
+                NebulaPlugin.Instance.Logger.Print("E");
 
                 //既にみたことがあれば出さない
                 if (AnnounceVersion.Value == Version)
@@ -63,7 +63,7 @@ namespace Nebula.Module
                     return false;
                 }
 
-                NebulaPlugin.Instance.Logger.Print("E");
+                NebulaPlugin.Instance.Logger.Print("F");
 
                 string lang = Language.Language.GetLanguage(SaveManager.LastLanguage);
                 if (jObj[lang].HasValues)
@@ -78,7 +78,7 @@ namespace Nebula.Module
                     return false;
                 }
 
-                NebulaPlugin.Instance.Logger.Print("F");
+                NebulaPlugin.Instance.Logger.Print("G");
             }
             catch (System.Exception ex)
             {
