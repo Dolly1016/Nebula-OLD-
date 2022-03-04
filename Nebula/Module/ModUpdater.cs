@@ -36,31 +36,34 @@ namespace Nebula.Module
 
         public static bool LoadAnnouncement()
         {
+            NebulaPlugin.Instance.Logger.Print("A");
             HttpClient http = new HttpClient();
             http.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue { NoCache = true };
-            var task= http.GetAsync(new System.Uri($"https://raw.githubusercontent.com/Dolly1016/MoreCosmic/master/announcement.json"), HttpCompletionOption.ResponseContentRead);
-            task.Wait();
-            var response=task.Result;
+            var response = http.GetAsync(new System.Uri($"https://raw.githubusercontent.com/Dolly1016/Nebula/master/announcement.json"), HttpCompletionOption.ResponseContentRead).Result;
+            NebulaPlugin.Instance.Logger.Print("B");
+
             try
             {
                 if (response.StatusCode != HttpStatusCode.OK) return false;
                 if (response.Content == null) return false;
-
-                var jsonTask = response.Content.ReadAsStringAsync();
-                jsonTask.Wait();
-                string json = jsonTask.Result;
+                NebulaPlugin.Instance.Logger.Print("C");
+                string json = response.Content.ReadAsStringAsync().Result;
                 JObject jObj = JObject.Parse(json);
                 JToken version = jObj["Version"];
                 if (!version.HasValues) return false;
 
                 int Version = int.Parse(version.ToString());
 
+                NebulaPlugin.Instance.Logger.Print("D");
+
                 //既にみたことがあれば出さない
                 if (AnnounceVersion.Value == Version)
                 {
-                    ShownFlag = false;
+                    ShownFlag = true;
                     return false;
                 }
+
+                NebulaPlugin.Instance.Logger.Print("E");
 
                 string lang = Language.Language.GetLanguage(SaveManager.LastLanguage);
                 if (jObj[lang].HasValues)
@@ -74,6 +77,8 @@ namespace Nebula.Module
                     Announcement = "-Invalid Announcement-";
                     return false;
                 }
+
+                NebulaPlugin.Instance.Logger.Print("F");
             }
             catch (System.Exception ex)
             {
