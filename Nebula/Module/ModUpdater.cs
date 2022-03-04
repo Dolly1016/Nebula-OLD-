@@ -62,6 +62,8 @@ namespace Nebula.Module
                     ShownFlag = true;
                     return false;
                 }
+                //更新する
+                AnnounceVersion.Value = Version;
 
                 NebulaPlugin.Instance.Logger.Print("F");
 
