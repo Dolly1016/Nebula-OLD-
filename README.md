@@ -14,6 +14,11 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 # Discord
 バグ報告などの情報交換は[こちら](https://discord.gg/kHNZD4pq9E)でお願いいたします。
 
+# More Cosmic!
+当Modでは、プレイヤーが新たに使えるようになる**ハット**と**ネームプレート**のデザインを募集しています。\
+詳細の確認と応募は上のDiscordからしていただけます。\
+是非、素敵なデザインをお寄せください！
+
 # ダウンロード
 
 当ModにはAmong Us内でアップデートができる機能がありますが、対応するVanillaのバージョンが変わる場合\
@@ -21,6 +26,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.4.6 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.6,2022.2.24/Nebula_v1.4.6.zip)|
 | 1.4.5.1 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.5.1,2022.2.24/Nebula_v1.4.5.1.zip)|
 | 1.4.5 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.5,2022.2.24/Nebula_v1.4.5.zip)|
 | 1.4.4 | 2022.2.23s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.4,2022.2.23/Nebula_v1.4.4.zip)|
@@ -105,16 +111,24 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 形式上、言語パックには下位互換があります。\
 また、新しいバージョンに対しても使用できますが、一部翻訳がなされないことがあります。
 
+日本語版について、1.4.5.1対応版が正常に動作していませんでした。現在は既に修正済みです。
+
 | Language | Translator | Full Support Version | Download |
 | --- | --- | --- | --- |
-| 日本語 | - | 1.4.5.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.5,2022.2.24/Japanese.dat)|
+| 日本語 | - | 1.4.6 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.6,2022.2.24/Japanese.dat)|
 | 日本語 | Rey | 1.4.5.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.4.5.1%2CRey/Japanese.dat)|
 | 日本語 | kihi | 1.4.5.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.4.5.1%2Ckihi/Japanese.dat)|
-| English | - | 1.4.5.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.5,2022.2.24/English.dat)|
+| English | - | 1.4.6 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.6,2022.2.24/English.dat)|
 
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+  
+ **Version 1.4.6**
+ - Agentに回数制限付きのベントを追加、これに伴い新オプション「Max Use Of Vents」を追加
+ - 開発者からの最新情報がゲーム内で確認できるように
+ - Jesterのベントクールダウン・制限時間が機能していない問題を修正
+ - Sniperが銃を出している時にキルされると、エイムアシストが消えなくなる問題を修正
   
  **Version 1.4.5.1**
  - Sniperのキルボタンが、画面中央付近で左クリックすることでも発動するように
@@ -692,19 +706,21 @@ p5p5next : Damned
 -----------------------
 
 ## Agent
- Agentは、他人の代わりにタスクを行うことができます。\
+ Agentは、他人の代わりにタスクを行うクルーメイトで、ゲーム中に何回かベントを使ってより迅速にタスクを終わらせることができます。\
  また、自身が最低限こなすべきタスクの数は減少しています。
  
   ### 操作方法
 | 操作キー | アクション |
 |----------|:-------------:|
 | F | 追加タスクの呼び出し(全タスク完了時)
+| V | ベントの使用
 
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
 | Exempt Tasks | ゲーム開始時に免除されるタスク数
 | Act Over Tasks | タスクを代行するたびに同時に獲得できるタスク数
+| Max Uses Of Vents | ベントを使用できる回数
 
 -----------------------
 
