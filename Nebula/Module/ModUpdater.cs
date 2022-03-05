@@ -31,41 +31,38 @@ namespace Nebula.Module
     public static class AnnouncementPatch
     {
         private static bool ShownFlag = false;
-        private static ConfigEntry<int> AnnounceVersion = NebulaPlugin.Instance.Config.Bind("Announce", "Version", (int)0);
+        private static ConfigEntry<int> AnnounceVersion = null;
         private static string Announcement = "";
 
         public static bool LoadAnnouncement()
         {
-            NebulaPlugin.Instance.Logger.Print("A");
+            if (AnnounceVersion == null)
+            {
+                AnnounceVersion = NebulaPlugin.Instance.Config.Bind("Announce", "Version", (int)0);
+            }
+            
             HttpClient http = new HttpClient();
             http.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue { NoCache = true };
             var response = http.GetAsync(new System.Uri($"https://raw.githubusercontent.com/Dolly1016/Nebula/master/announcement.json"), HttpCompletionOption.ResponseContentRead).Result;
-            NebulaPlugin.Instance.Logger.Print("B");
+            
 
             try
             {
                 if (response.StatusCode != HttpStatusCode.OK) return false;
                 if (response.Content == null) return false;
-                NebulaPlugin.Instance.Logger.Print("C");
                 string json = response.Content.ReadAsStringAsync().Result;
                 JObject jObj = JObject.Parse(json);
                 JToken? version = jObj["Version"];
                 if (version == null) return false;
-                NebulaPlugin.Instance.Logger.Print("D");
                 int Version = int.Parse(version.ToString());
-
-                NebulaPlugin.Instance.Logger.Print("E");
 
                 //既にみたことがあれば出さない
                 if (AnnounceVersion.Value == Version)
                 {
                     ShownFlag = true;
-                    return false;
                 }
                 //更新する
                 AnnounceVersion.Value = Version;
-
-                NebulaPlugin.Instance.Logger.Print("F");
 
                 string lang = Language.Language.GetLanguage(SaveManager.LastLanguage);
                 if (jObj[lang]!=null)
@@ -80,12 +77,11 @@ namespace Nebula.Module
                     return false;
                 }
 
-                NebulaPlugin.Instance.Logger.Print("G");
             }
             catch (System.Exception ex)
             {
             }
-            return true;
+            return !ShownFlag;
         }
 
         public static bool Prefix(AnnouncementPopUp __instance)
@@ -98,6 +94,7 @@ namespace Nebula.Module
                     ShownFlag = true;
                 }
             }
+            else { LoadAnnouncement(); }
 
             __instance.AnnounceTextMeshPro.text = Announcement;
 
