@@ -23,7 +23,6 @@ namespace Nebula.Roles.CrewmateRoles
         private bool hasBeenRepaired = false;
 
         public int remainingScrewsDataId { get; private set; }
-        public int totalScrewsDataId { get; private set; }
 
         private Module.CustomOption maxScrewsOption;
         private Module.CustomOption sealCoolDownOption;
@@ -85,7 +84,6 @@ namespace Nebula.Roles.CrewmateRoles
         public override void GlobalInitialize(PlayerControl __instance)
         {
             int value = (int)maxScrewsOption.getFloat();
-            __instance.GetModData().SetRoleData(totalScrewsDataId, value);
             __instance.GetModData().SetRoleData(remainingScrewsDataId, value);
         }
 
@@ -156,7 +154,7 @@ namespace Nebula.Roles.CrewmateRoles
                 },
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead && Game.GameData.data.myData.getGlobalData().GetRoleData(remainingScrewsDataId) > 0; },
                 () => {
-                    int total = Game.GameData.data.myData.getGlobalData().GetRoleData(totalScrewsDataId);
+                    int total = (int)maxScrewsOption.getFloat();
                     int remain = Game.GameData.data.myData.getGlobalData().GetRoleData(remainingScrewsDataId);
                     sealButtonString.text = $"{remain}/{total}";
 
@@ -257,7 +255,6 @@ namespace Nebula.Roles.CrewmateRoles
         {
             sealButton = null;
 
-            totalScrewsDataId=Game.GameData.RegisterRoleDataId("navvy.totalScrew");
             remainingScrewsDataId=Game.GameData.RegisterRoleDataId("navvy.remainScrew");
 
             VentColor = Palette.CrewmateBlue;

@@ -34,6 +34,24 @@ namespace Nebula.Module
         private static ConfigEntry<int> AnnounceVersion = null;
         private static string Announcement = "";
 
+        private static string FormatString(string str)
+        {
+            foreach(var role in Roles.Roles.AllRoles)
+            {
+                str = str.Replace("%COLOR:" + role.Name.ToUpper() + "%", Helpers.csTop(role.Color));
+                str = str.Replace("%ROLE:" + role.Name.ToUpper() + "%", Helpers.cs(role.Color,Language.Language.GetString("role."+role.LocalizeName+".name")));
+            }
+            foreach (var role in Roles.Roles.AllExtraRoles)
+            {
+                str=str.Replace("%COLOR:" + role.Name.ToUpper() + "%", Helpers.csTop(role.Color));
+                str = str.Replace("%ROLE:" + role.Name.ToUpper() + "%", Helpers.cs(role.Color, Language.Language.GetString("role." + role.LocalizeName + ".name")));
+            }
+
+            str = str.Replace("%/COLOR%", "</color>");
+
+            return str;
+        }
+
         public static bool LoadAnnouncement()
         {
             if (AnnounceVersion == null)
@@ -76,7 +94,7 @@ namespace Nebula.Module
                     Announcement = "-Invalid Announcement-";
                     return false;
                 }
-
+                Announcement = FormatString(Announcement);
             }
             catch (System.Exception ex)
             {
@@ -108,7 +126,7 @@ namespace Nebula.Module
         private static void Prefix(MainMenuManager __instance)
         {
             //ハット更新
-            CustomHatLoader.LaunchHatFetcher();
+            //CustomHatLoader.LaunchHatFetcher();
 
             ModUpdater.LaunchUpdater();
             if (!ModUpdater.hasUpdate  && !ModUpdater.hasUnprocessableUpdate) return;

@@ -15,12 +15,18 @@ namespace Nebula.Roles.CrewmateRoles
 
         private CustomButton agentButton;
 
+        private TMPro.TMP_Text ventButtonString;
+        public int remainingVentsDataId { get; private set; }
+
+        private Module.CustomOption maxVentsOption;
         private Module.CustomOption actOverOption;
         public override void LoadOptionData()
         {
             base.LoadOptionData();
 
             actOverOption = CreateOption(Color.white, "actOverTasks", 1f, 1f, 10f, 1f);
+
+            maxVentsOption = CreateOption(Color.white, "maxVents", 3f, 0f, 20f, 1f);
         }
 
         private Sprite buttonSprite = null;
@@ -29,6 +35,11 @@ namespace Nebula.Roles.CrewmateRoles
             if (buttonSprite) return buttonSprite;
             buttonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.AgentButton.png", 115f);
             return buttonSprite;
+        }
+
+        public override void GlobalInitialize(PlayerControl __instance)
+        {
+            __instance.GetModData().SetRoleData(remainingVentsDataId, (int)maxVentsOption.getFloat());
         }
 
         public override void ButtonInitialize(HudManager __instance)
@@ -57,6 +68,26 @@ namespace Nebula.Roles.CrewmateRoles
                 KeyCode.F
             );
             agentButton.MaxTimer = agentButton.Timer = 0;
+
+            ventButtonString = GameObject.Instantiate(agentButton.actionButton.cooldownTimerText, HudManager.Instance.ImpostorVentButton.transform);
+            ventButtonString.text = (int)maxVentsOption.getFloat() + "/" + (int)maxVentsOption.getFloat();
+            ventButtonString.enableWordWrapping = false;
+            ventButtonString.transform.localScale = Vector3.one * 0.5f;
+            ventButtonString.transform.localPosition += new Vector3(-0.05f, 0.7f, 0);
+        }
+
+        public override void MyUpdate()
+        {
+            var data = PlayerControl.LocalPlayer.GetModData();
+            if (data == null) return;
+
+            VentPermission = (!PlayerControl.LocalPlayer.inVent && data.GetRoleData(remainingVentsDataId) <= 0) ? VentPermission.CanNotUse : VentPermission.CanUseUnlimittedVent;
+        }
+
+        public override void OnEnterVent(Vent vent) {
+            PlayerControl.LocalPlayer.GetModData().AddRoleData(remainingVentsDataId, -1);
+            int remain= PlayerControl.LocalPlayer.GetModData().GetRoleData(remainingVentsDataId);
+            ventButtonString.text = (int)remain + "/" + (int)maxVentsOption.getFloat();
         }
 
         public override void ButtonActivate()
@@ -69,6 +100,19 @@ namespace Nebula.Roles.CrewmateRoles
             agentButton.setActive(false);
         }
 
+        public override void CleanUp()
+        {
+            if (agentButton != null)
+            {
+                agentButton.Destroy();
+                agentButton = null;
+            }
+            if (ventButtonString != null)
+            {
+                ventButtonString.DestroySubMeshObjects();
+                ventButtonString = null;
+            }
+        }
 
         public override void IntroInitialize(PlayerControl __instance)
         {
@@ -85,9 +129,13 @@ namespace Nebula.Roles.CrewmateRoles
         public Agent()
             : base("Agent", "agent", Color, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                  Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Crewmate.crewmateEndSet,
-                 false, VentPermission.CanNotUse, false, false, false)
+                 false, VentPermission.CanUseUnlimittedVent, true, false, false)
         {
-            
+            agentButton = null;
+
+            remainingVentsDataId = Game.GameData.RegisterRoleDataId("agent.remainVents");
+
+            VentColor = Palette.CrewmateBlue;
         }
     }
 }

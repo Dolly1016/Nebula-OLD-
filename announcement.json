@@ -9,12 +9,15 @@ and you can join the our Discord with the link on our GitHub.
 Submitted works will be checked and added in the this mod.
 You're exactly a nebula consists of ideas!
 
-Nebula on the Ship v1.4.5.1
- -Sniper's kill button can now use with mouse click.
+Main Features in Nos v1.4.6
+ -%ROLE:AGENT% can now use vents with the limit to use.
+  
+Main Features in NoS v1.4.5.1
+ -%ROLE:SNIPER%'s kill button can now use with mouse click.
 
-Nebula on the Ship v1.4.5
+Main Features in NoS v1.4.5
  -Ability's cool down work now while you see a map.
- -Reaper, Navvy, Spy, Empiric, Opportunist and Vulture can now use vents with the cool-down and the time-limit.",
+ -%ROLE:REAPER%, %ROLE:NAVVY%, %ROLE:SPY%, %ROLE:EMPIRIC%, %ROLE:OPPORTUNIST%, %ROLE:JESTER% and %ROLE:VULTURE% can now use vents with the cool-down and the time-limit.",
     "Japanese": 
 "
 ◎More Cosmic! カスタムコス募集のお知らせ
@@ -22,14 +25,15 @@ Nebula on the Ship v1.4.5
   ご応募いただいた作品は、開発者の確認ののち、今後のアップデートでMOD内に導入されます。
   皆様からの素敵な作品のご応募をお待ちしております！
   詳しくはNebula on the Ship のDiscordから(GitHubにリンクがあります)。
+  今日も良い船旅を！
+
+◆アップデート情報 v1.4.6
+  -%ROLE:AGENT%が回数制限付きでベントを使えるように
 
 ◆アップデート情報 v1.4.5.1
-  -Sniperのキルボタンが、画面中央付近で左クリックすることでも発動できるように
+  -%ROLE:SNIPER%のキルボタンが、画面中央付近で左クリックすることでも発動できるように
 
 ◆アップデート情報 v1.4.5
   -能力ボタンの挙動を修正
-  -Reaper, Navvy, Spy, Empiric, Opportunist, Vultureのベントにクールダウン、制限時間を付与
-
-○既知の問題
-  -Jesterのベントクールダウン、及び制限時間の設定が機能しない"
+  -%ROLE:REAPER%, %ROLE:NAVVY%, %ROLE:SPY%, %ROLE:EMPIRIC%, %ROLE:OPPORTUNIST%, %ROLE:JESTER%, %ROLE:VULTURE%のベントにクールダウン、制限時間を付与"
 }

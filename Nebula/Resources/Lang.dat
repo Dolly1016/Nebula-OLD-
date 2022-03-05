@@ -121,6 +121,7 @@
 "role.agent.info" : "You can do tasks on behalf other crewmates.\n\n - F : Get extra task"
 "role.agent.exemptTasks" : "Exempt Tasks"
 "role.agent.actOverTasks" : "Act Over Tasks"
+"role.agent.maxVents" : "Max Use Of Vents"
 
 "role.alien.name" : "Alien"
 "role.alien.description" : "Mediate The Ship"

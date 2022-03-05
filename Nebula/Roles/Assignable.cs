@@ -185,6 +185,22 @@ namespace Nebula.Roles
         /// </summary>
         [RoleLocalMethod]
         public virtual void OnTaskComplete() { }
+        
+        /*--------------------------------------------------------------------------------------*/
+
+        /// <summary>
+        /// ベントに入るときに呼び出されます。
+        /// </summary>
+        /// <param name="vent"></param>
+        [RoleLocalMethod]
+        public virtual void OnEnterVent(Vent vent) { }
+
+        /// <summary>
+        /// ベントから出るときに呼び出されます。
+        /// </summary>
+        /// <param name="vent"></param>
+        [RoleLocalMethod]
+        public virtual void OnExitVent(Vent vent) { }
 
         /*--------------------------------------------------------------------------------------*/
 

@@ -167,6 +167,11 @@ namespace Nebula
             return t.GetString(key, parts);
         }
 
+        public static string csTop(Color c)
+        {
+            return string.Format("<color=#{0:X2}{1:X2}{2:X2}{3:X2}>", ToByte(c.r), ToByte(c.g), ToByte(c.b), ToByte(c.a));
+        }
+
         public static string cs(Color c, string s)
         {
             return string.Format("<color=#{0:X2}{1:X2}{2:X2}{3:X2}>{4}</color>", ToByte(c.r), ToByte(c.g), ToByte(c.b), ToByte(c.a), s);

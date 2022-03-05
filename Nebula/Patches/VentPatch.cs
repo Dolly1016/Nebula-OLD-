@@ -16,6 +16,7 @@ namespace Nebula.Patches
         {
             if (pc != PlayerControl.LocalPlayer) return;
             Game.GameData.data.myData.VentDurationTimer = pc.GetModData().role.VentDurationMaxTimer;
+            Helpers.RoleAction(pc, (role) => role.OnEnterVent(__instance));
         }
     }
 
@@ -26,6 +27,7 @@ namespace Nebula.Patches
         {
             if (pc != PlayerControl.LocalPlayer) return;
             Game.GameData.data.myData.VentCoolDownTimer = pc.GetModData().role.VentCoolDownMaxTimer;
+            Helpers.RoleAction(pc, (role) => role.OnExitVent(__instance));
         }
     }
 
