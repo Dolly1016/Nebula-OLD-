@@ -65,7 +65,7 @@ namespace Nebula.Module
                 str = str.Replace("%ROLE:" + role.Name.ToUpper() + "%", Helpers.cs(role.Color, Language.Language.GetString("role." + role.LocalizeName + ".name")));
             }
 
-            regex = new Regex("%ROLE:[a-zA-Z]\\([^\\(\\)\t\f\r\n%,]\\)%");
+            regex = new Regex("%ROLE:[A-Z]+\\([a-zA-Z0-9 ]+\\)%");
             foreach (Match match in regex.Matches(str))
             {
                 var split = match.Value.Split(':','(', ')');
@@ -74,7 +74,7 @@ namespace Nebula.Module
 
             str = str.Replace("%/COLOR%", "</color>");
 
-            regex = new Regex("%OPTION\\([a-zA-Z\\.0-9]\\)\\,\\([a-zA-Z\\.0-9 ]\\)%");
+            regex = new Regex("%OPTION\\([a-zA-Z\\.0-9]+\\)\\,\\([a-zA-Z\\.0-9 ]+\\)%");
             foreach(Match match in regex.Matches(str))
             {
                 var split=match.Value.Split('(',')');
