@@ -11,7 +11,7 @@ You're exactly a nebula consists of ideas!
 
 Main Features in NoS v1.5.0
  -%ROLE:BOOSTER(Booster)% is now replaced %ROLE:COMET%.
- -%ROLE:PSYCHIC% and %ROLE:PURSUER% are unified.
+ -%ROLE:PSYCHIC% and %ROLE:PURSUER(Pursuer)% are unified.
  -%ROLE:PSYCHIC% can now see ghosts.",
     "Japanese": 
 "
@@ -24,6 +24,6 @@ Main Features in NoS v1.5.0
 
 ◆アップデート情報 v1.5.0
   -%ROLE:COMET(Comet)%が追加され、%ROLE:BOOSTER(Booster)%が削除されました。
-  -%ROLE:PSYCHIC%と%ROLE:PURSUER%が統合されました。
+  -%ROLE:PSYCHIC%と%ROLE:PURSUER(Pursuer)%が統合されました。
   -%ROLE:PSYCHIC%が会議を挟んでいない幽霊を見れるようになりました。"
 }
