@@ -26,6 +26,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.5.0 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.5.0,2022.2.24/Nebula_v1.5.0.zip)|
 | 1.4.6 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.6,2022.2.24/Nebula_v1.4.6.zip)|
 | 1.4.5.1 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.5.1,2022.2.24/Nebula_v1.4.5.1.zip)|
 | 1.4.5 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.5,2022.2.24/Nebula_v1.4.5.zip)|
@@ -123,6 +124,10 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+  
+ **Version 1.5.0**
+ - PsychicにPursuerを統合
+ - BoosterをCometに名称変更し、加速中に視界が広がり、透明化するように
   
  **Version 1.4.6**
  - Agentに回数制限付きのベントを追加、これに伴い新オプション「Max Use Of Vents」を追加
@@ -472,7 +477,7 @@ Sniperの弾の当たり判定やEmpiric,Alienなどの効果範囲を調べる�
 | [Camouflager](#camouflager) | [Agent](#agent) | [Arsonist](#arsonist) | [Drunk](#drunk) |
 | [Cleaner](#cleaner) | [Alien](#alien) | [Empiric](#empiric) | [Guesser](#guesser) |
 | [Damned](#damned) | [Bait](#bait) | [Jackal](#jackal) | [Lover](#lover) |
-| [Eraser](#eraser) | [Booster](#booster) | [Jester](#jester) | [Trilemma](#trilemma) |
+| [Eraser](#eraser) | [Comet](#comet) | [Jester](#jester) | [Trilemma](#trilemma) |
 | [Evil Ace](#evil-ace) | [Doctor](#doctor) | [Opportunist](#opportunist) ||
 | [Evil Guesser](#guesser) | [Mayor](#mayor) | [Sidekick](#sidekick) ||
 | [Evil Trapper](#trapper) | [Navvy](#navvy) | [Vulture](#vulture) ||
@@ -482,7 +487,6 @@ Sniperの弾の当たり判定やEmpiric,Alienなどの効果範囲を調べる�
 || [Oracle](#oracle) |||
 || [Provocateur](#provocateur) |||
 || [Psychic](#psychic) |||
-|| [Pursuer](#pursuer) |||
 || [Seer](#seer) |||
 || [Sheriff](#sheriff) |||
 || [Spy](#spy) |||
@@ -752,14 +756,13 @@ p5p5next : Damned
 
 -----------------------
 
-## Booster
- Boosterは一時的に加速することができます。\
- 加速トラップをもつTrapperと同時に起用することを推奨します。
+## Comet
+ Cometは一時的に彗星となり、加速し、視野が拡大かつ透明化します。
  
   ### 操作方法
 | 操作キー | アクション |
 |----------|:-------------:|
-| F | 速度ブースト
+| F | 彗星化
 
  ### オプション
 | オプション名 | 設定内容 |
@@ -767,6 +770,7 @@ p5p5next : Damned
 | Boost Cool Down | 速度上昇のクールダウン
 | Boost Duration | 速度上昇の持続時間
 | Boost Strength | 速度上昇の強度
+| Boost Vision Rate | 速度上昇時の視野の拡大率
 
 -----------------------
 
@@ -879,22 +883,9 @@ p5p5next : Damned
 
 ## Psychic
  Psychicは死体の近くに立つと様々な情報を得ることができます。\
- 死んだ次の会議が始まるまで有効で、会議を挟んだ後からでは情報は得られません。
+ 死んだ次の会議が始まるまで有効で、会議を挟んだ後からでは情報は得られません。\
+ また、死体を探索することができます。
  
- ### オプション
-| オプション名 | 設定内容 |
-|----------|:-------------:|
-
------------------------
-
-## Pursuer
- Pursuerは死体の位置を探査することができます。
- 
- ### 操作方法
-| 操作キー | アクション |
-|----------|:-------------:|
-| F | 死体の探索
-
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
