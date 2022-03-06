@@ -1,5 +1,5 @@
 ﻿{
-    "Version": "1",
+    "Version": "2",
     "English": 
 "Hi Crewmates!
 
@@ -9,15 +9,10 @@ and you can join the our Discord with the link on our GitHub.
 Submitted works will be checked and added in the this mod.
 You're exactly a nebula consists of ideas!
 
-Main Features in NoS v1.4.6
- -%ROLE:AGENT% can now use vents with the limit to use.
-  
-Main Features in NoS v1.4.5.1
- -%ROLE:SNIPER%'s kill button can now use with mouse click.
-
-Main Features in NoS v1.4.5
- -Ability's cool down work now while you see a map.
- -%ROLE:REAPER%, %ROLE:NAVVY%, %ROLE:SPY%, %ROLE:EMPIRIC%, %ROLE:OPPORTUNIST%, %ROLE:JESTER% and %ROLE:VULTURE% can now use vents with the cool-down and the time-limit.",
+Main Features in NoS v1.5.0
+ -%ROLE:BOOSTER,Booster% is now replaced %ROLE:COMET%.
+ -%ROLE:PSYCHIC% and %ROLE:PURSUER% are unified.
+ -%ROLE:PSYCHIC% can now see ghosts.",
     "Japanese": 
 "
 ◎More Cosmic! カスタムコス募集のお知らせ
@@ -27,13 +22,8 @@ Main Features in NoS v1.4.5
   詳しくはNebula on the Ship のDiscordから(GitHubにリンクがあります)。
   それでは、今日も良い船旅を！
 
-◆アップデート情報 v1.4.6
-  -%ROLE:AGENT%が回数制限付きでベントを使えるように
-
-◆アップデート情報 v1.4.5.1
-  -%ROLE:SNIPER%のキルボタンが、画面中央付近で左クリックすることでも発動できるように
-
-◆アップデート情報 v1.4.5
-  -能力ボタンの挙動を修正
-  -%ROLE:REAPER%, %ROLE:NAVVY%, %ROLE:SPY%, %ROLE:EMPIRIC%, %ROLE:OPPORTUNIST%, %ROLE:JESTER%, %ROLE:VULTURE%のベントにクールダウン、制限時間を付与"
+◆アップデート情報 v1.5.0
+  -%ROLE:COMET,Comet%が追加され、%ROLE:BOOSTER,Booster%が削除されました。
+  -%ROLE:Psychic%と%ROLE:PURSUER,Pursuer%が統合されました。
+  -%ROLE:Psychic%が会議を挟んでいない幽霊を見れるようになりました。"
 }

@@ -14,9 +14,90 @@ namespace Nebula.Roles.CrewmateRoles
     {
         static public Color Color = new Color(96f / 255f, 206f / 255f, 137f / 255f);
 
-        private CustomButton killButton;
+        private CustomButton searchButton;
 
-        private Module.CustomOption killCooldownOption;
+        private Module.CustomOption searchCoolDownOption;
+        private Module.CustomOption searchDurationOption;
+
+        private Dictionary<byte, Arrow> Arrows = new Dictionary<byte, Arrow>();
+
+        private Sprite buttonSprite = null;
+        public Sprite getButtonSprite()
+        {
+            if (buttonSprite) return buttonSprite;
+            buttonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.SearchButton.png", 115f);
+            return buttonSprite;
+        }
+
+        public override void Initialize(PlayerControl __instance)
+        {
+            foreach (Objects.Ghost g in Ghosts)
+            {
+                g.Remove();
+            }
+            Ghosts.Clear();
+        }
+
+        public override void ButtonInitialize(HudManager __instance)
+        {
+            if (searchButton != null)
+            {
+                searchButton.Destroy();
+            }
+            searchButton = RoleSystem.TrackSystem.ButtonInitialize(__instance, Arrows,
+                getButtonSprite(), searchDurationOption.getFloat(), searchCoolDownOption.getFloat());
+        }
+
+        public override void ButtonActivate()
+        {
+            searchButton.setActive(true);
+        }
+
+        public override void ButtonDeactivate()
+        {
+            searchButton.setActive(false);
+        }
+
+        public override void CleanUp()
+        {
+            if (searchButton != null)
+            {
+                searchButton.Destroy();
+                searchButton = null;
+            }
+
+            foreach (var arrow in Arrows.Values)
+            {
+                UnityEngine.Object.Destroy(arrow.arrow);
+            }
+            Arrows.Clear();
+        }
+
+        static public HashSet<Objects.Ghost> Ghosts = new HashSet<Objects.Ghost>();
+
+        public override void OnAnyoneMurdered(byte murderId, byte targetId)
+        {
+            if (targetId == PlayerControl.LocalPlayer.PlayerId) return;
+
+            Objects.Ghost ghost = new Objects.Ghost(Helpers.playerById(targetId).transform.position);
+            Ghosts.Add(ghost);
+        }
+
+        public override void OnMeetingEnd()
+        {
+            foreach (Objects.Ghost g in Ghosts)
+            {
+                g.Remove();
+            }
+            Ghosts.Clear();
+        }
+
+        public override void OnRoleRelationSetting()
+        {
+            RelatedRoles.Add(Roles.Vulture);
+            RelatedRoles.Add(Roles.Reaper);
+        }
+
 
         private float deathMessageInterval;
 
@@ -24,6 +105,8 @@ namespace Nebula.Roles.CrewmateRoles
 
         public override void MyPlayerControlUpdate()
         {
+            RoleSystem.TrackSystem.MyControlUpdate(searchButton.isEffectActive && !PlayerControl.LocalPlayer.Data.IsDead, Arrows);
+
             deathMessageInterval -= Time.deltaTime;
             if (deathMessageInterval > 0) return;
             deathMessageInterval = 7f;
@@ -59,12 +142,22 @@ namespace Nebula.Roles.CrewmateRoles
             }
         }
 
+        public override void LoadOptionData()
+        {
+            searchCoolDownOption = CreateOption(Color.white, "searchCoolDown", 20f, 5f, 60f, 5f);
+            searchCoolDownOption.suffix = "second";
+
+            searchDurationOption = CreateOption(Color.white, "searchDuration", 5f, 2.5f, 20f, 1.25f);
+            searchDurationOption.suffix = "second";
+        }
+
         public Psychic()
             : base("Psychic", "psychic", Color, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                  Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Crewmate.crewmateEndSet,
                  false, VentPermission.CanNotUse, false, false, false)
         {
             deathMessageInterval = 5f;
+            searchButton = null;
         }
     }
 }

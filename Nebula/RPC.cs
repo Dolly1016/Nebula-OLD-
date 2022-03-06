@@ -38,6 +38,7 @@ namespace Nebula
         SwapRole,
         RevivePlayer,
         EmitSpeedFactor,
+        EmitPlayerAttributeFactor,
         CleanDeadBody,
         FixLights,
         RequireUniqueRPC,
@@ -162,6 +163,9 @@ namespace Nebula
                     break;
                 case (byte)CustomRPC.EmitSpeedFactor:
                     RPCEvents.EmitSpeedFactor(reader.ReadByte(), new Game.SpeedFactor(reader.ReadBoolean(), reader.ReadByte(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadBoolean()));
+                    break;
+                case (byte)CustomRPC.EmitPlayerAttributeFactor:
+                    RPCEvents.EmitPlayerAttributeFactor(reader.ReadByte(), new Game.PlayerAttributeFactor(Game.PlayerAttribute.AllAttributes[reader.ReadByte()], reader.ReadBoolean(), reader.ReadSingle(), reader.ReadByte(), reader.ReadBoolean()));
                     break;
                 case (byte)CustomRPC.FixLights:
                     RPCEvents.FixLights();
@@ -604,6 +608,11 @@ namespace Nebula
             Game.GameData.data.players[playerId].Speed.Register(speedFactor);
         }
 
+        public static void EmitPlayerAttributeFactor(byte playerId, Game.PlayerAttributeFactor attributeFactor)
+        {
+            Game.GameData.data.players[playerId].Attribute.Register(attributeFactor);
+        }
+
         //ホストのイベントを本人に受け継ぐ
         public static void RequireUniqueRPC(byte playerId,byte actionId)
         {
@@ -711,7 +720,7 @@ namespace Nebula
         public static void ObjectInstantiate(byte ownerId,byte objectTypeId,ulong objectId,float positionX,float positionY)
         {
             Objects.CustomObject obj=new Objects.CustomObject(ownerId,Objects.CustomObject.Type.AllTypes[objectTypeId],objectId,new Vector3(positionX,positionY));
-            obj.ObjectType.UpdateFunction.Invoke(obj);
+            obj.ObjectType.Update(obj);
         }
 
         public static void SealVent(byte playerId, int ventId)
@@ -742,7 +751,7 @@ namespace Nebula
             foreach(Objects.CustomObject obj in Objects.CustomObject.Objects.Values)
             {
                 if (obj.OwnerId != playerId) continue;
-                if (obj.ObjectType != Objects.CustomObject.Type.SniperRifle) continue;
+                if (obj.ObjectType != Objects.ObjectTypes.SniperRifle.Rifle) continue;
 
                 objList.Add(obj);
             }
@@ -1018,6 +1027,19 @@ namespace Nebula
             writer.Write(speedFactor.CanCrossOverMeeting);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.EmitSpeedFactor(player.PlayerId, speedFactor);
+        }
+
+        public static void EmitAttributeFactor(PlayerControl player, Game.PlayerAttributeFactor attributeFactor)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.EmitPlayerAttributeFactor, Hazel.SendOption.Reliable, -1);
+            writer.Write(player.PlayerId);
+            writer.Write(attributeFactor.Attribute.Id);
+            writer.Write(attributeFactor.IsPermanent);
+            writer.Write(attributeFactor.Duration);
+            writer.Write(attributeFactor.DupId);
+            writer.Write(attributeFactor.CanCrossOverMeeting);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.EmitPlayerAttributeFactor(player.PlayerId, attributeFactor);
         }
 
         public static void RequireUniqueRPC(byte playerId, byte actionId)

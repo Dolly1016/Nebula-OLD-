@@ -13,110 +13,21 @@ namespace Nebula.Objects
         {
             static public Dictionary<byte, Type> AllTypes = new Dictionary<byte, Type>();
 
-            static public Type AccelTrap = new Type("AccelTrap", "Nebula.Resources.AccelTrap.png",(obj)=> {},(obj)=> {
-                if (obj.PassedMeetings == 0)
-                {
-                    //Trapperを考慮に入れる
-                    Game.GameData.data.EstimationAI.DetermineMultiply(new Roles.Role[] { Roles.Roles.NiceTrapper, Roles.Roles.EvilTrapper });
-
-                    if (obj.OwnerId != PlayerControl.LocalPlayer.PlayerId)
-                    {
-                        if (obj.Renderer.color.a != 0f) obj.Renderer.color = new Color(1f, 1f, 1f, 0f);
-                    }
-                    else
-                    {
-                        if (obj.Renderer.color.a != 0.5f) obj.Renderer.color = new Color(1f, 1f, 1f, 0.5f);
-                    }
-                }
-                else if (obj.Renderer.color.a < 1f) obj.Renderer.color = new Color(1f, 1f, 1f, 1f);
-            });
-            static public Type DecelTrap = new Type("DecelTrap", "Nebula.Resources.DecelTrap.png", (obj) => { }, (obj) => {
-                if (obj.PassedMeetings == 0)
-                {
-                    //Trapperを考慮に入れる
-                    Game.GameData.data.EstimationAI.DetermineMultiply(new Roles.Role[] { Roles.Roles.NiceTrapper, Roles.Roles.EvilTrapper });
-
-                    if (obj.OwnerId != PlayerControl.LocalPlayer.PlayerId)
-                    {
-                        if (obj.Renderer.color.a != 0f) obj.Renderer.color = new Color(1f, 1f, 1f, 0f);
-                    }
-                    else
-                    {
-                        if (obj.Renderer.color.a != 0.5f) obj.Renderer.color = new Color(1f, 1f, 1f, 0.5f);
-                    }
-                }
-                else if (obj.Renderer.color.a < 1f) obj.Renderer.color = new Color(1f, 1f, 1f, 1f);
-            });
-            static public Type KillTrap = new Type("KillTrap", "Nebula.Resources.KillTrap.png", (obj) => { }, (obj) => {
-                if (obj.OwnerId != PlayerControl.LocalPlayer.PlayerId) obj.GameObject.active = false;
-                if (obj.PassedMeetings == 0)
-                {
-                    if (obj.Renderer.color.a != 0.5f) obj.Renderer.color = new Color(1f, 1f, 1f, 0.5f);
-                }
-                else if (obj.Renderer.color.a < 1f) obj.Renderer.color = new Color(1f, 1f, 1f, 1f);
-            });
-            static public Type CommTrap = new Type("CommTrap", "Nebula.Resources.CommTrap.png", (obj) => { }, (obj) => {
-                if (obj.OwnerId != PlayerControl.LocalPlayer.PlayerId) obj.GameObject.active = false;
-                if (obj.PassedMeetings == 0)
-                {
-                    if (obj.Renderer.color.a != 0.5f) obj.Renderer.color = new Color(1f, 1f, 1f, 0.5f);
-                }
-                else if (obj.Renderer.color.a < 1f) obj.Renderer.color = new Color(1f, 1f, 1f, 1f);
-            });
-
-            static public Type SniperRifle = new Type("SniperRifle", "Nebula.Resources.SniperRifle.png", (obj) => { }, (obj) =>
-            {
-                var player = Game.GameData.data.players[obj.OwnerId];
-                var targetPosition = Helpers.playerById(obj.OwnerId).transform.position + new Vector3(0.8f * (float)Math.Cos(player.MouseAngle), 0.8f * (float)Math.Sin(player.MouseAngle));
-                obj.GameObject.transform.position += (targetPosition - obj.GameObject.transform.position) * 0.4f;
-                obj.Renderer.transform.eulerAngles = new Vector3(0f, 0f, (float)(player.MouseAngle * 360f / Math.PI / 2f));
-                if (Math.Cos(player.MouseAngle) < 0.0)
-                {
-                    if (obj.Renderer.transform.localScale.y > 0)
-                        obj.Renderer.transform.localScale = new Vector3(1f, -1f);
-                }
-                else
-                {
-                    if (obj.Renderer.transform.localScale.y < 0)
-                        obj.Renderer.transform.localScale = new Vector3(1f, 1f);
-                }
-
-                if (Helpers.playerById(obj.OwnerId).inVent)
-                    obj.GameObject.active = false;
-                else
-                    obj.GameObject.active = true;
-
-            }, false);
-
             static private byte AvailableId = 0;
 
             public byte Id { get; }
             public string ObjectName { get; }
-            private Sprite Sprite { get; set; }
-            public string SpriteAddress { get; set; }
 
             public bool IsBack { get; set; }
             public bool IsFront { get; set; }
+            public virtual void Update(CustomObject obj) { }
+            public virtual void Initialize(CustomObject obj) { }
 
-            public Sprite GetSprite()
-            {
-                if (Sprite) return Sprite;
-                Sprite = Helpers.loadSpriteFromResources(SpriteAddress, 150f);
-                return Sprite;
-            }
-
-            public Action<CustomObject> UpdateFunction;
-            public Action<CustomObject> SetUpFunction;
-
-            public Type(string objectName, string spriteAddress, Action<CustomObject> setUp, Action<CustomObject> updater,bool isBack = true)
+            public Type(string objectName,bool isBack = true)
             {
                 Id = AvailableId;
                 AvailableId++;
                 this.ObjectName = objectName;
-                Sprite = null;
-                SpriteAddress = spriteAddress;
-                UpdateFunction = updater;
-                SetUpFunction = setUp;
 
                 IsBack = isBack;
 
@@ -126,6 +37,7 @@ namespace Nebula.Objects
 
         public static Dictionary<ulong,CustomObject> Objects=new Dictionary<ulong, CustomObject>();
         public static HashSet<System.Action<PlayerControl>> ObjectUpdateFunctions = new HashSet<Action<PlayerControl>>();
+        public static Dictionary<Type, Func<CustomObject>> Constructors = new Dictionary<Type, Func<CustomObject>>();
         public GameObject GameObject { get; private set; }
         public SpriteRenderer Renderer { get; private set; }
         public byte OwnerId { get; set; }
@@ -147,6 +59,7 @@ namespace Nebula.Objects
             }
         }
 
+
         public CustomObject(byte ownerId,Type type,ulong id,Vector3 position)
         {
             ObjectType = type;
@@ -159,11 +72,10 @@ namespace Nebula.Objects
             else pos += new Vector3(0, 0, position.y / 1000f - 1f);
             GameObject.transform.position = pos;
             Renderer = GameObject.AddComponent<SpriteRenderer>();
-            Renderer.sprite = type.GetSprite();
 
             PassedMeetings = 0;
 
-            type.SetUpFunction.Invoke(this);
+            ObjectType.Initialize(this);
 
             if (Objects.ContainsKey(id)) Objects[id].Destroy();
             Objects[id] = this;
@@ -174,7 +86,7 @@ namespace Nebula.Objects
             //オブジェクトに対するアップデート関数
             foreach(CustomObject obj in Objects.Values)
             {
-                obj.ObjectType.UpdateFunction.Invoke(obj);
+                obj.ObjectType.Update(obj);
             }
 
             //オブジェクト群にたいするプレイヤーのアップデート関数
@@ -233,6 +145,11 @@ namespace Nebula.Objects
                 UnityEngine.Object.Destroy(co.GameObject);
             }
             Objects.Clear();
+        }
+
+        static public void Load()
+        {
+
         }
     }
 }

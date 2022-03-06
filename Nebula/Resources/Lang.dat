@@ -17,6 +17,7 @@
 "gamemode.freePlay" : "Free Play"
 
 "cosmic.package.innerslothHats" : "Innersloth Hats"
+"cosmic.package.innerslothNamePlates" : "Innersloth Nameplates"
 
 "option.display.pressTabForMore" : "Press Tab For More"
 "option.display.percentage.0" : "0%"
@@ -135,12 +136,13 @@
 "role.bait.description" : "Bait Your Enemies"
 "role.bait.info" : "If you killed, your killer will report your body instantly."
 
-"role.booster.name" : "Booster"
-"role.booster.description" : "Run Through"
-"role.booster.info" : "You can move fastly.\nBut you must not forget that the high speed movement can reveal your role to <color=#ffff00ff>Guesser</color>.\n\n - F : Boost"
-"role.booster.boostCoolDown" : "Boost Cool Down"
-"role.booster.boostDuration" : "Boost Duration"
-"role.booster.boostSpeed" : "Boost Strength"
+"role.comet.name" : "Comet"
+"role.comet.description" : "Run Through"
+"role.comet.info" : "You can move fastly and secretly.\n\n - F : Blaze"
+"role.comet.boostCoolDown" : "Blaze Cool Down"
+"role.comet.boostDuration" : "Blaze Duration"
+"role.comet.boostSpeed" : "Blaze Strength"
+"role.comet.boostVisionRate" : "Blaze Vision Rate"
 
 "role.doctor.name" : "Doctor"
 "role.doctor.description" : "Thus They Died"
@@ -251,6 +253,8 @@
 "role.psychic.name" : "Psychic"
 "role.psychic.description" : "Gather Testimony"
 "role.psychic.info" : "You can see the message of the dead.\nThis messages disappear when a meeting start."
+"role.psychic.searchCoolDown" : "Search Cool Down"
+"role.psychic.searchDuration" : "Search Duration"
 "role.psychic.color.dark" : "dark"
 "role.psychic.color.light" : "light"
 "role.psychic.message.elapsedTime" : "It's been %TIME% seconds since I was killed."
@@ -258,12 +262,6 @@
 "role.psychic.message.killerRole" : "My murder's role is %ROLE%."
 "role.psychic.message.myRole" : "I am %MYROLE%."
 "role.psychic.message.losing" : "Boo! I'm a ghost."
-
-"role.pursuer.name" : "Pursuer"
-"role.pursuer.description" : "Find Dead Body"
-"role.pursuer.info" : "You can search dead bodies.\n\n - F : Search dead bodies"
-"role.pursuer.searchCoolDown" : "Search Cool Down"
-"role.pursuer.searchDuration" : "Search Duration"
 
 "role.sheriff.name" : "Sheriff"
 "role.sheriff.description" : "Shoot the <color=#ff1919ff>Impostors</color>"
@@ -512,7 +510,7 @@
 "investigators.ui.title" : "What Is The Identity?"
 
 "button.label.arrest" : "arrest"
-"button.label.boost" : "boost"
+"button.label.blaze" : "blaze"
 "button.label.clean" : "clean"
 "button.label.drag" : "drag"
 "button.label.drop" : "drop"

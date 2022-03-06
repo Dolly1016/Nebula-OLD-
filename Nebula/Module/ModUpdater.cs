@@ -7,23 +7,17 @@ using Hazel;
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Events;
-using UnhollowerBaseLib;
 using System.IO;
 using System.Reflection;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using System.Security.Cryptography;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
 using Twitch;
+using System.Text.RegularExpressions;
+using System.Collections.Generic;
 
 namespace Nebula.Module
 {
@@ -34,20 +28,61 @@ namespace Nebula.Module
         private static ConfigEntry<int> AnnounceVersion = null;
         private static string Announcement = "";
 
-        private static string FormatString(string str)
+        private static string FormatRoleString(Match match,string str,string key,string defaultString)
         {
-            foreach(var role in Roles.Roles.AllRoles)
+            foreach (var role in Roles.Roles.AllRoles)
             {
-                str = str.Replace("%COLOR:" + role.Name.ToUpper() + "%", Helpers.csTop(role.Color));
-                str = str.Replace("%ROLE:" + role.Name.ToUpper() + "%", Helpers.cs(role.Color,Language.Language.GetString("role."+role.LocalizeName+".name")));
+                if (role.Name.ToUpper() == key)
+                {
+                    str = str.Replace(match.Value, Helpers.cs(role.Color, Language.Language.GetString("role." + role.LocalizeName + ".name")));
+                    return str;
+                }
             }
             foreach (var role in Roles.Roles.AllExtraRoles)
             {
-                str=str.Replace("%COLOR:" + role.Name.ToUpper() + "%", Helpers.csTop(role.Color));
+                if (role.Name.ToUpper() == key)
+                {
+                    str = str.Replace(match.Value, Helpers.cs(role.Color, Language.Language.GetString("role." + role.LocalizeName + ".name")));
+                    return str;
+                }
+            }
+
+            str = str.Replace(match.Value,defaultString);
+            return str;
+        }
+
+        private static string FormatString(string str)
+        {
+            Regex regex;
+
+            //旧式の変換
+            foreach (var role in Roles.Roles.AllRoles)
+            {
+                str = str.Replace("%ROLE:" + role.Name.ToUpper() + "%", Helpers.cs(role.Color, Language.Language.GetString("role." + role.LocalizeName + ".name")));
+            }
+            foreach (var role in Roles.Roles.AllExtraRoles)
+            {
                 str = str.Replace("%ROLE:" + role.Name.ToUpper() + "%", Helpers.cs(role.Color, Language.Language.GetString("role." + role.LocalizeName + ".name")));
             }
 
+            regex = new Regex("%ROLE:\\([a-zA-Z]\\)\\,\\([^\\(\\)\t\f\r\n%,]\\)%");
+            foreach (Match match in regex.Matches(str))
+            {
+                var split = match.Value.Split('(', ')');
+                str = FormatRoleString(match, str, split[1], split[3]);
+            }
+
             str = str.Replace("%/COLOR%", "</color>");
+
+            regex = new Regex("%OPTION\\([a-zA-Z\\.0-9]\\)\\,\\([a-zA-Z\\.0-9 ]\\)%");
+            foreach(Match match in regex.Matches(str))
+            {
+                var split=match.Value.Split('(',')');
+
+                str = str.Replace(match.Value,
+                    Language.Language.CheckValidKey(split[1]) ?
+                    Language.Language.GetString(split[1]) : split[3]);
+            }
 
             return str;
         }

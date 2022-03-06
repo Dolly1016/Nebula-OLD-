@@ -86,6 +86,12 @@ namespace Nebula.Patches
                 Color color = player.nameText.color;
                 Helpers.RoleAction(player.PlayerId, (role) => { role.EditDisplayNameColor(player.PlayerId, ref color); });
                 player.nameText.color = color;
+
+                if(playerData.Attribute.HasAttribute(Game.PlayerAttribute.Invisible) && player!=PlayerControl.LocalPlayer && !Game.GameData.data.myData.CanSeeEveryoneInfo)
+                    player.nameText.enabled = false;
+                else
+                    player.nameText.enabled = true;
+
             }
 
             if (MeetingHud.Instance != null)

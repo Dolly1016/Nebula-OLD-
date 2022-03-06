@@ -59,6 +59,8 @@ namespace Nebula.Patches
                 rate = Mathf.Lerp(__instance.MinLightRadius * role.LightRadiusMin, __instance.MaxLightRadius * role.LightRadiusMax, rate);
             }
 
+            Helpers.RoleAction(PlayerControl.LocalPlayer, role => role.GetLightRadius(ref rate));
+
             if (role.UseImpostorLightRadius)
             {
                 __result = rate * PlayerControl.GameOptions.ImpostorLightMod;
@@ -67,7 +69,6 @@ namespace Nebula.Patches
             {
                 __result = rate * PlayerControl.GameOptions.CrewLightMod;
             }
-
 
             return false;
         }

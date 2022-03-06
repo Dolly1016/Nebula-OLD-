@@ -178,6 +178,93 @@ namespace Nebula.Game
         }
     }
 
+    public class PlayerAttribute
+    {
+        public static Dictionary<byte, PlayerAttribute> AllAttributes = new Dictionary<byte, PlayerAttribute>();
+
+        public static PlayerAttribute Invisible = new PlayerAttribute(0);
+
+        public byte Id { get; private set; }
+        
+        private PlayerAttribute(byte Id)
+        {
+            this.Id = Id;
+
+            AllAttributes[Id] = this;
+        }
+    }
+    public class PlayerAttributeFactor
+    {
+        public PlayerAttribute Attribute;
+        public bool IsPermanent { get; private set; }
+        public float Duration;
+        public byte DupId { get; private set; }
+        public bool CanCrossOverMeeting { get; private set; }
+
+        public PlayerAttributeFactor(PlayerAttribute Attribute, bool IsPermanent,float Duration,byte DupId, bool CanCrossOverMeeting)
+        {
+            this.Attribute = Attribute;
+            this.IsPermanent = IsPermanent;
+            this.Duration = Duration;
+            this.DupId = DupId;
+            this.CanCrossOverMeeting = CanCrossOverMeeting;
+        }
+
+        public PlayerAttributeFactor(PlayerAttribute Attribute, byte DupId,bool CanCrossOverMeeting):
+            this(Attribute,true,1f,DupId,CanCrossOverMeeting)
+        {
+
+        }
+
+        public PlayerAttributeFactor(PlayerAttribute Attribute, float Duration, byte DupId, bool CanCrossOverMeeting):
+            this(Attribute, false, Duration, DupId, CanCrossOverMeeting)
+        {
+
+        }
+    }
+
+    public class PlayerAttributeFactorManager
+    {
+        HashSet<PlayerAttributeFactor> Factors;
+        byte PlayerId;
+
+        public PlayerAttributeFactorManager(byte playerId)
+        {
+            Factors = new HashSet<PlayerAttributeFactor>();
+            PlayerId = playerId;
+        }
+
+        public bool HasAttribute(PlayerAttribute Attribute)
+        {
+            return Factors.Any(factor => factor.Attribute == Attribute);
+        }
+
+        public void Register(PlayerAttributeFactor attributeFactor)
+        {
+            if (attributeFactor.DupId != 0) Factors.RemoveWhere((factor) => { return factor.DupId == attributeFactor.DupId; });
+            Factors.Add(attributeFactor);
+        }
+
+        public void Update()
+        {
+            int num = Factors.Count;
+            Factors.RemoveWhere((factor) =>
+            {
+                if(!factor.IsPermanent)
+                    factor.Duration -= Time.deltaTime;
+                return !(factor.Duration > 0);
+            });
+        }
+
+        public void OnMeeting()
+        {
+            Factors.RemoveWhere((factor) =>
+            {
+                return !factor.CanCrossOverMeeting;
+            });
+        }
+    }
+
     public class TaskData
     {
         //表示タスク総量
@@ -289,6 +376,8 @@ namespace Nebula.Game
         public byte dragPlayerId { get; set; }
 
         public SpeedFactorManager Speed { get; }
+        public PlayerAttributeFactorManager Attribute { get; }
+        public Color TransColor { get; set; }
 
         public float MouseAngle { get; set; }
 
@@ -313,10 +402,12 @@ namespace Nebula.Game
             this.currentName = name;
             this.dragPlayerId = Byte.MaxValue;
             this.Speed = new SpeedFactorManager(playerId) ;
+            this.Attribute = new PlayerAttributeFactorManager(playerId);
             this.Tasks = new TaskData(role.side == Roles.Side.Impostor || role.HasFakeTask, role.FakeTaskIsExecutable);
             this.MouseAngle = 0f;
             this.Status = PlayerStatus.Alive;
             this.RoleInfo = "";
+            this.TransColor = Color.white;
         }
 
         public int GetRoleData(int id)

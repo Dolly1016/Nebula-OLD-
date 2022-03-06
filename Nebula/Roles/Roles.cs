@@ -15,7 +15,7 @@ namespace Nebula.Roles
         public static CrewmateRoles.Agent Agent = new CrewmateRoles.Agent();
         public static CrewmateRoles.Alien Alien = new CrewmateRoles.Alien();
         public static CrewmateRoles.Bait Bait = new CrewmateRoles.Bait();
-        public static CrewmateRoles.Booster Booster = new CrewmateRoles.Booster();
+        public static CrewmateRoles.Comet Booster = new CrewmateRoles.Comet();
         public static CrewmateRoles.DamnedCrew DamnedCrew = new CrewmateRoles.DamnedCrew();
         public static CrewmateRoles.Doctor Doctor = new CrewmateRoles.Doctor();
         public static CrewmateRoles.Mayor Mayor = new CrewmateRoles.Mayor();
@@ -25,7 +25,6 @@ namespace Nebula.Roles
         public static CrewmateRoles.Oracle Oracle = new CrewmateRoles.Oracle();
         public static CrewmateRoles.Provocateur Provocateur = new CrewmateRoles.Provocateur();
         public static CrewmateRoles.Psychic Psychic = new CrewmateRoles.Psychic();
-        public static CrewmateRoles.Pursuer Pursuer = new CrewmateRoles.Pursuer();
         public static CrewmateRoles.Navvy Navvy = new CrewmateRoles.Navvy();
         public static CrewmateRoles.Seer Seer = new CrewmateRoles.Seer();
         public static CrewmateRoles.Sheriff Sheriff = new CrewmateRoles.Sheriff();
@@ -80,7 +79,7 @@ namespace Nebula.Roles
             F_Guesser,F_Trapper,
             Arsonist,Empiric,Jackal,Jester,Opportunist,Sidekick,Vulture,
             F_Crewmate,
-            Crewmate,Agent,Alien,Bait,Booster,DamnedCrew,Doctor,Mayor,Navvy,Necromancer,NiceGuesser,NiceTrapper,Oracle,Provocateur,Psychic,Pursuer,Seer,Sheriff,Spy,
+            Crewmate,Agent,Alien,Bait,Booster,DamnedCrew,Doctor,Mayor,Navvy,Necromancer,NiceGuesser,NiceTrapper,Oracle,Provocateur,Psychic,Seer,Sheriff,Spy,
             Madmate,
             Player,Escapee,Hunter,
             Gambler,

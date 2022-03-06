@@ -228,6 +228,7 @@ namespace Nebula.Patches
                 foreach (Game.PlayerData player in Game.GameData.data.players.Values)
                 {
                     player.Speed.OnMeeting();
+                    player.Attribute.OnMeeting();
                 }
 
                 //色の明暗を表示

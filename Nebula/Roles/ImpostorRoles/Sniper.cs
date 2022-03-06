@@ -101,7 +101,7 @@ namespace Nebula.Roles.ImpostorRoles
                     }
                     else
                     {
-                        RPCEventInvoker.ObjectInstantiate(CustomObject.Type.SniperRifle, PlayerControl.LocalPlayer.transform.position);
+                        RPCEventInvoker.ObjectInstantiate(Objects.ObjectTypes.SniperRifle.Rifle, PlayerControl.LocalPlayer.transform.position);
                     }
                     rifleCounter = 0f;
                     equipRifleFlag = !equipRifleFlag;

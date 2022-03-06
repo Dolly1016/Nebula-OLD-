@@ -90,6 +90,8 @@ namespace Nebula.Patches
                     continue;
                 }
 
+                if (playerInfo.GetModData().Attribute.HasAttribute(Game.PlayerAttribute.Invisible)) continue;
+
                 if (!playerInfo.Disconnected && !playerInfo.IsDead)
                 {
                     PlayerControl @object = playerInfo.Object;
@@ -188,7 +190,7 @@ namespace Nebula.Patches
 
             foreach (PlayerControl p in PlayerControl.AllPlayerControls)
             {
-                if (p == PlayerControl.LocalPlayer || p.GetModData().RoleInfo!="" || Game.GameData.data.myData.CanSeeEveryoneInfo)
+                if (p == PlayerControl.LocalPlayer || p.GetModData().RoleInfo != "" || Game.GameData.data.myData.CanSeeEveryoneInfo)
                 {
                     Transform playerInfoTransform = p.nameText.transform.parent.FindChild("Info");
                     TMPro.TextMeshPro playerInfo = playerInfoTransform != null ? playerInfoTransform.GetComponent<TMPro.TextMeshPro>() : null;
@@ -197,6 +199,7 @@ namespace Nebula.Patches
                         playerInfo = UnityEngine.Object.Instantiate(p.nameText, p.nameText.transform.parent);
                         playerInfo.fontSize *= 0.75f;
                         playerInfo.gameObject.name = "Info";
+                        playerInfo.enabled = true;
                     }
 
                     // Set the position every time bc it sometimes ends up in the wrong place due to camoflauge
@@ -229,7 +232,7 @@ namespace Nebula.Patches
                         roleNames = p.GetModData().RoleInfo;
 
                     var completedStr = commsActive ? "?" : tasksCompleted.ToString();
-                    string taskInfo="";
+                    string taskInfo = "";
                     if (p == PlayerControl.LocalPlayer || Game.GameData.data.myData.CanSeeEveryoneInfo)
                     {
                         if (p.GetModData().role.HasFakeTask)
@@ -261,6 +264,43 @@ namespace Nebula.Patches
         }
 
 
+        private static void UpdatePlayerVisibility(PlayerControl player)
+        {
+            var data = player.GetModData();
+            float alpha = data.TransColor.a;
+            if (data.Attribute.HasAttribute(Game.PlayerAttribute.Invisible))
+                alpha -= 0.75f * Time.deltaTime;
+            else
+                alpha += 0.75f * Time.deltaTime;
+
+            float min = 0f, max = 1f;
+            if (player == PlayerControl.LocalPlayer || Game.GameData.data.myData.CanSeeEveryoneInfo) min = 0.25f;
+            alpha = Mathf.Clamp(alpha, min, max);
+            if (alpha != data.TransColor.a)
+            {
+                data.TransColor = new Color(1f, 1f, 1f, alpha);
+            }
+
+            if (player.MyPhysics?.rend != null)
+                player.MyPhysics.rend.color = data.TransColor;
+
+            if (player.MyPhysics?.Skin?.layer != null)
+                player.MyPhysics.Skin.layer.color = data.TransColor;
+
+            if (player.HatRenderer != null)
+                player.HatRenderer.color = data.TransColor;
+
+            if (player.CurrentPet?.rend != null)
+                player.CurrentPet.rend.color = data.TransColor;
+
+            if (player.CurrentPet?.shadowRend != null)
+                player.CurrentPet.shadowRend.color = data.TransColor;
+
+            if (player.VisorSlot != null)
+                player.VisorSlot.color = data.TransColor;
+
+        }
+
         public static void Postfix(PlayerControl __instance)
         {
             if (AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Started) return;
@@ -275,6 +315,7 @@ namespace Nebula.Patches
 
             //全員に対して実行
             __instance.GetModData().role.GlobalUpdate(__instance.PlayerId);
+            UpdatePlayerVisibility(__instance);
 
             if (__instance.PlayerId == PlayerControl.LocalPlayer.PlayerId)
             {
@@ -284,7 +325,6 @@ namespace Nebula.Patches
                 ResetPlayerOutlines();
                 ResetDeadBodyOutlines();
 
-
                 Helpers.RoleAction(__instance, (role) =>
                  {
                      role.MyPlayerControlUpdate();
@@ -292,6 +332,7 @@ namespace Nebula.Patches
             }
 
             __instance.GetModData().Speed.Update();
+            __instance.GetModData().Attribute.Update();
         }
     }
 

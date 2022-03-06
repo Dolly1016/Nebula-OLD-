@@ -32,6 +32,10 @@ namespace Nebula.Language
             return "*" + key;
         }
 
+        public static bool CheckValidKey(string key)
+        {
+            return language.languageSet.ContainsKey(key);
+        }
         public Language()
         {
             languageSet = new Dictionary<string, string>();

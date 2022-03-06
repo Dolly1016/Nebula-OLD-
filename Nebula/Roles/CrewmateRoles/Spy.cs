@@ -47,7 +47,6 @@ namespace Nebula.Roles.CrewmateRoles
 
         public override void OnRoleRelationSetting()
         {
-            RelatedRoles.Add(Roles.Pursuer);
             RelatedRoles.Add(Roles.Seer);
             RelatedRoles.Add(Roles.Empiric);
             RelatedRoles.Add(Roles.Bait);
