@@ -11,7 +11,7 @@ namespace Nebula.Roles.CrewmateRoles
 {
     public class Provocateur : Role
     {
-        static public Color Color = new Color(112f / 255f, 255f / 255f, 89f / 255f);
+        static public Color RoleColor = new Color(112f / 255f, 255f / 255f, 89f / 255f);
 
 
         private CustomButton embroilButton;
@@ -123,7 +123,7 @@ namespace Nebula.Roles.CrewmateRoles
         }
 
         public Provocateur()
-            : base("Provocateur", "provocateur", Color, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
+            : base("Provocateur", "provocateur", RoleColor, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                  Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Crewmate.crewmateEndSet,
                  false, VentPermission.CanNotUse, false, false, false)
         {

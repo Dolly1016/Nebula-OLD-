@@ -25,7 +25,7 @@ namespace Nebula.Roles.ComplexRoles
         //Complexなロールカテゴリーについてのみ呼ばれます。
         public override Patches.AssignRoles.RoleAllocation[] GetComplexAllocations()
         {
-            Patches.AssignRoles.RoleAllocation[] result = new Patches.AssignRoles.RoleAllocation[(int)RoleCountOption.getFloat()];
+            Patches.AssignRoles.RoleAllocation[] result = new Patches.AssignRoles.RoleAllocation[(int)maxCountOfDamnedOption.getFloat()];
 
             int damneds= Helpers.CalcProbabilityCount(ChanceOfDamned(), result.Length);
 
@@ -42,6 +42,11 @@ namespace Nebula.Roles.ComplexRoles
         {
             chanceOfDamnedOption = CreateOption(Color.white, "chanceOfDamned", CustomOptionHolder.rates);
             maxCountOfDamnedOption = CreateOption(Color.white, "maxCountOfDamned", 1f, 0f, 15f, 1f);
+        }
+
+        public override List<Role> GetImplicateRoles()
+        {
+            return new List<Role>() { Roles.DamnedCrew };
         }
 
         public FCrewmate()

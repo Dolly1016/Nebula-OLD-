@@ -12,7 +12,7 @@ namespace Nebula.Roles.NeutralRoles
 {
     public class Jackal : Role
     {
-        static public Color Color = new Color(0f, 162f/255f, 211f/255f);
+        static public Color RoleColor = new Color(0f, 162f/255f, 211f/255f);
 
         static private CustomButton killButton;
         static private CustomButton sidekickButton;
@@ -191,19 +191,19 @@ namespace Nebula.Roles.NeutralRoles
             {
                 if(PlayerControl.LocalPlayer.GetModData().GetRoleData(jackalDataId)== Helpers.playerById(playerId).GetModData().GetRoleData(jackalDataId))
                 {
-                    displayColor = Color;
+                    displayColor = RoleColor;
                 }
             }else if (PlayerControl.LocalPlayer.GetModData().HasExtraRole(Roles.SecondarySidekick))
             {
                 if (PlayerControl.LocalPlayer.GetModData().GetExtraRoleData(Roles.SecondarySidekick) == (ulong)Helpers.playerById(playerId).GetModData().GetRoleData(jackalDataId))
                 {
-                    displayColor = Color;
+                    displayColor = RoleColor;
                 }
             }
         }
 
         public Jackal()
-            : base("Jackal", "jackal", Color, RoleCategory.Neutral, Side.Jackal, Side.Jackal,
+            : base("Jackal", "jackal", RoleColor, RoleCategory.Neutral, Side.Jackal, Side.Jackal,
                  new HashSet<Side>() { Side.Jackal }, new HashSet<Side>() { Side.Jackal },
                  new HashSet<Patches.EndCondition>() { Patches.EndCondition.JackalWin },
                  true, VentPermission.CanUseUnlimittedVent, true, true, true)

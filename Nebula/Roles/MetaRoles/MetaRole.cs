@@ -2,15 +2,132 @@
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using HarmonyLib;
 
 namespace Nebula.Roles.MetaRoles
 {
+    [HarmonyPatch(typeof(InGamePlayerList), nameof(InGamePlayerList.PopulateButtons))]
+    public static class ButtonUpdatePatch
+    {
+        public static bool Prefix(InGamePlayerList __instance)
+        {
+            return false;
+        }
+
+        private static PoolableBehavior Get(ObjectPoolBehavior objectPool)
+        {
+            var obj = objectPool.inactiveChildren;
+            PoolableBehavior poolableBehavior;
+            lock (obj)
+            {
+                if (objectPool.inactiveChildren.Count == 0)
+                {
+                    if (objectPool.activeChildren.Count == 0)
+                    {
+                        objectPool.InitPool(objectPool.Prefab);
+                    }
+                    else
+                    {
+                        objectPool.CreateOneInactive(objectPool.Prefab);
+                    }
+                }
+                poolableBehavior = objectPool.inactiveChildren[objectPool.inactiveChildren.Count - 1];
+                objectPool.inactiveChildren.RemoveAt(objectPool.inactiveChildren.Count - 1);
+                objectPool.activeChildren.Add(poolableBehavior);
+                PoolableBehavior poolableBehavior2 = poolableBehavior;
+                int num = objectPool.childIndex;
+                objectPool.childIndex = num + 1;
+                poolableBehavior2.PoolIndex = num;
+                if (objectPool.childIndex > objectPool.poolSize)
+                {
+                    objectPool.childIndex = 0;
+                }
+            }
+            if (objectPool.DetachOnGet)
+            {
+                poolableBehavior.transform.SetParent(null, false);
+            }
+            poolableBehavior.gameObject.SetActive(true);
+            poolableBehavior.Reset();
+            return poolableBehavior;
+        }
+
+        public static void Postfix(InGamePlayerList __instance)
+        {
+            __instance.backgroundSprite.sortingOrder = 1;
+            __instance.backgroundSprite.gameObject.GetComponent<BoxCollider2D>().enabled = false;
+
+            __instance.buttonPool.ReclaimAll();
+            int index = 0;
+            foreach (var role in Roles.AllRoles)
+            {
+                if (role.category == RoleCategory.Complex) continue;
+
+                PlayerIdentifierButton component = Get(__instance.buttonPool).GetComponent<PlayerIdentifierButton>();
+                Vector3 localPosition;
+                localPosition = new Vector3(-1.16f+ (index % 5) * 0.58f, -__instance.buttonHeight * (float)(index / 5), 0f);
+                component.transform.localPosition = localPosition;
+                component.transform.localScale = new Vector3(0.21f, 1f, 1f);
+
+                var obj = component.transform.FindChild("actualButton").gameObject;
+                var renderer= obj.GetComponent<SpriteRenderer>();
+                var button = obj.GetComponent<PassiveButton>();
+                button.transform.localPosition = new Vector3(0, 0, -1f);
+                button.OnClick.RemoveAllListeners();
+                button.OnClick.AddListener((UnityEngine.Events.UnityAction)(()=> {
+                    RPCEventInvoker.ImmediatelyChangeRole(PlayerControl.LocalPlayer, role);
+                    __instance.SetActive(false);
+                }));
+                
+
+                component.NameText.text = Helpers.cs(role.Color, Language.Language.GetString("role." + role.LocalizeName + ".name"));
+                component.NameText.transform.localScale = new Vector3(1.5f * 1.3f, 1.3f, 1f);
+                //component.NameText.transform.localPosition = new Vector3(-0.3f, 0.06f, -10f);
+                component.NameText.transform.localPosition = new Vector3(0, 0, 0f);
+                component.NameText.alignment = TMPro.TextAlignmentOptions.Center;
+                component.NameText.renderer.sortingOrder = 2;
+                
+                SpriteRenderer[] componentsInChildren = component.GetComponentsInChildren<SpriteRenderer>();
+                for (int i = 0; i < componentsInChildren.Length; i++)
+                {
+                    componentsInChildren[i].material.SetInt("_MaskLayer", index + 2);
+                    componentsInChildren[i].sortingOrder = 1;
+                }
+                component.NameText.maskType = TMPro.MaskingTypes.MaskOff;
+
+                //UiElement componentInChildren = component.GetComponentInChildren<UiElement>(true);
+                //__instance.controllerNavMenu.ControllerSelectable.Add(componentInChildren);
+
+                index++;
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(InGamePlayerList), nameof(InGamePlayerList.RefreshMenu))]
+    public static class MenuRefreshPatch
+    {
+        public static bool Prefix(InGamePlayerList __instance)
+        {
+            __instance.controllerNavMenu.ControllerSelectable.Clear();
+            __instance.PopulateButtons();
+            if(__instance.controllerNavMenu.ControllerSelectable.Count>0)
+                __instance.controllerNavMenu.DefaultButtonSelected = __instance.controllerNavMenu.ControllerSelectable[0];
+            return false;
+        }
+        public static void Postfix(InGamePlayerList __instance)
+        {
+        }
+    }
+
+        
+
     public class MetaRole : ExtraRole
     {
         static public Color Color = new Color(255 / 255f, 255 / 255f, 255 / 255f);
 
         private TMPro.TextMeshPro log;
         private Vector3 pos;
+        InGamePlayerList list;
 
         public override void Assignment(Patches.AssignMap assignMap)
         {
@@ -33,7 +150,7 @@ namespace Nebula.Roles.MetaRoles
             log.alignment = TMPro.TextAlignmentOptions.TopRight;
             log.rectTransform.pivot = new Vector2(1.0f,0f);
             log.transform.position = Vector3.zero;
-            log.transform.localPosition = log.transform.localPosition + new Vector3(4.5f, 0.8f, 0.0f);
+            log.transform.localPosition = new Vector3(5.1f, -2.8f, 0);
             log.transform.localScale = Vector3.one;
             log.color = Palette.White;
             log.enabled = true;
@@ -54,6 +171,46 @@ namespace Nebula.Roles.MetaRoles
             {
                 pos = PlayerControl.LocalPlayer.transform.position;
             }
+            if (Input.GetKeyDown(KeyCode.Keypad2) || Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                if (list == null)
+                {
+                    list = UnityEngine.Object.Instantiate(InGamePlayerList.instance,Camera.main.transform);
+
+                    list.enabled = true;
+                    list.gameObject.active = true;
+                    list.transform.localScale = new Vector3(3f, 0.9f);
+                }
+                list.SetActive(true);
+                list.openPosition += new Vector3(2f, 0f);
+            }
+            if (Input.GetKeyDown(KeyCode.Keypad3) || Input.GetKeyDown(KeyCode.Alpha3))
+            {
+                if (!PlayerControl.LocalPlayer.Data.IsDead)
+                    PlayerControl.LocalPlayer.MurderPlayer(PlayerControl.LocalPlayer);
+            }
+            if (Input.GetKeyDown(KeyCode.Keypad4) || Input.GetKeyDown(KeyCode.Alpha4))
+            {
+                if (PlayerControl.LocalPlayer.Data.IsDead)
+                {
+                    PlayerControl.LocalPlayer.Revive();
+
+                    foreach (DeadBody body in Helpers.AllDeadBodies())
+                    {
+                        if (body.ParentId != PlayerControl.LocalPlayer.PlayerId) continue;
+
+                        PlayerControl.LocalPlayer.Revive();
+                        Game.GameData.data.deadPlayers.Remove(PlayerControl.LocalPlayer.PlayerId);
+
+                        UnityEngine.Object.Destroy(body.gameObject);
+                    }
+                }
+            }
+
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                if (list != null) list.SetActive(false);
+            }
         }
 
         public override void CleanUp()
@@ -61,6 +218,10 @@ namespace Nebula.Roles.MetaRoles
             if (log)
             {
                 UnityEngine.Object.Destroy(log);
+            }
+            if(list!=null)
+            {
+                UnityEngine.Object.Destroy(list);
             }
         }
 
@@ -81,6 +242,8 @@ namespace Nebula.Roles.MetaRoles
             ValidGamemode = Module.CustomGameMode.FreePlay;
 
             log = null;
+
+            list = null;
         }
     }
 }

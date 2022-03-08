@@ -11,7 +11,7 @@ namespace Nebula.Roles.CrewmateRoles
 {
     public class Agent : Template.ExemptTasks
     {
-        static public Color Color = new Color(166f / 255f, 183f / 255f, 144f / 255f);
+        static public Color RoleColor = new Color(166f / 255f, 183f / 255f, 144f / 255f);
 
         private CustomButton agentButton;
 
@@ -109,7 +109,7 @@ namespace Nebula.Roles.CrewmateRoles
             }
             if (ventButtonString != null)
             {
-                ventButtonString.DestroySubMeshObjects();
+                UnityEngine.Object.Destroy(ventButtonString.gameObject);
                 ventButtonString = null;
             }
         }
@@ -127,7 +127,7 @@ namespace Nebula.Roles.CrewmateRoles
         }
 
         public Agent()
-            : base("Agent", "agent", Color, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
+            : base("Agent", "agent", RoleColor, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                  Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Crewmate.crewmateEndSet,
                  false, VentPermission.CanUseUnlimittedVent, true, false, false)
         {

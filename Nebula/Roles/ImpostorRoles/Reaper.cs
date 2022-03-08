@@ -23,79 +23,79 @@ namespace Nebula.Roles.ImpostorRoles
             {
                 case 0:
                     //Skeld
-                    ventMap["NavVentNorth"].Vent.Right = connect ? ventMap["NavVentSouth"] : null;
-                    ventMap["NavVentSouth"].Vent.Right = connect ? ventMap["NavVentNorth"] : null;
+                    ventMap["NavVentNorth"].Vent.Right = connect ? ventMap["NavVentSouth"] : new Vent();
+                    ventMap["NavVentSouth"].Vent.Right = connect ? ventMap["NavVentNorth"] : new Vent();
 
-                    ventMap["ShieldsVent"].Vent.Left = connect ? ventMap["WeaponsVent"] : null;
-                    ventMap["WeaponsVent"].Vent.Center = connect ? ventMap["ShieldsVent"] : null;
+                    ventMap["ShieldsVent"].Vent.Left = connect ? ventMap["WeaponsVent"] : new Vent();
+                    ventMap["WeaponsVent"].Vent.Center = connect ? ventMap["ShieldsVent"] : new Vent();
 
-                    ventMap["ReactorVent"].Vent.Left = connect ? ventMap["UpperReactorVent"] : null;
-                    ventMap["UpperReactorVent"].Vent.Left = connect ? ventMap["ReactorVent"] : null;
+                    ventMap["ReactorVent"].Vent.Left = connect ? ventMap["UpperReactorVent"] : new Vent();
+                    ventMap["UpperReactorVent"].Vent.Left = connect ? ventMap["ReactorVent"] : new Vent();
 
-                    ventMap["SecurityVent"].Vent.Center = connect ? ventMap["ReactorVent"] : null;
-                    ventMap["ReactorVent"].Vent.Center = connect ? ventMap["SecurityVent"] : null;
+                    ventMap["SecurityVent"].Vent.Center = connect ? ventMap["ReactorVent"] : new Vent();
+                    ventMap["ReactorVent"].Vent.Center = connect ? ventMap["SecurityVent"] : new Vent();
 
-                    ventMap["REngineVent"].Vent.Center = connect ? ventMap["LEngineVent"] : null;
-                    ventMap["LEngineVent"].Vent.Center = connect ? ventMap["REngineVent"] : null;
+                    ventMap["REngineVent"].Vent.Center = connect ? ventMap["LEngineVent"] : new Vent();
+                    ventMap["LEngineVent"].Vent.Center = connect ? ventMap["REngineVent"] : new Vent();
 
                     if (ventMap.ContainsKey("StorageVent"))
                     {
-                        ventMap["AdminVent"].Vent.Center = connect ? ventMap["StorageVent"] : null;
-                        ventMap["StorageVent"].Vent.Left = connect ? ventMap["ElecVent"] : null;
-                        ventMap["StorageVent"].Vent.Right = connect ? ventMap["AdminVent"] : null;
+                        ventMap["AdminVent"].Vent.Center = connect ? ventMap["StorageVent"] : new Vent();
+                        ventMap["StorageVent"].Vent.Left = connect ? ventMap["ElecVent"] : new Vent();
+                        ventMap["StorageVent"].Vent.Right = connect ? ventMap["AdminVent"] : new Vent();
 
-                        ventMap["StorageVent"].Vent.Center = connect ? ventMap["CafeUpperVent"] : null;
+                        ventMap["StorageVent"].Vent.Center = connect ? ventMap["CafeUpperVent"] : new Vent();
                     }
                     else
                     {
-                        ventMap["AdminVent"].Vent.Center = connect ? ventMap["MedVent"] : null;
-                        ventMap["MedVent"].Vent.Center = connect ? ventMap["AdminVent"] : null;
+                        ventMap["AdminVent"].Vent.Center = connect ? ventMap["MedVent"] : new Vent();
+                        ventMap["MedVent"].Vent.Center = connect ? ventMap["AdminVent"] : new Vent();
                     }
 
                     if (ventMap.ContainsKey("CafeUpperVent"))
                     {
-                        ventMap["CafeUpperVent"].Vent.Left = connect ? ventMap["LEngineVent"] : null;
-                        ventMap["LEngineVent"].Vent.Right = connect ? ventMap["CafeUpperVent"] : null;
+                        ventMap["CafeUpperVent"].Vent.Left = connect ? ventMap["LEngineVent"] : new Vent();
+                        ventMap["LEngineVent"].Vent.Right = connect ? ventMap["CafeUpperVent"] : new Vent();
 
-                        ventMap["CafeUpperVent"].Vent.Center = connect ? ventMap["StorageVent"] : null;
+                        ventMap["CafeUpperVent"].Vent.Center = connect ? ventMap["StorageVent"] : new Vent();
 
-                        ventMap["CafeUpperVent"].Vent.Right = connect ? ventMap["WeaponsVent"] : null;
-                        ventMap["WeaponsVent"].Vent.Left = connect ? ventMap["CafeUpperVent"] : null;
+                        ventMap["CafeUpperVent"].Vent.Right = connect ? ventMap["WeaponsVent"] : new Vent();
+                        ventMap["WeaponsVent"].Vent.Left = connect ? ventMap["CafeUpperVent"] : new Vent();
                     }
                     else
                     {
-                        ventMap["CafeVent"].Vent.Center = connect ? ventMap["WeaponsVent"] : null;
-                        ventMap["WeaponsVent"].Vent.Center = connect ? ventMap["CafeVent"] : null;
+                        ventMap["CafeVent"].Vent.Center = connect ? ventMap["WeaponsVent"] : new Vent();
+                        ventMap["WeaponsVent"].Vent.Center = connect ? ventMap["CafeVent"] : new Vent();
                     }
 
                     break;
                 case 2:
                     //Polus
-                    ventMap["CommsVent"].Vent.Center = connect ? ventMap["ElecFenceVent"] : null;
-                    ventMap["ElecFenceVent"].Vent.Center = connect ? ventMap["CommsVent"] : null;
+                    ventMap["CommsVent"].Vent.Center = connect ? ventMap["ElecFenceVent"] : new Vent();
+                    ventMap["ElecFenceVent"].Vent.Center = connect ? ventMap["CommsVent"] : new Vent();
 
-                    ventMap["ElectricalVent"].Vent.Center = connect ? ventMap["ElectricBuildingVent"] : null;
-                    ventMap["ElectricBuildingVent"].Vent.Center = connect ? ventMap["ElectricalVent"] : null;
+                    ventMap["ElectricalVent"].Vent.Center = connect ? ventMap["ElectricBuildingVent"] : new Vent();
+                    ventMap["ElectricBuildingVent"].Vent.Center = connect ? ventMap["ElectricalVent"] : new Vent();
 
-                    ventMap["ScienceBuildingVent"].Vent.Right = connect ? ventMap["BathroomVent"] : null;
-                    ventMap["BathroomVent"].Vent.Center = connect ? ventMap["ScienceBuildingVent"] : null;
+                    ventMap["ScienceBuildingVent"].Vent.Right = connect ? ventMap["BathroomVent"] : new Vent();
+                    ventMap["BathroomVent"].Vent.Center = connect ? ventMap["ScienceBuildingVent"] : new Vent();
 
-                    ventMap["AdminVent"].Vent.Center = connect ? ventMap["OfficeVent"] : null;
-                    ventMap["OfficeVent"].Vent.Center = connect ? ventMap["AdminVent"] : null;
+                    ventMap["AdminVent"].Vent.Center = connect ? ventMap["OfficeVent"] : new Vent();
+                    ventMap["OfficeVent"].Vent.Center = connect ? ventMap["AdminVent"] : new Vent();
                     break;
                 case 4:
                     //Airship
-                    ventMap["VaultVent"].Vent.Right = connect ? ventMap["GaproomVent1"] : null;
-                    ventMap["GaproomVent1"].Vent.Left = connect ? ventMap["VaultVent"] : null;
+                    ventMap["VaultVent"].Vent.Right = connect ? ventMap["GaproomVent1"] : new Vent();
+                    ventMap["GaproomVent1"].Vent.Left = connect ? ventMap["VaultVent"] : new Vent();
 
-                    ventMap["EjectionVent"].Vent.Right = connect ? ventMap["KitchenVent"] : null;
-                    ventMap["KitchenVent"].Vent.Left = connect ? ventMap["EjectionVent"] : null;
+                    ventMap["EjectionVent"].Vent.Right = connect ? ventMap["KitchenVent"] : new Vent();
+                    ventMap["KitchenVent"].Vent.Left = connect ? ventMap["EjectionVent"] : new Vent();
 
-                    ventMap["HallwayVent1"].Vent.Right = connect ? ventMap["HallwayVent2"] : null;
-                    ventMap["HallwayVent2"].Vent.Center = connect ? ventMap["HallwayVent1"] : null;
+                    ventMap["HallwayVent1"].Vent.Right = connect ? ventMap["HallwayVent2"] : new Vent();
+                    ventMap["HallwayVent2"].Vent.Center = connect ? ventMap["HallwayVent1"] : new Vent();
 
-                    ventMap["GaproomVent2"].Vent.Center = connect ? ventMap["RecordsVent"] : null;
-                    ventMap["RecordsVent"].Vent.Center = connect ? ventMap["GaproomVent2"] : null;
+                    ventMap["GaproomVent2"].Vent.Center = connect ? ventMap["RecordsVent"] : new Vent();
+                    ventMap["RecordsVent"].Vent.Center = connect ? ventMap["GaproomVent2"] : new Vent();
                     break;
             }
         }

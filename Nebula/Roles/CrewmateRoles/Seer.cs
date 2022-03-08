@@ -12,7 +12,7 @@ namespace Nebula.Roles.CrewmateRoles
 {
     public class Seer : Role
     {
-        static public Color Color = new Color(60f / 255f, 181f / 255f, 101f / 255f);
+        static public Color RoleColor = new Color(60f / 255f, 181f / 255f, 101f / 255f);
 
         static public HashSet<Objects.Ghost> Ghosts=new HashSet<Objects.Ghost>();
 
@@ -23,7 +23,7 @@ namespace Nebula.Roles.CrewmateRoles
             Objects.Ghost ghost = new Objects.Ghost(Helpers.playerById(targetId).transform.position);
             Ghosts.Add(ghost);
 
-            Helpers.PlayFlash(Color);
+            Helpers.PlayFlash(RoleColor);
         }
 
         static public Module.CustomOption GhostDurationOption;
@@ -58,7 +58,7 @@ namespace Nebula.Roles.CrewmateRoles
 
 
         public Seer()
-            : base("Seer", "seer", Color, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
+            : base("Seer", "seer", RoleColor, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                  Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Crewmate.crewmateEndSet,
                  false, VentPermission.CanNotUse, false, false, false)
         {

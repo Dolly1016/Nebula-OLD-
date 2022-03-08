@@ -122,7 +122,7 @@ namespace Nebula.Roles.NeutralRoles
         }
 
         public Sidekick()
-            : base("Sidekick", "sidekick", Jackal.Color, RoleCategory.Neutral, Side.Jackal, Side.Jackal,
+            : base("Sidekick", "sidekick", Jackal.RoleColor, RoleCategory.Neutral, Side.Jackal, Side.Jackal,
                  new HashSet<Side>() { Side.Jackal }, new HashSet<Side>() { Side.Jackal },
                  new HashSet<Patches.EndCondition>() { Patches.EndCondition.JackalWin },
                  false, VentPermission.CanNotUse, true, true, true)
@@ -172,10 +172,10 @@ namespace Nebula.Roles.NeutralRoles
         public override void EditDisplayNameForcely(byte playerId, ref string displayName)
         {
             displayName += Helpers.cs(
-                    Jackal.Color, "#");
+                    Jackal.RoleColor, "#");
         }
 
-        public SecondarySidekick() : base("Sidekick", "sidekick", Jackal.Color, 0)
+        public SecondarySidekick() : base("Sidekick", "sidekick", Jackal.RoleColor, 0)
         {
             IsHideRole = true;
         }

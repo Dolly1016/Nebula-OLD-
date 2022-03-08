@@ -47,7 +47,7 @@ namespace Nebula.Roles.ImpostorRoles
                 () => { return deadBodyId != Byte.MaxValue && PlayerControl.LocalPlayer.CanMove; },
                 () => { cleanButton.Timer = cleanButton.MaxTimer; },
                 getCleanButtonSprite(),
-                new Vector3(-1.8f, -0.06f, 0),
+                new Vector3(-1.8f, 0f, 0),
                 __instance,
                 KeyCode.F,
                 false,

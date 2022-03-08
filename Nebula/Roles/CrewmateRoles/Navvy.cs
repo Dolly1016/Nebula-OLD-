@@ -12,7 +12,7 @@ namespace Nebula.Roles.CrewmateRoles
 {
     public class Navvy : Role
     {
-        static public Color Color = new Color(71f / 255f, 93f / 255f, 206f / 255f);
+        static public Color RoleColor = new Color(71f / 255f, 93f / 255f, 206f / 255f);
 
         private CustomButton repairButton;
         private CustomButton sealButton;
@@ -220,7 +220,7 @@ namespace Nebula.Roles.CrewmateRoles
 
             if (sealButtonString != null)
             {
-                sealButtonString.DestroySubMeshObjects();
+                UnityEngine.Object.Destroy(sealButtonString.gameObject);
                 sealButtonString = null;
             }
 
@@ -249,7 +249,7 @@ namespace Nebula.Roles.CrewmateRoles
         }
 
         public Navvy()
-            : base("Navvy", "navvy", Color, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
+            : base("Navvy", "navvy", RoleColor, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                  Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Crewmate.crewmateEndSet,
                  false, VentPermission.CanNotUse, false, false, false)
         {

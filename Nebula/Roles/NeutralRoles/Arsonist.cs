@@ -14,7 +14,7 @@ namespace Nebula.Roles.NeutralRoles
 {
     public class Arsonist : Template.HasAlignedHologram, Template.HasWinTrigger
     {
-        static public Color Color = new Color(255f/255f, 103f/255f, 1/255f);
+        static public Color RoleColor = new Color(255f/255f, 103f/255f, 1/255f);
 
         static private CustomButton arsonistButton;
 
@@ -69,6 +69,46 @@ namespace Nebula.Roles.NeutralRoles
 
             canIgnite = false;
             WinTrigger = false;
+
+            if (arsonistButton != null)
+            {
+                arsonistButton.Destroy();
+                arsonistButton = null;
+            }
+        }
+
+        public override void OnMeetingEnd()
+        {
+            base.OnMeetingEnd();
+
+            CheckIgnite();
+        }
+
+        private bool CheckIgnite()
+        {
+            bool cannotIgnite = false;
+            foreach (PlayerControl player in PlayerControl.AllPlayerControls)
+            {
+                if (player.Data.IsDead) continue;
+                if (activePlayers.Contains(player.PlayerId)) continue;
+                if (player.PlayerId == PlayerControl.LocalPlayer.PlayerId) continue;
+
+                cannotIgnite = true; break;
+            }
+
+            if (!cannotIgnite)
+            {
+                //点火可能
+                arsonistButton.Sprite = getIgniteButtonSprite();
+                canIgnite = true;
+                arsonistButton.Timer = 0f;
+            }
+            else
+            {
+                arsonistButton.Timer = arsonistButton.MaxTimer;
+            }
+
+            return !cannotIgnite;
         }
 
         public override void ButtonInitialize(HudManager __instance)
@@ -112,27 +152,7 @@ namespace Nebula.Roles.NeutralRoles
                         Game.GameData.data.myData.currentTarget = null;
                     }
 
-                    bool cannotIgnite = false;
-                    foreach (PlayerControl player in PlayerControl.AllPlayerControls)
-                    {
-                        if (player.Data.IsDead) continue;
-                        if (activePlayers.Contains(player.PlayerId)) continue;
-                        if (player.PlayerId == PlayerControl.LocalPlayer.PlayerId) continue;
-
-                        cannotIgnite = true; break;
-                    }
-
-                    if (!cannotIgnite)
-                    {
-                        //点火可能
-                        arsonistButton.Sprite = getIgniteButtonSprite();
-                        canIgnite = true;
-                        arsonistButton.Timer = 0f;
-                    }
-                    else
-                    {
-                        arsonistButton.Timer = arsonistButton.MaxTimer;
-                    }
+                    CheckIgnite();
                 }
             );
             arsonistButton.MaxTimer = douseCoolDownOption.getFloat();
@@ -169,7 +189,7 @@ namespace Nebula.Roles.NeutralRoles
         }
 
         public Arsonist()
-            : base("Arsonist", "arsonist", Color, RoleCategory.Neutral, Side.Arsonist, Side.Arsonist,
+            : base("Arsonist", "arsonist", RoleColor, RoleCategory.Neutral, Side.Arsonist, Side.Arsonist,
                  new HashSet<Side>() { Side.Arsonist }, new HashSet<Side>() { Side.Arsonist },
                  new HashSet<Patches.EndCondition>() { Patches.EndCondition.ArsonistWin },
                  true, VentPermission.CanUseUnlimittedVent, true, false, false)

@@ -12,7 +12,7 @@ namespace Nebula.Roles.CrewmateRoles
 {
     public class Sheriff : Role
     {
-        static public Color Color = new Color(240f/255f, 191f/255f, 0f);
+        static public Color RoleColor = new Color(240f/255f, 191f/255f, 0f);
 
         private CustomButton killButton;
 
@@ -109,7 +109,7 @@ namespace Nebula.Roles.CrewmateRoles
         }
 
         public Sheriff()
-            : base("Sheriff", "sheriff", Color, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
+            : base("Sheriff", "sheriff", RoleColor, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                  Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Crewmate.crewmateEndSet,
                  false, VentPermission.CanNotUse, false, false, false)
         {

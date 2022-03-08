@@ -10,7 +10,7 @@ namespace Nebula.Roles.CrewmateRoles
 {
     public class Mayor : Role
     {
-        static public Color Color = new Color(3f / 255f, 79f / 255f, 66f / 255f);
+        static public Color RoleColor = new Color(3f / 255f, 79f / 255f, 66f / 255f);
 
         public int votesId { get; private set; }
 
@@ -140,7 +140,7 @@ namespace Nebula.Roles.CrewmateRoles
         }
 
         public Mayor()
-            : base("Mayor", "mayor", Color, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
+            : base("Mayor", "mayor", RoleColor, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                  Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Crewmate.crewmateEndSet,
                  false, VentPermission.CanNotUse, false, false, false)
         {

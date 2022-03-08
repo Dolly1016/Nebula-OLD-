@@ -92,6 +92,31 @@ namespace Nebula.Roles
 
         public bool HideKillButtonEvenImpostor { get; protected set; }
 
+        public virtual bool CanBeLovers
+        {
+            get
+            {
+                return CustomOptionHolder.advanceRoleOptions.getBool() ?
+                    (CanBeLoversOption != null ? CanBeLoversOption.getBool() : true) : DefaultCanBeLovers;
+            }
+        }
+        public virtual bool CanBeGuesser
+        {
+            get
+            {
+                return CustomOptionHolder.advanceRoleOptions.getBool() ?
+                    (CanBeGuesserOption!=null ? CanBeGuesserOption.getBool():true) : DefaultCanBeGuesser;
+            }
+        }
+        public virtual bool CanBeDrunk { get {
+                return CustomOptionHolder.advanceRoleOptions.getBool() ?
+                     (CanBeDrunkOption != null ? CanBeDrunkOption.getBool() : true) : DefaultCanBeDrunk;
+            } }
+
+        public bool DefaultCanBeLovers { get; set; }
+        public bool DefaultCanBeGuesser { get; set; }
+        public bool DefaultCanBeDrunk { get; set; }
+
 
         public virtual List<Role> GetImplicateRoles() { return new List<Role>(); }
         /// <summary>
@@ -132,26 +157,53 @@ namespace Nebula.Roles
         [RoleLocalMethod]
         public virtual void OnRoleRelationSetting() { }
 
+        private Module.CustomOption CanBeLoversOption=null;
+        private Module.CustomOption CanBeGuesserOption=null;
+        private Module.CustomOption CanBeDrunkOption=null;
+        sealed public override void SetupRoleOptionData()
+        {
+            base.SetupRoleOptionData();
+
+            CanBeLoversOption = CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeLovers", DefaultCanBeLovers, true).HiddenOnDisplay(true);
+            CanBeLoversOption.AddPrerequisite(CustomOptionHolder.advanceRoleOptions);
+            CanBeLoversOption.AddCustomPrerequisite(() => { return Roles.Lover.IsSpawnable(); });
+
+            CanBeGuesserOption = CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeGuesser", DefaultCanBeGuesser, true).HiddenOnDisplay(true);
+            CanBeGuesserOption.AddPrerequisite(CustomOptionHolder.advanceRoleOptions);
+            CanBeGuesserOption.AddCustomPrerequisite(() => { return Roles.SecondaryGuesser.IsSpawnable(); });
+
+            CanBeDrunkOption = CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeDrunk", DefaultCanBeDrunk, true).HiddenOnDisplay(true);
+            CanBeDrunkOption.AddPrerequisite(CustomOptionHolder.advanceRoleOptions);
+            CanBeDrunkOption.AddCustomPrerequisite(() => { return Roles.Drunk.IsSpawnable(); });
+
+            RoleChanceOption.Decorator = new Module.CustomOptionDecorator((original, option) =>
+            {
+                string suffix = "";
+                if (Roles.Lover.IsSpawnable() && CanBeLovers) suffix += Helpers.cs(Roles.Lover.Color, "♥");
+                if (Roles.SecondaryGuesser.IsSpawnable() && CanBeGuesser) suffix += Helpers.cs(Roles.SecondaryGuesser.Color, "⊕");
+                if (Roles.Drunk.IsSpawnable() && CanBeDrunk) suffix += Helpers.cs(Roles.Drunk.Color, "〻");
+
+                return suffix == "" ? original : (original + " " + suffix);
+                
+            }
+            );
+        }
+
         /// <summary>
         /// この役職が発生しうるかどうか調べます
         /// </summary>
-        public virtual bool IsSpawnable()
+        public override bool IsSpawnable()
         {
             if (category == RoleCategory.Complex) return false;
 
-            try
-            {
-                if (RoleChanceOption.getSelection() == 0) return false;
-                if (!FixedRoleCount && RoleCountOption.getFloat() == 0f) return false;
-            }
-            catch (Exception e) { return false; }
-
-            return true;
+            return base.IsSpawnable();
         }
 
         public virtual void SpawnableTest(ref Dictionary<Role,int> DefinitiveRoles ,ref HashSet<Role> SpawnableRoles)
         {
             if (!IsSpawnable()) return;
+
+            if (RoleChanceOption == null) return;
 
             if (RoleChanceOption.getSelection() == 10f)
                 DefinitiveRoles.Add(this, (int)RoleCountOption.getFloat());

@@ -115,6 +115,9 @@ namespace Nebula.Roles.ExtraRoles
             crewmates.RemoveAll(x => x.Data.Role.IsImpostor);
             impostors.RemoveAll(x => !x.Data.Role.IsImpostor);
 
+            crewmates.RemoveAll((player) => { return !player.GetModData().role.CanBeLovers; });
+            impostors.RemoveAll((player) => { return !player.GetModData().role.CanBeLovers; });
+
             int[] crewmateIndex = Helpers.GetRandomArray(crewmates.Count);
             int[] impostorIndex = Helpers.GetRandomArray(impostors.Count);
             int crewmateUsed = 0, impostorUsed = 0;
@@ -322,6 +325,14 @@ namespace Nebula.Roles.ExtraRoles
                 involveButton.Destroy();
                 involveButton = null;
             }
+        }
+
+
+        public virtual bool IsSpawnable()
+        {
+            if (maxPairsOption.getFloat() == 0f) return false;
+
+            return base.IsSpawnable();
         }
 
         public Lover() : base("Lover", "lover", iconColor[0],0)

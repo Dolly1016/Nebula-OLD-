@@ -1,5 +1,5 @@
 ﻿{
-    "Version": "2",
+    "Version": "3",
     "English": 
 "Hi Crewmates!
 
@@ -9,23 +9,25 @@ and you can join the our Discord with the link on our GitHub.
 Submitted works will be checked and added in the this mod.
 You're exactly a nebula consists of ideas!
 
-Main Features in NoS v1.5.0
- -%ROLE:BOOSTER(Booster)% is now replaced %ROLE:COMET%.
- -%ROLE:PSYCHIC% and %ROLE:PURSUER(Pursuer)% are unified.
- -%ROLE:PSYCHIC% can now see ghosts.",
+Main Features in NoS v1.5.1
+ -New option \"%OPTION(option.canBeLovers),(Can Be Lovers)%\", \"%OPTION(option.canBeGuesser),(Can Be Guesser)%\", \"%OPTION(option.canBeDrunk),(Can Be Drunk)%\.",
+ -%ROLE:GUESSER%(Secondary) can now adjust the count of players for each sides.
+ -%ROLE:OPPORTUNIST% and %ROLE:LOVER% can now win with any end of game.
+ -%ROLE:TRAPPER%'s new option \"%OPTION(role.trapper.rootTime),(Trapper Root Time)%\."
+ -In %OPTION(gamemode.freePlay),(Free Play)%, you can now change roles and suicide or revive.",
     "Japanese": 
-"
-※旧バージョンではお知らせが正常に表示されない場合があります。
-
-◎More Cosmic! カスタムコス募集のお知らせ
+"◎More Cosmic! カスタムコス募集のお知らせ
   NebulaのDiscordにて、カスタムハットおよびカスタムネームプレートを募集しています。
   ご応募いただいた作品は、開発者の確認ののち、今後のアップデートでMOD内に導入されます。
   皆様からの素敵な作品のご応募をお待ちしております！
   詳しくはNebula on the Ship のDiscordから(GitHubにリンクがあります)。
   それでは、今日も良い船旅を！
 
-◆アップデート情報 v1.5.0
-  -%ROLE:COMET(Comet)%が追加され、%ROLE:BOOSTER(Booster)%が削除されました。
-  -%ROLE:PSYCHIC%と%ROLE:PURSUER(Pursuer)%が統合されました。
-  -%ROLE:PSYCHIC%が会議を挟んでいない幽霊を見れるようになりました。"
+◆アップデート情報 v1.5.1
+  -追加役職に関する新オプション「%OPTION(option.canBeLovers),(Can Be Lovers)%」, 「%OPTION(option.canBeGuesser),(Can Be Guesser)%」, 「%OPTION(option.canBeDrunk),(Can Be Drunk)%」が追加されました。
+  -追加役職としての%ROLE:GUESSER%の配役人数を陣営ごとに設定できるようになりました。
+  -%ROLE:OPPORTUNIST%と%ROLE:LOVER%が第三陣営の単独勝利に潜り込んで追加勝利できるようになりました。
+  -%ROLE:TRAPPER%に新たなオプション「%OPTION(role.trapper.rootTime),(Trapper Root Time)%」が追加されました。
+  -%OPTION(gamemode.freePlay),(Free Play)%でゲーム中に役職を変更できるようになり、復活や自殺も可能になりました。
+  -その他、%ROLE:MORPHING%や%ROLE:DOCTOR%に関するそれぞれの問題の修正があります。"
 }

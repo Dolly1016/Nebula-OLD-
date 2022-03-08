@@ -100,7 +100,6 @@ namespace Nebula.Objects
             setActive(false);
             UnityEngine.Object.Destroy(actionButton);
             actionButton = null;
-            buttons.Remove(this);
         }
 
         public static void HudUpdate()
@@ -201,6 +200,12 @@ namespace Nebula.Objects
 
         private void Update()
         {
+            if (actionButton.cooldownTimerText.color.a != 1f)
+            {
+                Color c = actionButton.cooldownTimerText.color;
+                actionButton.cooldownTimerText.color = new Color(c.r, c.g, c.b, 1f);
+            }
+
             if (Timer >= 0)
             {
                 if (HasEffect && isEffectActive)

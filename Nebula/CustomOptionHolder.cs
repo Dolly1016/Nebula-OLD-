@@ -106,6 +106,8 @@ namespace Nebula
         public static CustomOption timeLimitOption;
         public static CustomOption timeLimitSecondOption;
 
+        public static CustomOption advanceRoleOptions;
+
         public static CustomOption exclusiveAssignmentParent;
         public static List<Tuple<CustomOption,List<CustomOption>>> exclusiveAssignmentList;
         public static List<Roles.Role> exclusiveAssignmentRoles;
@@ -140,8 +142,8 @@ namespace Nebula
             crewmateRolesCountMax = CustomOption.Create(10002, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.maximumCrewmateRoles", 0f, 0f, 15f, 1f, null, false).HiddenOnDisplay(true);
             neutralRolesCountMin = CustomOption.Create(10003, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.minimumNeutralRoles", 0f, 0f, 15f, 1f, null, false).HiddenOnDisplay(true);
             neutralRolesCountMax = CustomOption.Create(10004, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.maximumNeutralRoles", 0f, 0f, 15f, 1f, null, false).HiddenOnDisplay(true);
-            impostorRolesCountMin = CustomOption.Create(10005, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.minimumImpostorRoles", 0f, 0f, 3f, 1f, null, false).HiddenOnDisplay(true);
-            impostorRolesCountMax = CustomOption.Create(10006, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.maximumImpostorRoles", 0f, 0f, 3f, 1f, null, false).HiddenOnDisplay(true);
+            impostorRolesCountMin = CustomOption.Create(10005, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.minimumImpostorRoles", 0f, 0f, 5f, 1f, null, false).HiddenOnDisplay(true);
+            impostorRolesCountMax = CustomOption.Create(10006, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.maximumImpostorRoles", 0f, 0f, 5f, 1f, null, false).HiddenOnDisplay(true);
 
 
             emergencyOptions = CustomOption.Create(10100, Color.white, "option.emergencyOptions", false, null, true).SetGameMode(~CustomGameMode.Minigame);
@@ -166,6 +168,8 @@ namespace Nebula
             timeLimitSecondOption = CustomOption.Create(10142, Color.white, "option.timeLimitSecondOption", 0f, 0f, 55f, 5f, limiterOptions).SetGameMode(CustomGameMode.All);
             timeLimitOption.suffix = "minute";
             timeLimitSecondOption.suffix = "second";
+
+            advanceRoleOptions = CustomOption.Create(10150, Color.white, "option.advanceRoleOptions", false, null, true).SetGameMode(CustomGameMode.Standard);
 
             //ロールのオプションを読み込む
             Roles.Role.LoadAllOptionData();

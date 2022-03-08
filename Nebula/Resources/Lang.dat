@@ -82,7 +82,13 @@
 "option.timeLimitOption" : "Time Limit (Min)"
 "option.timeLimitSecondOption" : "Time Limit (Sec)"
 
+"option.advanceRoleOptions" : "Advance Role Options"
+
 "option.roleCount" : "Max Players"
+
+"option.canBeLovers" : "Can Be Lovers"
+"option.canBeGuesser" : "Can Be Guesser"
+"option.canBeDrunk" : "Can Be Drunk"
 
 "option.suffix.cross" : "x"
 "option.suffix.second" : "s"
@@ -102,6 +108,9 @@
 "role.guesser.isSecondaryRole" : "Assign As Secondary Role"
 "role.guesser.guesserShots" : "Guesser Shots"
 "role.guesser.guessesLeft" : "Guesses Left"
+"role.guesser.crewmateRoleCount" : "Max Players (Crewmate)"
+"role.guesser.impostorRoleCount" : "Max Players (Impostor) "
+"role.guesser.neutralRoleCount" : "Max Players (Neutral)  "
 "role.secondaryGuesser.description" : "and You Can Guess Anyone"
 
 "role.trapper.name" : "Trapper"
@@ -116,6 +125,7 @@
 "role.trapper.invisibleTrapRange" : "Invisible Trap Range"
 "role.trapper.commTrapCost" : "Log Trap Cost"
 "role.trapper.killTrapCost" : "Kill Trap Cost"
+"role.trapper.rootTime" : "Trapper Root Time"
 
 "role.agent.name" : "Agent"
 "role.agent.description" : "Do Your Tasks More"
@@ -393,12 +403,16 @@
 
 "role.opportunist.name" : "Opportunist"
 "role.opportunist.description" : "Wait for Opportunity"
-"role.opportunist.info" : "You have to do your best to survive.\nIf all your task are completed, you can win with other players.\nBe careful. You cannot win with Arsonist, Empiric Vulture, Jester."
+"role.opportunist.info" : "You have to do your best to survive.\nIf all your task are completed, you can win with other players."
 "role.opportunist.exemptTasks" : "Cut Tasks"
 "role.opportunist.canUseVents" : "Can Use Vents"
 "role.opportunist.additionalEndText" : " <color=#ffffffff>with</color> <color=#6afc2dff>Opportunist</color>"
 "role.opportunist.ventCoolDown" : "Vent Cool Down"
 "role.opportunist.ventDuration" : "Vent Duration"
+"role.opportunist.canWinWithArsonist" : "Can Win With Arsonist"
+"role.opportunist.canWinWithEmpiric" : "Can Win With Empiric"
+"role.opportunist.canWinWithJester" : "Can Win With Jester"
+"role.opportunist.canWinWithVulture" : "Can Win With Vulture"
 
 "role.sidekick.name" : "Sidekick"
 "role.sidekick.info" : "You became Jackal when Jackal dies."
@@ -446,7 +460,7 @@
 "role.hunter.name" : "Hunter"
 
 "role.metaRole.name" : "Free Play"
-"role.metaRole.info" : "You can measure the distance.\n\n - 1 : Set origin at the current position"
+"role.metaRole.info" : "You can measure the distance.\n\n - 1 : Set origin at the current position\n - 2 : Open roles menu\n - ESC : Close roles menu"
 
 "side.crewmate.name" : "Crewmate"
 "side.impostor.name" : "Impostor"

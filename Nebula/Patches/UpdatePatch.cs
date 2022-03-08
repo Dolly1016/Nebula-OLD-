@@ -290,6 +290,11 @@ namespace Nebula.Patches
             Game.GameData.data.TimerUpdate();
 
             if (Game.GameData.data.Ghost != null) Game.GameData.data.Ghost.Update();
+
+            PlayerControl.LocalPlayer.myTasks.RemoveAll((Il2CppSystem.Predicate<PlayerTask>)((c) =>
+            {
+                return c.GetComponent<ImportantTextTask>() != null;
+            }));
         }
     }
     

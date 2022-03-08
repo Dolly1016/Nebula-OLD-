@@ -14,7 +14,7 @@ namespace Nebula.Roles.NeutralRoles
 {
     public class Empiric : Template.HasAlignedHologram , Template.HasWinTrigger
     {
-        static public Color Color = new Color(183f / 255f, 233f / 255f, 0f / 255f);
+        static public Color RoleColor = new Color(183f / 255f, 233f / 255f, 0f / 255f);
 
         static private CustomButton infectButton;
         private TMPro.TMP_Text infectButtonString;
@@ -67,6 +67,7 @@ namespace Nebula.Roles.NeutralRoles
         {
             base.Initialize(__instance);
 
+            infectProgress.Clear();
             leftInfect = (int)maxInfectMyselfOption.getFloat();
             WinTrigger = false;
 
@@ -88,7 +89,7 @@ namespace Nebula.Roles.NeutralRoles
             }
             if (infectButtonString != null)
             {
-                infectButtonString.DestroySubMeshObjects();
+                UnityEngine.Object.Destroy(infectButtonString.gameObject);
                 infectButtonString = null;
             }
         }
@@ -258,7 +259,7 @@ namespace Nebula.Roles.NeutralRoles
         }
 
         public Empiric()
-            : base("Empiric", "empiric", Color, RoleCategory.Neutral, Side.Empiric, Side.Empiric,
+            : base("Empiric", "empiric", RoleColor, RoleCategory.Neutral, Side.Empiric, Side.Empiric,
                  new HashSet<Side>() { Side.Empiric }, new HashSet<Side>() { Side.Empiric },
                  new HashSet<Patches.EndCondition>() { Patches.EndCondition.EmpiricWin },
                  true, VentPermission.CanUseLimittedVent, true, false, false)

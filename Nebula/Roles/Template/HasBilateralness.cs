@@ -148,6 +148,30 @@ namespace Nebula.Roles.Template
             FRole = GetFRoleFunc.Invoke();    
         }
 
+        public override bool CanBeLovers
+        {
+            get
+            {
+                return FRole.CanBeLovers;
+            }
+        }
+
+        public override bool CanBeGuesser
+        {
+            get
+            {
+                return FRole.CanBeGuesser;
+            }
+        }
+
+        public override bool CanBeDrunk
+        {
+            get
+            {
+                return FRole.CanBeDrunk;
+            }
+        }
+
         public override bool IsSpawnable()
         {
             if (FRole.RoleChanceOption.getSelection() == 0) return false;

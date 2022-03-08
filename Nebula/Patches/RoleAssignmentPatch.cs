@@ -323,6 +323,13 @@ namespace Nebula.Patches
             }
         }
 
+        private static void ReduceImpostor(List<PlayerControl> crewmates, List<PlayerControl> impostors)
+        {
+            int index = NebulaPlugin.rnd.Next(impostors.Count);
+            crewmates.Add(impostors[index]);
+            impostors.RemoveAt(index);
+        }
+
         private static void assignRoles(AssignMap assignMap)
         {
             Game.GameModeProperty property = Game.GameModeProperty.GetProperty(CustomOptionHolder.GetCustomGameMode());
@@ -340,6 +347,14 @@ namespace Nebula.Patches
             {
                 impostors.Clear();
             }
+
+            //インポスターを減らす
+            if (PlayerControl.AllPlayerControls.Count < 7)
+                while (impostors.Count > 1)
+                    ReduceImpostor(crewmates, impostors);
+            else if (PlayerControl.AllPlayerControls.Count < 9)
+                while (impostors.Count > 2)
+                    ReduceImpostor(crewmates, impostors);
 
             /* ロールの割り当て */
             AssignRoles roleData = new AssignRoles(crewmates.Count, impostors.Count);
@@ -384,37 +399,6 @@ namespace Nebula.Patches
 
                 currentPriority = nextPriority;
             } while (currentPriority != Byte.MaxValue);
-        }
-
-        //ModRoleが有効でない場合標準ロールを割り当てます
-        private static void assignDefaultRoles(AssignMap assignMap)
-        {
-            Game.GameModeProperty property = Game.GameModeProperty.GetProperty(CustomOptionHolder.GetCustomGameMode());
-
-            List<PlayerControl> crewmates = PlayerControl.AllPlayerControls.ToArray().ToList().OrderBy(x => Guid.NewGuid()).ToList();
-            
-            List<PlayerControl> impostors = PlayerControl.AllPlayerControls.ToArray().ToList().OrderBy(x => Guid.NewGuid()).ToList();
-
-            if (property.RequireImpostors)
-            {
-                crewmates.RemoveAll(x => x.Data.Role.IsImpostor);
-                impostors.RemoveAll(x => !x.Data.Role.IsImpostor);
-            }
-            else
-            {
-                impostors.Clear();
-            }
-            
-
-            while (crewmates.Count > 0)
-            {
-                setRoleToRandomPlayer(assignMap, property.DefaultCrewmateRole, crewmates, true);
-
-            }
-            while (impostors.Count > 0)
-            {
-                setRoleToRandomPlayer(assignMap, property.DefaultImpostorRole, impostors, true);
-            }
         }
 
         public static byte setRoleToRandomPlayer(AssignMap assignMap,Role role, List<PlayerControl> playerList,bool removePlayerFlag)

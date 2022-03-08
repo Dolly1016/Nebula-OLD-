@@ -13,7 +13,7 @@ namespace Nebula.Roles.NeutralRoles
     public class Vulture : Role, Template.HasWinTrigger
     {
         /* 陣営色 */
-        static public Color Color = new Color(139f / 255f, 69f / 255f, 18f / 255f);
+        static public Color RoleColor = new Color(139f / 255f, 69f / 255f, 18f / 255f);
 
         /* オプション */
         private Module.CustomOption eatOption;
@@ -199,7 +199,7 @@ namespace Nebula.Roles.NeutralRoles
         }
 
         public Vulture()
-            : base("Vulture", "vulture", Color, RoleCategory.Neutral, Side.Vulture, Side.Vulture,
+            : base("Vulture", "vulture", RoleColor, RoleCategory.Neutral, Side.Vulture, Side.Vulture,
                  new HashSet<Side>() { Side.Vulture }, new HashSet<Side>() { Side.Vulture },
                  new HashSet<Patches.EndCondition>() { Patches.EndCondition.VultureWin },
                  true, VentPermission.CanUseLimittedVent, true, true, true)

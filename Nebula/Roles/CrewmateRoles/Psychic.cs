@@ -12,7 +12,7 @@ namespace Nebula.Roles.CrewmateRoles
 {
     public class Psychic : Role
     {
-        static public Color Color = new Color(96f / 255f, 206f / 255f, 137f / 255f);
+        static public Color RoleColor = new Color(96f / 255f, 206f / 255f, 137f / 255f);
 
         private CustomButton searchButton;
 
@@ -152,7 +152,7 @@ namespace Nebula.Roles.CrewmateRoles
         }
 
         public Psychic()
-            : base("Psychic", "psychic", Color, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
+            : base("Psychic", "psychic", RoleColor, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                  Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Crewmate.crewmateEndSet,
                  false, VentPermission.CanNotUse, false, false, false)
         {

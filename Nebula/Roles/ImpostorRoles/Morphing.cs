@@ -84,7 +84,7 @@ namespace Nebula.Roles.ImpostorRoles
                 {
                     if (morphId == Byte.MaxValue)
                     {
-                        morphButton.Timer = 0;
+                        morphButton.Timer = 3f;
                         morphButton.isEffectActive = false;
                         morphId = Game.GameData.data.myData.currentTarget.PlayerId;
                         Game.GameData.data.myData.currentTarget = null;

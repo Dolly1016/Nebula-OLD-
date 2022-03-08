@@ -23,8 +23,9 @@ namespace Nebula.Roles.ComplexRoles
         public Module.CustomOption invisibleTrapRangeOption;
         public Module.CustomOption commButtonCostOption;
         public Module.CustomOption killButtonCostOption;
+        public Module.CustomOption rootTimeOption;
 
-        static public Color Color = new Color(206f / 255f, 219f / 255f, 96f / 255f);
+        static public Color RoleColor = new Color(206f / 255f, 219f / 255f, 96f / 255f);
 
         public int remainTrapsId { get; private set; }
 
@@ -83,12 +84,15 @@ namespace Nebula.Roles.ComplexRoles
             killButtonCostOption = CreateOption(Color.white, "killTrapCost", 2f, 1f, 15f, 1f);
             killButtonCostOption.suffix = "cross";
 
+            rootTimeOption = CreateOption(Color.white, "rootTime", 2f, 0f, 10f, 0.5f);
+            rootTimeOption.suffix = "second";
+
             FirstRole = Roles.NiceTrapper;
             SecondaryRole = Roles.EvilTrapper;
         }
 
         public FTrapper()
-                : base("Trapper", "trapper", Color)
+                : base("Trapper", "trapper", RoleColor)
         {
             remainTrapsId = Game.GameData.RegisterRoleDataId("trapper.remainTraps");
 
@@ -123,7 +127,7 @@ namespace Nebula.Roles.ComplexRoles
         //インポスターはModで操作するFakeTaskは所持していない
         public Trapper(string name, string localizeName, bool isImpostor)
                 : base(name, localizeName,
-                     isImpostor ? Palette.ImpostorRed : FTrapper.Color,
+                     isImpostor ? Palette.ImpostorRed : FTrapper.RoleColor,
                      isImpostor ? RoleCategory.Impostor : RoleCategory.Crewmate,
                      isImpostor ? Side.Impostor : Side.Crewmate, isImpostor ? Side.Impostor : Side.Crewmate,
                      isImpostor ? ImpostorRoles.Impostor.impostorSideSet : CrewmateRoles.Crewmate.crewmateSideSet,
@@ -167,6 +171,7 @@ namespace Nebula.Roles.ComplexRoles
 
                 if (obj.ObjectType == Objects.ObjectTypes.InvisibleTrap.KillTrap)
                 {
+                    if (MeetingHud.Instance || ExileController.Instance) continue;
                     if (PlayerControl.LocalPlayer.killTimer > 0f) continue;
 
                     PlayerControl player = Patches.PlayerControlPatch.GetTarget(obj.GameObject.transform.position, Roles.F_Trapper.invisibleTrapRangeOption.getFloat() / 2, side == Side.Impostor);
@@ -278,8 +283,10 @@ namespace Nebula.Roles.ComplexRoles
                             }
                             break;
                     }
-                    
 
+                    if (Roles.F_Trapper.rootTimeOption.getFloat() > 0f)
+                        RPCEventInvoker.EmitSpeedFactor(PlayerControl.LocalPlayer, new Game.SpeedFactor(2, Roles.F_Trapper.rootTimeOption.getFloat(), 0f, false));
+                    
                     trapButton.Timer = trapButton.MaxTimer;                   
                 },
                 () => {
@@ -352,7 +359,7 @@ namespace Nebula.Roles.ComplexRoles
 
             if (trapButtonString != null)
             {
-                trapButtonString.DestroySubMeshObjects();
+                UnityEngine.Object.Destroy(trapButtonString.gameObject);
                 trapButtonString = null;
             }
         }

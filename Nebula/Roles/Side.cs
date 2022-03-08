@@ -78,7 +78,7 @@ namespace Nebula.Roles
             return null;
         });
 
-        public static Side Jackal = new Side("Jackal", "jackal", IntroDisplayOption.SHOW_ONLY_ME, NeutralRoles.Jackal.Color, (PlayerStatistics statistics, ShipStatus status) =>
+        public static Side Jackal = new Side("Jackal", "jackal", IntroDisplayOption.SHOW_ONLY_ME, NeutralRoles.Jackal.RoleColor, (PlayerStatistics statistics, ShipStatus status) =>
         {
             if (statistics.GetAlivePlayers(Jackal)*2 >= statistics.TotalAlive && statistics.GetAlivePlayers(Impostor)==0)
             {
@@ -87,7 +87,7 @@ namespace Nebula.Roles
             return null;
         });
 
-        public static Side Jester = new Side("Jester", "jester", IntroDisplayOption.SHOW_ONLY_ME, NeutralRoles.Jester.Color, (PlayerStatistics statistics, ShipStatus status) =>
+        public static Side Jester = new Side("Jester", "jester", IntroDisplayOption.SHOW_ONLY_ME, NeutralRoles.Jester.RoleColor, (PlayerStatistics statistics, ShipStatus status) =>
         {
             if (Roles.Jester.WinTrigger)
             {
@@ -96,7 +96,7 @@ namespace Nebula.Roles
             return null;
         });
 
-        public static Side Vulture = new Side("Vulture", "vulture", IntroDisplayOption.SHOW_ONLY_ME, NeutralRoles.Vulture.Color, (PlayerStatistics statistics, ShipStatus status) =>
+        public static Side Vulture = new Side("Vulture", "vulture", IntroDisplayOption.SHOW_ONLY_ME, NeutralRoles.Vulture.RoleColor, (PlayerStatistics statistics, ShipStatus status) =>
         {
             if (Roles.Vulture.WinTrigger)
             {
@@ -105,7 +105,7 @@ namespace Nebula.Roles
             return null;
         });
 
-        public static Side Arsonist = new Side("Arsonist", "arsonist", IntroDisplayOption.SHOW_ONLY_ME, NeutralRoles.Arsonist.Color, (PlayerStatistics statistics, ShipStatus side) =>
+        public static Side Arsonist = new Side("Arsonist", "arsonist", IntroDisplayOption.SHOW_ONLY_ME, NeutralRoles.Arsonist.RoleColor, (PlayerStatistics statistics, ShipStatus side) =>
         {
             if (Roles.Arsonist.WinTrigger)
             {
@@ -114,7 +114,7 @@ namespace Nebula.Roles
             return null;
         });
 
-        public static Side Empiric = new Side("Empiric", "empiric", IntroDisplayOption.SHOW_ONLY_ME, NeutralRoles.Empiric.Color, (PlayerStatistics statistics, ShipStatus side) =>
+        public static Side Empiric = new Side("Empiric", "empiric", IntroDisplayOption.SHOW_ONLY_ME, NeutralRoles.Empiric.RoleColor, (PlayerStatistics statistics, ShipStatus side) =>
         {
             if (Roles.Empiric.WinTrigger)
             {
@@ -123,7 +123,7 @@ namespace Nebula.Roles
             return null;
         });
 
-        public static Side Opportunist = new Side("Opportunist", "opportunist", IntroDisplayOption.SHOW_ONLY_ME, NeutralRoles.Opportunist.Color, (PlayerStatistics statistics, ShipStatus side) =>
+        public static Side Opportunist = new Side("Opportunist", "opportunist", IntroDisplayOption.SHOW_ONLY_ME, NeutralRoles.Opportunist.RoleColor, (PlayerStatistics statistics, ShipStatus side) =>
         {
             return null;
         });

@@ -12,7 +12,7 @@ namespace Nebula.Roles.CrewmateRoles
 {
     public class Oracle : Role
     {
-        static public Color Color = new Color(214f / 255f, 156f / 255f, 45f/255f);
+        static public Color RoleColor = new Color(214f / 255f, 156f / 255f, 45f/255f);
 
         private CustomButton oracleButton;
 
@@ -244,7 +244,7 @@ namespace Nebula.Roles.CrewmateRoles
         }
 
         public Oracle()
-            : base("Oracle", "oracle", Color, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
+            : base("Oracle", "oracle", RoleColor, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                  Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Crewmate.crewmateEndSet,
                  false, VentPermission.CanNotUse, false, false, false)
         {

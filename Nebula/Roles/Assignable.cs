@@ -29,6 +29,8 @@ namespace Nebula.Roles
 
         private int OptionId { get; set; }
 
+        private int OptionCapacity { get; set; }
+
         //オプションで使用するID
         static private int OptionAvailableId = 10;
 
@@ -37,12 +39,12 @@ namespace Nebula.Roles
         /*--------------------------------------------------------------------------------------*/
         /*--------------------------------------------------------------------------------------*/
 
-        public void SetupRoleOptionData()
+        public virtual void SetupRoleOptionData()
         {
             RoleChanceOption = Module.CustomOption.Create(OptionAvailableId, Color, "role." + LocalizeName + ".name", CustomOptionHolder.rates, CustomOptionHolder.rates[0], null, true);
             RoleChanceOption.GameMode = ValidGamemode;
             OptionId = OptionAvailableId + 1;
-            OptionAvailableId += 20;
+            OptionAvailableId += OptionCapacity;
 
             if (!FixedRoleCount)
             {
@@ -61,35 +63,35 @@ namespace Nebula.Roles
 
         }
 
-        private Module.CustomOption CreateOption(Color color, string name, object[] selections, System.Object defaultValue)
+        private Module.CustomOption CreateOption(Color color, string name, object[] selections, System.Object defaultValue,bool isGeneral=false)
         {
             if (OptionAvailableId == -1)
             {
                 return null;
             }
-            Module.CustomOption option = new Module.CustomOption(OptionId, color, "role." + this.LocalizeName + "." + name, selections, defaultValue, RoleChanceOption, false, false, "");
+            Module.CustomOption option = new Module.CustomOption(OptionId, color, (isGeneral ? "" : "role." + this.LocalizeName + ".") + name, selections, defaultValue, RoleChanceOption, false, false, "");
             option.GameMode = ValidGamemode;
             
             OptionId++;
             return option;
         }
 
-        protected Module.CustomOption CreateOption(Color color, string name, string[] selections)
+        protected Module.CustomOption CreateOption(Color color, string name, string[] selections, bool isGeneral = false)
         {
-            return CreateOption(color, name, selections, "");
+            return CreateOption(color, name, selections, "", isGeneral);
         }
 
-        protected Module.CustomOption CreateOption(Color color, string name, float defaultValue, float min, float max, float step)
+        protected Module.CustomOption CreateOption(Color color, string name, float defaultValue, float min, float max, float step, bool isGeneral = false)
         {
             List<float> selections = new List<float>();
             for (float s = min; s <= max; s += step)
                 selections.Add(s);
-            return CreateOption(color, name, selections.Cast<object>().ToArray(), defaultValue);
+            return CreateOption(color, name, selections.Cast<object>().ToArray(), defaultValue,isGeneral);
         }
 
-        protected Module.CustomOption CreateOption(Color color, string name, bool defaultValue)
+        protected Module.CustomOption CreateOption(Color color, string name, bool defaultValue, bool isGeneral = false)
         {
-            return CreateOption(color, name, new string[] { "option.switch.off", "option.switch.on" }, defaultValue ? "option.switch.on" : "option.switch.off");
+            return CreateOption(color, name, new string[] { "option.switch.off", "option.switch.on" }, defaultValue ? "option.switch.on" : "option.switch.off", isGeneral);
         }
 
 
@@ -400,6 +402,21 @@ namespace Nebula.Roles
         /*--------------------------------------------------------------------------------------*/
         /*--------------------------------------------------------------------------------------*/
 
+        /// <summary>
+        /// この役職が発生しうるかどうか調べます
+        /// </summary>
+        public virtual bool IsSpawnable()
+        {
+            try
+            {
+                if (RoleChanceOption.getSelection() == 0) return false;
+                if (!FixedRoleCount && RoleCountOption.getFloat() == 0f) return false;
+            }
+            catch (Exception e) { return false; }
+
+            return true;
+        }
+
         //ComplexRoleの子ロールなど、オプション画面で隠したいロールはtrueにしてください。
         public bool IsHideRole { get; protected set; }
 
@@ -416,6 +433,8 @@ namespace Nebula.Roles
             this.IsHideRole = false;
 
             this.ValidGamemode = Module.CustomGameMode.Standard;
+
+            this.OptionCapacity = 20;
         }
     }
 }

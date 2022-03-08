@@ -10,7 +10,7 @@ namespace Nebula.Roles.CrewmateRoles
 {
     public class Bait : Role
     {
-        static public Color Color = new Color(0f / 255f, 247f / 255f, 255f / 255f);
+        static public Color RoleColor = new Color(0f / 255f, 247f / 255f, 255f / 255f);
 
         public class BaitEvent : Events.LocalEvent
         {
@@ -39,7 +39,7 @@ namespace Nebula.Roles.CrewmateRoles
         }
 
         public Bait()
-            : base("Bait", "bait", Color, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
+            : base("Bait", "bait", RoleColor, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                  Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Crewmate.crewmateEndSet,
                  false, VentPermission.CanNotUse, false, false, false)
         {

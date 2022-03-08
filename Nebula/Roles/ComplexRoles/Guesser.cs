@@ -17,7 +17,12 @@ namespace Nebula.Roles.ComplexRoles
         public Module.CustomOption guesserShots;
         public Module.CustomOption canShotSeveralTimesInTheSameMeeting;
 
-        static public Color Color = new Color(255f / 255f, 255f / 255f, 0f / 255f);
+
+        public Module.CustomOption crewmateRoleCountOption;
+        public Module.CustomOption impostorRoleCountOption;
+        public Module.CustomOption neutralRoleCountOption;
+
+        static public Color RoleColor = new Color(255f / 255f, 255f / 255f, 0f / 255f);
 
         public override Patches.AssignRoles.RoleAllocation[] GetComplexAllocations()
         {
@@ -40,10 +45,24 @@ namespace Nebula.Roles.ComplexRoles
 
         public override void LoadOptionData()
         {
+            secondoryRoleOption = CreateOption(Color.white, "isSecondaryRole", false);
+
             base.LoadOptionData();
-            secondoryRoleOption= CreateOption(Color.white, "isSecondaryRole", false);
+            
             canShotSeveralTimesInTheSameMeeting = CreateOption(Color.white,"canShotSeveralTimes",false);
             guesserShots = CreateOption(Color.white, "guesserShots",3f,1f,15f,1f);
+
+            chanceToSpawnAsSecondarySide.AddInvPrerequisite(secondoryRoleOption);
+            definitiveAssignmentOption.AddInvPrerequisite(secondoryRoleOption);
+            RoleCountOption.AddInvPrerequisite(secondoryRoleOption);
+
+            crewmateRoleCountOption = CreateOption(Color.white, "crewmateRoleCount", 1f, 0f, 15f, 1f);
+            impostorRoleCountOption = CreateOption(Color.white, "impostorRoleCount", 1f, 0f, 5f, 1f);
+            neutralRoleCountOption = CreateOption(Color.white, "neutralRoleCount", 1f, 0f, 15f, 1f);
+
+            crewmateRoleCountOption.AddPrerequisite(secondoryRoleOption);
+            impostorRoleCountOption.AddPrerequisite(secondoryRoleOption);
+            neutralRoleCountOption.AddPrerequisite(secondoryRoleOption);
 
             FirstRole = Roles.NiceGuesser;
             SecondaryRole = Roles.EvilGuesser;
@@ -56,7 +75,7 @@ namespace Nebula.Roles.ComplexRoles
         }
 
         public FGuesser()
-                : base("Guesser", "guesser", Color)
+                : base("Guesser", "guesser", RoleColor)
                      
         {
             remainShotsId = Game.GameData.RegisterRoleDataId("guesser.remainShots");
@@ -198,7 +217,7 @@ namespace Nebula.Roles.ComplexRoles
         //インポスターはModで操作するFakeTaskは所持していない
         public Guesser(string name, string localizeName, bool isImpostor)
                 : base(name, localizeName,
-                     isImpostor ? Palette.ImpostorRed : FGuesser.Color,
+                     isImpostor ? Palette.ImpostorRed : FGuesser.RoleColor,
                      isImpostor ? RoleCategory.Impostor : RoleCategory.Crewmate,
                      isImpostor ? Side.Impostor : Side.Crewmate, isImpostor ? Side.Impostor : Side.Crewmate,
                      isImpostor ? ImpostorRoles.Impostor.impostorSideSet : CrewmateRoles.Crewmate.crewmateSideSet,
@@ -242,66 +261,59 @@ namespace Nebula.Roles.ComplexRoles
     {
         //インポスターはModで操作するFakeTaskは所持していない
         public SecondaryGuesser()
-                : base("Guesser", "guesser" ,FGuesser.Color,0)
+                : base("Guesser", "guesser" ,FGuesser.RoleColor,0)
         {
             IsHideRole = true;
         }
+
+        private void _sub_Assignment(Patches.AssignMap assignMap,List<byte> players,int count)
+        {
+            int chance = Roles.F_Guesser.RoleChanceOption.getSelection();
+
+            byte playerId;
+            for(int i = 0; i < count; i++)
+            {
+                //割り当てられない場合終了
+                if (players.Count == 0) return;
+
+                if (chance < NebulaPlugin.rnd.Next(10)) continue;
+
+                playerId = players[NebulaPlugin.rnd.Next(players.Count)];
+                assignMap.Assign(playerId, id, 0);
+                players.Remove(playerId);
+            }
+        }
+
         public override void Assignment(Patches.AssignMap assignMap)
         {
             if (!Roles.F_Guesser.secondoryRoleOption.getBool()) return;
 
 
             List<byte> impostors = new List<byte>();
-            //第三陣営含む
             List<byte> crewmates = new List<byte>();
+            List<byte> neutrals = new List<byte>();
 
-            foreach(PlayerControl player in PlayerControl.AllPlayerControls)
+            foreach (PlayerControl player in PlayerControl.AllPlayerControls)
             {
-                if (player.Data.Role.IsImpostor)
+                if (!player.GetModData().role.CanBeGuesser) continue;
+
+                switch (player.GetModData().role.category)
                 {
-                    impostors.Add(player.PlayerId);
-                }
-                else
-                {
-                    crewmates.Add(player.PlayerId);
+                    case RoleCategory.Crewmate:
+                        crewmates.Add(player.PlayerId);
+                        break;
+                    case RoleCategory.Impostor:
+                        impostors.Add(player.PlayerId);
+                        break;
+                    case RoleCategory.Neutral:
+                        neutrals.Add(player.PlayerId);
+                        break;
                 }
             }
 
-            FGuesser guesser=Roles.F_Guesser;
-            int max = (int)guesser.RoleCountOption.getFloat();
-            int chance = guesser.RoleChanceOption.getSelection();
-            float impostorChance;
-            byte playerId;
-            for(int i = 0; i < max; i++)
-            {
-                if (chance < NebulaPlugin.rnd.Next(10)) continue;
-
-                if (guesser.definitiveAssignmentOption.getBool())
-                {
-                    impostorChance = (float)i / (float)max;
-                }
-                else
-                {
-                    impostorChance = (float)NebulaPlugin.rnd.NextDouble();
-                }
-
-                if ((float)guesser.chanceToSpawnAsSecondarySide.getSelection() / 10 > impostorChance)
-                {
-                    //Impostorとして湧く
-                    if (impostors.Count == 0) continue;
-                    playerId = impostors[NebulaPlugin.rnd.Next(impostors.Count)];
-                    assignMap.Assign(playerId,id,0);
-                    impostors.Remove(playerId);
-                }
-                else
-                {
-                    //Impostor以外として湧く
-                    if (crewmates.Count == 0) continue;
-                    playerId = crewmates[NebulaPlugin.rnd.Next(crewmates.Count)];
-                    assignMap.Assign(playerId, id, 0);
-                    crewmates.Remove(playerId);
-                }
-            }
+            _sub_Assignment(assignMap, crewmates, (int)Roles.F_Guesser.crewmateRoleCountOption.getFloat());
+            _sub_Assignment(assignMap, impostors, (int)Roles.F_Guesser.impostorRoleCountOption.getFloat());
+            _sub_Assignment(assignMap, neutrals, (int)Roles.F_Guesser.neutralRoleCountOption.getFloat());
         }
 
         public override void GlobalInitialize(PlayerControl __instance)
@@ -333,6 +345,18 @@ namespace Nebula.Roles.ComplexRoles
         public override void EditDisplayNameForcely(byte playerId, ref string displayName)
         {
             displayName += Helpers.cs(Color, "⊕");
+        }
+
+        /// <summary>
+        /// この役職が発生しうるかどうか調べます
+        /// </summary>
+        public override bool IsSpawnable()
+        {
+            if (!Roles.F_Guesser.secondoryRoleOption.getBool()) return false;
+            if (Roles.F_Guesser.RoleChanceOption.getSelection() == 0) return false;
+            if (Roles.F_Guesser.RoleCountOption.getFloat() == 0f) return false;
+
+            return true;
         }
     }
 }

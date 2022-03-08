@@ -40,7 +40,9 @@ namespace Nebula.Module
             return AllGameModes[0];
         }
     }
-    
+
+
+    public delegate string CustomOptionDecorator(string original,CustomOption option);
 
     public class CustomOption
     {
@@ -69,6 +71,9 @@ namespace Nebula.Module
 
         public List<CustomOption> prerequisiteOptions;
         public List<CustomOption> prerequisiteOptionsInv;
+        public List<Func<bool>> prerequisiteOptionsCustom;
+
+        public CustomOptionDecorator? Decorator { get; set; }
 
         public virtual bool enabled
         {
@@ -94,7 +99,8 @@ namespace Nebula.Module
         {
             return isHidden || (0 == (int)(gameMode & GameMode))
                 || prerequisiteOptions.Count > 0 && prerequisiteOptions.Any((option) => { return !option.enabled || option.IsHidden(gameMode); })
-                || prerequisiteOptionsInv.Count > 0 && prerequisiteOptionsInv.Any((option) => { return option.enabled || option.IsHidden(gameMode); });
+                || prerequisiteOptionsInv.Count > 0 && prerequisiteOptionsInv.Any((option) => { return option.enabled || option.IsHidden(gameMode); })
+                || prerequisiteOptionsCustom.Count > 0 && prerequisiteOptionsCustom.Any((func) => { return !func.Invoke(); });
         }
 
         public bool IsHiddenOnDisplay(CustomGameMode gameMode)
@@ -142,7 +148,10 @@ namespace Nebula.Module
 
             this.prerequisiteOptions = new List<CustomOption>();
             this.prerequisiteOptionsInv = new List<CustomOption>();
+            this.prerequisiteOptionsCustom = new List<Func<bool>>();
             this.GameMode = CustomGameMode.Standard;
+
+            this.Decorator = null;
         }
 
         public static CustomOption Create(int id, Color color,string name, string[] selections,string defaultValue, CustomOption parent = null, bool isHeader = false, bool isHidden = false, string format = "")
@@ -206,6 +215,11 @@ namespace Nebula.Module
             prerequisiteOptionsInv.Add(option);
         }
 
+        public void AddCustomPrerequisite(Func<bool> func)
+        {
+            prerequisiteOptionsCustom.Add(func);
+        }
+
         // Getter
 
         public virtual int getSelection()
@@ -255,9 +269,17 @@ namespace Nebula.Module
             return text;
         }
 
-        public virtual string getName()
+        public virtual string getName(bool display=false)
         {
-            return Helpers.cs(color,Language.Language.GetString(name));
+            string original = Helpers.cs(color, Language.Language.GetString(name));
+            if (Decorator != null && display)
+            {
+                return Decorator.Invoke(original, this);
+            }
+            else
+            {
+                return original;
+            }
         }
 
         // Option changes
@@ -498,7 +520,10 @@ namespace Nebula.Module
 
             var longTasksOption = __instance.Children.FirstOrDefault(x => x.name == "NumLongTasks").TryCast<NumberOption>();
             if (longTasksOption != null) longTasksOption.ValidRange = new FloatRange(0f, 15f);
-            
+
+            var impostorsOption = __instance.Children.FirstOrDefault(x => x.name == "NumImpostors").TryCast<NumberOption>();
+            if (impostorsOption != null) impostorsOption.ValidRange = new FloatRange(0f, 5f);
+
         }
     }
 
@@ -713,7 +738,7 @@ namespace Nebula.Module
         public static string optionToString(CustomOption option)
         {
             if (option == null) return "";
-            return $"{option.getName()}: {option.getString()}";
+            return $"{option.getName(true)}: {option.getString()}";
         }
 
         public static string optionsToString(CustomOption option, bool skipFirst = false)
@@ -775,7 +800,7 @@ namespace Nebula.Module
 
                 foreach (var child in option.children)
                 {
-                    if (!(child.IsHidden(CustomOption.CurrentGameMode)))
+                    if (!(child.IsHiddenOnDisplay(CustomOption.CurrentGameMode)))
                         builder.AppendLine((indent ? "    " : "") + inheritIndent+ optionToString(child));
                     addChildren(child, ref builder, indent, inheritIndent + (indent ? "    " : ""));
                 }

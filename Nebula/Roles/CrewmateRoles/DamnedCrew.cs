@@ -52,6 +52,29 @@ namespace Nebula.Roles.CrewmateRoles
 
         }
 
+        public override bool CanBeLovers
+        {
+            get
+            {
+                return Roles.F_Crewmate.CanBeLovers;
+            }
+        }
+
+        public override bool CanBeGuesser
+        {
+            get
+            {
+                return Roles.F_Crewmate.CanBeGuesser;
+            }
+        }
+
+        public override bool CanBeDrunk
+        {
+            get
+            {
+                return Roles.F_Crewmate.CanBeDrunk;
+            }
+        }
         public DamnedCrew():base()
         {
             guardLeftId = Game.GameData.RegisterRoleDataId("damnedCrew.guardLeft");

@@ -33,7 +33,7 @@ namespace Nebula.Roles.CrewmateRoles
         }
 
 
-        static public Color Color = new Color(187f / 255f, 109f / 255f, 178f / 255f);
+        static public Color RoleColor = new Color(187f / 255f, 109f / 255f, 178f / 255f);
 
         private Sprite buttonSprite = null;
         public Sprite getButtonSprite()
@@ -126,7 +126,7 @@ namespace Nebula.Roles.CrewmateRoles
         }
 
         public Alien()
-            : base("Alien", "alien", Color, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
+            : base("Alien", "alien", RoleColor, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                  Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Crewmate.crewmateEndSet,
                  false, VentPermission.CanNotUse, false, false, false)
         {

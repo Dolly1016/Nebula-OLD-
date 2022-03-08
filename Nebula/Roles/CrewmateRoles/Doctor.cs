@@ -10,7 +10,7 @@ namespace Nebula.Roles.CrewmateRoles
 {
     public class Doctor : Role
     {
-        static public Color Color = new Color(128f / 255f, 255f / 255f, 221f / 255f);
+        static public Color RoleColor = new Color(128f / 255f, 255f / 255f, 221f / 255f);
 
         private List<Tuple<byte,TMPro.TextMeshPro>> StatusTexts = new List<Tuple<byte, TMPro.TextMeshPro>>();
 
@@ -22,7 +22,7 @@ namespace Nebula.Roles.CrewmateRoles
 
         private float gadgetTimer=0f;
 
-        private Minigame vitalsMinigame=null;
+        private VitalsMinigame vitalsMinigame=null;
 
         private static Sprite vitalsSprite;
         public static Sprite getVitalsSprite()
@@ -114,9 +114,14 @@ namespace Nebula.Roles.CrewmateRoles
                 {
                     if (vitalsMinigame == null)
                     {
-                        var e = UnityEngine.Object.FindObjectsOfType<SystemConsole>().FirstOrDefault(x => x.gameObject.name.Contains("panel_vitals"));
-                        if (e == null || Camera.main == null) return;
-                        vitalsMinigame = UnityEngine.Object.Instantiate(e.MinigamePrefab, Camera.main.transform, false);
+                        foreach (RoleBehaviour role in RoleManager.Instance.AllRoles)
+                        {
+                            if (role.Role==RoleTypes.Scientist)
+                            {   
+                                vitalsMinigame = UnityEngine.Object.Instantiate((role.gameObject.GetComponent<ScientistRole>()).VitalsPrefab, Camera.main.transform, false);
+                                break;
+                            }
+                        }
                     }
                     vitalsMinigame.transform.SetParent(Camera.main.transform, false);
                     vitalsMinigame.transform.localPosition = new Vector3(0.0f, 0.0f, -50f);
@@ -189,7 +194,7 @@ namespace Nebula.Roles.CrewmateRoles
         }
 
         public Doctor()
-                : base("Doctor", "doctor", Color, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
+                : base("Doctor", "doctor", RoleColor, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                  Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Crewmate.crewmateEndSet,
                  false, VentPermission.CanNotUse, false, false, false)
         {

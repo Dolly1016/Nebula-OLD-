@@ -7,7 +7,7 @@ namespace Nebula.Roles.ExtraRoles
 {
     public class Drunk : ExtraRole
     {
-        static public Color Color = new Color(133f / 255f, 161f / 255f, 190f / 255f);
+        static public Color RoleColor = new Color(133f / 255f, 161f / 255f, 190f / 255f);
 
         private List<Tuple<Module.CustomOption,Module.CustomOption>> detailChanceOption;
         private string[] categories = { "roles.category.default", "roles.category.crewmate", "roles.category.impostor", "roles.category.neutral", "roles.category.lover", "roles.category.vulture", "roles.category.jackal" };
@@ -59,6 +59,8 @@ namespace Nebula.Roles.ExtraRoles
         public override void Assignment(Patches.AssignMap assignMap)
         {
             List<byte> playerArray = new List<byte>(Helpers.GetRandomArray(Game.GameData.data.players.Keys));
+            playerArray.RemoveAll((id) => { return !Game.GameData.data.players[id].role.CanBeDrunk; });
+
             int leftPlayers = RoleCountOption.getSelection();
 
             float probability = (float)RoleChanceOption.getSelection() / 10;
@@ -91,7 +93,7 @@ namespace Nebula.Roles.ExtraRoles
         public override void EditDisplayNameForcely(byte playerId, ref string displayName)
         {
             displayName += Helpers.cs(
-                    Color, "〻");
+                    RoleColor, "〻");
         }
 
         public override void LoadOptionData()
@@ -109,7 +111,7 @@ namespace Nebula.Roles.ExtraRoles
             }
         }
 
-        public Drunk() : base("Drunk", "drunk", Color,1)
+        public Drunk() : base("Drunk", "drunk", RoleColor,1)
         {
             detailChanceOption = new List<Tuple<Module.CustomOption, Module.CustomOption>>();
         }

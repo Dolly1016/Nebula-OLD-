@@ -12,7 +12,7 @@ namespace Nebula.Roles.CrewmateRoles
 {
     public class Comet : Role
     {
-        static public Color Color = new Color(121f / 255f, 175f / 255f, 206f / 255f);
+        static public Color RoleColor = new Color(121f / 255f, 175f / 255f, 206f / 255f);
 
         private CustomButton boostButton;
 
@@ -120,7 +120,7 @@ namespace Nebula.Roles.CrewmateRoles
         }
 
         public Comet()
-            : base("Comet", "comet", Color, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
+            : base("Comet", "comet", RoleColor, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                  Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Crewmate.crewmateEndSet,
                  false, VentPermission.CanNotUse, false, true, false)
         {

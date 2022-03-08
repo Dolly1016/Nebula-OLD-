@@ -8,7 +8,7 @@ namespace Nebula.Roles.CrewmateRoles
 {
     public class Necromancer : Template.Draggable
     {
-        static public Color Color = new Color(110f / 255f, 51f / 255f, 163f / 255f);
+        static public Color RoleColor = new Color(110f / 255f, 51f / 255f, 163f / 255f);
 
         private CustomButton reviveButton;
 
@@ -55,7 +55,7 @@ namespace Nebula.Roles.CrewmateRoles
              {
                  if (p == 0f)
                  {
-                     CustomMessage.Create(new Vector3(0, 1f, 0), false, message, 0.5f, 0.4f, 0.7f, 1.0f, Color);
+                     CustomMessage.Create(new Vector3(0, 1f, 0), false, message, 0.5f, 0.4f, 0.7f, 1.0f, RoleColor);
                  }
                  if (p == 1f && Game.GameData.data.myData.getGlobalData().dragPlayerId == playerId)
                  {
@@ -208,7 +208,7 @@ namespace Nebula.Roles.CrewmateRoles
         }
 
         public Necromancer()
-            : base("Necromancer", "necromancer", Color, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
+            : base("Necromancer", "necromancer", RoleColor, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                  CrewmateRoles.Crewmate.crewmateSideSet, CrewmateRoles.Crewmate.crewmateSideSet,
                  CrewmateRoles.Crewmate.crewmateEndSet,
                  false, VentPermission.CanNotUse, false, false, false)

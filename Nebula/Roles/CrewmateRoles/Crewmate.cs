@@ -18,6 +18,31 @@ namespace Nebula.Roles.CrewmateRoles
             new HashSet<EndCondition>() { EndCondition.CrewmateWinByTask, EndCondition.CrewmateWinByVote, EndCondition.CrewmateWinDisconnect };
 
 
+        public override bool CanBeLovers
+        {
+            get
+            {
+                return Roles.F_Crewmate.CanBeLovers;
+            }
+        }
+
+        public override bool CanBeGuesser
+        {
+            get
+            {
+                return Roles.F_Crewmate.CanBeGuesser;
+            }
+        }
+
+        public override bool CanBeDrunk
+        {
+            get
+            {
+                return Roles.F_Crewmate.CanBeDrunk;
+            }
+        }
+
+
         public Crewmate()
                 : base("Crewmate", "crewmate", Palette.CrewmateBlue, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                      crewmateSideSet, crewmateSideSet, crewmateEndSet,

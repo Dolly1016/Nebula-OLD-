@@ -18,11 +18,11 @@ namespace Nebula.Patches
         public static EndCondition ImpostorWinBySabotage = new EndCondition(GameOverReason.ImpostorBySabotage, Palette.ImpostorRed, "impostor", 16, Module.CustomGameMode.Standard);
         public static EndCondition ImpostorWinByVote = new EndCondition(GameOverReason.ImpostorByVote, Palette.ImpostorRed, "impostor", 16, Module.CustomGameMode.Standard);
         public static EndCondition ImpostorWinDisconnect = new EndCondition(GameOverReason.ImpostorDisconnect, Palette.ImpostorRed, "impostor",16, Module.CustomGameMode.Standard);
-        public static EndCondition JesterWin = new EndCondition(16, Roles.NeutralRoles.Jester.Color, "jester", 1, Module.CustomGameMode.Standard);
-        public static EndCondition JackalWin = new EndCondition(17, Roles.NeutralRoles.Jackal.Color, "jackal", 2, Module.CustomGameMode.Standard);
-        public static EndCondition ArsonistWin = new EndCondition(18, Roles.NeutralRoles.Arsonist.Color, "arsonist", 1, Module.CustomGameMode.Standard,false, () => { PlayerControl.AllPlayerControls.ForEach((Action<PlayerControl>)((p) => { if (!p.Data.IsDead && p.GetModData().role.side != Roles.Side.Arsonist) p.MurderPlayer(p); })); });
-        public static EndCondition EmpiricWin = new EndCondition(19, Roles.NeutralRoles.Empiric.Color, "empiric", 1, Module.CustomGameMode.Standard);
-        public static EndCondition VultureWin = new EndCondition(20, Roles.NeutralRoles.Vulture.Color, "vulture", 1, Module.CustomGameMode.Standard);
+        public static EndCondition JesterWin = new EndCondition(16, Roles.NeutralRoles.Jester.RoleColor, "jester", 1, Module.CustomGameMode.Standard);
+        public static EndCondition JackalWin = new EndCondition(17, Roles.NeutralRoles.Jackal.RoleColor, "jackal", 2, Module.CustomGameMode.Standard);
+        public static EndCondition ArsonistWin = new EndCondition(18, Roles.NeutralRoles.Arsonist.RoleColor, "arsonist", 1, Module.CustomGameMode.Standard,false, () => { PlayerControl.AllPlayerControls.ForEach((Action<PlayerControl>)((p) => { if (!p.Data.IsDead && p.GetModData().role.side != Roles.Side.Arsonist) p.MurderPlayer(p); })); });
+        public static EndCondition EmpiricWin = new EndCondition(19, Roles.NeutralRoles.Empiric.RoleColor, "empiric", 1, Module.CustomGameMode.Standard);
+        public static EndCondition VultureWin = new EndCondition(20, Roles.NeutralRoles.Vulture.RoleColor, "vulture", 1, Module.CustomGameMode.Standard);
         public static EndCondition TrilemmaWin = new EndCondition(24, new Color(209f / 255f, 63f / 255f, 138f / 255f), "trilemma",0, Module.CustomGameMode.Standard);
 
         
@@ -165,26 +165,30 @@ namespace Nebula.Patches
             }
             else
             {
-                bool addedFlag = false;
                 foreach (PlayerControl player in PlayerControl.AllPlayerControls)
                 {
                     if (Game.GameData.data.players[player.PlayerId].role.CheckWin(EndCondition))
                     {
                         TempData.winners.Add(new WinningPlayerData(player.Data));
                     }
-                    else
-                    {
-                        addedFlag = false;
-                        Helpers.RoleAction(player, (role) =>
-                        {
-                            if ((!addedFlag) && role.CheckWin(player, EndCondition))
-                            {
-                                TempData.winners.Add(new WinningPlayerData(player.Data));
-                                addedFlag = true;
-                            }
-                        });
-                    }
                 }
+            }
+
+            //追加勝利
+            bool addedFlag = false;
+            foreach (PlayerControl player in PlayerControl.AllPlayerControls)
+            {
+                if (TempData.winners.FindAll((Il2CppSystem.Predicate<WinningPlayerData>)((data) => { return data.PlayerName == player.name; })).Count > 0) continue;
+
+                addedFlag = false;
+                Helpers.RoleAction(player, (role) =>
+                {
+                    if ((!addedFlag) && role.CheckWin(player, EndCondition))
+                    {
+                        TempData.winners.Add(new WinningPlayerData(player.Data));
+                        addedFlag = true;
+                    }
+                });
             }
 
             //変更したオプションを元に戻す

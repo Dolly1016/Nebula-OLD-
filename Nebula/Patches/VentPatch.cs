@@ -135,6 +135,8 @@ namespace Nebula.Patches
             if (!__instance.AmOwner) return;
 
             var data = Game.GameData.data.players[__instance.PlayerId];
+            if (data == null) return;
+
             var role = data.role;
             var showFlag = HudManager.Instance.ReportButton.isActiveAndEnabled;
 
@@ -148,14 +150,14 @@ namespace Nebula.Patches
             {
                 HudManager.Instance.ImpostorVentButton.Show();
 
+                if (!HudManager.Instance.ImpostorVentButton.cooldownTimerText)
+                {
+                    HudManager.Instance.ImpostorVentButton.cooldownTimerText =
+                        UnityEngine.Object.Instantiate(HudManager.Instance.AbilityButton.cooldownTimerText, HudManager.Instance.ImpostorVentButton.transform);
+                }
+
                 if (role.VentPermission == Roles.VentPermission.CanUseLimittedVent)
                 {
-                    if (!HudManager.Instance.ImpostorVentButton.cooldownTimerText)
-                    {
-                        HudManager.Instance.ImpostorVentButton.cooldownTimerText =
-                            UnityEngine.Object.Instantiate(HudManager.Instance.AbilityButton.cooldownTimerText, HudManager.Instance.ImpostorVentButton.transform);
-                    }
-
                     if (__instance.inVent)
                     {
                         HudManager.Instance.ImpostorVentButton.cooldownTimerText.text = Mathf.CeilToInt(Game.GameData.data.myData.VentDurationTimer).ToString();
