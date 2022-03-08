@@ -126,6 +126,19 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+ 
+ **Version 1.5.1**
+ - 全役職に、追加役職に関するオプションを追加
+ - 追加役職としてのGuesserがクルー陣営、インポスター陣営、第三陣営それぞれに湧き人数を設定できるように
+ - Opportunist, Loverが単独勝利に潜り込んで追加勝利できるように
+ - Morphingがサンプルを取ったときに3秒のクールダウンが発生するように
+ - Trapperに新たなオプション「Trapper Root Time」を追加
+ - Free Playモードで役職を2キーで変更できるように
+ - Free Playモードで3キーで自殺、復活できるように
+ - プレイヤー人数によって、インポスターの人数が適切に抑えられるように
+ - インポスターの人数を0~5人の範囲で設定できるように
+ - The Skeld, MIRA HQでDoctorのバイタルが使えない問題を修正
+ - 会議終了後に能力ボタンのタイマーが半透明になってしまう問題を修正
   
  **Version 1.5.0.1**
  - Arsonistが会議終了後に点火可能になった場合、ボタンが点火ボタンに変化しない問題を修正
@@ -541,6 +554,9 @@ p5p5next : Damned
 | Can Shot Several Times In The Same Meeting | 同じ会議で複数回撃つことができるかどうかの設定
 | Assign As Secondary Role | 追加役職として割り当てるかどうかの設定
 | Guesser Shots | 全体を通して撃つことができる回数
+| Max Players (Crewmate) | 追加役職として割り当てる際のクルーメイト陣営の最大人数
+| Max Players (Impostor) | 追加役職として割り当てる際のインポスター陣営の最大人数
+| Max Players (Neutral) | 追加役職として割り当てる際の第三陣営の最大人数
 
 -----------------------
 
@@ -570,6 +586,7 @@ p5p5next : Damned
 | Invisible Trap Range | 不可視なトラップの当たり判定
 | Log Trap Cost | ログトラップの設置コスト
 | Kill Trap Cost | キルトラップの設置コスト
+| Trapper Root Time | トラップ設置時の硬直時間
 
 -----------------------
 
@@ -1041,6 +1058,10 @@ p5p5next : Damned
 | Can Use Vents | ベントを使えるかどうかの設定
 | Vent Cool Down | ベントのクールダウン
 | Vent Duration | ベントでの潜伏可能時間
+| Can Win With Arsonist | Arsonistの単独勝利に潜り込めるかどうか
+| Can Win With Empiric | Empiricの単独勝利に潜り込めるかどうか
+| Can Win With Jester | Jesterの単独勝利に潜り込めるかどうか
+| Can Win With Vulture | Vultureの単独勝利に潜り込めるかどうか
 
 -----------------------
 
