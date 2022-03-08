@@ -10,10 +10,10 @@ Submitted works will be checked and added in the this mod.
 You're exactly a nebula consists of ideas!
 
 Main Features in NoS v1.5.1
- -New option \"%OPTION(option.canBeLovers),(Can Be Lovers)%\", \"%OPTION(option.canBeGuesser),(Can Be Guesser)%\", \"%OPTION(option.canBeDrunk),(Can Be Drunk)%\.",
+ -New option \"%OPTION(option.canBeLovers),(Can Be Lovers)%\", \"%OPTION(option.canBeGuesser),(Can Be Guesser)%\", \"%OPTION(option.canBeDrunk),(Can Be Drunk)%\".,
  -%ROLE:GUESSER%(Secondary) can now adjust the count of players for each sides.
  -%ROLE:OPPORTUNIST% and %ROLE:LOVER% can now win with any end of game.
- -%ROLE:TRAPPER%'s new option \"%OPTION(role.trapper.rootTime),(Trapper Root Time)%\."
+ -%ROLE:TRAPPER%'s new option \"%OPTION(role.trapper.rootTime),(Trapper Root Time)%\".
  -In %OPTION(gamemode.freePlay),(Free Play)%, you can now change roles and suicide or revive.",
     "Japanese": 
 "◎More Cosmic! カスタムコス募集のお知らせ
