@@ -26,6 +26,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.5.0.1 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.5.0.1,2022.2.24/Nebula_v1.5.0.1.zip)|
 | 1.5.0 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.5.0,2022.2.24/Nebula_v1.5.0.zip)|
 | 1.4.6 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.6,2022.2.24/Nebula_v1.4.6.zip)|
 | 1.4.5.1 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.5.1,2022.2.24/Nebula_v1.4.5.1.zip)|
@@ -119,11 +120,16 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 | 日本語 | - | 1.4.6 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.6,2022.2.24/Japanese.dat)|
 | 日本語 | Rey | 1.4.5.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.4.5.1%2CRey/Japanese.dat)|
 | 日本語 | kihi | 1.4.5.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.4.5.1%2Ckihi/Japanese.dat)|
-| English | - | 1.4.6 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.6,2022.2.24/English.dat)|
+| English | - | 1.5.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.5.0,2022.2.24/English.dat)|
 
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+  
+ **Version 1.5.0.1**
+ - Arsonistが会議終了後に点火可能になった場合、ボタンが点火ボタンに変化しない問題を修正
+ - Damnedの最大人数のオプションが効果をなしてない問題を修正
+ - Empiricを2回目以降プレイする場合、以前の感染進捗を引き継いでしまう問題を修正
   
  **Version 1.5.0**
  - PsychicにPursuerを統合
