@@ -26,6 +26,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.5.1.1 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.5.1.1,2022.2.24/Nebula_v1.5.1.1.zip)|
 | 1.5.1 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.5.1,2022.2.24/Nebula_v1.5.1.zip)|
 | 1.5.0.1 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.5.0.1,2022.2.24/Nebula_v1.5.0.1.zip)|
 | 1.5.0 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.5.0,2022.2.24/Nebula_v1.5.0.zip)|
@@ -127,6 +128,9 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 <details>
   <summary>クリックで展開</summary>
  
+ **Version 1.5.1.1**
+ - ONLINEでインポスターの人数を1~3人以外にするとBANされてしまう問題を修正
+  
  **Version 1.5.1**
  - 全役職に、追加役職に関するオプションを追加
  - 追加役職としてのGuesserがクルー陣営、インポスター陣営、第三陣営それぞれに湧き人数を設定できるように
