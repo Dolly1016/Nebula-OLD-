@@ -179,7 +179,7 @@ namespace Nebula.Module
             CustomOption.preset = newPreset;
             foreach (CustomOption option in CustomOption.options)
             {
-                if (option.id <= 0) continue;
+                if (option.id <= 1) continue;
 
                 option.entry = NebulaPlugin.Instance.Config.Bind($"Preset{preset}", option.id.ToString(), option.defaultSelection);
                 option.selection = Mathf.Clamp(option.entry.Value, 0, option.selections.Length - 1);

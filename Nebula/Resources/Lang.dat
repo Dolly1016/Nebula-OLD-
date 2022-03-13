@@ -249,7 +249,7 @@
 
 "role.niceGuesser.name" : "Nice Guesser"
 "role.niceGuesser.description" : "Guess and Shoot"
-"role.guesser.info" : "You can guess other alive players.\nIf your guess is correct, guessed player will die."
+"role.niceGuesser.info" : "You can guess other alive players.\nIf your guess is correct, guessed player will die."
 
 "role.niceTrapper.name" : "Nice Trapper"
 "role.niceTrapper.description" : "Entrap and Find the <color=#ff1919ff>Impostors</color>"

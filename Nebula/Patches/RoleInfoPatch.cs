@@ -88,7 +88,7 @@ namespace Nebula.Patches
                 infoOverlayRoles.enableWordWrapping = false;
                 infoOverlayRoles.alignment = TMPro.TextAlignmentOptions.TopLeft;
                 infoOverlayRoles.transform.position = Vector3.zero;
-                infoOverlayRoles.transform.localPosition = infoOverlayRules.transform.localPosition + new Vector3(1.5f, 0.0f, 0.0f);
+                infoOverlayRoles.transform.localPosition = infoOverlayRules.transform.localPosition + new Vector3(1.0f, 0.0f, 0.0f);
                 infoOverlayRoles.transform.localScale = Vector3.one;
                 infoOverlayRoles.color = Palette.White;
                 infoOverlayRoles.enabled = false;
@@ -164,7 +164,7 @@ namespace Nebula.Patches
 
             infoUnderlay.sprite = colorBG;
             infoUnderlay.color = new Color(0.1f, 0.1f, 0.1f, 0.88f);
-            infoUnderlay.transform.localScale = new Vector3(4.5f, 5f, 1f);
+            infoUnderlay.transform.localScale = new Vector3(5.4f, 5f, 1f);
             infoUnderlay.enabled = true;
 
             infoOverlayRules.text = "";
