@@ -63,6 +63,8 @@ namespace Nebula.Roles.CrewmateRoles
 
         public override void MyPlayerControlUpdate()
         {
+            if (!ShipStatus.Instance) return;
+
             Vent target = null;
             Vector2 truePosition = PlayerControl.LocalPlayer.GetTruePosition();
             float closestDistance = float.MaxValue;

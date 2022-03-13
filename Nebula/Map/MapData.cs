@@ -54,6 +54,7 @@ namespace Nebula.Map
 
         //スポーン位置候補
         public List<SpawnCandidate> SpawnCandidates;
+        public bool SpawnOriginalPositionAtFirst;
 
         
 
@@ -98,6 +99,7 @@ namespace Nebula.Map
             DoorRooms = new HashSet<SystemTypes>();
 
             SpawnCandidates = new List<SpawnCandidate>();
+            SpawnOriginalPositionAtFirst = false;
 
             DoorHackingCanBlockSabotage = false;
 

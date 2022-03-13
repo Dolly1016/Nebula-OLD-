@@ -20,6 +20,8 @@ namespace Nebula.Patches
 			{
 				if (!CustomOptionHolder.mapOptions.getBool() || !CustomOptionHolder.multipleSpawnPoints.getBool()) return;
 
+				if (Map.MapData.GetCurrentMapData().SpawnOriginalPositionAtFirst && !MeetingHud.Instance) return;
+
 				var spawnCandidates = Map.MapData.GetCurrentMapData().SpawnCandidates;
 				if (spawnCandidates.Count < 3) return;
 
@@ -30,6 +32,7 @@ namespace Nebula.Patches
 
 				/* Begin (Minigame) */
 				Minigame.Instance = spawnInMinigame;
+				SpawnInMinigame.Instance = spawnInMinigame;
 				spawnInMinigame.MyTask = null;
 				spawnInMinigame.MyNormTask = null;
 				if (PlayerControl.LocalPlayer)

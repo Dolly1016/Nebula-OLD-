@@ -36,6 +36,8 @@ namespace Nebula.Map.Database
             SpawnCandidates.Add(new SpawnCandidate("Weapons", new Vector2(12.2f, -23.3f), "Nebula.Resources.Locations.Weapons.png"));
             SpawnCandidates.Add(new SpawnCandidate("LifeSupport", new Vector2(3.5f, -21.5f), "Nebula.Resources.Locations.LifeSupport.png"));
             SpawnCandidates.Add(new SpawnCandidate("Electrical", new Vector2(7.4f, -9.6f), "Nebula.Resources.Locations.Electrical.png"));
+
+            SpawnOriginalPositionAtFirst = true;
         }
     }
 }

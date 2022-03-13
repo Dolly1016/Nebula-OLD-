@@ -183,6 +183,8 @@ namespace Nebula.Roles.NeutralRoles
             ExceptBasicOption = true;
             CreateOptionFollowingRelatedRole = true;
 
+            IsGuessableRole = false;
+
             Arrow = null;
         }
     }
