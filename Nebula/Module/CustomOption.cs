@@ -97,7 +97,7 @@ namespace Nebula.Module
 
         public bool IsHidden(CustomGameMode gameMode)
         {
-            return isHidden || (0 == (int)(gameMode & GameMode))
+            return isHidden || (parent!=null && (parent.IsHidden(gameMode) || !parent.enabled)) || (0 == (int)(gameMode & GameMode))
                 || prerequisiteOptions.Count > 0 && prerequisiteOptions.Any((option) => { return !option.enabled || option.IsHidden(gameMode); })
                 || prerequisiteOptionsInv.Count > 0 && prerequisiteOptionsInv.Any((option) => { return option.enabled || option.IsHidden(gameMode); })
                 || prerequisiteOptionsCustom.Count > 0 && prerequisiteOptionsCustom.Any((func) => { return !func.Invoke(); });
@@ -105,7 +105,7 @@ namespace Nebula.Module
 
         public bool IsHiddenOnDisplay(CustomGameMode gameMode)
         {
-            return isHiddenOnDisplay || IsHidden(gameMode);
+            return isHiddenOnDisplay || IsHidden(gameMode) || (parent != null && parent.IsHiddenOnDisplay(gameMode));
         }
 
         // Option creation
@@ -197,6 +197,10 @@ namespace Nebula.Module
 
             MessageWriter messageWriter = AmongUsClient.Instance.StartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ShareOptions, Hazel.SendOption.Reliable);
             messageWriter.WritePacked((uint)CustomOption.options.Count);
+
+            messageWriter.WritePacked((uint)0);
+            messageWriter.WritePacked((uint)PlayerControl.GameOptions.NumImpostors);
+
             foreach (CustomOption option in CustomOption.options)
             {
                 messageWriter.WritePacked((uint)option.id);
@@ -229,7 +233,7 @@ namespace Nebula.Module
 
         public virtual bool getBool()
         {
-            return selection > 0;
+            return selection > 0 || selections.Length == 1;
         }
 
         public virtual float getFloat()
@@ -303,7 +307,7 @@ namespace Nebula.Module
 
                 if (AmongUsClient.Instance?.AmHost == true && PlayerControl.LocalPlayer)
                 {
-                    if (id == 0) switchPreset(selection); // Switch presets
+                    if (id == 1) switchPreset(selection); // Switch presets
                     else if (entry != null) entry.Value = selection; // Save selection to config
 
                     ShareOptionSelections();// Share all selections
@@ -423,7 +427,7 @@ namespace Nebula.Module
             var gameSettings = GameObject.Find("Game Settings");
             var gameSettingMenu = UnityEngine.Object.FindObjectsOfType<GameSettingMenu>().FirstOrDefault();
             var nebulaSettings = UnityEngine.Object.Instantiate(gameSettings, gameSettings.transform.parent);
-            var torMenu = nebulaSettings.transform.FindChild("GameGroup").FindChild("SliderInner").GetComponent<GameOptionsMenu>();
+            var nebulaMenu = nebulaSettings.transform.FindChild("GameGroup").FindChild("SliderInner").GetComponent<GameOptionsMenu>();
             nebulaSettings.name = "NebulaSettings";
 
             var roleTab = GameObject.Find("RoleTab");
@@ -469,21 +473,27 @@ namespace Nebula.Module
                 }));
             }
 
-            foreach (OptionBehaviour option in torMenu.GetComponentsInChildren<OptionBehaviour>())
+            foreach (OptionBehaviour option in nebulaMenu.GetComponentsInChildren<OptionBehaviour>())
                 UnityEngine.Object.Destroy(option.gameObject);
-            List<OptionBehaviour> torOptions = new List<OptionBehaviour>();
+            List<OptionBehaviour> nebulaOptions = new List<OptionBehaviour>();
 
             for (int i = 0; i < CustomOption.options.Count; i++)
             {
                 CustomOption option = CustomOption.options[i];
                 if (option.optionBehaviour == null)
                 {
-                    StringOption stringOption = UnityEngine.Object.Instantiate(template, torMenu.transform);
-                    torOptions.Add(stringOption);
+                    StringOption stringOption = UnityEngine.Object.Instantiate(template, nebulaMenu.transform);
+                    nebulaOptions.Add(stringOption);
                     stringOption.OnValueChanged = new Action<OptionBehaviour>((o) => { });
                     stringOption.TitleText.text = option.name;
                     stringOption.Value = stringOption.oldValue = option.selection;
                     stringOption.ValueText.text = option.selections[option.selection].ToString();
+
+                    if (option.selections.Length == 1)
+                    {
+                        stringOption.gameObject.transform.FindChild("Plus_TMP").gameObject.SetActive(false);
+                        stringOption.gameObject.transform.FindChild("Minus_TMP").gameObject.SetActive(false);
+                    }
 
                     if (option.prefix != null)
                     {
@@ -500,7 +510,7 @@ namespace Nebula.Module
                 option.optionBehaviour.gameObject.SetActive(true);
             }
 
-            torMenu.Children = torOptions.ToArray();
+            nebulaMenu.Children = nebulaOptions.ToArray();
             nebulaSettings.gameObject.SetActive(false);
 
             /*            
@@ -616,7 +626,6 @@ namespace Nebula.Module
                 if (option?.optionBehaviour != null && option.optionBehaviour.gameObject != null)
                 {
                     bool enabled = true;
-                    var parent = option.parent;
 
                     if (AmongUsClient.Instance?.AmHost == false)
                     {
@@ -626,12 +635,6 @@ namespace Nebula.Module
                     if (option.IsHidden(CustomOption.CurrentGameMode))
                     {
                         enabled = false;
-                    }
-
-                    while (parent != null && enabled)
-                    {
-                        enabled = parent.enabled;
-                        parent = parent.parent;
                     }
 
                     option.optionBehaviour.gameObject.SetActive(enabled);
@@ -796,7 +799,7 @@ namespace Nebula.Module
 
             void addChildren(CustomOption option, ref StringBuilder builder, bool indent = true,string inheritIndent = "")
             {
-                if (!option.enabled) return;
+                if (!option.enabled || option.IsHiddenOnDisplay(CustomOption.CurrentGameMode)) return;
 
                 foreach (var child in option.children)
                 {
@@ -815,15 +818,13 @@ namespace Nebula.Module
 
                 if (option.parent == null)
                 {
-                    if (!option.enabled)
+                    if (!option.enabled || option.IsHiddenOnDisplay(CustomOption.CurrentGameMode))
                     {
                         continue;
                     }
 
                     entry = new StringBuilder();
-                    if (!option.IsHiddenOnDisplay(CustomOption.CurrentGameMode))
-                        entry.AppendLine(optionToString(option));
-
+                    entry.AppendLine(optionToString(option));
                     addChildren(option, ref entry, !option.isHidden);
                     entries.Add(entry.ToString().Trim('\r', '\n'));
                 }
@@ -860,13 +861,42 @@ namespace Nebula.Module
         }
     }
 
-    [HarmonyPatch(typeof(GameOptionsData), nameof(GameOptionsData.GetAdjustedNumImpostors))]
-    public static class GameOptionsGetAdjustedNumImpostorsPatch
+    [HarmonyPatch(typeof(GameOptionsData), nameof(GameOptionsData.Deserialize),typeof(Il2CppSystem.IO.BinaryReader))]
+    public static class GameOptionsDeserializePatch
     {
-        public static bool Prefix(GameOptionsData __instance, ref int __result)
+        static private int NumImpostors = PlayerControl.GameOptions.NumImpostors;
+        public static bool Prefix(GameOptionsData __instance)
         {
-            __result = PlayerControl.GameOptions.NumImpostors;
-            return false;
+            NumImpostors = PlayerControl.GameOptions.NumImpostors;
+            return true;
+        }
+
+        public static void Postfix(GameOptionsData __instance)
+        {
+            PlayerControl.GameOptions.NumImpostors = NumImpostors;
+        }
+    }
+
+    [HarmonyPatch(typeof(GameOptionsData), nameof(GameOptionsData.Serialize))]
+    public static class GameOptionsSerializePatch
+    {
+        static private int NumImpostors= PlayerControl.GameOptions.NumImpostors;
+        public static bool Prefix(GameOptionsData __instance)
+        {
+            NumImpostors = PlayerControl.GameOptions.NumImpostors;
+            if (NumImpostors == 0)
+            {
+                PlayerControl.GameOptions.NumImpostors = 1;
+            }else if (NumImpostors > 3)
+            {
+                PlayerControl.GameOptions.NumImpostors = 3;
+            }
+            return true;
+        }
+
+        public static void Postfix(GameOptionsData __instance)
+        {
+            PlayerControl.GameOptions.NumImpostors = NumImpostors;
         }
     }
 

@@ -1,4 +1,7 @@
 ﻿using HarmonyLib;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Reflection.Emit;
 
 namespace Nebula.Patches
 {
@@ -32,12 +35,40 @@ namespace Nebula.Patches
             }
         }
 
+
         [HarmonyPatch(typeof(ExileController), nameof(ExileController.WrapUp))]
         class BaseExileControllerPatch
         {
-            public static void Postfix(ExileController __instance)
+            public static bool Prefix(ExileController __instance)
             {
-                WrapUpPostfix(__instance.exiled);
+                if (__instance.exiled != null)
+                {
+                    PlayerControl @object = __instance.exiled.Object;
+                    if (@object)
+                    {
+                        @object.Exiled();
+                    }
+                    __instance.exiled.IsDead = true;
+                }
+
+                List<Il2CppSystem.Collections.IEnumerator> sequence = new List<Il2CppSystem.Collections.IEnumerator>();
+
+                if (DestroyableSingleton<TutorialManager>.InstanceExists || !ShipStatus.Instance.IsGameOverDueToDeath())
+                {
+                    sequence.Add(ShipStatus.Instance.PrespawnStep());
+                    sequence.Add(Effects.Action(new System.Action(() => { __instance.ReEnableGameplay(); })));
+                }
+                sequence.Add(Effects.Action(new System.Action(() =>
+                {
+                    UnityEngine.Object.Destroy(__instance.gameObject);
+                    WrapUpPostfix(__instance.exiled);
+                })));
+
+                var refArray = new UnhollowerBaseLib.Il2CppReferenceArray<Il2CppSystem.Collections.IEnumerator>(sequence.ToArray());
+                HudManager.Instance.StartCoroutine(Effects.Sequence(refArray));
+
+
+                return false;
             }
         }
 
@@ -60,6 +91,8 @@ namespace Nebula.Patches
 
                 if (exiled.GetModData().role.OnExiledPost(voters, exiled.PlayerId))
                 {
+                    Game.GameData.data.players[exiled.PlayerId].Die(Game.PlayerData.PlayerStatus.Exiled);
+
                     Helpers.RoleAction(exiled.PlayerId, (role) => { role.OnDied(exiled.PlayerId); });
 
                     if (exiled.PlayerId == PlayerControl.LocalPlayer.PlayerId)
@@ -69,8 +102,6 @@ namespace Nebula.Patches
 
                         Game.GameData.data.myData.CanSeeEveryoneInfo = true;
                     }
-
-                    Game.GameData.data.players[exiled.PlayerId].Die(Game.PlayerData.PlayerStatus.Exiled);
                 }
                 else
                 {
@@ -80,6 +111,7 @@ namespace Nebula.Patches
 
             Objects.CustomButton.OnMeetingEnd();
             Objects.CustomObject.OnMeetingEnd();
+            Game.GameData.data.UtilityTimer.OnMeetingEnd();
             Game.GameData.data.myData.getGlobalData().role.OnMeetingEnd();
 
             if (Game.GameData.data.GameMode == Module.CustomGameMode.Investigators)

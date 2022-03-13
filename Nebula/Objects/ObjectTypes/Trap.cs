@@ -27,7 +27,7 @@ namespace Nebula.Objects.ObjectTypes
                 //Trapperを考慮に入れる
                 Game.GameData.data.EstimationAI.DetermineMultiply(new Roles.Role[] { Roles.Roles.NiceTrapper, Roles.Roles.EvilTrapper });
 
-                if (obj.OwnerId != PlayerControl.LocalPlayer.PlayerId)
+                if (obj.OwnerId != PlayerControl.LocalPlayer.PlayerId || Game.GameData.data.myData.CanSeeEveryoneInfo)
                 {
                     if (obj.Renderer.color.a != 0f) obj.Renderer.color = new Color(1f, 1f, 1f, 0f);
                 }
@@ -50,7 +50,7 @@ namespace Nebula.Objects.ObjectTypes
 
         public override void Update(CustomObject obj)
         {
-            if (obj.OwnerId != PlayerControl.LocalPlayer.PlayerId) obj.GameObject.active = false;
+            if (obj.OwnerId != PlayerControl.LocalPlayer.PlayerId && !Game.GameData.data.myData.CanSeeEveryoneInfo) obj.GameObject.active = false;
             if (obj.PassedMeetings == 0)
             {
                 if (obj.Renderer.color.a != 0.5f) obj.Renderer.color = new Color(1f, 1f, 1f, 0.5f);

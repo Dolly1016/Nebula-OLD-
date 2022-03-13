@@ -12,6 +12,7 @@ namespace Nebula.Roles.ExtraRoles
     public class Lover : ExtraRole
     {
         private Module.CustomOption maxPairsOption;
+        public Module.CustomOption loversModeOption;
         private Module.CustomOption chanceThatOneLoverIsImpostorOption;
         private Module.CustomOption canChangeTrilemmaOption;
 
@@ -50,8 +51,10 @@ namespace Nebula.Roles.ExtraRoles
                 if (data.GetExtraRoleData(this) == myLoverId)
                 {
                     target = Helpers.playerById(data.id);
-
-                    action.Invoke(target);
+                    if (target != null)
+                    {
+                        action.Invoke(target);
+                    }
                 }
             }
         }
@@ -73,7 +76,8 @@ namespace Nebula.Roles.ExtraRoles
                 //自身であれば特に何もしない
                 if (player == PlayerControl.LocalPlayer) return;
 
-                if (!player.Data.IsDead)RPCEventInvoker.UncheckedExilePlayer(player.PlayerId, Game.PlayerData.PlayerStatus.Suicide.Id);
+
+                if (!player.Data.IsDead) RPCEventInvoker.UncheckedExilePlayer(player.PlayerId, Game.PlayerData.PlayerStatus.Suicide.Id);
             }
             );
         }
@@ -81,7 +85,19 @@ namespace Nebula.Roles.ExtraRoles
         public override void OnMurdered(byte murderId) {
             ActionForMyLover((player) =>
             {
-                if (!player.Data.IsDead) RPCEventInvoker.UncheckedMurderPlayer(player.PlayerId, player.PlayerId, Game.PlayerData.PlayerStatus.Suicide.Id, false);
+                if (!player.Data.IsDead)
+                {
+                    if (loversModeOption.getSelection() == 1)
+                    {
+                        if (murderId != PlayerControl.LocalPlayer.PlayerId)
+                        {
+                            RPCEventInvoker.ImmediatelyChangeRole(player, Roles.Avenger);
+                            RPCEventInvoker.SetExtraRole(Helpers.playerById(murderId), Roles.AvengerTarget, Game.GameData.data.myData.getGlobalData().GetExtraRoleData(this));
+                            return;
+                        }
+                    }
+                    RPCEventInvoker.UncheckedMurderPlayer(player.PlayerId, player.PlayerId, Game.PlayerData.PlayerStatus.Suicide.Id, false);
+                }
             }
             );
         }
@@ -93,12 +109,23 @@ namespace Nebula.Roles.ExtraRoles
             {
                 if (player.Data.IsDead) return;
 
+                if (loversModeOption.getSelection() == 1)
+                {
+                    byte murder = Game.GameData.data.deadPlayers[PlayerControl.LocalPlayer.PlayerId].MurderId;
+                    if (murder != byte.MaxValue && murder != PlayerControl.LocalPlayer.PlayerId)
+                    {
+                        RPCEventInvoker.ImmediatelyChangeRole(player, Roles.Avenger);
+                        RPCEventInvoker.SetExtraRole(Helpers.playerById(murder), Roles.AvengerTarget, Game.GameData.data.myData.getGlobalData().GetExtraRoleData(this));
+                        return;
+                    }
+                }
 
                 if (Game.GameData.data.myData.getGlobalData().Status == Game.PlayerData.PlayerStatus.Guessed ||
-                Game.GameData.data.myData.getGlobalData().Status == Game.PlayerData.PlayerStatus.Misguessed)
+                            Game.GameData.data.myData.getGlobalData().Status == Game.PlayerData.PlayerStatus.Misguessed)
                     RPCEventInvoker.CloseUpKill(player, player, Game.PlayerData.PlayerStatus.Suicide);
                 else
                     RPCEventInvoker.UncheckedExilePlayer(player.PlayerId, Game.PlayerData.PlayerStatus.Suicide.Id);
+                
             }
             );
         }
@@ -158,8 +185,17 @@ namespace Nebula.Roles.ExtraRoles
         public override void LoadOptionData()
         {
             maxPairsOption = CreateOption(Color.white, "maxPairs", 1f, 0f, 5f, 1f);
+            loversModeOption = CreateOption(Color.white, "mode", new string[] { "role.lover.mode.standard", "role.lover.mode.avenger" });
             chanceThatOneLoverIsImpostorOption = CreateOption(Color.white, "chanceThatOneLoverIsImpostor", CustomOptionHolder.rates);
+
             canChangeTrilemmaOption = CreateOption(Color.white, "canChangeTrilemma", true);
+            canChangeTrilemmaOption.AddCustomPrerequisite(() => loversModeOption.getSelection() == 0);
+
+        }
+
+        public override IEnumerable<Assignable> GetFollowRoles()
+        {
+            yield return Roles.Avenger;
         }
 
         public override void EditDisplayName(byte playerId, ref string displayName, bool hideFlag)
@@ -170,6 +206,18 @@ namespace Nebula.Roles.ExtraRoles
             {
                 ulong pairId = Game.GameData.data.myData.getGlobalData().GetExtraRoleData(this);
                 if (Game.GameData.data.players[playerId].GetExtraRoleData(this) == pairId) showFlag = true;
+            }
+
+            if (!showFlag && loversModeOption.getSelection()==1 && Roles.Avenger.everyoneCanKnowExistenceOfAvengerOption.getBool())
+            {
+                PlayerControl player = Helpers.playerById(playerId);
+                if (player == null) return;
+
+
+                bool avengerFlag = false;
+                ActionForLover(player, (p) => { if (p != player && !p.Data.IsDead && player.Data.IsDead) avengerFlag = true; });
+
+                if (avengerFlag) { displayName += Helpers.cs(Roles.Avenger.Color, "♥"); return; }
             }
 
             if (showFlag)EditDisplayNameForcely(playerId,ref displayName);
@@ -191,14 +239,12 @@ namespace Nebula.Roles.ExtraRoles
             desctiption += "\n" + Language.Language.GetString("role.lover.description").Replace("%NAME%",partner);
         }
 
-        public override bool CheckWin(PlayerControl player, EndCondition condition)
+        public override bool CheckAdditionalWin(PlayerControl player, EndCondition condition)
         {
-            if (player.Data.IsDead) return false;
-
             bool winFlag = false;
             ActionForLover(player, (partner) =>
             {
-                winFlag |= partner.GetModData().role.CheckWin(condition);
+                winFlag |= partner.GetModData().role.CheckWin(partner, condition) && !partner.Data.IsDead;
             });
             if (winFlag)
             {
@@ -219,6 +265,8 @@ namespace Nebula.Roles.ExtraRoles
 
         public override void MyPlayerControlUpdate()
         {
+            if (loversModeOption.getSelection() != 0) return;
+
             trilemmaTarget = Patches.PlayerControlPatch.SetMyTarget(2.5f);
             
             if (IsMyLover(trilemmaTarget)) {
@@ -236,7 +284,7 @@ namespace Nebula.Roles.ExtraRoles
                 involveButton.Destroy();
             }
 
-            if (!canChangeTrilemmaOption.getBool()) return;
+            if (!canChangeTrilemmaOption.getBool() || loversModeOption.getSelection()!=0) return;
 
             involveButton = new CustomButton(
                 () =>

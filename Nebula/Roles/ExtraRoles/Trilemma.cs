@@ -21,8 +21,11 @@ namespace Nebula.Roles.ExtraRoles
                 {
                     target = Helpers.playerById(data.id);
 
-                    //指定の方法で自殺する
-                    action.Invoke(target);
+                    if (target != null)
+                    {
+                        //指定の方法で自殺する
+                        action.Invoke(target);
+                    }
                 }
             }
         }
@@ -103,7 +106,7 @@ namespace Nebula.Roles.ExtraRoles
             desctiption += "\n" + Language.Language.GetString("role.lover.description").Replace("%NAME%", partner);
         }
 
-        public override bool CheckWin(PlayerControl player, EndCondition condition)
+        public override bool CheckAdditionalWin(PlayerControl player, EndCondition condition)
         {
             if (player.Data.IsDead) return false;
 
@@ -112,6 +115,7 @@ namespace Nebula.Roles.ExtraRoles
 
         public Trilemma() : base("Trilemma", "trilemma", Lover.iconColor[0], 0)
         {
+            ExceptBasicOption = true;
             IsHideRole = true;
         }
     }

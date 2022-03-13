@@ -46,7 +46,9 @@ namespace Nebula
         RefreshTasks,
         CompleteTask,
         ObjectInstantiate,
+        ObjectDestroy,
         CountDownMessage,
+        UpdateRestrictTimer,
 
         // Role functionality
 
@@ -185,11 +187,17 @@ namespace Nebula
                 case (byte)CustomRPC.ObjectInstantiate:
                     RPCEvents.ObjectInstantiate(reader.ReadByte(), reader.ReadByte(), reader.ReadUInt64(), reader.ReadSingle(), reader.ReadSingle());
                     break;
+                case (byte)CustomRPC.ObjectDestroy:
+                    RPCEvents.ObjectDestroy(reader.ReadUInt32());
+                    break;
                 case (byte)CustomRPC.CleanDeadBody:
                     RPCEvents.CleanDeadBody(reader.ReadByte());
                     break;
                 case (byte)CustomRPC.CountDownMessage:
                     RPCEvents.CountDownMessage(reader.ReadByte());
+                    break;
+                case (byte)CustomRPC.UpdateRestrictTimer:
+                    RPCEvents.UpdateRestrictTimer(reader.ReadByte(),reader.ReadSingle());
                     break;
 
                 case (byte)CustomRPC.SealVent:
@@ -386,6 +394,7 @@ namespace Nebula
             if (player != null)
             {
                 player.Exiled();
+                Game.GameData.data.players[playerId].Die(Game.PlayerData.PlayerStatus.GetStatusById(statusId));
 
                 Helpers.RoleAction(player.PlayerId, (role) => role.OnDied(playerId));
 
@@ -422,9 +431,6 @@ namespace Nebula
                     if(AmongUsClient.Instance.AmHost)
                         MeetingHud.Instance.CheckForEndVoting();
                 }
-
-                Game.GameData.data.players[playerId].Die(Game.PlayerData.PlayerStatus.GetStatusById(statusId));
-
             }
         }
 
@@ -632,8 +638,16 @@ namespace Nebula
                 {
                     uint optionId = reader.ReadPackedUInt32();
                     uint selection = reader.ReadPackedUInt32();
-                    CustomOption option = CustomOption.options.FirstOrDefault(opt => opt.id == (int)optionId);
-                    option.updateSelection((int)selection);
+
+                    if (optionId == 0)
+                    {
+                        PlayerControl.GameOptions.NumImpostors = (int)selection;
+                    }
+                    else
+                    {
+                        CustomOption option = CustomOption.options.FirstOrDefault(opt => opt.id == (int)optionId);
+                        option.updateSelection((int)selection);
+                    }
                 }
             }
             catch (Exception e)
@@ -723,6 +737,14 @@ namespace Nebula
             obj.ObjectType.Update(obj);
         }
 
+        public static void ObjectDestroy(ulong objectId)
+        {
+            if (Objects.CustomObject.Objects.ContainsKey(objectId))
+            {
+                Objects.CustomObject.Objects[objectId].Destroy();
+            }
+        }
+
         public static void SealVent(byte playerId, int ventId)
         {
             Events.Schedule.RegisterPostMeetingAction(() =>
@@ -759,6 +781,22 @@ namespace Nebula
             foreach(var obj in objList)
             {
                 obj.Destroy();
+            }
+        }
+
+        public static void UpdateRestrictTimer(byte device,float timer)
+        {
+            switch (device)
+            {
+                case 0:
+                    Game.GameData.data.UtilityTimer.AdminTimer -= timer;
+                    break;
+                case 1:
+                    Game.GameData.data.UtilityTimer.VitalsTimer -= timer;
+                    break;
+                case 2:
+                    Game.GameData.data.UtilityTimer.CameraTimer -= timer;
+                    break;
             }
         }
 
@@ -803,7 +841,7 @@ namespace Nebula
 
         public static void CreateSidekick(byte playerId, byte jackalId)
         {
-            if (Roles.NeutralRoles.Jackal.SidekickTakeOverOriginalRoleOption.getBool())
+            if (Roles.NeutralRoles.Sidekick.SidekickTakeOverOriginalRoleOption.getBool())
             {
                 RPCEvents.ImmediatelyChangeRole(playerId, Roles.Roles.Sidekick.id);
                 RPCEvents.UpdateRoleData(playerId, Roles.Roles.Jackal.jackalDataId, jackalId);
@@ -1205,12 +1243,44 @@ namespace Nebula
             RPCEvents.ObjectInstantiate(PlayerControl.LocalPlayer.PlayerId,objectType.Id,id,position.x,position.y);
         }
 
+        public static void ObjectDestroy(Objects.CustomObject customObject)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ObjectDestroy, Hazel.SendOption.Reliable, -1);
+            writer.Write(customObject.Id);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.ObjectDestroy(customObject.Id);
+        }
+
         public static void CountDownMessage(byte count)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.CountDownMessage, Hazel.SendOption.Reliable, -1);
             writer.Write(count);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.CountDownMessage(count);
+        }
+
+        public static void UpdateRestrictTimer(byte deviceId, float timer)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UpdateRestrictTimer, Hazel.SendOption.Reliable, -1);
+            writer.Write(deviceId);
+            writer.Write(timer);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.UpdateRestrictTimer(deviceId, timer);
+        }
+
+        public static void UpdateAdminRestrictTimer(float timer)
+        {
+            UpdateRestrictTimer(0,timer);
+        }
+
+        public static void UpdateVitalsRestrictTimer(float timer)
+        {
+            UpdateRestrictTimer(1, timer);
+        }
+
+        public static void UpdateCameraAndDoorLogRestrictTimer(float timer)
+        {
+            UpdateRestrictTimer(2, timer);
         }
 
         public static void SniperSettleRifle()

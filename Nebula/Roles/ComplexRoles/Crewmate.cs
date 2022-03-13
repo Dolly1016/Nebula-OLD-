@@ -9,6 +9,7 @@ namespace Nebula.Roles.ComplexRoles
 {
     public class FCrewmate : Role
     {
+        public Module.CustomOption isGuessableOption;
         private Module.CustomOption maxCountOfDamnedOption;
         private Module.CustomOption chanceOfDamnedOption;
 
@@ -40,13 +41,9 @@ namespace Nebula.Roles.ComplexRoles
 
         public override void LoadOptionData()
         {
+            isGuessableOption = CreateOption(Color.white, "isGuessable", true);
             chanceOfDamnedOption = CreateOption(Color.white, "chanceOfDamned", CustomOptionHolder.rates);
             maxCountOfDamnedOption = CreateOption(Color.white, "maxCountOfDamned", 1f, 0f, 15f, 1f);
-        }
-
-        public override List<Role> GetImplicateRoles()
-        {
-            return new List<Role>() { Roles.DamnedCrew };
         }
 
         public FCrewmate()

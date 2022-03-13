@@ -23,9 +23,8 @@ namespace Nebula.Patches
         public static EndCondition ArsonistWin = new EndCondition(18, Roles.NeutralRoles.Arsonist.RoleColor, "arsonist", 1, Module.CustomGameMode.Standard,false, () => { PlayerControl.AllPlayerControls.ForEach((Action<PlayerControl>)((p) => { if (!p.Data.IsDead && p.GetModData().role.side != Roles.Side.Arsonist) p.MurderPlayer(p); })); });
         public static EndCondition EmpiricWin = new EndCondition(19, Roles.NeutralRoles.Empiric.RoleColor, "empiric", 1, Module.CustomGameMode.Standard);
         public static EndCondition VultureWin = new EndCondition(20, Roles.NeutralRoles.Vulture.RoleColor, "vulture", 1, Module.CustomGameMode.Standard);
+        public static EndCondition AvengerWin = new EndCondition(21, Roles.NeutralRoles.Avenger.RoleColor, "avenger", 0, Module.CustomGameMode.Standard);
         public static EndCondition TrilemmaWin = new EndCondition(24, new Color(209f / 255f, 63f / 255f, 138f / 255f), "trilemma",0, Module.CustomGameMode.Standard);
-
-        
 
         public static EndCondition InvestigatorRightGuess = new EndCondition(32, Palette.CrewmateBlue, "rightGuess", 0, Module.CustomGameMode.Investigators,true);
         public static EndCondition InvestigatorWrongGuess = new EndCondition(33, Palette.ImpostorRed, "wrongGuess", 0, Module.CustomGameMode.Investigators);
@@ -52,7 +51,7 @@ namespace Nebula.Patches
             CrewmateWinByVote ,CrewmateWinByTask,CrewmateWinDisconnect,
             ImpostorWinByKill,ImpostorWinBySabotage,ImpostorWinByVote,ImpostorWinDisconnect,
             JesterWin,JackalWin,ArsonistWin,EmpiricWin,VultureWin,
-            TrilemmaWin,
+            TrilemmaWin,AvengerWin,
             NobodyWin,NobodySkeldWin,NobodyMiraWin,NobodyPolusWin,NobodyAirshipWin,
             InvestigatorRightGuess,InvestigatorWrongGuess,HostDisconnected,
             MinigamePlayersWin,MinigameEscapeesWin,MinigameHunterWin,
@@ -158,19 +157,11 @@ namespace Nebula.Patches
             //勝利者を消去する
             TempData.winners.Clear();
 
-            if (EndCondition.TriggerRole != null && EndCondition.TriggerRole.Winner != Byte.MaxValue)
+            foreach (PlayerControl player in PlayerControl.AllPlayerControls)
             {
-                //単独勝利の場合
-                TempData.winners.Add(new WinningPlayerData(Helpers.playerById(EndCondition.TriggerRole.Winner).Data));
-            }
-            else
-            {
-                foreach (PlayerControl player in PlayerControl.AllPlayerControls)
+                if (Game.GameData.data.players[player.PlayerId].role.CheckWin(player, EndCondition))
                 {
-                    if (Game.GameData.data.players[player.PlayerId].role.CheckWin(EndCondition))
-                    {
-                        TempData.winners.Add(new WinningPlayerData(player.Data));
-                    }
+                    TempData.winners.Add(new WinningPlayerData(player.Data));
                 }
             }
 
@@ -183,7 +174,7 @@ namespace Nebula.Patches
                 addedFlag = false;
                 Helpers.RoleAction(player, (role) =>
                 {
-                    if ((!addedFlag) && role.CheckWin(player, EndCondition))
+                    if ((!addedFlag) && role.CheckAdditionalWin(player, EndCondition))
                     {
                         TempData.winners.Add(new WinningPlayerData(player.Data));
                         addedFlag = true;
@@ -347,6 +338,13 @@ namespace Nebula.Patches
 
             if (endCondition != null)
             {
+                //勝利乗っ取り
+                foreach (Roles.Side side in Roles.Side.AllSides)
+                {
+                    temp = side.endTakeoverChecker(endCondition, statistics, __instance);
+                    if(temp!=null) endCondition = temp;
+                }
+
                 __instance.enabled = false;
                 ShipStatus.RpcEndGame(endCondition.Id, false);
                 return false;

@@ -141,7 +141,7 @@ namespace Nebula.Roles.ImpostorRoles
                 new Vector3(0f, 1f, 0),
                 __instance,
                 KeyCode.Q
-            );
+            ).SetTimer(10f);
             killButton.MaxTimer = snipeCoolDownOption.getFloat();
             killButton.FireOnClicked = true;
         }

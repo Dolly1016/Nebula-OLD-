@@ -78,7 +78,7 @@ namespace Nebula.Patches
                     {
                         continue;
                     }
-                    if (role.IsHideRole)
+                    if (role.IsHideRole || role.ExceptBasicOption)
                     {
                         continue;
                     }

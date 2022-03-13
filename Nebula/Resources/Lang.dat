@@ -39,6 +39,8 @@
 "option.switch.on" : "On"
 "option.switch.off" : "Off"
 
+"option.empty" : ""
+
 "option.preset" : "Preset"
 "option.gameMode" : "Game Mode"
 "option.crewmateRoles" : "Crewmate Roles"
@@ -66,6 +68,7 @@
 "option.exceptPolus" : "Except Polus"
 "option.exceptAirship" : "Except The Airship"
 "option.additionalVents" : "Additional Vents"
+"option.multipleSpawnPoints" : "Multiple Spawn Points"
 
 "option.exclusiveAssignment" : "Exclusive Assignment"
 "option.exclusiveAssignment1" : "Assignment Set 1"
@@ -82,6 +85,13 @@
 "option.timeLimitOption" : "Time Limit (Min)"
 "option.timeLimitSecondOption" : "Time Limit (Sec)"
 
+"option.devicesOption" : "Restrict Devices"
+"option.devicesOption.perDiscussion" : "Per Discussion"
+"option.devicesOption.perGame" : "Per Game"
+"option.devicesOption.Admin" : "Admin"
+"option.devicesOption.Vitals" : "Vitals"
+"option.devicesOption.CameraAndDoorLog" : "Cam and Door Log"
+
 "option.advanceRoleOptions" : "Advance Role Options"
 
 "option.roleCount" : "Max Players"
@@ -97,6 +107,7 @@
 "role.crewmate.name" : "Crewmate"
 "role.crewmate.description" : "Find the <color=#ff1919ff>Impostors</color>"
 "role.crewmate.info" : "You have no special abilities.\nThe key to win is just your own brain."
+"role.crewmate.isGuessable" : "Is Guessable"
 "role.crewmate.maxCountOfDamned" : "Max Count Of Damned"
 "role.crewmate.chanceOfDamned" : "Chance Of Damned"
 
@@ -117,6 +128,7 @@
 "role.trapper.chanceToSpawnAsSecondarySide" : "Chance to Spawn as Impostor"
 "role.trapper.definitiveAssignment" : "Definitive Assignment"
 "role.trapper.maxTraps" : "Max Traps"
+"role.trapper.placeCoolDown" : "Place Cool Down"
 "role.trapper.accelSpeed" : "Accel Speed"
 "role.trapper.decelSpeed" : "Decel Speed"
 "role.trapper.accelDuration" : "Accel Duration"
@@ -387,11 +399,14 @@
 "role.jackal.info" : "You must kill everyone.\n\n - F : Create a sidekick"
 "role.jackal.canCreateSidekick" : "Can Create Sidekick"
 "role.jackal.killCoolDown" : "Kill Cool Down"
-"role.jackal.sidekickCanKill" : "Sidekick Can Kill"
-"role.jackal.sidekickKillCoolDown" : "Sidekick Kill Cool Down"
-"role.jackal.sidekickTakeOverOriginalRole" : "Sidekick Take Over Original Role"
-"role.jackal.sidekickCanCreateSidekick" : "Sidekick Can Create Sidekick"
-"role.jackal.sidekickCanUseVents" : "Sidekick Can Use Vents"
+
+"role.sidekick.name" : "Sidekick"
+"role.sidekick.info" : "You became Jackal when Jackal dies."
+"role.sidekick.canKill" : "Sidekick Can Kill"
+"role.sidekick.killCoolDown" : "Kill Cool Down"
+"role.sidekick.takeOverOriginalRole" : "Take Over Original Role"
+"role.sidekick.canCreateSidekick" : "Can Create Sidekick"
+"role.sidekick.canUseVents" : "Can Use Vents"
 
 "role.jester.name" : "Jester"
 "role.jester.description" : "Get Voted Out"
@@ -414,9 +429,6 @@
 "role.opportunist.canWinWithJester" : "Can Win With Jester"
 "role.opportunist.canWinWithVulture" : "Can Win With Vulture"
 
-"role.sidekick.name" : "Sidekick"
-"role.sidekick.info" : "You became Jackal when Jackal dies."
-
 "role.vulture.name" : "Vulture"
 "role.vulture.description" : "Eat Corpses to Win"
 "role.vulture.info" : "You have to eat dead bodies to win.\nYou can see the bodies' location.\n\n - F : Eat a dead body"
@@ -438,12 +450,26 @@
 "role.lover.description" : "You're in <color=#fc04bdff>Love</color> with %NAME%"
 "role.lover.info" : "You have the partner. When one of yours, another follows someone into death.\nYou can choose any player to change to Trilemma. \n\n - Z : Change to Trilemma with your chosen"
 "role.lover.maxPairs" : "Max Couples"
+"role.lover.mode" : "Lover Mode"
+"role.lover.mode.standard" : "Standard"
+"role.lover.mode.avenger" : "Avenger"
 "role.lover.chanceThatOneLoverIsImpostor" : "Chance That One Lover Is Impostor"
 "role.lover.canChangeTrilemma" : "Can Change Trilemma"
 "role.lover.additionalEndText" : " <color=#ffffffff>with</color> <color=#fb02beff>Lovers</color>"
 
 "role.trilemma.name" : "Trilemma"
 "role.trilemma.info" : "You're the team of 3 players. When one of yours, others follow someone into death.\nWhen only the members of the team, your team will win."
+
+"role.avenger.name" : "Avenger"
+"role.avenger.info" : "Your lover is gone. Now is the time for revenge.\nKill your lover's murderer and survive.\n\nYou are always in my heart. I'll take you the big moment.\n\n - Q : Kill"
+"role.avenger.killCoolDown" : "Kill Cool Down"
+"role.avenger.murderCanKnowAvenger" : "Murder Can Know Avenger"
+"role.avenger.everyoneCanKnowExistenceOfAvenger" : "Everyone Can Know Existense Of Avenger"
+"role.avenger.avengerNoticeIntervalOption" : "Notice Interval Option For Avenger"
+"role.avenger.murderNoticeIntervalOption" : "Notice Interval Option For Murder"
+
+"role.avengerTarget.name" : "[CAUTION] You're being targeted by Avenger."
+"role.avengerTarget.info" : "You killed one of lovers.\nThe other of them may take the chance to kill you."
 
 "role.investigator.name" : "Investigator"
 "role.investigator.description" : "Find Out What It Is"
@@ -484,9 +510,22 @@
 "game.message.countDown" : "Starting in %COUNT%s"
 "game.message.start" : "Game Start!"
 
+"game.spawnLocation.Dropship" : "Dropship"
+"game.spawnLocation.Electrical" : "Electrical"
+"game.spawnLocation.Laboratory" : "Laboratory"
+"game.spawnLocation.LifeSupport" : "O2"
+"game.spawnLocation.Office" : "Office"
+"game.spawnLocation.Specimens" : "Specimens"
+"game.spawnLocation.Storage" : "Storage"
+"game.spawnLocation.Weapons" : "Weapons"
+
+"game.device.timeRemaining" : "%TIMER%"
+"game.device.restrictOutOfTime" : "Not Available"
+
 "game.endText.crewmate" : "Team Crewmate Wins"
 "game.endText.impostor" : "Team Impostor Wins"
 "game.endText.arsonist" : "Arsonist Wins"
+"game.endText.avenger" : "Avenger Wins"
 "game.endText.empiric" : "Empiric Wins"
 "game.endText.jackal" : "Team Jackal Wins"
 "game.endText.jester" : "Jester Wins"

@@ -128,6 +128,21 @@ namespace Nebula.Roles
             return null;
         });
 
+        public static Side Avenger = new Side("Avenger", "avenger", IntroDisplayOption.SHOW_ONLY_ME, NeutralRoles.Avenger.RoleColor, (PlayerStatistics statistics, ShipStatus status) =>
+        {
+            return null;
+        },(EndCondition endCondition,PlayerStatistics statistics, ShipStatus status)=> {
+            foreach(var player in Game.GameData.data.players.Values)
+            {
+                if (!player.IsAlive) continue;
+                if (player.role != Roles.Avenger) continue;
+
+                if (player.GetRoleData(Roles.Avenger.avengerCheckerId) == 1)
+                    return EndCondition.AvengerWin;
+            }
+            return null;
+        });
+
         public static Side GamePlayer = new Side("GamePlayer", "gamePlayer", IntroDisplayOption.SHOW_ONLY_ME, Palette.CrewmateBlue, (PlayerStatistics statistics, ShipStatus status) =>
         {
             if (Game.GameData.data.GameMode == Module.CustomGameMode.Minigame)
@@ -213,7 +228,7 @@ namespace Nebula.Roles
         public static List<Side> AllSides = new List<Side>()
         {
             Crewmate, Impostor,
-            Jackal, Jester, Vulture, Empiric, Arsonist, 
+            Jackal, Jester, Vulture, Empiric, Arsonist, Avenger,
             Investigator,
             Gambler,
             GamePlayer,
@@ -226,14 +241,21 @@ namespace Nebula.Roles
         public string localizeSide { get; }
 
         public EndCriteriaChecker endCriteriaChecker { get; }
+        public EndTakeoverChecker endTakeoverChecker { get; }
 
-        private Side(string side, string localizeSide, IntroDisplayOption displayOption, Color color, EndCriteriaChecker endCriteriaChecker)
+        private Side(string side, string localizeSide, IntroDisplayOption displayOption, Color color, EndCriteriaChecker endCriteriaChecker,EndTakeoverChecker endTakeoverChecker)
         {
             this.side = side;
             this.localizeSide = localizeSide;
             this.ShowOption = displayOption;
             this.color = color;
             this.endCriteriaChecker = endCriteriaChecker;
+            this.endTakeoverChecker = endTakeoverChecker;
+        }
+
+        private Side(string side, string localizeSide, IntroDisplayOption displayOption, Color color, EndCriteriaChecker endCriteriaChecker) :
+            this(side, localizeSide, displayOption, color, endCriteriaChecker, (a1,a2,a3)=>null)
+        {
         }
     }
 

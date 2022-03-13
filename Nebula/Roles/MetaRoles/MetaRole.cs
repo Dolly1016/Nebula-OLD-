@@ -187,24 +187,12 @@ namespace Nebula.Roles.MetaRoles
             if (Input.GetKeyDown(KeyCode.Keypad3) || Input.GetKeyDown(KeyCode.Alpha3))
             {
                 if (!PlayerControl.LocalPlayer.Data.IsDead)
-                    PlayerControl.LocalPlayer.MurderPlayer(PlayerControl.LocalPlayer);
+                    RPCEventInvoker.UncheckedMurderPlayer(PlayerControl.LocalPlayer.PlayerId, PlayerControl.LocalPlayer.PlayerId, Game.PlayerData.PlayerStatus.Dead.Id, false);
             }
             if (Input.GetKeyDown(KeyCode.Keypad4) || Input.GetKeyDown(KeyCode.Alpha4))
             {
                 if (PlayerControl.LocalPlayer.Data.IsDead)
-                {
-                    PlayerControl.LocalPlayer.Revive();
-
-                    foreach (DeadBody body in Helpers.AllDeadBodies())
-                    {
-                        if (body.ParentId != PlayerControl.LocalPlayer.PlayerId) continue;
-
-                        PlayerControl.LocalPlayer.Revive();
-                        Game.GameData.data.deadPlayers.Remove(PlayerControl.LocalPlayer.PlayerId);
-
-                        UnityEngine.Object.Destroy(body.gameObject);
-                    }
-                }
+                    RPCEventInvoker.RevivePlayer(PlayerControl.LocalPlayer);
             }
 
             if (Input.GetKeyDown(KeyCode.Escape))

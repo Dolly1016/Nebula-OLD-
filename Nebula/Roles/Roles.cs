@@ -45,6 +45,7 @@ namespace Nebula.Roles
         public static ImpostorRoles.Sniper Sniper = new ImpostorRoles.Sniper();
 
         public static NeutralRoles.Arsonist Arsonist = new NeutralRoles.Arsonist();
+        public static NeutralRoles.Avenger Avenger = new NeutralRoles.Avenger();
         public static NeutralRoles.Empiric Empiric = new NeutralRoles.Empiric();
         public static NeutralRoles.Jackal Jackal = new NeutralRoles.Jackal();
         public static NeutralRoles.Sidekick Sidekick = new NeutralRoles.Sidekick();
@@ -69,6 +70,7 @@ namespace Nebula.Roles
         public static ExtraRoles.Drunk Drunk = new ExtraRoles.Drunk();
         public static ExtraRoles.Lover Lover = new ExtraRoles.Lover();
         public static ExtraRoles.Trilemma Trilemma = new ExtraRoles.Trilemma();
+        public static ExtraRoles.AvengerTarget AvengerTarget = new ExtraRoles.AvengerTarget();
         public static MetaRoles.MetaRole MetaRole = new MetaRoles.MetaRole();
 
 
@@ -77,7 +79,7 @@ namespace Nebula.Roles
         {
             Impostor,Camouflager,Cleaner,Damned,Eraser,EvilAce,EvilGuesser,EvilTrapper,Morphing,Reaper,Sniper,
             F_Guesser,F_Trapper,
-            Arsonist,Empiric,Jackal,Jester,Opportunist,Sidekick,Vulture,
+            Arsonist,Avenger,Empiric,Jackal,Jester,Opportunist,Sidekick,Vulture,
             F_Crewmate,
             Crewmate,Agent,Alien,Bait,Booster,DamnedCrew,Doctor,Mayor,Navvy,Necromancer,NiceGuesser,NiceTrapper,Oracle,Provocateur,Psychic,Seer,Sheriff,Spy,
             Madmate,
@@ -89,7 +91,9 @@ namespace Nebula.Roles
 
         public static List<ExtraRole> AllExtraRoles = new List<ExtraRole>()
         {
-            SecondaryGuesser,SecondarySidekick,Drunk,Lover,Trilemma,MetaRole
+            SecondaryGuesser,SecondarySidekick,
+            Drunk,Lover,Trilemma,
+            MetaRole,AvengerTarget
         };
 
         public static void ResetWinTrigger()

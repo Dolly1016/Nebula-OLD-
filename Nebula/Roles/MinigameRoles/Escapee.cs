@@ -13,7 +13,7 @@ namespace Nebula.Roles.MinigameRoles
 {
     public class Escapee : Role
     {
-        public override bool CheckWin(PlayerControl player, EndCondition condition)
+        public override bool CheckAdditionalWin(PlayerControl player, EndCondition condition)
         {
             if (condition != EndCondition.MinigameEscapeesWin) return false;
             return !player.Data.IsDead ;

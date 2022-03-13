@@ -52,7 +52,7 @@ namespace Nebula
         public const string AmongUsVersion = "2022.2.24";
         public const string PluginGuid = "jp.dreamingpig.amongus.nebula";
         public const string PluginName = "TheNebula";
-        public const string PluginVersion = "1.5.1";
+        public const string PluginVersion = "1.6.0";
         /*
         public const string PluginVisualVersion = "22.02.14a";
         public const string PluginStage = "Snapshot";
@@ -61,8 +61,8 @@ namespace Nebula
         public const string PluginVisualVersion = PluginVersion;
         public const string PluginStage = "";
         // */
-        public const string PluginVersionForFetch = "1.5.1";
-        public byte[] PluginVersionData = new byte[] { 1, 5, 1, 0 };
+        public const string PluginVersionForFetch = "1.6.0";
+        public byte[] PluginVersionData = new byte[] { 1, 6, 0, 0 };
 
         public static NebulaPlugin Instance;
 
@@ -116,6 +116,20 @@ namespace Nebula
         }
     }
 
+    [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.Awake))]
+    public static class AmongUsClientAwakePatch
+    {
+        [HarmonyPrefix]
+        [HarmonyPriority(800)]
+        public static void Postfix(AmongUsClient __instance)
+        {
+            foreach(var map in Map.MapData.MapDatabase.Values)
+            {
+                map.LoadAssets(__instance);
+            }
+        }
+    }
+
     // Deactivate bans
     [HarmonyPatch(typeof(StatsManager), nameof(StatsManager.AmBanned), MethodType.Getter)]
     public static class AmBannedPatch
@@ -133,6 +147,14 @@ namespace Nebula
     {
         private static readonly System.Random random = new System.Random((int)DateTime.Now.Ticks);
         private static List<PlayerControl> bots = new List<PlayerControl>();
+
+
+        public static void SaveTexture(Texture2D texture , string fileName)
+        {
+            byte[] bytes = UnityEngine.ImageConversion.EncodeToPNG(Helpers.CreateReadabeTexture2D(texture));
+            //保存
+            File.WriteAllBytes(fileName + ".png", bytes);
+        }
 
         public static void Postfix(KeyboardJoystick __instance)
         {
@@ -191,9 +213,7 @@ namespace Nebula
             if (Input.GetKeyDown(KeyCode.F8))
             {
                 SpriteRenderer r = MapBehaviour.Instance.transform.FindChild("Background").GetComponent<SpriteRenderer>();
-                byte[] bytes = UnityEngine.ImageConversion.EncodeToPNG(Helpers.CreateReadabeTexture2D(r.sprite.texture));
-                //保存
-                File.WriteAllBytes("vent.png", bytes);
+                SaveTexture(r.sprite.texture,"debug");
             }
 
             // Suiside

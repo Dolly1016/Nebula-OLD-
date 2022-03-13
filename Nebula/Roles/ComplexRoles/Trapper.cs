@@ -15,6 +15,7 @@ namespace Nebula.Roles.ComplexRoles
     public class FTrapper : Template.HasBilateralness
     {
         public Module.CustomOption maxTrapsOption;
+        public Module.CustomOption placeCoolDownOption;
         public Module.CustomOption accelTrapSpeedOption;
         public Module.CustomOption decelTrapSpeedOption;
         public Module.CustomOption accelTrapDurationOption;
@@ -66,6 +67,8 @@ namespace Nebula.Roles.ComplexRoles
             base.LoadOptionData();
 
             maxTrapsOption = CreateOption(Color.white, "maxTraps", 5f, 1f, 15f, 1f);
+            placeCoolDownOption = CreateOption(Color.white, "placeCoolDown", 15f, 5f, 60f, 2.5f);
+            placeCoolDownOption.suffix = "second";
             accelTrapSpeedOption = CreateOption(Color.white, "accelSpeed", 1.5f, 1f, 2f, 0.125f);
             accelTrapSpeedOption.suffix = "cross";
             decelTrapSpeedOption = CreateOption(Color.white, "decelSpeed", 0.5f, 0.125f, 1f, 0.125f);
@@ -163,65 +166,63 @@ namespace Nebula.Roles.ComplexRoles
                 return true;
             });
 
-            HashSet<CustomObject> deleteObjects = new HashSet<CustomObject>();
-            foreach(CustomObject obj in CustomObject.Objects.Values)
+            if (CustomObject.Objects.Values.Count > 0)
             {
-                if (obj.PassedMeetings == 0) continue;
-                if (obj.OwnerId != PlayerControl.LocalPlayer.PlayerId) continue;
-
-                if (obj.ObjectType == Objects.ObjectTypes.InvisibleTrap.KillTrap)
+                foreach (CustomObject obj in new List<CustomObject>(CustomObject.Objects.Values))
                 {
-                    if (MeetingHud.Instance || ExileController.Instance) continue;
-                    if (PlayerControl.LocalPlayer.killTimer > 0f) continue;
+                    if (obj.PassedMeetings == 0) continue;
+                    if (obj.OwnerId != PlayerControl.LocalPlayer.PlayerId) continue;
 
-                    PlayerControl player = Patches.PlayerControlPatch.GetTarget(obj.GameObject.transform.position, Roles.F_Trapper.invisibleTrapRangeOption.getFloat() / 2, side == Side.Impostor);
-                    if (player != null)
+                    if (obj.ObjectType == Objects.ObjectTypes.InvisibleTrap.KillTrap)
                     {
-                        if (player.Data.IsDead) continue;
+                        if (MeetingHud.Instance || ExileController.Instance) continue;
+                        if (PlayerControl.LocalPlayer.killTimer > 0f) continue;
 
-                        Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, player, Game.PlayerData.PlayerStatus.Trapped, false, false);
-                        deleteObjects.Add(obj);
-
-                        PlayerControl.LocalPlayer.killTimer = PlayerControl.GameOptions.KillCooldown;
-                    }
-
-                }
-                else if (obj.ObjectType == Objects.ObjectTypes.InvisibleTrap.CommTrap)
-                {
-                    foreach (PlayerControl player in PlayerControl.AllPlayerControls)
-                    {
-                        if (player.Data.IsDead) continue;
-                        if (detectedPlayers.Contains(player.PlayerId)) continue;
-
-                        if (player.transform.position.Distance(obj.GameObject.transform.position) < Roles.F_Trapper.invisibleTrapRangeOption.getFloat() / 2)
+                        PlayerControl player = Patches.PlayerControlPatch.GetTarget(obj.GameObject.transform.position, Roles.F_Trapper.invisibleTrapRangeOption.getFloat() / 2, side == Side.Impostor);
+                        if (player != null)
                         {
-                            Arrow arrow = new Arrow(Palette.PlayerColors[player.CurrentOutfit.ColorId]);
-                            arrow.arrow.SetActive(true);
-                            arrow.Update(obj.GameObject.transform.position);
-                            detectedPlayers.Add(player.PlayerId);
+                            if (player.Data.IsDead) continue;
 
-                            byte id = player.PlayerId;
-                            Vector3 pos = obj.GameObject.transform.position;
-                            HudManager.Instance.StartCoroutine(Effects.Lerp(5f, new Action<float>((p) =>
+                            Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, player, Game.PlayerData.PlayerStatus.Trapped, false, false);
+                            RPCEventInvoker.ObjectDestroy(obj);
+
+                            PlayerControl.LocalPlayer.killTimer = PlayerControl.GameOptions.KillCooldown;
+                        }
+
+                    }
+                    else if (obj.ObjectType == Objects.ObjectTypes.InvisibleTrap.CommTrap)
+                    {
+                        foreach (PlayerControl player in PlayerControl.AllPlayerControls)
+                        {
+                            if (player.Data.IsDead) continue;
+                            if (detectedPlayers.Contains(player.PlayerId)) continue;
+
+                            if (player.transform.position.Distance(obj.GameObject.transform.position) < Roles.F_Trapper.invisibleTrapRangeOption.getFloat() / 2)
                             {
-                                arrow.Update(pos);
-                                if (p > 0.8f)
+                                Arrow arrow = new Arrow(Palette.PlayerColors[player.CurrentOutfit.ColorId]);
+                                arrow.arrow.SetActive(true);
+                                arrow.Update(obj.GameObject.transform.position);
+                                detectedPlayers.Add(player.PlayerId);
+
+                                byte id = player.PlayerId;
+                                Vector3 pos = obj.GameObject.transform.position;
+                                HudManager.Instance.StartCoroutine(Effects.Lerp(5f, new Action<float>((p) =>
                                 {
-                                    arrow.image.color = new Color(arrow.image.color.r, arrow.image.color.g, arrow.image.color.b, (1f - p) * 5f);
-                                }
-                                if (p == 1f)
-                                {
+                                    arrow.Update(pos);
+                                    if (p > 0.8f)
+                                    {
+                                        arrow.image.color = new Color(arrow.image.color.r, arrow.image.color.g, arrow.image.color.b, (1f - p) * 5f);
+                                    }
+                                    if (p == 1f)
+                                    {
                                     //矢印を消す
                                     UnityEngine.Object.Destroy(arrow.arrow);
-                                }
-                            })));
+                                    }
+                                })));
+                            }
                         }
                     }
                 }
-            }
-            foreach(CustomObject obj in deleteObjects)
-            {
-                obj.Destroy();
             }
 
 
@@ -287,7 +288,7 @@ namespace Nebula.Roles.ComplexRoles
                     if (Roles.F_Trapper.rootTimeOption.getFloat() > 0f)
                         RPCEventInvoker.EmitSpeedFactor(PlayerControl.LocalPlayer, new Game.SpeedFactor(2, Roles.F_Trapper.rootTimeOption.getFloat(), 0f, false));
                     
-                    trapButton.Timer = trapButton.MaxTimer;                   
+                    trapButton.Timer = Roles.F_Trapper.rootTimeOption.getFloat();                   
                 },
                 () => {
                     int total = (int)Roles.F_Trapper.maxTrapsOption.getFloat();
@@ -323,9 +324,13 @@ namespace Nebula.Roles.ComplexRoles
                 FTrapper.getAccelButtonSprite(),
                 new Vector3(-1.8f, -0.06f, 0),
                 __instance,
-                KeyCode.F
+                KeyCode.F,
+                true,
+                Roles.F_Trapper.rootTimeOption.getFloat(),
+                () => { trapButton.Timer = trapButton.MaxTimer; }
             );
-            trapButton.MaxTimer = 20;
+            trapButton.MaxTimer = Roles.F_Trapper.placeCoolDownOption.getFloat();
+            trapButton.EffectDuration = Roles.F_Trapper.rootTimeOption.getFloat();
 
             trapButtonString = GameObject.Instantiate(trapButton.actionButton.cooldownTimerText, trapButton.actionButton.cooldownTimerText.transform.parent);
             trapButtonString.text = "";

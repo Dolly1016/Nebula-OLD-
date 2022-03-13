@@ -14,6 +14,7 @@ namespace Nebula.Roles
         public string LocalizeName { get; private set; }
         public Color Color { get; private set; }
 
+        public Module.CustomOption TopOption { get; private set; }
         public Module.CustomOption RoleChanceOption { get; private set; }
         public Module.CustomOption RoleCountOption { get; private set; }
 
@@ -26,6 +27,10 @@ namespace Nebula.Roles
         /// 配役人数を標準設定に準じさせたくない場合はtrueにしてください。
         /// </summary>
         public bool FixedRoleCount { get; protected set; }
+        /// <summary>
+        /// 割り当て確率を設定しない場合はtrueにしてください。
+        /// </summary>
+        public bool ExceptBasicOption { get; protected set; }
 
         private int OptionId { get; set; }
 
@@ -41,14 +46,23 @@ namespace Nebula.Roles
 
         public virtual void SetupRoleOptionData()
         {
-            RoleChanceOption = Module.CustomOption.Create(OptionAvailableId, Color, "role." + LocalizeName + ".name", CustomOptionHolder.rates, CustomOptionHolder.rates[0], null, true);
-            RoleChanceOption.GameMode = ValidGamemode;
+            if (ExceptBasicOption)
+            {
+                TopOption = Module.CustomOption.Create(OptionAvailableId, Color, "role." + LocalizeName + ".name", new string[] { "option.empty" }, "option.empty", null, true);
+            }
+            else
+            {
+                RoleChanceOption = Module.CustomOption.Create(OptionAvailableId, Color, "role." + LocalizeName + ".name", CustomOptionHolder.rates, CustomOptionHolder.rates[0], null, true);
+                TopOption = RoleChanceOption;
+            }
+            TopOption.GameMode = ValidGamemode;
+
             OptionId = OptionAvailableId + 1;
             OptionAvailableId += OptionCapacity;
 
-            if (!FixedRoleCount)
+            if (!FixedRoleCount && !ExceptBasicOption)
             {
-                RoleCountOption = Module.CustomOption.Create(OptionId, Color.white, "option.roleCount", 0f, 0f, 15f, 1f, RoleChanceOption, false);
+                RoleCountOption = Module.CustomOption.Create(OptionId, Color.white, "option.roleCount", 0f, 0f, 15f, 1f, TopOption, false);
                 RoleCountOption.GameMode = ValidGamemode;
                 OptionId++;
             }
@@ -69,7 +83,7 @@ namespace Nebula.Roles
             {
                 return null;
             }
-            Module.CustomOption option = new Module.CustomOption(OptionId, color, (isGeneral ? "" : "role." + this.LocalizeName + ".") + name, selections, defaultValue, RoleChanceOption, false, false, "");
+            Module.CustomOption option = new Module.CustomOption(OptionId, color, (isGeneral ? "" : "role." + this.LocalizeName + ".") + name, selections, defaultValue, TopOption, false, false, "");
             option.GameMode = ValidGamemode;
             
             OptionId++;
@@ -378,7 +392,7 @@ namespace Nebula.Roles
         /// <param name="condition"></param>
         /// <returns></returns>
         [RoleGlobalMethod]
-        public virtual bool CheckWin(PlayerControl player, Patches.EndCondition condition) { return false; }
+        public virtual bool CheckAdditionalWin(PlayerControl player, Patches.EndCondition condition) { return false; }
 
         /// <summary>
         /// どのゲームでも必ず最初に呼び出されます。
@@ -420,6 +434,34 @@ namespace Nebula.Roles
         //ComplexRoleの子ロールなど、オプション画面で隠したいロールはtrueにしてください。
         public bool IsHideRole { get; protected set; }
 
+        protected bool CreateOptionFollowingRelatedRole { get; set; }
+
+        private bool CreateOptionFlag { get; set; }
+
+        public void CreateRoleOption()
+        {
+            if (CreateOptionFlag) return;
+
+            if (!IsHideRole)
+            {
+                SetupRoleOptionData();
+            }
+            LoadOptionData();
+
+            CreateOptionFlag = true;
+
+            foreach (var assignable in GetFollowRoles())
+            {
+                assignable.CreateRoleOption();
+            }
+        }
+
+        /// <summary>
+        /// 関連したロールを返します。
+        /// </summary>
+        /// <returns></returns>
+        public virtual IEnumerable<Assignable> GetFollowRoles() { yield break; }
+
         protected Assignable(string name, string localizeName, Color color)
         {
 
@@ -431,6 +473,10 @@ namespace Nebula.Roles
             this.OptionId = -1;
 
             this.IsHideRole = false;
+            this.ExceptBasicOption = false;
+            this.CreateOptionFollowingRelatedRole = false;
+            this.CreateOptionFlag = false;
+
 
             this.ValidGamemode = Module.CustomGameMode.Standard;
 

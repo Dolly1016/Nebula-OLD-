@@ -1,5 +1,5 @@
 ﻿{
-    "Version": "3",
+    "Version": "4",
     "English": 
 "Hi Crewmates!
 
@@ -9,12 +9,9 @@ and you can join the our Discord with the link on our GitHub.
 Submitted works will be checked and added in the this mod.
 You're exactly a nebula consists of ideas!
 
-Main Features in NoS v1.5.1
- -New option \"%OPTION(option.canBeLovers),(Can Be Lovers)%\", \"%OPTION(option.canBeGuesser),(Can Be Guesser)%\", \"%OPTION(option.canBeDrunk),(Can Be Drunk)%\".,
- -%ROLE:GUESSER%(Secondary) can now adjust the count of players for each sides.
- -%ROLE:OPPORTUNIST% and %ROLE:LOVER% can now win with any end of game.
- -%ROLE:TRAPPER%'s new option \"%OPTION(role.trapper.rootTime),(Trapper Root Time)%\".
- -In %OPTION(gamemode.freePlay),(Free Play)%, you can now change roles and suicide or revive.",
+Main Features in NoS v1.6.0
+ -New role %ROLE:AVENGER(Avenger)% is added.
+ -We can now use Multiple Spawn Point in Polus."
     "Japanese": 
 "◎More Cosmic! カスタムコス募集のお知らせ
   NebulaのDiscordにて、カスタムハットおよびカスタムネームプレートを募集しています。
@@ -23,11 +20,8 @@ Main Features in NoS v1.5.1
   詳しくはNebula on the Ship のDiscordから(GitHubにリンクがあります)。
   それでは、今日も良い船旅を！
 
-◆アップデート情報 v1.5.1
-  -追加役職に関する新オプション「%OPTION(option.canBeLovers),(Can Be Lovers)%」, 「%OPTION(option.canBeGuesser),(Can Be Guesser)%」, 「%OPTION(option.canBeDrunk),(Can Be Drunk)%」が追加されました。
-  -追加役職としての%ROLE:GUESSER%の配役人数を陣営ごとに設定できるようになりました。
-  -%ROLE:OPPORTUNIST%と%ROLE:LOVER%が第三陣営の単独勝利に潜り込んで追加勝利できるようになりました。
-  -%ROLE:TRAPPER%に新たなオプション「%OPTION(role.trapper.rootTime),(Trapper Root Time)%」が追加されました。
-  -%OPTION(gamemode.freePlay),(Free Play)%でゲーム中に役職を変更できるようになり、復活や自殺も可能になりました。
-  -その他、%ROLE:MORPHING%や%ROLE:DOCTOR%に関するそれぞれの問題の修正があります。"
+◆アップデート情報 v1.6.0
+  -新たな役職 %ROLE:AVENGER(Avenger)% を追加しました。
+  -Polusで、複数のスポーン位置を使用可能になりました。
+  -%ROLE:CREWMATE%に新たなオプション「%OPTION(role.crewmate.isGuessable),(Is Guessable)%」が追加されました。
 }

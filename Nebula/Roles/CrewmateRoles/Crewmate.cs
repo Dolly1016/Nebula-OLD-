@@ -1,13 +1,5 @@
-﻿using System;
+﻿using Nebula.Patches;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
-using HarmonyLib;
-using Hazel;
-using Nebula.Objects;
-using Nebula.Patches;
 
 namespace Nebula.Roles.CrewmateRoles
 {
@@ -42,6 +34,12 @@ namespace Nebula.Roles.CrewmateRoles
             }
         }
 
+        public override bool IsGuessableRole { get => Roles.F_Crewmate.isGuessableOption.getBool(); protected set => base.IsGuessableRole = value; }
+
+        public override List<Role> GetImplicateRoles()
+        {
+            return new List<Role>() { Roles.DamnedCrew };
+        }
 
         public Crewmate()
                 : base("Crewmate", "crewmate", Palette.CrewmateBlue, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,

@@ -55,7 +55,7 @@ namespace Nebula.Roles.NeutralRoles
             VentCoolDownMaxTimer = ventCoolDownOption.getFloat();
             VentDurationMaxTimer = ventDurationOption.getFloat();
         }
-        public override bool CheckWin(PlayerControl player, EndCondition condition)
+        public override bool CheckAdditionalWin(PlayerControl player, EndCondition condition)
         {
             if (player.Data.IsDead) return false;
             if (condition == EndCondition.ArsonistWin && !canWinWithArsonistOption.getBool()) return false;

@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using UnhollowerBaseLib.Attributes;
 
 namespace Nebula.Map
 {
@@ -24,6 +27,8 @@ namespace Nebula.Map
     public class MapData
     {
         //Skeld=0,MIRA=1,Polus=2,AirShip=4
+
+        public ShipStatus Assets;
         public int MapId { get; }
 
         public static Dictionary<int, MapData> MapDatabase = new Dictionary<int, MapData>();
@@ -46,6 +51,9 @@ namespace Nebula.Map
 
         //マップの端から端までの距離
         public float MapScale;
+
+        //スポーン位置候補
+        public List<SpawnCandidate> SpawnCandidates;
 
         
 
@@ -89,10 +97,20 @@ namespace Nebula.Map
             RoomsRelation = new Dictionary<SystemTypes, HashSet<SystemTypes>>();
             DoorRooms = new HashSet<SystemTypes>();
 
+            SpawnCandidates = new List<SpawnCandidate>();
+
             DoorHackingCanBlockSabotage = false;
 
             MapScale = 1f;
             DoorHackingDuration = 10f;
+        }
+
+        public void LoadAssets(AmongUsClient __instance)
+        {
+            AssetReference assetReference = __instance.ShipPrefabs.ToArray()[MapId];
+            AsyncOperationHandle<GameObject> asset = assetReference.LoadAsset<GameObject>();
+            asset.WaitForCompletion();
+            Assets = asset.Result.GetComponent<ShipStatus>();
         }
 
         public byte GetRandomCommonTaskId() { return CommonTaskIdList[NebulaPlugin.rnd.Next(CommonTaskIdList.Count)]; }

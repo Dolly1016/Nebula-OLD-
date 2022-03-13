@@ -19,6 +19,28 @@ namespace Nebula.Roles.NeutralRoles
     {
         static private CustomButton killButton;
 
+        static public Module.CustomOption SidekickCanKillOption;
+        static public Module.CustomOption SidekickTakeOverOriginalRoleOption;
+        static public Module.CustomOption SidekickKillCoolDownOption;
+        static public Module.CustomOption SidekickCanCreateSidekickOption;
+        static public Module.CustomOption SidekickCanUseVentsOption;
+
+        public override void LoadOptionData()
+        {
+            TopOption.AddPrerequisite(Jackal.CanCreateSidekickOption);
+
+            SidekickCanKillOption = CreateOption(Color.white, "canKill", false);
+            SidekickKillCoolDownOption = CreateOption(Color.white, "killCoolDown", 20f, 10f, 60f, 2.5f);
+            SidekickKillCoolDownOption.suffix = "second";
+            SidekickTakeOverOriginalRoleOption = CreateOption(Color.white, "takeOverOriginalRole", true);
+            SidekickCanCreateSidekickOption = CreateOption(Color.white, "canCreateSidekick", false);
+            SidekickCanUseVentsOption = CreateOption(Color.white, "canUseVents", false);
+
+            SidekickCanKillOption.AddPrerequisite(SidekickTakeOverOriginalRoleOption);
+            SidekickKillCoolDownOption.AddPrerequisite(SidekickCanKillOption);
+            SidekickCanUseVentsOption.AddPrerequisite(SidekickTakeOverOriginalRoleOption);
+        }
+
         public override void MyPlayerControlUpdate()
         {
             if (killButton != null)
@@ -47,7 +69,7 @@ namespace Nebula.Roles.NeutralRoles
             }
             killButton = null;
 
-            if (NeutralRoles.Jackal.SidekickCanKillOption.getBool())
+            if (SidekickCanKillOption.getBool())
             {
                 killButton = new CustomButton(
                     () =>
@@ -65,7 +87,7 @@ namespace Nebula.Roles.NeutralRoles
                     __instance,
                     KeyCode.Q
                 );
-                killButton.MaxTimer = Jackal.SidekickKillCoolDownOption.getFloat();
+                killButton.MaxTimer = SidekickKillCoolDownOption.getFloat();
             }
         }
 
@@ -97,8 +119,8 @@ namespace Nebula.Roles.NeutralRoles
 
         public override void GlobalInitialize(PlayerControl __instance)
         {
-            CanMoveInVents = Jackal.SidekickCanUseVentsOption.getBool();
-            VentPermission = Jackal.SidekickCanUseVentsOption.getBool() ? VentPermission.CanUseUnlimittedVent : VentPermission.CanNotUse;
+            CanMoveInVents = SidekickCanUseVentsOption.getBool();
+            VentPermission = SidekickCanUseVentsOption.getBool() ? VentPermission.CanUseUnlimittedVent : VentPermission.CanNotUse;
         }
 
         public override void EditDisplayNameColor(byte playerId, ref Color displayColor)
@@ -116,7 +138,7 @@ namespace Nebula.Roles.NeutralRoles
         {
             if (!Roles.Jackal.IsSpawnable()) return false;
             if (!Jackal.CanCreateSidekickOption.getBool()) return false;
-            if (!Jackal.SidekickTakeOverOriginalRoleOption.getBool()) return false;
+            if (!SidekickTakeOverOriginalRoleOption.getBool()) return false;
 
             return true;
         }
@@ -128,7 +150,9 @@ namespace Nebula.Roles.NeutralRoles
                  false, VentPermission.CanNotUse, true, true, true)
         {
             killButton = null;
-            IsHideRole = true;
+
+            ExceptBasicOption = true;
+            CreateOptionFollowingRelatedRole = true;
         }
     }
 
@@ -145,7 +169,7 @@ namespace Nebula.Roles.NeutralRoles
             }
         }
 
-        public override bool CheckWin(PlayerControl player, Patches.EndCondition condition)
+        public override bool CheckAdditionalWin(PlayerControl player, Patches.EndCondition condition)
         {
             return condition == Patches.EndCondition.JackalWin;
         }

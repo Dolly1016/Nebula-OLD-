@@ -10,6 +10,7 @@ using Nebula.Patches;
 namespace Nebula.Roles
 {
     public delegate EndCondition EndCriteriaChecker(Patches.PlayerStatistics statistics, ShipStatus status);
+    public delegate EndCondition EndTakeoverChecker(EndCondition endCondition,Patches.PlayerStatistics statistics, ShipStatus status);
 
     public enum RoleCategory
     {
@@ -53,11 +54,11 @@ namespace Nebula.Roles
         public HashSet<Role> RelatedRoles { get; set; }
 
         protected HashSet<Patches.EndCondition> winReasons { get; }
-        public virtual bool CheckWin(Patches.EndCondition winReason)
+        public virtual bool CheckWin(PlayerControl player, Patches.EndCondition winReason)
         {
             //単独勝利ロール
             if (winReason.TriggerRole != null)
-                return winReason.TriggerRole.Winner == PlayerControl.LocalPlayer.PlayerId;
+                return winReason.TriggerRole.Winner == player.PlayerId;
             
             return winReasons.Contains(winReason);
         }
@@ -86,7 +87,7 @@ namespace Nebula.Roles
         //FakeTaskは実行可能かどうか
         public bool FakeTaskIsExecutable { get; protected set; }
         public bool DeceiveImpostorInNameDisplay { get; set; }
-        public bool IsGuessableRole { get; protected set; }
+        public virtual bool IsGuessableRole { get; protected set; }
 
         public bool CanCallEmergencyMeeting { get; protected set; }
 
@@ -163,6 +164,8 @@ namespace Nebula.Roles
         sealed public override void SetupRoleOptionData()
         {
             base.SetupRoleOptionData();
+
+            if (ExceptBasicOption) return;
 
             CanBeLoversOption = CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeLovers", DefaultCanBeLovers, true).HiddenOnDisplay(true);
             CanBeLoversOption.AddPrerequisite(CustomOptionHolder.advanceRoleOptions);
@@ -318,11 +321,8 @@ namespace Nebula.Roles
         {
             foreach (Role role in Roles.AllRoles)
             {
-                if (!role.IsHideRole)
-                {
-                    role.SetupRoleOptionData();
-                }
-                role.LoadOptionData();
+                if(!role.CreateOptionFollowingRelatedRole)
+                    role.CreateRoleOption();
             }
         }
     }

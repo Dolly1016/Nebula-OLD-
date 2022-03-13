@@ -57,11 +57,8 @@ namespace Nebula.Roles
         {
             foreach (ExtraRole role in Roles.AllExtraRoles)
             {
-                if (!role.IsHideRole)
-                {
-                    role.SetupRoleOptionData();
-                    role.LoadOptionData();
-                }
+                if (!role.CreateOptionFollowingRelatedRole)
+                    role.CreateRoleOption();
             }
         }
 

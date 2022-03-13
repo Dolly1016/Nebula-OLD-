@@ -56,32 +56,43 @@ namespace Nebula.Game
             this.Data = playerData;
             this.MurderId = murderId;
             this.existDeadBody = true;
-            this.deathLocation = Helpers.allPlayersById()[playerData.id].transform.position;
             this.Elapsed = 0f;
-
-            List<SystemTypes> candidate = new List<SystemTypes>();
-            float dis = Roles.Roles.Necromancer.maxReviveRoomDistanceOption.getFloat(),nearestDis=100f;
-            SystemTypes? nearest = null;
-            foreach (var room in Game.GameData.data.Rooms)
+            if (Helpers.allPlayersById().ContainsKey(playerData.id))
             {
-                float d = ShipStatus.Instance.FastRooms[room].roomArea.Distance(Helpers.allPlayersById()[playerData.id].Collider).distance;
-                if (d > 0.2f)
+                this.deathLocation = Helpers.allPlayersById()[playerData.id].transform.position;
+
+                List<SystemTypes> candidate = new List<SystemTypes>();
+                float dis = Roles.Roles.Necromancer.maxReviveRoomDistanceOption.getFloat(), nearestDis = 100f;
+                SystemTypes? nearest = null;
+                foreach (var room in Game.GameData.data.Rooms)
                 {
-                    if (dis > d)
+                    float d = ShipStatus.Instance.FastRooms[room].roomArea.Distance(Helpers.allPlayersById()[playerData.id].Collider).distance;
+                    if (d > 0.2f)
                     {
-                        candidate.Add(room);
-                    }
-                    if (nearest == null || nearestDis > d)
-                    {
-                        nearestDis = d;
-                        nearest = room;
+                        if (dis > d)
+                        {
+                            candidate.Add(room);
+                        }
+                        if (nearest == null || nearestDis > d)
+                        {
+                            nearestDis = d;
+                            nearest = room;
+                        }
                     }
                 }
+                if (candidate.Count > 0)
+                    this.RespawnRoom = candidate[NebulaPlugin.rnd.Next(candidate.Count)];
+                else
+                    this.RespawnRoom = nearest.Value;
             }
-            if (candidate.Count > 0)
-                this.RespawnRoom = candidate[NebulaPlugin.rnd.Next(candidate.Count)];
             else
-                this.RespawnRoom = nearest.Value;
+            {
+                this.deathLocation = new Vector3(0, 0);
+                this.RespawnRoom = ShipStatus.Instance.AllRooms[0].RoomId;
+            }
+
+
+            
         }
 
         public void EraseBody()
@@ -298,11 +309,11 @@ namespace Nebula.Game
             static Dictionary<byte, PlayerStatus> StatusMap = new System.Collections.Generic.Dictionary<byte, PlayerStatus>();
 
             public static PlayerStatus Alive = new PlayerStatus("alive");
+            public static PlayerStatus Revived = new PlayerStatus("revived");
             public static PlayerStatus Dead = new PlayerStatus("dead");
             public static PlayerStatus Exiled = new PlayerStatus("exiled");
             public static PlayerStatus Disconnected = new PlayerStatus("disconnected");
             public static PlayerStatus Suicide = new PlayerStatus("suicide");
-            public static PlayerStatus Revived = new PlayerStatus("revived");
             public static PlayerStatus Burned=new PlayerStatus("burned");
             public static PlayerStatus Embroiled = new PlayerStatus("embroiled");
             public static PlayerStatus Guessed = new PlayerStatus("guessed");
@@ -526,8 +537,8 @@ namespace Nebula.Game
                 Helpers.allPlayersById()[id].clearAllTasks();
             }
             */
-
-            Game.GameData.data.deadPlayers.Add(id, new DeadPlayerData(this, murderId));
+            
+            Game.GameData.data.deadPlayers[id] = new DeadPlayerData(this, murderId);
             Status = status;
         }
 
@@ -593,6 +604,32 @@ namespace Nebula.Game
         }
     }
 
+    public class UtilityTimer
+    {
+        public float AdminTimer { get; set; }
+        public float VitalsTimer { get; set; }
+        public float CameraTimer { get; set; }
+
+        public UtilityTimer()
+        {
+            AdminTimer = CustomOptionHolder.AdminLimitOption.getFloat();
+            VitalsTimer = CustomOptionHolder.VitalsLimitOption.getFloat();
+            CameraTimer = CustomOptionHolder.CameraAndDoorLogLimitOption.getFloat();
+        }
+
+        /// <summary>
+        /// ミーティング終了時のリセット
+        /// </summary>
+        public void OnMeetingEnd()
+        {
+            if (CustomOptionHolder.DevicesOption.getSelection() != 1) return;
+
+            AdminTimer = CustomOptionHolder.AdminLimitOption.getFloat();
+            VitalsTimer = CustomOptionHolder.VitalsLimitOption.getFloat();
+            CameraTimer = CustomOptionHolder.CameraAndDoorLogLimitOption.getFloat();
+        }
+    }
+
     public class GameData
     {
         public static GameData data = null;
@@ -625,6 +662,8 @@ namespace Nebula.Game
 
         public Roles.RoleAI.EstimationAI EstimationAI;
 
+        public UtilityTimer UtilityTimer;
+
         public GameData()
         {
             players = new Dictionary<byte, PlayerData>();
@@ -646,6 +685,8 @@ namespace Nebula.Game
             CountDownMessage = null;
 
             EstimationAI = new Roles.RoleAI.EstimationAI();
+
+            UtilityTimer = new UtilityTimer();
 
             Timer = 300f;
         }

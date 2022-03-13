@@ -229,7 +229,8 @@ namespace Nebula.Patches
                     if (Game.GameData.data.myData.CanSeeEveryoneInfo || p.GetModData().RoleInfo == "")
                         roleNames = Helpers.cs(p.GetModData().role.Color, Language.Language.GetString("role." + p.GetModData().role.LocalizeName + ".name"));
                     else
-                        roleNames = p.GetModData().RoleInfo;
+                        //カモフラージュ中は表示しない
+                        roleNames = p.GetModData().currentName.Length == 0 ? "" : p.GetModData().RoleInfo;
 
                     var completedStr = commsActive ? "?" : tasksCompleted.ToString();
                     string taskInfo = "";

@@ -25,6 +25,7 @@ namespace Nebula.Roles.NeutralRoles
         {
             eatOption = CreateOption(Color.white, "eatenCountNeeded", 3f, 1f, 5f, 1f);
             eatCoolDownOption = CreateOption(Color.white, "eatCoolDown", 10f, 5f, 40f, 2.5f);
+            eatCoolDownOption.suffix = "second";
             ventCoolDownOption = CreateOption(Color.white, "ventCoolDown", 20f, 5f, 60f, 2.5f);
             ventCoolDownOption.suffix = "second";
             ventDurationOption = CreateOption(Color.white, "ventDuration", 10f, 5f, 60f, 2.5f);

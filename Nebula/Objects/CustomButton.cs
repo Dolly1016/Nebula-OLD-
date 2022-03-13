@@ -79,6 +79,12 @@ namespace Nebula.Objects
             this.showButtonText = (actionButton.graphic.sprite == Sprite || buttonText != "");
         }
 
+        public CustomButton SetTimer(float timer)
+        {
+            this.Timer = timer;
+            return this;
+        }
+
         public void onClickEvent()
         {
             if (this.Timer < 0f && HasButton() && CouldUse())

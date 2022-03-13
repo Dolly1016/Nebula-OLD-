@@ -93,6 +93,7 @@ namespace Nebula
         public static CustomOption exceptPolus;
         public static CustomOption exceptAirship;
         public static CustomOption additionalVents;
+        public static CustomOption multipleSpawnPoints;
 
         public static CustomOption emergencyOptions;
         public static CustomOption maxNumberOfMeetings;
@@ -105,6 +106,11 @@ namespace Nebula
         public static CustomOption limiterOptions;
         public static CustomOption timeLimitOption;
         public static CustomOption timeLimitSecondOption;
+
+        public static CustomOption DevicesOption;
+        public static CustomOption AdminLimitOption;
+        public static CustomOption VitalsLimitOption;
+        public static CustomOption CameraAndDoorLogLimitOption;
 
         public static CustomOption advanceRoleOptions;
 
@@ -135,8 +141,8 @@ namespace Nebula
 
         public static void Load()
         {
-            presetSelection = CustomOption.Create(0, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.preset", presets, presets[0], null, true).HiddenOnDisplay(true).SetGameMode(CustomGameMode.All);
-            gameMode = CustomOption.Create(1, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.gameMode", gamemodes, gamemodes[0], null, true).SetGameMode(CustomGameMode.All);
+            presetSelection = CustomOption.Create(1, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.preset", presets, presets[0], null, true).HiddenOnDisplay(true).SetGameMode(CustomGameMode.All);
+            gameMode = CustomOption.Create(2, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.gameMode", gamemodes, gamemodes[0], null, true).SetGameMode(CustomGameMode.All);
 
             crewmateRolesCountMin = CustomOption.Create(10001, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.minimumCrewmateRoles", 0f, 0f, 15f, 1f, null, true).HiddenOnDisplay(true);
             crewmateRolesCountMax = CustomOption.Create(10002, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.maximumCrewmateRoles", 0f, 0f, 15f, 1f, null, false).HiddenOnDisplay(true);
@@ -162,6 +168,7 @@ namespace Nebula
             exceptPolus = CustomOption.Create(10124, Color.white, "option.exceptPolus", false, dynamicMap).SetGameMode(~CustomGameMode.Minigame);
             exceptAirship = CustomOption.Create(10125, Color.white, "option.exceptAirship", false, dynamicMap).SetGameMode(~CustomGameMode.Minigame);
             additionalVents = CustomOption.Create(10130, Color.white, "option.additionalVents", false, mapOptions).SetGameMode(~CustomGameMode.Minigame);
+            multipleSpawnPoints = CustomOption.Create(10131, Color.white, "option.multipleSpawnPoints", false, mapOptions).SetGameMode(~CustomGameMode.Minigame);
 
             limiterOptions = CustomOption.Create(10140, Color.white, "option.limitOptions", false, null, true).SetGameMode(CustomGameMode.All);
             timeLimitOption = CustomOption.Create(10141, Color.white, "option.timeLimitOption", 20f, 1f, 80f, 1f, limiterOptions).SetGameMode(CustomGameMode.All);
@@ -169,7 +176,15 @@ namespace Nebula
             timeLimitOption.suffix = "minute";
             timeLimitSecondOption.suffix = "second";
 
-            advanceRoleOptions = CustomOption.Create(10150, Color.white, "option.advanceRoleOptions", false, null, true).SetGameMode(CustomGameMode.Standard);
+            DevicesOption = CustomOption.Create(10150, Color.white, "option.devicesOption", new string[] {"option.switch.off" , "option.devicesOption.perDiscussion" , "option.devicesOption.perGame"}, "option.switch.off",null,true).SetGameMode(CustomGameMode.All);
+            AdminLimitOption = CustomOption.Create(10151, Color.white, "option.devicesOption.Admin", 30f, 5f, 600f, 5f, DevicesOption).SetGameMode(CustomGameMode.All);
+            AdminLimitOption.suffix = "second";
+            VitalsLimitOption = CustomOption.Create(10152, Color.white, "option.devicesOption.Vitals", 30f, 5f, 600f, 5f, DevicesOption).SetGameMode(CustomGameMode.All);
+            VitalsLimitOption.suffix = "second";
+            CameraAndDoorLogLimitOption = CustomOption.Create(10153, Color.white, "option.devicesOption.CameraAndDoorLog", 30f, 5f, 600f, 5f, DevicesOption).SetGameMode(CustomGameMode.All);
+            CameraAndDoorLogLimitOption.suffix = "second";
+
+            advanceRoleOptions = CustomOption.Create(10160, Color.white, "option.advanceRoleOptions", false, null, true).SetGameMode(CustomGameMode.Standard);
 
             //ロールのオプションを読み込む
             Roles.Role.LoadAllOptionData();

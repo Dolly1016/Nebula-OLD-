@@ -17,13 +17,8 @@ namespace Nebula.Roles.NeutralRoles
         static private CustomButton killButton;
         static private CustomButton sidekickButton;
 
-        static public Module.CustomOption SidekickCanKillOption;
-        static public Module.CustomOption SidekickTakeOverOriginalRoleOption;
-        static public Module.CustomOption SidekickKillCoolDownOption;
-        static public Module.CustomOption KillCoolDownOption;
-        static public Module.CustomOption SidekickCanCreateSidekickOption;
         static public Module.CustomOption CanCreateSidekickOption;
-        static public Module.CustomOption SidekickCanUseVentsOption;
+        static public Module.CustomOption KillCoolDownOption;
 
         private Sprite sidekickButtonSprite = null;
         public Sprite getSidekickButtonSprite()
@@ -41,18 +36,11 @@ namespace Nebula.Roles.NeutralRoles
             CanCreateSidekickOption = CreateOption(Color.white, "canCreateSidekick", true);
             KillCoolDownOption = CreateOption(Color.white, "killCoolDown", 20f, 10f, 60f, 2.5f);
             KillCoolDownOption.suffix = "second";
-            SidekickCanKillOption = CreateOption(Color.white, "sidekickCanKill", false);
-            SidekickKillCoolDownOption = CreateOption(Color.white, "sidekickKillCoolDown", 20f, 10f, 60f, 2.5f);
-            SidekickKillCoolDownOption.suffix = "second";
-            SidekickTakeOverOriginalRoleOption = CreateOption(Color.white, "sidekickTakeOverOriginalRole", true);
-            SidekickCanCreateSidekickOption = CreateOption(Color.white, "sidekickCanCreateSidekick", false);
-            SidekickCanUseVentsOption = CreateOption(Color.white, "sidekickCanUseVents", false);
+        }
 
-            SidekickTakeOverOriginalRoleOption.AddPrerequisite(CanCreateSidekickOption);
-            SidekickCanKillOption.AddPrerequisite(SidekickTakeOverOriginalRoleOption);
-            SidekickKillCoolDownOption.AddPrerequisite(SidekickCanKillOption);
-            SidekickCanCreateSidekickOption.AddPrerequisite(CanCreateSidekickOption);
-            SidekickCanUseVentsOption.AddPrerequisite(SidekickTakeOverOriginalRoleOption);
+        public override IEnumerable<Assignable> GetFollowRoles()
+        {
+            yield return Roles.Sidekick;
         }
 
         public override void MyPlayerControlUpdate()
@@ -105,7 +93,7 @@ namespace Nebula.Roles.NeutralRoles
                 new Vector3(0f, 1f, 0),
                 __instance,
                 KeyCode.Q
-            );
+            ).SetTimer(10f);
             killButton.MaxTimer = KillCoolDownOption.getFloat();
 
             if (sidekickButton != null)
@@ -162,7 +150,7 @@ namespace Nebula.Roles.NeutralRoles
 
             foreach (Game.PlayerData player in Game.GameData.data.players.Values)
             {
-                if (SidekickTakeOverOriginalRoleOption.getBool())
+                if (Sidekick.SidekickTakeOverOriginalRoleOption.getBool())
                 {
                     //Jackalに変化できるプレイヤーを抽出
 
@@ -181,7 +169,7 @@ namespace Nebula.Roles.NeutralRoles
 
                 RPCEvents.ImmediatelyChangeRole(player.id, id);
                 RPCEvents.UpdateRoleData(player.id, jackalDataId, jackalId);
-                RPCEvents.UpdateRoleData(player.id, leftSidekickDataId, SidekickCanCreateSidekickOption.getBool() ? 1 : 0);
+                RPCEvents.UpdateRoleData(player.id, leftSidekickDataId, Sidekick.SidekickCanCreateSidekickOption.getBool() ? 1 : 0);
             }
         }
 
