@@ -26,6 +26,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.5.1.2 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.5.1.2,2022.2.24/Nebula_v1.5.1.2.zip)|
 | 1.5.1.1 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.5.1.1,2022.2.24/Nebula_v1.5.1.1.zip)|
 | 1.5.1 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.5.1,2022.2.24/Nebula_v1.5.1.zip)|
 | 1.5.0.1 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.5.0.1,2022.2.24/Nebula_v1.5.0.1.zip)|
@@ -120,14 +121,18 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 | Language | Translator | Full Support Version | Download |
 | --- | --- | --- | --- |
 | 日本語 | - | 1.4.6 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.6,2022.2.24/Japanese.dat)|
-| 日本語 | Rey | 1.4.5.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.4.5.1%2CRey/Japanese.dat)|
-| 日本語 | kihi | 1.4.5.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.4.5.1%2Ckihi/Japanese.dat)|
-| English | - | 1.5.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.5.0,2022.2.24/English.dat)|
+| 日本語 | kihi | 1.5.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.5.1.2%2Ckihi/Japanese.dat)|
+| 日本語 | Rey | 1.5.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.5.1.2%2CRey/Japanese.dat)|
+| 日本語 | Tanakanira | 1.5.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.5.1.2%2CTanakanira/Japanese.dat)|
+| English | - | 1.5.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.5.1.2,2022.2.24/English.dat)|
 
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
  
+ **Version 1.5.1.2**
+ - Loversを追放するとゲームが進行不能になる問題を修正
+  
  **Version 1.5.1.1**
  - ONLINEでインポスターの人数を1~3人以外にするとBANされてしまう問題を修正
   
