@@ -26,6 +26,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.6.0 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.0,2022.2.24/Nebula_v1.6.0.zip)|
 | 1.5.1.2 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.5.1.2,2022.2.24/Nebula_v1.5.1.2.zip)|
 | 1.5.1.1 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.5.1.1,2022.2.24/Nebula_v1.5.1.1.zip)|
 | 1.5.1 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.5.1,2022.2.24/Nebula_v1.5.1.zip)|
@@ -120,16 +121,24 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 
 | Language | Translator | Full Support Version | Download |
 | --- | --- | --- | --- |
-| 日本語 | - | 1.4.6 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.4.6,2022.2.24/Japanese.dat)|
+| 日本語 | - | 1.6.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.0,2022.2.24/Japanese.dat)|
 | 日本語 | kihi | 1.5.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.5.1.2%2Ckihi/Japanese.dat)|
 | 日本語 | Rey | 1.5.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.5.1.2%2CRey/Japanese.dat)|
 | 日本語 | Tanakanira | 1.5.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.5.1.2%2CTanakanira/Japanese.dat)|
-| English | - | 1.5.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.5.1.2,2022.2.24/English.dat)|
+| English | - | 1.6.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.0,2022.2.24/English.dat)|
 
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
- 
+
+ **Version 1.6.0**
+ - Avengerを追加、これに伴いLoversに新たなオプション「Lover Mode」を追加
+ - Polusにて複数のスポーン地点が使用できるようになり、新たなオプション「Multiple Spawn Point」を追加
+ - Admin, Vitals, Camera, DoorLogの時間制限設定を追加
+ - Trapperがトラップを設置した後の硬直時間中のボタンの表示を変更
+ - Crewmateに新たなオプション「Is Guessable」を追加
+ - Jackalのオプション項目を整理
+  
  **Version 1.5.1.2**
  - Loversを追放するとゲームが進行不能になる問題を修正
   
@@ -504,13 +513,13 @@ Sniperの弾の当たり判定やEmpiric,Alienなどの効果範囲を調べる�
 | Impostors | Crewmates | Neutral | Secondary |
 | ---------- | ---------- | ---------- | ---------- |
 | [Camouflager](#camouflager) | [Agent](#agent) | [Arsonist](#arsonist) | [Drunk](#drunk) |
-| [Cleaner](#cleaner) | [Alien](#alien) | [Empiric](#empiric) | [Guesser](#guesser) |
-| [Damned](#damned) | [Bait](#bait) | [Jackal](#jackal) | [Lover](#lover) |
-| [Eraser](#eraser) | [Comet](#comet) | [Jester](#jester) | [Trilemma](#trilemma) |
-| [Evil Ace](#evil-ace) | [Doctor](#doctor) | [Opportunist](#opportunist) ||
-| [Evil Guesser](#guesser) | [Mayor](#mayor) | [Sidekick](#sidekick) ||
-| [Evil Trapper](#trapper) | [Navvy](#navvy) | [Vulture](#vulture) ||
-| [Morphing](#morphing) | [Necromancer](#necromancer) |||
+| [Cleaner](#cleaner) | [Alien](#alien) | [Avenger](#avenger) | [Guesser](#guesser) |
+| [Damned](#damned) | [Bait](#bait) | [Empiric](#empiric) | [Lover](#lover) |
+| [Eraser](#eraser) | [Comet](#comet) | [Jackal](#jackal) | [Trilemma](#trilemma) |
+| [Evil Ace](#evil-ace) | [Doctor](#doctor) | [Jester](#jester) ||
+| [Evil Guesser](#guesser) | [Mayor](#mayor) | [Opportunist](#opportunist) ||
+| [Evil Trapper](#trapper) | [Navvy](#navvy) | [Sidekick](#sidekick) ||
+| [Morphing](#morphing) | [Necromancer](#necromancer) | [Vulture](#vulture) ||
 | [Reaper](#reaper) | [Nice Guesser](#guesser) |||
 | [Sniper](#sniper) | [Nice Trapper](#trapper) |||
 || [Oracle](#oracle) |||
@@ -979,6 +988,21 @@ p5p5next : Damned
 
 -----------------------
 
+## Avenger
+ AvengerはAvenger Modeのときに、Loverの片方が死ぬと残された一人に付与されます。
+ 
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| Q | キル
+ 
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+| Kill Cool Down | キルクールダウン
+
+-----------------------
+
 ## Empiric
  Empiricは自身が選択した感染者の周囲にいるプレイヤーを徐々に感染させます。\
  全ての生存プレイヤーが感染することが勝利条件です。
@@ -1014,11 +1038,6 @@ p5p5next : Damned
 |----------|:-------------:|
 | Can Create Sidekick | Sidekickを生み出せるかどうか
 | Kill Cool Down | 自身のキルクールダウン
-| Sidekick Can Kill | Sidekickがキルできるかどうか
-| Sidekick Kill Cool Down | Sidekickのキルクールダウン
-| Sidekick Take Over Original Role | Sidekickが元の役職を保持するかどうか
-| Sidekick Can Create Sidekick | SidekickがJackalになったとき、Sidekickを生み出すことができるかどうか
-| Sidekick Can Use Vents | Sidekickがベントを使用できるかどうか
 
 -----------------------
 
@@ -1053,6 +1072,11 @@ p5p5next : Damned
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
+| Sidekick Can Kill | Sidekickがキルできるかどうか
+| Kill Cool Down | キルクールダウン
+| Take Over Original Role | Sidekickが元の役職を上書きするかどうか
+| Can Create Sidekick | SidekickがJackalになったとき、Sidekickを生み出すことができるかどうか
+| Can Use Vents | Sidekickがベントを使用できるかどうか
 
 -----------------------
 
