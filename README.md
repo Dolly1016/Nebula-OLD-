@@ -596,6 +596,7 @@ p5p5next : Damned
 |----------|:-------------:|
 | Chance to Spawn as Impostor | インポスターとしてスポーンする確率
 | Max Traps | 設置できるトラップの数
+| Place Cool Down | 設置クールダウン
 | Accel Speed | 加速トラップの加速倍率
 | Decel Speed | 減速トラップの減速倍率
 | Accel Duration | 加速トラップの効果時間
@@ -1000,6 +1001,10 @@ p5p5next : Damned
 | オプション名 | 設定内容 |
 |----------|:-------------:|
 | Kill Cool Down | キルクールダウン
+| Murder Can Know Avenger | Avengerの標的が矢印によってAvengerの位置を知ることができるかどうか
+| Everyone Can Know Existanse Of Avenger | グレーのハートマークによって全員がAvengerの存在を知ることができるかどうか
+| Notice Interval For Avenger | Avengerへの標的の位置の通知間隔
+| Notice Interval For Murder | 標的へのAvengerの位置の通知間隔
 
 -----------------------
 
@@ -1150,6 +1155,7 @@ p5p5next : Damned
 |----------|:-------------:|
 | Max Couples | Loversが発生する最大組数
 | Chance That One Lover Is Impostor | Loversの片方がインポスター陣営から選ばれる確率
+| Lover Mode | Loverのモード設定(Standard / Avenger)
 | Can Change Trilemma | 第三者を巻き込んでTrilemmaになれるかどうかの設定
 
 -----------------------
