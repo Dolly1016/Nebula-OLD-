@@ -26,6 +26,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.6.1.1 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.1.1,2022.2.24/Nebula_v1.6.1.1.zip)|
 | 1.6.1 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.1,2022.2.24/Nebula_v1.6.1.zip)|
 | 1.6.0 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.0,2022.2.24/Nebula_v1.6.0.zip)|
 | 1.5.1.2 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.5.1.2,2022.2.24/Nebula_v1.5.1.2.zip)|
@@ -134,6 +135,9 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 <details>
   <summary>クリックで展開</summary>
 
+ **Version 1.6.1.1**
+ - 1.6.1でマルチスポーンポイントが使えなくなってしまっていた問題を修正
+  
  **Version 1.6.1**
  - Polusで、マルチスポーンポイントを有効にしても最初の1回はドロップシップにスポーンするように
  - ゲーム終了時の役職開示画面で、プレイヤーが死因によってソートされるように
