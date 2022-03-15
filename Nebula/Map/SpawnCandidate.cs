@@ -1,17 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
+using UnhollowerBaseLib;
+using System.Linq;
 
 namespace Nebula.Map
 {
     public class SpawnCandidate
     {
+        static private Il2CppArrayBase<UnityEngine.Object>? audioClips = null;
+
         public Vector2 SpawnLocation;
         public Texture2D Texture;
         public Sprite[] Sprites;
         public string TextureAddress;
         public string LocationKey;
+        public AudioClip? AudioClip;
+        public string? AudioClipName;
 
         public Texture2D GetTexture()
         {
@@ -48,21 +52,37 @@ namespace Nebula.Map
             return null;
         }
 
+        public AudioClip? GetAudioClip()
+        {
+            if (AudioClipName == null) return null;
+
+            if (audioClips == null) audioClips = UnityEngine.Object.FindObjectsOfTypeAll(AudioClip.Il2CppType);
+
+            if (AudioClip != null) return AudioClip;
+
+            AudioClip = (audioClips.FirstOrDefault<UnityEngine.Object>((audio) => audio.name == AudioClipName)).TryCast<AudioClip>();
+            return AudioClip;
+        }
+
         public Il2CppSystem.Collections.IEnumerator GetEnumerator(SpriteRenderer renderer)
         {
             GetTexture();
             return Effects.Lerp(Sprites.Length*0.06f, new Action<float>((t)=>{
+                if (!renderer) return;
                 int num = (int)(t * Sprites.Length);
                 if (num < Sprites.Length) renderer.sprite = Sprites[num];
             }));
         }
 
-        public SpawnCandidate(string locationKey,Vector2 location,string textureAddress)
+        public SpawnCandidate(string locationKey,Vector2 location,string textureAddress,string? audioClip)
         {
             SpawnLocation = location;
             LocationKey = locationKey;
             TextureAddress = textureAddress;
             Sprites = new Sprite[0];
+
+            AudioClip = null;
+            AudioClipName = audioClip;
         }
     }
 }

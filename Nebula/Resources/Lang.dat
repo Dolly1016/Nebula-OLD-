@@ -465,8 +465,8 @@
 "role.avenger.killCoolDown" : "Kill Cool Down"
 "role.avenger.murderCanKnowAvenger" : "Murder Can Know Avenger"
 "role.avenger.everyoneCanKnowExistenceOfAvenger" : "Everyone Can Know Existence Of Avenger"
-"role.avenger.avengerNoticeIntervalOption" : "Notice Interval Option For Avenger"
-"role.avenger.murderNoticeIntervalOption" : "Notice Interval Option For Murder"
+"role.avenger.avengerNoticeIntervalOption" : "Notice Interval For Avenger"
+"role.avenger.murderNoticeIntervalOption" : "Notice Interval For Murder"
 
 "role.avengerTarget.name" : "[CAUTION] You're being targeted by Avenger."
 "role.avengerTarget.info" : "You killed one of lovers.\nThe other of them may take the chance to kill you."

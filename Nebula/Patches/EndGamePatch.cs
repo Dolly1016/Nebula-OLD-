@@ -20,7 +20,7 @@ namespace Nebula.Patches
         public static EndCondition ImpostorWinDisconnect = new EndCondition(GameOverReason.ImpostorDisconnect, Palette.ImpostorRed, "impostor",16, Module.CustomGameMode.Standard);
         public static EndCondition JesterWin = new EndCondition(16, Roles.NeutralRoles.Jester.RoleColor, "jester", 1, Module.CustomGameMode.Standard);
         public static EndCondition JackalWin = new EndCondition(17, Roles.NeutralRoles.Jackal.RoleColor, "jackal", 2, Module.CustomGameMode.Standard);
-        public static EndCondition ArsonistWin = new EndCondition(18, Roles.NeutralRoles.Arsonist.RoleColor, "arsonist", 1, Module.CustomGameMode.Standard,false, () => { PlayerControl.AllPlayerControls.ForEach((Action<PlayerControl>)((p) => { if (!p.Data.IsDead && p.GetModData().role.side != Roles.Side.Arsonist) p.MurderPlayer(p); })); });
+        public static EndCondition ArsonistWin = new EndCondition(18, Roles.NeutralRoles.Arsonist.RoleColor, "arsonist", 1, Module.CustomGameMode.Standard,false, () => { PlayerControl.AllPlayerControls.ForEach((Action<PlayerControl>)((p) => { if (!p.Data.IsDead && p.GetModData().role.side != Roles.Side.Arsonist) RPCEventInvoker.UncheckedMurderPlayer(p.PlayerId, p.PlayerId, Game.PlayerData.PlayerStatus.Burned.Id, false); })); });
         public static EndCondition EmpiricWin = new EndCondition(19, Roles.NeutralRoles.Empiric.RoleColor, "empiric", 1, Module.CustomGameMode.Standard);
         public static EndCondition VultureWin = new EndCondition(20, Roles.NeutralRoles.Vulture.RoleColor, "vulture", 1, Module.CustomGameMode.Standard);
         public static EndCondition AvengerWin = new EndCondition(21, Roles.NeutralRoles.Avenger.RoleColor, "avenger", 0, Module.CustomGameMode.Standard);
@@ -118,10 +118,10 @@ namespace Nebula.Patches
             }
         }
 
-        public HashSet<FinalPlayer> players { get; private set; }
+        public List<FinalPlayer> players { get; private set; }
         public FinalPlayerData()
         {
-            players = new HashSet<FinalPlayer>();
+            players = new List<FinalPlayer>();
 
             string name;
             foreach (Game.PlayerData player in Game.GameData.data.players.Values)
@@ -136,6 +136,8 @@ namespace Nebula.Patches
                 players.Add(new FinalPlayer(name,
                     player.role, player.Status, player.Tasks.Quota, player.Tasks.Completed));
             }
+
+            players.Sort((p1, p2) => p1.status.Id - p2.status.Id);
         }
     }
 

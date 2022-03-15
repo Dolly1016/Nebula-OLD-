@@ -87,11 +87,10 @@ namespace Nebula.Roles.NeutralRoles
         private bool CheckIgnite()
         {
             bool cannotIgnite = false;
-            foreach (PlayerControl player in PlayerControl.AllPlayerControls)
+            foreach (var entry in PlayerIcons)
             {
-                if (player.Data.IsDead) continue;
-                if (activePlayers.Contains(player.PlayerId)) continue;
-                if (player.PlayerId == PlayerControl.LocalPlayer.PlayerId) continue;
+                if (!entry.Value.gameObject.active) continue;
+                if (activePlayers.Contains(entry.Key)) continue;
 
                 cannotIgnite = true; break;
             }

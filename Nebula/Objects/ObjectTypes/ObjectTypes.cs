@@ -16,7 +16,7 @@ namespace Nebula.Objects.ObjectTypes
             return Sprite;
         }
 
-        public TypeWithImage(string objectName, string spriteAddress, bool isBack) : base(objectName, isBack)
+        public TypeWithImage(byte id,string objectName, string spriteAddress, bool isBack) : base(id,objectName, isBack)
         {
             SpriteAddress = spriteAddress;
         }

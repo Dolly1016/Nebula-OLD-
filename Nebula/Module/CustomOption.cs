@@ -513,11 +513,6 @@ namespace Nebula.Module
             nebulaMenu.Children = nebulaOptions.ToArray();
             nebulaSettings.gameObject.SetActive(false);
 
-            /*            
-            var numImpostorsOption = __instance.Children.FirstOrDefault(x => x.name == "NumImpostors").TryCast<NumberOption>();
-            if (numImpostorsOption != null) numImpostorsOption.ValidRange = new FloatRange(0f, 15f);
-            */
-
             var killCoolOption = __instance.Children.FirstOrDefault(x => x.name == "KillCooldown").TryCast<NumberOption>();
             if (killCoolOption != null) killCoolOption.ValidRange = new FloatRange(2.5f, 60f);
 
@@ -533,7 +528,6 @@ namespace Nebula.Module
 
             var impostorsOption = __instance.Children.FirstOrDefault(x => x.name == "NumImpostors").TryCast<NumberOption>();
             if (impostorsOption != null) impostorsOption.ValidRange = new FloatRange(0f, 5f);
-
         }
     }
 
@@ -680,6 +674,7 @@ namespace Nebula.Module
                 kvp.value = i;
                 options.Add(kvp);
             }
+
             mapNameTransform.GetComponent<KeyValueOption>().Values = options;
         }
     }
@@ -956,6 +951,21 @@ namespace Nebula.Module
                 numImpostors = 1;
             }
             __instance.SetImpostorButtons(numImpostors);
+        }
+    }
+
+    [HarmonyPatch(typeof(GameOptionsData), nameof(GameOptionsData.ToggleMapFilter))]
+    public static class GameOptionsData_ToggleMapFilter_Patch
+    {
+        [HarmonyPrefix]
+        public static bool Prefix(GameOptionsData __instance, [HarmonyArgument(0)] byte mapId)
+        {
+            __instance.MapId ^= (byte)(1 << (int)mapId);
+            if (__instance.MapId == 0)
+            {
+                __instance.MapId ^= (byte)(1 << (int)mapId);
+            }
+            return false;
         }
     }
 }

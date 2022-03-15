@@ -40,10 +40,9 @@ namespace Nebula.Module
             Renderers = new SpriteRenderer[6];
             for (int i = 0; i < Renderers.Length; i++)
             {
-                Renderers[i] = UnityEngine.Object.Instantiate<SpriteRenderer>(Patches.IntroCutsceneOnDestroyPatch.PlayerPrefab.Body, __instance.transform);
-                Renderers[i].GetComponent<PoolablePlayer>().NameText.text = "";
-                Renderers[i].GetComponent<PoolablePlayer>().NameText.enabled = false;
+                Renderers[i] = new UnityEngine.GameObject("Timer" + i).AddComponent<SpriteRenderer>();
                 Renderers[i].transform.SetParent(__instance.transform);
+                Renderers[i].gameObject.layer = UnityEngine.LayerMask.NameToLayer("UI");
 
                 Renderers[i].sortingOrder = 0;
             }

@@ -20,7 +20,7 @@ namespace Nebula.Patches
 			{
 				if (!CustomOptionHolder.mapOptions.getBool() || !CustomOptionHolder.multipleSpawnPoints.getBool()) return;
 
-				if (Map.MapData.GetCurrentMapData().SpawnOriginalPositionAtFirst && !MeetingHud.Instance) return;
+				if (Map.MapData.GetCurrentMapData().SpawnOriginalPositionAtFirst && !ExileController.Instance) return;
 
 				var spawnCandidates = Map.MapData.GetCurrentMapData().SpawnCandidates;
 				if (spawnCandidates.Count < 3) return;
@@ -69,7 +69,7 @@ namespace Nebula.Patches
 					ButtonAnimRolloverHandler component = passiveButton.GetComponent<ButtonAnimRolloverHandler>();
 					component.StaticOutImage = spawnCandidates[index].GetSprite();
 					component.RolloverAnim = new AnimationClip();
-					component.HoverSound = spawnInMinigame.DefaultRolloverSound;
+					component.HoverSound = spawnCandidates[index].GetAudioClip() ?? spawnInMinigame.DefaultRolloverSound;
 				}
 				PlayerControl.LocalPlayer.gameObject.SetActive(false);
 				PlayerControl.LocalPlayer.NetTransform.RpcSnapTo(new Vector2(20f, 40f));

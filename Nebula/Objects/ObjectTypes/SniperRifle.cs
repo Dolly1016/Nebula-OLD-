@@ -5,11 +5,9 @@ using UnityEngine;
 
 namespace Nebula.Objects.ObjectTypes
 {
-    class SniperRifle : TypeWithImage
+    public class SniperRifle : TypeWithImage
     {
-        public static SniperRifle Rifle = new SniperRifle();
-
-        public SniperRifle() : base("SniperRifle", "Nebula.Resources.SniperRifle.png",false)
+        public SniperRifle() : base(4,"SniperRifle", "Nebula.Resources.SniperRifle.png",false)
         {
 
         }

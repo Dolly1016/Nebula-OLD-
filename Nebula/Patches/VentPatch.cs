@@ -52,8 +52,10 @@ namespace Nebula.Patches
                 return false;
             }
 
+
             couldUse = (@object.inVent || roleCouldUse) && !pc.IsDead && (@object.CanMove || @object.inVent);
             canUse = couldUse;
+
             if (canUse)
             {
                 Vector2 truePosition = @object.GetTruePosition();
@@ -61,8 +63,11 @@ namespace Nebula.Patches
                 num = Vector2.Distance(truePosition, position);
 
                 canUse &= (num <= usableDistance && !PhysicsHelpers.AnythingBetween(truePosition, position, Constants.ShipOnlyMask, false));
+
+                if (@object.MyPhysics.Animator.Clip == @object.MyPhysics.EnterVentAnim && @object.MyPhysics.Animator.Playing) canUse = false;
             }
             __result = num;
+
             return false;
         }
     }
@@ -90,7 +95,7 @@ namespace Nebula.Patches
             __instance.CanUse(PlayerControl.LocalPlayer.Data, out canUse, out couldUse);
 
             if (Game.GameData.data.players[PlayerControl.LocalPlayer.PlayerId].role.VentPermission != Roles.VentPermission.CanNotUse)
-                canUse = !HudManager.Instance.ImpostorVentButton.isCoolingDown;
+                canUse &= !HudManager.Instance.ImpostorVentButton.isCoolingDown;
             
             canMoveInVents = Game.GameData.data.players[PlayerControl.LocalPlayer.PlayerId].role.CanMoveInVents;
             

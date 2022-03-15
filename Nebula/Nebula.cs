@@ -52,7 +52,7 @@ namespace Nebula
         public const string AmongUsVersion = "2022.2.24";
         public const string PluginGuid = "jp.dreamingpig.amongus.nebula";
         public const string PluginName = "TheNebula";
-        public const string PluginVersion = "1.6.0";
+        public const string PluginVersion = "1.6.1.2";
         /*
         public const string PluginVisualVersion = "22.02.14a";
         public const string PluginStage = "Snapshot";
@@ -61,8 +61,8 @@ namespace Nebula
         public const string PluginVisualVersion = PluginVersion;
         public const string PluginStage = "";
         // */
-        public const string PluginVersionForFetch = "1.6.0";
-        public byte[] PluginVersionData = new byte[] { 1, 6, 0, 0 };
+        public const string PluginVersionForFetch = "1.6.1.2";
+        public byte[] PluginVersionData = new byte[] { 1, 6, 1, 2 };
 
         public static NebulaPlugin Instance;
 
@@ -107,6 +107,9 @@ namespace Nebula
 
             // Harmonyパッチ全てを適用する
             Harmony.PatchAll();
+
+            //追加マップを読み込む
+            Map.AdditionalMapManager.Load();
         }
 
         public static Sprite GetModStamp()
@@ -127,6 +130,9 @@ namespace Nebula
             {
                 map.LoadAssets(__instance);
             }
+
+            //追加マップを読み込む
+            Map.AdditionalMapManager.AddPrefabs(__instance);
         }
     }
 
@@ -187,7 +193,7 @@ namespace Nebula
                 playerControl.transform.position = PlayerControl.LocalPlayer.transform.position;
                 playerControl.GetComponent<DummyBehaviour>().enabled = false;
                 playerControl.NetTransform.enabled = true;
-                playerControl.SetName(RandomString(10));
+                playerControl.SetName(Patches.RandomNamePatch.GetRandomName());
                 playerControl.SetColor((byte)random.Next(Palette.PlayerColors.Length));
                 GameData.Instance.RpcSetTasks(playerControl.PlayerId, new byte[0]);
             }
@@ -205,7 +211,7 @@ namespace Nebula
                 playerControl.transform.position = PlayerControl.LocalPlayer.transform.position;
                 playerControl.GetComponent<DummyBehaviour>().enabled = true;
                 playerControl.NetTransform.enabled = true;
-                playerControl.SetName(RandomString(10));
+                playerControl.SetName(Patches.RandomNamePatch.GetRandomName());
                 playerControl.SetColor((byte)random.Next(Palette.PlayerColors.Length));
                 GameData.Instance.RpcSetTasks(playerControl.PlayerId, new byte[0]);
             }
@@ -231,13 +237,6 @@ namespace Nebula
                 Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, target, Game.PlayerData.PlayerStatus.Dead, false, false);
                 
             }
-        }
-
-        public static string RandomString(int length)
-        {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            return new string(Enumerable.Repeat(chars, length)
-                .Select(s => s[random.Next(s.Length)]).ToArray());
         }
     }
 }

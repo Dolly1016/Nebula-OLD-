@@ -97,21 +97,21 @@ namespace Nebula.Roles
         {
             get
             {
-                return CustomOptionHolder.advanceRoleOptions.getBool() ?
-                    (CanBeLoversOption != null ? CanBeLoversOption.getBool() : true) : DefaultCanBeLovers;
+                return (CustomOptionHolder.advanceRoleOptions.getBool() && CanBeLoversOption != null) ?
+                    CanBeLoversOption.getBool() : DefaultCanBeLovers;
             }
         }
         public virtual bool CanBeGuesser
         {
             get
             {
-                return CustomOptionHolder.advanceRoleOptions.getBool() ?
-                    (CanBeGuesserOption!=null ? CanBeGuesserOption.getBool():true) : DefaultCanBeGuesser;
+                return (CustomOptionHolder.advanceRoleOptions.getBool() && CanBeGuesserOption != null) ?
+                    CanBeGuesserOption.getBool() : DefaultCanBeGuesser;
             }
         }
         public virtual bool CanBeDrunk { get {
-                return CustomOptionHolder.advanceRoleOptions.getBool() ?
-                     (CanBeDrunkOption != null ? CanBeDrunkOption.getBool() : true) : DefaultCanBeDrunk;
+                return (CustomOptionHolder.advanceRoleOptions.getBool() && CanBeDrunkOption != null) ?
+                    CanBeDrunkOption.getBool() : DefaultCanBeDrunk;
             } }
 
         public bool DefaultCanBeLovers { get; set; }
@@ -265,6 +265,10 @@ namespace Nebula.Roles
 
             this.VentDurationMaxTimer = 10f;
             this.VentCoolDownMaxTimer = 20f;
+
+            DefaultCanBeLovers = true;
+            DefaultCanBeGuesser = true;
+            DefaultCanBeDrunk = true;
         }
 
         public static Role GetRoleById(byte id)

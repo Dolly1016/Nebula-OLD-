@@ -13,7 +13,11 @@ namespace Nebula.Objects
         {
             static public Dictionary<byte, Type> AllTypes = new Dictionary<byte, Type>();
 
-            static private byte AvailableId = 0;
+            public static ObjectTypes.VisibleTrap AccelTrap = new ObjectTypes.VisibleTrap(0, "AccelTrap", "Nebula.Resources.AccelTrap.png");
+            public static ObjectTypes.VisibleTrap DecelTrap = new ObjectTypes.VisibleTrap(1, "DecelTrap", "Nebula.Resources.DecelTrap.png");
+            public static ObjectTypes.InvisibleTrap KillTrap = new ObjectTypes.InvisibleTrap(2, "KillTrap", "Nebula.Resources.KillTrap.png");
+            public static ObjectTypes.InvisibleTrap CommTrap = new ObjectTypes.InvisibleTrap(3, "CommTrap", "Nebula.Resources.CommTrap.png");
+            public static ObjectTypes.SniperRifle Rifle = new ObjectTypes.SniperRifle();
 
             public byte Id { get; }
             public string ObjectName { get; }
@@ -23,10 +27,9 @@ namespace Nebula.Objects
             public virtual void Update(CustomObject obj) { }
             public virtual void Initialize(CustomObject obj) { }
 
-            public Type(string objectName,bool isBack = true)
+            public Type(byte id,string objectName,bool isBack = true)
             {
-                Id = AvailableId;
-                AvailableId++;
+                Id = id;
                 this.ObjectName = objectName;
 
                 IsBack = isBack;

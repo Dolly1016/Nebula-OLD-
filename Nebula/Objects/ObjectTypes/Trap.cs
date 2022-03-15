@@ -7,16 +7,14 @@ namespace Nebula.Objects.ObjectTypes
 {
     public class Trap : TypeWithImage
     {
-        public Trap(string objectName, string spriteAddress) : base(objectName, spriteAddress, true)
+        public Trap(byte id,string objectName, string spriteAddress) : base(id,objectName, spriteAddress, true)
         {
         }
     }
 
     public class VisibleTrap : Trap
     {
-        public static VisibleTrap AccelTrap = new VisibleTrap("AccelTrap", "Nebula.Resources.AccelTrap.png");
-        public static VisibleTrap DecelTrap = new VisibleTrap("DecelTrap", "Nebula.Resources.DecelTrap.png");
-        public VisibleTrap(string objectName, string spriteAddress) : base(objectName, spriteAddress)
+        public VisibleTrap(byte id,string objectName, string spriteAddress) : base(id,objectName, spriteAddress)
         {
         }
 
@@ -42,9 +40,7 @@ namespace Nebula.Objects.ObjectTypes
 
     public class InvisibleTrap : Trap
     {
-        public static InvisibleTrap KillTrap = new InvisibleTrap("KillTrap", "Nebula.Resources.KillTrap.png");
-        public static InvisibleTrap CommTrap = new InvisibleTrap("CommTrap", "Nebula.Resources.CommTrap.png");
-        public InvisibleTrap(string objectName, string spriteAddress) : base(objectName, spriteAddress)
+        public InvisibleTrap(byte id,string objectName, string spriteAddress) : base(id,objectName, spriteAddress)
         {
         }
 
