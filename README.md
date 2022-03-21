@@ -26,6 +26,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.6.2.1 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.2.1,2022.2.24/Nebula_v1.6.2.1.zip)|
 | 1.6.2 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.2,2022.2.24/Nebula_v1.6.2.zip)|
 | 1.6.1.2 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.1.2,2022.2.24/Nebula_v1.6.1.2.zip)|
 | 1.6.1.1 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.1.1,2022.2.24/Nebula_v1.6.1.1.zip)|
@@ -137,6 +138,10 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 <details>
   <summary>クリックで展開</summary>
 
+ **Version 1.6.2.1**
+ - マルチスポーンポイントの選択画面が正常に表示されない問題を修正
+ - ベントに潜った際にペットやハットが見えてしまう問題を修正
+  
  **Version 1.6.2**
  - 死後、会議を挟むとMキーで天界モードに行けるように(ホイールで拡大/縮小可能)
  - Sheriffに新オプション「Can Kill Opportunist」を追加
