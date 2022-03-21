@@ -26,6 +26,11 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.6.2.1 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.2.1,2022.2.24/Nebula_v1.6.2.1.zip)|
+| 1.6.2 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.2,2022.2.24/Nebula_v1.6.2.zip)|
+| 1.6.1.2 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.1.2,2022.2.24/Nebula_v1.6.1.2.zip)|
+| 1.6.1.1 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.1.1,2022.2.24/Nebula_v1.6.1.1.zip)|
+| 1.6.1 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.1,2022.2.24/Nebula_v1.6.1.zip)|
 | 1.6.0 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.0,2022.2.24/Nebula_v1.6.0.zip)|
 | 1.5.1.2 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.5.1.2,2022.2.24/Nebula_v1.5.1.2.zip)|
 | 1.5.1.1 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.5.1.1,2022.2.24/Nebula_v1.5.1.1.zip)|
@@ -58,6 +63,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 <details>
   <summary>ALPHA Versions</summary>
+  
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
 | Alpha 1.10.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.10.1,2021.12.15/Nebula.zip)|
@@ -93,6 +99,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 | Alpha 1.2.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.2.0/Nebula.zip)|
 | Alpha 1.1.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.1.0/Nebula.zip)|
 | Alpha 1.0.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/0.1.0.0/Nebula.zip)|
+ 
 </details>
   
 # ご利用に関する留意点
@@ -121,16 +128,43 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 
 | Language | Translator | Full Support Version | Download |
 | --- | --- | --- | --- |
-| 日本語 | - | 1.6.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.0,2022.2.24/Japanese.dat)|
+| 日本語 | - | 1.6.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.1,2022.2.24/Japanese.dat)|
 | 日本語 | kihi | 1.5.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.5.1.2%2Ckihi/Japanese.dat)|
-| 日本語 | Rey | 1.5.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.5.1.2%2CRey/Japanese.dat)|
-| 日本語 | Tanakanira | 1.5.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.5.1.2%2CTanakanira/Japanese.dat)|
-| English | - | 1.6.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.0,2022.2.24/English.dat)|
+| 日本語 | Rey | 1.6.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.6.0%2CRey/Japanese.dat)|
+| 日本語 | Tanakanira | 1.6.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.6.0%2CTanakanira/Japanese.dat)|
+| English | - | 1.6.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.1,2022.2.24/English.dat)|
 
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
 
+ **Version 1.6.2.1**
+ - マルチスポーンポイントの選択画面が正常に表示されない問題を修正
+ - ベントに潜った際にペットやハットが見えてしまう問題を修正
+  
+ **Version 1.6.2**
+ - 死後、会議を挟むとMキーで天界モードに行けるように(ホイールで拡大/縮小可能)
+ - Sheriffに新オプション「Can Kill Opportunist」を追加
+ - Opportunistに新オプション「Can Win With Avenger」を追加
+ - Arsonistが勝利する際、他の生存者のステータスが「Burned」になるように
+  
+ **Version 1.6.1.2**
+ - ベントに入る動作を短時間で何度も繰り返せてしまう問題を修正
+ - バニラの機能「Randomize Name」の名前候補を変更
+  
+ **Version 1.6.1.1**
+ - 1.6.1でマルチスポーンポイントが使えなくなってしまっていた問題を修正
+  
+ **Version 1.6.1**
+ - Polusで、マルチスポーンポイントを有効にしても最初の1回はドロップシップにスポーンするように
+ - ゲーム終了時の役職開示画面で、プレイヤーが死因によってソートされるように
+ - トラップを設置すると、他人からはスナイパーライフルを出したように見えることがある問題を修正
+ - プリセットが正常に動作しない問題を修正
+ - マルチスポーンポイントを有効にしたPolusで、一部盤面でJesterが正常に勝利できない問題を修正
+ - Advance Role OptionをOffにしていると追加役職のGuesser,Lovers,Drunkが発生しない問題を修正
+ - Avengerの設定が不要な時に正常に隠れるように
+ - 一部オプションの誤記訂正
+  
  **Version 1.6.0**
  - Avengerを追加、これに伴いLoversに新たなオプション「Lover Mode」を追加
  - Polusにて複数のスポーン地点が使用できるようになり、新たなオプション「Multiple Spawn Point」を追加
@@ -596,6 +630,7 @@ p5p5next : Damned
 |----------|:-------------:|
 | Chance to Spawn as Impostor | インポスターとしてスポーンする確率
 | Max Traps | 設置できるトラップの数
+| Place Cool Down | 設置クールダウン
 | Accel Speed | 加速トラップの加速倍率
 | Decel Speed | 減速トラップの減速倍率
 | Accel Duration | 加速トラップの効果時間
@@ -1000,6 +1035,10 @@ p5p5next : Damned
 | オプション名 | 設定内容 |
 |----------|:-------------:|
 | Kill Cool Down | キルクールダウン
+| Murder Can Know Avenger | Avengerの標的が矢印によってAvengerの位置を知ることができるかどうか
+| Everyone Can Know Existanse Of Avenger | グレーのハートマークによって全員がAvengerの存在を知ることができるかどうか
+| Notice Interval For Avenger | Avengerへの標的の位置の通知間隔
+| Notice Interval For Murder | 標的へのAvengerの位置の通知間隔
 
 -----------------------
 
@@ -1150,6 +1189,7 @@ p5p5next : Damned
 |----------|:-------------:|
 | Max Couples | Loversが発生する最大組数
 | Chance That One Lover Is Impostor | Loversの片方がインポスター陣営から選ばれる確率
+| Lover Mode | Loverのモード設定(Standard / Avenger)
 | Can Change Trilemma | 第三者を巻き込んでTrilemmaになれるかどうかの設定
 
 -----------------------
