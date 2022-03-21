@@ -60,7 +60,7 @@ namespace Nebula.Map
 
             if (AudioClip != null) return AudioClip;
 
-            AudioClip = (audioClips.FirstOrDefault<UnityEngine.Object>((audio) => audio.name == AudioClipName)).TryCast<AudioClip>();
+            AudioClip = (audioClips.FirstOrDefault<UnityEngine.Object>((audio) => audio && audio.name == AudioClipName)).TryCast<AudioClip>();
             return AudioClip;
         }
 

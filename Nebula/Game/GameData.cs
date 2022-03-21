@@ -301,6 +301,31 @@ namespace Nebula.Game
         }
     }
 
+    public class PlayerProperty
+    {
+        private bool underTheFloor { get; set; }
+
+        public bool CanTransmitWalls { get; set; }
+        public bool UnderTheFloor { 
+            get {
+                return underTheFloor;
+            } 
+            set {
+                if (underTheFloor != value)
+                {
+                    underTheFloor = value;
+                    
+                }
+            }
+        }
+
+        public PlayerProperty()
+        {
+            CanTransmitWalls = false;
+            UnderTheFloor = false;
+        }
+    }
+
     public class PlayerData
     {
         public class PlayerStatus
@@ -398,6 +423,10 @@ namespace Nebula.Game
 
         public string RoleInfo { get; set; }
 
+        public PlayerProperty Property { get; set; }
+
+
+
         public PlayerData(byte playerId, string name,PlayerOutfit outfit,Role role)
         {
             
@@ -419,6 +448,7 @@ namespace Nebula.Game
             this.Status = PlayerStatus.Alive;
             this.RoleInfo = "";
             this.TransColor = Color.white;
+            this.Property = new PlayerProperty();
         }
 
         public int GetRoleData(int id)

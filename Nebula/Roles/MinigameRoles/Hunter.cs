@@ -57,6 +57,25 @@ namespace Nebula.Roles.MinigameRoles
             arrestButton.MaxTimer = arrestButton.Timer = 10f;
         }
 
+        public override void ButtonActivate()
+        {
+            arrestButton.setActive(true);
+        }
+
+        public override void ButtonDeactivate()
+        {
+            arrestButton.setActive(false);
+        }
+
+        public override void CleanUp()
+        {
+            if (arrestButton != null)
+            {
+                arrestButton.Destroy();
+                arrestButton = null;
+            }
+        }
+
         public override void EditDisplayNameColor(byte playerId, ref Color displayColor)
         {
             displayColor = Palette.ImpostorRed;

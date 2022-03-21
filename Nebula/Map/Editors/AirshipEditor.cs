@@ -8,7 +8,6 @@ namespace Nebula.Map.Editors
     {
         public AirshipEditor():base(4)
         {
-
         }
     }
 }

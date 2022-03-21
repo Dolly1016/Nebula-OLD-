@@ -56,6 +56,9 @@ namespace Nebula.Map
         public List<SpawnCandidate> SpawnCandidates;
         public bool SpawnOriginalPositionAtFirst;
 
+        //スポーン位置選択がもとから発生するかどうか
+        public bool HasDefaultPrespawnMinigame;
+
         
 
         public static void Load()
@@ -103,6 +106,8 @@ namespace Nebula.Map
 
             DoorHackingCanBlockSabotage = false;
 
+            HasDefaultPrespawnMinigame = false;
+
             MapScale = 1f;
             DoorHackingDuration = 10f;
         }
@@ -118,5 +123,15 @@ namespace Nebula.Map
         public byte GetRandomCommonTaskId() { return CommonTaskIdList[NebulaPlugin.rnd.Next(CommonTaskIdList.Count)]; }
         public byte GetRandomShortTaskId() { return ShortTaskIdList[NebulaPlugin.rnd.Next(ShortTaskIdList.Count)]; }
         public byte GetRandomLongTaskId() { return LongTaskIdList[NebulaPlugin.rnd.Next(LongTaskIdList.Count)]; }
+
+        public bool PlayInitialPrespawnMinigame
+        {
+            get
+            {
+                if (HasDefaultPrespawnMinigame) return true;
+
+                return (SpawnCandidates.Count >= 3 && !SpawnOriginalPositionAtFirst && CustomOptionHolder.mapOptions.getBool() && CustomOptionHolder.multipleSpawnPoints.getBool());
+            }
+        }
     }
 }

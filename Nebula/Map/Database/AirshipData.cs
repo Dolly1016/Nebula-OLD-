@@ -26,6 +26,7 @@ namespace Nebula.Map.Database
 
 
             MapScale = 30f;
+            HasDefaultPrespawnMinigame = true;
         }
     }
 }

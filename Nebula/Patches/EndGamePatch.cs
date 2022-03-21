@@ -8,6 +8,7 @@ using UnityEngine;
 
 namespace Nebula.Patches
 {
+    public delegate void EndAction(FinalPlayerData finalPlayerData);
 
     public class EndCondition
     {
@@ -20,7 +21,7 @@ namespace Nebula.Patches
         public static EndCondition ImpostorWinDisconnect = new EndCondition(GameOverReason.ImpostorDisconnect, Palette.ImpostorRed, "impostor",16, Module.CustomGameMode.Standard);
         public static EndCondition JesterWin = new EndCondition(16, Roles.NeutralRoles.Jester.RoleColor, "jester", 1, Module.CustomGameMode.Standard);
         public static EndCondition JackalWin = new EndCondition(17, Roles.NeutralRoles.Jackal.RoleColor, "jackal", 2, Module.CustomGameMode.Standard);
-        public static EndCondition ArsonistWin = new EndCondition(18, Roles.NeutralRoles.Arsonist.RoleColor, "arsonist", 1, Module.CustomGameMode.Standard,false, () => { PlayerControl.AllPlayerControls.ForEach((Action<PlayerControl>)((p) => { if (!p.Data.IsDead && p.GetModData().role.side != Roles.Side.Arsonist) RPCEventInvoker.UncheckedMurderPlayer(p.PlayerId, p.PlayerId, Game.PlayerData.PlayerStatus.Burned.Id, false); })); });
+        public static EndCondition ArsonistWin = new EndCondition(18, Roles.NeutralRoles.Arsonist.RoleColor, "arsonist", 1, Module.CustomGameMode.Standard, false, (fpData) => { PlayerControl.AllPlayerControls.ForEach((Action<PlayerControl>)((p) => { if (!p.Data.IsDead && Roles.Roles.Arsonist.Winner != p.PlayerId) { p.MurderPlayer(p);  fpData.players[p.PlayerId].status = Game.PlayerData.PlayerStatus.Burned; } })); });
         public static EndCondition EmpiricWin = new EndCondition(19, Roles.NeutralRoles.Empiric.RoleColor, "empiric", 1, Module.CustomGameMode.Standard);
         public static EndCondition VultureWin = new EndCondition(20, Roles.NeutralRoles.Vulture.RoleColor, "vulture", 1, Module.CustomGameMode.Standard);
         public static EndCondition AvengerWin = new EndCondition(21, Roles.NeutralRoles.Avenger.RoleColor, "avenger", 0, Module.CustomGameMode.Standard);
@@ -73,25 +74,25 @@ namespace Nebula.Patches
         public GameOverReason Id { get; }
         public Color Color { get; }
         public String Identifier { get; }
-        public Action EndAction { get; }
+        public EndAction EndAction { get; }
         public byte Priority { get; }
         public Roles.Template.HasWinTrigger TriggerRole { get; set; }
         public bool IsPeaceful;
 
         public Module.CustomGameMode GameMode { get; set; }
-        public EndCondition(GameOverReason Id,Color Color,String EndText, byte Priority,Module.CustomGameMode GameMode,bool IsPeaceful=false, System.Action EndAction = null)
+        public EndCondition(GameOverReason Id,Color Color,String EndText, byte Priority,Module.CustomGameMode GameMode,bool IsPeaceful=false, EndAction EndAction = null)
         {
             this.Id = Id;
             this.Color = Color;
             this.Identifier = EndText;
-            this.EndAction = EndAction == null ? () => { } : EndAction;
+            this.EndAction = EndAction == null ? (FinalPlayerData data) => { } : EndAction;
             this.Priority = Priority;
             this.GameMode = GameMode;
             this.TriggerRole = null;
             this.IsPeaceful = IsPeaceful;
         }
 
-        public EndCondition(int Id, Color Color, String EndText, byte Priority, Module.CustomGameMode GameMode, bool IsPeaceful = false, System.Action EndAction = null):
+        public EndCondition(int Id, Color Color, String EndText, byte Priority, Module.CustomGameMode GameMode, bool IsPeaceful = false, EndAction EndAction = null):
             this((GameOverReason)Id,Color,EndText,Priority,GameMode,IsPeaceful,EndAction)
         {
         }
@@ -106,7 +107,7 @@ namespace Nebula.Patches
             public Roles.Role role { get; private set; }
             public int totalTasks { get; private set; }
             public int completedTasks { get; private set; }
-            public Game.PlayerData.PlayerStatus status { get; private set; }
+            public Game.PlayerData.PlayerStatus status { get; set; }
 
             public FinalPlayer(string name, Roles.Role role, Game.PlayerData.PlayerStatus status,int totalTasks, int completedTasks)
             {
@@ -155,7 +156,7 @@ namespace Nebula.Patches
 
         public static void Postfix(AmongUsClient __instance, [HarmonyArgument(0)] ref EndGameResult endGameResult)
         {
-            EndCondition.EndAction.Invoke();
+            EndCondition.EndAction.Invoke(FinalData);
             //勝利者を消去する
             TempData.winners.Clear();
 

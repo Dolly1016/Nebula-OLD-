@@ -293,6 +293,7 @@
 "role.sheriff.canKillSpy" : "Can Kill Spy"
 "role.sheriff.canKillNecromancer" : "Can Kill Necromancer"
 "role.sheriff.canKillSheriff" : "Can Kill Sheriff"
+"role.sheriff.canKillOpportunist" : "Can Kill Opportunist"
 
 "role.seer.name" : "Seer"
 "role.seer.description" : "You Will See Players Die"
@@ -428,6 +429,7 @@
 "role.opportunist.canWinWithEmpiric" : "Can Win With Empiric"
 "role.opportunist.canWinWithJester" : "Can Win With Jester"
 "role.opportunist.canWinWithVulture" : "Can Win With Vulture"
+"role.opportunist.canWinWithAvenger" : "Can Win With Avenger"
 
 "role.vulture.name" : "Vulture"
 "role.vulture.description" : "Eat Corpses to Win"

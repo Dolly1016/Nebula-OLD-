@@ -23,6 +23,7 @@ namespace Nebula.Roles.NeutralRoles
         private Module.CustomOption canWinWithEmpiricOption;
         private Module.CustomOption canWinWithJesterOption;
         private Module.CustomOption canWinWithVultureOption;
+        private Module.CustomOption canWinWithAvengerOption;
 
         public override void GlobalInitialize(PlayerControl __instance)
         {
@@ -48,6 +49,7 @@ namespace Nebula.Roles.NeutralRoles
             canWinWithEmpiricOption = CreateOption(Color.white, "canWinWithEmpiric", true);
             canWinWithJesterOption = CreateOption(Color.white, "canWinWithJester", true);
             canWinWithVultureOption = CreateOption(Color.white, "canWinWithVulture", true);
+            canWinWithAvengerOption = CreateOption(Color.white, "canWinWithAvenger", true);
         }
 
         public override void Initialize(PlayerControl __instance)
@@ -57,11 +59,12 @@ namespace Nebula.Roles.NeutralRoles
         }
         public override bool CheckAdditionalWin(PlayerControl player, EndCondition condition)
         {
-            if (player.Data.IsDead) return false;
+            if (player.Data.IsDead && player.GetModData().Status != Game.PlayerData.PlayerStatus.Burned) return false;
             if (condition == EndCondition.ArsonistWin && !canWinWithArsonistOption.getBool()) return false;
             if (condition == EndCondition.EmpiricWin && !canWinWithEmpiricOption.getBool()) return false;
             if (condition == EndCondition.JesterWin && !canWinWithJesterOption.getBool()) return false;
             if (condition == EndCondition.VultureWin && !canWinWithVultureOption.getBool()) return false;
+            if (condition == EndCondition.AvengerWin && !canWinWithAvengerOption.getBool()) return false;
             if (condition == EndCondition.NobodySkeldWin) return false;
             if (condition == EndCondition.NobodyMiraWin) return false;
             if (condition == EndCondition.NobodyPolusWin) return false;

@@ -13,6 +13,21 @@ namespace Nebula.Patches
     [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
     public static class UpdatePatch
     {
+        static private bool CannotSeeNameTag(PlayerControl player)
+        {
+            return
+                (player.GetModData().Attribute.HasAttribute(Game.PlayerAttribute.Invisible) && player != PlayerControl.LocalPlayer && !Game.GameData.data.myData.CanSeeEveryoneInfo)
+                || (player == PlayerControl.LocalPlayer && EyesightPatch.ObserverMode)
+                || (player.GetModData().Property.UnderTheFloor);
+        }
+
+        static private bool IsInvisible(PlayerControl player)
+        {
+            return
+                (player == PlayerControl.LocalPlayer && EyesightPatch.ObserverMode)
+                || (player.GetModData().Property.UnderTheFloor);
+        }
+
         static private Color rewriteImpostorColor(Game.PlayerData player, Color currentColor, Color impostorColor)
         {
             if (player.role.category==Roles.RoleCategory.Impostor)
@@ -87,11 +102,7 @@ namespace Nebula.Patches
                 Helpers.RoleAction(player.PlayerId, (role) => { role.EditDisplayNameColor(player.PlayerId, ref color); });
                 player.nameText.color = color;
 
-                if(playerData.Attribute.HasAttribute(Game.PlayerAttribute.Invisible) && player!=PlayerControl.LocalPlayer && !Game.GameData.data.myData.CanSeeEveryoneInfo)
-                    player.nameText.enabled = false;
-                else
-                    player.nameText.enabled = true;
-
+                player.nameText.enabled = !CannotSeeNameTag(player);
             }
 
             if (MeetingHud.Instance != null)

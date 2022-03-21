@@ -21,6 +21,7 @@ namespace Nebula.Roles.CrewmateRoles
         private Module.CustomOption canKillSpyOption;
         private Module.CustomOption canKillNecromancerOption;
         private Module.CustomOption canKillSheriffOption;
+        private Module.CustomOption canKillOpportunistOption;
 
         public override void MyPlayerControlUpdate()
         {
@@ -32,6 +33,10 @@ namespace Nebula.Roles.CrewmateRoles
         //キルできる相手かどうか調べる
         private bool CanKill(PlayerControl target)
         {
+            //個別に設定したい非クルー陣営
+            if (target.GetModData().role == Roles.Opportunist && canKillOpportunistOption.getBool()) return true;
+
+            //非クルーおよび個別に設定するクルー陣営
             if (Game.GameData.data.players[target.PlayerId].role.category != RoleCategory.Crewmate) return true;
             if (target.GetModData().role == Roles.Madmate && canKillMadmateOption.getBool()) return true;
             if (target.GetModData().role == Roles.Spy && canKillSpyOption.getBool()) return true;
@@ -106,6 +111,8 @@ namespace Nebula.Roles.CrewmateRoles
             canKillNecromancerOption = CreateOption(Color.white, "canKillNecromancer", false);
 
             canKillSheriffOption = CreateOption(Color.white, "canKillSheriff", false);
+
+            canKillOpportunistOption = CreateOption(Color.white, "canKillOpportunist", false);
         }
 
         public Sheriff()

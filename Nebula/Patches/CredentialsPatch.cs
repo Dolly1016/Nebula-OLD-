@@ -49,6 +49,7 @@ namespace Nebula.Patches
                 if (modStamp == null)
                 {
                     modStamp = new GameObject("ModStamp");
+                    modStamp.layer = UnityEngine.LayerMask.NameToLayer("UI");
                     var rend = modStamp.AddComponent<SpriteRenderer>();
                     rend.sprite = NebulaPlugin.GetModStamp();
                     rend.color = new Color(1, 1, 1, 0.5f);
