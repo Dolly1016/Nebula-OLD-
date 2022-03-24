@@ -26,6 +26,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.6.3 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.3,2022.2.24/Nebula_v1.6.3.zip)|
 | 1.6.2.1 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.2.1,2022.2.24/Nebula_v1.6.2.1.zip)|
 | 1.6.2 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.2,2022.2.24/Nebula_v1.6.2.zip)|
 | 1.6.1.2 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.1.2,2022.2.24/Nebula_v1.6.1.2.zip)|
@@ -132,12 +133,18 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 | 日本語 | kihi | 1.6.2.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.6.2.1%2Ckihi/Japanese.dat)|
 | 日本語 | Rey | 1.6.2.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.6.2.1%2CRey/Japanese.dat)|
 | 日本語 | Tanakanira | 1.6.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.6.0%2CTanakanira/Japanese.dat)|
-| English | - | 1.6.2.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.2.1,2022.2.24/English.dat)|
+| English | - | 1.6.3 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.3,2022.2.24/English.dat)|
 
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
 
+ **Version 1.6.3**
+ - タスク難化オプション「Meister's Task Option」を追加
+ - Evil Trapperの発火済みキルトラップが全員から見えるように
+ - マップオプションに配線タスクを増やすオプション「Additional Wirings」を追加
+ - ゲームモード「Escape」用の役職「Escapee」「Hunter」をそれぞれ「Halley」「Polis」に改名
+  
  **Version 1.6.2.1**
  - マルチスポーンポイントの選択画面が正常に表示されない問題を修正
  - ベントに潜った際にペットやハットが見えてしまう問題を修正
@@ -567,8 +574,8 @@ Sniperの弾の当たり判定やEmpiric,Alienなどの効果範囲を調べる�
 ## Escape
 | Players |
 | ---------- |
-| [Escapee](#escapee) |
-| [Hunter](#hunter) |
+| [Halley](#halley) |
+| [Polis](#polis) |
 | [Player](#player) |
 
 -----------------------
@@ -1204,8 +1211,8 @@ p5p5next : Damned
 
 -----------------------
 
-## Escapee
- EscapeeはHunterから逃げるか、タスクをすべてこなすことで勝利できます。
+## Halley
+ HalleyはHunterから逃げるか、タスクをすべてこなすことで勝利できます。
  
  ### オプション
 | オプション名 | 設定内容 |
@@ -1213,8 +1220,8 @@ p5p5next : Damned
 
 -----------------------
 
-## Hunter
- Hunterは、制限時間内にEscapeeを全員捕まえることで勝利します。
+## Polis
+ Polisは、制限時間内に逃走者を全員捕まえることで勝利します。
  
  ### 操作方法
 | 操作キー | アクション |
@@ -1229,7 +1236,7 @@ p5p5next : Damned
 
 ## Player
  Escapeモードでは、はじめ全員がPlayerを割り振られます。
- ゲーム開始から10秒後に、Escapee, Hunterに変化します。
+ ゲーム開始から10秒後に、Halley, Polisに変化します。
  
  ### オプション
 | オプション名 | 設定内容 |
