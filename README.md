@@ -26,6 +26,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.6.3.3 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.3.3,2022.2.24/Nebula_v1.6.3.3.zip)|
 | 1.6.3.2 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.3.2,2022.2.24/Nebula_v1.6.3.2.zip)|
 | 1.6.3.1 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.3.1,2022.2.24/Nebula_v1.6.3.1.zip)|
 | 1.6.3 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.3,2022.2.24/Nebula_v1.6.3.zip)|
@@ -141,6 +142,9 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 <details>
   <summary>クリックで展開</summary>
 
+ **Version 1.6.3.3**
+ - ホストが正常にゲームを進行できない問題を修正
+  
  **Version 1.6.3.2**
  - 削除してしまった「Advance Role Options」を再追加
   
