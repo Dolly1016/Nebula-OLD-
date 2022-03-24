@@ -15,11 +15,11 @@ namespace Nebula.Roles.MinigameRoles
                 player = PlayerControl.AllPlayerControls[i];
                 if (i == index)
                 {
-                    RPCEventInvoker.ImmediatelyChangeRole(player, Roles.Hunter);
+                    RPCEventInvoker.ImmediatelyChangeRole(player, Roles.Polis);
                 }
                 else
                 {
-                    RPCEventInvoker.ImmediatelyChangeRole(player, Roles.Escapee);
+                    RPCEventInvoker.ImmediatelyChangeRole(player, Roles.Halley);
                 }
             }
         }

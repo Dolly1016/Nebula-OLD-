@@ -51,6 +51,8 @@ namespace Nebula.Patches
                     __instance.exiled.IsDead = true;
                 }
 
+                WrapUpPostfix(__instance.exiled);
+
                 List<Il2CppSystem.Collections.IEnumerator> sequence = new List<Il2CppSystem.Collections.IEnumerator>();
 
                 if (DestroyableSingleton<TutorialManager>.InstanceExists || !ShipStatus.Instance.IsGameOverDueToDeath())
@@ -61,7 +63,6 @@ namespace Nebula.Patches
                 sequence.Add(Effects.Action(new System.Action(() =>
                 {
                     UnityEngine.Object.Destroy(__instance.gameObject);
-                    WrapUpPostfix(__instance.exiled);
                 })));
 
                 var refArray = new UnhollowerBaseLib.Il2CppReferenceArray<Il2CppSystem.Collections.IEnumerator>(sequence.ToArray());

@@ -80,5 +80,11 @@ namespace Nebula.Patches
             __result = false;
         }
 
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.Awake))]
+        public static void Postfix(ShipStatus __instance)
+        {
+            Game.GameData.data.LoadMapData();
+        }
     }
 }

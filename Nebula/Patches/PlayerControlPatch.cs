@@ -91,6 +91,7 @@ namespace Nebula.Patches
                 }
 
                 if (playerInfo.GetModData().Attribute.HasAttribute(Game.PlayerAttribute.Invisible)) continue;
+                if (playerInfo.GetModData().Property.UnderTheFloor) continue;
 
                 if (!playerInfo.Disconnected && !playerInfo.IsDead)
                 {

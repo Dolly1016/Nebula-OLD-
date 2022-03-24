@@ -25,7 +25,9 @@ namespace Nebula.Patches
         {
             return
                 (player == PlayerControl.LocalPlayer && EyesightPatch.ObserverMode)
-                || (player.GetModData().Property.UnderTheFloor);
+                || (player.GetModData().Property.UnderTheFloor)
+                || (player.inVent)
+                || (!PlayerControl.LocalPlayer.Data.IsDead && player.Data.IsDead);
         }
 
         static private Color rewriteImpostorColor(Game.PlayerData player, Color currentColor, Color impostorColor)
@@ -78,6 +80,17 @@ namespace Nebula.Patches
                 }
 
                 playerData = Game.GameData.data.players[player.PlayerId];
+
+                /* 表示・非表示を設定する */
+
+                player.Visible = !IsInvisible(player);
+
+                if (player.MyPhysics?.GlowAnimator != null)
+                {
+                    player.MyPhysics.GlowAnimator.gameObject.SetActive(player.Visible && !ShipStatus.Instance);
+                }
+            
+
 
                 /* 名前を編集する */
                 name = "";

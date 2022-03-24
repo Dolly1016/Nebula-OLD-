@@ -24,7 +24,7 @@ namespace Nebula.Roles
             {
                 return EndCondition.CrewmateWinByVote;
             }
-            if (GameData.Instance.TotalTasks <= GameData.Instance.CompletedTasks)
+            if (GameData.Instance.TotalTasks <= GameData.Instance.CompletedTasks && GameData.Instance.CompletedTasks>0)
             {
                 return EndCondition.CrewmateWinByTask;
             }
@@ -147,7 +147,7 @@ namespace Nebula.Roles
         {
             if (Game.GameData.data.GameMode == Module.CustomGameMode.Minigame)
             {
-                if (GameData.Instance.TotalTasks <= GameData.Instance.CompletedTasks)
+                if (GameData.Instance.TotalTasks <= GameData.Instance.CompletedTasks && GameData.Instance.CompletedTasks>0)
                 {
                     return EndCondition.MinigameEscapeesWin;
                 }

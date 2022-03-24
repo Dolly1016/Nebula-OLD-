@@ -9,18 +9,19 @@ using Nebula.Objects;
 using HarmonyLib;
 using Hazel;
 
-namespace Nebula.Roles.MinigameRoles
+
+namespace Nebula.Roles.MinigameRoles.Escapees
 {
-    public class Escapee : Role
+    public class Biela : Role
     {
         public override bool CheckAdditionalWin(PlayerControl player, EndCondition condition)
         {
             if (condition != EndCondition.MinigameEscapeesWin) return false;
-            return !player.Data.IsDead ;
+            return !player.Data.IsDead;
         }
 
-        public Escapee()
-                : base("Escapee", "escapee", Palette.CrewmateBlue, RoleCategory.Crewmate, Side.GamePlayer, Side.GamePlayer,
+        public Biela()
+                : base("Biela", "biela", Palette.CrewmateBlue, RoleCategory.Crewmate, Side.GamePlayer, Side.GamePlayer,
                      Player.minigameSideSet, Player.minigameSideSet, new HashSet<EndCondition>() { EndCondition.MinigamePlayersWin },
                      false, VentPermission.CanNotUse, false, false, false)
         {

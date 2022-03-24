@@ -69,6 +69,7 @@ namespace Nebula.Roles
         public float VentCoolDownMaxTimer { get; set; }
         public bool CanMoveInVents { get; set; }
         public bool canInvokeSabotage { get; set; }
+        public bool RemoveAllTasksOnDead { get; set; }
         /// <summary>
         /// 停電が効かない場合true
         /// </summary>

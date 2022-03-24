@@ -93,6 +93,7 @@ namespace Nebula
         public static CustomOption exceptPolus;
         public static CustomOption exceptAirship;
         public static CustomOption additionalVents;
+        public static CustomOption additionalWirings;
         public static CustomOption multipleSpawnPoints;
 
         public static CustomOption emergencyOptions;
@@ -111,6 +112,12 @@ namespace Nebula
         public static CustomOption AdminLimitOption;
         public static CustomOption VitalsLimitOption;
         public static CustomOption CameraAndDoorLogLimitOption;
+
+        public static CustomOption TasksOption;
+        public static CustomOption RandomizedWiringOption;
+        public static CustomOption MeistersManifoldsOption;
+        public static CustomOption MeistersFilterOption;
+        public static CustomOption MeistersFuelEnginesOption;
 
         public static CustomOption advanceRoleOptions;
 
@@ -161,14 +168,15 @@ namespace Nebula
             canUseEmergencyWithoutReport = CustomOption.Create(10105, Color.white, "option.canUseEmergencyWithoutReport", false, emergencyOptions).SetGameMode(~CustomGameMode.Minigame);
             severeEmergencyLock = CustomOption.Create(10109, Color.white, "option.severeEmergencyLock", false, emergencyOptions).SetGameMode(~CustomGameMode.Minigame);
 
-            mapOptions = CustomOption.Create(10120, Color.white, "option.mapOptions", false, null, true).SetGameMode(~CustomGameMode.Minigame);
-            dynamicMap = CustomOption.Create(10121, Color.white, "option.playRandomMaps", false, mapOptions).SetGameMode(~CustomGameMode.Minigame);
-            exceptSkeld = CustomOption.Create(10122, Color.white, "option.exceptSkeld", false, dynamicMap).SetGameMode(~CustomGameMode.Minigame);
-            exceptMIRA = CustomOption.Create(10123, Color.white, "option.exceptMIRA", false, dynamicMap).SetGameMode(~CustomGameMode.Minigame);
-            exceptPolus = CustomOption.Create(10124, Color.white, "option.exceptPolus", false, dynamicMap).SetGameMode(~CustomGameMode.Minigame);
-            exceptAirship = CustomOption.Create(10125, Color.white, "option.exceptAirship", false, dynamicMap).SetGameMode(~CustomGameMode.Minigame);
+            mapOptions = CustomOption.Create(10120, Color.white, "option.mapOptions", false, null, true).SetGameMode(CustomGameMode.All);
+            dynamicMap = CustomOption.Create(10121, Color.white, "option.playRandomMaps", false, mapOptions).SetGameMode(CustomGameMode.All);
+            exceptSkeld = CustomOption.Create(10122, Color.white, "option.exceptSkeld", false, dynamicMap).SetGameMode(CustomGameMode.All);
+            exceptMIRA = CustomOption.Create(10123, Color.white, "option.exceptMIRA", false, dynamicMap).SetGameMode(CustomGameMode.All);
+            exceptPolus = CustomOption.Create(10124, Color.white, "option.exceptPolus", false, dynamicMap).SetGameMode(CustomGameMode.All);
+            exceptAirship = CustomOption.Create(10125, Color.white, "option.exceptAirship", false, dynamicMap).SetGameMode(CustomGameMode.All);
             additionalVents = CustomOption.Create(10130, Color.white, "option.additionalVents", false, mapOptions).SetGameMode(~CustomGameMode.Minigame);
-            multipleSpawnPoints = CustomOption.Create(10131, Color.white, "option.multipleSpawnPoints", false, mapOptions).SetGameMode(~CustomGameMode.Minigame);
+            additionalWirings = CustomOption.Create(10131, Color.white, "option.additionalWirings", false, mapOptions).SetGameMode(CustomGameMode.All);
+            multipleSpawnPoints = CustomOption.Create(10132, Color.white, "option.multipleSpawnPoints", false, mapOptions).SetGameMode(~CustomGameMode.Minigame);
 
             limiterOptions = CustomOption.Create(10140, Color.white, "option.limitOptions", false, null, true).SetGameMode(CustomGameMode.All);
             timeLimitOption = CustomOption.Create(10141, Color.white, "option.timeLimitOption", 20f, 1f, 80f, 1f, limiterOptions).SetGameMode(CustomGameMode.All);
@@ -184,7 +192,11 @@ namespace Nebula
             CameraAndDoorLogLimitOption = CustomOption.Create(10153, Color.white, "option.devicesOption.CameraAndDoorLog", 30f, 5f, 600f, 5f, DevicesOption).SetGameMode(CustomGameMode.All);
             CameraAndDoorLogLimitOption.suffix = "second";
 
-            advanceRoleOptions = CustomOption.Create(10160, Color.white, "option.advanceRoleOptions", false, null, true).SetGameMode(CustomGameMode.Standard);
+            TasksOption = CustomOption.Create(10160, Color.white, "option.tasksOption", false, null, true).SetGameMode(CustomGameMode.All);
+            RandomizedWiringOption = CustomOption.Create(10161, Color.white, "option.randomizedWiring", false, TasksOption).SetGameMode(CustomGameMode.All);
+            MeistersManifoldsOption = CustomOption.Create(10162, Color.white, "option.meistersManifolds", false, TasksOption).SetGameMode(CustomGameMode.All);
+            MeistersFilterOption = CustomOption.Create(10163, Color.white, "option.meistersO2Filter", false, TasksOption).SetGameMode(CustomGameMode.All);
+            MeistersFuelEnginesOption = CustomOption.Create(10164, Color.white, "option.meistersFuelEngines", false, TasksOption).SetGameMode(CustomGameMode.All);
 
             //ロールのオプションを読み込む
             Roles.Role.LoadAllOptionData();

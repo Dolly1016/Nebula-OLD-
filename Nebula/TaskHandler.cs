@@ -50,6 +50,9 @@ namespace Nebula
                 {
                     GameData.PlayerInfo playerInfo = __instance.AllPlayers[i];
 
+                    //切断されたプレイヤーのタスクは数えない
+                    if (Helpers.playerById(playerInfo.PlayerId) == null) continue;
+
                     if (!Helpers.HasModData(playerInfo.PlayerId)) continue;
 
                     if (playerInfo.GetModData().role.HasFakeTask) continue;

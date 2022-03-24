@@ -68,6 +68,7 @@
 "option.exceptPolus" : "Except Polus"
 "option.exceptAirship" : "Except The Airship"
 "option.additionalVents" : "Additional Vents"
+"option.additionalWirings" : "Additional Wirings"
 "option.multipleSpawnPoints" : "Multiple Spawn Points"
 
 "option.exclusiveAssignment" : "Exclusive Assignment"
@@ -91,6 +92,12 @@
 "option.devicesOption.Admin" : "Admin"
 "option.devicesOption.Vitals" : "Vitals"
 "option.devicesOption.CameraAndDoorLog" : "Cam and Door Log"
+
+"option.tasksOption" : "Meister's Task Option"
+"option.randomizedWiring" : "Randomized Wiring"
+"option.meistersManifolds" : "Meister's Manifolds"
+"option.meistersO2Filter" : "Meister's O2 Filter"
+"option.meistersFuelEngines" : "Meister's Fuel Engines"
 
 "option.advanceRoleOptions" : "Advance Role Options"
 
@@ -483,9 +490,13 @@
 "role.player.description" : "The Game Is About To Start"
 "role.player.info" : "You're game player."
 
-"role.escapee.name" : "Escapee"
+"role.biela.name" : "Biela"
 
-"role.hunter.name" : "Hunter"
+"role.halley.name" : "Halley"
+
+"role.hadar.name" : "Hadar"
+
+"role.polis.name" : "Polis"
 
 "role.metaRole.name" : "Free Play"
 "role.metaRole.info" : "You can measure the distance.\n\n - 1 : Set origin at the current position\n - 2 : Open roles menu\n - ESC : Close roles menu"
@@ -573,3 +584,5 @@
 "button.label.oracle" : "oracle"
 "button.label.revive" : "revive"
 "button.label.vital" : "vitals"
+"button.label.hadar.hide" : "lurk"
+"button.label.hadar.appear" : "raid"

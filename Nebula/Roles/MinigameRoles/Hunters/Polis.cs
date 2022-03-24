@@ -9,9 +9,9 @@ using Nebula.Objects;
 using HarmonyLib;
 using Hazel;
 
-namespace Nebula.Roles.MinigameRoles
+namespace Nebula.Roles.MinigameRoles.Hunters
 {
-    public class Hunter : Role
+    public class Polis : Role
     {
         static private CustomButton arrestButton;
 
@@ -81,8 +81,8 @@ namespace Nebula.Roles.MinigameRoles
             displayColor = Palette.ImpostorRed;
         }
 
-        public Hunter()
-                : base("Hunter", "hunter", Palette.ImpostorRed, RoleCategory.Crewmate, Side.GamePlayer, Side.GamePlayer,
+        public Polis()
+                : base("Polis", "polis", Palette.ImpostorRed, RoleCategory.Crewmate, Side.GamePlayer, Side.GamePlayer,
                      Player.minigameSideSet, Player.minigameSideSet, new HashSet<EndCondition>() { EndCondition.MinigameHunterWin },
                      true, VentPermission.CanNotUse, false, false, true)
         {

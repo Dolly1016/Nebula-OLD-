@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Nebula.Roles;
 using UnityEngine;
+using PowerTools;
 using static GameData;
 
 namespace Nebula.Game
@@ -303,6 +304,7 @@ namespace Nebula.Game
 
     public class PlayerProperty
     {
+        private PlayerControl player { get; }
         private bool underTheFloor { get; set; }
 
         public bool CanTransmitWalls { get; set; }
@@ -313,16 +315,82 @@ namespace Nebula.Game
             set {
                 if (underTheFloor != value)
                 {
-                    underTheFloor = value;
-                    
+                    if (underTheFloor)
+                        Gush();
+                    else
+                        Dive();
                 }
             }
         }
 
-        public PlayerProperty()
+        private void Dive()
+        {
+            List<Il2CppSystem.Collections.IEnumerator> sequence = new List<Il2CppSystem.Collections.IEnumerator>();
+
+            sequence.Add(Effects.Action(new System.Action(() =>
+            {
+                player.MyPhysics.body.velocity = Vector2.zero;
+                if (player.AmOwner)
+                    player.MyPhysics.inputHandler.enabled = true;
+                player.MyPhysics.Skin.SetEnterVent(player.MyPhysics.rend.flipX);
+                player.MyPhysics.Animator.Play(player.MyPhysics.EnterVentAnim, 1f);
+                player.MyPhysics.Animator.Time = 0f;
+                player.moveable = false;
+            })));
+            sequence.Add(Effects.Wait(player.MyPhysics.EnterVentAnim.length));
+            sequence.Add(Effects.Action(new System.Action(() =>
+            {
+                if (player.AmOwner)
+                    player.MyPhysics.inputHandler.enabled = false;
+                player.MyPhysics.myPlayer.Visible = false;
+                player.MyPhysics.Skin.SetIdle(player.MyPhysics.rend.flipX);
+                player.MyPhysics.Animator.Play(player.MyPhysics.IdleAnim, 1f);
+                player.moveable = true;
+                underTheFloor = true;
+            })));
+
+            var refArray = new UnhollowerBaseLib.Il2CppReferenceArray<Il2CppSystem.Collections.IEnumerator>(sequence.ToArray());
+            player.MyPhysics.StopAllCoroutines();
+            player.MyPhysics.StartCoroutine(Effects.Sequence(refArray));
+        }
+
+        private void Gush()
+        {
+            List<Il2CppSystem.Collections.IEnumerator> sequence = new List<Il2CppSystem.Collections.IEnumerator>();
+
+            sequence.Add(Effects.Action(new System.Action(() =>
+            {
+                player.MyPhysics.body.velocity = Vector2.zero;
+                if (player.AmOwner)
+                    player.MyPhysics.inputHandler.enabled = true;
+                player.MyPhysics.Skin.SetExitVent(player.MyPhysics.rend.flipX);
+                player.MyPhysics.Animator.Play(player.MyPhysics.ExitVentAnim, 1f);
+                player.MyPhysics.Animator.Time = 0f;
+                player.moveable = false;
+                player.MyPhysics.myPlayer.Visible = true;
+                underTheFloor = false;
+            })));
+            sequence.Add(Effects.Wait(player.MyPhysics.ExitVentAnim.length));
+            sequence.Add(Effects.Action(new System.Action(() =>
+            {
+                if (player.AmOwner)
+                    player.MyPhysics.inputHandler.enabled = false;
+                player.MyPhysics.Skin.SetIdle(player.MyPhysics.rend.flipX);
+                player.MyPhysics.Animator.Play(player.MyPhysics.IdleAnim, 1f);
+                player.moveable = true;
+            })));
+
+            var refArray = new UnhollowerBaseLib.Il2CppReferenceArray<Il2CppSystem.Collections.IEnumerator>(sequence.ToArray());
+            player.MyPhysics.StopAllCoroutines();
+            player.MyPhysics.StartCoroutine(Effects.Sequence(refArray));
+        }
+
+        public PlayerProperty(PlayerControl player)
         {
             CanTransmitWalls = false;
             UnderTheFloor = false;
+
+            this.player = player;
         }
     }
 
@@ -427,10 +495,10 @@ namespace Nebula.Game
 
 
 
-        public PlayerData(byte playerId, string name,PlayerOutfit outfit,Role role)
+        public PlayerData(PlayerControl player, string name,PlayerOutfit outfit,Role role)
         {
             
-            this.id = playerId;
+            this.id = player.PlayerId;
             this.name = name;
             this.role = role;
             this.extraRole = new HashSet<ExtraRole>();
@@ -441,14 +509,14 @@ namespace Nebula.Game
             this.CurrentOutfit = new PlayerOutfitData(outfit);
             this.currentName = name;
             this.dragPlayerId = Byte.MaxValue;
-            this.Speed = new SpeedFactorManager(playerId) ;
-            this.Attribute = new PlayerAttributeFactorManager(playerId);
+            this.Speed = new SpeedFactorManager(player.PlayerId) ;
+            this.Attribute = new PlayerAttributeFactorManager(player.PlayerId);
             this.Tasks = new TaskData(role.side == Roles.Side.Impostor || role.HasFakeTask, role.FakeTaskIsExecutable);
             this.MouseAngle = 0f;
             this.Status = PlayerStatus.Alive;
             this.RoleInfo = "";
             this.TransColor = Color.white;
-            this.Property = new PlayerProperty();
+            this.Property = new PlayerProperty(player);
         }
 
         public int GetRoleData(int id)
@@ -783,7 +851,7 @@ namespace Nebula.Game
                 }
             }
 
-            players.Add(playerId, new PlayerData(playerId,name, outfit,role));
+            players.Add(playerId, new PlayerData(Helpers.playerById(playerId), name, outfit, role));
         }
 
         public void LoadMapData()
@@ -793,8 +861,11 @@ namespace Nebula.Game
                 VentMap.Add(vent.gameObject.name, new VentData(vent));
             }
 
-            Map.MapEditor.AddVents(PlayerControl.GameOptions.MapId);
-
+            if (CustomOptionHolder.mapOptions.getBool())
+            {
+                Map.MapEditor.AddVents(PlayerControl.GameOptions.MapId);
+                Map.MapEditor.AddWirings(PlayerControl.GameOptions.MapId);
+            }
 
             Rooms = new List<SystemTypes>();
             foreach(SystemTypes type in ShipStatus.Instance.FastRooms.Keys)

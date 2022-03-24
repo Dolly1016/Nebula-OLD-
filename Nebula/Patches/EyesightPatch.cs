@@ -118,18 +118,6 @@ namespace Nebula.Patches
 					transform.gameObject.SetActive(!ObserverMode);
 				}
 			}
-
-            if (PlayerControl.LocalPlayer)
-            {
-				var player = PlayerControl.LocalPlayer;
-
-				player.Visible = !ObserverMode && !player.inVent;
-
-                if (player.MyPhysics?.GlowAnimator != null)
-                {
-					player.MyPhysics.GlowAnimator.gameObject.SetActive(!ObserverMode && !ShipStatus.Instance);
-				}
-			}
 		}
 	}
 }

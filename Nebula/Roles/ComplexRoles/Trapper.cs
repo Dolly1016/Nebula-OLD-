@@ -183,8 +183,8 @@ namespace Nebula.Roles.ComplexRoles
                         {
                             if (player.Data.IsDead) continue;
 
+                            RPCEventInvoker.ObjectUpdate(obj, 0);
                             Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, player, Game.PlayerData.PlayerStatus.Trapped, false, false);
-                            RPCEventInvoker.ObjectDestroy(obj);
 
                             PlayerControl.LocalPlayer.killTimer = PlayerControl.GameOptions.KillCooldown;
                         }
@@ -264,22 +264,22 @@ namespace Nebula.Roles.ComplexRoles
                     switch (trapKind)
                     {
                         case 0:
-                            RPCEventInvoker.ObjectInstantiate(Objects.ObjectTypes.VisibleTrap.AccelTrap, PlayerControl.LocalPlayer.transform.position + (Vector3)PlayerControl.LocalPlayer.Collider.offset);
+                            RPCEventInvoker.ObjectInstantiate(CustomObject.Type.AccelTrap, PlayerControl.LocalPlayer.transform.position + (Vector3)PlayerControl.LocalPlayer.Collider.offset);
                             RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, Roles.F_Trapper.remainTrapsId, -1);
                             break;
                         case 1:
-                            RPCEventInvoker.ObjectInstantiate(Objects.ObjectTypes.VisibleTrap.DecelTrap, PlayerControl.LocalPlayer.transform.position + (Vector3)PlayerControl.LocalPlayer.Collider.offset);
+                            RPCEventInvoker.ObjectInstantiate(CustomObject.Type.DecelTrap, PlayerControl.LocalPlayer.transform.position + (Vector3)PlayerControl.LocalPlayer.Collider.offset);
                             RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, Roles.F_Trapper.remainTrapsId, -1);
                             break;
                         case 2:
                             if (side == Side.Impostor)
                             {
-                                RPCEventInvoker.ObjectInstantiate(Objects.ObjectTypes.InvisibleTrap.KillTrap, PlayerControl.LocalPlayer.transform.position + (Vector3)PlayerControl.LocalPlayer.Collider.offset);
+                                RPCEventInvoker.ObjectInstantiate(CustomObject.Type.KillTrap, PlayerControl.LocalPlayer.transform.position + (Vector3)PlayerControl.LocalPlayer.Collider.offset);
                                 RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, Roles.F_Trapper.remainTrapsId, -(int)Roles.F_Trapper.killButtonCostOption.getFloat());
                             }
                             else
                             {
-                                RPCEventInvoker.ObjectInstantiate(Objects.ObjectTypes.InvisibleTrap.CommTrap, PlayerControl.LocalPlayer.transform.position + (Vector3)PlayerControl.LocalPlayer.Collider.offset);
+                                RPCEventInvoker.ObjectInstantiate(CustomObject.Type.CommTrap, PlayerControl.LocalPlayer.transform.position + (Vector3)PlayerControl.LocalPlayer.Collider.offset);
                                 RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, Roles.F_Trapper.remainTrapsId, -(int)Roles.F_Trapper.commButtonCostOption.getFloat());
                             }
                             break;

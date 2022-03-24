@@ -46,6 +46,7 @@ namespace Nebula
         RefreshTasks,
         CompleteTask,
         ObjectInstantiate,
+        ObjectUpdate,
         ObjectDestroy,
         CountDownMessage,
         UpdateRestrictTimer,
@@ -186,6 +187,9 @@ namespace Nebula
                     break;
                 case (byte)CustomRPC.ObjectInstantiate:
                     RPCEvents.ObjectInstantiate(reader.ReadByte(), reader.ReadByte(), reader.ReadUInt64(), reader.ReadSingle(), reader.ReadSingle());
+                    break;
+                case (byte)CustomRPC.ObjectUpdate:
+                    RPCEvents.ObjectUpdate(reader.ReadUInt32(),reader.ReadInt32());
                     break;
                 case (byte)CustomRPC.ObjectDestroy:
                     RPCEvents.ObjectDestroy(reader.ReadUInt32());
@@ -353,7 +357,7 @@ namespace Nebula
 
                 Game.GameData.data.players[target.PlayerId].Die(Game.PlayerData.PlayerStatus.GetStatusById(statusId), source.PlayerId);
 
-                if (Game.GameData.data.players[target.PlayerId].role.HasFakeTask)
+                if (Game.GameData.data.players[target.PlayerId].role.RemoveAllTasksOnDead)
                 {
                     target.clearAllTasks();
                 }
@@ -591,21 +595,32 @@ namespace Nebula
 
         public static void RevivePlayer(byte playerId)
         {
-            //Necromancerを確定させる
-            Game.GameData.data.EstimationAI.Determine(Roles.Roles.Necromancer);
-
-            foreach (DeadBody body in Helpers.AllDeadBodies())
+            if (Game.GameData.data.GameMode == CustomGameMode.Standard)
             {
-                if (body.ParentId != playerId) continue;
+                //Necromancerを確定させる
+                Game.GameData.data.EstimationAI.Determine(Roles.Roles.Necromancer);
 
+                foreach (DeadBody body in Helpers.AllDeadBodies())
+                {
+                    if (body.ParentId != playerId) continue;
+
+                    Game.GameData.data.players[playerId].Revive();
+                    PlayerControl player = Helpers.playerById(playerId);
+                    player.transform.position = body.transform.position;
+                    player.Revive(false);
+                    player.Data.IsDead = false;
+                    Game.GameData.data.deadPlayers.Remove(playerId);
+
+                    UnityEngine.Object.Destroy(body.gameObject);
+                }
+            }
+            else
+            {
                 Game.GameData.data.players[playerId].Revive();
                 PlayerControl player = Helpers.playerById(playerId);
-                player.transform.position = body.transform.position;
                 player.Revive(false);
                 player.Data.IsDead = false;
                 Game.GameData.data.deadPlayers.Remove(playerId);
-
-                UnityEngine.Object.Destroy(body.gameObject);
             }
         }
 
@@ -735,6 +750,14 @@ namespace Nebula
         {
             Objects.CustomObject obj=new Objects.CustomObject(ownerId,Objects.CustomObject.Type.AllTypes[objectTypeId],objectId,new Vector3(positionX,positionY));
             obj.ObjectType.Update(obj);
+        }
+
+        public static void ObjectUpdate(ulong objectId,int command)
+        {
+            if (Objects.CustomObject.Objects.ContainsKey(objectId))
+            {
+                Objects.CustomObject.Objects[objectId].Update(command);
+            }
         }
 
         public static void ObjectDestroy(ulong objectId)
@@ -1241,6 +1264,15 @@ namespace Nebula
             writer.Write(position.y);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.ObjectInstantiate(PlayerControl.LocalPlayer.PlayerId,objectType.Id,id,position.x,position.y);
+        }
+
+        public static void ObjectUpdate(Objects.CustomObject customObject,int command)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ObjectUpdate, Hazel.SendOption.Reliable, -1);
+            writer.Write(customObject.Id);
+            writer.Write(command);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.ObjectUpdate(customObject.Id, command);
         }
 
         public static void ObjectDestroy(Objects.CustomObject customObject)

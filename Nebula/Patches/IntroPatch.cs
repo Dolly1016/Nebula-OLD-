@@ -60,9 +60,6 @@ namespace Nebula.Patches
                 RPCEventInvoker.SynchronizeTimer();
             }
 
-
-            Game.GameData.data.LoadMapData();
-
             Roles.Roles.StaticInitialize();
             
             //役職予測を初期化

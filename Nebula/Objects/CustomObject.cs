@@ -15,7 +15,7 @@ namespace Nebula.Objects
 
             public static ObjectTypes.VisibleTrap AccelTrap = new ObjectTypes.VisibleTrap(0, "AccelTrap", "Nebula.Resources.AccelTrap.png");
             public static ObjectTypes.VisibleTrap DecelTrap = new ObjectTypes.VisibleTrap(1, "DecelTrap", "Nebula.Resources.DecelTrap.png");
-            public static ObjectTypes.InvisibleTrap KillTrap = new ObjectTypes.InvisibleTrap(2, "KillTrap", "Nebula.Resources.KillTrap.png");
+            public static ObjectTypes.KillTrap KillTrap = new ObjectTypes.KillTrap(2, "KillTrap", "Nebula.Resources.KillTrap.png");
             public static ObjectTypes.InvisibleTrap CommTrap = new ObjectTypes.InvisibleTrap(3, "CommTrap", "Nebula.Resources.CommTrap.png");
             public static ObjectTypes.SniperRifle Rifle = new ObjectTypes.SniperRifle();
 
@@ -25,6 +25,7 @@ namespace Nebula.Objects
             public bool IsBack { get; set; }
             public bool IsFront { get; set; }
             public virtual void Update(CustomObject obj) { }
+            public virtual void Update(CustomObject obj,int command) { }
             public virtual void Initialize(CustomObject obj) { }
 
             public Type(byte id,string objectName,bool isBack = true)
@@ -47,6 +48,7 @@ namespace Nebula.Objects
         public Type ObjectType { get; }
         public ulong Id { get; }
         public int PassedMeetings { get; set; }
+        public int[] Data { get; set; }
 
         static public void RegisterUpdater(Action<PlayerControl> action)
         {
@@ -75,6 +77,8 @@ namespace Nebula.Objects
             else pos += new Vector3(0, 0, position.y / 1000f - 1f);
             GameObject.transform.position = pos;
             Renderer = GameObject.AddComponent<SpriteRenderer>();
+
+            Data = new int[0];
 
             PassedMeetings = 0;
 
@@ -139,6 +143,12 @@ namespace Nebula.Objects
         {
             UnityEngine.Object.Destroy(GameObject);
             Objects.Remove(this.Id);
+        }
+
+        //コマンドを受け付けた際のアップデート
+        public void Update(int command)
+        {
+            ObjectType.Update(this, command);
         }
 
         static public void Initialize()

@@ -58,8 +58,12 @@ namespace Nebula.Roles
         public static ParlourRoles.Gambler Gambler = new ParlourRoles.Gambler();
 
         public static MinigameRoles.Player Player = new MinigameRoles.Player();
-        public static MinigameRoles.Escapee Escapee = new MinigameRoles.Escapee();
-        public static MinigameRoles.Hunter Hunter = new MinigameRoles.Hunter();
+
+        public static MinigameRoles.Escapees.Biela Biela = new MinigameRoles.Escapees.Biela();
+        public static MinigameRoles.Escapees.Halley Halley = new MinigameRoles.Escapees.Halley();
+
+        public static MinigameRoles.Hunters.Hadar Hadar = new MinigameRoles.Hunters.Hadar();
+        public static MinigameRoles.Hunters.Polis Polis = new MinigameRoles.Hunters.Polis();
 
         public static ComplexRoles.FCrewmate F_Crewmate = new ComplexRoles.FCrewmate();
         public static ComplexRoles.FGuesser F_Guesser = new ComplexRoles.FGuesser();
@@ -83,7 +87,9 @@ namespace Nebula.Roles
             F_Crewmate,
             Crewmate,Agent,Alien,Bait,Booster,DamnedCrew,Doctor,Mayor,Navvy,Necromancer,NiceGuesser,NiceTrapper,Oracle,Provocateur,Psychic,Seer,Sheriff,Spy,
             Madmate,
-            Player,Escapee,Hunter,
+            Player,
+            Biela,Halley,
+            Hadar,Polis,
             Gambler,
             Investigator
             

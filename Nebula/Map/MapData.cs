@@ -24,6 +24,16 @@ namespace Nebula.Map
         }
     }
 
+    public class WiringData
+    {
+        HashSet<int>[] WiringCandidate;
+
+        public WiringData()
+        {
+            WiringCandidate = new HashSet<int>[3] { new HashSet<int>(), new HashSet<int>(), new HashSet<int>() };            
+        }
+    }
+
     public class MapData
     {
         //Skeld=0,MIRA=1,Polus=2,AirShip=4

@@ -39,7 +39,7 @@ namespace Nebula.Patches
     [HarmonyPatch(typeof(SabotageButton), nameof(SabotageButton.Refresh))]
     class SabotageButtonRefreshPatch
     {
-        static void Postfix(SabotageButton button)
+        static void Postfix(SabotageButton __instance)
         {
             if (HudManager.Instance==null) return;
             if (Game.GameData.data == null) return;
@@ -47,7 +47,7 @@ namespace Nebula.Patches
 
             if (!Game.GameData.data.myData.getGlobalData().role.canInvokeSabotage)
             {
-                button.SetDisabled();
+                __instance.SetDisabled();
             }
         }
     }

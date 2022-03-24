@@ -157,6 +157,12 @@ namespace Nebula
 
             if (player.Data != null && player.Data.Tasks != null)
                 player.Data.Tasks.Clear();
+
+            var taskData = player.GetModData().Tasks;
+            taskData.AllTasks = 0;
+            taskData.Completed = 0;
+            taskData.DisplayTasks = 0;
+            taskData.Quota = 0;
         }
 
         public static void setSemiTransparent(this PoolablePlayer player, bool value)
