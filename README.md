@@ -128,11 +128,11 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 
 | Language | Translator | Full Support Version | Download |
 | --- | --- | --- | --- |
-| 日本語 | - | 1.6.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.1,2022.2.24/Japanese.dat)|
-| 日本語 | kihi | 1.5.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.5.1.2%2Ckihi/Japanese.dat)|
-| 日本語 | Rey | 1.6.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.6.0%2CRey/Japanese.dat)|
+| 日本語 | - | 1.6.2.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.2.1,2022.2.24/Japanese.dat)|
+| 日本語 | kihi | 1.6.2.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.6.2.1%2Ckihi/Japanese.dat)|
+| 日本語 | Rey | 1.6.2.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.6.2.1%2CRey/Japanese.dat)|
 | 日本語 | Tanakanira | 1.6.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.6.0%2CTanakanira/Japanese.dat)|
-| English | - | 1.6.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.1,2022.2.24/English.dat)|
+| English | - | 1.6.2.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.2.1,2022.2.24/English.dat)|
 
 # 更新履歴
 <details>
