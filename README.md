@@ -26,6 +26,8 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.6.3.2 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.3.2,2022.2.24/Nebula_v1.6.3.2.zip)|
+| 1.6.3.1 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.3.1,2022.2.24/Nebula_v1.6.3.1.zip)|
 | 1.6.3 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.3,2022.2.24/Nebula_v1.6.3.zip)|
 | 1.6.2.1 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.2.1,2022.2.24/Nebula_v1.6.2.1.zip)|
 | 1.6.2 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.2,2022.2.24/Nebula_v1.6.2.zip)|
@@ -139,6 +141,12 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 <details>
   <summary>クリックで展開</summary>
 
+ **Version 1.6.3.2**
+ - 削除してしまった「Advance Role Options」を再追加
+  
+ **Version 1.6.3.1**
+ - フリープレイで復活時に死体が残る問題を修正
+  
  **Version 1.6.3**
  - タスク難化オプション「Meister's Task Option」を追加
  - Evil Trapperの発火済みキルトラップが全員から見えるように
