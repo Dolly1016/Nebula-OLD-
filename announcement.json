@@ -9,9 +9,9 @@ and you can join the our Discord with the link on our GitHub.
 Submitted works will be checked and added in the this mod.
 You're exactly a nebula consists of ideas!
 
-Main Features in NoS v1.6.0
- -New role %ROLE:AVENGER(Avenger)% is added.
- -We can now use Multiple Spawn Point in Polus.",
+Main Features in NoS v1.6.3
+ -New option %OPTION(option.tasksOptions),(Meister's Task Option)% is added.
+ -Everyone can now see fired %ROLE:EVILTRAPPER%'s kill traps.",
     "Japanese": 
 "◎More Cosmic! カスタムコス募集のお知らせ
   NebulaのDiscordにて、カスタムハットおよびカスタムネームプレートを募集しています。
@@ -20,8 +20,7 @@ Main Features in NoS v1.6.0
   詳しくはNebula on the Ship のDiscordから(GitHubにリンクがあります)。
   それでは、今日も良い船旅を！
 
-◆アップデート情報 v1.6.0
-  -新たな役職 %ROLE:AVENGER(Avenger)% を追加しました。
-  -Polusで、複数のスポーン位置を使用可能になりました。
-  -%ROLE:CREWMATE%に新たなオプション「%OPTION(role.crewmate.isGuessable),(Is Guessable)%」が追加されました。"
+◆アップデート情報 v1.6.3
+  -新機能「%OPTION(option.tasksOptions),(Meister's Task Option)%」を追加しました。
+  -%ROLE:EVILTRAPPER%の発動済みキルトラップが、全員から見えるようになりました。"
 }
