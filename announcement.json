@@ -1,5 +1,5 @@
 ﻿{
-    "Version": "4",
+    "Version": "5",
     "English": 
 "Hi Crewmates!
 
@@ -10,7 +10,7 @@ Submitted works will be checked and added in the this mod.
 You're exactly a nebula consists of ideas!
 
 Main Features in NoS v1.6.3
- -New option %OPTION(option.tasksOptions),(Meister's Task Option)% is added.
+ -New option %OPTION(option.tasksOptions),(Meister Task Option)% is added.
  -Everyone can now see fired %ROLE:EVILTRAPPER%'s kill traps.",
     "Japanese": 
 "◎More Cosmic! カスタムコス募集のお知らせ
@@ -21,6 +21,6 @@ Main Features in NoS v1.6.3
   それでは、今日も良い船旅を！
 
 ◆アップデート情報 v1.6.3
-  -新機能「%OPTION(option.tasksOptions),(Meister's Task Option)%」を追加しました。
+  -新機能「%OPTION(option.tasksOptions),(Meister Task Option)%」を追加しました。
   -%ROLE:EVILTRAPPER%の発動済みキルトラップが、全員から見えるようになりました。"
 }
