@@ -26,6 +26,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.6.3.4 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.3.4,2022.2.24/Nebula_v1.6.3.4.zip)|
 | 1.6.3.3 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.3.3,2022.2.24/Nebula_v1.6.3.3.zip)|
 | 1.6.3.2 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.3.2,2022.2.24/Nebula_v1.6.3.2.zip)|
 | 1.6.3.1 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.3.1,2022.2.24/Nebula_v1.6.3.1.zip)|
@@ -136,12 +137,18 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 | 日本語 | kihi | 1.6.2.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.6.2.1%2Ckihi/Japanese.dat)|
 | 日本語 | Rey | 1.6.2.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.6.2.1%2CRey/Japanese.dat)|
 | 日本語 | Tanakanira | 1.6.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.6.0%2CTanakanira/Japanese.dat)|
-| English | - | 1.6.3 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.3,2022.2.24/English.dat)|
+| English | - | 1.6.3.4 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.3,2022.2.24/English.dat)|
 
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
 
+ **Version 1.6.3.4**
+ - タイトル画面の構成を変更
+ - 役職が変化した際、追加役職としてのGuesserの能力が使えなくなってしまう問題を修正
+ - AvengerモードでLoversの相方がGuesserで撃たれたとき、Avengerにならずに自殺する問題を修正
+ - 全体的に操作がおかしくなる問題を暫定的に修正
+  
  **Version 1.6.3.3**
  - ホストが正常にゲームを進行できない問題を修正
  - Evil Trapperのキルトラップが何度も発動できてしまう問題を修正
