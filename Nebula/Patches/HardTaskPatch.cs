@@ -1,14 +1,12 @@
 ﻿using HarmonyLib;
-using Hazel;
+using Rewired;
 using System;
 using System.Linq;
-using System.Collections.Generic;
-using Rewired;
 using UnityEngine;
 
 namespace Nebula.Patches
 {
-	[Harmony]
+    [Harmony]
 	public class HardTaskPatch
 	{
 		//数字タスクの一部迷彩化
@@ -56,9 +54,15 @@ namespace Nebula.Patches
 		{
 			public static void Postfix(NormalPlayerTask __instance)
 			{
+				if (__instance.TaskType == TaskTypes.FuelEngines && __instance.StartAt==SystemTypes.CargoBay) {
+					//タスクの見た目のバグ修正
+					var stages = __instance.MinigamePrefab.gameObject.GetComponent<MultistageMinigame>().Stages;
+					stages[2] = stages[1];
+				}
+
 				if (!CustomOptionHolder.TasksOption.getBool() || !CustomOptionHolder.MeistersFuelEnginesOption.getBool()) return;
 
-				if (__instance.TaskType == TaskTypes.FuelEngines && __instance.StartAt == SystemTypes.Storage)
+				if (__instance.TaskType == TaskTypes.FuelEngines && __instance.MaxStep != 1)
 				{
 					__instance.MaxStep *= 2;
 				}
@@ -69,11 +73,12 @@ namespace Nebula.Patches
 		[HarmonyPatch(typeof(RefuelStage), nameof(RefuelStage.FixedUpdate))]
 		public static class RefuelStagePatch
 		{
-			private static bool IsHardMode(RefuelStage __instance) { return __instance.MyNormTask.MaxStep == 4; }
+			private static byte airshipEngineHistory = 1;
+			private static bool IsHardMode() { return (CustomOptionHolder.TasksOption.getBool() && CustomOptionHolder.MeistersFuelEnginesOption.getBool()); }
 
 			public static bool Prefix(RefuelStage __instance)
 			{
-				if (!CustomOptionHolder.TasksOption.getBool() || !CustomOptionHolder.MeistersFuelEnginesOption.getBool()) return true;
+				if (!IsHardMode()) return true;
 
 				if (ReInput.players.GetPlayer(0).GetButton(21))
 				{
@@ -95,28 +100,37 @@ namespace Nebula.Patches
 				if (__instance.isDown && __instance.timer < 1f)
 				{
 
-					__instance.timer += (Time.fixedDeltaTime / __instance.RefuelDuration) * ((IsHardMode(__instance) && __instance.MyNormTask.Data[1] % 2 == 1) ? 0.5f : 1f);
+					__instance.timer += (Time.fixedDeltaTime / __instance.RefuelDuration) * ((IsHardMode() && __instance.srcGauge) ? 0.5f : 1f);
 
 					__instance.MyNormTask.Data[0] = (byte)Mathf.Min(255f, __instance.timer * 255f);
-					if (__instance.timer >= ((IsHardMode(__instance) && __instance.MyNormTask.Data[1] % 2 == 1) ? 0.5f : 1f))
+					if (__instance.timer >= ((IsHardMode() && __instance.srcGauge) ? 0.5f : 1f))
 					{
 						__instance.complete = true;
 						if (__instance.greenLight)
-						{
 							__instance.greenLight.color = __instance.green;
-						}
+						
 						if (__instance.redLight)
-						{
 							__instance.redLight.color = __instance.darkRed;
-						}
+						
 						if (__instance.MyNormTask.MaxStep == 1)
-						{
 							__instance.MyNormTask.NextStep();
-						}
+						
 						else if (__instance.MyNormTask.StartAt == SystemTypes.CargoBay || __instance.MyNormTask.StartAt == SystemTypes.Engine)
 						{
 							__instance.MyNormTask.Data[0] = 0;
-							__instance.MyNormTask.Data[1] = (byte)(BoolRange.Next(0.5f) ? 1 : 2);
+							switch (__instance.MyNormTask.TaskStep)
+                            {
+								case 0:
+									airshipEngineHistory = __instance.MyNormTask.Data[1] = (byte)(NebulaPlugin.rnd.Next(1, 3));
+									break;
+								case 1:
+									__instance.MyNormTask.Data[1] = 0;
+									break;
+								case 2:
+									__instance.MyNormTask.Data[1] = airshipEngineHistory;
+									break;
+							}
+							
 							__instance.MyNormTask.NextStep();
 						}
 						else
@@ -129,25 +143,21 @@ namespace Nebula.Patches
 								__instance.MyNormTask.Data[1]++;
 
 							if (__instance.MyNormTask.Data[1] % 2 == 0)
-							{
 								__instance.MyNormTask.NextStep();
-							}
+							
 							__instance.MyNormTask.UpdateArrow();
 						}
 					}
 				}
 
-				if (IsHardMode(__instance) &&
-					((__instance.MyNormTask.Data[1] % 2 == 1 && __instance.MyNormTask.TaskStep % 2 == 1) ||
-					(__instance.complete && __instance.MyNormTask.Data[1] % 2 == 0 && __instance.MyNormTask.TaskStep % 2 == 0)))
+				if (IsHardMode() && __instance.srcGauge  && (__instance.MyNormTask.TaskStep+1)%4<=1)
 					__instance.destGauge.value = __instance.timer + 0.5f;
 				else
 					__instance.destGauge.value = __instance.timer;
 
 				if (__instance.srcGauge)
-				{
-					__instance.srcGauge.value = 1f - (IsHardMode(__instance) ? 2f : 1f) * __instance.timer;
-				}
+					__instance.srcGauge.value = 1f - (IsHardMode() ? 2f : 1f) * __instance.timer;
+				
 
 				return false;
 			}

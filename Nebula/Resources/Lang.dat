@@ -490,13 +490,19 @@
 "role.player.description" : "The Game Is About To Start"
 "role.player.info" : "You're game player."
 
-"role.biela.name" : "Biela"
-
 "role.halley.name" : "Halley"
 
-"role.hadar.name" : "Hadar"
+"role.biela.name" : "Biela"
+
+"option.escapeHunter" : "Hunter"
 
 "role.polis.name" : "Polis"
+"role.polis.arrestCoolDown" : "Arrest Cool Down"
+
+"role.hadar.name" : "Hadar"
+"role.hadar.damageRadius" : "Damage Radius"
+"role.hadar.damageLevel" : "Damage Level"
+"role.hadar.reappearance" : "Reappear Cool Down"
 
 "role.metaRole.name" : "Free Play"
 "role.metaRole.info" : "You can measure the distance.\n\n - 1 : Set origin at the current position\n - 2 : Open roles menu\n - ESC : Close roles menu"

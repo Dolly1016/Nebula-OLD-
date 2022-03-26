@@ -11,8 +11,45 @@ using Hazel;
 
 namespace Nebula.Roles.MinigameRoles.Hunters
 {
-    public class Hadar : Role
+    public class Hadar : Hunter
     {
+        private SpriteRenderer FS_PlayersSensor=null;
+
+        private void UpdateFullScreen()
+        {
+            if (!PlayerControl.LocalPlayer) return;
+            if (PlayerControl.LocalPlayer.GetModData() == null) return;
+
+            if (FS_PlayersSensor==null)
+            {
+                FS_PlayersSensor = GameObject.Instantiate(HudManager.Instance.FullScreen, HudManager.Instance.transform);
+                FS_PlayersSensor.color = Palette.ImpostorRed.AlphaMultiplied(0f);
+                FS_PlayersSensor.enabled = true;
+            }
+
+            if (!PlayerControl.LocalPlayer.GetModData().Property.UnderTheFloor)
+                FS_PlayersSensor.color = Palette.ClearWhite;
+            else
+            {
+                float sum = 0f;
+                var center = PlayerControl.LocalPlayer.transform.position;
+                foreach (var player in PlayerControl.AllPlayerControls)
+                {
+                    if (player == PlayerControl.LocalPlayer) continue;
+                    if (player.Data.IsDead) continue;
+                    float dis = player.transform.position.Distance(center);
+                    if (dis < DamageRadiusOption.getFloat()+3f)
+                    {
+                        sum += 1f- (dis / (DamageRadiusOption.getFloat() + 3f));
+                    }
+                }
+                sum *= 0.25f;
+                if (sum > 1f) sum = 1f;
+
+                FS_PlayersSensor.color = Palette.ImpostorRed.AlphaMultiplied(sum * 0.75f);
+            }
+        }
+
         static private CustomButton ventButton, auraButton;
         private float lightRadius=1f;
 
@@ -38,6 +75,25 @@ namespace Nebula.Roles.MinigameRoles.Hunters
             return auraButtonSprite;
         }
 
+        private Module.CustomOption DamageRadiusOption;
+        private Module.CustomOption DamageLevelOption;
+        private Module.CustomOption ReappearanceOption;
+
+        public override void LoadOptionData()
+        {
+            base.LoadOptionData();
+
+            DamageRadiusOption = CreateOption(Color.white, "damageRadius", 5f, 1f, 15f, 0.5f);
+            DamageRadiusOption.suffix = "cross";
+
+            DamageLevelOption = CreateOption(Color.white, "damageLevel", 2f, 0.5f, 5f, 0.5f);
+            DamageLevelOption.suffix = "cross";
+
+            ReappearanceOption = CreateOption(Color.white, "reappearance", 5f, 3f, 15f, 1f);
+            ReappearanceOption.suffix = "second";
+        }
+
+
         public override void Initialize(PlayerControl __instance)
         {
             lightRadius = 1f;
@@ -53,11 +109,35 @@ namespace Nebula.Roles.MinigameRoles.Hunters
                 () =>
                 {
                     var property = PlayerControl.LocalPlayer.GetModData().Property;
+
+                    //ダメージを与える
+                    if (property.UnderTheFloor)
+                    {
+                        var center = PlayerControl.LocalPlayer.transform.position;
+                        foreach(var player in PlayerControl.AllPlayerControls)
+                        {
+                            if (player == PlayerControl.LocalPlayer) continue;
+                            if (player.Data.IsDead) continue;
+                            float dis = player.transform.position.Distance(center);
+                            if (dis < DamageRadiusOption.getFloat())
+                            {
+                                float damage = (DamageRadiusOption.getFloat() - dis) / DamageRadiusOption.getFloat();
+                                damage *= DamageLevelOption.getFloat() * 0.6f;
+                                RPCEventInvoker.DeathGuage(PlayerControl.LocalPlayer.PlayerId, player.PlayerId, damage);
+                            }
+                        }
+                        ventButton.Timer = 3f;
+                    }
+                    else
+                    {
+                        ventButton.Timer = ReappearanceOption.getFloat();
+                    }
+
                     ventButton.SetLabel(property.UnderTheFloor?
                         "button.label.hadar.hide" : "button.label.hadar.appear");
                     ventButton.Sprite = property.UnderTheFloor ?
                         GetVentHideButtonSprite() : GetVentAppearButtonSprite();
-                    property.UnderTheFloor = !property.UnderTheFloor;
+                    RPCEventInvoker.UndergroundAction(!property.UnderTheFloor);
                 },
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
                 () => { return PlayerControl.LocalPlayer.CanMove; },
@@ -89,6 +169,18 @@ namespace Nebula.Roles.MinigameRoles.Hunters
                 ventButton.Destroy();
                 ventButton = null;
             }
+
+            if (FS_PlayersSensor)
+            {
+                GameObject.Destroy(FS_PlayersSensor);
+                FS_PlayersSensor = null;
+            }
+        }
+
+        public override void MyPlayerControlUpdate()
+        {
+            base.MyPlayerControlUpdate();
+            UpdateFullScreen();
         }
 
         public override void GetLightRadius(ref float radius) {
@@ -111,7 +203,6 @@ namespace Nebula.Roles.MinigameRoles.Hunters
                      Player.minigameSideSet, Player.minigameSideSet, new HashSet<EndCondition>() { EndCondition.MinigameHunterWin },
                      true, VentPermission.CanNotUse, false, false, true)
         {
-            IsHideRole = true;
             ValidGamemode = Module.CustomGameMode.Minigame;
             CanCallEmergencyMeeting = false;
 

@@ -78,7 +78,6 @@ namespace Nebula.Roles.ComplexRoles
                 : base("Guesser", "guesser", RoleColor)
                      
         {
-            remainShotsId = Game.GameData.RegisterRoleDataId("guesser.remainShots");
         }
 
         public override List<Role> GetImplicateRoles() { return new List<Role>() { Roles.EvilGuesser, Roles.NiceGuesser }; }
@@ -88,7 +87,7 @@ namespace Nebula.Roles.ComplexRoles
     {
         public static void GlobalInitialize(PlayerControl __instance)
         {
-            Game.GameData.data.myData.getGlobalData().SetRoleData(Roles.F_Guesser.remainShotsId, (int)Roles.F_Guesser.guesserShots.getFloat());
+            Game.GameData.data.myData.getGlobalData().SetExtraRoleData(Roles.SecondaryGuesser.id, (ulong)Roles.F_Guesser.guesserShots.getFloat());
         }
 
         private static GameObject guesserUI;
@@ -161,7 +160,9 @@ namespace Nebula.Roles.ComplexRoles
                         __instance.playerStates.ToList().ForEach(x => x.gameObject.SetActive(true));
                         UnityEngine.Object.Destroy(container.gameObject);
 
-                        RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, Roles.F_Guesser.remainShotsId, -1);
+                        ulong data=PlayerControl.LocalPlayer.GetModData().GetExtraRoleData(Roles.SecondaryGuesser.id);
+                        data--;
+                        RPCEventInvoker.UpdateExtraRoleData(PlayerControl.LocalPlayer.PlayerId, Roles.SecondaryGuesser.id, data);
 
                         if (Roles.F_Guesser.canShotSeveralTimesInTheSameMeeting.getBool() &&
                         Game.GameData.data.myData.getGlobalData().GetRoleData(Roles.F_Guesser.remainShotsId) > 1 && dyingTarget != PlayerControl.LocalPlayer)
@@ -182,7 +183,7 @@ namespace Nebula.Roles.ComplexRoles
 
         public static void SetupMeetingButton(MeetingHud __instance)
         {
-            if (!PlayerControl.LocalPlayer.Data.IsDead && Game.GameData.data.myData.getGlobalData().GetRoleData(Roles.F_Guesser.remainShotsId) > 0)
+            if (!PlayerControl.LocalPlayer.Data.IsDead && Game.GameData.data.myData.getGlobalData().GetExtraRoleData(Roles.SecondaryGuesser.id) > 0)
             {
                 for (int i = 0; i < __instance.playerStates.Length; i++)
                 {
@@ -205,7 +206,7 @@ namespace Nebula.Roles.ComplexRoles
 
         public static void MeetingUpdate(MeetingHud __instance, TMPro.TextMeshPro meetingInfo)
         {
-            int left = Game.GameData.data.myData.getGlobalData().GetRoleData(Roles.F_Guesser.remainShotsId);
+            ulong left = Game.GameData.data.myData.getGlobalData().GetExtraRoleData(Roles.SecondaryGuesser);
             if (left <= 0) return;
             meetingInfo.text = Language.Language.GetString("role.guesser.guessesLeft") + ": " + left;
             meetingInfo.gameObject.SetActive(true);

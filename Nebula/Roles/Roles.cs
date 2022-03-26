@@ -88,8 +88,8 @@ namespace Nebula.Roles
             Crewmate,Agent,Alien,Bait,Booster,DamnedCrew,Doctor,Mayor,Navvy,Necromancer,NiceGuesser,NiceTrapper,Oracle,Provocateur,Psychic,Seer,Sheriff,Spy,
             Madmate,
             Player,
-            Biela,Halley,
-            Hadar,Polis,
+            Halley,Biela,
+            Polis,Hadar,
             Gambler,
             Investigator
             

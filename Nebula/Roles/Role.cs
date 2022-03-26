@@ -53,7 +53,7 @@ namespace Nebula.Roles
         /// </summary>
         public HashSet<Role> RelatedRoles { get; set; }
 
-        protected HashSet<Patches.EndCondition> winReasons { get; }
+        public HashSet<Patches.EndCondition> winReasons { get; }
         public virtual bool CheckWin(PlayerControl player, Patches.EndCondition winReason)
         {
             //単独勝利ロール

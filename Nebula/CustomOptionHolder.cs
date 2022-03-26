@@ -125,6 +125,8 @@ namespace Nebula
         public static List<Tuple<CustomOption,List<CustomOption>>> exclusiveAssignmentList;
         public static List<Roles.Role> exclusiveAssignmentRoles;
 
+        public static CustomOption escapeHunterOption;
+
         public static void AddExclusiveAssignment(ref List<ExclusiveAssignment> exclusiveAssignments)
         {
             if (!exclusiveAssignmentParent.getBool()) return;
@@ -197,6 +199,16 @@ namespace Nebula
             MeistersManifoldsOption = CustomOption.Create(10162, Color.white, "option.meistersManifolds", false, TasksOption).SetGameMode(CustomGameMode.All);
             MeistersFilterOption = CustomOption.Create(10163, Color.white, "option.meistersO2Filter", false, TasksOption).SetGameMode(CustomGameMode.All);
             MeistersFuelEnginesOption = CustomOption.Create(10164, Color.white, "option.meistersFuelEngines", false, TasksOption).SetGameMode(CustomGameMode.All);
+
+            advanceRoleOptions = CustomOption.Create(10170, Color.white, "option.advanceRoleOptions", false, null, true).SetGameMode(CustomGameMode.Standard);
+
+            List<string> hunters = new List<string>();
+            foreach(Roles.Role role in Roles.Roles.AllRoles)
+            {
+                if (role.ValidGamemode == CustomGameMode.Minigame && role.winReasons.Contains(Patches.EndCondition.MinigameHunterWin))
+                    hunters.Add("role."+role.LocalizeName+".name");
+            }
+            escapeHunterOption = CustomOption.Create(10171, Color.white, "option.escapeHunter", hunters.ToArray(), hunters[0], null, true).SetGameMode(CustomGameMode.Minigame);
 
             //ロールのオプションを読み込む
             Roles.Role.LoadAllOptionData();

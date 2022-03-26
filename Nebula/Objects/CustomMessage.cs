@@ -27,7 +27,7 @@ namespace Nebula.Objects
         {
             foreach(CustomMessage message in customMessages)
             {
-                UnityEngine.Object.Destroy(message.text.gameObject);
+                UnityEngine.Object.Destroy(message.text);
             }
             customMessages.Clear();
         }

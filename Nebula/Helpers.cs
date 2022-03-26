@@ -121,6 +121,15 @@ namespace Nebula
             return iCall_LoadImage.Invoke(tex.Pointer, il2cppArray.Pointer, markNonReadable);
         }
 
+        public static AudioClip loadAudioClip(string path, bool is3DSound)
+        {
+            Module.AudioLoader wav = new Module.AudioLoader(path);
+            NebulaPlugin.Instance.Logger.Print("Audio SampleCount:" + wav.SampleCount + " ,Channels:" + wav.ChannelCount + " ,Frequency:" + wav.Frequency);
+            AudioClip audioClip = AudioClip.Create(Path.GetFileName(path), wav.SampleCount, wav.ChannelCount, wav.Frequency, is3DSound, false);
+            audioClip.SetData(wav.RawData, 0);
+            return audioClip;
+        }
+
         public static PlayerControl playerById(byte id)
         {
             foreach (PlayerControl player in PlayerControl.AllPlayerControls)
@@ -158,11 +167,6 @@ namespace Nebula
             if (player.Data != null && player.Data.Tasks != null)
                 player.Data.Tasks.Clear();
 
-            var taskData = player.GetModData().Tasks;
-            taskData.AllTasks = 0;
-            taskData.Completed = 0;
-            taskData.DisplayTasks = 0;
-            taskData.Quota = 0;
         }
 
         public static void setSemiTransparent(this PoolablePlayer player, bool value)

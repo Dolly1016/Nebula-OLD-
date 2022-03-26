@@ -256,6 +256,11 @@ namespace Nebula.Module
             return Language.Language.GetString(sel);
         }
 
+        public string getRawString()
+        {
+            return selections[selection].ToString();
+        }
+
         public string getString()
         {
             string text = getStringSelection();

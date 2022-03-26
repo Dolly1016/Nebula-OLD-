@@ -164,7 +164,7 @@ namespace Nebula.Patches
 
             infoUnderlay.sprite = colorBG;
             infoUnderlay.color = new Color(0.1f, 0.1f, 0.1f, 0.88f);
-            infoUnderlay.transform.localScale = new Vector3(5.4f, 5f, 1f);
+            infoUnderlay.transform.localScale = new Vector3(5.6f, 5.2f, 1f);
             infoUnderlay.enabled = true;
 
             infoOverlayRules.text = "";

@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
+using UnityEditor;
+
 namespace Nebula.Objects
 {
     public class Arrow
@@ -17,6 +19,7 @@ namespace Nebula.Objects
         private static Sprite sprite;
         public static Sprite getSprite()
         {
+            
             if (sprite) return sprite;
             sprite = Helpers.loadSpriteFromResources("Nebula.Resources.Arrow.png", 200f);
             return sprite;

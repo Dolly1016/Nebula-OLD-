@@ -11,8 +11,19 @@ using Hazel;
 
 namespace Nebula.Roles.MinigameRoles.Hunters
 {
-    public class Polis : Role
+    public class Polis : Hunter
     {
+        private Module.CustomOption ArrestCoolDownOption;
+
+        public override void LoadOptionData()
+        {
+            base.LoadOptionData();
+
+            ArrestCoolDownOption = CreateOption(Color.white, "arrestCoolDown", 5f, 2.5f, 30f, 2.5f);
+            ArrestCoolDownOption.suffix = "second";
+        }
+
+
         static private CustomButton arrestButton;
 
         private Sprite buttonSprite = null;
@@ -54,7 +65,7 @@ namespace Nebula.Roles.MinigameRoles.Hunters
                 false,
                 "button.label.arrest"
             );
-            arrestButton.MaxTimer = arrestButton.Timer = 10f;
+            arrestButton.MaxTimer = arrestButton.Timer = ArrestCoolDownOption.getFloat();
         }
 
         public override void ButtonActivate()
@@ -86,7 +97,6 @@ namespace Nebula.Roles.MinigameRoles.Hunters
                      Player.minigameSideSet, Player.minigameSideSet, new HashSet<EndCondition>() { EndCondition.MinigameHunterWin },
                      true, VentPermission.CanNotUse, false, false, true)
         {
-            IsHideRole = true;
             ValidGamemode = Module.CustomGameMode.Minigame;
             CanCallEmergencyMeeting = false;
 

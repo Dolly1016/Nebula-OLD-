@@ -301,9 +301,6 @@ namespace Nebula.Patches
     {
         public static void Postfix()
         {
-            RPCEvents.ResetVaribles();
-
-
             AssignMap assignMap = new AssignMap();
 
             if (!DestroyableSingleton<TutorialManager>.InstanceExists)

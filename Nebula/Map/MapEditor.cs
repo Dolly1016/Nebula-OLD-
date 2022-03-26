@@ -100,18 +100,19 @@ namespace Nebula.Map
             if (!button)
             {
                 button = obj.AddComponent<PassiveButton>();
-                button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => {
-                    console.Use();
-                }));
+                button.OnMouseOut = new UnityEngine.Events.UnityEvent();
+                button.OnMouseOver = new UnityEngine.Events.UnityEvent();
+                button._CachedZ_k__BackingField = 0.1f;
+                button.CachedZ = 0.1f;
             }
+            
             if (!collider)
             {
                 collider = obj.AddComponent<CircleCollider2D>();
                 collider.radius = 0.4f;
                 collider.isTrigger = true;
             }
-            if(!PlayerControl.LocalPlayer.cache.ContainsKey(collider))
-                PlayerControl.LocalPlayer.cache.Add(collider, new UnhollowerBaseLib.Il2CppReferenceArray<IUsable>(new IUsable[1] { console.gameObject.GetComponent<IUsable>() }));
+
             return console;
         }
 

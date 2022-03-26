@@ -13,6 +13,26 @@ namespace Nebula.Patches
     [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
     public static class UpdatePatch
     {
+        private static SpriteRenderer FS_DeathGuage;
+
+        static private void UpdateFullScreen()
+        {
+            if (!PlayerControl.LocalPlayer) return;
+            if (PlayerControl.LocalPlayer.GetModData()==null) return;
+
+            if (!FS_DeathGuage)
+            {
+                FS_DeathGuage = GameObject.Instantiate(HudManager.Instance.FullScreen,HudManager.Instance.transform);
+                FS_DeathGuage.color = Palette.ImpostorRed.AlphaMultiplied(0f);
+                FS_DeathGuage.enabled = true;
+            }
+
+            if (PlayerControl.LocalPlayer.Data.IsDead)
+                FS_DeathGuage.color = Palette.ClearWhite;
+            else if (FS_DeathGuage.color.a != PlayerControl.LocalPlayer.GetModData().DeathGuage*0.25f)
+                FS_DeathGuage.color = Palette.ImpostorRed.AlphaMultiplied(PlayerControl.LocalPlayer.GetModData().DeathGuage*0.25f);
+        }
+
         static private bool CannotSeeNameTag(PlayerControl player)
         {
             return
@@ -251,6 +271,9 @@ namespace Nebula.Patches
             if (AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Started) return;
             if (!Helpers.HasModData(PlayerControl.LocalPlayer.PlayerId)) return;
 
+
+            /* スクリーンの更新 */
+            UpdateFullScreen();
 
             /* サボタージュを確認 */
             if (Helpers.SabotageIsActive())

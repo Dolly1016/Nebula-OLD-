@@ -338,6 +338,19 @@ namespace Nebula.Patches
         }
     }
 
+    [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.HandleAnimation))]
+    class PlayerPhysicsHandleAnimationPatch
+    {
+        public static bool Prefix(PlayerPhysics __instance)
+        {
+            if (
+                __instance.Animator.IsPlaying(__instance.ExitVentAnim) ||
+                __instance.Animator.IsPlaying(__instance.EnterVentAnim))
+                return false;
+            return true;
+        }
+    }
+
     [HarmonyPatch(typeof(GameData), nameof(GameData.HandleDisconnect),typeof(PlayerControl),typeof(DisconnectReasons))]
     class PlayerDisconnectPatch
     {

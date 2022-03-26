@@ -50,10 +50,12 @@ namespace Nebula
         ObjectDestroy,
         CountDownMessage,
         UpdateRestrictTimer,
+        UndergroundAction,
+        DeathGuage,
 
         // Role functionality
 
-        SealVent = 101,
+        SealVent = 129,
         MultipleVote,
         SniperSettleRifle,
         SniperShot,
@@ -107,7 +109,6 @@ namespace Nebula
                     RPCEvents.ShareOptions((int)reader.ReadPackedUInt32(), reader);
                     break;
                 case (byte)CustomRPC.SetRoles:
-                    RPCEvents.ResetVaribles();
                     int num=reader.ReadInt32();
                     for (int i= 0;i<num;i++)
                     {
@@ -202,6 +203,12 @@ namespace Nebula
                     break;
                 case (byte)CustomRPC.UpdateRestrictTimer:
                     RPCEvents.UpdateRestrictTimer(reader.ReadByte(),reader.ReadSingle());
+                    break;
+                case (byte)CustomRPC.UndergroundAction:
+                    RPCEvents.UndergroundAction(reader.ReadByte(), reader.ReadBoolean());
+                    break;
+                case (byte)CustomRPC.DeathGuage:
+                    RPCEvents.DeathGuage(reader.ReadByte(), reader.ReadByte(), reader.ReadSingle());
                     break;
 
                 case (byte)CustomRPC.SealVent:
@@ -360,6 +367,11 @@ namespace Nebula
                 if (Game.GameData.data.players[target.PlayerId].role.RemoveAllTasksOnDead)
                 {
                     target.clearAllTasks();
+                    var taskData = target.GetModData().Tasks;
+                    taskData.AllTasks = 0;
+                    taskData.Completed = 0;
+                    taskData.DisplayTasks = 0;
+                    taskData.Quota = 0;
                 }
 
                 //LocalMethod（自身が殺したとき）
@@ -392,13 +404,13 @@ namespace Nebula
             }
         }
 
-        public static void UncheckedExilePlayer(byte playerId,byte statusId)
+        public static void UncheckedExilePlayer(byte playerId,byte statusId,byte murderId=byte.MaxValue)
         {
             PlayerControl player = Helpers.playerById(playerId);
             if (player != null)
             {
                 player.Exiled();
-                Game.GameData.data.players[playerId].Die(Game.PlayerData.PlayerStatus.GetStatusById(statusId));
+                Game.GameData.data.players[playerId].Die(Game.PlayerData.PlayerStatus.GetStatusById(statusId), murderId);
 
                 Helpers.RoleAction(player.PlayerId, (role) => role.OnDied(playerId));
 
@@ -450,7 +462,7 @@ namespace Nebula
 
         public static void CloseUpKill(byte killerId,byte targetId,byte statusId)
         {
-            UncheckedExilePlayer(targetId, statusId);
+            UncheckedExilePlayer(targetId, statusId, killerId);
 
             if (Constants.ShouldPlaySfx()) SoundManager.Instance.PlaySound(Helpers.playerById(targetId).KillSfx, false, 0.8f);
 
@@ -616,6 +628,12 @@ namespace Nebula
             }
             else
             {
+                foreach (DeadBody body in Helpers.AllDeadBodies())
+                {
+                    if (body.ParentId != playerId) continue;
+                    UnityEngine.Object.Destroy(body.gameObject);
+                }
+
                 Game.GameData.data.players[playerId].Revive();
                 PlayerControl player = Helpers.playerById(playerId);
                 player.Revive(false);
@@ -823,6 +841,39 @@ namespace Nebula
             }
         }
 
+        public static void UndergroundAction(byte playerId,bool underground)
+        {
+            PlayerControl pc=Helpers.playerById(playerId);
+            if (!pc) return;
+
+            pc.GetModData().Property.UnderTheFloor = underground;
+        }
+
+        private static AudioClip audioFear;
+        public static void DeathGuage(byte attackerId,byte playerId, float value)
+        {
+            PlayerControl pc = Helpers.playerById(playerId);
+            if (!pc) return;
+
+            pc.GetModData().DeathGuage += value;
+
+            if (pc == PlayerControl.LocalPlayer)
+            {
+                if (pc.GetModData().DeathGuage < 1f)
+                {
+                    if (!audioFear) audioFear = Helpers.loadAudioClip("Nebula.Resources.Sounds.Fear.wav", false);
+                    if (Constants.ShouldPlaySfx()) SoundManager.Instance.PlaySound(audioFear, false, 0.8f);
+                }
+            }
+
+            if (attackerId == PlayerControl.LocalPlayer.PlayerId)
+            {
+                if (pc.GetModData().DeathGuage >= 1f)
+                {
+                    RPCEventInvoker.CloseUpKill(PlayerControl.LocalPlayer, pc, Game.PlayerData.PlayerStatus.Dead);
+                }
+            }
+        }
 
         public static void SniperShot(byte murderId)
         {
@@ -1313,6 +1364,25 @@ namespace Nebula
         public static void UpdateCameraAndDoorLogRestrictTimer(float timer)
         {
             UpdateRestrictTimer(2, timer);
+        }
+
+        public static void UndergroundAction(bool underground)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UndergroundAction, Hazel.SendOption.Reliable, -1);
+            writer.Write(PlayerControl.LocalPlayer.PlayerId);
+            writer.Write(underground);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.UndergroundAction(PlayerControl.LocalPlayer.PlayerId, underground);
+        }
+
+        public static void DeathGuage(byte attackerId,byte playerId,float value)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.DeathGuage, Hazel.SendOption.Reliable, -1);
+            writer.Write(attackerId);
+            writer.Write(playerId);
+            writer.Write(value);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.DeathGuage(attackerId,playerId, value);
         }
 
         public static void SniperSettleRifle()

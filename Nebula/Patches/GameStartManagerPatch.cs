@@ -222,6 +222,11 @@ namespace Nebula.Patches
 
                 if (AmongUsClient.Instance.AmHost)
                 {
+                    // Reset Settings
+                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ResetVaribles, Hazel.SendOption.Reliable, -1);
+                    AmongUsClient.Instance.FinishRpcImmediately(writer);
+                    RPCEvents.ResetVaribles();
+
                     foreach (InnerNet.ClientData client in AmongUsClient.Instance.allClients)
                     {
                         if (client.Character == null) continue;
@@ -282,5 +287,7 @@ namespace Nebula.Patches
                 }
             }
         }
+
+        
     }
 }

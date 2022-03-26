@@ -9,6 +9,7 @@ using BepInEx;
 using HarmonyLib;
 using BepInEx.IL2CPP;
 using UnityEngine;
+using UnityEditor;
 using Hazel;
 
 namespace Nebula
@@ -52,7 +53,7 @@ namespace Nebula
         public const string AmongUsVersion = "2022.2.24";
         public const string PluginGuid = "jp.dreamingpig.amongus.nebula";
         public const string PluginName = "TheNebula";
-        public const string PluginVersion = "1.6.3";
+        public const string PluginVersion = "1.6.4";
         /*
         public const string PluginVisualVersion = "22.02.14a";
         public const string PluginStage = "Snapshot";
@@ -61,8 +62,8 @@ namespace Nebula
         public const string PluginVisualVersion = PluginVersion;
         public const string PluginStage = "";
         // */
-        public const string PluginVersionForFetch = "1.6.3";
-        public byte[] PluginVersionData = new byte[] { 1, 6, 3, 0 };
+        public const string PluginVersionForFetch = "1.6.4";
+        public byte[] PluginVersionData = new byte[] { 1, 6, 4, 0 };
 
         public static NebulaPlugin Instance;
 
@@ -81,6 +82,9 @@ namespace Nebula
             Logger = new Logger.Logger(true);
 
             Instance = this;
+
+            //サーバー情報を読み込む
+            Patches.RegionMenuOpenPatch.Initialize();
 
             //色データを読み込む
             Module.DynamicColors.Load();

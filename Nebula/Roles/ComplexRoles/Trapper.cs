@@ -176,6 +176,7 @@ namespace Nebula.Roles.ComplexRoles
                     if (obj.ObjectType == Objects.ObjectTypes.InvisibleTrap.KillTrap)
                     {
                         if (MeetingHud.Instance || ExileController.Instance) continue;
+                        if (obj.Data[0] != 0) continue;
                         if (PlayerControl.LocalPlayer.killTimer > 0f) continue;
 
                         PlayerControl player = Patches.PlayerControlPatch.GetTarget(obj.GameObject.transform.position, Roles.F_Trapper.invisibleTrapRangeOption.getFloat() / 2, side == Side.Impostor);

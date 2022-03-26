@@ -22,7 +22,7 @@ namespace Nebula.Patches
                 if (amongUsLogo == null) return;
 
                 var credentials = UnityEngine.Object.Instantiate<TMPro.TextMeshPro>(__instance.text);
-                credentials.transform.position = new Vector3(0, 0, 0);
+                credentials.transform.position = new Vector3(0, -0.6f, 0);
 
                 if (Nebula.NebulaPlugin.PluginStage != null)
                 {
@@ -91,13 +91,18 @@ namespace Nebula.Patches
                 if (amongUsLogo != null)
                 {
                     amongUsLogo.transform.localScale *= 0.6f;
-                    amongUsLogo.transform.position += Vector3.up * 0.25f;
+                    amongUsLogo.transform.position += new Vector3(0f, -0.1f, 0f);
                 }
 
-                var torLogo = new GameObject("bannerLogo_Nebula");
-                torLogo.transform.position = Vector3.up;
-                var renderer = torLogo.AddComponent<SpriteRenderer>();
+                var nebulaLogo = new GameObject("bannerLogo_Nebula");
+                nebulaLogo.transform.position = new Vector3(0f, 0.55f, 0f);
+                var renderer = nebulaLogo.AddComponent<SpriteRenderer>();
                 renderer.sprite = Helpers.loadSpriteFromResources("Nebula.Resources.Logo.png", 340f);
+
+                GameObject.Find("PlayOnlineButton").transform.position = new Vector3(1.025f, -1.5f, 0f);
+                GameObject.Find("PlayLocalButton").transform.position = new Vector3(-1.025f, -1.5f, 0f);
+                GameObject.Find("HowToPlayButton").active = false;
+                GameObject.Find("FreePlayButton").active = false;
             }
         }
     }

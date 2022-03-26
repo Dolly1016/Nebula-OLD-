@@ -323,6 +323,7 @@ namespace Nebula.Game
             }
         }
 
+        private static AudioClip audioDive;
         private void Dive()
         {
             List<Il2CppSystem.Collections.IEnumerator> sequence = new List<Il2CppSystem.Collections.IEnumerator>();
@@ -336,6 +337,12 @@ namespace Nebula.Game
                 player.MyPhysics.Animator.Play(player.MyPhysics.EnterVentAnim, 1f);
                 player.MyPhysics.Animator.Time = 0f;
                 player.moveable = false;
+
+                if (player.PlayerId == PlayerControl.LocalPlayer.PlayerId)
+                {
+                    if (!audioDive) audioDive = Helpers.loadAudioClip("Nebula.Resources.Sounds.Dive.wav", false);
+                    if (Constants.ShouldPlaySfx()) SoundManager.Instance.PlaySound(audioDive, false, 0.8f);
+                }
             })));
             sequence.Add(Effects.Wait(player.MyPhysics.EnterVentAnim.length));
             sequence.Add(Effects.Action(new System.Action(() =>
@@ -354,6 +361,7 @@ namespace Nebula.Game
             player.MyPhysics.StartCoroutine(Effects.Sequence(refArray));
         }
 
+        private static AudioClip audioGush;
         private void Gush()
         {
             List<Il2CppSystem.Collections.IEnumerator> sequence = new List<Il2CppSystem.Collections.IEnumerator>();
@@ -369,6 +377,12 @@ namespace Nebula.Game
                 player.moveable = false;
                 player.MyPhysics.myPlayer.Visible = true;
                 underTheFloor = false;
+
+                if (player.PlayerId == PlayerControl.LocalPlayer.PlayerId)
+                {
+                    if (!audioGush) audioGush = Helpers.loadAudioClip("Nebula.Resources.Sounds.Reappear.wav", false);
+                    if (Constants.ShouldPlaySfx()) SoundManager.Instance.PlaySound(audioGush, false, 0.8f);
+                }
             })));
             sequence.Add(Effects.Wait(player.MyPhysics.ExitVentAnim.length));
             sequence.Add(Effects.Action(new System.Action(() =>
@@ -493,6 +507,8 @@ namespace Nebula.Game
 
         public PlayerProperty Property { get; set; }
 
+        public float DeathGuage { get; set; }
+
 
 
         public PlayerData(PlayerControl player, string name,PlayerOutfit outfit,Role role)
@@ -517,6 +533,7 @@ namespace Nebula.Game
             this.RoleInfo = "";
             this.TransColor = Color.white;
             this.Property = new PlayerProperty(player);
+            this.DeathGuage = 0f;
         }
 
         public int GetRoleData(int id)
@@ -621,6 +638,7 @@ namespace Nebula.Game
 
         public void Revive()
         {
+            DeathGuage = 0f;
             IsAlive = true;
             Status = PlayerStatus.Revived;
         }

@@ -1,5 +1,5 @@
 ﻿{
-    "Version": "5",
+    "Version": "6",
     "English": 
 "Hi Crewmates!
 
@@ -9,9 +9,8 @@ and you can join the our Discord with the link on our GitHub.
 Submitted works will be checked and added in the this mod.
 You're exactly a nebula consists of ideas!
 
-Main Features in NoS v1.6.3
- -New option %OPTION(option.tasksOptions),(Meister Task Option)% is added.
- -Everyone can now see fired %ROLE:EVILTRAPPER%'s kill traps.",
+Main Features in NoS v1.6.4
+ -New hanter %ROLE:HADAR(Hadar)% is added.",
     "Japanese": 
 "◎More Cosmic! カスタムコス募集のお知らせ
   NebulaのDiscordにて、カスタムハットおよびカスタムネームプレートを募集しています。
@@ -20,7 +19,7 @@ Main Features in NoS v1.6.3
   詳しくはNebula on the Ship のDiscordから(GitHubにリンクがあります)。
   それでは、今日も良い船旅を！
 
-◆アップデート情報 v1.6.3
-  -新機能「%OPTION(option.tasksOptions),(Meister Task Option)%」を追加しました。
-  -%ROLE:EVILTRAPPER%の発動済みキルトラップが、全員から見えるようになりました。"
+◆アップデート情報 v1.6.4
+  -新ハンター「%ROLE:HADAR(Hadar)%」を追加しました。
+  -クリックが正常に機能しなくなる場合がある問題を修正しました。"
 }
