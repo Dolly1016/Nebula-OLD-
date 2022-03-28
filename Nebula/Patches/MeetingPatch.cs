@@ -207,7 +207,10 @@ namespace Nebula.Patches
                 return DarkColorSprite;
             }
 
-            static void Postfix(MeetingHud __instance) { 
+            static void Postfix(MeetingHud __instance) {
+                //スポーンミニゲームの同期設定を予めリセット
+                Game.GameData.data.synchronizeData.Reset(Game.SynchronizeTag.PreSpawnMinigame);
+
                 //票の重み設定をリセット
                 VoteWeight.Clear();
 

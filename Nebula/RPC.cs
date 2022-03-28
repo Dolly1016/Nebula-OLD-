@@ -15,6 +15,7 @@ namespace Nebula
         ResetVaribles = 60,
         SetRandomMap,
         VersionHandshake,
+        Synchronize,
         SetMyColor,
         SynchronizeTimer,
         UpdatePlayerControl,
@@ -92,6 +93,9 @@ namespace Nebula
                     break;
                 case (byte)CustomRPC.SetMyColor:
                     RPCEvents.SetMyColor(reader.ReadByte(), new Color(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(),1f),reader.ReadByte());
+                    break;
+                case (byte)CustomRPC.Synchronize:
+                    RPCEvents.Synchronize(reader.ReadByte(), reader.ReadInt32());
                     break;
                 case (byte)CustomRPC.SynchronizeTimer:
                     RPCEvents.SynchronizeTimer(reader.ReadSingle());
@@ -786,6 +790,11 @@ namespace Nebula
             }
         }
 
+        public static void Synchronize(byte playerId,int tag)
+        {
+            Game.GameData.data.synchronizeData.Synchronize((Game.SynchronizeTag)tag, playerId);
+        }
+
         public static void SealVent(byte playerId, int ventId)
         {
             Events.Schedule.RegisterPostMeetingAction(() =>
@@ -1332,6 +1341,15 @@ namespace Nebula
             writer.Write(customObject.Id);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.ObjectDestroy(customObject.Id);
+        }
+
+        public static void Synchronize(Game.SynchronizeTag tag,byte playerId)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Synchronize, Hazel.SendOption.Reliable, -1);
+            writer.Write(playerId);
+            writer.Write((int)tag);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.Synchronize(playerId, (int)tag);
         }
 
         public static void CountDownMessage(byte count)

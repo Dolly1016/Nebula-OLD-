@@ -177,7 +177,7 @@ namespace Nebula.Roles
                 {
                     if (Game.GameData.data.GameMode == Module.CustomGameMode.Minigame)
                     {
-                        return EndCondition.MinigameEscapeesWin;
+                        return EndCondition.MinigameHunterWin;
                     }
                     else
                     {

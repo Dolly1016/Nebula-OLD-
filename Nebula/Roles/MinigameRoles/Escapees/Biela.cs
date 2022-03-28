@@ -28,6 +28,7 @@ namespace Nebula.Roles.MinigameRoles.Escapees
             IsHideRole = true;
             ValidGamemode = Module.CustomGameMode.Minigame;
             CanCallEmergencyMeeting = false;
+            RemoveAllTasksOnDead = true;
         }
     }
 }

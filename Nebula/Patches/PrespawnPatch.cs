@@ -13,6 +13,109 @@ namespace Nebula.Patches
 	[HarmonyPatch]
 	class PrespawnPatch
     {
+		private static PassiveButton? selected = null;
+
+		[HarmonyPatch(typeof(SpawnInMinigame), nameof(SpawnInMinigame.SpawnAt))]
+		public static class PrespawnSpawnAtPatch
+		{
+			public static bool Prefix(SpawnInMinigame __instance, [HarmonyArgument(0)] Vector3 spawnAt)
+			{
+				if (!CustomOptionHolder.synchronizedSpawning.getBool()) return true;
+
+				RPCEventInvoker.Synchronize(Game.SynchronizeTag.PreSpawnMinigame,PlayerControl.LocalPlayer.PlayerId);
+				if (__instance.amClosing != Minigame.CloseState.None)
+				{
+					return false;
+				}
+				if (__instance.gotButton) return false;
+
+				__instance.gotButton = true;
+
+
+				foreach (var button in __instance.LocationButtons)
+				{
+					button.enabled = false;
+				}
+
+				__instance.StartCoroutine(Effects.Lerp(10f, (Il2CppSystem.Action<float>)((p) =>
+				{
+					float time = p * 10f;
+					
+
+					foreach (var button in __instance.LocationButtons)
+					{
+                        if (selected == button)
+                        {
+							if (time > 0.3f)
+							{
+								float x = button.transform.localPosition.x;
+								if (x < 0f) x += 10f * Time.deltaTime;
+								if (x > 0f) x -= 10f * Time.deltaTime;
+								if (Mathf.Abs(x) < 10f * Time.deltaTime) x = 0f;
+								button.transform.localPosition = new Vector3(x, button.transform.localPosition.y, button.transform.localPosition.z);
+							}
+						}
+                        else
+                        {
+							var color = button.GetComponent<SpriteRenderer>().color;
+							float a = color.a;
+							if (a > 0f) a -= 2f * Time.deltaTime;
+							if (a < 0f) a = 0f;
+							button.GetComponent<SpriteRenderer>().color = new Color(color.r, color.g, color.b, a);
+							button.GetComponentInChildren<TextMeshPro>().color = new Color(1f, 1f, 1f, a);
+						}
+
+						if (__instance.amClosing != Minigame.CloseState.None) return;
+
+						if (Game.GameData.data.synchronizeData.Align(Game.SynchronizeTag.PreSpawnMinigame, false) || p==1f)
+						{
+							PlayerControl.LocalPlayer.gameObject.SetActive(true);
+							__instance.StopAllCoroutines();
+							PlayerControl.LocalPlayer.NetTransform.RpcSnapTo(spawnAt);
+							DestroyableSingleton<HudManager>.Instance.PlayerCam.SnapToTarget();
+							__instance.Close();
+						}
+					}
+
+				})));
+
+				return false;
+			}
+		}
+
+		[HarmonyPatch(typeof(SpawnInMinigame._RunTimer_d__10), nameof(SpawnInMinigame._RunTimer_d__10.MoveNext))]
+		public static class PrespawnTextPatch
+		{
+			public static void Postfix(SpawnInMinigame._RunTimer_d__10 __instance)
+			{
+				if (!CustomOptionHolder.synchronizedSpawning.getBool()) return;
+				
+				if (selected!=null)
+					__instance.__4__this.Text.text = Language.Language.GetString("game.minigame.waitSpawning");
+			}
+		}
+
+		[HarmonyPatch(typeof(SpawnInMinigame), nameof(SpawnInMinigame.Begin))]
+		public static class PrespawnBeginPatch
+        {
+			public static void Postfix(SpawnInMinigame __instance)
+            {
+				selected = null;				
+
+				if (!CustomOptionHolder.synchronizedSpawning.getBool()) return;
+
+				foreach(var button in __instance.LocationButtons)
+                {
+					button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
+					{
+						if (selected == null)
+							selected = button;
+					}
+					));
+                }
+            }
+        }
+
 		[HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.PrespawnStep))]
 		public static class PrespawnStepPatch
 		{
@@ -73,6 +176,9 @@ namespace Nebula.Patches
 				}
 				PlayerControl.LocalPlayer.gameObject.SetActive(false);
 				PlayerControl.LocalPlayer.NetTransform.RpcSnapTo(new Vector2(20f, 40f));
+
+				PrespawnBeginPatch.Postfix(spawnInMinigame);
+
 				spawnInMinigame.StartCoroutine(spawnInMinigame.RunTimer());
 				ControllerManager.Instance.OpenOverlayMenu(spawnInMinigame.name, null, spawnInMinigame.DefaultButtonSelected, spawnInMinigame.ControllerSelectable, false);
 				PlayerControl.HideCursorTemporarily();

@@ -38,12 +38,11 @@ namespace Nebula.Map
         }
 
 
-        protected static Vent CreateVent(string ventName,Vector3 position)
+        protected static Vent CreateVent(SystemTypes room, string ventName,Vector2 position)
         {
             var referenceVent = UnityEngine.Object.FindObjectOfType<Vent>();
-            Vent vent = UnityEngine.Object.Instantiate<Vent>(referenceVent);
-            vent.transform.position = position;
-            vent.transform.position += new Vector3(0f, 0f, ShipStatus.Instance.AllVents[0].transform.position.z);
+            Vent vent = UnityEngine.Object.Instantiate<Vent>(referenceVent,ShipStatus.Instance.FastRooms[room].transform);
+            vent.transform.localPosition = new Vector3(position.x,position.y,-1);
             vent.Left = null;
             vent.Right = null;
             vent.Center = null;
@@ -74,6 +73,32 @@ namespace Nebula.Map
             return console;
         }
 
+        protected static Console CreateConsole(SystemTypes room,string objectName,Sprite sprite,Vector2 pos)
+        {
+            if (!ShipStatus.Instance.FastRooms.ContainsKey(room)) return null;
+            GameObject obj = new GameObject(objectName);
+            obj.transform.SetParent(ShipStatus.Instance.FastRooms[room].transform);
+            obj.transform.localPosition = pos;
+            SpriteRenderer renderer = obj.AddComponent<SpriteRenderer>();
+            renderer.sprite = sprite;
+
+            return ActivateConsole(objectName);
+        }
+
+        private static Material? highlightMaterial = null;
+
+        private static Material GetHighlightMaterial()
+        {
+            if (highlightMaterial != null) return new Material(highlightMaterial);
+            foreach (var mat in UnityEngine.Resources.FindObjectsOfTypeAll(Material.Il2CppType))
+            {
+                if (mat.name == "HighlightMat") { 
+                    highlightMaterial = mat.TryCast<Material>();
+                    break;
+                }
+            }
+            return new Material(highlightMaterial);
+        }
         protected static Console ActivateConsole(string objectName)
         {
             GameObject obj = UnityEngine.GameObject.Find(objectName);
@@ -95,7 +120,8 @@ namespace Nebula.Map
             if (console.Image == null)
             {
                 console.Image = obj.GetComponent<SpriteRenderer>();
-                console.Image.material = new Material(ShipStatus.Instance.AllConsoles[0].Image.material);
+                
+                console.Image.material = GetHighlightMaterial();
             }
             if (!button)
             {

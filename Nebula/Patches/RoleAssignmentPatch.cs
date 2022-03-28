@@ -333,25 +333,26 @@ namespace Nebula.Patches
 
             List<PlayerControl> crewmates = PlayerControl.AllPlayerControls.ToArray().ToList().OrderBy(x => Guid.NewGuid()).ToList();
 
-            List<PlayerControl> impostors = PlayerControl.AllPlayerControls.ToArray().ToList().OrderBy(x => Guid.NewGuid()).ToList();
+            List<PlayerControl> impostors = new List<PlayerControl>();
 
             if (property.RequireImpostors)
             {
-                crewmates.RemoveAll(x => x.Data.Role.IsImpostor);
-                impostors.RemoveAll(x => !x.Data.Role.IsImpostor);
-            }
-            else
-            {
-                impostors.Clear();
+                int impostorCount = PlayerControl.GameOptions.NumImpostors;
+                if (PlayerControl.AllPlayerControls.Count < 7 && impostorCount > 1) impostorCount = 1;
+                else if (PlayerControl.AllPlayerControls.Count < 9 && impostorCount > 2) impostorCount = 2;
+                //インポスターを決定する
+
+                var array = Helpers.GetRandomArray(crewmates.Count);
+                for (int i=0;i<impostorCount;i++) {
+                    impostors.Add(crewmates[array[i]]);
+                }
+                foreach (var imp in impostors)
+                {
+                    crewmates.Remove(imp);
+                }
             }
 
-            //インポスターを減らす
-            if (PlayerControl.AllPlayerControls.Count < 7)
-                while (impostors.Count > 1)
-                    ReduceImpostor(crewmates, impostors);
-            else if (PlayerControl.AllPlayerControls.Count < 9)
-                while (impostors.Count > 2)
-                    ReduceImpostor(crewmates, impostors);
+           
 
             /* ロールの割り当て */
             AssignRoles roleData = new AssignRoles(crewmates.Count, impostors.Count);

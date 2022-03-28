@@ -95,6 +95,7 @@ namespace Nebula
         public static CustomOption additionalVents;
         public static CustomOption additionalWirings;
         public static CustomOption multipleSpawnPoints;
+        public static CustomOption synchronizedSpawning;
 
         public static CustomOption emergencyOptions;
         public static CustomOption maxNumberOfMeetings;
@@ -115,6 +116,7 @@ namespace Nebula
 
         public static CustomOption TasksOption;
         public static CustomOption RandomizedWiringOption;
+        public static CustomOption StepsOfWiringOption;
         public static CustomOption MeistersManifoldsOption;
         public static CustomOption MeistersFilterOption;
         public static CustomOption MeistersFuelEnginesOption;
@@ -179,6 +181,7 @@ namespace Nebula
             additionalVents = CustomOption.Create(10130, Color.white, "option.additionalVents", false, mapOptions).SetGameMode(~CustomGameMode.Minigame);
             additionalWirings = CustomOption.Create(10131, Color.white, "option.additionalWirings", false, mapOptions).SetGameMode(CustomGameMode.All);
             multipleSpawnPoints = CustomOption.Create(10132, Color.white, "option.multipleSpawnPoints", false, mapOptions).SetGameMode(~CustomGameMode.Minigame);
+            synchronizedSpawning = CustomOption.Create(10133, Color.white, "option.synchronizedSpawning", false, mapOptions).SetGameMode(~CustomGameMode.Minigame);
 
             limiterOptions = CustomOption.Create(10140, Color.white, "option.limitOptions", false, null, true).SetGameMode(CustomGameMode.All);
             timeLimitOption = CustomOption.Create(10141, Color.white, "option.timeLimitOption", 20f, 1f, 80f, 1f, limiterOptions).SetGameMode(CustomGameMode.All);
@@ -196,6 +199,7 @@ namespace Nebula
 
             TasksOption = CustomOption.Create(10160, Color.white, "option.tasksOption", false, null, true).SetGameMode(CustomGameMode.All);
             RandomizedWiringOption = CustomOption.Create(10161, Color.white, "option.randomizedWiring", false, TasksOption).SetGameMode(CustomGameMode.All);
+            StepsOfWiringOption = CustomOption.Create(10161, Color.white, "option.stepsOfWiring", 3f, 3f, 10f, 1f, TasksOption).SetGameMode(CustomGameMode.All);
             MeistersManifoldsOption = CustomOption.Create(10162, Color.white, "option.meistersManifolds", false, TasksOption).SetGameMode(CustomGameMode.All);
             MeistersFilterOption = CustomOption.Create(10163, Color.white, "option.meistersO2Filter", false, TasksOption).SetGameMode(CustomGameMode.All);
             MeistersFuelEnginesOption = CustomOption.Create(10164, Color.white, "option.meistersFuelEngines", false, TasksOption).SetGameMode(CustomGameMode.All);

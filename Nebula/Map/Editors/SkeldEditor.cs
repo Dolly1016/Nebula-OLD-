@@ -12,8 +12,8 @@ namespace Nebula.Map.Editors
 
         public override void AddVents()
         {
-            CreateVent("CafeUpperVent", new UnityEngine.Vector3(-2.3f, 5.6f));
-            CreateVent("StorageVent", new UnityEngine.Vector3(-1f, -17.2f));
+            CreateVent(SystemTypes.Cafeteria,"CafeUpperVent", new UnityEngine.Vector2(-2.1f, 3.8f));
+            CreateVent(SystemTypes.Storage,"StorageVent", new UnityEngine.Vector2(0.45f, -3.6f));
         }
     }
 }

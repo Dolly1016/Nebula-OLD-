@@ -2,6 +2,7 @@
 using Rewired;
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Nebula.Patches
@@ -48,23 +49,37 @@ namespace Nebula.Patches
 			}
 		}
 
-		//給油タスクのステップ数改変
+		//タスクのステップ数改変
 		[HarmonyPatch(typeof(NormalPlayerTask), nameof(NormalPlayerTask.Initialize))]
 		public static class VeryLongTaskPatch
 		{
+			public static void Prefix(NormalPlayerTask __instance)
+			{
+				if (!CustomOptionHolder.TasksOption.getBool()) return;
+
+				if (__instance.TaskType == TaskTypes.FixWiring)
+				{
+					__instance.MaxStep = (int)CustomOptionHolder.StepsOfWiringOption.getFloat();
+				}
+			}
+
 			public static void Postfix(NormalPlayerTask __instance)
 			{
+				//給油タスク
 				if (__instance.TaskType == TaskTypes.FuelEngines && __instance.StartAt==SystemTypes.CargoBay) {
 					//タスクの見た目のバグ修正
 					var stages = __instance.MinigamePrefab.gameObject.GetComponent<MultistageMinigame>().Stages;
 					stages[2] = stages[1];
 				}
 
-				if (!CustomOptionHolder.TasksOption.getBool() || !CustomOptionHolder.MeistersFuelEnginesOption.getBool()) return;
+				if (!CustomOptionHolder.TasksOption.getBool()) return;
 
-				if (__instance.TaskType == TaskTypes.FuelEngines && __instance.MaxStep != 1)
+				if (CustomOptionHolder.MeistersFuelEnginesOption.getBool())
 				{
-					__instance.MaxStep *= 2;
+					if (__instance.TaskType == TaskTypes.FuelEngines && __instance.MaxStep != 1)
+					{
+						__instance.MaxStep *= 2;
+					}
 				}
 			}
 		}
@@ -74,6 +89,7 @@ namespace Nebula.Patches
 		public static class RefuelStagePatch
 		{
 			private static byte airshipEngineHistory = 1;
+			private static bool filledHalf = false;
 			private static bool IsHardMode() { return (CustomOptionHolder.TasksOption.getBool() && CustomOptionHolder.MeistersFuelEnginesOption.getBool()); }
 
 			public static bool Prefix(RefuelStage __instance)
@@ -122,12 +138,14 @@ namespace Nebula.Patches
                             {
 								case 0:
 									airshipEngineHistory = __instance.MyNormTask.Data[1] = (byte)(NebulaPlugin.rnd.Next(1, 3));
+									filledHalf = false;
 									break;
 								case 1:
 									__instance.MyNormTask.Data[1] = 0;
 									break;
 								case 2:
 									__instance.MyNormTask.Data[1] = airshipEngineHistory;
+									filledHalf = true;
 									break;
 							}
 							
@@ -144,13 +162,16 @@ namespace Nebula.Patches
 
 							if (__instance.MyNormTask.Data[1] % 2 == 0)
 								__instance.MyNormTask.NextStep();
-							
+							else
+								filledHalf = __instance.MyNormTask.TaskStep % 2 == 1;
+
+
 							__instance.MyNormTask.UpdateArrow();
 						}
 					}
 				}
 
-				if (IsHardMode() && __instance.srcGauge  && (__instance.MyNormTask.TaskStep+1)%4<=1)
+				if (IsHardMode() && __instance.srcGauge  && filledHalf)
 					__instance.destGauge.value = __instance.timer + 0.5f;
 				else
 					__instance.destGauge.value = __instance.timer;
@@ -175,6 +196,30 @@ namespace Nebula.Patches
 				for (int i= 0;i<newArray.Length;i++)
 					consoleIds[i] = newArray[i];
              
+			}
+
+			static public bool Prefix(NormalPlayerTask __instance, [HarmonyArgument(0)] TaskTypes taskType, [HarmonyArgument(1)] ref UnhollowerBaseLib.Il2CppStructArray<byte> consoleIds)
+			{
+				if (!CustomOptionHolder.TasksOption.getBool()) return true;
+
+				List<Console> orgList = ShipStatus.Instance.AllConsoles.Where((t) => { return t.TaskTypes.Contains(taskType); }).ToList<Console>();
+				List<Console> list = new List<Console>(orgList);
+
+				for (int i = 0; i < __instance.Data.Length; i++)
+				{
+					if (list.Count == 0)
+						list = new List<Console>(orgList);
+					int index = NebulaPlugin.rnd.Next(list.Count);
+					list.RemoveAt(index);
+				}
+
+				if (CustomOptionHolder.RandomizedWiringOption.getBool())
+					list.Sort((console1,console2)=> { return console2.ConsoleId-console1.ConsoleId; });
+
+				for (int i = 0; i < __instance.Data.Length; i++)
+					consoleIds[i] = (byte)list[i].ConsoleId;
+
+				return false;
 			}
 		}
 	}

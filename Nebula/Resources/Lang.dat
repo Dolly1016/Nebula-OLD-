@@ -70,6 +70,7 @@
 "option.additionalVents" : "Additional Vents"
 "option.additionalWirings" : "Additional Wirings"
 "option.multipleSpawnPoints" : "Multiple Spawn Points"
+"option.synchronizedSpawning" : "Synchronized Spawning"
 
 "option.exclusiveAssignment" : "Exclusive Assignment"
 "option.exclusiveAssignment1" : "Assignment Set 1"
@@ -95,6 +96,7 @@
 
 "option.tasksOption" : "Meister's Task Option"
 "option.randomizedWiring" : "Randomized Wiring"
+"option.stepsOfWiring" : "Steps Of Wiring"
 "option.meistersManifolds" : "Meister's Manifolds"
 "option.meistersO2Filter" : "Meister's O2 Filter"
 "option.meistersFuelEngines" : "Meister's Fuel Engines"
@@ -537,6 +539,8 @@
 "game.spawnLocation.Specimens" : "Specimens"
 "game.spawnLocation.Storage" : "Storage"
 "game.spawnLocation.Weapons" : "Weapons"
+
+"game.minigame.waitSpawning": "Wait for other players..."
 
 "game.device.timeRemaining" : "%TIMER%"
 "game.device.restrictOutOfTime" : "Not Available"
