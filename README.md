@@ -5,8 +5,8 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 **Nebula on the Ship (NoS)** は Among Us に新たなロールを追加するModです。\
 また、1万を超える数の色からプレイヤーのスキンを選ぶことができます。
 
-他にも、設定次第でAirshipでの配線タスクの追加や、Polusでのマルチスポーンポイント、Skeldの追加ベントなど\
-これまでとは少し様変わりしたマップで遊ぶこともできます。\
+他にも、設定次第でAirshipでの**配線タスクの追加**や、Polusでの**マルチスポーンポイント**、Skeldの**追加ベント**など\
+これまでとは少し様変わりしたマップで遊ぶこともできます。
 
 このModの一部コードは The Other Roles および The Other Roles GM Edition のものを使用しています。
 
