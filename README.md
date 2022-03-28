@@ -29,6 +29,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.6.5.1 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.5.1,2022.2.24/Nebula_v1.6.5.1.zip)|
 | 1.6.5 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.5,2022.2.24/Nebula_v1.6.5.zip)|
 | 1.6.4 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.4,2022.2.24/Nebula_v1.6.4.zip)|
 | 1.6.3.4 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.3.4,2022.2.24/Nebula_v1.6.3.4.zip)|
@@ -148,6 +149,10 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 <details>
   <summary>クリックで展開</summary>
 
+ **Version 1.6.5.1**
+ - More Cosmicを解禁
+ - 配線タスクのステップ数を増やしたときに正常にタスクの場所が割り振られない問題を修正
+  
  **Version 1.6.5**
  - Airshipにて、Medicalに新たな配線タスクを追加
  - 配線タスクのステップ数を変更できるように
