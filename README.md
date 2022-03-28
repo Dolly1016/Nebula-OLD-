@@ -5,6 +5,9 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 **Nebula on the Ship (NoS)** は Among Us に新たなロールを追加するModです。\
 また、1万を超える数の色からプレイヤーのスキンを選ぶことができます。
 
+他にも、設定次第でAirshipでの配線タスクの追加や、Polusでのマルチスポーンポイント、Skeldの追加ベントなど\
+これまでとは少し様変わりしたマップで遊ぶこともできます。\
+
 このModの一部コードは The Other Roles および The Other Roles GM Edition のものを使用しています。
 
 # Twitter
@@ -565,7 +568,7 @@ VanillaのAmong Usと同じルールです。Modによる追加役職を使用�
 #### 推奨プレイ人数: 4 ~ 8人
 
 いわゆる鬼ごっこです。ゲーム開始から10秒後に、1人がハンターに、その他全員が逃走者になります。\
-制限時間いっぱいまでハンターから逃げ切るか、タスクをこなせば逃走者の勝利です。\
+タスクをこなしながら制限時間いっぱいまでハンターから逃げ切るか、全逃走者がタスクを全て完了すれば逃走者の勝利です。\
 ハンターは、逃げる逃走者全員を捕まえられたら勝利します。\
 ゲーム参加者を待つ間のちょっとしたミニゲームにどうぞ。
 
@@ -626,6 +629,7 @@ BasePluginに以下の属性を新たに付与することで、Nebula on the Sh
 [The Other Roles](https://github.com/Eisbison/TheOtherRoles) このMODの着想の根源はすべてここからのものです。ソースを一部使用しています。\
 [TheOtherRoles: GM Edition](https://github.com/yukinogatari/TheOtherRoles-GM) ソースを一部使用しています。Empiric,MadmateのアイデアはこのMODからのものです。\
 [Town Of Impostors](https://github.com/Town-of-Impostors/TownOfImpostors) Sniper,Necromancer,MayorのアイデアはこのMODからのものです。\
+[Extreme Roles](https://github.com/yukieiji/ExtremeRoles) より偏りのない乱数生成のソースを使用しています。
 \
 その他ロールアイデアのご提供等\
 \
