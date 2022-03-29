@@ -135,8 +135,6 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 形式上、言語パックには下位互換があります。\
 また、新しいバージョンに対しても使用できますが、一部翻訳がなされないことがあります。
 
-日本語版について、1.4.5.1対応版が正常に動作していませんでした。現在は既に修正済みです。
-
 | Language | Translator | Full Support Version | Download |
 | --- | --- | --- | --- |
 | 日本語 | - | 1.6.2.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.2.1,2022.2.24/Japanese.dat)|
