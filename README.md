@@ -614,7 +614,7 @@ Sniperの弾の当たり判定やEmpiric,Alienなどの効果範囲を調べる�
 
 ## Escape
 | Players | Escapees | Hunters |
-| ---------- |
+| ---------- | ---------- | ---------- |
 | [Player](#player) | [Halley](#halley) | [Hadar](#hadar) |
 ||| [Polis](#polis) |
 
