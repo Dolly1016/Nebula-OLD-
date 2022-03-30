@@ -1,5 +1,5 @@
 ﻿{
-    "Version": "6",
+    "Version": "7",
     "English": 
 "Hi Crewmates!
 
@@ -10,7 +10,7 @@ Submitted works will be checked and added in the this mod.
 You're exactly a nebula consists of ideas!
 
 Main Features in NoS v1.6.4
- -New hanter %ROLE:HADAR(Hadar)% is added.",
+ -New role %ROLE:DISTURBER(Disturber)% is added.",
     "Japanese": 
 "◎More Cosmic! カスタムコス募集のお知らせ
   NebulaのDiscordにて、カスタムハットおよびカスタムネームプレートを募集しています。
@@ -19,7 +19,8 @@ Main Features in NoS v1.6.4
   詳しくはNebula on the Ship のDiscordから(GitHubにリンクがあります)。
   それでは、今日も良い船旅を！
 
-◆アップデート情報 v1.6.4
-  -新ハンター「%ROLE:HADAR(Hadar)%」を追加しました。
-  -クリックが正常に機能しなくなる場合がある問題を修正しました。"
+◆アップデート情報 v1.7.0
+  -新役職「%ROLE:DISTURBER(Disturber)%」を追加しました。
+   バリアを張ることでプレイヤーの行動を妨害することができます。
+  -プレイヤーに対して使用するボタンの反応が悪い問題を修正しました。"
 }

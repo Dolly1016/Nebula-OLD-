@@ -61,7 +61,8 @@ namespace Nebula
         SniperSettleRifle,
         SniperShot,
         Morph,
-        CreateSidekick
+        CreateSidekick,
+        DisturberInvoke
     }
 
     //RPCを受け取ったときのイベント
@@ -194,7 +195,7 @@ namespace Nebula
                     RPCEvents.ObjectInstantiate(reader.ReadByte(), reader.ReadByte(), reader.ReadUInt64(), reader.ReadSingle(), reader.ReadSingle());
                     break;
                 case (byte)CustomRPC.ObjectUpdate:
-                    RPCEvents.ObjectUpdate(reader.ReadUInt32(),reader.ReadInt32());
+                    RPCEvents.ObjectUpdate(reader.ReadUInt64(), reader.ReadInt32());
                     break;
                 case (byte)CustomRPC.ObjectDestroy:
                     RPCEvents.ObjectDestroy(reader.ReadUInt32());
@@ -232,6 +233,9 @@ namespace Nebula
                     break;
                 case (byte)CustomRPC.CreateSidekick:
                     RPCEvents.CreateSidekick(reader.ReadByte(), reader.ReadByte());
+                    break;
+                case (byte)CustomRPC.DisturberInvoke:
+                    RPCEvents.DisturberInvoke(reader.ReadByte(),reader.ReadUInt64(), reader.ReadUInt64());
                     break;
             }
         }
@@ -768,10 +772,11 @@ namespace Nebula
             switchSystem.ActualSwitches = switchSystem.ExpectedSwitches;
         }
 
-        public static void ObjectInstantiate(byte ownerId,byte objectTypeId,ulong objectId,float positionX,float positionY)
+        public static Objects.CustomObject ObjectInstantiate(byte ownerId,byte objectTypeId,ulong objectId,float positionX,float positionY)
         {
             Objects.CustomObject obj=new Objects.CustomObject(ownerId,Objects.CustomObject.Type.AllTypes[objectTypeId],objectId,new Vector3(positionX,positionY));
             obj.ObjectType.Update(obj);
+            return obj;
         }
 
         public static void ObjectUpdate(ulong objectId,int command)
@@ -792,7 +797,7 @@ namespace Nebula
 
         public static void Synchronize(byte playerId,int tag)
         {
-            Game.GameData.data.synchronizeData.Synchronize((Game.SynchronizeTag)tag, playerId);
+            Game.GameData.data.SynchronizeData.Synchronize((Game.SynchronizeTag)tag, playerId);
         }
 
         public static void SealVent(byte playerId, int ventId)
@@ -932,8 +937,69 @@ namespace Nebula
             else
             {
                 RPCEvents.SetExtraRole(playerId, Roles.Roles.SecondarySidekick, (ulong)jackalId);
-            }
-            
+            }   
+        }
+
+        public static void DisturberInvoke(byte playerId,ulong objectId1, ulong objectId2)
+        {
+            Vector2 pos1 = (Vector2)Objects.CustomObject.Objects[objectId1].GameObject.transform.position + new Vector2(0, -0.3f);
+            Vector2 pos2 = (Vector2)Objects.CustomObject.Objects[objectId2].GameObject.transform.position + new Vector2(0, -0.3f);
+            Vector2 pos1Upper = pos1 + new Vector2(0, 0.5f);
+            Vector2 pos2Upper = pos2 + new Vector2(0, 0.5f);
+            Vector2 center = (pos1 + pos2) / 2f;
+
+            bool vertical = Mathf.Abs(pos1.x - pos2.x) < 0.6f;
+
+            var obj = new GameObject("ElecBarrior");
+            var MeshFilter = obj.AddComponent<MeshFilter>();
+            var MeshRenderer = obj.AddComponent<MeshRenderer>();
+            var Collider = obj.AddComponent<EdgeCollider2D>();
+
+            obj.transform.localPosition = new Vector3(center.x, center.y, center.y / 1000f);
+
+            var mesh = new Mesh();
+            var vertextList = new Il2CppSystem.Collections.Generic.List<Vector3>();
+            var uvList = new Il2CppSystem.Collections.Generic.List<Vector2>();
+
+            vertextList.Add(pos1Upper - center + new Vector2(vertical ? 0.22f : 0f, 0.2f));
+            vertextList.Add(pos2Upper - center + new Vector2(vertical ? 0.22f : 0f, 0.2f));
+            vertextList.Add(pos1 - center + new Vector2(vertical ? -0.22f : 0f, vertical ? 0.7f : 0.2f));
+            vertextList.Add(pos2 - center + new Vector2(vertical ? -0.22f : 0f, vertical ? 0.7f : 0.2f));
+
+            uvList.Add(new Vector2(0, 0));
+            uvList.Add(new Vector2(1f/3f, 0));
+            uvList.Add(new Vector2(0, 1));
+            uvList.Add(new Vector2(1f/3f, 1));
+
+            mesh.SetVertices(vertextList);
+            mesh.SetUVs(0, uvList);
+            mesh.SetIndices(new int[6] { 0, 2, 1, 1, 2, 3 }, MeshTopology.Triangles, 0);
+
+            Collider.points = new Vector2[5] { pos1 - center, pos1Upper - center, pos2Upper - center, pos2 - center, pos1 - center };
+            Collider.edgeRadius = 0.2f;
+
+            MeshRenderer.material = new Material(HudManager.Instance.MapButton.material);
+            MeshRenderer.material.mainTexture =  vertical ? Roles.Roles.Disturber.getElecAnimSubTexture() : Roles.Roles.Disturber.getElecAnimTexture();
+
+            MeshFilter.mesh = mesh;
+
+            float timer = 0.1f;
+            int num = 0;
+            new Objects.DynamicCollider(Collider, Roles.Roles.Disturber.disturbDurationOption.getFloat(), false, (c) => {
+                timer -= Time.deltaTime;
+
+                if (timer < 0f)
+                {
+                    timer = 0.1f;
+                    num = (num + 1) % 3;
+
+                    uvList[0]=(new Vector2((float)num/3f, 0));
+                    uvList[1]=(new Vector2((float)(num + 1) / 3f, 0));
+                    uvList[2]=(new Vector2((float)num / 3f, 1));
+                    uvList[3]=(new Vector2((float)(num + 1) / 3f, 1));
+                    mesh.SetUVs(0, uvList);
+                }
+            });
         }
     }
 
@@ -1309,7 +1375,7 @@ namespace Nebula
             RPCEvents.CompleteTask(playerId);
         }
 
-        public static void ObjectInstantiate(Objects.CustomObject.Type objectType,Vector3 position)
+        public static Objects.CustomObject ObjectInstantiate(Objects.CustomObject.Type objectType,Vector3 position)
         {
             ulong id;
             while (true) {
@@ -1323,7 +1389,7 @@ namespace Nebula
             writer.Write(position.x);
             writer.Write(position.y);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
-            RPCEvents.ObjectInstantiate(PlayerControl.LocalPlayer.PlayerId,objectType.Id,id,position.x,position.y);
+            return RPCEvents.ObjectInstantiate(PlayerControl.LocalPlayer.PlayerId,objectType.Id,id,position.x,position.y);
         }
 
         public static void ObjectUpdate(Objects.CustomObject customObject,int command)
@@ -1435,6 +1501,16 @@ namespace Nebula
             writer.Write(jackalId);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.CreateSidekick(targetId, jackalId);
+        }
+
+        public static void DisturberInvoke(ulong objectId1,ulong objectId2)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.DisturberInvoke, Hazel.SendOption.Reliable, -1);
+            writer.Write(PlayerControl.LocalPlayer.PlayerId);
+            writer.Write(objectId1);
+            writer.Write(objectId2);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.DisturberInvoke(PlayerControl.LocalPlayer.PlayerId, objectId1, objectId2);
         }
     }
 }

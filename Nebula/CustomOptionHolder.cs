@@ -179,7 +179,6 @@ namespace Nebula
             exceptPolus = CustomOption.Create(10124, Color.white, "option.exceptPolus", false, dynamicMap).SetGameMode(CustomGameMode.All);
             exceptAirship = CustomOption.Create(10125, Color.white, "option.exceptAirship", false, dynamicMap).SetGameMode(CustomGameMode.All);
             additionalVents = CustomOption.Create(10130, Color.white, "option.additionalVents", false, mapOptions).SetGameMode(~CustomGameMode.Minigame);
-            additionalWirings = CustomOption.Create(10131, Color.white, "option.additionalWirings", false, mapOptions).SetGameMode(CustomGameMode.All);
             multipleSpawnPoints = CustomOption.Create(10132, Color.white, "option.multipleSpawnPoints", false, mapOptions).SetGameMode(~CustomGameMode.Minigame);
             synchronizedSpawning = CustomOption.Create(10133, Color.white, "option.synchronizedSpawning", false, mapOptions).SetGameMode(~CustomGameMode.Minigame);
 
@@ -198,13 +197,14 @@ namespace Nebula
             CameraAndDoorLogLimitOption.suffix = "second";
 
             TasksOption = CustomOption.Create(10160, Color.white, "option.tasksOption", false, null, true).SetGameMode(CustomGameMode.All);
-            RandomizedWiringOption = CustomOption.Create(10161, Color.white, "option.randomizedWiring", false, TasksOption).SetGameMode(CustomGameMode.All);
-            StepsOfWiringOption = CustomOption.Create(10161, Color.white, "option.stepsOfWiring", 3f, 3f, 10f, 1f, TasksOption).SetGameMode(CustomGameMode.All);
-            MeistersManifoldsOption = CustomOption.Create(10162, Color.white, "option.meistersManifolds", false, TasksOption).SetGameMode(CustomGameMode.All);
-            MeistersFilterOption = CustomOption.Create(10163, Color.white, "option.meistersO2Filter", false, TasksOption).SetGameMode(CustomGameMode.All);
-            MeistersFuelEnginesOption = CustomOption.Create(10164, Color.white, "option.meistersFuelEngines", false, TasksOption).SetGameMode(CustomGameMode.All);
+            additionalWirings = CustomOption.Create(10161, Color.white, "option.additionalWirings", false, TasksOption).SetGameMode(CustomGameMode.All);
+            RandomizedWiringOption = CustomOption.Create(10162, Color.white, "option.randomizedWiring", false, TasksOption).SetGameMode(CustomGameMode.All);
+            StepsOfWiringOption = CustomOption.Create(10163, Color.white, "option.stepsOfWiring", 3f, 3f, 10f, 1f, TasksOption).SetGameMode(CustomGameMode.All);
+            MeistersManifoldsOption = CustomOption.Create(10164, Color.white, "option.meistersManifolds", false, TasksOption).SetGameMode(CustomGameMode.All);
+            MeistersFilterOption = CustomOption.Create(10165, Color.white, "option.meistersO2Filter", false, TasksOption).SetGameMode(CustomGameMode.All);
+            MeistersFuelEnginesOption = CustomOption.Create(10166, Color.white, "option.meistersFuelEngines", false, TasksOption).SetGameMode(CustomGameMode.All);
 
-            advanceRoleOptions = CustomOption.Create(10170, Color.white, "option.advanceRoleOptions", false, null, true).SetGameMode(CustomGameMode.Standard);
+            advanceRoleOptions = CustomOption.Create(10190, Color.white, "option.advanceRoleOptions", false, null, true).SetGameMode(CustomGameMode.Standard);
 
             List<string> hunters = new List<string>();
             foreach(Roles.Role role in Roles.Roles.AllRoles)
@@ -212,7 +212,7 @@ namespace Nebula
                 if (role.ValidGamemode == CustomGameMode.Minigame && role.winReasons.Contains(Patches.EndCondition.MinigameHunterWin))
                     hunters.Add("role."+role.LocalizeName+".name");
             }
-            escapeHunterOption = CustomOption.Create(10171, Color.white, "option.escapeHunter", hunters.ToArray(), hunters[0], null, true).SetGameMode(CustomGameMode.Minigame);
+            escapeHunterOption = CustomOption.Create(10191, Color.white, "option.escapeHunter", hunters.ToArray(), hunters[0], null, true).SetGameMode(CustomGameMode.Minigame);
 
             //ロールのオプションを読み込む
             Roles.Role.LoadAllOptionData();

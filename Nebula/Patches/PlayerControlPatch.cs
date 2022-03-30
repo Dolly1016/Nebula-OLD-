@@ -11,9 +11,9 @@ namespace Nebula.Patches
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixedUpdate))]
     public class PlayerControlPatch
     {
-        static private bool CheckTargetable(Vector3 position, Vector3 myPosition, ref float distanceCondition)
+        static private bool CheckTargetable(Vector2 position, Vector2 myPosition, ref float distanceCondition)
         {
-            Vector3 vector = position - PlayerControl.LocalPlayer.transform.position;
+            Vector2 vector = (Vector2)position - myPosition;
             float magnitude = vector.magnitude;
 
             if (magnitude <= distanceCondition && !PhysicsHelpers.AnyNonTriggersBetween(myPosition, vector.normalized, magnitude, Constants.ShipAndObjectsMask))
@@ -24,7 +24,7 @@ namespace Nebula.Patches
             return false;
         }
 
-        static public PlayerControl GetTarget(Vector3 position, float distance, bool onlyWhiteNames = false, List<byte> untargetablePlayers = null)
+        static public PlayerControl GetTarget(Vector3 position, float distance, bool onlyWhiteNames = false, List<byte>? untargetablePlayers = null)
         {
             PlayerControl result = null;
             float num;
@@ -47,7 +47,7 @@ namespace Nebula.Patches
             return result;
         }
 
-        static public PlayerControl SetMyTarget(float range, bool onlyWhiteNames = false, bool targetPlayersInVents = false, List<byte> untargetablePlayers = null, PlayerControl targetingPlayer = null)
+        static public PlayerControl? SetMyTarget(float range, bool onlyWhiteNames = false, bool targetPlayersInVents = false, List<byte>? untargetablePlayers = null, PlayerControl? targetingPlayer = null)
         {
             return SetMyTarget(range,
                     (player) =>
@@ -59,19 +59,19 @@ namespace Nebula.Patches
                     }, targetingPlayer);
         }
 
-        static public PlayerControl SetMyTarget(bool onlyWhiteNames = false, bool targetPlayersInVents = false, List<byte> untargetablePlayers = null, PlayerControl targetingPlayer = null)
+        static public PlayerControl? SetMyTarget(bool onlyWhiteNames = false, bool targetPlayersInVents = false, List<byte> untargetablePlayers = null, PlayerControl targetingPlayer = null)
         {
             return SetMyTarget(GameOptionsData.KillDistances[Mathf.Clamp(PlayerControl.GameOptions.KillDistance, 0, 2)],
                     onlyWhiteNames, targetPlayersInVents, untargetablePlayers, targetingPlayer);
         }
 
-        static public PlayerControl SetMyTarget(System.Predicate<GameData.PlayerInfo> untargetablePlayers, PlayerControl targetingPlayer = null)
+        static public PlayerControl? SetMyTarget(System.Predicate<GameData.PlayerInfo> untargetablePlayers, PlayerControl targetingPlayer = null)
         {
             return SetMyTarget(GameOptionsData.KillDistances[Mathf.Clamp(PlayerControl.GameOptions.KillDistance, 0, 2)],
                 untargetablePlayers);
         }
 
-        static public PlayerControl SetMyTarget(float range, System.Predicate<GameData.PlayerInfo> untargetablePlayers, PlayerControl targetingPlayer = null)
+        static public PlayerControl? SetMyTarget(float range, System.Predicate<GameData.PlayerInfo> untargetablePlayers, PlayerControl? targetingPlayer = null)
         {
             PlayerControl result = null;
             float num = range;
@@ -85,10 +85,9 @@ namespace Nebula.Patches
             {
                 GameData.PlayerInfo playerInfo = allPlayers[i];
 
-                if (PlayerControl.LocalPlayer.PlayerId == playerInfo.PlayerId)
-                {
+                if (playerInfo==null || (PlayerControl.LocalPlayer.PlayerId == playerInfo.PlayerId) || (playerInfo.Object==null))
                     continue;
-                }
+                
 
                 if (playerInfo.GetModData().Attribute.HasAttribute(Game.PlayerAttribute.Invisible)) continue;
                 if (playerInfo.GetModData().Property.UnderTheFloor) continue;
@@ -191,76 +190,82 @@ namespace Nebula.Patches
 
             foreach (PlayerControl p in PlayerControl.AllPlayerControls)
             {
-                if (p == PlayerControl.LocalPlayer || p.GetModData().RoleInfo != "" || Game.GameData.data.myData.CanSeeEveryoneInfo)
+                try
                 {
-                    Transform playerInfoTransform = p.nameText.transform.parent.FindChild("Info");
-                    TMPro.TextMeshPro playerInfo = playerInfoTransform != null ? playerInfoTransform.GetComponent<TMPro.TextMeshPro>() : null;
-                    if (playerInfo == null)
+                    if (p == PlayerControl.LocalPlayer || p.GetModData().RoleInfo != "" || Game.GameData.data.myData.CanSeeEveryoneInfo)
                     {
-                        playerInfo = UnityEngine.Object.Instantiate(p.nameText, p.nameText.transform.parent);
-                        playerInfo.fontSize *= 0.75f;
-                        playerInfo.gameObject.name = "Info";
-                        playerInfo.enabled = true;
-                    }
-
-                    // Set the position every time bc it sometimes ends up in the wrong place due to camoflauge
-                    playerInfo.transform.localPosition = p.nameText.transform.localPosition + Vector3.up * 0.5f;
-
-                    PlayerVoteArea playerVoteArea = MeetingHud.Instance?.playerStates?.FirstOrDefault(x => x.TargetPlayerId == p.PlayerId);
-                    Transform meetingInfoTransform = playerVoteArea != null ? playerVoteArea.NameText.transform.parent.FindChild("Info") : null;
-                    TMPro.TextMeshPro meetingInfo = meetingInfoTransform != null ? meetingInfoTransform.GetComponent<TMPro.TextMeshPro>() : null;
-                    if (meetingInfo == null && playerVoteArea != null)
-                    {
-                        meetingInfo = UnityEngine.Object.Instantiate(playerVoteArea.NameText, playerVoteArea.NameText.transform.parent);
-                        meetingInfo.transform.localPosition += Vector3.down * 0.10f;
-                        meetingInfo.fontSize *= 0.60f;
-                        meetingInfo.gameObject.name = "Info";
-                    }
-
-                    // Set player name higher to align in middle
-                    if (meetingInfo != null && playerVoteArea != null)
-                    {
-                        var playerName = playerVoteArea.NameText;
-                        playerName.transform.localPosition = new Vector3(0.3384f, (0.0311f + 0.0683f), -0.1f);
-                    }
-
-                    var (tasksCompleted, tasksTotal) = TasksHandler.taskInfo(p.Data);
-                    string roleNames;
-
-                    if (Game.GameData.data.myData.CanSeeEveryoneInfo || p.GetModData().RoleInfo == "")
-                        roleNames = Helpers.cs(p.GetModData().role.Color, Language.Language.GetString("role." + p.GetModData().role.LocalizeName + ".name"));
-                    else
-                        //カモフラージュ中は表示しない
-                        roleNames = p.GetModData().currentName.Length == 0 ? "" : p.GetModData().RoleInfo;
-
-                    var completedStr = commsActive ? "?" : tasksCompleted.ToString();
-                    string taskInfo = "";
-                    if (p == PlayerControl.LocalPlayer || Game.GameData.data.myData.CanSeeEveryoneInfo)
-                    {
-                        if (p.GetModData().role.HasFakeTask)
-                            taskInfo = tasksTotal > 0 ? $"<color=#868686FF>({completedStr}/{tasksTotal})</color>" : "";
-                        else
-                            taskInfo = tasksTotal > 0 ? $"<color=#FAD934FF>({completedStr}/{tasksTotal})</color>" : "";
-                    }
-
-                    string playerInfoText = "";
-                    string meetingInfoText = "";
-                    if (p == PlayerControl.LocalPlayer)
-                    {
-                        playerInfoText = $"{roleNames}";
-                        if (DestroyableSingleton<TaskPanelBehaviour>.InstanceExists)
+                        Transform playerInfoTransform = p.nameText.transform.parent.FindChild("Info");
+                        TMPro.TextMeshPro playerInfo = playerInfoTransform != null ? playerInfoTransform.GetComponent<TMPro.TextMeshPro>() : null;
+                        if (playerInfo == null)
                         {
-                            TMPro.TextMeshPro tabText = DestroyableSingleton<TaskPanelBehaviour>.Instance.tab.transform.FindChild("TabText_TMP").GetComponent<TMPro.TextMeshPro>();
-                            tabText.SetText($"{TranslationController.Instance.GetString(StringNames.Tasks)} {taskInfo}");
+                            playerInfo = UnityEngine.Object.Instantiate(p.nameText, p.nameText.transform.parent);
+                            playerInfo.fontSize *= 0.75f;
+                            playerInfo.gameObject.name = "Info";
+                            playerInfo.enabled = true;
                         }
-                        meetingInfoText = $"{roleNames} {taskInfo}".Trim();
-                    }
-                    playerInfoText = $"{roleNames} {taskInfo}".Trim();
-                    meetingInfoText = playerInfoText;
 
-                    playerInfo.text = playerInfoText;
-                    playerInfo.gameObject.SetActive(p.Visible);
-                    if (meetingInfo != null) meetingInfo.text = MeetingHud.Instance.state == MeetingHud.VoteStates.Results ? "" : meetingInfoText;
+                        // Set the position every time bc it sometimes ends up in the wrong place due to camoflauge
+                        playerInfo.transform.localPosition = p.nameText.transform.localPosition + Vector3.up * 0.5f;
+
+                        PlayerVoteArea playerVoteArea = MeetingHud.Instance?.playerStates?.FirstOrDefault(x => x.TargetPlayerId == p.PlayerId);
+                        Transform meetingInfoTransform = playerVoteArea != null ? playerVoteArea.NameText.transform.parent.FindChild("Info") : null;
+                        TMPro.TextMeshPro meetingInfo = meetingInfoTransform != null ? meetingInfoTransform.GetComponent<TMPro.TextMeshPro>() : null;
+                        if (meetingInfo == null && playerVoteArea != null)
+                        {
+                            meetingInfo = UnityEngine.Object.Instantiate(playerVoteArea.NameText, playerVoteArea.NameText.transform.parent);
+                            meetingInfo.transform.localPosition += Vector3.down * 0.10f;
+                            meetingInfo.fontSize *= 0.60f;
+                            meetingInfo.gameObject.name = "Info";
+                        }
+
+                        // Set player name higher to align in middle
+                        if (meetingInfo != null && playerVoteArea != null)
+                        {
+                            var playerName = playerVoteArea.NameText;
+                            playerName.transform.localPosition = new Vector3(0.3384f, (0.0311f + 0.0683f), -0.1f);
+                        }
+
+                        var (tasksCompleted, tasksTotal) = TasksHandler.taskInfo(p.Data);
+                        string roleNames;
+
+                        if (Game.GameData.data.myData.CanSeeEveryoneInfo || p.GetModData().RoleInfo == "")
+                            roleNames = Helpers.cs(p.GetModData().role.Color, Language.Language.GetString("role." + p.GetModData().role.LocalizeName + ".name"));
+                        else
+                            //カモフラージュ中は表示しない
+                            roleNames = p.GetModData().currentName.Length == 0 ? "" : p.GetModData().RoleInfo;
+
+                        var completedStr = commsActive ? "?" : tasksCompleted.ToString();
+                        string taskInfo = "";
+                        if (p == PlayerControl.LocalPlayer || Game.GameData.data.myData.CanSeeEveryoneInfo)
+                        {
+                            if (p.GetModData().role.HasFakeTask)
+                                taskInfo = tasksTotal > 0 ? $"<color=#868686FF>({completedStr}/{tasksTotal})</color>" : "";
+                            else
+                                taskInfo = tasksTotal > 0 ? $"<color=#FAD934FF>({completedStr}/{tasksTotal})</color>" : "";
+                        }
+
+                        string playerInfoText = "";
+                        string meetingInfoText = "";
+                        if (p == PlayerControl.LocalPlayer)
+                        {
+                            playerInfoText = $"{roleNames}";
+                            if (DestroyableSingleton<TaskPanelBehaviour>.InstanceExists)
+                            {
+                                TMPro.TextMeshPro tabText = DestroyableSingleton<TaskPanelBehaviour>.Instance.tab.transform.FindChild("TabText_TMP").GetComponent<TMPro.TextMeshPro>();
+                                tabText.SetText($"{TranslationController.Instance.GetString(StringNames.Tasks)} {taskInfo}");
+                            }
+                            meetingInfoText = $"{roleNames} {taskInfo}".Trim();
+                        }
+                        playerInfoText = $"{roleNames} {taskInfo}".Trim();
+                        meetingInfoText = playerInfoText;
+
+                        playerInfo.text = playerInfoText;
+                        playerInfo.gameObject.SetActive(p.Visible);
+                        if (meetingInfo != null) meetingInfo.text = MeetingHud.Instance.state == MeetingHud.VoteStates.Results ? "" : meetingInfoText;
+                    }
+                }catch(NullReferenceException exp)
+                {
+                    continue;
                 }
             }
         }

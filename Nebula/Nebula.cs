@@ -53,7 +53,7 @@ namespace Nebula
         public const string AmongUsVersion = "2022.2.24";
         public const string PluginGuid = "jp.dreamingpig.amongus.nebula";
         public const string PluginName = "TheNebula";
-        public const string PluginVersion = "1.6.5";
+        public const string PluginVersion = "1.7.0";
         /*
         public const string PluginVisualVersion = "22.02.14a";
         public const string PluginStage = "Snapshot";
@@ -62,8 +62,8 @@ namespace Nebula
         public const string PluginVisualVersion = PluginVersion;
         public const string PluginStage = "";
         // */
-        public const string PluginVersionForFetch = "1.6.5";
-        public byte[] PluginVersionData = new byte[] { 1, 6, 5, 0 };
+        public const string PluginVersionForFetch = "1.7.0";
+        public byte[] PluginVersionData = new byte[] { 1, 7, 0, 0 };
 
         public static NebulaPlugin Instance;
 
@@ -174,10 +174,7 @@ namespace Nebula
                 //ゲーム強制終了
                 if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.F5))
                 {
-                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ForceEnd, Hazel.SendOption.Reliable, -1);
-                    writer.WritePacked(PlayerControl.LocalPlayer.PlayerId);
-                    AmongUsClient.Instance.FinishRpcImmediately(writer);
-                    RPCEvents.ForceEnd(PlayerControl.LocalPlayer.PlayerId);
+                    Game.GameData.data.IsCanceled = true;
                 }
             }
 

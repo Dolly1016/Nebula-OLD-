@@ -171,13 +171,19 @@ namespace Nebula.Roles
 
         public static Side Extra = new Side("Extra", "extra", IntroDisplayOption.STANDARD, new Color(150, 150, 150), (PlayerStatistics statistics, ShipStatus side) =>
         {
+            if (Game.GameData.data.IsCanceled)
+            {
+                return EndCondition.NoGame;
+            }
+
+
             if (CustomOptionHolder.limiterOptions.getBool())
             {
                 if (Game.GameData.data.Timer < 1f)
                 {
                     if (Game.GameData.data.GameMode == Module.CustomGameMode.Minigame)
                     {
-                        return EndCondition.MinigameHunterWin;
+                        return EndCondition.MinigameEscapeesWin;
                     }
                     else
                     {

@@ -209,7 +209,7 @@ namespace Nebula.Patches
 
             static void Postfix(MeetingHud __instance) {
                 //スポーンミニゲームの同期設定を予めリセット
-                Game.GameData.data.synchronizeData.Reset(Game.SynchronizeTag.PreSpawnMinigame);
+                Game.GameData.data.SynchronizeData.Reset(Game.SynchronizeTag.PreSpawnMinigame);
 
                 //票の重み設定をリセット
                 VoteWeight.Clear();

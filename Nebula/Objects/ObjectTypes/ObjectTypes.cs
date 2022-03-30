@@ -7,6 +7,7 @@ namespace Nebula.Objects.ObjectTypes
 {
     public class TypeWithImage : CustomObject.Type
     {
+
         private Sprite Sprite;
         private string SpriteAddress;
         public Sprite GetSprite()

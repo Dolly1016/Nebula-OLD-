@@ -11,6 +11,22 @@ namespace Nebula.Objects
     {
         public class Type
         {
+            protected static void VisibleObjectUpdate(CustomObject obj)
+            {
+                if (obj.PassedMeetings == 0)
+                {
+                    if (obj.OwnerId != PlayerControl.LocalPlayer.PlayerId || Game.GameData.data.myData.CanSeeEveryoneInfo)
+                    {
+                        if (obj.Renderer.color.a != 0f) obj.Renderer.color = new Color(1f, 1f, 1f, 0f);
+                    }
+                    else
+                    {
+                        if (obj.Renderer.color.a != 0.5f) obj.Renderer.color = new Color(1f, 1f, 1f, 0.5f);
+                    }
+                }
+                else if (obj.Renderer.color.a < 1f) obj.Renderer.color = new Color(1f, 1f, 1f, 1f);
+            }
+
             static public Dictionary<byte, Type> AllTypes = new Dictionary<byte, Type>();
 
             public static ObjectTypes.VisibleTrap AccelTrap = new ObjectTypes.VisibleTrap(0, "AccelTrap", "Nebula.Resources.AccelTrap.png");
@@ -18,12 +34,16 @@ namespace Nebula.Objects
             public static ObjectTypes.KillTrap KillTrap = new ObjectTypes.KillTrap(2, "KillTrap", "Nebula.Resources.KillTrap.png");
             public static ObjectTypes.InvisibleTrap CommTrap = new ObjectTypes.InvisibleTrap(3, "CommTrap", "Nebula.Resources.CommTrap.png");
             public static ObjectTypes.SniperRifle Rifle = new ObjectTypes.SniperRifle();
+            public static ObjectTypes.ElecPole ElecPole = new ObjectTypes.ElecPole();
+            public static ObjectTypes.ElecPoleGuide ElecPoleGuide = new ObjectTypes.ElecPoleGuide();
 
             public byte Id { get; }
             public string ObjectName { get; }
 
             public bool IsBack { get; set; }
             public bool IsFront { get; set; }
+            public bool CanSeeInShadow { get; set; }
+
             public virtual void Update(CustomObject obj) { }
             public virtual void Update(CustomObject obj,int command) { }
             public virtual void Initialize(CustomObject obj) { }
@@ -34,6 +54,8 @@ namespace Nebula.Objects
                 this.ObjectName = objectName;
 
                 IsBack = isBack;
+                IsFront = false;
+                CanSeeInShadow = false;
 
                 AllTypes.Add(Id,this);
             }
@@ -74,9 +96,11 @@ namespace Nebula.Objects
 
             Vector3 pos = new Vector3(position.x, position.y, 0f);
             if (type.IsBack) pos += new Vector3(0,0, position.y/1000f + 1f);
-            else pos += new Vector3(0, 0, position.y / 1000f - 1f);
-            GameObject.transform.position = pos;
+            else if (type.IsFront) pos += new Vector3(0, 0, position.y / 1000f - 1f);
+            GameObject.transform.position = pos += new Vector3(0, 0, position.y / 1000f);
             Renderer = GameObject.AddComponent<SpriteRenderer>();
+
+            if (ObjectType.CanSeeInShadow) GameObject.layer = LayerMask.NameToLayer("Objects");
 
             Data = new int[0];
 
@@ -88,6 +112,16 @@ namespace Nebula.Objects
             Objects[id] = this;
         }
 
+        public static CustomObject CreatePrivateObject(Type type, Vector3 position)
+        {
+            ulong id;
+            while (true)
+            {
+                id = (ulong)NebulaPlugin.rnd.Next(64);
+                if (!Objects.ContainsKey((id + (ulong)PlayerControl.LocalPlayer.PlayerId * 64))) break;
+            }
+            return new CustomObject(PlayerControl.LocalPlayer.PlayerId, type, id, position);
+        }
         public static void Update()
         {
             //オブジェクトに対するアップデート関数

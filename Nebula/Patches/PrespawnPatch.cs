@@ -67,7 +67,7 @@ namespace Nebula.Patches
 
 						if (__instance.amClosing != Minigame.CloseState.None) return;
 
-						if (Game.GameData.data.synchronizeData.Align(Game.SynchronizeTag.PreSpawnMinigame, false) || p==1f)
+						if (Game.GameData.data.SynchronizeData.Align(Game.SynchronizeTag.PreSpawnMinigame, false) || p==1f)
 						{
 							PlayerControl.LocalPlayer.gameObject.SetActive(true);
 							__instance.StopAllCoroutines();

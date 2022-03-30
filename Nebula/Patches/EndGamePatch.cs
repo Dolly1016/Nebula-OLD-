@@ -37,13 +37,16 @@ namespace Nebula.Patches
         public static EndCondition NobodyPolusWin = new EndCondition(51, new Color(72f / 255f, 78f / 255f, 84f / 255f), "nobody.polus", 32, Module.CustomGameMode.All);
         public static EndCondition NobodyAirshipWin = new EndCondition(52, new Color(72f / 255f, 78f / 255f, 84f / 255f), "nobody.airship", 32, Module.CustomGameMode.All);
 
-        public static EndCondition HostDisconnected = new EndCondition(64, new Color(72f / 255f, 78f / 255f, 84f / 255f), "hostDisconnected", 0, Module.CustomGameMode.Investigators);
+        public static EndCondition NoGame = new EndCondition(64, new Color(72f / 255f, 78f / 255f, 84f / 255f), "noGame", 0, Module.CustomGameMode.All);
+        public static EndCondition HostDisconnected = new EndCondition(65, new Color(72f / 255f, 78f / 255f, 84f / 255f), "hostDisconnected", 0, Module.CustomGameMode.Investigators);
 
         public static EndCondition MinigamePlayersWin = new EndCondition(128, Palette.CrewmateBlue, "players", 0, Module.CustomGameMode.Minigame, true);
         public static EndCondition MinigameEscapeesWin = new EndCondition(129, Palette.CrewmateBlue, "escapees", 0, Module.CustomGameMode.Minigame, true);
         public static EndCondition MinigameHunterWin = new EndCondition(130, Palette.ImpostorRed, "hunter", 0, Module.CustomGameMode.Minigame);
 
         public static EndCondition ShowDownWin = new EndCondition(256, new Color(255f / 255f, 213f / 255f, 0f / 255f), "showDown", 0, Module.CustomGameMode.Parlour);
+
+        
 
 
 
@@ -53,7 +56,7 @@ namespace Nebula.Patches
             ImpostorWinByKill,ImpostorWinBySabotage,ImpostorWinByVote,ImpostorWinDisconnect,
             JesterWin,JackalWin,ArsonistWin,EmpiricWin,VultureWin,
             TrilemmaWin,AvengerWin,
-            NobodyWin,NobodySkeldWin,NobodyMiraWin,NobodyPolusWin,NobodyAirshipWin,
+            NoGame,NobodyWin,NobodySkeldWin,NobodyMiraWin,NobodyPolusWin,NobodyAirshipWin,
             InvestigatorRightGuess,InvestigatorWrongGuess,HostDisconnected,
             MinigamePlayersWin,MinigameEscapeesWin,MinigameHunterWin,
             ShowDownWin
@@ -380,25 +383,31 @@ namespace Nebula.Patches
 
             foreach (GameData.PlayerInfo playerInfo in GameData.Instance.AllPlayers)
             {
-                if (playerInfo.Disconnected)
+                try
+                {
+                    if (playerInfo.Disconnected)
+                    {
+                        continue;
+                    }
+                    if (playerInfo.IsDead)
+                    {
+                        continue;
+                    }
+                    TotalAlive++;
+
+                    side = Game.GameData.data.players[playerInfo.PlayerId].role.side;
+
+                    if (!alivePlayers.ContainsKey(side))
+                    {
+                        alivePlayers.Add(side, 1);
+                    }
+                    else
+                    {
+                        alivePlayers[side] = alivePlayers[side] + 1;
+                    }
+                }catch(NullReferenceException exp)
                 {
                     continue;
-                }
-                if (playerInfo.IsDead)
-                {
-                    continue;
-                }
-                TotalAlive++;
-
-                side = Game.GameData.data.players[playerInfo.PlayerId].role.side;
-
-                if (!alivePlayers.ContainsKey(side))
-                {
-                    alivePlayers.Add(side, 1);
-                }
-                else
-                {
-                    alivePlayers[side] = alivePlayers[side] + 1;
                 }
             }
         }

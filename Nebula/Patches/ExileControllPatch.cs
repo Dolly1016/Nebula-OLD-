@@ -112,6 +112,7 @@ namespace Nebula.Patches
 
             Objects.CustomButton.OnMeetingEnd();
             Objects.CustomObject.OnMeetingEnd();
+            Game.GameData.data.ColliderManager.OnMeetingEnd();
             Game.GameData.data.UtilityTimer.OnMeetingEnd();
             Game.GameData.data.myData.getGlobalData().role.OnMeetingEnd();
 

@@ -18,23 +18,19 @@ namespace Nebula.Objects.ObjectTypes
         {
         }
 
-        public override void Update(CustomObject obj)
+        public override void Initialize(CustomObject obj)
         {
-            if (obj.PassedMeetings == 0)
+            base.Initialize(obj);
+            Events.Schedule.RegisterPreMeetingAction(() =>
             {
                 //Trapperを考慮に入れる
                 Game.GameData.data.EstimationAI.DetermineMultiply(new Roles.Role[] { Roles.Roles.NiceTrapper, Roles.Roles.EvilTrapper });
+            });
+        }
 
-                if (obj.OwnerId != PlayerControl.LocalPlayer.PlayerId || Game.GameData.data.myData.CanSeeEveryoneInfo)
-                {
-                    if (obj.Renderer.color.a != 0f) obj.Renderer.color = new Color(1f, 1f, 1f, 0f);
-                }
-                else
-                {
-                    if (obj.Renderer.color.a != 0.5f) obj.Renderer.color = new Color(1f, 1f, 1f, 0.5f);
-                }
-            }
-            else if (obj.Renderer.color.a < 1f) obj.Renderer.color = new Color(1f, 1f, 1f, 1f);
+        public override void Update(CustomObject obj)
+        {
+            CustomObject.Type.VisibleObjectUpdate(obj);
         }
     }
 

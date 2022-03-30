@@ -53,16 +53,19 @@ namespace Nebula.Patches
 		[HarmonyPatch(typeof(NormalPlayerTask), nameof(NormalPlayerTask.Initialize))]
 		public static class VeryLongTaskPatch
 		{
-			public static void Prefix(NormalPlayerTask __instance)
+			
+			public static bool Prefix(NormalPlayerTask __instance)
 			{
-				if (!CustomOptionHolder.TasksOption.getBool()) return;
+				if (!CustomOptionHolder.TasksOption.getBool()) return true;
 
 				if (__instance.TaskType == TaskTypes.FixWiring)
 				{
 					__instance.MaxStep = (int)CustomOptionHolder.StepsOfWiringOption.getFloat();
 				}
-			}
 
+				return true;
+			}
+			
 			public static void Postfix(NormalPlayerTask __instance)
 			{
 				//給油タスク
@@ -198,26 +201,32 @@ namespace Nebula.Patches
              
 			}
 
-			static public bool Prefix(NormalPlayerTask __instance, [HarmonyArgument(0)] TaskTypes taskType, [HarmonyArgument(1)] ref UnhollowerBaseLib.Il2CppStructArray<byte> consoleIds)
+			static public bool Prefix(NormalPlayerTask __instance, ref Il2CppSystem.Collections.Generic.List<Console> __result,[HarmonyArgument(0)] TaskTypes taskType, [HarmonyArgument(1)] ref UnhollowerBaseLib.Il2CppStructArray<byte> consoleIds)
 			{
 				if (!CustomOptionHolder.TasksOption.getBool()) return true;
 
 				List<Console> orgList = ShipStatus.Instance.AllConsoles.Where((t) => { return t.TaskTypes.Contains(taskType); }).ToList<Console>();
 				List<Console> list = new List<Console>(orgList);
+				List<Console> result = new List<Console>();
 
-				for (int i = 0; i < __instance.Data.Length; i++)
+				__result = new Il2CppSystem.Collections.Generic.List<Console>();
+				foreach (var console in orgList)
+					__result.Add(console);
+
+				for (int i = 0; i < consoleIds.Length; i++)
 				{
 					if (list.Count == 0)
 						list = new List<Console>(orgList);
 					int index = NebulaPlugin.rnd.Next(list.Count);
+					result.Add(list[index]);
 					list.RemoveAt(index);
 				}
 
-				if (CustomOptionHolder.RandomizedWiringOption.getBool())
-					list.Sort((console1,console2)=> { return console2.ConsoleId-console1.ConsoleId; });
+				if (!CustomOptionHolder.RandomizedWiringOption.getBool())
+					result.Sort((console1,console2)=> { return console2.ConsoleId-console1.ConsoleId; });
 
-				for (int i = 0; i < __instance.Data.Length; i++)
-					consoleIds[i] = (byte)list[i].ConsoleId;
+				for (int i = 0; i < consoleIds.Length; i++)
+					consoleIds[i] = (byte)result[i].ConsoleId;
 
 				return false;
 			}

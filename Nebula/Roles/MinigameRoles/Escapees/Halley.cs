@@ -11,14 +11,8 @@ using Hazel;
 
 namespace Nebula.Roles.MinigameRoles.Escapees
 {
-    public class Halley : Role
+    public class Halley : Escapee
     {
-        public override bool CheckAdditionalWin(PlayerControl player, EndCondition condition)
-        {
-            if (condition != EndCondition.MinigameEscapeesWin) return false;
-            return !player.Data.IsDead ;
-        }
-
         public Halley()
                 : base("Halley", "halley", Palette.CrewmateBlue, RoleCategory.Crewmate, Side.GamePlayer, Side.GamePlayer,
                      Player.minigameSideSet, Player.minigameSideSet, new HashSet<EndCondition>() { EndCondition.MinigamePlayersWin },

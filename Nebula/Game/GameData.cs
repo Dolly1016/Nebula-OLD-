@@ -827,7 +827,11 @@ namespace Nebula.Game
 
         public UtilityTimer UtilityTimer;
 
-        public SynchronizeData synchronizeData;
+        public SynchronizeData SynchronizeData;
+
+        public Objects.ColliderManager ColliderManager;
+
+        public bool IsCanceled;
 
         public GameData()
         {
@@ -853,9 +857,12 @@ namespace Nebula.Game
 
             UtilityTimer = new UtilityTimer();
 
-            synchronizeData = new SynchronizeData();
+            SynchronizeData = new SynchronizeData();
+            ColliderManager = new Objects.ColliderManager();
 
             Timer = 300f;
+
+            IsCanceled = false;
         }
 
         //データを消去します。

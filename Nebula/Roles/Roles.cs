@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HarmonyLib;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
 namespace Nebula.Roles
 {
@@ -36,6 +30,7 @@ namespace Nebula.Roles
         public static ImpostorRoles.Camouflager Camouflager = new ImpostorRoles.Camouflager();
         public static ImpostorRoles.Cleaner Cleaner = new ImpostorRoles.Cleaner();
         public static ImpostorRoles.Damned Damned = new ImpostorRoles.Damned();
+        public static ImpostorRoles.Disturber Disturber = new ImpostorRoles.Disturber();
         public static ImpostorRoles.Eraser Eraser = new ImpostorRoles.Eraser();
         public static ImpostorRoles.EvilAce EvilAce = new ImpostorRoles.EvilAce();
         public static ComplexRoles.Guesser EvilGuesser = new ComplexRoles.Guesser("EvilGuesser", "evilGuesser", true);
@@ -65,6 +60,7 @@ namespace Nebula.Roles
         public static MinigameRoles.Hunters.Hadar Hadar = new MinigameRoles.Hunters.Hadar();
         public static MinigameRoles.Hunters.Polis Polis = new MinigameRoles.Hunters.Polis();
 
+        
         public static ComplexRoles.FCrewmate F_Crewmate = new ComplexRoles.FCrewmate();
         public static ComplexRoles.FGuesser F_Guesser = new ComplexRoles.FGuesser();
         public static ComplexRoles.FTrapper F_Trapper = new ComplexRoles.FTrapper();
@@ -81,7 +77,7 @@ namespace Nebula.Roles
         //全てのロールはこの中に含まれている必要があります
         public static List<Role> AllRoles = new List<Role>()
         {
-            Impostor,Camouflager,Cleaner,Damned,Eraser,EvilAce,EvilGuesser,EvilTrapper,Morphing,Reaper,Sniper,
+            Impostor,Camouflager,Cleaner,Damned,Disturber,Eraser,EvilAce,EvilGuesser,EvilTrapper,Morphing,Reaper,Sniper,
             F_Guesser,F_Trapper,
             Arsonist,Avenger,Empiric,Jackal,Jester,Opportunist,Sidekick,Vulture,
             F_Crewmate,

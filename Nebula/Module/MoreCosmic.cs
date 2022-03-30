@@ -376,10 +376,10 @@ namespace Nebula.Module
 
                 try
                 {
-                    while (CustomHatLoader.hatdetails.Count > 0)
+                    while (CosmicLoader.hatdetails.Count > 0)
                     {
-                        __instance.AllHats.Add(CreateHatBehaviour(CustomHatLoader.hatdetails[0],true));
-                        CustomHatLoader.hatdetails.RemoveAt(0);
+                        __instance.AllHats.Add(CreateHatBehaviour(CosmicLoader.hatdetails[0],true));
+                        CosmicLoader.hatdetails.RemoveAt(0);
                     }
                 }
                 catch (System.Exception e)
@@ -408,10 +408,10 @@ namespace Nebula.Module
 
                 try
                 {
-                    while (CustomHatLoader.namePlatedetails.Count > 0)
+                    while (CosmicLoader.namePlatedetails.Count > 0)
                     {
-                        __instance.AllNamePlates.Add(CreateNamePlateData(CustomHatLoader.namePlatedetails[0], true));
-                        CustomHatLoader.namePlatedetails.RemoveAt(0);
+                        __instance.AllNamePlates.Add(CreateNamePlateData(CosmicLoader.namePlatedetails[0], true));
+                        CosmicLoader.namePlatedetails.RemoveAt(0);
                     }
                 }
                 catch (System.Exception e)
@@ -468,7 +468,7 @@ namespace Nebula.Module
         private static List<TMPro.TMP_Text> nameplatesTabCustomTexts = new List<TMPro.TMP_Text>();
 
         public static string innerslothHatPackageName = "innerslothHats";
-        public static string innerslothNamePlatePackageName = "innerslothNamePlates";
+        public static string innerslothNamePlatePackageName = "innerslothNameplates";
         private static float headerSize = 0.8f;
         private static float headerX = 0.8f;
         private static float inventoryTop = 1.5f;
@@ -748,7 +748,7 @@ namespace Nebula.Module
 
     }
 
-    public class CustomHatLoader
+    public class CosmicLoader
     {
         public static bool running = false;
 
@@ -760,18 +760,17 @@ namespace Nebula.Module
         public static List<CustomHat> hatdetails = new List<CustomHat>();
         public static List<CustomNamePlate> namePlatedetails = new List<CustomNamePlate>();
 
-        private static Task hatFetchTask = null;
-        private static Task namePlateFetchTask = null;
+        private static Task cosmicFetchTask = null;
 
-        public static void LaunchHatFetcher()
+        public static void LaunchCosmicFetcher()
         {
             if (running)
                 return;
             running = true;
-            hatFetchTask = LaunchHatFetcherAsync();
+            cosmicFetchTask = LaunchCosmicFetcherAsync();
         }
 
-        private static async Task LaunchHatFetcherAsync()
+        private static async Task LaunchCosmicFetcherAsync()
         {
             System.IO.Directory.CreateDirectory("MoreCosmic");
             System.IO.Directory.CreateDirectory("MoreCosmic/hats");

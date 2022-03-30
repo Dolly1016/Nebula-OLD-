@@ -160,8 +160,8 @@ namespace Nebula.Module
     {
         private static void Prefix(MainMenuManager __instance)
         {
-            //ハット更新
-            //CustomHatLoader.LaunchHatFetcher();
+            //More Cosmic 更新
+            CosmicLoader.LaunchCosmicFetcher();
 
             ModUpdater.LaunchUpdater();
             if (!ModUpdater.hasUpdate  && !ModUpdater.hasUnprocessableUpdate) return;
