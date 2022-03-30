@@ -5,6 +5,9 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 **Nebula on the Ship (NoS)** は Among Us に新たなロールを追加するModです。\
 また、1万を超える数の色からプレイヤーのスキンを選ぶことができます。
 
+他にも、設定次第でAirshipでの**配線タスクの追加**や、Polusでの**マルチスポーンポイント**、Skeldの**追加ベント**など\
+これまでとは少し様変わりしたマップで遊ぶこともできます。
+
 このModの一部コードは The Other Roles および The Other Roles GM Edition のものを使用しています。
 
 # Twitter
@@ -26,6 +29,8 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.6.5.1 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.5.1,2022.2.24/Nebula_v1.6.5.1.zip)|
+| 1.6.5 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.5,2022.2.24/Nebula_v1.6.5.zip)|
 | 1.6.4 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.4,2022.2.24/Nebula_v1.6.4.zip)|
 | 1.6.3.4 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.3.4,2022.2.24/Nebula_v1.6.3.4.zip)|
 | 1.6.3.3 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.3.3,2022.2.24/Nebula_v1.6.3.3.zip)|
@@ -130,20 +135,29 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 形式上、言語パックには下位互換があります。\
 また、新しいバージョンに対しても使用できますが、一部翻訳がなされないことがあります。
 
-日本語版について、1.4.5.1対応版が正常に動作していませんでした。現在は既に修正済みです。
-
 | Language | Translator | Full Support Version | Download |
 | --- | --- | --- | --- |
 | 日本語 | - | 1.6.2.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.2.1,2022.2.24/Japanese.dat)|
 | 日本語 | kihi | 1.6.2.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.6.2.1%2Ckihi/Japanese.dat)|
 | 日本語 | Rey | 1.6.2.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.6.2.1%2CRey/Japanese.dat)|
 | 日本語 | Tanakanira | 1.6.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.6.0%2CTanakanira/Japanese.dat)|
-| English | - | 1.6.3.4 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.3,2022.2.24/English.dat)|
+| English | - | 1.6.5.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.5.1,2022.2.24/English.dat)|
 
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
 
+ **Version 1.6.5.1**
+ - More Cosmicを解禁
+ - 配線タスクのステップ数を増やしたときに正常にタスクの場所が割り振られない問題を修正
+  
+ **Version 1.6.5**
+ - Airshipにて、Medicalに新たな配線タスクを追加
+ - 配線タスクのステップ数を変更できるように
+ - 「Escape」モードで、時間切れの際にタスクを全てクリアした逃走者のみが勝利するように
+ - 「Escape」モードで、幽霊がタスクを持たなくなるように変更
+ - 乱数の生成アルゴリズムを変更
+  
  **Version 1.6.4**
  - 新ハンター「Hadar」を追加
  - カスタムサーバーを使用可能に
@@ -557,7 +571,7 @@ VanillaのAmong Usと同じルールです。Modによる追加役職を使用�
 #### 推奨プレイ人数: 4 ~ 8人
 
 いわゆる鬼ごっこです。ゲーム開始から10秒後に、1人がハンターに、その他全員が逃走者になります。\
-制限時間いっぱいまでハンターから逃げ切るか、タスクをこなせば逃走者の勝利です。\
+タスクをこなしながら制限時間いっぱいまでハンターから逃げ切るか、全逃走者がタスクを全て完了すれば逃走者の勝利です。\
 ハンターは、逃げる逃走者全員を捕まえられたら勝利します。\
 ゲーム参加者を待つ間のちょっとしたミニゲームにどうぞ。
 
@@ -600,7 +614,7 @@ Sniperの弾の当たり判定やEmpiric,Alienなどの効果範囲を調べる�
 
 ## Escape
 | Players | Escapees | Hunters |
-| ---------- |
+| ---------- | ---------- | ---------- |
 | [Player](#player) | [Halley](#halley) | [Hadar](#hadar) |
 ||| [Polis](#polis) |
 
@@ -618,6 +632,7 @@ BasePluginに以下の属性を新たに付与することで、Nebula on the Sh
 [The Other Roles](https://github.com/Eisbison/TheOtherRoles) このMODの着想の根源はすべてここからのものです。ソースを一部使用しています。\
 [TheOtherRoles: GM Edition](https://github.com/yukinogatari/TheOtherRoles-GM) ソースを一部使用しています。Empiric,MadmateのアイデアはこのMODからのものです。\
 [Town Of Impostors](https://github.com/Town-of-Impostors/TownOfImpostors) Sniper,Necromancer,MayorのアイデアはこのMODからのものです。\
+[Extreme Roles](https://github.com/yukieiji/ExtremeRoles) より偏りのない乱数生成のソースを使用しています。
 \
 その他ロールアイデアのご提供等\
 \
