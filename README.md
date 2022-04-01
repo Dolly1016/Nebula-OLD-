@@ -153,6 +153,14 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 <details>
   <summary>クリックで展開</summary>
 
+ **Version 1.7.1**
+ - Disturberに新オプション「Ignore Barriors」を追加
+ - Sniperに新オプション「Store Rifle On Fire」を追加
+ - v2022.3.29に仮対応
+ - Disturberのポールの設置方法に微細な変更
+ - Disturberのポール、Trapperのトラップ、Sniperのライフルが複数出現する際に\
+   既存のオブジェクトの動作を異常にすることがある問題を修正
+  
  **Version 1.7.0**
  - Disturberを追加
  - マルチスポーンポイント使用時およびAirshipで同時スポーンを有効化するオプションを追加
