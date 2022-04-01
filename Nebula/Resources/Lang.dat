@@ -351,6 +351,10 @@
 "role.disturber.disturbDuration" : "Disturb Duration"
 "role.disturber.countOfBarriors" : "Count Of Barriors"
 "role.disturber.maxPoleDistance" : "Max Pole Distance"
+"role.disturber.ignoreBarriors" : "Ignore Barriors"
+"role.disturber.ignoreBarriors.constant" : "Constant"
+"role.disturber.ignoreBarriors.impostors" : "Impostors"
+"role.disturber.ignoreBarriors.onlyMyself" : "Only Myself"
 
 "role.eraser.name" : "Eraser"
 "role.eraser.description" : "Kill the Crewmates and Erase Their Roles"
@@ -391,6 +395,7 @@
 "role.sniper.shotEffectiveRange" : "Shot Effective Range"
 "role.sniper.canKillImpostors" : "Can Kill Impostors"
 "role.sniper.soundEffectiveRange" : "Sound Effective Range"
+"role.sniper.storeRifleOnFire" : "Store Rifle On Fire"
 "role.sniper.showAimAssist" : "Show Aim Assist"
 "role.sniper.aimAssistDelay" : "Aim Assist Delay"
 "role.sniper.aimAssistDuration" : "Aim Assist Duration"

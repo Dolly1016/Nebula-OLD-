@@ -140,7 +140,7 @@ namespace Nebula.Patches
             if (overlayShown) return;
 
             HudManager hudManager = DestroyableSingleton<HudManager>.Instance;
-            if (ShipStatus.Instance == null || PlayerControl.LocalPlayer == null || hudManager == null || HudManager.Instance.isIntroDisplayed || (!PlayerControl.LocalPlayer.CanMove && MeetingHud.Instance == null))
+            if (ShipStatus.Instance == null || PlayerControl.LocalPlayer == null || hudManager == null || HudManager.Instance.IsIntroDisplayed || (!PlayerControl.LocalPlayer.CanMove && MeetingHud.Instance == null))
                 return;
 
             if (!Initialize()) return;

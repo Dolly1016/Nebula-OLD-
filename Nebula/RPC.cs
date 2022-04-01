@@ -948,7 +948,7 @@ namespace Nebula
             Vector2 pos2Upper = pos2 + new Vector2(0, 0.5f);
             Vector2 center = (pos1 + pos2) / 2f;
 
-            bool vertical = Mathf.Abs(pos1.x - pos2.x) < 0.6f;
+            bool vertical = Mathf.Abs(pos1.x - pos2.x) < 0.8f;
 
             var obj = new GameObject("ElecBarrior");
             var MeshFilter = obj.AddComponent<MeshFilter>();
@@ -985,7 +985,8 @@ namespace Nebula
 
             float timer = 0.1f;
             int num = 0;
-            new Objects.DynamicCollider(Collider, Roles.Roles.Disturber.disturbDurationOption.getFloat(), false, (c) => {
+            new Objects.DynamicCollider(Collider, Roles.Roles.Disturber.disturbDurationOption.getFloat(), false, (c) =>
+            {
                 timer -= Time.deltaTime;
 
                 if (timer < 0f)
@@ -993,13 +994,14 @@ namespace Nebula
                     timer = 0.1f;
                     num = (num + 1) % 3;
 
-                    uvList[0]=(new Vector2((float)num/3f, 0));
-                    uvList[1]=(new Vector2((float)(num + 1) / 3f, 0));
-                    uvList[2]=(new Vector2((float)num / 3f, 1));
-                    uvList[3]=(new Vector2((float)(num + 1) / 3f, 1));
+                    uvList[0] = (new Vector2((float)num / 3f, 0));
+                    uvList[1] = (new Vector2((float)(num + 1) / 3f, 0));
+                    uvList[2] = (new Vector2((float)num / 3f, 1));
+                    uvList[3] = (new Vector2((float)(num + 1) / 3f, 1));
                     mesh.SetUVs(0, uvList);
                 }
-            });
+            }, Roles.Roles.Disturber.ignoreBarriorsOption.getSelection() == 1,
+            (ulong)(Roles.Roles.Disturber.ignoreBarriorsOption.getSelection() == 2 ? 1 << playerId : 0));
         }
     }
 
@@ -1382,6 +1384,7 @@ namespace Nebula
                 id = (ulong)NebulaPlugin.rnd.Next(64);
                 if (!Objects.CustomObject.Objects.ContainsKey((id + (ulong)PlayerControl.LocalPlayer.PlayerId * 64))) break;
             }
+            id = id + (ulong)PlayerControl.LocalPlayer.PlayerId;
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ObjectInstantiate, Hazel.SendOption.Reliable, -1);
             writer.Write(PlayerControl.LocalPlayer.PlayerId);
             writer.Write(objectType.Id);

@@ -45,24 +45,27 @@ namespace Nebula.Roles.ImpostorRoles
         public Module.CustomOption disturbDurationOption;
         private Module.CustomOption countOfBarriorsOption;
         private Module.CustomOption maxPoleDistanceOption;
+        public Module.CustomOption ignoreBarriorsOption;
 
         public override void LoadOptionData()
         {
             disturbCoolDownOption = CreateOption(Color.white, "disturbCoolDown", 20f, 10f, 60f, 2.5f);
             disturbCoolDownOption.suffix = "second";
 
-            disturbDurationOption = CreateOption(Color.white, "disturbDuration", 10f, 5f, 20f, 2.5f);
+            disturbDurationOption = CreateOption(Color.white, "disturbDuration", 10f, 5f, 60f, 2.5f);
             disturbDurationOption.suffix = "second";
 
             countOfBarriorsOption = CreateOption(Color.white, "countOfBarriors", 2f, 1f, 10f, 1f);
 
             maxPoleDistanceOption = CreateOption(Color.white, "maxPoleDistance", 2.5f, 1f, 10f, 0.25f);
             maxPoleDistanceOption.suffix = "cross";
+
+            ignoreBarriorsOption = CreateOption(Color.white, "ignoreBarriors", new string[] { "role.disturber.ignoreBarriors.constant", "role.disturber.ignoreBarriors.impostors", "role.disturber.ignoreBarriors.onlyMyself" });
         }
 
         private void PlaceOnClick() {
             if (PolesGuide[0] == null)
-            {
+            {                
                 PolesGuide[0] = Objects.CustomObject.CreatePrivateObject(Objects.CustomObject.Type.ElecPoleGuide, PlayerControl.LocalPlayer.transform.position);
             }
             else if (PolesGuide[1] == null)    
@@ -119,7 +122,7 @@ namespace Nebula.Roles.ImpostorRoles
                 __instance,
                 KeyCode.F,
                 true,
-                10f,
+                disturbDurationOption.getFloat(),
                 () => { },
                 false,
                 "button.label.place"
@@ -148,7 +151,14 @@ namespace Nebula.Roles.ImpostorRoles
         }
         public override void MyUpdate()
         {
-            if (PolesGuide[0] == null) return;
+            if (PolesGuide[0] == null)
+            {
+                if (elecButton.Timer < 0f && Poles.Count < countOfBarriorsOption.getFloat())
+                {
+                    PolesGuide[0] = Objects.CustomObject.CreatePrivateObject(Objects.CustomObject.Type.ElecPoleGuide, PlayerControl.LocalPlayer.transform.position);
+                }
+                return;
+            }
 
             var pos = new Vector2(0f,-0.2f)+ (Vector2)PlayerControl.LocalPlayer.transform.position + (PlayerControl.LocalPlayer.MyPhysics.body.velocity.normalized * 0.3f);
             Vector2 vector = (pos - (Vector2)PlayerControl.LocalPlayer.transform.position);

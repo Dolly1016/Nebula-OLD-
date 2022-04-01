@@ -19,8 +19,9 @@ namespace Nebula.Roles.ImpostorRoles
         private Module.CustomOption snipeCoolDownOption;
         private Module.CustomOption shotSizeOption;
         private Module.CustomOption shotEffectiveRangeOption;
-        private Module.CustomOption canKillImpostorsOption;
         public Module.CustomOption noticeRangeOption;
+        private Module.CustomOption canKillImpostorsOption;
+        public Module.CustomOption storeRifleOnFireOption;
         public Module.CustomOption showAimAssistOption;
         public Module.CustomOption aimAssistDelayOption;
         public Module.CustomOption aimAssistDurationOption;
@@ -37,10 +38,11 @@ namespace Nebula.Roles.ImpostorRoles
             shotSizeOption.suffix = "cross";
             shotEffectiveRangeOption = CreateOption(Color.white, "shotEffectiveRange", 20f, 2f, 40f, 2f);
             shotEffectiveRangeOption.suffix = "cross";
-            canKillImpostorsOption = CreateOption(Color.white, "canKillImpostors", false);
-
             noticeRangeOption = CreateOption(Color.white, "soundEffectiveRange", 20f, 2f, 50f, 2f);
             noticeRangeOption.suffix = "cross";
+            canKillImpostorsOption = CreateOption(Color.white, "canKillImpostors", false);
+
+            storeRifleOnFireOption = CreateOption(Color.white, "storeRifleOnFire", false);
 
             showAimAssistOption = CreateOption(Color.white, "showAimAssist", false);
             aimAssistDelayOption = CreateOption(Color.white, "aimAssistDelay", 2f, 1f, 10f, 1f);
@@ -133,6 +135,11 @@ namespace Nebula.Roles.ImpostorRoles
 
                     RPCEventInvoker.SniperShot();
                     killButton.Timer = killButton.MaxTimer;
+                    if (storeRifleOnFireOption.getBool())
+                    {
+                        RPCEventInvoker.SniperSettleRifle();
+                        equipRifleFlag = false;
+                    }
                 },
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
                 () => { return PlayerControl.LocalPlayer.CanMove && equipRifleFlag; },

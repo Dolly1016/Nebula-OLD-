@@ -942,6 +942,7 @@ namespace Nebula.Module
         }
     }
 
+    /*
     [HarmonyPatch(typeof(CreateOptionsPicker), nameof(CreateOptionsPicker.Start))]
     public class CreateOptionsPickerPatch
     {
@@ -958,6 +959,7 @@ namespace Nebula.Module
             __instance.SetImpostorButtons(numImpostors);
         }
     }
+    */
 
     [HarmonyPatch(typeof(GameOptionsData), nameof(GameOptionsData.ToggleMapFilter))]
     public static class GameOptionsData_ToggleMapFilter_Patch

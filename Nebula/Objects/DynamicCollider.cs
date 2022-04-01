@@ -28,7 +28,22 @@ namespace Nebula.Objects
 
             collider.gameObject.layer=LayerMask.NameToLayer("Ship");
 
+            if (PlayerControl.LocalPlayer.Data.Role.IsImpostor && impostorsCanIgnore)
+                collider.enabled = false;
+
             Game.GameData.data.ColliderManager.Colliders.Add(this);
+
+            UpdateCollision();
+        }
+
+        public void UpdateCollision()
+        {
+            if (impostorsCanIgnore && PlayerControl.LocalPlayer.Data.Role.IsImpostor)
+                collider.enabled = false;
+            else if ((ignoreMask & (ulong)(1 << PlayerControl.LocalPlayer.PlayerId)) != 0)
+                collider.enabled = false;
+            else
+                collider.enabled = true;
         }
 
         public void Update()
@@ -39,6 +54,8 @@ namespace Nebula.Objects
             duration -= Time.deltaTime;
             if (duration < 0f)
                 OnFinalize();
+            else
+            UpdateCollision();
         }
 
         public void OnMeetingEnd()

@@ -63,21 +63,20 @@ namespace Nebula.Patches
             static void Postfix(PingTracker __instance)
             {
                 __instance.text.alignment = TMPro.TextAlignmentOptions.TopRight;
-
                 __instance.text.text = $"<size=130%><color=#9579ce>Nebula on the Ship</color></size> v" + NebulaPlugin.PluginVisualVersion + "\n" + __instance.text.text;
                 if (AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Started)
                 {
-                    __instance.transform.localPosition = new Vector3(3.5f, __instance.transform.localPosition.y, __instance.transform.localPosition.z);
+                    __instance.gameObject.GetComponent<AspectPosition>().DistanceFromEdge = new Vector3(1.2f, 0.8f, 0f);
                 }
                 else if (PlayerControl.LocalPlayer!=null && PlayerControl.LocalPlayer.Data.IsDead)
                 {
-                    __instance.transform.localPosition = new Vector3(3.45f, __instance.transform.localPosition.y, __instance.transform.localPosition.z);
+                    __instance.gameObject.GetComponent<AspectPosition>().DistanceFromEdge = new Vector3(2.0f, 0.1f, 0f);
                 }
                 else
                 {
-                    __instance.transform.localPosition = new Vector3(4.2f, __instance.transform.localPosition.y, __instance.transform.localPosition.z);
+                    __instance.gameObject.GetComponent<AspectPosition>().DistanceFromEdge = new Vector3(1.2f, 0.1f, 0f);
                 }
-
+                __instance.gameObject.GetComponent<AspectPosition>().AdjustPosition();
             }
         }
 

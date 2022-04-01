@@ -381,7 +381,7 @@ namespace Nebula.Game
                 if (player.AmOwner)
                     player.MyPhysics.inputHandler.enabled = true;
                 player.MyPhysics.Skin.SetEnterVent(player.MyPhysics.rend.flipX);
-                player.MyPhysics.Animator.Play(player.MyPhysics.EnterVentAnim, 1f);
+                player.MyPhysics.Animator.Play(player.MyPhysics.CurrentAnimationGroup.EnterVentAnim, 1f);
                 player.MyPhysics.Animator.Time = 0f;
                 player.moveable = false;
 
@@ -391,14 +391,14 @@ namespace Nebula.Game
                     if (Constants.ShouldPlaySfx()) SoundManager.Instance.PlaySound(audioDive, false, 0.8f);
                 }
             })));
-            sequence.Add(Effects.Wait(player.MyPhysics.EnterVentAnim.length));
+            sequence.Add(Effects.Wait(player.MyPhysics.CurrentAnimationGroup.EnterVentAnim.length));
             sequence.Add(Effects.Action(new System.Action(() =>
             {
                 if (player.AmOwner)
                     player.MyPhysics.inputHandler.enabled = false;
                 player.MyPhysics.myPlayer.Visible = false;
                 player.MyPhysics.Skin.SetIdle(player.MyPhysics.rend.flipX);
-                player.MyPhysics.Animator.Play(player.MyPhysics.IdleAnim, 1f);
+                player.MyPhysics.Animator.Play(player.MyPhysics.CurrentAnimationGroup.IdleAnim, 1f);
                 player.moveable = true;
                 underTheFloor = true;
             })));
@@ -419,7 +419,7 @@ namespace Nebula.Game
                 if (player.AmOwner)
                     player.MyPhysics.inputHandler.enabled = true;
                 player.MyPhysics.Skin.SetExitVent(player.MyPhysics.rend.flipX);
-                player.MyPhysics.Animator.Play(player.MyPhysics.ExitVentAnim, 1f);
+                player.MyPhysics.Animator.Play(player.MyPhysics.CurrentAnimationGroup.ExitVentAnim, 1f);
                 player.MyPhysics.Animator.Time = 0f;
                 player.moveable = false;
                 player.MyPhysics.myPlayer.Visible = true;
@@ -431,13 +431,13 @@ namespace Nebula.Game
                     if (Constants.ShouldPlaySfx()) SoundManager.Instance.PlaySound(audioGush, false, 0.8f);
                 }
             })));
-            sequence.Add(Effects.Wait(player.MyPhysics.ExitVentAnim.length));
+            sequence.Add(Effects.Wait(player.MyPhysics.CurrentAnimationGroup.ExitVentAnim.length));
             sequence.Add(Effects.Action(new System.Action(() =>
             {
                 if (player.AmOwner)
                     player.MyPhysics.inputHandler.enabled = false;
                 player.MyPhysics.Skin.SetIdle(player.MyPhysics.rend.flipX);
-                player.MyPhysics.Animator.Play(player.MyPhysics.IdleAnim, 1f);
+                player.MyPhysics.Animator.Play(player.MyPhysics.CurrentAnimationGroup.IdleAnim, 1f);
                 player.moveable = true;
             })));
 

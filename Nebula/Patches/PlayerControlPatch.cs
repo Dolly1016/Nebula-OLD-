@@ -109,10 +109,10 @@ namespace Nebula.Patches
 
         static public void SetPlayerOutline(PlayerControl target, Color color)
         {
-            if (target == null || target.myRend == null) return;
+            if (target == null || target.MyRend == null) return;
 
-            target.myRend.material.SetFloat("_Outline", 1f);
-            target.myRend.material.SetColor("_OutlineColor", color);
+            target.MyRend.material.SetFloat("_Outline", 1f);
+            target.MyRend.material.SetColor("_OutlineColor", color);
         }
 
         static public DeadBody SetMyDeadTarget()
@@ -160,9 +160,9 @@ namespace Nebula.Patches
         {
             foreach (PlayerControl target in PlayerControl.AllPlayerControls)
             {
-                if (target == null || target.myRend == null) continue;
+                if (target == null || target.MyRend == null) continue;
 
-                target.myRend.material.SetFloat("_Outline", 0f);
+                target.MyRend.material.SetFloat("_Outline", 0f);
             }
         }
 
@@ -349,8 +349,8 @@ namespace Nebula.Patches
         public static bool Prefix(PlayerPhysics __instance)
         {
             if (
-                __instance.Animator.IsPlaying(__instance.ExitVentAnim) ||
-                __instance.Animator.IsPlaying(__instance.EnterVentAnim))
+                __instance.Animator.IsPlaying(__instance.CurrentAnimationGroup.ExitVentAnim) ||
+                __instance.Animator.IsPlaying(__instance.CurrentAnimationGroup.EnterVentAnim))
                 return false;
             return true;
         }

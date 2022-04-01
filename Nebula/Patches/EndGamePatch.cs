@@ -243,7 +243,7 @@ namespace Nebula.Patches
                 poolablePlayer.UpdateFromPlayerOutfit(winningPlayerData2, winningPlayerData2.IsDead);
                 if (winningPlayerData2.IsDead)
                 {
-                    poolablePlayer.Body.sprite = __instance.GhostSprite;
+                    poolablePlayer.Skin.layer.sprite = __instance.GhostSprite;
                     poolablePlayer.SetDeadFlipX(i % 2 == 0);
                 }
                 else

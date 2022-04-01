@@ -280,15 +280,15 @@ namespace Nebula.Module
         public static CustomHat TestHat = null;
         public static CustomNamePlate TestNamePlate = null;
 
-        private static HatBehaviour CreateHatBehaviour(CustomHat ch, bool fromDisk = false, bool testOnly = false)
+        private static HatData CreateHatBehaviour(CustomHat ch, bool fromDisk = false, bool testOnly = false)
         {
             if (hatShader == null && DestroyableSingleton<HatManager>.InstanceExists)
             {
-                foreach (HatBehaviour h in DestroyableSingleton<HatManager>.Instance.AllHats)
+                foreach (HatData h in DestroyableSingleton<HatManager>.Instance.allHats)
                 {
-                    if (h.AltShader != null)
+                    if (h.hatViewData.viewData.AltShader != null)
                     {
-                        hatShader = h.AltShader;
+                        hatShader = h.hatViewData.viewData.AltShader;
                         break;
                     }
                 }
@@ -299,17 +299,19 @@ namespace Nebula.Module
                 content.LoadImage("MoreCosmic/hats", fromDisk);
             }
 
-            HatBehaviour hat = new HatBehaviour();
-            hat.MainImage = ch.I_Main.Image;
+            HatData hat = new HatData();
+            HatViewData viewData = hat.hatViewData.viewData;
+
+            viewData.MainImage = ch.I_Main.Image;
             if (ch.I_Back)
             {
-                hat.BackImage = ch.I_Back.Image;
+                viewData.BackImage = ch.I_Back.Image;
                 ch.Behind.Value = true;
             }
             if (ch.I_Climb)
-                hat.ClimbImage = ch.I_Climb.Image;
-            hat.name = ch.Name.Value + "\nby " + ch.Author.Value;
-            hat.Order = 99;
+                viewData.ClimbImage = ch.I_Climb.Image;
+            hat.StoreName = ch.Name.Value + "\nby " + ch.Author.Value;
+            //hat.Order = 99;
             hat.ProductId = "hat_" + ch.Name.Value.Replace(' ', '_');
             hat.InFront = !ch.Behind.Value;
             hat.NoBounce = !ch.Bounce.Value;
@@ -319,7 +321,7 @@ namespace Nebula.Module
 
 
             if (ch.Adaptive.Value && hatShader != null)
-                hat.AltShader = hatShader;
+                viewData.AltShader = hatShader;
 
             if (testOnly)
             {
@@ -342,10 +344,10 @@ namespace Nebula.Module
             }
 
             NamePlateData np = new NamePlateData();
-            np.Image = ch.I_Plate.Image;
+            np.viewData.viewData.Image = ch.I_Plate.Image;
             np.name = ch.Name.Value + "\nby " + ch.Author.Value;
-            np.Order = 99;
-            np.ProductId = "hat_" + ch.Name.Value.Replace(' ', '_');
+            //np.Order = 99;
+            np.ProductId = "nameplate_" + ch.Name.Value.Replace(' ', '_');
             np.ChipOffset = new Vector2(0f, 0.2f);
             np.Free = true;
             np.NotInStore = true;
@@ -378,7 +380,7 @@ namespace Nebula.Module
                 {
                     while (CosmicLoader.hatdetails.Count > 0)
                     {
-                        __instance.AllHats.Add(CreateHatBehaviour(CosmicLoader.hatdetails[0],true));
+                        __instance.allHats.Add(CreateHatBehaviour(CosmicLoader.hatdetails[0],true));
                         CosmicLoader.hatdetails.RemoveAt(0);
                     }
                 }
@@ -410,7 +412,7 @@ namespace Nebula.Module
                 {
                     while (CosmicLoader.namePlatedetails.Count > 0)
                     {
-                        __instance.AllNamePlates.Add(CreateNamePlateData(CosmicLoader.namePlatedetails[0], true));
+                        __instance.allNamePlates.Add(CreateNamePlateData(CosmicLoader.namePlatedetails[0], true));
                         CosmicLoader.namePlatedetails.RemoveAt(0);
                     }
                 }
@@ -433,7 +435,7 @@ namespace Nebula.Module
             private static void Postfix(PlayerPhysics __instance)
             {
                 AnimationClip currentAnimation = __instance.Animator.GetCurrentAnimation();
-                if (currentAnimation == __instance.ClimbAnim || currentAnimation == __instance.ClimbDownAnim) return;
+                if (currentAnimation == __instance.CurrentAnimationGroup.ClimbAnim || currentAnimation == __instance.CurrentAnimationGroup.ClimbDownAnim) return;
                 HatParent hp = __instance.myPlayer.HatRenderer;
                 if (hp.Hat == null) return;
                 CustomHat extend = hp.Hat.getHatData();
@@ -446,7 +448,7 @@ namespace Nebula.Module
                     }
                     else
                     {
-                        hp.FrontLayer.sprite = hp.Hat.MainImage;
+                        hp.FrontLayer.sprite = hp.Hat.hatViewData.viewData.MainImage;
                     }
                 }
                 if (extend.I_BackFlip != null)
@@ -457,7 +459,7 @@ namespace Nebula.Module
                     }
                     else
                     {
-                        hp.BackLayer.sprite = hp.Hat.BackImage;
+                        hp.BackLayer.sprite = hp.Hat.hatViewData.viewData.BackImage;
                     }
                 }
             }
@@ -486,7 +488,7 @@ namespace Nebula.Module
         {
             public static TMPro.TMP_Text textTemplate;
 
-            public static float createHatPackage(List<System.Tuple<HatBehaviour, CustomHat>> hats, string packageName, float YStart, HatsTab __instance)
+            public static float createHatPackage(List<System.Tuple<HatData, CustomHat>> hats, string packageName, float YStart, HatsTab __instance)
             {
                 float offset = YStart;
 
@@ -509,7 +511,7 @@ namespace Nebula.Module
 
                 for (int i = 0; i < hats.Count; i++)
                 {
-                    HatBehaviour hat = hats[i].Item1;
+                    HatData hat = hats[i].Item1;
                     CustomHat ext = hats[i].Item2;
 
                     float xpos = __instance.XRange.Lerp((i % __instance.NumPerRow) / (__instance.NumPerRow - 1f));
@@ -544,8 +546,8 @@ namespace Nebula.Module
             {
                 calcItemBounds(__instance);
 
-                HatBehaviour[] unlockedHats = DestroyableSingleton<HatManager>.Instance.GetUnlockedHats();
-                Dictionary<string, List<System.Tuple<HatBehaviour, CustomHat>>> packages = new Dictionary<string, List<System.Tuple<HatBehaviour, CustomHat>>>();
+                HatData[] unlockedHats = DestroyableSingleton<HatManager>.Instance.GetUnlockedHats();
+                Dictionary<string, List<System.Tuple<HatData, CustomHat>>> packages = new Dictionary<string, List<System.Tuple<HatData, CustomHat>>>();
 
                 Helpers.destroyList(hatsTabCustomTexts);
                 Helpers.destroyList(__instance.ColorChips);
@@ -555,21 +557,21 @@ namespace Nebula.Module
 
                 textTemplate = PlayerCustomizationMenu.Instance.itemName;
 
-                foreach (HatBehaviour hatBehaviour in unlockedHats)
+                foreach (HatData hatBehaviour in unlockedHats)
                 {
                     CustomHat ext = hatBehaviour.getHatData();
 
                     if (ext != null)
                     {
                         if (!packages.ContainsKey(ext.Package.Value))
-                            packages[ext.Package.Value] = new List<System.Tuple<HatBehaviour, CustomHat>>();
-                        packages[ext.Package.Value].Add(new System.Tuple<HatBehaviour, CustomHat>(hatBehaviour, ext));
+                            packages[ext.Package.Value] = new List<System.Tuple<HatData, CustomHat>>();
+                        packages[ext.Package.Value].Add(new System.Tuple<HatData, CustomHat>(hatBehaviour, ext));
                     }
                     else
                     {
                         if (!packages.ContainsKey(innerslothHatPackageName))
-                            packages[innerslothHatPackageName] = new List<System.Tuple<HatBehaviour, CustomHat>>();
-                        packages[innerslothHatPackageName].Add(new System.Tuple<HatBehaviour, CustomHat>(hatBehaviour, null));
+                            packages[innerslothHatPackageName] = new List<System.Tuple<HatData, CustomHat>>();
+                        packages[innerslothHatPackageName].Add(new System.Tuple<HatData, CustomHat>(hatBehaviour, null));
                     }
                 }
 
@@ -583,7 +585,7 @@ namespace Nebula.Module
 
                 foreach (string key in orderedKeys)
                 {
-                    List<System.Tuple<HatBehaviour, CustomHat>> value = packages[key];
+                    List<System.Tuple<HatData, CustomHat>> value = packages[key];
                     YOffset = createHatPackage(value, key, YOffset, __instance);
                 }
 
@@ -618,6 +620,7 @@ namespace Nebula.Module
 
                 var numNameplates = nameplates.Count;
 
+                NebulaPlugin.Instance.Logger.Print("A");
                 for (int i = 0; i < nameplates.Count; i++)
                 {
                     NamePlateData nameplate = nameplates[i].Item1;
@@ -626,6 +629,8 @@ namespace Nebula.Module
                     float xpos = __instance.XRange.Lerp((i % __instance.NumPerRow) / (__instance.NumPerRow - 1f));
                     float ypos = offset - (i / __instance.NumPerRow) * __instance.YOffset;
                     ColorChip colorChip = UnityEngine.Object.Instantiate<ColorChip>(__instance.ColorTabPrefab, __instance.scroller.Inner);
+
+                    NebulaPlugin.Instance.Logger.Print("B");
 
                     colorChip.transform.localPosition = new Vector3(xpos, ypos, inventoryZ);
                     if (ActiveInputManager.currentControlType == ActiveInputManager.InputType.Keyboard)
@@ -639,8 +644,14 @@ namespace Nebula.Module
                         colorChip.Button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => __instance.SelectNameplate(nameplate)));
                     }
 
-                    colorChip.gameObject.GetComponent<NameplateChip>().image.sprite = nameplate.Image;
-                    __instance.ColorChips.Add(colorChip);
+                    NebulaPlugin.Instance.Logger.Print("C");
+
+                    __instance.StartCoroutine(nameplate.CoLoadViewData((Il2CppSystem.Action<NamePlateViewData>)((n) => {
+                        colorChip.gameObject.GetComponent<NameplateChip>().image.sprite = n.Image;
+                        __instance.ColorChips.Add(colorChip);
+                    })));
+
+                    NebulaPlugin.Instance.Logger.Print("D");
                 }
 
                 return offset - ((numNameplates - 1) / __instance.NumPerRow) * __instance.YOffset - headerSize;
@@ -859,7 +870,7 @@ namespace Nebula.Module
     }
     public static class CustomItemManager
     {
-        public static CustomHat getHatData(this HatBehaviour hat)
+        public static CustomHat getHatData(this HatData hat)
         {
             CustomHat ret = null;
             if (CustomParts.TestHat != null && CustomParts.TestHat.Condition.Value.Equals(hat.name))

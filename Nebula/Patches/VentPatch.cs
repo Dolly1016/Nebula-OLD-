@@ -64,7 +64,7 @@ namespace Nebula.Patches
 
                 canUse &= (num <= usableDistance && !PhysicsHelpers.AnythingBetween(truePosition, position, Constants.ShipOnlyMask, false));
 
-                if (@object.MyPhysics.Animator.Clip == @object.MyPhysics.EnterVentAnim && @object.MyPhysics.Animator.Playing) canUse = false;
+                if (@object.MyPhysics.Animator.Clip == @object.MyPhysics.CurrentAnimationGroup.EnterVentAnim && @object.MyPhysics.Animator.Playing) canUse = false;
             }
             __result = num;
 

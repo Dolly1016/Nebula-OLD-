@@ -56,7 +56,7 @@ namespace Nebula.Ghost
                 Transform button = UnityEngine.Object.Instantiate(buttonTemplate, buttonParent);
                 Transform buttonMask = UnityEngine.Object.Instantiate(maskTemplate, buttonParent);
                 TMPro.TextMeshPro label = UnityEngine.Object.Instantiate(textTemplate, button);
-                button.GetComponent<SpriteRenderer>().sprite = DestroyableSingleton<HatManager>.Instance.AllNamePlates[0].Image;
+                button.GetComponent<SpriteRenderer>().sprite = DestroyableSingleton<HatManager>.Instance.AllNamePlates[0].viewData.viewData.Image;
                 buttons.Add(button);
                 button.gameObject.active = false;
                 int row = i / 4, col = i % 4;
@@ -124,7 +124,7 @@ namespace Nebula.Ghost
 
                     if (mask == null)
                     {
-                        mask = player.PlayerIcon.Body.material.GetInt("_MaskLayer") - 2;
+                        mask = player.PlayerIcon.Skin.layer.material.GetInt("_MaskLayer") - 2;
                         player.MaskArea.transform.localPosition = new Vector3(0f, 0.017f, 0.5f);
                         player.MaskArea.transform.localScale = new Vector3(10f, 0.596f, 1f);
                     }

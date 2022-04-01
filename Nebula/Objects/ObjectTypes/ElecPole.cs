@@ -22,7 +22,8 @@ namespace Nebula.Objects.ObjectTypes
     {
         public ElecPoleGuide() : base(6, "ElecPoleGuide", "Nebula.Resources.ElecPole.png", false)
         {
-            IsBack = IsFront = false;
+            IsBack = false;
+            IsFront = true;
             CanSeeInShadow = true;
         }
 

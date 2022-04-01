@@ -50,10 +50,10 @@ namespace Nebula
     {
         public static Module.Random rnd = new Module.Random();
 
-        public const string AmongUsVersion = "2022.2.24";
+        public const string AmongUsVersion = "2022.3.29";
         public const string PluginGuid = "jp.dreamingpig.amongus.nebula";
         public const string PluginName = "TheNebula";
-        public const string PluginVersion = "1.7.0";
+        public const string PluginVersion = "1.7.1";
         /*
         public const string PluginVisualVersion = "22.02.14a";
         public const string PluginStage = "Snapshot";
@@ -62,7 +62,7 @@ namespace Nebula
         public const string PluginVisualVersion = PluginVersion;
         public const string PluginStage = "";
         // */
-        public const string PluginVersionForFetch = "1.7.0";
+        public const string PluginVersionForFetch = "1.7.1";
         public byte[] PluginVersionData = new byte[] { 1, 7, 0, 0 };
 
         public static NebulaPlugin Instance;

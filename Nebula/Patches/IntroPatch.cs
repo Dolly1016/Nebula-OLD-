@@ -3,26 +3,6 @@ using System.Collections.Generic;
 
 namespace Nebula.Patches
 {
-    [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.SetUpRoleText))]
-    public class SetUpRoleTextPatch
-    {
-        public static void Postfix(IntroCutscene __instance)
-        {
-            Game.PlayerData data = Game.GameData.data.players[PlayerControl.LocalPlayer.PlayerId];
-            if (data == null)
-            {
-                return;
-            }
-
-            if (data.role != null)
-            {
-                __instance.RoleText.text = Language.Language.GetString("role." + data.role.LocalizeName + ".name");
-                __instance.RoleText.color = data.role.Color;
-                __instance.RoleBlurbText.text = Language.Language.GetString("role."+data.role.LocalizeName+".description");
-                __instance.RoleBlurbText.color = data.role.Color;
-            }
-        }
-    }
 
     [HarmonyPatch(typeof(HudManager), nameof(HudManager.Start))]
     static class HudManagerStartPatch
@@ -129,10 +109,10 @@ namespace Nebula.Patches
             Roles.Role.ExtractDisplayPlayers(ref yourTeam);
         }
 
-        [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.SetUpRoleText))]
+        [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.ShowRole))]
         class SetUpRoleTextPatch
         {
-            public static void Postfix(IntroCutscene __instance)
+            private static void setUpRoleText(IntroCutscene __instance)
             {
                 Roles.Role role = Game.GameData.data.players[PlayerControl.LocalPlayer.PlayerId].role;
 
@@ -143,19 +123,28 @@ namespace Nebula.Patches
 
 
                 //追加ロールの情報を付加
-                string description=__instance.RoleBlurbText.text;
+                string description = __instance.RoleBlurbText.text;
                 foreach (Roles.ExtraRole exRole in Game.GameData.data.myData.getGlobalData().extraRole)
                 {
                     exRole.EditDescriptionString(ref description);
                 }
                 __instance.RoleBlurbText.text = description;
             }
+
+            public static void Postfix(IntroCutscene __instance)
+            {
+                HudManager.Instance.StartCoroutine(Effects.Lerp(1f, (Il2CppSystem.Action<float>)((p) => {
+                    if (p > 0.1f)return;
+                    setUpRoleText(__instance);
+                })));
+                setUpRoleText(__instance);
+            }
         }
 
-        [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.CoBegin))]
+        [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.ShowTeam))]
         class BeginPatch
         {
-            public static void Prefix(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> yourTeam,ref bool isImpostor)
+            public static void Prefix(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> teamToShow)
             {
                 foreach(PlayerControl player in PlayerControl.AllPlayerControls)
                 {
@@ -169,20 +158,20 @@ namespace Nebula.Patches
                     }
                 }
 
-                isImpostor = (Game.GameData.data.myData.getGlobalData().role.category == Roles.RoleCategory.Impostor);
+                //isImpostor = (Game.GameData.data.myData.getGlobalData().role.category == Roles.RoleCategory.Impostor);
             }
         }
 
         [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.BeginCrewmate))]
         class BeginCrewmatePatch
         {
-            public static void Prefix(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> yourTeam)
+            public static void Prefix(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> teamToDisplay)
             {
-                setupIntroTeamMembers(__instance, ref yourTeam);
+                setupIntroTeamMembers(__instance, ref teamToDisplay);
             }
-            public static void Postfix(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> yourTeam)
+            public static void Postfix(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> teamToDisplay)
             {
-                setupIntroTeamText(__instance, ref yourTeam);
+                setupIntroTeamText(__instance, ref teamToDisplay);
             }
         }
 
