@@ -27,8 +27,14 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 当ModにはAmong Us内でアップデートができる機能がありますが、対応するVanillaのバージョンが変わる場合\
 最新版への更新ができませんので、こちらから手動でのアップデートをお願いいたします。
 
+また、現在 2022.3.29s では正常に動作するかどうか全てはテストしきれていません。\
+フィードバックを頂けましたら非常に助かります。\
+2022.2.24sのデータのバックアップを取ったうえでのアップデートをおすすめします。
+
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.7.1 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.7.1,2022.2.24/Nebula_v1.7.1.zip)|
+| 1.7.0 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.7.0,2022.2.24/Nebula_v1.7.0.zip)|
 | 1.6.5.1 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.5.1,2022.2.24/Nebula_v1.6.5.1.zip)|
 | 1.6.5 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.5,2022.2.24/Nebula_v1.6.5.zip)|
 | 1.6.4 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.4,2022.2.24/Nebula_v1.6.4.zip)|
@@ -137,15 +143,22 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 
 | Language | Translator | Full Support Version | Download |
 | --- | --- | --- | --- |
-| 日本語 | - | 1.6.2.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.2.1,2022.2.24/Japanese.dat)|
-| 日本語 | kihi | 1.6.2.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.6.2.1%2Ckihi/Japanese.dat)|
-| 日本語 | Rey | 1.6.2.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.6.2.1%2CRey/Japanese.dat)|
+| 日本語 | - | 1.7.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.7.0,2022.2.24/Japanese.dat)|
+| 日本語 | kihi | 1.7.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.7.0%2Ckihi/Japanese.dat)|
+| 日本語 | Rey | 1.6.5.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.6.5%2CRey/Japanese.dat)|
 | 日本語 | Tanakanira | 1.6.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.6.0%2CTanakanira/Japanese.dat)|
-| English | - | 1.6.5.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.5.1,2022.2.24/English.dat)|
+| English | - | 1.7.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.7.0,2022.2.24/English.dat)|
 
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+
+ **Version 1.7.0**
+ - Disturberを追加
+ - マルチスポーンポイント使用時およびAirshipで同時スポーンを有効化するオプションを追加
+ - 廃村時にキルモーションが発生しないように
+ - 対プレイヤーのボタンの反応が悪い問題を修正
+ - パフォーマンスに関する軽微な改善
 
  **Version 1.6.5.1**
  - More Cosmicを解禁
@@ -597,14 +610,14 @@ Sniperの弾の当たり判定やEmpiric,Alienなどの効果範囲を調べる�
 | [Camouflager](#camouflager) | [Agent](#agent) | [Arsonist](#arsonist) | [Drunk](#drunk) |
 | [Cleaner](#cleaner) | [Alien](#alien) | [Avenger](#avenger) | [Guesser](#guesser) |
 | [Damned](#damned) | [Bait](#bait) | [Empiric](#empiric) | [Lover](#lover) |
-| [Eraser](#eraser) | [Comet](#comet) | [Jackal](#jackal) | [Trilemma](#trilemma) |
-| [Evil Ace](#evil-ace) | [Doctor](#doctor) | [Jester](#jester) ||
-| [Evil Guesser](#guesser) | [Mayor](#mayor) | [Opportunist](#opportunist) ||
-| [Evil Trapper](#trapper) | [Navvy](#navvy) | [Sidekick](#sidekick) ||
-| [Morphing](#morphing) | [Necromancer](#necromancer) | [Vulture](#vulture) ||
-| [Reaper](#reaper) | [Nice Guesser](#guesser) |||
-| [Sniper](#sniper) | [Nice Trapper](#trapper) |||
-|| [Oracle](#oracle) |||
+| [Disturber](#disturber) | [Comet](#comet) | [Jackal](#jackal) | [Trilemma](#trilemma) |
+| [Eraser](#eraser) | [Doctor](#doctor) | [Jester](#jester) ||
+| [Evil Ace](#evil-ace) | [Mayor](#mayor) | [Opportunist](#opportunist) ||
+| [Evil Guesser](#guesser) | [Navvy](#navvy) | [Sidekick](#sidekick) ||
+| [Evil Trapper](#trapper) | [Necromancer](#necromancer) | [Vulture](#vulture) ||
+| [Morphing](#morphing) | [Nice Guesser](#guesser) |||
+| [Reaper](#reaper) | [Nice Trapper](#trapper) |||
+| [Sniper](#sniper) | [Oracle](#oracle) |||
 || [Provocateur](#provocateur) |||
 || [Psychic](#psychic) |||
 || [Seer](#seer) |||
@@ -735,6 +748,21 @@ p5p5next : Damned
 |----------|:-------------:|
 | Max Count Of Damned | Damnedに変化するCrewmateの最大人数
 | Chance Of Damned | CrewmateがDamnedに変化しうる確率
+
+-----------------------
+
+## Disturber
+ Disturberはプレイヤーの動きを妨害するバリアを張ることができるインポスターです。\
+ バリアは2つのポールから成り、ポールを設置できるだけ設置すると\
+ 次の会議の後から妨害できるようになります。
+ 
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+| Disturb Cool Down | バリア妨害クールダウン
+| Disturb Duration | バリア妨害効果時間
+| Count Of Barriors | バリア設置数
+| Max Pole Distance | ポールの距離制限
 
 -----------------------
 
