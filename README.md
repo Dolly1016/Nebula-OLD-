@@ -667,7 +667,6 @@ BasePluginに以下の属性を新たに付与することで、Nebula on the Sh
 よっキング
 
 **その他ロールアイデアのご提供等**\
-
 龍 : Reaper, Provocateur, Booster, Alien\
 Alps : Guesser(Secondary), Drunk\
 p5p5next : Damned
