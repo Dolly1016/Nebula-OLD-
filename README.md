@@ -33,6 +33,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.7.1.1 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.7.1.1,2022.2.24/Nebula_v1.7.1.1.zip)|
 | 1.7.1 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.7.1,2022.2.24/Nebula_v1.7.1.zip)|
 | 1.7.0 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.7.0,2022.2.24/Nebula_v1.7.0.zip)|
 | 1.6.5.1 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.5.1,2022.2.24/Nebula_v1.6.5.1.zip)|
@@ -153,6 +154,11 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 <details>
   <summary>クリックで展開</summary>
 
+ **Version 1.7.1.1**
+ - ダイナミックパレットがタイトル画面から開く色選択画面で正常に使用できない問題を修正
+ - カスタムネームプレートが使用できない問題を修正(協力:よっキング さん)
+ - ネームプレート選択画面が正常に動作しない問題を修正
+  
  **Version 1.7.1**
  - Disturberに新オプション「Ignore Barriors」を追加
  - Sniperに新オプション「Store Rifle On Fire」を追加
@@ -649,11 +655,15 @@ BasePluginに以下の属性を新たに付与することで、Nebula on the Sh
 
 # クレジットとリソース
 
+いずれも、敬称略\
 [BepInEx](https://github.com/BepInEx) ゲームの関数をフックするために使用しています。\
 [The Other Roles](https://github.com/Eisbison/TheOtherRoles) このMODの着想の根源はすべてここからのものです。ソースを一部使用しています。\
 [TheOtherRoles: GM Edition](https://github.com/yukinogatari/TheOtherRoles-GM) ソースを一部使用しています。Empiric,MadmateのアイデアはこのMODからのものです。\
 [Town Of Impostors](https://github.com/Town-of-Impostors/TownOfImpostors) Sniper,Necromancer,MayorのアイデアはこのMODからのものです。\
 [Extreme Roles](https://github.com/yukieiji/ExtremeRoles) より偏りのない乱数生成のソースを使用しています。
+\
+バグ修正のご協力\
+よっキング
 \
 その他ロールアイデアのご提供等\
 \
