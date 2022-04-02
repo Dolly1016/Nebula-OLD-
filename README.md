@@ -655,18 +655,19 @@ BasePluginに以下の属性を新たに付与することで、Nebula on the Sh
 
 # クレジットとリソース
 
-いずれも、敬称略\
+いずれも、敬称略
+
 [BepInEx](https://github.com/BepInEx) ゲームの関数をフックするために使用しています。\
 [The Other Roles](https://github.com/Eisbison/TheOtherRoles) このMODの着想の根源はすべてここからのものです。ソースを一部使用しています。\
 [TheOtherRoles: GM Edition](https://github.com/yukinogatari/TheOtherRoles-GM) ソースを一部使用しています。Empiric,MadmateのアイデアはこのMODからのものです。\
 [Town Of Impostors](https://github.com/Town-of-Impostors/TownOfImpostors) Sniper,Necromancer,MayorのアイデアはこのMODからのものです。\
 [Extreme Roles](https://github.com/yukieiji/ExtremeRoles) より偏りのない乱数生成のソースを使用しています。
-\
-バグ修正のご協力\
+
+**バグ修正のご協力**\
 よっキング
-\
-その他ロールアイデアのご提供等\
-\
+
+**その他ロールアイデアのご提供等**\
+
 龍 : Reaper, Provocateur, Booster, Alien\
 Alps : Guesser(Secondary), Drunk\
 p5p5next : Damned
