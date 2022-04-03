@@ -33,6 +33,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.7.2 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.7.2,2022.3.29/Nebula_v1.7.2.zip)|
 | 1.7.1.1 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.7.1.1,2022.3.29/Nebula_v1.7.1.1.zip)|
 | 1.7.1 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.7.1,2022.3.29/Nebula_v1.7.1.zip)|
 | 1.7.0 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.7.0,2022.2.24/Nebula_v1.7.0.zip)|
@@ -154,6 +155,13 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 <details>
   <summary>クリックで展開</summary>
 
+ **Version 1.7.2**
+ - Disturberの妨害に停電効果を追加し、これに関連して新オプション「Disturb Black Out Rate」を追加
+ - Guesserの能力使用時に役職選択画面が表示されない問題を修正
+ - AirshipでReaperのベント移動先が一部欠落している問題を修正
+ - Airshipの一部タスクに壁判定を追加
+ - Airshipの宿舎下のダウンロードタスクの使用可能範囲を増大
+  
  **Version 1.7.1.1**
  - 2022.3.29sに本対応
  - ダイナミックパレットがタイトル画面から開く色選択画面で正常に使用できない問題を修正
@@ -780,8 +788,10 @@ p5p5next : Damned
 |----------|:-------------:|
 | Disturb Cool Down | バリア妨害クールダウン
 | Disturb Duration | バリア妨害効果時間
+| Disturb Black Out Rate | バリア妨害中の視野範囲
 | Count Of Barriors | バリア設置数
 | Max Pole Distance | ポールの距離制限
+| Ignore Barriors | バリアを無視できるプレイヤー
 
 -----------------------
 
