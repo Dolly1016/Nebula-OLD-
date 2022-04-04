@@ -33,6 +33,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.7.2.1 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.7.2.1,2022.3.29/Nebula_v1.7.2.1.zip)|
 | 1.7.2 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.7.2,2022.3.29/Nebula_v1.7.2.zip)|
 | 1.7.1.1 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.7.1.1,2022.3.29/Nebula_v1.7.1.1.zip)|
 | 1.7.1 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.7.1,2022.3.29/Nebula_v1.7.1.zip)|
@@ -155,6 +156,13 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 <details>
   <summary>クリックで展開</summary>
 
+ **Version 1.7.2.1**
+ - ゲーム冒頭のロール開示時に置き換え前の文章が一瞬ちらつく問題を修正
+ - Sidekickがタスクを持っていた問題を修正
+ - オンラインロビーでマップを変更できない問題を修正
+ - Can Be Guesserオプションの出現条件をより直感的なものに調整
+ - 各種マップにて、上下方向の移動をふさぐ扉の当たり判定に軽微な変更
+  
  **Version 1.7.2**
  - Disturberの妨害に停電効果を追加し、これに関連して新オプション「Disturb Black Out Rate」を追加
  - Guesserの能力使用時に役職選択画面が表示されない問題を修正
