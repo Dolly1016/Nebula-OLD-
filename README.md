@@ -33,6 +33,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.7.3 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.7.3,2022.3.29/Nebula_v1.7.3.zip)|
 | 1.7.2.1 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.7.2.1,2022.3.29/Nebula_v1.7.2.1.zip)|
 | 1.7.2 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.7.2,2022.3.29/Nebula_v1.7.2.zip)|
 | 1.7.1.1 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.7.1.1,2022.3.29/Nebula_v1.7.1.1.zip)|
@@ -150,12 +151,18 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 | 日本語 | kihi | 1.7.2.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.7.2.1%2Ckihi/Japanese.dat)|
 | 日本語 | Rey | 1.7.2.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.7.2.1%2CRey/Japanese.dat)|
 | 日本語 | Tanakanira | 1.6.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.6.0%2CTanakanira/Japanese.dat)|
-| English | - | 1.7.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.7.0,2022.2.24/English.dat)|
+| English | - | 1.7.3 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.7.3,2022.2.29/English.dat)|
 
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
 
+ **Version 1.7.3**
+ - Necromancerに新オプション「Max Notification Distance」を追加
+ - バニラの影に関する不具合を修正
+ - Seerのキルフラッシュが機能していない問題を修正
+ - Mayorの投票数を固定にした場合の挙動を修正
+  
  **Version 1.7.2.1**
  - ゲーム冒頭のロール開示時に置き換え前の文章が一瞬ちらつく問題を修正
  - Sidekickがタスクを持っていた問題を修正
