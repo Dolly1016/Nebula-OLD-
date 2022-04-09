@@ -33,6 +33,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.8.1 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.0,2022.3.29/Nebula_v1.8.1.zip)|
 | 1.8.0 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.0,2022.3.29/Nebula_v1.8.0.zip)|
 | 1.7.3 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.7.3,2022.3.29/Nebula_v1.7.3.zip)|
 | 1.7.2.1 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.7.2.1,2022.3.29/Nebula_v1.7.2.1.zip)|
@@ -159,6 +160,9 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 <details>
   <summary>クリックで展開</summary>
 
+ **Version 1.8.1**
+ - プリセットに、#JUMP ,#TO , #NOT INITIALIZE コマンドを追加しました。
+  
  **Version 1.8.0**
  - 現在の設定を出力および読み込みできるようになりました。
  - Mayorを固定票にした際に正常に作動しないことがある問題を修正しました。
