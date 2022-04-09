@@ -20,6 +20,11 @@
 "cosmic.package.innerslothNameplates" : "Innersloth Nameplates"
 "cosmic.package.standardNameplate" : "Standard Collections"
 
+"preset.save" : "Save Current Setting"
+"preset.dialog.save" : "Current settings have been saved!"
+"preset.dialog.load" : "Loaded the preset successfully!"
+"preset.dialog.loadFailed" : "Failed to load preset..."
+
 "option.display.pressTabForMore" : "Press Tab For More"
 "option.display.percentage.0" : "0%"
 "option.display.percentage.10" : "10%"
@@ -143,8 +148,6 @@
 "role.trapper.decelSpeed" : "Decel Speed"
 "role.trapper.accelDuration" : "Accel Duration"
 "role.trapper.decelDuration" : "Decel Duration"
-"role.trapper.visibleTrapRange" : "Visible Trap Range"
-"role.trapper.invisibleTrapRange" : "Invisible Trap Range"
 "role.trapper.commTrapCost" : "Log Trap Cost"
 "role.trapper.killTrapCost" : "Kill Trap Cost"
 "role.trapper.rootTime" : "Trapper Root Time"
@@ -256,6 +259,7 @@
 "role.necromancer.reviveCoolDown" : "Revive Cool Down"
 "role.necromancer.reviveDuration" : "Revive Duration"
 "role.necromancer.maxReviveRoomDistance" : "Max Revive Room Distance"
+"role.necromancer.maxNotificationDistance" : "Max Notification Distance"
 
 "role.niceGuesser.name" : "Nice Guesser"
 "role.niceGuesser.description" : "Guess and Shoot"
@@ -349,6 +353,7 @@
 "role.disturber.info" : "You can use Elec Barrior to prevent players from freely moving."
 "role.disturber.disturbCoolDown" : "Disturb Cool Down"
 "role.disturber.disturbDuration" : "Disturb Duration"
+"role.disturber.disturbBlackOutRate" : "Disturb Black Out Rate"
 "role.disturber.countOfBarriors" : "Count Of Barriors"
 "role.disturber.maxPoleDistance" : "Max Pole Distance"
 "role.disturber.ignoreBarriors" : "Ignore Barriors"

@@ -937,9 +937,15 @@ namespace Nebula.Game
                 VentMap.Add(vent.gameObject.name, new VentData(vent));
             }
 
+            Map.MapEditor.FixTasks(PlayerControl.GameOptions.MapId);
+
             if (CustomOptionHolder.mapOptions.getBool())
             {
                 Map.MapEditor.AddVents(PlayerControl.GameOptions.MapId);
+            }
+
+            if (CustomOptionHolder.TasksOption.getBool())
+            {
                 Map.MapEditor.AddWirings(PlayerControl.GameOptions.MapId);
             }
 

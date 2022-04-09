@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Nebula.Events
 {
-    public delegate GlobalEvent GlobalEventGenerator(float duration);
+    public delegate GlobalEvent GlobalEventGenerator(float duration,ulong option);
     public class GlobalEvent
     {
         static public List<GlobalEvent> Events=new List<GlobalEvent>();
@@ -18,6 +18,7 @@ namespace Nebula.Events
             static private byte availableId=0;
             static public Type Camouflage = new Type();
             static public Type EMI = new Type();
+            static public Type BlackOut = new Type();
 
             public byte Id { get; }
 
@@ -30,7 +31,8 @@ namespace Nebula.Events
             public static HashSet<Type> AllTypes = new HashSet<Type>()
             {
                 Camouflage,
-                EMI
+                EMI,
+                BlackOut
             };
 
             public static Type GetType(byte id)
@@ -70,10 +72,16 @@ namespace Nebula.Events
 
         }
 
+        public virtual void Update(float left)
+        {
+
+        }
+
+
         //このイベントが発生している時、プレイヤーの見た目の変更の反映を許すかどうか
         public bool AllowUpdateOutfit { get; protected set; }
 
-        protected GlobalEvent(Type type,float duration)
+        protected GlobalEvent(Type type,float duration, ulong option)
         {
             this.type = type;
             this.duration = duration;
@@ -96,16 +104,17 @@ namespace Nebula.Events
             foreach(GlobalEvent globalEvent in Events)
             {
                 globalEvent.duration -= Time.deltaTime;
+                globalEvent.Update(globalEvent.duration);
             }
 
             Events.RemoveAll(e => e.CheckTerminal());
         }
 
-        static public bool Activate(GlobalEvent.Type type,float duration)
+        static public bool Activate(GlobalEvent.Type type,float duration,ulong option)
         {
             if (Generators.ContainsKey(type))
             {
-                GlobalEvent e = Generators[type](duration);
+                GlobalEvent e = Generators[type](duration,option);
                 e.OnActivate();
                 Events.Add(e);
                 return true;

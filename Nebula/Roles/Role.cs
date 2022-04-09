@@ -175,6 +175,11 @@ namespace Nebula.Roles
             CanBeGuesserOption = CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeGuesser", DefaultCanBeGuesser, true).HiddenOnDisplay(true);
             CanBeGuesserOption.AddPrerequisite(CustomOptionHolder.advanceRoleOptions);
             CanBeGuesserOption.AddCustomPrerequisite(() => { return Roles.SecondaryGuesser.IsSpawnable(); });
+            CanBeGuesserOption.AddCustomPrerequisite(() => { return
+                (side == Side.Crewmate && Roles.F_Guesser.crewmateRoleCountOption.getFloat() > 0) ||
+                (side == Side.Impostor && Roles.F_Guesser.impostorRoleCountOption.getFloat() > 0) ||
+                (side != Side.Crewmate && side != Side.Impostor && Roles.F_Guesser.neutralRoleCountOption.getFloat() > 0);
+                });
 
             CanBeDrunkOption = CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeDrunk", DefaultCanBeDrunk, true).HiddenOnDisplay(true);
             CanBeDrunkOption.AddPrerequisite(CustomOptionHolder.advanceRoleOptions);
@@ -184,11 +189,15 @@ namespace Nebula.Roles
             {
                 string suffix = "";
                 if (Roles.Lover.IsSpawnable() && CanBeLovers) suffix += Helpers.cs(Roles.Lover.Color, "♥");
-                if (Roles.SecondaryGuesser.IsSpawnable() && CanBeGuesser) suffix += Helpers.cs(Roles.SecondaryGuesser.Color, "⊕");
+                if (Roles.SecondaryGuesser.IsSpawnable() && CanBeGuesser &&
+                (
+                (side == Side.Crewmate && Roles.F_Guesser.crewmateRoleCountOption.getFloat() > 0) ||
+                (side == Side.Impostor && Roles.F_Guesser.impostorRoleCountOption.getFloat() > 0) ||
+                (side != Side.Crewmate && side != Side.Impostor && Roles.F_Guesser.neutralRoleCountOption.getFloat() > 0)))
+                    suffix += Helpers.cs(Roles.SecondaryGuesser.Color, "⊕");
                 if (Roles.Drunk.IsSpawnable() && CanBeDrunk) suffix += Helpers.cs(Roles.Drunk.Color, "〻");
 
                 return suffix == "" ? original : (original + " " + suffix);
-                
             }
             );
         }

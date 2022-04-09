@@ -491,7 +491,7 @@ namespace Nebula.Module
             }
             else
             {
-                var pos = Camera.current.ScreenToWorldPoint(Input.mousePosition);
+                var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                 if (PaletteCollider.OverlapPoint(pos))
                 {
                     Palette.PlayerColors[15] = GetColor(color, MyColor.GetLuminosity());
@@ -511,9 +511,9 @@ namespace Nebula.Module
 
         private static void DetectColor(bool setFlag)
         {
-            Vector3 pos = Camera.current.ScreenToWorldPoint(Input.mousePosition) - PaletteObject.transform.position;
+            Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition) - PaletteObject.transform.position;
             float dis = Mathf.Sqrt(pos.x * pos.x + pos.y * pos.y);
-
+            
             float angle = Mathf.Atan2(pos.y, pos.x) - (float)System.Math.PI / 2f;
             if (angle < 0) angle += (float)(System.Math.PI * 2f);
             Color color;
@@ -531,10 +531,10 @@ namespace Nebula.Module
                 color = new Color(sum, sum, sum) * s + color * (1 - s);
             }
 
-            pos = Camera.current.ScreenToWorldPoint(Input.mousePosition) - LPaletteObject.transform.position;
+            pos = Camera.main.ScreenToWorldPoint(Input.mousePosition) - LPaletteObject.transform.position;
             float l = pos.y / LPaletteCollider.size.y + 0.5f;
 
-            pos = Camera.current.ScreenToWorldPoint(Input.mousePosition);
+            pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             if (PaletteCollider.OverlapPoint(pos))
                 DetectColor(color, MyColor.GetLuminosity(), (byte)((h * 64) % 64), (byte)((dis / 2.1f) * 24), MyColor.GetShadowType(), setFlag);
             else if (LPaletteCollider.OverlapPoint(pos))

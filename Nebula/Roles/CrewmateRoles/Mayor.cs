@@ -114,6 +114,8 @@ namespace Nebula.Roles.CrewmateRoles
                     countText.text = "";
                 }
             }
+
+            RPCEventInvoker.MultipleVote(PlayerControl.LocalPlayer, numOfVote);
         }
 
         public override void MeetingUpdate(MeetingHud __instance, TMPro.TextMeshPro meetingInfo)

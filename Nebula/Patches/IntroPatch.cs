@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Nebula.Patches
 {
@@ -120,7 +121,7 @@ namespace Nebula.Patches
                 __instance.RoleText.color = role.Color;
                 __instance.RoleBlurbText.text = Language.Language.GetString("role." + role.LocalizeName + ".description");
                 __instance.RoleBlurbText.color = role.Color;
-
+                __instance.YouAreText.color = role.side.color;
 
                 //追加ロールの情報を付加
                 string description = __instance.RoleBlurbText.text;
@@ -129,15 +130,40 @@ namespace Nebula.Patches
                     exRole.EditDescriptionString(ref description);
                 }
                 __instance.RoleBlurbText.text = description;
+
+                __instance.YouAreText.gameObject.SetActive(true);
+                __instance.RoleText.gameObject.SetActive(true);
+                __instance.RoleBlurbText.gameObject.SetActive(true);
+
+                SoundManager.Instance.PlaySound(PlayerControl.LocalPlayer.Data.Role.IntroSound, false, 1f);
+
+                if (__instance.ourCrewmate == null)
+                {
+                    __instance.ourCrewmate = __instance.CreatePlayer(0, 1, PlayerControl.LocalPlayer.Data, false);
+                    __instance.ourCrewmate.gameObject.SetActive(false);
+                }
+                __instance.ourCrewmate.gameObject.SetActive(true);
+                __instance.ourCrewmate.transform.localPosition = new Vector3(0f, -1.05f, -18f);
+                __instance.ourCrewmate.transform.localScale = new Vector3(1f, 1f, 1f);
             }
 
-            public static void Postfix(IntroCutscene __instance)
+            public static bool Prefix(IntroCutscene __instance,ref Il2CppSystem.Collections.IEnumerator __result)
             {
-                HudManager.Instance.StartCoroutine(Effects.Lerp(1f, (Il2CppSystem.Action<float>)((p) => {
-                    if (p > 0.1f)return;
+                var list = new List<Il2CppSystem.Collections.IEnumerator>();
+
+                list.Add(Effects.Action((Il2CppSystem.Action)(()=>{
                     setUpRoleText(__instance);
                 })));
-                setUpRoleText(__instance);
+                list.Add(Effects.Wait(2.5f));
+                list.Add(Effects.Action((Il2CppSystem.Action)(() => {
+                    __instance.YouAreText.gameObject.SetActive(false);
+                    __instance.RoleText.gameObject.SetActive(false);
+                    __instance.RoleBlurbText.gameObject.SetActive(false);
+                    __instance.ourCrewmate.gameObject.SetActive(false);
+                })));
+
+                __result = Effects.Sequence(list.ToArray());
+                return false;
             }
         }
 

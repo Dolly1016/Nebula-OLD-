@@ -20,8 +20,6 @@ namespace Nebula.Roles.ComplexRoles
         public Module.CustomOption decelTrapSpeedOption;
         public Module.CustomOption accelTrapDurationOption;
         public Module.CustomOption decelTrapDurationOption;
-        public Module.CustomOption visibleTrapRangeOption;
-        public Module.CustomOption invisibleTrapRangeOption;
         public Module.CustomOption commButtonCostOption;
         public Module.CustomOption killButtonCostOption;
         public Module.CustomOption rootTimeOption;
@@ -77,10 +75,6 @@ namespace Nebula.Roles.ComplexRoles
             accelTrapDurationOption.suffix = "second";
             decelTrapDurationOption = CreateOption(Color.white, "decelDuration", 5f, 2.5f, 30f, 2.5f);
             decelTrapDurationOption.suffix = "second";
-            visibleTrapRangeOption = CreateOption(Color.white, "visibleTrapRange", 0.5f, 0.125f, 2f, 0.125f);
-            visibleTrapRangeOption.suffix = "cross";
-            invisibleTrapRangeOption = CreateOption(Color.white, "invisibleTrapRange", 0.5f, 0.125f, 2f, 0.125f);
-            invisibleTrapRangeOption.suffix = "cross";
 
             commButtonCostOption = CreateOption(Color.white, "commTrapCost", 2f, 1f, 15f, 1f);
             commButtonCostOption.suffix = "cross";
@@ -101,7 +95,7 @@ namespace Nebula.Roles.ComplexRoles
 
             Objects.CustomObject.RegisterUpdater((player) =>
             {
-                CustomObject trap = Objects.CustomObject.GetTarget(visibleTrapRangeOption.getFloat() / 2, player, (obj) => { return obj.PassedMeetings > 0; }, Objects.ObjectTypes.VisibleTrap.AccelTrap, Objects.ObjectTypes.VisibleTrap.DecelTrap);
+                CustomObject trap = Objects.CustomObject.GetTarget(0.875f / 2f, player, (obj) => { return obj.PassedMeetings > 0; }, Objects.ObjectTypes.VisibleTrap.AccelTrap, Objects.ObjectTypes.VisibleTrap.DecelTrap);
                 if (trap == null) return;
 
                 if (trap.ObjectType == Objects.ObjectTypes.VisibleTrap.AccelTrap)
@@ -155,7 +149,7 @@ namespace Nebula.Roles.ComplexRoles
             //探知されていないプレイヤーを除去する
             detectedPlayers.RemoveAll((id)=> {
                 PlayerControl player = Helpers.playerById(id);
-                float dis = Roles.F_Trapper.invisibleTrapRangeOption.getFloat()/2;
+                float dis = 1.125f / 2f;
                 foreach (CustomObject obj in CustomObject.Objects.Values)
                 {
                     if (obj.ObjectType == Objects.ObjectTypes.InvisibleTrap.CommTrap)
@@ -179,7 +173,7 @@ namespace Nebula.Roles.ComplexRoles
                         if (obj.Data[0] != 0) continue;
                         if (PlayerControl.LocalPlayer.killTimer > 0f) continue;
 
-                        PlayerControl player = Patches.PlayerControlPatch.GetTarget(obj.GameObject.transform.position, Roles.F_Trapper.invisibleTrapRangeOption.getFloat() / 2, side == Side.Impostor);
+                        PlayerControl player = Patches.PlayerControlPatch.GetTarget(obj.GameObject.transform.position, 1.125f / 2f, side == Side.Impostor);
                         if (player != null)
                         {
                             if (player.Data.IsDead) continue;
@@ -198,7 +192,7 @@ namespace Nebula.Roles.ComplexRoles
                             if (player.Data.IsDead) continue;
                             if (detectedPlayers.Contains(player.PlayerId)) continue;
 
-                            if (player.transform.position.Distance(obj.GameObject.transform.position) < Roles.F_Trapper.invisibleTrapRangeOption.getFloat() / 2)
+                            if (player.transform.position.Distance(obj.GameObject.transform.position) < 1.125f / 2f)
                             {
                                 Arrow arrow = new Arrow(Palette.PlayerColors[player.CurrentOutfit.ColorId]);
                                 arrow.arrow.SetActive(true);

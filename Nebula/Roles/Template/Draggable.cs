@@ -94,19 +94,21 @@ namespace Nebula.Roles.Template
 
         public override void MyPlayerControlUpdate()
         {
+            if (dragButton == null) return;
             if (Game.GameData.data.myData.getGlobalData() == null) return;
-
+            
             if (Game.GameData.data.myData.getGlobalData().dragPlayerId == byte.MaxValue)
             {
                 dragButton.SetLabel("button.label.drag");
                 DeadBody body = Patches.PlayerControlPatch.SetMyDeadTarget();
+                
                 if (body!=null)
                 {
                     deadBodyId = body.ParentId;
-                    Patches.PlayerControlPatch.SetDeadBodyOutline(body, Color.yellow);
+                    Patches.PlayerControlPatch.SetDeadBodyOutline(body, Color.yellow);   
                 }
                 else
-                {
+                {       
                     deadBodyId = byte.MaxValue;
                 }
             }

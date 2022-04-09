@@ -25,6 +25,7 @@ namespace Nebula.Patches
                 FS_DeathGuage = GameObject.Instantiate(HudManager.Instance.FullScreen,HudManager.Instance.transform);
                 FS_DeathGuage.color = Palette.ImpostorRed.AlphaMultiplied(0f);
                 FS_DeathGuage.enabled = true;
+                FS_DeathGuage.gameObject.SetActive(true);
             }
 
             if (PlayerControl.LocalPlayer.Data.IsDead)

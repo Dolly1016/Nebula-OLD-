@@ -57,6 +57,11 @@ namespace Nebula.Patches
             else
             {
                 rate = Mathf.Lerp(__instance.MinLightRadius * role.LightRadiusMin, __instance.MaxLightRadius * role.LightRadiusMax, rate);
+                foreach(var e in Events.GlobalEvent.Events)
+                {
+                    if (e is Events.Variation.BlackOut)
+                        rate *= (e as Events.Variation.BlackOut).VisionRate;
+                }
             }
 
             Helpers.RoleAction(PlayerControl.LocalPlayer, role => role.GetLightRadius(ref rate));

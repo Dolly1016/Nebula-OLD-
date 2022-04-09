@@ -31,7 +31,33 @@ namespace Nebula.Map.Editors
             ActivateWiring("task_wiresStorage", 8);
             ActivateWiring("task_electricalSide", 9).Room = SystemTypes.VaultRoom;
             ActivateWiring("task_wiresMeeting", 10);
+        }
 
+        public override void FixTasks()
+        {
+            //宿舎下ダウンロード
+            EditConsole(SystemTypes.Engine, "panel_data", (c) => {
+                c.checkWalls = true;
+                c.usableDistance = 0.9f;
+            });
+
+            //写真現像タスク
+            EditConsole(SystemTypes.MainHall, "task_developphotos", (c) =>
+            {
+                c.checkWalls = true;
+            });
+
+            //シャワータスク
+            EditConsole(SystemTypes.Showers, "task_shower", (c) =>
+            {
+                c.checkWalls = true;
+            });
+
+            //ラウンジゴミ箱タスク
+            EditConsole(SystemTypes.Lounge, "task_garbage5", (c) =>
+            {
+                c.checkWalls = true;
+            });
         }
     }
 }

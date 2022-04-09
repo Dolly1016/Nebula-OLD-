@@ -45,11 +45,7 @@ namespace Nebula.Roles.ImpostorRoles
             camouflageButton = new CustomButton(
                 () =>
                 {
-                    MessageWriter camouflageWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.GlobalEvent, Hazel.SendOption.Reliable, -1);
-                    camouflageWriter.Write(Events.GlobalEvent.Type.Camouflage.Id);
-                    camouflageWriter.Write(camouflageDurationOption.getFloat());
-                    AmongUsClient.Instance.FinishRpcImmediately(camouflageWriter);
-                    RPCEvents.GlobalEvent(Events.GlobalEvent.Type.Camouflage.Id, camouflageDurationOption.getFloat());
+                    RPCEventInvoker.GlovalEvent(Events.GlobalEvent.Type.Camouflage, camouflageDurationOption.getFloat());
                 },
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
                 () => { return PlayerControl.LocalPlayer.CanMove; },

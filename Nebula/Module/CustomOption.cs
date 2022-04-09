@@ -51,6 +51,7 @@ namespace Nebula.Module
 
         public int id;
         public Color color;
+        public string identifierName;
         public string name;
         public string format;
         public string prefix, suffix;
@@ -66,6 +67,8 @@ namespace Nebula.Module
         public bool isHidden;
         public bool isHiddenOnDisplay;
         public CustomGameMode GameMode;
+
+        public bool isProtected;
 
         static public CustomGameMode CurrentGameMode;
 
@@ -95,6 +98,18 @@ namespace Nebula.Module
             return this;
         }
 
+        public CustomOption Protect()
+        {
+            isProtected = true;
+            return this;
+        }
+
+        public CustomOption SetIdentifier(string identifier)
+        {
+            identifierName = identifier;
+            return this;
+        }
+
         public bool IsHidden(CustomGameMode gameMode)
         {
             return isHidden || (parent!=null && (parent.IsHidden(gameMode) || !parent.enabled)) || (0 == (int)(gameMode & GameMode))
@@ -119,6 +134,7 @@ namespace Nebula.Module
             this.id = id;
             this.color = color;
             this.name = name;
+            this.identifierName = name;
             this.format = format;
             this.selections = selections;
             int index = Array.IndexOf(selections, defaultValue);
@@ -170,6 +186,20 @@ namespace Nebula.Module
         public static CustomOption Create(int id, Color color, string name, bool defaultValue, CustomOption parent = null, bool isHeader = false, bool isHidden = false, string format = "")
         {
             return new CustomOption(id, color,name, new string[] { "option.switch.off", "option.switch.on" }, defaultValue ? "option.switch.on" : "option.switch.off", parent, isHeader, isHidden, format);
+        }
+
+        public static void loadOption(string optionName, int selection)
+        {
+            foreach (CustomOption option in CustomOption.options)
+            {
+                if (option.identifierName != optionName) continue;
+
+                if (option.isProtected) break;
+
+                option.updateSelection(selection);
+
+                break;
+            }
         }
 
         // Static behaviour
@@ -415,38 +445,206 @@ namespace Nebula.Module
 
     }
 
+    [HarmonyPatch(typeof(GameSettingMenu), nameof(GameSettingMenu.InitializeOptions))]
+    public static class GameSettingMenuInitializePatch
+    {
+        public static void Prefix(GameSettingMenu __instance)
+        {
+            var defaultTransform = __instance.AllItems.FirstOrDefault(x => x.gameObject.activeSelf && x.name.Equals("ResetToDefault", StringComparison.OrdinalIgnoreCase));
+            if (defaultTransform != null)
+                __instance.HideForOnline = new Transform[] { defaultTransform };
+            else
+                __instance.HideForOnline = new Transform[] { };
+        }
+    }
+
+    delegate void OptionInitializer(GameOptionsMenu menu,StringOption stringTemplate, List<OptionBehaviour> options,GameObject settings);
+
     [HarmonyPatch(typeof(GameOptionsMenu), nameof(GameOptionsMenu.Start))]
     class GameOptionsMenuStartPatch
     {
+        public static GameObject? nebulaSettings=null;
+        public static GameObject? presetSettings = null;
+
+        private static bool FixTab(GameObject? currentSettings,GameOptionsMenu __instance,string tabIconPath,string tabName,string settingsName,string settingsDisplayName, OptionInitializer initializer)
+        {
+            
+            if (currentSettings)
+            {
+                currentSettings.transform.FindChild("GameGroup").FindChild("Text").GetComponent<TMPro.TextMeshPro>().SetText(settingsDisplayName);   
+                return false;
+            }
+            
+            var template = UnityEngine.Object.FindObjectsOfType<StringOption>().FirstOrDefault();
+            if (template == null) return false;
+            var gameSettings = GameObject.Find("Game Settings");
+            var customSettings = UnityEngine.Object.Instantiate(gameSettings, gameSettings.transform.parent);
+            var customMenu = customSettings.transform.FindChild("GameGroup").FindChild("SliderInner").GetComponent<GameOptionsMenu>();
+            UnityEngine.GameObject.SetName(customSettings,settingsName);
+
+            var roleTab = GameObject.Find("RoleTab");
+
+            var nebulaTab = UnityEngine.Object.Instantiate(roleTab, roleTab.transform.parent);
+            nebulaTab.gameObject.name = tabName;
+            nebulaTab.transform.FindChild("Hat Button").FindChild("Icon").GetComponent<SpriteRenderer>().sprite = Helpers.loadSpriteFromResources(tabIconPath, 100f);
+
+
+            foreach (OptionBehaviour option in customMenu.GetComponentsInChildren<OptionBehaviour>())
+                UnityEngine.Object.Destroy(option.gameObject);
+            List<OptionBehaviour> customOptions = new List<OptionBehaviour>();
+
+            initializer(customMenu,template,customOptions,customSettings);
+
+            customMenu.Children = customOptions.ToArray();
+            customSettings.gameObject.SetActive(false);
+
+            return true;
+        }
+
+        private static bool FixNebulaTab(GameOptionsMenu __instance)
+        {
+            return FixTab(nebulaSettings,__instance, "Nebula.Resources.TabIcon.png","NebulaTab","NebulaSettings", "The Nebula Settings",(menu,temp,list,setting)=>
+            {
+                nebulaSettings = setting;
+
+                for (int i = 0; i < CustomOption.options.Count; i++)
+                {
+                    CustomOption option = CustomOption.options[i];
+                    if (option.optionBehaviour == null)
+                    {
+                        StringOption stringOption = UnityEngine.Object.Instantiate(temp, menu.transform);
+                        list.Add(stringOption);
+                        stringOption.OnValueChanged = new Action<OptionBehaviour>((o) => { });
+                        stringOption.TitleText.text = option.name;
+                        stringOption.Value = stringOption.oldValue = option.selection;
+                        stringOption.ValueText.text = option.selections[option.selection].ToString();
+
+                        if (option.selections.Length == 1)
+                        {
+                            stringOption.gameObject.transform.FindChild("Plus_TMP").gameObject.SetActive(false);
+                            stringOption.gameObject.transform.FindChild("Minus_TMP").gameObject.SetActive(false);
+                        }
+
+                        if (option.prefix != null)
+                        {
+                            stringOption.ValueText.text = Language.Language.GetString("option.prefix." + option.prefix) + stringOption.ValueText.text;
+                        }
+
+                        if (option.suffix != null)
+                        {
+                            stringOption.ValueText.text += Language.Language.GetString("option.suffix." + option.suffix);
+                        }
+
+                        option.optionBehaviour = stringOption;
+                    }
+                    option.optionBehaviour.gameObject.SetActive(true);
+                }
+            });
+        }
+    
+        private static StringOption SetupStringOption(List<OptionBehaviour> list,StringOption template,GameOptionsMenu menu)
+        {
+            StringOption stringOption = UnityEngine.Object.Instantiate(template, menu.transform);
+            list.Add(stringOption);
+            stringOption.OnValueChanged = new Action<OptionBehaviour>((o) => { });
+            stringOption.TitleText.text = "";
+            stringOption.TitleText.rectTransform.sizeDelta = new Vector2(stringOption.TitleText.rectTransform.sizeDelta.x + 2.4f, stringOption.TitleText.rectTransform.sizeDelta.y);
+            stringOption.TitleText.rectTransform.anchoredPosition = new Vector2(stringOption.TitleText.rectTransform.anchoredPosition.x + 1.2f, 0);
+
+            stringOption.Value = 0;
+            stringOption.ValueText.text = "";
+
+            stringOption.gameObject.transform.FindChild("Plus_TMP").gameObject.SetActive(false);
+            stringOption.gameObject.transform.FindChild("Minus_TMP").gameObject.SetActive(false);
+            stringOption.ValueText.enabled = false;
+
+            BoxCollider2D collider = stringOption.gameObject.AddComponent<BoxCollider2D>();
+            collider.size = new Vector2(4.5f, 0.45f);
+
+            PassiveButton button = stringOption.gameObject.AddComponent<PassiveButton>();
+            button.OnMouseOver = new UnityEngine.Events.UnityEvent();
+            button.OnMouseOut = new UnityEngine.Events.UnityEvent();
+            button.OnClick = new UnityEngine.UI.Button.ButtonClickedEvent();
+
+            return stringOption;
+        }
+
+        private static bool FixPresetTab(GameOptionsMenu __instance)
+        {
+            return FixTab(presetSettings,__instance, "Nebula.Resources.TabIconPreset.png", "PresetTab", "PresetSettings", "Preset Settings", (menu, temp, list,setting) =>
+            {
+                presetSettings = setting;
+
+                if (!CustomOptionPreset.SaveButton)
+                {
+                    StringOption stringOption = SetupStringOption(list, temp, menu);
+                    stringOption.TitleText.text = Language.Language.GetString("preset.save");
+
+                    PassiveButton button = stringOption.gameObject.GetComponent<PassiveButton>();
+                    button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
+                    {
+                        if (Constants.ShouldPlaySfx()) SoundManager.Instance.PlaySound(HudManager.Instance.TaskCompleteSound, false, 0.8f);
+                        CustomOptionPreset.Export().Output();
+                        Helpers.ShowDialog("preset.dialog.save");
+                    }));
+
+                    CustomOptionPreset.SaveButton = stringOption;
+                }
+                CustomOptionPreset.SaveButton.gameObject.SetActive(true);
+
+                CustomOptionPreset.LoadPresets();
+                foreach (var preset in CustomOptionPreset.Presets)
+                {
+                    if (!preset.Option)
+                    {
+                        string name = preset.Name;
+
+                        StringOption stringOption = SetupStringOption(list,temp,menu);
+                        stringOption.TitleText.text = preset.Name;
+                        
+                        PassiveButton button = stringOption.gameObject.GetComponent<PassiveButton>();
+                        button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
+                        {
+                            if (Constants.ShouldPlaySfx()) SoundManager.Instance.PlaySound(HudManager.Instance.TaskUpdateSound, false, 0.8f);
+                            bool result = CustomOptionPreset.LoadAndInput("Presets/"+name + ".options");
+
+                            CustomOption.ShareOptionSelections();
+
+                            Helpers.ShowDialog(result ? "preset.dialog.load" : "preset.dialog.loadFailed");
+                        }));
+
+                        preset.Option = stringOption;
+                    }
+
+                    preset.Option.gameObject.SetActive(true);
+                }
+            });
+        }
+
         public static void Postfix(GameOptionsMenu __instance)
         {
-            if (GameObject.Find("NebulaSettings") != null)
-            { // Settings setup has already been performed, fixing the title of the tab and returning
-                GameObject.Find("NebulaSettings").transform.FindChild("GameGroup").FindChild("Text").GetComponent<TMPro.TextMeshPro>().SetText("The Nebula Settings");
-                return;
-            }
+            bool result=false, f1= FixNebulaTab(__instance),f2 = FixPresetTab(__instance);
+            result = f1 | f2;
 
-            // Setup TOR tab
-            var template = UnityEngine.Object.FindObjectsOfType<StringOption>().FirstOrDefault();
-            if (template == null) return;
-            var gameSettings = GameObject.Find("Game Settings");
-            var gameSettingMenu = UnityEngine.Object.FindObjectsOfType<GameSettingMenu>().FirstOrDefault();
-            var nebulaSettings = UnityEngine.Object.Instantiate(gameSettings, gameSettings.transform.parent);
-            var nebulaMenu = nebulaSettings.transform.FindChild("GameGroup").FindChild("SliderInner").GetComponent<GameOptionsMenu>();
-            nebulaSettings.name = "NebulaSettings";
+            if (!result) return;
 
             var roleTab = GameObject.Find("RoleTab");
             var gameTab = GameObject.Find("GameTab");
+            var nebulaTab = GameObject.Find("NebulaTab");
+            var presetTab = GameObject.Find("PresetTab");
 
-            var torTab = UnityEngine.Object.Instantiate(roleTab, roleTab.transform.parent);
-            var nebulaTabHighlight = torTab.transform.FindChild("Hat Button").FindChild("Tab Background").GetComponent<SpriteRenderer>();
-            torTab.transform.FindChild("Hat Button").FindChild("Icon").GetComponent<SpriteRenderer>().sprite = Helpers.loadSpriteFromResources("Nebula.Resources.TabIcon.png", 100f);
+            gameTab.transform.localPosition = new Vector3(-1.5f, 0, -5);
+            roleTab.transform.localPosition = new Vector3(-0.5f, 0, -5);
+            nebulaTab.transform.localPosition = new Vector3(0.5f, 0, -5);
+            presetTab.transform.localPosition = new Vector3(1.5f, 0, -5);
 
-            gameTab.transform.position += Vector3.left * 0.5f;
-            torTab.transform.position += Vector3.right * 0.5f;
-            roleTab.transform.position += Vector3.left * 0.5f;
+            var gameSettings = GameObject.Find("Game Settings");
+            var gameSettingMenu = UnityEngine.Object.FindObjectsOfType<GameSettingMenu>().FirstOrDefault();
 
-            var tabs = new GameObject[] { gameTab, roleTab, torTab };
+            var nebulaTabHighlight = nebulaTab.transform.FindChild("Hat Button").FindChild("Tab Background").GetComponent<SpriteRenderer>();
+            var presetTabHighlight = presetTab.transform.FindChild("Hat Button").FindChild("Tab Background").GetComponent<SpriteRenderer>();
+
+            var tabs = new GameObject[] { gameTab, roleTab, nebulaTab, presetTab };
             for (int i = 0; i < tabs.Length; i++)
             {
                 var button = tabs[i].GetComponentInChildren<PassiveButton>();
@@ -457,9 +655,11 @@ namespace Nebula.Module
                     gameSettingMenu.RegularGameSettings.SetActive(false);
                     gameSettingMenu.RolesSettings.gameObject.SetActive(false);
                     nebulaSettings.gameObject.SetActive(false);
+                    presetSettings.gameObject.SetActive(false);
                     gameSettingMenu.GameSettingsHightlight.enabled = false;
                     gameSettingMenu.RolesSettingsHightlight.enabled = false;
                     nebulaTabHighlight.enabled = false;
+                    presetTabHighlight.enabled = false;
                     if (copiedIndex == 0)
                     {
                         gameSettingMenu.RegularGameSettings.SetActive(true);
@@ -475,53 +675,19 @@ namespace Nebula.Module
                         nebulaSettings.gameObject.SetActive(true);
                         nebulaTabHighlight.enabled = true;
                     }
+                    else if (copiedIndex == 3)
+                    {
+                        presetSettings.gameObject.SetActive(true);
+                        presetTabHighlight.enabled = true;
+                    }
                 }));
             }
 
-            foreach (OptionBehaviour option in nebulaMenu.GetComponentsInChildren<OptionBehaviour>())
-                UnityEngine.Object.Destroy(option.gameObject);
-            List<OptionBehaviour> nebulaOptions = new List<OptionBehaviour>();
-
-            for (int i = 0; i < CustomOption.options.Count; i++)
-            {
-                CustomOption option = CustomOption.options[i];
-                if (option.optionBehaviour == null)
-                {
-                    StringOption stringOption = UnityEngine.Object.Instantiate(template, nebulaMenu.transform);
-                    nebulaOptions.Add(stringOption);
-                    stringOption.OnValueChanged = new Action<OptionBehaviour>((o) => { });
-                    stringOption.TitleText.text = option.name;
-                    stringOption.Value = stringOption.oldValue = option.selection;
-                    stringOption.ValueText.text = option.selections[option.selection].ToString();
-
-                    if (option.selections.Length == 1)
-                    {
-                        stringOption.gameObject.transform.FindChild("Plus_TMP").gameObject.SetActive(false);
-                        stringOption.gameObject.transform.FindChild("Minus_TMP").gameObject.SetActive(false);
-                    }
-
-                    if (option.prefix != null)
-                    {
-                        stringOption.ValueText.text = Language.Language.GetString("option.prefix." + option.prefix) + stringOption.ValueText.text;
-                    }
-
-                    if (option.suffix != null)
-                    {
-                        stringOption.ValueText.text += Language.Language.GetString("option.suffix."+option.suffix);
-                    }
-
-                    option.optionBehaviour = stringOption;
-                }
-                option.optionBehaviour.gameObject.SetActive(true);
-            }
-
-            nebulaMenu.Children = nebulaOptions.ToArray();
-            nebulaSettings.gameObject.SetActive(false);
 
             var killCoolOption = __instance.Children.FirstOrDefault(x => x.name == "KillCooldown").TryCast<NumberOption>();
             if (killCoolOption != null) killCoolOption.ValidRange = new FloatRange(2.5f, 60f);
 
-            
+
             var commonTasksOption = __instance.Children.FirstOrDefault(x => x.name == "NumCommonTasks").TryCast<NumberOption>();
             if (commonTasksOption != null) commonTasksOption.ValidRange = new FloatRange(0f, 4f);
 
@@ -533,6 +699,7 @@ namespace Nebula.Module
 
             var impostorsOption = __instance.Children.FirstOrDefault(x => x.name == "NumImpostors").TryCast<NumberOption>();
             if (impostorsOption != null) impostorsOption.ValidRange = new FloatRange(0f, 5f);
+
         }
     }
 
@@ -559,15 +726,25 @@ namespace Nebula.Module
     {
         public static bool Prefix(StringOption __instance)
         {
-            CustomOption option = CustomOption.options.FirstOrDefault(opt => opt.optionBehaviour == __instance);
-            if (option == null) return true;
+            var setting = __instance.transform.parent.parent.parent;
+            if (GameOptionsMenuStartPatch.nebulaSettings && setting == GameOptionsMenuStartPatch.nebulaSettings.transform)
+            {
+                CustomOption option = CustomOption.options.FirstOrDefault(opt => opt.optionBehaviour == __instance);
+                if (option == null) return true;
 
-            __instance.OnValueChanged = new Action<OptionBehaviour>((o) => { });
-            __instance.TitleText.text = option.getName();
-            __instance.Value = __instance.oldValue = option.selection;
-            __instance.ValueText.text = option.getString();
+                __instance.OnValueChanged = new Action<OptionBehaviour>((o) => { });
+                __instance.TitleText.text = option.getName();
+                __instance.Value = __instance.oldValue = option.selection;
+                __instance.ValueText.text = option.getString();
 
-            return false;
+                return false;
+            }else if(GameOptionsMenuStartPatch.presetSettings && setting == GameOptionsMenuStartPatch.presetSettings.transform)
+            {
+                
+
+                return false;
+            }
+            return true;
         }
     }
 
@@ -611,60 +788,88 @@ namespace Nebula.Module
         private static float timer = 1f;
         public static void Postfix(GameOptionsMenu __instance)
         {
-            if (__instance.Children.Length < 20) return; // TODO: Introduce a cleaner way to seperate the TOR settings from the game settings
-
             timer += Time.deltaTime;
             if (timer < 0.1f) return;
             timer = 0f;
 
-            float numItems = __instance.Children.Length;
-
             float offset = 2.75f;
-            foreach (CustomOption option in CustomOption.options)
+            
+
+            var setting = __instance.transform.parent.parent;
+            if (setting == GameOptionsMenuStartPatch.nebulaSettings.transform)
             {
-                if (option?.optionBehaviour != null && option.optionBehaviour.gameObject != null)
+
+                float numItems = __instance.Children.Length;
+
+
+                foreach (CustomOption option in CustomOption.options)
                 {
-                    bool enabled = true;
-
-                    if (AmongUsClient.Instance?.AmHost == false)
+                    if (option?.optionBehaviour != null && option.optionBehaviour.gameObject != null)
                     {
-                        enabled = false;
-                    }
+                        bool enabled = true;
 
-                    if (option.IsHidden(CustomOption.CurrentGameMode))
-                    {
-                        enabled = false;
-                    }
-
-                    option.optionBehaviour.gameObject.SetActive(enabled);
-                    if (enabled)
-                    {
-                        offset -= option.isHeader ? 0.75f : 0.5f;
-                        option.optionBehaviour.transform.localPosition = new Vector3(option.optionBehaviour.transform.localPosition.x, offset, option.optionBehaviour.transform.localPosition.z);
-
-                        if (option.isHeader)
+                        if (AmongUsClient.Instance?.AmHost == false)
                         {
-                            numItems += 0.5f;
+                            enabled = false;
+                        }
+
+                        if (option.IsHidden(CustomOption.CurrentGameMode))
+                        {
+                            enabled = false;
+                        }
+
+                        option.optionBehaviour.gameObject.SetActive(enabled);
+                        if (enabled)
+                        {
+                            offset -= option.isHeader ? 0.75f : 0.5f;
+                            option.optionBehaviour.transform.localPosition = new Vector3(option.optionBehaviour.transform.localPosition.x, offset, option.optionBehaviour.transform.localPosition.z);
+
+                            if (option.isHeader)
+                            {
+                                numItems += 0.5f;
+                            }
+                        }
+                        else
+                        {
+                            numItems--;
                         }
                     }
-                    else
-                    {
-                        numItems--;
-                    }
+                }
+
+            }
+            else if (setting == GameOptionsMenuStartPatch.presetSettings.transform)
+            {
+                offset = 2f;
+
+                var saveButton = CustomOptionPreset.SaveButton;
+
+                    saveButton.gameObject.SetActive(true);
+                    saveButton.transform.localPosition = new Vector3(saveButton.transform.localPosition.x, offset, saveButton.transform.localPosition.z);
+
+                    offset -= 0.75f;
+                
+
+                foreach(var preset in CustomOptionPreset.Presets)
+                {
+                        preset.Option.gameObject.SetActive(true);
+                        preset.Option.transform.localPosition = new Vector3(preset.Option.transform.localPosition.x, offset, preset.Option.transform.localPosition.z);
+
+                        offset -= 0.5f;
+                    
                 }
             }
+            else
+            {
+                return;
+            }
+
             __instance.GetComponentInParent<Scroller>().ContentYBounds.max = (-offset) - 1.5f;
         }
     }
 
     [HarmonyPatch(typeof(GameSettingMenu), nameof(GameSettingMenu.Start))]
     class GameSettingMenuStartPatch
-    {
-        public static void Prefix(GameSettingMenu __instance)
-        {
-            __instance.HideForOnline = new Transform[] { };
-        }
-
+    { 
         public static void Postfix(GameSettingMenu __instance)
         {
             // Setup mapNameTransform
@@ -725,8 +930,7 @@ namespace Nebula.Module
         }
     }
 
-    [HarmonyPatch]
-    class GameOptionsDataPatch
+    public static class GameOptionStringGenerator
     {
         public static string tl(string key)
         {
@@ -760,13 +964,12 @@ namespace Nebula.Module
             }
             return string.Join("\n", options);
         }
-
-        private static void Postfix(ref string __result)
+        public static List<string> GenerateString()
         {
             CustomOption.CurrentGameMode = CustomGameModes.GetGameMode(CustomOptionHolder.gameMode.getSelection());
 
             List<string> pages = new List<string>();
-            pages.Add(__result);
+            pages.Add(PlayerControl.GameOptions.ToHudString(PlayerControl.AllPlayerControls.Count));
 
             StringBuilder entry = new StringBuilder();
             List<string> entries = new List<string>();
@@ -774,37 +977,51 @@ namespace Nebula.Module
             // First add the presets and the role counts
             entries.Add(optionToString(CustomOptionHolder.presetSelection));
 
-            var optionName = CustomOptionHolder.cs(new Color(204f / 255f, 204f / 255f, 0, 1f), tl("option.crewmateRoles"));
-            var min = CustomOptionHolder.crewmateRolesCountMin.getSelection();
-            var max = CustomOptionHolder.crewmateRolesCountMax.getSelection();
-            if (min > max) min = max;
-            var optionValue = (min == max) ? $"{max}" : $"{min} - {max}";
-            entry.AppendLine($"{optionName}: {optionValue}");
+            string optionName;
+            int min;
+            int max;
+            string optionValue;
 
-            optionName = CustomOptionHolder.cs(new Color(204f / 255f, 204f / 255f, 0, 1f), tl("option.neutralRoles"));
-            min = CustomOptionHolder.neutralRolesCountMin.getSelection();
-            max = CustomOptionHolder.neutralRolesCountMax.getSelection();
-            if (min > max) min = max;
-            optionValue = (min == max) ? $"{max}" : $"{min} - {max}";
-            entry.AppendLine($"{optionName}: {optionValue}");
+            if (!CustomOptionHolder.crewmateRolesCountMin.IsHidden(CustomOption.CurrentGameMode))
+            {
+                optionName = CustomOptionHolder.cs(new Color(204f / 255f, 204f / 255f, 0, 1f), tl("option.crewmateRoles"));
+                min = CustomOptionHolder.crewmateRolesCountMin.getSelection();
+                max = CustomOptionHolder.crewmateRolesCountMax.getSelection();
+                if (min > max) min = max;
+                optionValue = (min == max) ? $"{max}" : $"{min} - {max}";
+                entry.AppendLine($"{optionName}: {optionValue}");
+            }
 
-            optionName = CustomOptionHolder.cs(new Color(204f / 255f, 204f / 255f, 0, 1f), tl("option.impostorRoles"));
-            min = CustomOptionHolder.impostorRolesCountMin.getSelection();
-            max = CustomOptionHolder.impostorRolesCountMax.getSelection();
-            if (min > max) min = max;
-            optionValue = (min == max) ? $"{max}" : $"{min} - {max}";
-            entry.AppendLine($"{optionName}: {optionValue}");
+            if (!CustomOptionHolder.neutralRolesCountMin.IsHidden(CustomOption.CurrentGameMode))
+            {
+                optionName = CustomOptionHolder.cs(new Color(204f / 255f, 204f / 255f, 0, 1f), tl("option.neutralRoles"));
+                min = CustomOptionHolder.neutralRolesCountMin.getSelection();
+                max = CustomOptionHolder.neutralRolesCountMax.getSelection();
+                if (min > max) min = max;
+                optionValue = (min == max) ? $"{max}" : $"{min} - {max}";
+                entry.AppendLine($"{optionName}: {optionValue}");
+            }
+
+            if (!CustomOptionHolder.impostorRolesCountMin.IsHidden(CustomOption.CurrentGameMode))
+            {
+                optionName = CustomOptionHolder.cs(new Color(204f / 255f, 204f / 255f, 0, 1f), tl("option.impostorRoles"));
+                min = CustomOptionHolder.impostorRolesCountMin.getSelection();
+                max = CustomOptionHolder.impostorRolesCountMax.getSelection();
+                if (min > max) min = max;
+                optionValue = (min == max) ? $"{max}" : $"{min} - {max}";
+                entry.AppendLine($"{optionName}: {optionValue}");
+            }
 
             entries.Add(entry.ToString().Trim('\r', '\n'));
 
-            void addChildren(CustomOption option, ref StringBuilder builder, bool indent = true,string inheritIndent = "")
+            void addChildren(CustomOption option, ref StringBuilder builder, bool indent = true, string inheritIndent = "")
             {
                 if (!option.enabled || option.IsHiddenOnDisplay(CustomOption.CurrentGameMode)) return;
 
                 foreach (var child in option.children)
                 {
                     if (!(child.IsHiddenOnDisplay(CustomOption.CurrentGameMode)))
-                        builder.AppendLine((indent ? "    " : "") + inheritIndent+ optionToString(child));
+                        builder.AppendLine((indent ? "    " : "") + inheritIndent + optionToString(child));
                     addChildren(child, ref builder, indent, inheritIndent + (indent ? "    " : ""));
                 }
             }
@@ -854,10 +1071,22 @@ namespace Nebula.Module
                 pages.Add(page);
             }
 
+            return pages;
+        }
+    }
+
+    [HarmonyPatch(typeof(LobbyBehaviour), nameof(LobbyBehaviour.FixedUpdate))]
+    class GameOptionsDataPatch
+    {
+        private static void Postfix()
+        {
+            if (PlayerControl.GameOptions == null) return;
+            
+            var pages = GameOptionStringGenerator.GenerateString();
+
             int numPages = pages.Count;
             int counter = CustomOptionHolder.optionsPage = CustomOptionHolder.optionsPage % numPages;
-
-            __result = pages[counter].Trim('\r', '\n') + "\n\n" + tl("option.display.pressTabForMore") + $" ({counter + 1}/{numPages})";
+            HudManager.Instance.GameSettings.text = pages[counter].Trim('\r', '\n') + "\n\n" + Language.Language.GetString("option.display.pressTabForMore") + $" ({counter + 1}/{numPages})";
         }
     }
 

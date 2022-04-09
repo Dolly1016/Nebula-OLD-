@@ -126,13 +126,17 @@ namespace Nebula.Roles.ComplexRoles
             {
                 //撃てないロールを除外する
                 if (!role.IsGuessableRole || role.category == RoleCategory.Complex||(int)(role.ValidGamemode&Game.GameData.data.GameMode)==0) continue;
+                NebulaPlugin.Instance.Logger.Print("G1");
                 Transform buttonParent = (new GameObject()).transform;
                 buttonParent.SetParent(container);
+                NebulaPlugin.Instance.Logger.Print("G2");
                 Transform button = UnityEngine.Object.Instantiate(buttonTemplate, buttonParent);
                 Transform buttonMask = UnityEngine.Object.Instantiate(maskTemplate, buttonParent);
                 TMPro.TextMeshPro label = UnityEngine.Object.Instantiate(textTemplate, button);
-                button.GetComponent<SpriteRenderer>().sprite = DestroyableSingleton<HatManager>.Instance.AllNamePlates[0].viewData.viewData.Image;
+                NebulaPlugin.Instance.Logger.Print("G3");
+                NebulaPlugin.Instance.Logger.Print("G4");
                 buttons.Add(button);
+                NebulaPlugin.Instance.Logger.Print("G5");
                 int row = i / 5, col = i % 5;
                 buttonParent.localPosition = new Vector3(-3.47f + 1.75f * col, 1.5f - 0.45f * row, -5);
                 buttonParent.localScale = new Vector3(0.55f, 0.55f, 1f);
@@ -141,6 +145,7 @@ namespace Nebula.Roles.ComplexRoles
                 label.transform.localPosition = new Vector3(0, 0, label.transform.localPosition.z);
                 label.transform.localScale *= 1.7f;
                 int copiedIndex = i;
+                NebulaPlugin.Instance.Logger.Print("G6");
 
                 button.GetComponent<PassiveButton>().OnClick.RemoveAllListeners();
                 if (!PlayerControl.LocalPlayer.Data.IsDead) button.GetComponent<PassiveButton>().OnClick.AddListener((System.Action)(() => {
@@ -165,7 +170,7 @@ namespace Nebula.Roles.ComplexRoles
                         RPCEventInvoker.UpdateExtraRoleData(PlayerControl.LocalPlayer.PlayerId, Roles.SecondaryGuesser.id, data);
 
                         if (Roles.F_Guesser.canShotSeveralTimesInTheSameMeeting.getBool() &&
-                        Game.GameData.data.myData.getGlobalData().GetRoleData(Roles.F_Guesser.remainShotsId) > 1 && dyingTarget != PlayerControl.LocalPlayer)
+                        Game.GameData.data.myData.getGlobalData().GetExtraRoleData(Roles.SecondaryGuesser) > 1 && dyingTarget != PlayerControl.LocalPlayer)
                             __instance.playerStates.ToList().ForEach(x => { if (x.TargetPlayerId == dyingTarget.PlayerId && x.transform.FindChild("ShootButton") != null) UnityEngine.Object.Destroy(x.transform.FindChild("ShootButton").gameObject); });
                         else
                             __instance.playerStates.ToList().ForEach(x => { if (x.transform.FindChild("ShootButton") != null) UnityEngine.Object.Destroy(x.transform.FindChild("ShootButton").gameObject); });
@@ -175,10 +180,17 @@ namespace Nebula.Roles.ComplexRoles
                             dyingTarget.PlayerId == PlayerControl.LocalPlayer.PlayerId ? Game.PlayerData.PlayerStatus.Misguessed : Game.PlayerData.PlayerStatus.Guessed);
                     }
                 }));
+                NebulaPlugin.Instance.Logger.Print("G7");
 
                 i++;
             }
             container.transform.localScale *= 0.75f;
+
+            DestroyableSingleton<HatManager>.Instance.GetNamePlateById("nameplate_NoPlate").CoLoadViewData((Il2CppSystem.Action<NamePlateViewData>)((n) =>
+            {
+                foreach (var b in buttons)
+                    b.GetComponent<SpriteRenderer>().sprite = n.Image;
+            }));
         }
 
         public static void SetupMeetingButton(MeetingHud __instance)
@@ -355,7 +367,6 @@ namespace Nebula.Roles.ComplexRoles
         {
             if (!Roles.F_Guesser.secondoryRoleOption.getBool()) return false;
             if (Roles.F_Guesser.RoleChanceOption.getSelection() == 0) return false;
-            if (Roles.F_Guesser.RoleCountOption.getFloat() == 0f) return false;
 
             return true;
         }

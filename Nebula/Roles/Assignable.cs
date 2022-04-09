@@ -62,7 +62,7 @@ namespace Nebula.Roles
 
             if (!FixedRoleCount && !ExceptBasicOption)
             {
-                RoleCountOption = Module.CustomOption.Create(OptionId, Color.white, "option.roleCount", 0f, 0f, 15f, 1f, TopOption, false);
+                RoleCountOption = Module.CustomOption.Create(OptionId, Color.white, "option.roleCount", 0f, 0f, 15f, 1f, TopOption, false).SetIdentifier("role." + LocalizeName + ".roleCount");
                 RoleCountOption.GameMode = ValidGamemode;
                 OptionId++;
             }

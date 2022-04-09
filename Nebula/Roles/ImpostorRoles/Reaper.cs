@@ -86,10 +86,10 @@ namespace Nebula.Roles.ImpostorRoles
                 case 4:
                     //Airship
                     ventMap["VaultVent"].Vent.Right = connect ? ventMap["GaproomVent1"] : new Vent();
-                    ventMap["GaproomVent1"].Vent.Left = connect ? ventMap["VaultVent"] : new Vent();
+                    ventMap["GaproomVent1"].Vent.Center = connect ? ventMap["VaultVent"] : new Vent();
 
                     ventMap["EjectionVent"].Vent.Right = connect ? ventMap["KitchenVent"] : new Vent();
-                    ventMap["KitchenVent"].Vent.Left = connect ? ventMap["EjectionVent"] : new Vent();
+                    ventMap["KitchenVent"].Vent.Center = connect ? ventMap["EjectionVent"] : new Vent();
 
                     ventMap["HallwayVent1"].Vent.Right = connect ? ventMap["HallwayVent2"] : new Vent();
                     ventMap["HallwayVent2"].Vent.Center = connect ? ventMap["HallwayVent1"] : new Vent();

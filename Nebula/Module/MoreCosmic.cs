@@ -344,6 +344,7 @@ namespace Nebula.Module
             }
 
             NamePlateData np = new NamePlateData();
+            np.viewData.viewData = new NamePlateViewData();
             np.viewData.viewData.Image = ch.I_Plate.Image;
             np.name = ch.Name.Value + "\nby " + ch.Author.Value;
             //np.Order = 99;
@@ -620,7 +621,6 @@ namespace Nebula.Module
 
                 var numNameplates = nameplates.Count;
 
-                NebulaPlugin.Instance.Logger.Print("A");
                 for (int i = 0; i < nameplates.Count; i++)
                 {
                     NamePlateData nameplate = nameplates[i].Item1;
@@ -630,7 +630,6 @@ namespace Nebula.Module
                     float ypos = offset - (i / __instance.NumPerRow) * __instance.YOffset;
                     ColorChip colorChip = UnityEngine.Object.Instantiate<ColorChip>(__instance.ColorTabPrefab, __instance.scroller.Inner);
 
-                    NebulaPlugin.Instance.Logger.Print("B");
 
                     colorChip.transform.localPosition = new Vector3(xpos, ypos, inventoryZ);
                     if (ActiveInputManager.currentControlType == ActiveInputManager.InputType.Keyboard)
@@ -644,14 +643,13 @@ namespace Nebula.Module
                         colorChip.Button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => __instance.SelectNameplate(nameplate)));
                     }
 
-                    NebulaPlugin.Instance.Logger.Print("C");
 
                     __instance.StartCoroutine(nameplate.CoLoadViewData((Il2CppSystem.Action<NamePlateViewData>)((n) => {
                         colorChip.gameObject.GetComponent<NameplateChip>().image.sprite = n.Image;
+                        colorChip.gameObject.GetComponent<NameplateChip>().ProductId = nameplate.ProductId;
                         __instance.ColorChips.Add(colorChip);
                     })));
 
-                    NebulaPlugin.Instance.Logger.Print("D");
                 }
 
                 return offset - ((numNameplates - 1) / __instance.NumPerRow) * __instance.YOffset - headerSize;

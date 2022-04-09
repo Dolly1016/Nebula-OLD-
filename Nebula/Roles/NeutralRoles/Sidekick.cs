@@ -147,7 +147,7 @@ namespace Nebula.Roles.NeutralRoles
             : base("Sidekick", "sidekick", Jackal.RoleColor, RoleCategory.Neutral, Side.Jackal, Side.Jackal,
                  new HashSet<Side>() { Side.Jackal }, new HashSet<Side>() { Side.Jackal },
                  new HashSet<Patches.EndCondition>() { Patches.EndCondition.JackalWin },
-                 false, VentPermission.CanNotUse, true, true, true)
+                 true, VentPermission.CanNotUse, true, true, true)
         {
             killButton = null;
 

@@ -21,7 +21,7 @@ namespace Nebula.Patches
         public static EndCondition ImpostorWinDisconnect = new EndCondition(GameOverReason.ImpostorDisconnect, Palette.ImpostorRed, "impostor",16, Module.CustomGameMode.Standard);
         public static EndCondition JesterWin = new EndCondition(16, Roles.NeutralRoles.Jester.RoleColor, "jester", 1, Module.CustomGameMode.Standard);
         public static EndCondition JackalWin = new EndCondition(17, Roles.NeutralRoles.Jackal.RoleColor, "jackal", 2, Module.CustomGameMode.Standard);
-        public static EndCondition ArsonistWin = new EndCondition(18, Roles.NeutralRoles.Arsonist.RoleColor, "arsonist", 1, Module.CustomGameMode.Standard, false, (fpData) => { PlayerControl.AllPlayerControls.ForEach((Action<PlayerControl>)((p) => { if (!p.Data.IsDead && Roles.Roles.Arsonist.Winner != p.PlayerId) { p.MurderPlayer(p);  fpData.players[p.PlayerId].status = Game.PlayerData.PlayerStatus.Burned; } })); });
+        public static EndCondition ArsonistWin = new EndCondition(18, Roles.NeutralRoles.Arsonist.RoleColor, "arsonist", 1, Module.CustomGameMode.Standard, false, (fpData) => { PlayerControl.AllPlayerControls.ForEach((Action<PlayerControl>)((p) => { if (!p.Data.IsDead && Roles.Roles.Arsonist.Winner != p.PlayerId) { p.MurderPlayer(p);  fpData.GetPlayer(p.PlayerId).status = Game.PlayerData.PlayerStatus.Burned; } })); });
         public static EndCondition EmpiricWin = new EndCondition(19, Roles.NeutralRoles.Empiric.RoleColor, "empiric", 1, Module.CustomGameMode.Standard);
         public static EndCondition VultureWin = new EndCondition(20, Roles.NeutralRoles.Vulture.RoleColor, "vulture", 1, Module.CustomGameMode.Standard);
         public static EndCondition AvengerWin = new EndCondition(21, Roles.NeutralRoles.Avenger.RoleColor, "avenger", 0, Module.CustomGameMode.Standard);
@@ -107,13 +107,15 @@ namespace Nebula.Patches
         public class FinalPlayer
         {
             public string name { get; private set; }
+            public byte id { get; private set; }
             public Roles.Role role { get; private set; }
             public int totalTasks { get; private set; }
             public int completedTasks { get; private set; }
             public Game.PlayerData.PlayerStatus status { get; set; }
 
-            public FinalPlayer(string name, Roles.Role role, Game.PlayerData.PlayerStatus status,int totalTasks, int completedTasks)
+            public FinalPlayer(byte id,string name, Roles.Role role, Game.PlayerData.PlayerStatus status,int totalTasks, int completedTasks)
             {
+                this.id = id;
                 this.name = name;
                 this.role = role;
                 this.totalTasks = totalTasks;
@@ -123,6 +125,16 @@ namespace Nebula.Patches
         }
 
         public List<FinalPlayer> players { get; private set; }
+
+        public FinalPlayer? GetPlayer(byte playerId)
+        {
+            foreach(var p in players)
+            {
+                if (p.id == playerId) return p;
+            }
+            return null;
+        }
+
         public FinalPlayerData()
         {
             players = new List<FinalPlayer>();
@@ -137,7 +149,7 @@ namespace Nebula.Patches
                     name = player.name;
                 else
                     name = player.name + " " + name;
-                players.Add(new FinalPlayer(name,
+                players.Add(new FinalPlayer(player.id,player.name,
                     player.role, player.Status, player.Tasks.Quota, player.Tasks.Completed));
             }
 

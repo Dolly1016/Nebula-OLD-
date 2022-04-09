@@ -153,7 +153,7 @@ namespace Nebula
                     RPCEvents.UpdateExtraRoleData(reader.ReadByte(), reader.ReadByte(), reader.ReadUInt64());
                     break;
                 case (byte)CustomRPC.GlobalEvent:
-                    RPCEvents.GlobalEvent(reader.ReadByte(), reader.ReadSingle());
+                    RPCEvents.GlobalEvent(reader.ReadByte(), reader.ReadSingle(),reader.ReadUInt64());
                     break;
                 case (byte)CustomRPC.DragAndDropPlayer:
                     RPCEvents.DragAndDropPlayer(reader.ReadByte(), reader.ReadByte());
@@ -509,9 +509,9 @@ namespace Nebula
             }
         }
 
-        public static void GlobalEvent(byte eventId, float duration)
+        public static void GlobalEvent(byte eventId, float duration,ulong option)
         {
-            Events.GlobalEvent.Activate(Events.GlobalEvent.Type.GetType(eventId), duration);
+            Events.GlobalEvent.Activate(Events.GlobalEvent.Type.GetType(eventId), duration, option);
         }
 
         public static void DragAndDropPlayer(byte playerId, byte targetId)
@@ -1514,6 +1514,16 @@ namespace Nebula
             writer.Write(objectId2);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.DisturberInvoke(PlayerControl.LocalPlayer.PlayerId, objectId1, objectId2);
+        }
+
+        public static void GlovalEvent(Events.GlobalEvent.Type type,float duration,ulong option=0)
+        {
+            MessageWriter camouflageWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.GlobalEvent, Hazel.SendOption.Reliable, -1);
+            camouflageWriter.Write(type.Id);
+            camouflageWriter.Write(duration);
+            camouflageWriter.Write(option);
+            AmongUsClient.Instance.FinishRpcImmediately(camouflageWriter);
+            RPCEvents.GlobalEvent(type.Id,duration,option);
         }
     }
 }

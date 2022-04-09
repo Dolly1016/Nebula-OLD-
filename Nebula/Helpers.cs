@@ -222,8 +222,11 @@ namespace Nebula
             target.RawSetColor(colorId);
             target.RawSetVisor(visorId);
             target.RawSetHat(hatId, colorId);
+            target.RawSetSkin(skinId,colorId);
+
             Game.GameData.data.players[target.PlayerId].currentName = playerName;
 
+            /*
             SkinData nextSkin = DestroyableSingleton<HatManager>.Instance.GetSkinById(skinId);
             PlayerPhysics playerPhysics = target.MyPhysics;
             AnimationClip clip = null;
@@ -240,6 +243,7 @@ namespace Nebula
             spriteAnim.Play(clip, 1f);
             spriteAnim.m_animator.Play("a", 0, progress % 1);
             spriteAnim.m_animator.Update(0f);
+            */
 
             if (target.CurrentPet) UnityEngine.Object.Destroy(target.CurrentPet.gameObject);
             target.CurrentPet = UnityEngine.Object.Instantiate<PetBehaviour>(DestroyableSingleton<HatManager>.Instance.GetPetById(petId).viewData.viewData);
@@ -371,46 +375,42 @@ namespace Nebula
             return murder;
         }
 
-        public static void PlayFlash(Color color)
+        public static void PlayCustomFlash(Color color,float fadeIn ,float fadeOut,float maxAlpha=0.5f)
         {
-            HudManager.Instance.FullScreen.color = color;
-            HudManager.Instance.FullScreen.enabled = true;
-            HudManager.Instance.StartCoroutine(Effects.Lerp(0.75f, new Action<float>((p) =>
+            float duration = fadeIn + fadeOut;
+
+            var flash = GameObject.Instantiate(HudManager.Instance.FullScreen, HudManager.Instance.transform);
+            flash.color = color;
+            flash.enabled = true;
+            flash.gameObject.active = true;
+
+            HudManager.Instance.StartCoroutine(Effects.Lerp(duration, new Action<float>((p) =>
             {
-                var renderer = HudManager.Instance.FullScreen;
-                if (p < 0.5)
+                if (p < (fadeIn/duration))
                 {
-                    if (renderer != null)
-                        renderer.color = new Color(color.r, color.g, color.b, Mathf.Clamp01(p * 2 * 0.75f));
+                    if (flash != null)
+                        flash.color = new Color(color.r, color.g, color.b, Mathf.Clamp01(maxAlpha * p / (fadeIn / duration)));
                 }
                 else
                 {
-                    if (renderer != null)
-                        renderer.color = new Color(color.r, color.g, color.b, Mathf.Clamp01((1 - p) * 2 * 0.75f));
+                    if (flash != null)
+                        flash.color = new Color(color.r, color.g, color.b, Mathf.Clamp01(maxAlpha * (1 - p) / (fadeOut / duration)));
                 }
-                if (p == 1f && renderer != null) renderer.enabled = false;
+                if (p == 1f && flash != null) { 
+                    flash.enabled = false;
+                    GameObject.Destroy(flash.gameObject);
+                }
             })));
+        }
+
+        public static void PlayFlash(Color color)
+        {
+            PlayCustomFlash(color,0.375f, 0.375f);
         }
 
         public static void PlayQuickFlash(Color color)
         {
-            HudManager.Instance.FullScreen.color = color;
-            HudManager.Instance.FullScreen.enabled = true;
-            HudManager.Instance.StartCoroutine(Effects.Lerp(0.5f, new Action<float>((p) =>
-            {
-                var renderer = HudManager.Instance.FullScreen;
-                if (p < 0.2)
-                {
-                    if (renderer != null)
-                        renderer.color = new Color(color.r, color.g, color.b, Mathf.Clamp01(p * 5f * 0.75f));
-                }
-                else 
-                {
-                    if (renderer != null)
-                        renderer.color = new Color(color.r, color.g, color.b, Mathf.Clamp01((1 - p) * 1.25f * 0.75f));
-                }
-                if (p == 1f && renderer != null) renderer.enabled = false;
-            })));
+            PlayCustomFlash(color, 0.1f, 0.4f);
         }
 
         /// <summary>
@@ -575,6 +575,17 @@ namespace Nebula
             }
         }
 
+        public static void ShowDialog(string text)
+        {
+            HudManager.Instance.Dialogue.transform.localPosition = new Vector3(0, 0, -920);
+            HudManager.Instance.ShowPopUp(Language.Language.GetString(text));
+        }
+
+        public static bool AnalyzeFormula(string text)
+        {
+            var analyzer = new Module.Parser.FormulaAnalyzer(text);
+            return analyzer.GetResult().GetBool();
+        }
     }
 }
 

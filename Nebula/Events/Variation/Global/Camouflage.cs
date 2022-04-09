@@ -8,7 +8,7 @@ namespace Nebula.Events.Variation
 {
     class Camouflage : GlobalEvent
     {
-        public Camouflage(float duration):base(GlobalEvent.Type.Camouflage,duration)
+        public Camouflage(float duration, ulong option) :base(GlobalEvent.Type.Camouflage,duration,option)
         {
             AllowUpdateOutfit = false;
         }

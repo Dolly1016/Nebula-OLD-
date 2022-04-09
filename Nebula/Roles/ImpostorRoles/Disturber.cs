@@ -43,6 +43,7 @@ namespace Nebula.Roles.ImpostorRoles
 
         private Module.CustomOption disturbCoolDownOption;
         public Module.CustomOption disturbDurationOption;
+        public Module.CustomOption disturbBlackOutRateOption;
         private Module.CustomOption countOfBarriorsOption;
         private Module.CustomOption maxPoleDistanceOption;
         public Module.CustomOption ignoreBarriorsOption;
@@ -54,6 +55,9 @@ namespace Nebula.Roles.ImpostorRoles
 
             disturbDurationOption = CreateOption(Color.white, "disturbDuration", 10f, 5f, 60f, 2.5f);
             disturbDurationOption.suffix = "second";
+
+            disturbBlackOutRateOption = CreateOption(Color.white, "disturbBlackOutRate", 0.75f, 0.25f, 1f, 0.125f);
+            disturbBlackOutRateOption.suffix = "cross";
 
             countOfBarriorsOption = CreateOption(Color.white, "countOfBarriors", 2f, 1f, 10f, 1f);
 
@@ -106,6 +110,7 @@ namespace Nebula.Roles.ImpostorRoles
                     {
                         foreach(var pole in Poles)
                             RPCEventInvoker.DisturberInvoke(pole[0].Id, pole[1].Id);
+                        RPCEventInvoker.GlovalEvent(Events.GlobalEvent.Type.BlackOut, disturbDurationOption.getFloat() + 2f, (ulong)(disturbBlackOutRateOption.getFloat() * 100f));
                     }
                     else
                     {

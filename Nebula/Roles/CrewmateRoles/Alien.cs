@@ -81,11 +81,7 @@ namespace Nebula.Roles.CrewmateRoles
             emiButton = new CustomButton(
                 () =>
                 {
-                    MessageWriter emiWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.GlobalEvent, Hazel.SendOption.Reliable, -1);
-                    emiWriter.Write(Events.GlobalEvent.Type.EMI.Id);
-                    emiWriter.Write(emiDurationOption.getFloat());
-                    AmongUsClient.Instance.FinishRpcImmediately(emiWriter);
-                    RPCEvents.GlobalEvent(Events.GlobalEvent.Type.EMI.Id, emiDurationOption.getFloat());
+                    RPCEventInvoker.GlovalEvent(Events.GlobalEvent.Type.EMI, emiDurationOption.getFloat());
                 },
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
                 () => { return PlayerControl.LocalPlayer.CanMove; },

@@ -15,11 +15,48 @@ namespace Nebula.Roles.CrewmateRoles
         private Module.CustomOption reviveCoolDownOption;
         private Module.CustomOption reviveDurationOption;
         public Module.CustomOption maxReviveRoomDistanceOption;
+        private Module.CustomOption maxNotificationDistanceOption;
 
         private Sprite buttonSprite = null;
 
         public Arrow reviveArrow;
         public SystemTypes targetRoom;
+
+        private SpriteRenderer FS_BodiesSensor = null;
+
+        private void UpdateFullScreen()
+        {
+            if (!PlayerControl.LocalPlayer) return;
+            if (PlayerControl.LocalPlayer.GetModData() == null) return;
+
+            if (FS_BodiesSensor == null)
+            {
+                FS_BodiesSensor = GameObject.Instantiate(HudManager.Instance.FullScreen, HudManager.Instance.transform);
+                FS_BodiesSensor.color = Palette.ClearWhite;
+                FS_BodiesSensor.enabled = true;
+                FS_BodiesSensor.gameObject.SetActive(true);
+            }
+
+
+
+            float a = FS_BodiesSensor.color.a;
+            var center = PlayerControl.LocalPlayer.transform.position;
+            bool flag = false;
+            foreach (var body in Helpers.AllDeadBodies())
+            {
+                float dis = body.transform.position.Distance(center);
+                if (dis > 2f && dis < maxNotificationDistanceOption.getFloat())
+                {
+                    flag = true;
+                    break;
+                }
+            }
+
+            a += (flag ? 0.8f : -0.8f)*Time.deltaTime;
+            FS_BodiesSensor.color = Color.AlphaMultiplied(Mathf.Clamp01(a)*0.9f);
+            
+        }
+
 
         public Sprite getReviveButtonSprite()
         {
@@ -38,6 +75,9 @@ namespace Nebula.Roles.CrewmateRoles
 
             maxReviveRoomDistanceOption = CreateOption(Color.white, "maxReviveRoomDistance", 25f, 5f, 40f, 2.5f);
             maxReviveRoomDistanceOption.suffix = "cross";
+
+            maxNotificationDistanceOption = CreateOption(Color.white, "maxNotificationDistance", 20f, 5f, 40f, 2.5f);
+            maxNotificationDistanceOption.suffix = "cross";
         }
 
         public override void OnDropPlayer()
@@ -170,6 +210,12 @@ namespace Nebula.Roles.CrewmateRoles
                 reviveButton = null;
             }
 
+            if (FS_BodiesSensor != null)
+            {
+                GameObject.Destroy(FS_BodiesSensor.gameObject);
+                FS_BodiesSensor = null;
+            }
+
             CleanArrow();
         }
 
@@ -200,6 +246,8 @@ namespace Nebula.Roles.CrewmateRoles
             {
                 reviveArrow.Update(ShipStatus.Instance.FastRooms[targetRoom].roomArea.transform.position);
             }
+
+            UpdateFullScreen();
         }
 
         public override void OnRoleRelationSetting() {

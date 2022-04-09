@@ -16,6 +16,8 @@ namespace Nebula.Patches
         private static SpriteRenderer infoUnderlay;
         private static TMPro.TextMeshPro infoOverlayRules;
         private static TMPro.TextMeshPro infoOverlayRoles;
+        private static List<string> infoText=new List<string>();
+        private static int page = 0;
         public static bool overlayShown = false;
 
         public static void Reset()
@@ -81,7 +83,7 @@ namespace Nebula.Patches
             if (infoOverlayRoles == null)
             {
                 infoOverlayRoles = UnityEngine.Object.Instantiate(infoOverlayRules, hudManager.transform);
-                infoOverlayRoles.maxVisibleLines = 28;
+                infoOverlayRoles.maxVisibleLines = 42;
                 infoOverlayRoles.fontSize = infoOverlayRoles.fontSizeMin = infoOverlayRoles.fontSizeMax = 1.15f;
                 infoOverlayRoles.outlineWidth += 0.02f;
                 infoOverlayRoles.autoSizeTextContainer = false;
@@ -170,6 +172,8 @@ namespace Nebula.Patches
             infoOverlayRules.text = "";
             infoOverlayRules.enabled = true;
 
+            infoText.Clear();
+
             string rolesText = "";
             Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId, (role) =>
             {
@@ -177,8 +181,12 @@ namespace Nebula.Patches
                 rolesText += $"<size=150%>{Helpers.cs(role.Color, Language.Language.GetString("role." + role.LocalizeName + ".name"))}</size>" +
                     (roleDesc != "" ? $"\n{roleDesc}" : "") + "\n\n";
             });
+            infoText.Add(rolesText);
+            infoText.AddRange(Module.GameOptionStringGenerator.GenerateString());
 
-            infoOverlayRoles.text = rolesText;
+            page = 0;
+
+            infoOverlayRoles.text = getPage(page);
             infoOverlayRoles.enabled = true;
 
             var underlayTransparent = new Color(0.1f, 0.1f, 0.1f, 0.0f);
@@ -231,14 +239,43 @@ namespace Nebula.Patches
                 showInfoOverlay();
         }
 
+        public static string getPage(int page)
+        {
+            int max=infoText.Count;
+            string result = infoText[page % max];
+            result += "\n\n" + $" ({(page % max) + 1}/{max})";
+            return result;
+        }
+
+        public static void goToNextPage()
+        {
+            page = (page + 1) % infoText.Count;
+            infoOverlayRoles.text = getPage(page);
+        }
+
+        public static void goToPrevPage()
+        {
+            page--;
+            if (page < 0) page = infoText.Count - 1;
+
+            infoOverlayRoles.text = getPage(page);
+        }
+
         [HarmonyPatch(typeof(KeyboardJoystick), nameof(KeyboardJoystick.Update))]
         public static class CustomOverlayKeybinds
         {
             public static void Postfix(KeyboardJoystick __instance)
             {
                 if (Input.GetKeyDown(KeyCode.H) && AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started)
-                {
                     toggleInfoOverlay();
+
+                if (overlayShown && Input.GetKeyDown(KeyCode.J))
+                {
+                    if (Input.GetKeyInt(KeyCode.LeftShift))
+                        goToPrevPage();
+                    else
+                        goToNextPage();
+
                 }
             }
         }

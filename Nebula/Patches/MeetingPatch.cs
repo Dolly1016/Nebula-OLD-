@@ -184,6 +184,9 @@ namespace Nebula.Patches
             public static void Prefix(PlayerControl __instance, [HarmonyArgument(0)] GameData.PlayerInfo meetingTarget)
             {
                 CustomOverlays.OnMeetingStart();
+
+                //票の重み設定をリセット
+                VoteWeight.Clear();
             }
         }
 
@@ -211,8 +214,6 @@ namespace Nebula.Patches
                 //スポーンミニゲームの同期設定を予めリセット
                 Game.GameData.data.SynchronizeData.Reset(Game.SynchronizeTag.PreSpawnMinigame);
 
-                //票の重み設定をリセット
-                VoteWeight.Clear();
 
                 Events.GlobalEvent.OnMeeting();
                 Events.LocalEvent.OnMeeting();
@@ -224,9 +225,10 @@ namespace Nebula.Patches
 
                 EmergencyPatch.MeetingUpdate();
 
+                Game.GameData.data.myData.getGlobalData().role.OnMeetingStart();
+
                 Helpers.RoleAction(PlayerControl.LocalPlayer, (role) => { role.SetupMeetingButton(MeetingHud.Instance); });
 
-                Game.GameData.data.myData.getGlobalData().role.OnMeetingStart();
 
                 foreach (Game.PlayerData player in Game.GameData.data.players.Values)
                 {

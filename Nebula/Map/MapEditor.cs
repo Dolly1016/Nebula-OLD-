@@ -37,6 +37,13 @@ namespace Nebula.Map
             MapEditors[mapId].AddWirings();
         }
 
+        public static void FixTasks(int mapId)
+        {
+            if (!MapEditors.ContainsKey(mapId)) return;
+
+            MapEditors[mapId].FixTasks();
+        }
+
 
         protected static Vent CreateVent(SystemTypes room, string ventName,Vector2 position)
         {
@@ -142,6 +149,19 @@ namespace Nebula.Map
             return console;
         }
 
+        protected static void EditConsole(SystemTypes room, string objectName,Action<Console> action)
+        {
+            if (!ShipStatus.Instance.FastRooms.ContainsKey(room)) return;
+            PlainShipRoom shipRoom = ShipStatus.Instance.FastRooms[room];
+            Transform transform = shipRoom.transform.FindChild(objectName);
+            if (!transform) return;
+            GameObject obj = transform.gameObject;
+            if (!obj) return;
+
+            Console c = obj.GetComponent<Console>();
+            if (c) action.Invoke(c);
+        }
+
         /// <summary>
         /// マップにベントを追加します。
         /// </summary>
@@ -151,6 +171,8 @@ namespace Nebula.Map
         /// マップに新たな配線タスクを追加します
         /// </summary>
         public virtual void AddWirings() { }
+
+        public virtual void FixTasks() { }
 
         public MapEditor(int mapId)
         {
