@@ -33,7 +33,13 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
-| 1.7.1 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.7.1,2022.2.24/Nebula_v1.7.1.zip)|
+| 1.8.1 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.0,2022.3.29/Nebula_v1.8.1.zip)|
+| 1.8.0 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.0,2022.3.29/Nebula_v1.8.0.zip)|
+| 1.7.3 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.7.3,2022.3.29/Nebula_v1.7.3.zip)|
+| 1.7.2.1 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.7.2.1,2022.3.29/Nebula_v1.7.2.1.zip)|
+| 1.7.2 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.7.2,2022.3.29/Nebula_v1.7.2.zip)|
+| 1.7.1.1 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.7.1.1,2022.3.29/Nebula_v1.7.1.1.zip)|
+| 1.7.1 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.7.1,2022.3.29/Nebula_v1.7.1.zip)|
 | 1.7.0 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.7.0,2022.2.24/Nebula_v1.7.0.zip)|
 | 1.6.5.1 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.5.1,2022.2.24/Nebula_v1.6.5.1.zip)|
 | 1.6.5 | 2022.2.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.6.5,2022.2.24/Nebula_v1.6.5.zip)|
@@ -144,15 +150,58 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 | Language | Translator | Full Support Version | Download |
 | --- | --- | --- | --- |
 | 日本語 | - | 1.7.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.7.0,2022.2.24/Japanese.dat)|
-| 日本語 | kihi | 1.7.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.7.0%2Ckihi/Japanese.dat)|
-| 日本語 | Rey | 1.6.5.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.6.5%2CRey/Japanese.dat)|
+| 日本語 | kihi | 1.7.2.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.7.2.1%2Ckihi/Japanese.dat)|
+| 日本語 | Rey | 1.7.3 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.7.3%2CRey/Japanese.dat)|
 | 日本語 | Tanakanira | 1.6.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.6.0%2CTanakanira/Japanese.dat)|
-| English | - | 1.7.0 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.7.0,2022.2.24/English.dat)|
+| 簡体中文 | 四个憨批汉化组 | 1.7.3 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CSC%2C1.7.3%2C四个憨批汉化组/SChinese.dat)|
+| English | - | 1.7.3 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.7.3,2022.3.29/English.dat)|
 
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
 
+ **Version 1.8.1**
+ - プリセットに、#JUMP ,#TO , #NOT INITIALIZE コマンドを追加しました。
+  
+ **Version 1.8.0**
+ - 現在の設定を出力および読み込みできるようになりました。
+ - Mayorを固定票にした際に正常に作動しないことがある問題を修正しました。
+ - Morphingがプレイヤーの色に依存したスキンを着用したプレイヤーに変化した際の不具合を修正しました。
+  
+ **Version 1.7.3**
+ - Necromancerに新オプション「Max Notification Distance」を追加
+ - バニラの影に関する不具合を修正
+ - Seerのキルフラッシュが機能していない問題を修正
+ - Hキーから開けるヘルプ画面にて、ゲームの設定を確認できるページを追加(Jキーで切り替え)
+  
+ **Version 1.7.2.1**
+ - ゲーム冒頭のロール開示時に置き換え前の文章が一瞬ちらつく問題を修正
+ - Sidekickがタスクを持っていた問題を修正
+ - オンラインロビーでマップを変更できない問題を修正
+ - Can Be Guesserオプションの出現条件をより直感的なものに調整
+ - 各種マップにて、上下方向の移動をふさぐ扉の当たり判定に軽微な変更
+  
+ **Version 1.7.2**
+ - Disturberの妨害に停電効果を追加し、これに関連して新オプション「Disturb Black Out Rate」を追加
+ - Guesserの能力使用時に役職選択画面が表示されない問題を修正
+ - AirshipでReaperのベント移動先が一部欠落している問題を修正
+ - Airshipの一部タスクに壁判定を追加
+ - Airshipの宿舎下のダウンロードタスクの使用可能範囲を増大
+  
+ **Version 1.7.1.1**
+ - 2022.3.29sに本対応
+ - ダイナミックパレットがタイトル画面から開く色選択画面で正常に使用できない問題を修正
+ - カスタムネームプレートが使用できない問題を修正(協力:よっキング さん)
+ - ネームプレート選択画面が正常に動作しない問題を修正
+  
+ **Version 1.7.1**
+ - Disturberに新オプション「Ignore Barriors」を追加
+ - Sniperに新オプション「Store Rifle On Fire」を追加
+ - 2022.3.29sに仮対応
+ - Disturberのポールの設置方法に微細な変更
+ - Disturberのポール、Trapperのトラップ、Sniperのライフルが複数出現する際に\
+   既存のオブジェクトの動作を異常にすることがある問題を修正
+  
  **Version 1.7.0**
  - Disturberを追加
  - マルチスポーンポイント使用時およびAirshipで同時スポーンを有効化するオプションを追加
@@ -641,14 +690,18 @@ BasePluginに以下の属性を新たに付与することで、Nebula on the Sh
 
 # クレジットとリソース
 
+いずれも、敬称略
+
 [BepInEx](https://github.com/BepInEx) ゲームの関数をフックするために使用しています。\
 [The Other Roles](https://github.com/Eisbison/TheOtherRoles) このMODの着想の根源はすべてここからのものです。ソースを一部使用しています。\
 [TheOtherRoles: GM Edition](https://github.com/yukinogatari/TheOtherRoles-GM) ソースを一部使用しています。Empiric,MadmateのアイデアはこのMODからのものです。\
 [Town Of Impostors](https://github.com/Town-of-Impostors/TownOfImpostors) Sniper,Necromancer,MayorのアイデアはこのMODからのものです。\
 [Extreme Roles](https://github.com/yukieiji/ExtremeRoles) より偏りのない乱数生成のソースを使用しています。
-\
-その他ロールアイデアのご提供等\
-\
+
+**バグ修正のご協力**\
+よっキング
+
+**その他ロールアイデアのご提供等**\
 龍 : Reaper, Provocateur, Booster, Alien\
 Alps : Guesser(Secondary), Drunk\
 p5p5next : Damned
@@ -761,8 +814,10 @@ p5p5next : Damned
 |----------|:-------------:|
 | Disturb Cool Down | バリア妨害クールダウン
 | Disturb Duration | バリア妨害効果時間
+| Disturb Black Out Rate | バリア妨害中の視野範囲
 | Count Of Barriors | バリア設置数
 | Max Pole Distance | ポールの距離制限
+| Ignore Barriors | バリアを無視できるプレイヤー
 
 -----------------------
 
