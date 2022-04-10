@@ -33,6 +33,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.8.1.3 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.1.3,2022.3.29/Nebula_v1.8.1.3.zip)|
 | 1.8.1.2 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.1.2,2022.3.29/Nebula_v1.8.1.2.zip)|
 | 1.8.1.1 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.1.1,2022.3.29/Nebula_v1.8.1.1.zip)|
 | 1.8.1 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.1,2022.3.29/Nebula_v1.8.1.zip)|
@@ -162,6 +163,11 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 <details>
   <summary>クリックで展開</summary>
 
+ **Version 1.8.1.3**
+ - 排他的役職設定、および各役職の「Can Be  ...」系オプションがプリセットで使用できなかった問題を修正
+ - 「Advanced Role Options」を無効にした場合、Bait,ProvocateurがLoversにならないように
+ - 「Advanced Role Options」を無効にした場合、OracleがGuesserにならないように
+  
  **Version 1.8.1.2**
  - オプションの設定値に数式が使えるようになりました。
  - ユーザー定義の変数が使用できるようになりました。
