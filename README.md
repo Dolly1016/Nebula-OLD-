@@ -166,7 +166,10 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
-
+  
+ **Version 1.8.1.4**
+ - PolusのLaboratoryにあるベントに関する挙動の問題を修正しました。
+  
  **Version 1.8.1.3**
  - 排他的役職設定、および各役職の「Can Be  ...」系オプションがプリセットで使用できなかった問題を修正
  - 「Advanced Role Options」を無効にした場合、Bait,ProvocateurがLoversにならないように
