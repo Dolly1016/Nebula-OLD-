@@ -33,6 +33,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.8.1.4 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.1.4,2022.3.29/Nebula_v1.8.1.4.zip)|
 | 1.8.1.3 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.1.3,2022.3.29/Nebula_v1.8.1.3.zip)|
 | 1.8.1.2 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.1.2,2022.3.29/Nebula_v1.8.1.2.zip)|
 | 1.8.1.1 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.1.1,2022.3.29/Nebula_v1.8.1.1.zip)|
@@ -155,12 +156,12 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 
 | Language | Translator | Full Support Version | Download |
 | --- | --- | --- | --- |
-| 日本語 | - | 1.8.1.3 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.1.3,2022.3.29/Japanese.dat)|
+| 日本語 | - | 1.8.1.4 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.1.3,2022.3.29/Japanese.dat)|
 | 日本語 | kihi | 1.7.2.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.7.2.1%2Ckihi/Japanese.dat)|
-| 日本語 | Rey | 1.7.3 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.7.3%2CRey/Japanese.dat)|
+| 日本語 | Rey | 1.8.1.4 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.8.1.4%2CRey/Japanese.dat)|
 | 日本語 | Tanakanira | 1.6.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.6.0%2CTanakanira/Japanese.dat)|
-| 簡体中文 | 四个憨批汉化组 | 1.7.3 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CSC%2C1.7.3%2C四个憨批汉化组/SChinese.dat)|
-| English | - | 1.8.1.3 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.1.3,2022.3.29/English.dat)|
+| 簡体中文 | 四个憨批汉化组 | 1.8.1.4 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CSC%2C1.8.1.4%2C四个憨批汉化组/SChinese.dat)|
+| English | - | 1.8.1.4 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.1.3,2022.3.29/English.dat)|
 
 # 更新履歴
 <details>
