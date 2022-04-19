@@ -27,15 +27,40 @@ namespace Nebula
             return fileStream;
         }
 
+		public static void SearchAndSaveTextureFromMesh(string objName, string fileName)
+		{
+			var obj = UnityEngine.GameObject.Find(objName);
+			var renderer = obj.GetComponent<MeshRenderer>();
+			if (renderer == null) return;
+
+			byte[] bytes = UnityEngine.ImageConversion.EncodeToPNG(Helpers.CreateReadabeTexture(renderer.material.mainTexture));
+			//保存
+			File.WriteAllBytes(fileName + ".png", bytes);
+		}
+
 		public static void SearchAndSaveTexture(string objName, string fileName)
 		{
 			var obj=UnityEngine.GameObject.Find(objName);
 			var renderer = obj.GetComponent<SpriteRenderer>();
 			if (renderer == null) return;
 
-			byte[] bytes = UnityEngine.ImageConversion.EncodeToPNG(Helpers.CreateReadabeTexture2D(renderer.sprite.texture));
+			byte[] bytes = UnityEngine.ImageConversion.EncodeToPNG(Helpers.CreateReadabeTexture(renderer.sprite.texture));
 			//保存
 			File.WriteAllBytes(fileName + ".png", bytes);
+		}
+
+		public static void SearchAndSaveTextureFromSprite(string objName, string fileName)
+		{
+			foreach(var sprite in UnityEngine.Object.FindObjectsOfTypeAll(Sprite.Il2CppType))
+            {
+				if (sprite.name != objName) continue;
+
+				byte[] bytes = UnityEngine.ImageConversion.EncodeToPNG(Helpers.CreateReadabeTexture(sprite.Cast<Sprite>().texture));
+				//保存
+				File.WriteAllBytes(fileName + ".png", bytes);
+
+				break;
+			}
 		}
 
 		public static void SaveAllSound(string directory)

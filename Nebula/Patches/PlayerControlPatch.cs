@@ -8,6 +8,26 @@ using UnityEngine;
 
 namespace Nebula.Patches
 {
+
+    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetHatAndVisorAlpha))]
+    public class PlayerControlSetAlphaPatch
+    {
+        public static void Postfix(PlayerControl __instance) 
+        {
+            if (AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Started) return;
+            if (Game.GameData.data == null)
+            {
+                return;
+            }
+            if (!Game.GameData.data.players.ContainsKey(__instance.PlayerId))
+            {
+                return;
+            }
+
+            PlayerControlPatch.UpdatePlayerVisibility(__instance);
+        }
+    }
+
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixedUpdate))]
     public class PlayerControlPatch
     {
@@ -271,7 +291,7 @@ namespace Nebula.Patches
         }
 
 
-        private static void UpdatePlayerVisibility(PlayerControl player)
+        public static void UpdatePlayerVisibility(PlayerControl player)
         {
             var data = player.GetModData();
             float alpha = data.TransColor.a;

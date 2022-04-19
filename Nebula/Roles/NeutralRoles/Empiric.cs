@@ -171,7 +171,7 @@ namespace Nebula.Roles.NeutralRoles
             base.MyPlayerControlUpdate();
 
             Game.MyPlayerData data = Game.GameData.data.myData;
-            data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(2.5f,false, false, activePlayers);
+            data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(1f,false, false, activePlayers);
             Patches.PlayerControlPatch.SetPlayerOutline(data.currentTarget, Color.yellow);
 
             //感染停滞期を進める

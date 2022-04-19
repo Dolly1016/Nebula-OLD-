@@ -149,7 +149,7 @@ namespace Nebula.Patches
                     name = player.name;
                 else
                     name = player.name + " " + name;
-                players.Add(new FinalPlayer(player.id,player.name,
+                players.Add(new FinalPlayer(player.id,name,
                     player.role, player.Status, player.Tasks.Quota, player.Tasks.Completed));
             }
 

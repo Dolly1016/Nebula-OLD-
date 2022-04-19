@@ -53,7 +53,7 @@ namespace Nebula
         public const string AmongUsVersion = "2022.3.29";
         public const string PluginGuid = "jp.dreamingpig.amongus.nebula";
         public const string PluginName = "TheNebula";
-        public const string PluginVersion = "1.8.1";
+        public const string PluginVersion = "1.8.3";
         /*
         public const string PluginVisualVersion = "22.02.14a";
         public const string PluginStage = "Snapshot";
@@ -62,8 +62,8 @@ namespace Nebula
         public const string PluginVisualVersion = PluginVersion;
         public const string PluginStage = "";
         // */
-        public const string PluginVersionForFetch = "1.8.1";
-        public byte[] PluginVersionData = new byte[] { 1, 8, 1, 0 };
+        public const string PluginVersionForFetch = "1.8.3";
+        public byte[] PluginVersionData = new byte[] { 1, 8, 3, 0 };
 
         public static NebulaPlugin Instance;
 
@@ -132,8 +132,6 @@ namespace Nebula
 
             //NebulaPlugin.Instance.Logger.Print("Reach:10");
 
-            //追加マップを読み込む
-            Map.AdditionalMapManager.Load();
 
             //NebulaPlugin.Instance.Logger.Print("Reach:11");
         }
@@ -149,16 +147,12 @@ namespace Nebula
     public static class AmongUsClientAwakePatch
     {
         [HarmonyPrefix]
-        [HarmonyPriority(800)]
         public static void Postfix(AmongUsClient __instance)
         {
             foreach(var map in Map.MapData.MapDatabase.Values)
             {
                 map.LoadAssets(__instance);
             }
-
-            //追加マップを読み込む
-            Map.AdditionalMapManager.AddPrefabs(__instance);
         }
     }
 
@@ -183,7 +177,7 @@ namespace Nebula
 
         public static void SaveTexture(Texture2D texture , string fileName)
         {
-            byte[] bytes = UnityEngine.ImageConversion.EncodeToPNG(Helpers.CreateReadabeTexture2D(texture));
+            byte[] bytes = UnityEngine.ImageConversion.EncodeToPNG(Helpers.CreateReadabeTexture(texture));
             //保存
             File.WriteAllBytes(fileName + ".png", bytes);
         }

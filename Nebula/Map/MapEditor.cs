@@ -44,6 +44,13 @@ namespace Nebula.Map
             MapEditors[mapId].FixTasks();
         }
 
+        public static void OptimizeMap(int mapId)
+        {
+            if (!CustomOptionHolder.optimizedMaps.getBool()) return;
+            if (!MapEditors.ContainsKey(mapId)) return;
+
+            MapEditors[mapId].OptimizeMap();
+        }
 
         protected static Vent CreateVent(SystemTypes room, string ventName,Vector2 position)
         {
@@ -173,6 +180,11 @@ namespace Nebula.Map
         public virtual void AddWirings() { }
 
         public virtual void FixTasks() { }
+
+        /// <summary>
+        /// マップを最適化します。
+        /// </summary>
+        public virtual void OptimizeMap(){}
 
         public MapEditor(int mapId)
         {

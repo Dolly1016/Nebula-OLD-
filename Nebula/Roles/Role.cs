@@ -168,11 +168,11 @@ namespace Nebula.Roles
 
             if (ExceptBasicOption) return;
 
-            CanBeLoversOption = CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeLovers", DefaultCanBeLovers, true).HiddenOnDisplay(true);
+            CanBeLoversOption = CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeLovers", DefaultCanBeLovers, true).HiddenOnDisplay(true).SetIdentifier("role." + LocalizeName + ".canBeLovers"); ;
             CanBeLoversOption.AddPrerequisite(CustomOptionHolder.advanceRoleOptions);
             CanBeLoversOption.AddCustomPrerequisite(() => { return Roles.Lover.IsSpawnable(); });
 
-            CanBeGuesserOption = CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeGuesser", DefaultCanBeGuesser, true).HiddenOnDisplay(true);
+            CanBeGuesserOption = CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeGuesser", DefaultCanBeGuesser, true).HiddenOnDisplay(true).SetIdentifier("role." + LocalizeName + ".canBeGuesser"); ; ;
             CanBeGuesserOption.AddPrerequisite(CustomOptionHolder.advanceRoleOptions);
             CanBeGuesserOption.AddCustomPrerequisite(() => { return Roles.SecondaryGuesser.IsSpawnable(); });
             CanBeGuesserOption.AddCustomPrerequisite(() => { return
@@ -181,7 +181,7 @@ namespace Nebula.Roles
                 (side != Side.Crewmate && side != Side.Impostor && Roles.F_Guesser.neutralRoleCountOption.getFloat() > 0);
                 });
 
-            CanBeDrunkOption = CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeDrunk", DefaultCanBeDrunk, true).HiddenOnDisplay(true);
+            CanBeDrunkOption = CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeDrunk", DefaultCanBeDrunk, true).HiddenOnDisplay(true).SetIdentifier("role." + LocalizeName + ".canBeDrunk"); ; ;
             CanBeDrunkOption.AddPrerequisite(CustomOptionHolder.advanceRoleOptions);
             CanBeDrunkOption.AddCustomPrerequisite(() => { return Roles.Drunk.IsSpawnable(); });
 

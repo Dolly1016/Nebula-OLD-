@@ -35,7 +35,7 @@ namespace Nebula.Roles.CrewmateRoles
         public override void MyPlayerControlUpdate()
         {
             Game.MyPlayerData data = Game.GameData.data.myData;
-            data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(2.5f);
+            data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(1.5f);
             Patches.PlayerControlPatch.SetPlayerOutline(data.currentTarget, Color.yellow);
         }
 
@@ -249,6 +249,8 @@ namespace Nebula.Roles.CrewmateRoles
                  false, VentPermission.CanNotUse, false, false, false)
         {
             oracleButton = null;
+
+            DefaultCanBeGuesser = false;
         }
     }
 }

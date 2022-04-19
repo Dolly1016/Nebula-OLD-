@@ -60,6 +60,15 @@ namespace Nebula.Patches
 		}
 	}
 
+	[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CoStartMeeting))]
+	class StartMeetingPatch
+	{
+		public static void Prefix(PlayerControl __instance, [HarmonyArgument(0)] GameData.PlayerInfo meetingTarget)
+		{
+			EyesightPatch.ObserverMode = false;
+		}
+	}
+
 	[HarmonyPriority(100)]
 	[HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
 	class EyesightPatch

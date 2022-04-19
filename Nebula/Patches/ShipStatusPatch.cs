@@ -91,5 +91,18 @@ namespace Nebula.Patches
         {
             Game.GameData.data.LoadMapData();
         }
+
+        /*
+        [HarmonyPatch(typeof(AspectSize), nameof(AspectSize.OnEnable))]
+        public static class AspectPatch
+        {
+            public static bool Prefix()
+            {
+                return !Map.MapData.GetCurrentMapData().IsModMap;
+            }
+        }
+        */
+
+        
     }
 }

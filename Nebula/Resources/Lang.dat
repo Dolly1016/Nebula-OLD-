@@ -19,6 +19,8 @@
 "cosmic.package.innerslothHats" : "Innersloth Hats"
 "cosmic.package.innerslothNameplates" : "Innersloth Nameplates"
 "cosmic.package.standardNameplate" : "Standard Collections"
+"cosmic.package.nosCommHat" : "NoS Community Hats"
+"cosmic.package.nosCommNameplate" : "NoS Community Nameplates"
 
 "preset.save" : "Save Current Setting"
 "preset.dialog.save" : "Current settings have been saved!"
@@ -42,8 +44,8 @@
 "option.display.preset.3" : "Preset 3"
 "option.display.preset.4" : "Preset 4"
 "option.display.preset.5" : "Preset 5"
-"option.switch.on" : "On"
-"option.switch.off" : "Off"
+"option.switch.on" : "<color=#ffffd6ff>On</color>"
+"option.switch.off" : "<color=#606060ff>Off</color>"
 
 "option.empty" : ""
 
@@ -77,6 +79,7 @@
 "option.additionalWirings" : "Additional Wirings"
 "option.multipleSpawnPoints" : "Multiple Spawn Points"
 "option.synchronizedSpawning" : "Synchronized Spawning"
+"option.optimizedMaps" : "Optimized Maps"
 
 "option.exclusiveAssignment" : "Exclusive Assignment"
 "option.exclusiveAssignment1" : "Assignment Set 1"

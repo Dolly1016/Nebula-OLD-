@@ -244,7 +244,13 @@ namespace Nebula.Roles.ExtraRoles
             bool winFlag = false;
             ActionForLover(player, (partner) =>
             {
-                winFlag |= partner.GetModData().role.CheckWin(partner, condition) && !partner.Data.IsDead;
+                if (partner.Data.IsDead) return;
+                if(partner.GetModData().role.CheckWin(partner, condition))
+                {
+                    winFlag = true;
+                    return;
+                }
+                Helpers.RoleAction(partner, (role) => winFlag |= role.CheckAdditionalWin(partner, condition));
             });
             if (winFlag)
             {
@@ -267,7 +273,7 @@ namespace Nebula.Roles.ExtraRoles
         {
             if (loversModeOption.getSelection() != 0) return;
 
-            trilemmaTarget = Patches.PlayerControlPatch.SetMyTarget(2.5f);
+            trilemmaTarget = Patches.PlayerControlPatch.SetMyTarget(1.5f);
             
             if (IsMyLover(trilemmaTarget)) {
                 trilemmaTarget = null;

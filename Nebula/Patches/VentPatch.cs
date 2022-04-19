@@ -198,4 +198,23 @@ namespace Nebula.Patches
             }
         }
     }
+
+    [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.CoEnterVent))]
+    class CoEnterVentPatch
+    {
+        static void Postfix(PlayerPhysics __instance,ref Il2CppSystem.Collections.IEnumerator __result)
+        {
+            List<Il2CppSystem.Collections.IEnumerator> sequence = new List<Il2CppSystem.Collections.IEnumerator>();
+            sequence.Add(Effects.Action((Il2CppSystem.Action)(() =>
+            {
+                __instance.myPlayer.Collider.enabled = false;
+            })));
+            sequence.Add(__result);
+            sequence.Add(Effects.Action((Il2CppSystem.Action)(() =>
+            {
+                __instance.myPlayer.Collider.enabled = true;
+            })));
+            __result = Effects.Sequence(new UnhollowerBaseLib.Il2CppReferenceArray<Il2CppSystem.Collections.IEnumerator>(sequence.ToArray()));
+        }
+    }
 }

@@ -9,10 +9,6 @@ namespace Nebula.Map.Database
     {
         public SkeldData() :base(0)
         {
-            CommonTaskIdList = new List<byte>() { 0, 1 };
-            ShortTaskIdList = new List<byte>() { 11, 12, 13, 14, 16, 17, 18, 19,21,24,28,29 };
-            LongTaskIdList = new List<byte>() { 2, 3, 4, 5, 6, 7, 8, 9 };
-
             SabotageMap[SystemTypes.Reactor] = new SabotageData(SystemTypes.Reactor, new Vector3(-21f, -5.4f), true, true);
             SabotageMap[SystemTypes.LifeSupp] = new SabotageData(SystemTypes.LifeSupp, new Vector3(6.5f, -4.7f), true, true);
             SabotageMap[SystemTypes.Electrical] = new SabotageData(SystemTypes.Electrical, new Vector3(-9.3f, -10.9f), true, false);

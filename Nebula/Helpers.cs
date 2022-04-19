@@ -27,8 +27,22 @@ namespace Nebula
         {
             get
             {
-                return !PlayerControl.LocalPlayer.inVent && !MeetingHud.Instance && 
-                    (PlayerControl.LocalPlayer.CanMove || (!(MapBehaviour.Instance && MapBehaviour.Instance.IsOpen))  || ((!Minigame.Instance) || Minigame.Instance.MyNormTask || Minigame.Instance is DoorCardSwipeGame || Minigame.Instance is DoorBreakerGame));
+                if (PlayerControl.LocalPlayer.inVent) return false;
+                if (MeetingHud.Instance) return false;
+
+                //情報端末以外ではカウントが進む
+                if (MapBehaviour.Instance && MapBehaviour.Instance.IsOpen)
+                    return !MapBehaviour.Instance.countOverlay.isActiveAndEnabled;
+
+                if (Minigame.Instance)
+                {
+                    if (Minigame.Instance.TryCast<SpawnInMinigame>()) return false;
+                    if (Minigame.Instance.MyNormTask) return true;
+                    if (Minigame.Instance.TryCast<DoorCardSwipeGame>()) return true;
+                    if (Minigame.Instance.TryCast<DoorBreakerGame>()) return true;
+                }
+
+                return PlayerControl.LocalPlayer.CanMove;
             }
         }
 
@@ -536,19 +550,19 @@ namespace Nebula
             }
         }
 
-        static public Texture2D CreateReadabeTexture2D(Texture2D texture2d)
+        static public Texture2D CreateReadabeTexture(Texture texture)
         {
             RenderTexture renderTexture = RenderTexture.GetTemporary(
-                        texture2d.width,
-                        texture2d.height,
+                        texture.width,
+                        texture.height,
                         0,
                         RenderTextureFormat.Default,
                         RenderTextureReadWrite.Linear);
 
-            Graphics.Blit(texture2d, renderTexture);
+            Graphics.Blit(texture, renderTexture);
             RenderTexture previous = RenderTexture.active;
             RenderTexture.active = renderTexture;
-            Texture2D readableTextur2D = new Texture2D(texture2d.width, texture2d.height);
+            Texture2D readableTextur2D = new Texture2D(texture.width, texture.height);
             readableTextur2D.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
             readableTextur2D.Apply();
             RenderTexture.active = previous;
@@ -579,12 +593,6 @@ namespace Nebula
         {
             HudManager.Instance.Dialogue.transform.localPosition = new Vector3(0, 0, -920);
             HudManager.Instance.ShowPopUp(Language.Language.GetString(text));
-        }
-
-        public static bool AnalyzeFormula(string text)
-        {
-            var analyzer = new Module.Parser.FormulaAnalyzer(text);
-            return analyzer.GetResult().GetBool();
         }
     }
 }

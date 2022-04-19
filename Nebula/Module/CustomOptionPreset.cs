@@ -195,19 +195,26 @@ namespace Nebula.Module
             }
         }
 
-        public void LoadMetaText(string text,ref string jumpTo,ref bool skipping)
+        public void LoadMetaText(string text,ref string jumpTo,ref bool skipping,Dictionary<string,string> masterVariables, Dictionary<string, string> variables)
         {
             if (text == "NOT INITIALIZE") { notInitialize = true; return; }
             if (text.StartsWith("JUMP:"))
             {
                 string[] strings = text.Split(":");
                 if (strings.Length != 3) return;
-                var formula = new Module.Parser.FormulaAnalyzer(strings[1]);
+                var formula = new Module.Parser.FormulaAnalyzer(strings[1], masterVariables, variables);
                 if (formula.GetResult().GetBool())
                 {
                     skipping = true;
                     jumpTo = strings[2];
                 }
+            }
+            if (text.StartsWith("SUBSTITUTE:"))
+            {
+                string[] strings = text.Split(":");
+                if (strings.Length != 3) return;
+                var formula = new Module.Parser.FormulaAnalyzer(strings[2], masterVariables, variables);
+                variables[strings[1]] = formula.GetResult().GetInt().ToString();
             }
         }
 
@@ -222,28 +229,97 @@ namespace Nebula.Module
 
                 CustomOptionPreset preset = new CustomOptionPreset();
 
+                /* JUMP,TO構文 */
                 bool skipping = false;
                 string jumpTo = "";
+                /* IF 構文 0:一度も条件を満たしていない 1:条件を満たしている 2:過去に条件を満たしている */
+                List<byte> conditionList = new List<byte>();
+
+                /* 変数テーブル */
+                Dictionary<string, string> variables = new Dictionary<string, string>();
+                Dictionary<string, string> masterVariables = new Dictionary<string, string>();
+
+                var players = PlayerControl.AllPlayerControls.Count.ToString();
+
+                var mapId = PlayerControl.GameOptions.MapId.ToString();
+
+                masterVariables["Players"] = players;
+                masterVariables["P"] = players;
+
+                masterVariables["MapId"] = mapId;
+                masterVariables["Map"] = mapId;
+                masterVariables["M"] = mapId;
 
                 while (reader.Peek() > -1)
                 {
-                    text=reader.ReadLine().Replace(" ","");
+                    text=reader.ReadLine().Replace(" ","").Replace("\t","");
 
                     if (text.StartsWith("//")) continue;
 
+                    //JUMPの処理
                     if (skipping)
                     {
                         if (text.StartsWith("#TO:"))
                             if (text.Substring(4) == jumpTo)
                                 skipping = false;
                     }
-                    else
-                    {
-                        if (text.StartsWith("#")) preset.LoadMetaText(text.Substring(1), ref jumpTo, ref skipping);
-                        strings = text.Split(":");
-                        if (strings.Length != 2) continue;
 
-                        preset.options[strings[0]] = int.Parse(strings[1]);
+                    //IF関連の処理
+                    if (text.StartsWith("#IF:"))
+                    {
+                        //条件を考慮するべき時のみ計算する
+                        if (conditionList.Count > 0 && (conditionList[conditionList.Count - 1]!=1))
+                        {
+                            conditionList.Add(2);
+                        }
+                        else
+                        {
+                            var formula = new Module.Parser.FormulaAnalyzer(text.Substring(4), masterVariables, variables);
+                            conditionList.Add((byte)(formula.GetResult().GetBool() ? 1 : 0));
+                        }
+                    }
+                    else if (text.StartsWith("#ELSEIF:"))
+                    {
+                        //条件を考慮するべき時は計算する
+                        if (conditionList.Count != 0 && (conditionList[conditionList.Count - 1]==0))
+                        {
+                            var formula = new Module.Parser.FormulaAnalyzer(text.Substring(8), masterVariables, variables);
+                            conditionList[conditionList.Count - 1] = (byte)(formula.GetResult().GetBool()?1:0);
+                        }
+                        else if (conditionList.Count > 0)
+                            conditionList[conditionList.Count - 1] = 2;
+                    }
+                    else if (text == "#ELSE") {
+                        //条件を反転させる
+                        if (conditionList.Count > 0)
+                            conditionList[conditionList.Count - 1] = (byte)((conditionList[conditionList.Count - 1]==0)?1:2);
+                    }
+                    else if (text == "#ENDIF")
+                    {
+                        //IF文をぬける
+                        if (conditionList.Count > 0)
+                            conditionList.RemoveAt(conditionList.Count - 1);
+                    }
+
+                    //読み飛ばさない場合
+                    if (!skipping && (conditionList.Count == 0 || (conditionList.Count > 0 && conditionList[conditionList.Count - 1] == 1)))
+                    {
+                        if (text.StartsWith("#")) preset.LoadMetaText(text.Substring(1), ref jumpTo, ref skipping,masterVariables,variables);
+                        else
+                        {
+                            strings = text.Split(":");
+                            if (strings.Length != 2) continue;
+
+                            int result;
+                            if (int.TryParse(strings[1], out result)) {
+                                preset.options[strings[0]] = result;
+                            }
+                            else
+                            {
+                                var formula = new Module.Parser.FormulaAnalyzer(strings[1],masterVariables,variables);
+                                preset.options[strings[0]] = formula.GetResult().GetInt();
+                            }
+                        }
                     }
                 }
 
@@ -251,6 +327,7 @@ namespace Nebula.Module
 
                 return true;
             }catch(Exception exp) {
+                NebulaPlugin.Instance.Logger.Print(exp.ToString());
                 return false;
             }
         }

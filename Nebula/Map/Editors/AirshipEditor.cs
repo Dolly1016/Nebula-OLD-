@@ -59,5 +59,38 @@ namespace Nebula.Map.Editors
                 c.checkWalls = true;
             });
         }
+
+        public override void OptimizeMap() {
+            var obj = ShipStatus.Instance.FastRooms[SystemTypes.GapRoom].gameObject;
+            //インポスターについてのみ影を無効化
+            obj.transform.FindChild("Shadow").FindChild("LedgeShadow").GetComponent<OneWayShadows>().IgnoreImpostor = true;
+
+            SpriteRenderer renderer;
+
+            GameObject fance = new GameObject("ModFance");
+            fance.layer = LayerMask.NameToLayer("Ship");
+            fance.transform.SetParent(obj.transform);
+            fance.transform.localPosition = new Vector3(4.2f, 0.15f, 0.5f);
+            fance.transform.localScale = new Vector3(1f,1f,1f);
+            fance.SetActive(true);
+            var Collider = fance.AddComponent<EdgeCollider2D>();
+            Collider.points = new Vector2[] { new Vector2(1.5f, -0.2f), new Vector2(-1.5f, -0.2f), new Vector2(-1.5f, 1.5f) };
+            Collider.enabled = true;
+            renderer = fance.AddComponent<SpriteRenderer>();
+            renderer.sprite = Helpers.loadSpriteFromResources("Nebula.Resources.AirshipFance.png", 100f);
+
+            GameObject pole = new GameObject("DownloadPole");
+            pole.layer = LayerMask.NameToLayer("Ship");
+            pole.transform.SetParent(obj.transform);
+            pole.transform.localPosition = new Vector3(4.1f, 0.75f, 0.8f);
+            pole.transform.localScale = new Vector3(1f, 1f, 1f);
+            renderer = pole.AddComponent<SpriteRenderer>();
+            renderer.sprite = Helpers.loadSpriteFromResources("Nebula.Resources.AirshipDownloadG.png", 100f);
+
+            var panel = obj.transform.FindChild("panel_data");
+            panel.localPosition = new Vector3(4.1f, 0.72f, 0.1f);
+            panel.gameObject.GetComponent<Console>().usableDistance = 0.9f;
+
+        }
     }
 }

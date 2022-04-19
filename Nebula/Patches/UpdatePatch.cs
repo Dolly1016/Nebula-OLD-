@@ -178,7 +178,7 @@ namespace Nebula.Patches
 
         }
 
-        private static DeadBody GetDeadBody(byte playerId, DeadBody[] deadBodies)
+        private static DeadBody? GetDeadBody(byte playerId, DeadBody[] deadBodies)
         {
             foreach (DeadBody player in deadBodies)
             {
@@ -194,7 +194,7 @@ namespace Nebula.Patches
         {
             Game.PlayerData data;
             DeadBody[] deadBodies = Helpers.AllDeadBodies();
-            DeadBody deadBody;
+            DeadBody? deadBody;
             float distance;
             Vector3 targetPosition;
 

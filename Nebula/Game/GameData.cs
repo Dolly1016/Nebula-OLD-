@@ -556,6 +556,10 @@ namespace Nebula.Game
 
         public float DeathGuage { get; set; }
 
+        public Patches.FinalPlayerData.FinalPlayer? FinalData { get {
+                return Patches.OnGameEndPatch.FinalData.players.FirstOrDefault((p) => p.id == id);
+        }}
+
 
 
         public PlayerData(PlayerControl player, string name,PlayerOutfit outfit,Role role)
@@ -939,8 +943,10 @@ namespace Nebula.Game
 
             Map.MapEditor.FixTasks(PlayerControl.GameOptions.MapId);
 
+
             if (CustomOptionHolder.mapOptions.getBool())
             {
+                Map.MapEditor.OptimizeMap(PlayerControl.GameOptions.MapId);
                 Map.MapEditor.AddVents(PlayerControl.GameOptions.MapId);
             }
 

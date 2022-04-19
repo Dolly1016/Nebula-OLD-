@@ -46,7 +46,7 @@ namespace Nebula.Roles.ImpostorRoles
         public override void MyPlayerControlUpdate()
         {
             Game.MyPlayerData data = Game.GameData.data.myData;
-            data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(2.5f);
+            data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(1f);
             Patches.PlayerControlPatch.SetPlayerOutline(data.currentTarget, Color.yellow);
         }
 

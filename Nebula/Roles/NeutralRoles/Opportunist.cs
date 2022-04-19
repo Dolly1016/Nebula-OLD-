@@ -59,7 +59,7 @@ namespace Nebula.Roles.NeutralRoles
         }
         public override bool CheckAdditionalWin(PlayerControl player, EndCondition condition)
         {
-            if (player.Data.IsDead && player.GetModData().Status != Game.PlayerData.PlayerStatus.Burned) return false;
+            if (player.Data.IsDead && player.GetModData().FinalData?.status != Game.PlayerData.PlayerStatus.Burned) return false;
             if (condition == EndCondition.ArsonistWin && !canWinWithArsonistOption.getBool()) return false;
             if (condition == EndCondition.EmpiricWin && !canWinWithEmpiricOption.getBool()) return false;
             if (condition == EndCondition.JesterWin && !canWinWithJesterOption.getBool()) return false;
@@ -70,7 +70,7 @@ namespace Nebula.Roles.NeutralRoles
             if (condition == EndCondition.NobodyPolusWin) return false;
             if (condition == EndCondition.NobodyAirshipWin) return false;
 
-            if (player.GetModData().Tasks.AllTasks == player.GetModData().Tasks.Completed)
+            if (player.GetModData().Tasks.AllTasks <= player.GetModData().Tasks.Completed)
             {
                 EndGameManagerSetUpPatch.AddEndText(Language.Language.GetString("role.opportunist.additionalEndText"));
                 return true;

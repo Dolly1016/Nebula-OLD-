@@ -17,13 +17,13 @@ namespace Nebula.Module.Parser
         public FormulaResult(int value = 0)
         {
             iValue = value;
-            bValue = false;
+            bValue = value == 1;
             isBool = false;
         }
 
         public FormulaResult(bool value)
         {
-            iValue = 0;
+            iValue = value ? 1 : 0;
             bValue = value;
             isBool = true;
         }
@@ -138,7 +138,7 @@ namespace Nebula.Module.Parser
     {
         FormulaComplexContent Formula;
 
-        public FormulaAnalyzer(string text)
+        public FormulaAnalyzer(string text,params Dictionary<string,string>[] variables)
         {
             text = text.Replace(" ","");
             List<FormulaContent> temp = new List<FormulaContent>();
@@ -223,14 +223,13 @@ namespace Nebula.Module.Parser
                 return new FormulaResult(left.GetResult().GetBool() || right.GetResult().GetBool());
             });
 
-            var players = PlayerControl.AllPlayerControls.Count.ToString();
-            Formula.Substitute("Players",players);
-            Formula.Substitute("P", players);
-
-            var mapId = PlayerControl.GameOptions.MapId.ToString();
-            Formula.Substitute("MapId", mapId);
-            Formula.Substitute("Map", mapId);
-            Formula.Substitute("M", mapId);
+            foreach(var variableTable in variables)
+            {
+                foreach(var entry in variableTable)
+                {
+                    Formula.Substitute(entry.Key,entry.Value);
+                }
+            }
         }
 
         private void ConvertBracket(List<FormulaContent> list)

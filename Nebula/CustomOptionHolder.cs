@@ -96,6 +96,7 @@ namespace Nebula
         public static CustomOption additionalWirings;
         public static CustomOption multipleSpawnPoints;
         public static CustomOption synchronizedSpawning;
+        public static CustomOption optimizedMaps;
 
         public static CustomOption emergencyOptions;
         public static CustomOption maxNumberOfMeetings;
@@ -181,6 +182,7 @@ namespace Nebula
             additionalVents = CustomOption.Create(10130, Color.white, "option.additionalVents", false, mapOptions).SetGameMode(~CustomGameMode.Minigame);
             multipleSpawnPoints = CustomOption.Create(10132, Color.white, "option.multipleSpawnPoints", false, mapOptions).SetGameMode(~CustomGameMode.Minigame);
             synchronizedSpawning = CustomOption.Create(10133, Color.white, "option.synchronizedSpawning", false, mapOptions).SetGameMode(~CustomGameMode.Minigame);
+            optimizedMaps = CustomOption.Create(10134, Color.white, "option.optimizedMaps", true, mapOptions).SetGameMode(CustomGameMode.All);
 
             limiterOptions = CustomOption.Create(10140, Color.white, "option.limitOptions", false, null, true).SetGameMode(CustomGameMode.All);
             timeLimitOption = CustomOption.Create(10141, Color.white, "option.timeLimitOption", 20f, 1f, 80f, 1f, limiterOptions).SetGameMode(CustomGameMode.All);
@@ -241,7 +243,10 @@ namespace Nebula
 
                 for (int r = 0; r < 3; r++)
                 {
-                    exclusiveAssignmentList[exclusiveAssignmentList.Count - 1].Item2.Add(CustomOption.Create(10210 + i * 5 + 1 + r, Color.white, "option.exclusiveAssignmentRole" + (r + 1), roleList, "option.exclusiveAssignmentRole.none", exclusiveAssignmentList[exclusiveAssignmentList.Count - 1].Item1, false));
+                    exclusiveAssignmentList[exclusiveAssignmentList.Count - 1].Item2.Add(
+                        CustomOption.Create(10210 + i * 5 + 1 + r, Color.white, "option.exclusiveAssignmentRole" + (r + 1), roleList, "option.exclusiveAssignmentRole.none", exclusiveAssignmentList[exclusiveAssignmentList.Count - 1].Item1, false)
+                        .SetIdentifier("option.exclusiveAssignment"+(i+1)+".Role" + (r + 1))
+                        );
                 }
             }
 

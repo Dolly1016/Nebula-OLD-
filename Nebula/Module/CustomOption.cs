@@ -867,6 +867,7 @@ namespace Nebula.Module
         }
     }
 
+    /*
     [HarmonyPatch(typeof(GameSettingMenu), nameof(GameSettingMenu.Start))]
     class GameSettingMenuStartPatch
     { 
@@ -888,47 +889,8 @@ namespace Nebula.Module
             mapNameTransform.GetComponent<KeyValueOption>().Values = options;
         }
     }
-
-    [HarmonyPatch(typeof(Constants), nameof(Constants.ShouldFlipSkeld))]
-    class ConstantsShouldFlipSkeldPatch
-    {
-        public static bool Prefix(ref bool __result)
-        {
-            if (PlayerControl.GameOptions == null) return true;
-            __result = PlayerControl.GameOptions.MapId == 3;
-            return false;
-        }
-
-        public static bool aprilFools
-        {
-            get
-            {
-                try
-                {
-                    DateTime utcNow = DateTime.UtcNow;
-                    DateTime t = new DateTime(utcNow.Year, 4, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-                    DateTime t2 = t.AddDays(1.0);
-                    if (utcNow >= t && utcNow <= t2)
-                    {
-                        return true;
-                    }
-                }
-                catch
-                {
-                }
-                return false;
-            }
-        }
-    }
-
-    [HarmonyPatch(typeof(FreeWeekendShower), nameof(FreeWeekendShower.Start))]
-    class FreeWeekendShowerPatch
-    {
-        public static bool Prefix()
-        {
-            return ConstantsShouldFlipSkeldPatch.aprilFools;
-        }
-    }
+    */
+   
 
     public static class GameOptionStringGenerator
     {
@@ -1189,20 +1151,5 @@ namespace Nebula.Module
         }
     }
     */
-
-    [HarmonyPatch(typeof(GameOptionsData), nameof(GameOptionsData.ToggleMapFilter))]
-    public static class GameOptionsData_ToggleMapFilter_Patch
-    {
-        [HarmonyPrefix]
-        public static bool Prefix(GameOptionsData __instance, [HarmonyArgument(0)] byte mapId)
-        {
-            __instance.MapId ^= (byte)(1 << (int)mapId);
-            if (__instance.MapId == 0)
-            {
-                __instance.MapId ^= (byte)(1 << (int)mapId);
-            }
-            return false;
-        }
-    }
 }
 

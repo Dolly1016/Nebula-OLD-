@@ -41,11 +41,10 @@ namespace Nebula.Map
         public ShipStatus Assets;
         public int MapId { get; }
 
+        public bool IsModMap { get; }
+
         public static Dictionary<int, MapData> MapDatabase = new Dictionary<int, MapData>();
 
-        public List<byte> CommonTaskIdList { get; protected set; }
-        public List<byte> ShortTaskIdList { get; protected set; }
-        public List<byte> LongTaskIdList { get; protected set; }
 
         public Dictionary<SystemTypes, SabotageData> SabotageMap;
 
@@ -77,35 +76,28 @@ namespace Nebula.Map
             new Database.MIRAData();
             new Database.PolusData();
             new Database.AirshipData();
+            new MapData(5);
         }
 
         public static Map.MapData GetCurrentMapData()
         {
-            return MapDatabase[PlayerControl.GameOptions.MapId];
+            if (MapDatabase.ContainsKey(PlayerControl.GameOptions.MapId))
+            {
+                return MapDatabase[PlayerControl.GameOptions.MapId];
+            }
+            else
+            {
+                return MapDatabase[5];
+            }
         }
 
-        public static byte GetRandomCommonTaskId(byte mapId)
-        {
-            if (!MapDatabase.ContainsKey(mapId)) return 0;
-
-            return MapDatabase[mapId].GetRandomCommonTaskId();
-        }
-        public static byte GetRandomShortTaskId(byte mapId) {
-            if (!MapDatabase.ContainsKey(mapId)) return 0;
-
-            return MapDatabase[mapId].GetRandomShortTaskId(); 
-        }
-    
-        public static byte GetRandomLongTaskId(byte mapId) {
-            if (!MapDatabase.ContainsKey(mapId)) return 0;
-
-            return MapDatabase[mapId].GetRandomLongTaskId();
-        }
-
+        
         public MapData(int mapId)
         {
             MapId = mapId;
             MapDatabase[mapId] = this;
+
+            IsModMap = mapId >= 5;
 
             SabotageMap = new Dictionary<SystemTypes, SabotageData>();
             RoomsRelation = new Dictionary<SystemTypes, HashSet<SystemTypes>>();
@@ -124,16 +116,15 @@ namespace Nebula.Map
 
         public void LoadAssets(AmongUsClient __instance)
         {
+            if (IsModMap) return;
+
             AssetReference assetReference = __instance.ShipPrefabs.ToArray()[MapId];
             AsyncOperationHandle<GameObject> asset = assetReference.LoadAsset<GameObject>();
             asset.WaitForCompletion();
-            Assets = asset.Result.GetComponent<ShipStatus>();
+            Assets = assetReference.Asset.Cast<GameObject>().GetComponent<ShipStatus>();
         }
 
-        public byte GetRandomCommonTaskId() { return CommonTaskIdList[NebulaPlugin.rnd.Next(CommonTaskIdList.Count)]; }
-        public byte GetRandomShortTaskId() { return ShortTaskIdList[NebulaPlugin.rnd.Next(ShortTaskIdList.Count)]; }
-        public byte GetRandomLongTaskId() { return LongTaskIdList[NebulaPlugin.rnd.Next(LongTaskIdList.Count)]; }
-
+        
         public bool PlayInitialPrespawnMinigame
         {
             get

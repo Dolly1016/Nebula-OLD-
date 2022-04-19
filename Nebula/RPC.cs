@@ -1258,9 +1258,6 @@ namespace Nebula
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.ExemptTasks(playerId, cutTasks, cutQuota);
 
-            var tasks = new Il2CppSystem.Collections.Generic.List<GameData.TaskInfo>();
-            GameData.TaskInfo taskInfo;
-
             int allTasks = Game.GameData.data.players[playerId].Tasks.DisplayTasks;
             int commonTasks = PlayerControl.GameOptions.NumCommonTasks;
             int longTasks = PlayerControl.GameOptions.NumLongTasks;
@@ -1285,57 +1282,28 @@ namespace Nebula
                 phase=(phase+1)%3;
             }
 
-            int[] array;
+            var tasks = new Il2CppSystem.Collections.Generic.List<byte>();
 
-            array = Helpers.GetRandomArray(Map.MapData.MapDatabase[PlayerControl.GameOptions.MapId].CommonTaskIdList.Count);
-            for(int i = 0; i < commonTasks; i++)
-            {
-                if (i < array.Length)
-                {
-                    tasks.Add(new GameData.TaskInfo(Map.MapData.MapDatabase[PlayerControl.GameOptions.MapId].CommonTaskIdList[array[i]], (uint)(tasks.Count)));
-                }
-                else
-                {
-                    tasks.Add(new GameData.TaskInfo(Map.MapData.GetRandomCommonTaskId(PlayerControl.GameOptions.MapId), (uint)(tasks.Count)));
-                }
-            }
+            for (int i = 0; i < commonTasks; i++)
+                tasks.Add((byte)ShipStatus.Instance.CommonTasks.FirstOrDefault((t) => t.TaskType == PlayerControl.LocalPlayer.myTasks[i].TaskType).Index);
 
-            array = Helpers.GetRandomArray(Map.MapData.MapDatabase[PlayerControl.GameOptions.MapId].LongTaskIdList.Count);
-            for (int i = 0; i < longTasks; i++)
-            {
-                if (i < array.Length)
-                {
-                    tasks.Add(new GameData.TaskInfo(Map.MapData.MapDatabase[PlayerControl.GameOptions.MapId].LongTaskIdList[array[i]], (uint)(tasks.Count + 1)));
-                }
-                else
-                {
-                    tasks.Add(new GameData.TaskInfo(Map.MapData.GetRandomLongTaskId(PlayerControl.GameOptions.MapId), (uint)(tasks.Count + 1)));
-                }
-            }
+            int num=0;
+            var usedTypes = new Il2CppSystem.Collections.Generic.HashSet<TaskTypes>();
+            Il2CppSystem.Collections.Generic.List<NormalPlayerTask> unused;
+            
+            unused = new Il2CppSystem.Collections.Generic.List<NormalPlayerTask>();
+            foreach (var t in ShipStatus.Instance.LongTasks)
+                unused.Add(t);
+            Extensions.Shuffle<NormalPlayerTask>(unused.Cast<Il2CppSystem.Collections.Generic.IList<NormalPlayerTask>>(), 0);
+            ShipStatus.Instance.AddTasksFromList(ref num, longTasks, tasks, usedTypes, unused);
 
-            array = Helpers.GetRandomArray(Map.MapData.MapDatabase[PlayerControl.GameOptions.MapId].ShortTaskIdList.Count);
-            for (int i = 0; i < shortTasks; i++)
-            {
-                if (i < array.Length)
-                {
-                    tasks.Add(new GameData.TaskInfo(Map.MapData.MapDatabase[PlayerControl.GameOptions.MapId].ShortTaskIdList[array[i]], (uint)(tasks.Count + 1)));
-                }
-                else
-                {
-                    tasks.Add(new GameData.TaskInfo(Map.MapData.GetRandomShortTaskId(PlayerControl.GameOptions.MapId), (uint)(tasks.Count + 1)));
-                }
-            }
+            unused = new Il2CppSystem.Collections.Generic.List<NormalPlayerTask>();
+            foreach (var t in ShipStatus.Instance.NormalTasks)
+                unused.Add(t);
+            Extensions.Shuffle<NormalPlayerTask>(unused.Cast<Il2CppSystem.Collections.Generic.IList<NormalPlayerTask>>(), 0);
+            ShipStatus.Instance.AddTasksFromList(ref num, shortTasks, tasks, usedTypes, unused);
 
-            PlayerControl.LocalPlayer.clearAllTasks();
-            if (PlayerControl.GameOptions.MapId == 4)
-            {
-                Patches.CloseSpawnGUIPatch.Actions.Add(() => { PlayerControl.LocalPlayer.SetTasks(tasks); });
-            }
-            else
-            {
-                PlayerControl.LocalPlayer.SetTasks(tasks);
-            }
-            PlayerControl.LocalPlayer.Data.Tasks = tasks;
+            GameData.Instance.SetTasks(PlayerControl.LocalPlayer.PlayerId, tasks.ToArray().ToArray());
         }
 
         public static void RefreshTasks(byte playerId, int newTasks, int addQuota, float longTaskChance)
@@ -1347,26 +1315,35 @@ namespace Nebula
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.RefreshTasks(playerId, newTasks, addQuota);
 
-            var tasks = new Il2CppSystem.Collections.Generic.List<GameData.TaskInfo>();
-            GameData.TaskInfo taskInfo;
-
-            while (tasks.Count < newTasks)
+            int shortTasks = 0, longTasks = 0;
+            int sum = 0;
+            for (int i = 0; i < newTasks; i++)
             {
-                byte task = 0;
                 if (NebulaPlugin.rnd.NextDouble() < longTaskChance)
-                {
-                    task = Map.MapData.GetRandomLongTaskId(PlayerControl.GameOptions.MapId);
-                }
+                    longTasks++;
                 else
-                {
-                    task = Map.MapData.GetRandomShortTaskId(PlayerControl.GameOptions.MapId);
-                }
-                tasks.Add(new GameData.TaskInfo(task, (uint)tasks.Count+1));                
+                    shortTasks++;
             }
 
-            PlayerControl.LocalPlayer.clearAllTasks();
-            PlayerControl.LocalPlayer.SetTasks(tasks);
-            PlayerControl.LocalPlayer.Data.Tasks = tasks;
+            var tasks = new Il2CppSystem.Collections.Generic.List<byte>();
+
+            int num = 0;
+            var usedTypes = new Il2CppSystem.Collections.Generic.HashSet<TaskTypes>();
+            Il2CppSystem.Collections.Generic.List<NormalPlayerTask> unused;
+
+            unused = new Il2CppSystem.Collections.Generic.List<NormalPlayerTask>();
+            foreach (var t in ShipStatus.Instance.LongTasks)
+                unused.Add(t);
+            Extensions.Shuffle<NormalPlayerTask>(unused.Cast<Il2CppSystem.Collections.Generic.IList<NormalPlayerTask>>(), 0);
+            ShipStatus.Instance.AddTasksFromList(ref num, longTasks, tasks, usedTypes, unused);
+
+            unused = new Il2CppSystem.Collections.Generic.List<NormalPlayerTask>();
+            foreach (var t in ShipStatus.Instance.NormalTasks)
+                unused.Add(t);
+            Extensions.Shuffle<NormalPlayerTask>(unused.Cast<Il2CppSystem.Collections.Generic.IList<NormalPlayerTask>>(), 0);
+            ShipStatus.Instance.AddTasksFromList(ref num, shortTasks, tasks, usedTypes, unused);
+
+            GameData.Instance.SetTasks(PlayerControl.LocalPlayer.PlayerId, tasks.ToArray().ToArray());
         }
 
         public static void CompleteTask(byte playerId)

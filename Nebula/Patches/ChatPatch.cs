@@ -16,14 +16,20 @@ namespace Nebula.Patches
         {
             public static void Postfix(ChatBubble __instance, [HarmonyArgument(0)] string playerName)
             {
-                //チャット欄でImpostor陣営から見たSpyがばれないように
-                PlayerControl sourcePlayer = PlayerControl.AllPlayerControls.ToArray().ToList().FirstOrDefault(x => x.Data.PlayerName.Equals(playerName));
-                if (PlayerControl.LocalPlayer.Data.Role.IsImpostor)
+                try
                 {
-                    if (sourcePlayer.GetModData().role.DeceiveImpostorInNameDisplay)
+                    //チャット欄でImpostor陣営から見たSpyがばれないように
+                    PlayerControl sourcePlayer = PlayerControl.AllPlayerControls.ToArray().ToList().FirstOrDefault(x => x.Data.PlayerName.Equals(playerName));
+                    if (PlayerControl.LocalPlayer.Data.Role.IsImpostor)
                     {
-                        __instance.NameText.color = Palette.ImpostorRed;
+                        if (sourcePlayer.GetModData().role.DeceiveImpostorInNameDisplay)
+                        {
+                            __instance.NameText.color = Palette.ImpostorRed;
+                        }
                     }
+                }
+                catch(Exception e)
+                {
                 }
             }
         }
