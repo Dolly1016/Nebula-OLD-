@@ -70,8 +70,8 @@ namespace Nebula.Module
     public class CustomVImage : CustomVariable
     {
         public static implicit operator bool(CustomVImage image) { return image.Address != null; }
-        public string Hash { get; set; }
-        public string Address { get; set; }
+        public string? Hash { get; set; }
+        public string? Address { get; set; }
         public Sprite Image { get; set; }
 
         private string SanitizeResourcePath(string res)
@@ -94,6 +94,7 @@ namespace Nebula.Module
 
         public override void LoadImage(string parent, bool fromDisk = false)
         {
+            if (Address == null) return;
             Texture2D texture = fromDisk ? Helpers.loadTextureFromDisk(Path.GetDirectoryName(Application.dataPath) + "/" + parent + "/" + Address) : Helpers.loadTextureFromResources(parent + "." + Address);
             if (texture == null)
                 return;
@@ -282,27 +283,21 @@ namespace Nebula.Module
 
         private static HatData CreateHatBehaviour(CustomHat ch, bool fromDisk = false, bool testOnly = false)
         {
-            if (hatShader == null && DestroyableSingleton<HatManager>.InstanceExists)
-            {
-                foreach (HatData h in DestroyableSingleton<HatManager>.Instance.allHats)
-                {
-                    if (h.hatViewData.viewData.AltShader != null)
-                    {
-                        hatShader = h.hatViewData.viewData.AltShader;
-                        break;
-                    }
-                }
-            }
+            if (hatShader == null)
+                hatShader = DestroyableSingleton<HatManager>.Instance.PlayerMaterial;
 
             foreach(var content in ch.Contents())
             {
                 content.LoadImage("MoreCosmic/hats", fromDisk);
             }
 
-            HatData hat = new HatData();
+            HatData hat = ScriptableObject.CreateInstance<HatData>();
+            hat.hatViewData.viewData= ScriptableObject.CreateInstance<HatViewData>();
             HatViewData viewData = hat.hatViewData.viewData;
 
             viewData.MainImage = ch.I_Main.Image;
+            if (ch.I_Flip)
+                viewData.LeftMainImage = ch.I_Flip.Image;
             if (ch.I_Back)
             {
                 viewData.BackImage = ch.I_Back.Image;
@@ -310,7 +305,10 @@ namespace Nebula.Module
             }
             if (ch.I_Climb)
                 viewData.ClimbImage = ch.I_Climb.Image;
+            if (ch.I_BackFlip)
+                viewData.LeftBackImage = ch.I_BackFlip.Image;
             hat.StoreName = ch.Name.Value + "\nby " + ch.Author.Value;
+            hat.name = hat.StoreName;
             //hat.Order = 99;
             hat.ProductId = "hat_" + ch.Name.Value.Replace(' ', '_');
             hat.InFront = !ch.Behind.Value;
@@ -343,8 +341,8 @@ namespace Nebula.Module
                 content.LoadImage("MoreCosmic/namePlates", fromDisk);
             }
 
-            NamePlateData np = new NamePlateData();
-            np.viewData.viewData = new NamePlateViewData();
+            NamePlateData np = ScriptableObject.CreateInstance<NamePlateData>();
+            np.viewData.viewData = ScriptableObject.CreateInstance<NamePlateViewData>();
             np.viewData.viewData.Image = ch.I_Plate.Image;
             np.name = ch.Name.Value + "\nby " + ch.Author.Value;
             //np.Order = 99;
@@ -452,7 +450,7 @@ namespace Nebula.Module
                         hp.FrontLayer.sprite = hp.Hat.hatViewData.viewData.MainImage;
                     }
                 }
-                if (extend.I_BackFlip != null)
+                if (extend.I_BackFlip)
                 {
                     if (__instance.rend.flipX)
                     {
@@ -832,7 +830,6 @@ namespace Nebula.Module
                 List<CustomVariable> markedfordownload = new List<CustomVariable>();
                 string filePath = Path.GetDirectoryName(Application.dataPath) + @"\MoreCosmic\"+ category+@"\";
                 MD5 md5 = MD5.Create();
-
 
                 for (JToken current = jobj.First; current != null; current = current.Next)
                 {

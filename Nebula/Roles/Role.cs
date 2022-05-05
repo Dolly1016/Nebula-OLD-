@@ -331,6 +331,11 @@ namespace Nebula.Roles
             }
         }
 
+        public void ReflectRoleEyesight(RoleBehaviour role)
+        {
+            role.AffectedByLightAffectors = !UseImpostorLightRadius;
+        }
+
         static public void LoadAllOptionData()
         {
             foreach (Role role in Roles.AllRoles)

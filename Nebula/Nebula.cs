@@ -50,10 +50,10 @@ namespace Nebula
     {
         public static Module.Random rnd = new Module.Random();
 
-        public const string AmongUsVersion = "2022.3.29";
+        public const string AmongUsVersion = "2022.3.29.1";
         public const string PluginGuid = "jp.dreamingpig.amongus.nebula";
         public const string PluginName = "TheNebula";
-        public const string PluginVersion = "1.8.3";
+        public const string PluginVersion = "1.8.4";
         /*
         public const string PluginVisualVersion = "22.02.14a";
         public const string PluginStage = "Snapshot";
@@ -62,8 +62,8 @@ namespace Nebula
         public const string PluginVisualVersion = PluginVersion;
         public const string PluginStage = "";
         // */
-        public const string PluginVersionForFetch = "1.8.3";
-        public byte[] PluginVersionData = new byte[] { 1, 8, 3, 0 };
+        public const string PluginVersionForFetch = "1.8.4";
+        public byte[] PluginVersionData = new byte[] { 1, 8, 4, 0 };
 
         public static NebulaPlugin Instance;
 
@@ -83,57 +83,34 @@ namespace Nebula
 
             Instance = this;
 
-            //NebulaPlugin.Instance.Logger.Print("Reach:01");
-
             //サーバー情報を読み込む
             Patches.RegionMenuOpenPatch.Initialize();
-
-            //NebulaPlugin.Instance.Logger.Print("Reach:02");
 
             //色データを読み込む
             Module.DynamicColors.Load();
 
-            //NebulaPlugin.Instance.Logger.Print("Reach:03");
-
             //言語データを読み込む
             Language.Language.Load();
-
-            //NebulaPlugin.Instance.Logger.Print("Reach:04");
 
             //ゲームモードデータを読み込む
             Game.GameModeProperty.Load();
 
-            //NebulaPlugin.Instance.Logger.Print("Reach:05");
-
             //オプションを読み込む
             CustomOptionHolder.Load();
 
-            //NebulaPlugin.Instance.Logger.Print("Reach:06");
-
             //GlobalEventデータを読み込む
             Events.Events.Load();
-
-            //NebulaPlugin.Instance.Logger.Print("Reach:07");
 
             //マップ関連のデータを読み込む
             Map.MapEditor.Load();
             Map.MapData.Load();
 
-            //NebulaPlugin.Instance.Logger.Print("Reach:08");
-
             //ゴースト情報を読み込む
             Ghost.GhostInfo.Load();
             Ghost.Ghost.Load();
 
-            //NebulaPlugin.Instance.Logger.Print("Reach:09");
-
             // Harmonyパッチ全てを適用する
             Harmony.PatchAll();
-
-            //NebulaPlugin.Instance.Logger.Print("Reach:10");
-
-
-            //NebulaPlugin.Instance.Logger.Print("Reach:11");
         }
 
         public static Sprite GetModStamp()

@@ -703,6 +703,7 @@ namespace Nebula.Module
         }
     }
 
+    /*
     [HarmonyPatch(typeof(KeyValueOption), nameof(KeyValueOption.OnEnable))]
     public class KeyValueOptionEnablePatch
     {
@@ -720,6 +721,7 @@ namespace Nebula.Module
             catch { }
         }
     }
+    */
 
     [HarmonyPatch(typeof(StringOption), nameof(StringOption.OnEnable))]
     public class StringOptionEnablePatch
@@ -891,7 +893,7 @@ namespace Nebula.Module
     }
     */
    
-
+    
     public static class GameOptionStringGenerator
     {
         public static string tl(string key)

@@ -313,6 +313,7 @@ namespace Nebula
             {
                 DestroyableSingleton<RoleManager>.Instance.SetRole(Helpers.playerById(playerId), RoleTypes.Crewmate);
             }
+            role.ReflectRoleEyesight(Helpers.playerById(playerId).Data.Role);
             Game.GameData.data.RegisterPlayer(playerId, role);
         }
 
@@ -549,6 +550,7 @@ namespace Nebula
             {
                 DestroyableSingleton<RoleManager>.Instance.SetRole(player, RoleTypes.Crewmate);
             }
+            role.ReflectRoleEyesight(player.Data.Role);
 
             if (roleData == null)
             {

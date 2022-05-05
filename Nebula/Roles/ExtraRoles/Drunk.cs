@@ -86,7 +86,7 @@ namespace Nebula.Roles.ExtraRoles
 
         public override void GlobalInitialize(PlayerControl __instance)
         {
-            base.Initialize(__instance);
+            base.GlobalInitialize(__instance);
             RPCEvents.EmitSpeedFactor(__instance.PlayerId, new Game.SpeedFactor(0, 99999f, -1f, true));
         }
 

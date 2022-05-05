@@ -294,7 +294,7 @@ namespace Nebula
             target.SetOutfit(target.GetModData().name, target.GetModData().Outfit);
         }
 
-        public static Game.PlayerData GetModData(byte player)
+        public static Game.PlayerData? GetModData(byte player)
         {
             if (Game.GameData.data.players.ContainsKey(player))
             {
@@ -309,17 +309,17 @@ namespace Nebula
             return Game.GameData.data.players.ContainsKey(player);
         }
 
-        public static Game.PlayerData GetModData(this PlayerControl player)
+        public static Game.PlayerData? GetModData(this PlayerControl player)
         {
             return GetModData(player.PlayerId);
         }
 
-        public static Game.PlayerData GetModData(this GameData.PlayerInfo player)
+        public static Game.PlayerData? GetModData(this GameData.PlayerInfo player)
         {
             return GetModData(player.PlayerId);
         }
 
-        public static Game.PlayerData GetModData(this DeadBody player)
+        public static Game.PlayerData? GetModData(this DeadBody player)
         {
             return GetModData(player.ParentId);
         }

@@ -182,6 +182,7 @@ namespace Nebula.Patches
                     {
                         DestroyableSingleton<RoleManager>.Instance.SetRole(player, RoleTypes.Crewmate);
                     }
+                    Game.GameData.data.players[player.PlayerId].role.ReflectRoleEyesight(player.Data.Role);
                 }
 
                 //isImpostor = (Game.GameData.data.myData.getGlobalData().role.category == Roles.RoleCategory.Impostor);

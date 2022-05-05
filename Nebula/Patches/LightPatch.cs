@@ -12,16 +12,21 @@ namespace Nebula.Patches
     [HarmonyPatch]
     class LightPatch
     {
-        [HarmonyPatch(typeof(LightSource), nameof(LightSource.Update))]
-        public static class DebugLightPatch
+        [HarmonyPatch(typeof(OneWayShadows), nameof(OneWayShadows.IsIgnored))]
+        public static class OneWayShadowsPatch
         {
-            public static bool Prefix(LightSource __instance)
+            public static void Postfix(OneWayShadows __instance, ref bool __result)
             {
-                __instance.transform.localPosition = new Vector3(0f, -0.2f);
+                if (Game.GameData.data == null) return;
+                if (!PlayerControl.LocalPlayer) return;
 
-                return true;
+                var data = PlayerControl.LocalPlayer.GetModData();
+                if (data == null) return;
+
+                __result |= data.role.UseImpostorLightRadius;
             }
         }
+
     }
     
 }

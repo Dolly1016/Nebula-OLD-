@@ -244,13 +244,18 @@ namespace Nebula.Roles.ExtraRoles
             bool winFlag = false;
             ActionForLover(player, (partner) =>
             {
+                if (player == partner) return;
                 if (partner.Data.IsDead) return;
-                if(partner.GetModData().role.CheckWin(partner, condition))
+                if (partner.GetModData().role.CheckWin(partner, condition))
                 {
                     winFlag = true;
                     return;
                 }
-                Helpers.RoleAction(partner, (role) => winFlag |= role.CheckAdditionalWin(partner, condition));
+                Helpers.RoleAction(partner, (role) =>
+                {
+                    if (role == this) return;
+                    winFlag |= role.CheckAdditionalWin(partner, condition);
+                });
             });
             if (winFlag)
             {

@@ -255,7 +255,7 @@ namespace Nebula.Patches
                 poolablePlayer.UpdateFromPlayerOutfit(winningPlayerData2, winningPlayerData2.IsDead);
                 if (winningPlayerData2.IsDead)
                 {
-                    poolablePlayer.Skin.layer.sprite = __instance.GhostSprite;
+                    poolablePlayer.CurrentBodySprite.BodySprite.sprite = __instance.GhostSprite;
                     poolablePlayer.SetDeadFlipX(i % 2 == 0);
                 }
                 else
@@ -334,8 +334,7 @@ namespace Nebula.Patches
             }
 
             if (!GameData.Instance) return false;
-            if (DestroyableSingleton<TutorialManager>.InstanceExists) // InstanceExists | Don't check Custom Criteria when in Tutorial
-                return true;
+
             var statistics = new PlayerStatistics(__instance);
 
             Patches.EndCondition endCondition = null, temp;
