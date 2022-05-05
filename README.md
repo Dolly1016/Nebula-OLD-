@@ -33,6 +33,8 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.8.4 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.4.0,2022.3.29.1/Nebula_v1.8.4.zip)|
+| 1.8.3 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.3.0,2022.3.29/Nebula_v1.8.3.zip)|
 | 1.8.2 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.2.0,2022.3.29/Nebula_v1.8.2.zip)|
 | 1.8.1.5 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.1.5,2022.3.29/Nebula_v1.8.1.5.zip)|
 | 1.8.1.4 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.1.4,2022.3.29/Nebula_v1.8.1.4.zip)|
@@ -169,16 +171,25 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 <details>
   <summary>クリックで展開</summary>
   
+ **Version 1.8.4**
+ - BepInExのバージョンを更新(v1.8.3以前からのアップデートは不可能です。)
+ - Jackalなど、インポスターと同様の視界を持つプレイヤーが、インポスター同様一部の影や暗室の効果を無視するように
+ - Loversがいるゲームがなんらかの要因で終了するとき、クラッシュしてしまう問題を修正
+ - カスタムハットに関する問題を修正
+  
+ **Version 1.8.3**
+ - Airshipにて、GapRoomのダウンロードタスクの位置を調整できるオプションを追加
+  
  **Version 1.8.2**
- - Agent, Opportunistのコモンタスクが他プレイヤ―と共通していなかった問題を修正しました。
- - Agent, Opportunistのタスクに同一種類のものが含まれることがある問題を修正しました。
- - ボタンのクールダウンがスポーン位置選択画面中にも進行してしまう問題を修正しました。
+ - Agent, Opportunistのコモンタスクが他プレイヤ―と共通していなかった問題を修正
+ - Agent, Opportunistのタスクに同一種類のものが含まれることがある問題を修正
+ - ボタンのクールダウンがスポーン位置選択画面中にも進行してしまう問題を修正
   
  **Version 1.8.1.5**
  - ゲーム終了時の役職開示画面で、追加役職が確認できなくなっていた問題を修正
   
  **Version 1.8.1.4**
- - PolusのLaboratoryにあるベントに関する挙動の問題を修正しました。
+ - PolusのLaboratoryにあるベントに関する挙動の問題を修正
   
  **Version 1.8.1.3**
  - 排他的役職設定、および各役職の「Can Be  ...」系オプションがプリセットで使用できなかった問題を修正
@@ -186,21 +197,21 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
  - 「Advanced Role Options」を無効にした場合、OracleがGuesserにならないように
   
  **Version 1.8.1.2**
- - オプションの設定値に数式が使えるようになりました。
- - ユーザー定義の変数が使用できるようになりました。
- - プリセットに、#SUBSTITUTE コマンドを追加しました。
-  
+ - オプションの設定値に数式が使えるように
+ - ユーザー定義の変数が使用できるように
+ - プリセットに、#SUBSTITUTE コマンドを追加
+ 
  **Version 1.8.1.1**
- - プリセットに、#IF ,#ELSEIF ,#ELSE ,#ENDIF コマンドを追加しました。
+ - プリセットに、#IF ,#ELSEIF ,#ELSE ,#ENDIF コマンドを追加
    #JUMPおよび#TOコマンドよりこちらを推奨します。
   
  **Version 1.8.1**
  - プリセットに、#JUMP ,#TO , #NOT INITIALIZE コマンドを追加しました。
   
  **Version 1.8.0**
- - 現在の設定を出力および読み込みできるようになりました。
- - Mayorを固定票にした際に正常に作動しないことがある問題を修正しました。
- - Morphingがプレイヤーの色に依存したスキンを着用したプレイヤーに変化した際の不具合を修正しました。
+ - 現在の設定を出力および読み込みできるように
+ - Mayorを固定票にした際に正常に作動しないことがある問題を修正
+ - Morphingがプレイヤーの色に依存したスキンを着用したプレイヤーに変化した際の不具合を修正
   
  **Version 1.7.3**
  - Necromancerに新オプション「Max Notification Distance」を追加
