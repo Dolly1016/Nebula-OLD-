@@ -33,6 +33,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.9.0 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.0,2022.3.29.1/Nebula_v1.9.0.zip)|
 | 1.8.4.2 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.4.2,2022.3.29.1/Nebula_v1.8.4.2.zip)|
 | 1.8.4.1 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.4.1,2022.3.29.1/Nebula_v1.8.4.1.zip)|
 | 1.8.4 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.4,2022.3.29.1/Nebula_v1.8.4.zip)|
@@ -172,6 +173,15 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+  
+ **Version 1.9.0**
+ - Bounty Hunterを追加
+ - Madmateに狂信者設定(タスクをこなすとインポスターが分かるようになる)を追加
+ - AvengerおよびAvengerの標的の互いを示す矢印が、会議終了時に一度消えるように
+ - Guesserの役職選択画面でCrewmateが2つ出現している問題を修正
+ - ゲーム起動後、2回以上Avengerの標的になるとAvengerへの矢印が表示されなくなる問題を修正
+ - 追加役職としてのSidekickがJackal陣営として他陣営の勝利を妨げない問題を修正
+ - テスト、或いはお遊び用に指定のプレイヤーに特定の役職を割り当てられるように
   
  **Version 1.8.4.2**
  - 特定の条件下で、Avengerが正常に勝利できない問題を修正
