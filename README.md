@@ -33,6 +33,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.9.1 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.1,2022.3.29.1/Nebula_v1.9.1.zip)|
 | 1.9.0 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.0,2022.3.29.1/Nebula_v1.9.0.zip)|
 | 1.8.4.2 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.4.2,2022.3.29.1/Nebula_v1.8.4.2.zip)|
 | 1.8.4.1 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.4.1,2022.3.29.1/Nebula_v1.8.4.1.zip)|
@@ -173,6 +174,11 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+  
+ **Version 1.9.1**
+ - Evil Aceに、赤文字除く死体の役職が見えるオプション「Can Know Dead Non-Impostors Roles」を追加
+ - DoctorとMadmateについて、他人がタスクをこなした際にも自身がタスクをこなした際に行う処理を実行してしまっていた問題を修正
+ - Madmateの、狂信者設定で一部組み合わせの際に正常な挙動をしなくなる問題を修正
   
  **Version 1.9.0**
  - Bounty Hunterを追加
