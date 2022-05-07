@@ -719,18 +719,18 @@ Sniperの弾の当たり判定やEmpiric,Alienなどの効果範囲を調べる�
 ## Standard
 | Impostors | Crewmates | Neutral | Secondary |
 | ---------- | ---------- | ---------- | ---------- |
-| [Camouflager](#camouflager) | [Agent](#agent) | [Arsonist](#arsonist) | [Drunk](#drunk) |
-| [Cleaner](#cleaner) | [Alien](#alien) | [Avenger](#avenger) | [Guesser](#guesser) |
-| [Damned](#damned) | [Bait](#bait) | [Empiric](#empiric) | [Lover](#lover) |
-| [Disturber](#disturber) | [Comet](#comet) | [Jackal](#jackal) | [Trilemma](#trilemma) |
-| [Eraser](#eraser) | [Doctor](#doctor) | [Jester](#jester) ||
-| [Evil Ace](#evil-ace) | [Mayor](#mayor) | [Opportunist](#opportunist) ||
-| [Evil Guesser](#guesser) | [Navvy](#navvy) | [Sidekick](#sidekick) ||
-| [Evil Trapper](#trapper) | [Necromancer](#necromancer) | [Vulture](#vulture) ||
-| [Morphing](#morphing) | [Nice Guesser](#guesser) |||
-| [Reaper](#reaper) | [Nice Trapper](#trapper) |||
-| [Sniper](#sniper) | [Oracle](#oracle) |||
-|| [Provocateur](#provocateur) |||
+| [BountyHuunter](#bountyHunter) | [Agent](#agent) | [Arsonist](#arsonist) | [Drunk](#drunk) |
+| [Camouflager](#camouflager) | [Alien](#alien) | [Avenger](#avenger) | [Guesser](#guesser) |
+| [Cleaner](#cleaner) | [Bait](#bait) | [Empiric](#empiric) | [Lover](#lover) |
+| [Damned](#damned) | [Comet](#comet) | [Jackal](#jackal) | [Trilemma](#trilemma) |
+| [Disturber](#disturber) | [Doctor](#doctor) | [Jester](#jester) ||
+| [Eraser](#eraser) | [Mayor](#mayor) | [Opportunist](#opportunist) ||
+| [Evil Ace](#evil-ace) | [Navvy](#navvy) | [Sidekick](#sidekick) ||
+| [Evil Guesser](#guesser) | [Necromancer](#necromancer) | [Vulture](#vulture) ||
+| [Evil Trapper](#trapper) | [Nice Guesser](#guesser) |||
+| [Morphing](#morphing) | [Nice Trapper](#trapper) |||
+| [Reaper](#reaper) | [Oracle](#oracle) |||
+| [Sniper](#sniper) | [Provocateur](#provocateur) |||
 || [Psychic](#psychic) |||
 || [Seer](#seer) |||
 || [Sheriff](#sheriff) |||
@@ -817,6 +817,25 @@ p5p5next : Damned
 | Log Trap Cost | ログトラップの設置コスト
 | Kill Trap Cost | キルトラップの設置コスト
 | Trapper Root Time | トラップ設置時の硬直時間
+
+-----------------------
+
+## Bounty Hunter
+ Bounty Hunterは、指定されたプレイヤーを殺すとより短いキルクールで次のキルを重ねられます。\
+ 一方、指定外のプレイヤーを殺すとキルクールは延びてしまいます。
+  
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+| Changing Bounty Interval | 標的が変化するまでの時間
+| Kill Cool Down Multiplier After Killing Bounty | 標的をキルした際のキルクール倍率
+| Kill Cool Down Multiplier After Killing Others | 標的以外をキルした際のキルクール倍率
+| Show Arrow Pointing Towards The Bounty | 標的をさす矢印を表示するかどうか
+| Bounty Arrow Update Interval | 標的をさす矢印の更新間隔
 
 -----------------------
 
@@ -970,13 +989,17 @@ p5p5next : Damned
 
 ## Madmate
  Madmateはインポスターの肩を持つ狂人です。\
- 人数上ではクルーメイトとして数えられますが、勝利条件はインポスターと同様です。
+ 人数上ではクルーメイトとして数えられますが、勝利条件はインポスターと同様です。\
+ また、設定によってはインポスターが誰かを知ることができ、狂信者としても活躍できます。
  
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
 | Has Impostor Vision | インポスターと同じ視界を持つかどうか
 | Can Invoke Sabotage | サボタージュを起こせるかどうか
+| Can Know Impostors By Tasks | タスクによってインポスターが誰か知れるか
+| Num Of Max Impostors Can Know | 特定できるインポスターの最大人数
+| Num Of Tasks Required To Know Impostors 1 ~ 5 | インポスターの特定までに必要なタスク数(累計)
 
 -----------------------
 
