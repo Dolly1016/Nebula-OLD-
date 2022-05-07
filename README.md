@@ -33,6 +33,12 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.9.1 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.1,2022.3.29.1/Nebula_v1.9.1.zip)|
+| 1.9.0 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.0,2022.3.29.1/Nebula_v1.9.0.zip)|
+| 1.8.4.2 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.4.2,2022.3.29.1/Nebula_v1.8.4.2.zip)|
+| 1.8.4.1 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.4.1,2022.3.29.1/Nebula_v1.8.4.1.zip)|
+| 1.8.4 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.4,2022.3.29.1/Nebula_v1.8.4.zip)|
+| 1.8.3 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.3,2022.3.29/Nebula_v1.8.3.zip)|
 | 1.8.2 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.2.0,2022.3.29/Nebula_v1.8.2.zip)|
 | 1.8.1.5 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.1.5,2022.3.29/Nebula_v1.8.1.5.zip)|
 | 1.8.1.4 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.1.4,2022.3.29/Nebula_v1.8.1.4.zip)|
@@ -163,22 +169,51 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 | 日本語 | Rey | 1.8.1.4 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.8.1.4%2CRey/Japanese.dat)|
 | 日本語 | Tanakanira | 1.6.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.6.0%2CTanakanira/Japanese.dat)|
 | 簡体中文 | 四个憨批汉化组 | 1.8.1.4 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CSC%2C1.8.1.4%2C四个憨批汉化组/SChinese.dat)|
-| English | - | 1.8.1.4 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.1.3,2022.3.29/English.dat)|
+| English | - | 1.9.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.1,2022.3.29.1/English.dat)|
 
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
   
+ **Version 1.9.1**
+ - Evil Aceに、赤文字除く死体の役職が見えるオプション「Can Know Dead Non-Impostors Roles」を追加
+ - DoctorとMadmateについて、他人がタスクをこなした際にも自身がタスクをこなした際に行う処理を実行してしまっていた問題を修正
+ - Madmateについて、狂信者設定で一部組み合わせの際に正常な挙動をしなくなる問題を修正
+  
+ **Version 1.9.0**
+ - Bounty Hunterを追加
+ - Madmateに狂信者設定(タスクをこなすとインポスターが分かるようになる)を追加
+ - AvengerおよびAvengerの標的の互いを示す矢印が、会議終了時に一度消えるように
+ - Guesserの役職選択画面でCrewmateが2つ出現している問題を修正
+ - ゲーム起動後、2回以上Avengerの標的になるとAvengerへの矢印が表示されなくなる問題を修正
+ - 追加役職としてのSidekickがJackal陣営として他陣営の勝利を妨げない問題を修正
+ - テスト、或いはお遊び用に指定のプレイヤーに特定の役職を割り当てられるように
+  
+ **Version 1.8.4.2**
+ - 特定の条件下で、Avengerが正常に勝利できない問題を修正
+  
+ **Version 1.8.4.1**
+ - 手違いで正常に動作しない版を公開してしまっていたため修正
+  
+ **Version 1.8.4**
+ - BepInExのバージョンを更新(v1.8.3以前からのアップデートは不可能です。)
+ - Jackalなど、インポスターと同様の視界を持つプレイヤーが、インポスター同様一部の影や暗室の効果を無視するように
+ - Loversがいるゲームがなんらかの要因で終了するとき、クラッシュしてしまう問題を修正
+ - カスタムハットに関する問題を修正
+  
+ **Version 1.8.3**
+ - Airshipにて、GapRoomのダウンロードタスクの位置を調整できるオプションを追加
+  
  **Version 1.8.2**
- - Agent, Opportunistのコモンタスクが他プレイヤ―と共通していなかった問題を修正しました。
- - Agent, Opportunistのタスクに同一種類のものが含まれることがある問題を修正しました。
- - ボタンのクールダウンがスポーン位置選択画面中にも進行してしまう問題を修正しました。
+ - Agent, Opportunistのコモンタスクが他プレイヤ―と共通していなかった問題を修正
+ - Agent, Opportunistのタスクに同一種類のものが含まれることがある問題を修正
+ - ボタンのクールダウンがスポーン位置選択画面中にも進行してしまう問題を修正
   
  **Version 1.8.1.5**
  - ゲーム終了時の役職開示画面で、追加役職が確認できなくなっていた問題を修正
   
  **Version 1.8.1.4**
- - PolusのLaboratoryにあるベントに関する挙動の問題を修正しました。
+ - PolusのLaboratoryにあるベントに関する挙動の問題を修正
   
  **Version 1.8.1.3**
  - 排他的役職設定、および各役職の「Can Be  ...」系オプションがプリセットで使用できなかった問題を修正
@@ -186,21 +221,21 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
  - 「Advanced Role Options」を無効にした場合、OracleがGuesserにならないように
   
  **Version 1.8.1.2**
- - オプションの設定値に数式が使えるようになりました。
- - ユーザー定義の変数が使用できるようになりました。
- - プリセットに、#SUBSTITUTE コマンドを追加しました。
-  
+ - オプションの設定値に数式が使えるように
+ - ユーザー定義の変数が使用できるように
+ - プリセットに、#SUBSTITUTE コマンドを追加
+ 
  **Version 1.8.1.1**
- - プリセットに、#IF ,#ELSEIF ,#ELSE ,#ENDIF コマンドを追加しました。
+ - プリセットに、#IF ,#ELSEIF ,#ELSE ,#ENDIF コマンドを追加
    #JUMPおよび#TOコマンドよりこちらを推奨します。
   
  **Version 1.8.1**
  - プリセットに、#JUMP ,#TO , #NOT INITIALIZE コマンドを追加しました。
   
  **Version 1.8.0**
- - 現在の設定を出力および読み込みできるようになりました。
- - Mayorを固定票にした際に正常に作動しないことがある問題を修正しました。
- - Morphingがプレイヤーの色に依存したスキンを着用したプレイヤーに変化した際の不具合を修正しました。
+ - 現在の設定を出力および読み込みできるように
+ - Mayorを固定票にした際に正常に作動しないことがある問題を修正
+ - Morphingがプレイヤーの色に依存したスキンを着用したプレイヤーに変化した際の不具合を修正
   
  **Version 1.7.3**
  - Necromancerに新オプション「Max Notification Distance」を追加
@@ -676,11 +711,15 @@ VanillaのAmong Usと同じルールです。Modによる追加役職を使用�
 #### プレイ可能人数: 1 ~ 15人
 #### 推奨プレイ人数: 1 ~ 15人
 
-現状、1キーで原点を設定して、その点から現在位置までの距離を見ることができます。\
+さまざまな役職を試すことができます。\
+また、任意に設定した点から現在位置までの距離を見ることができます。\
 Sniperの弾の当たり判定やEmpiric,Alienなどの効果範囲を調べる際にお使いください。\
 一部、大きさが異なるものもありますので、当たり判定算出の式はDiscordでご確認ください。
 
-今後、様々な役職のテストプレイができるよう整備する予定です。
+1キー : 原点の設定(距離測定)\
+2キー : 役職変更(メニューを閉じるときはEsc)\
+3キー : 自殺\
+4キー : 復活
 
 
 -----------------------
@@ -690,18 +729,18 @@ Sniperの弾の当たり判定やEmpiric,Alienなどの効果範囲を調べる�
 ## Standard
 | Impostors | Crewmates | Neutral | Secondary |
 | ---------- | ---------- | ---------- | ---------- |
-| [Camouflager](#camouflager) | [Agent](#agent) | [Arsonist](#arsonist) | [Drunk](#drunk) |
-| [Cleaner](#cleaner) | [Alien](#alien) | [Avenger](#avenger) | [Guesser](#guesser) |
-| [Damned](#damned) | [Bait](#bait) | [Empiric](#empiric) | [Lover](#lover) |
-| [Disturber](#disturber) | [Comet](#comet) | [Jackal](#jackal) | [Trilemma](#trilemma) |
-| [Eraser](#eraser) | [Doctor](#doctor) | [Jester](#jester) ||
-| [Evil Ace](#evil-ace) | [Mayor](#mayor) | [Opportunist](#opportunist) ||
-| [Evil Guesser](#guesser) | [Navvy](#navvy) | [Sidekick](#sidekick) ||
-| [Evil Trapper](#trapper) | [Necromancer](#necromancer) | [Vulture](#vulture) ||
-| [Morphing](#morphing) | [Nice Guesser](#guesser) |||
-| [Reaper](#reaper) | [Nice Trapper](#trapper) |||
-| [Sniper](#sniper) | [Oracle](#oracle) |||
-|| [Provocateur](#provocateur) |||
+| [Bounty Hunter](#bountyHunter) | [Agent](#agent) | [Arsonist](#arsonist) | [Drunk](#drunk) |
+| [Camouflager](#camouflager) | [Alien](#alien) | [Avenger](#avenger) | [Guesser](#guesser) |
+| [Cleaner](#cleaner) | [Bait](#bait) | [Empiric](#empiric) | [Lover](#lover) |
+| [Damned](#damned) | [Comet](#comet) | [Jackal](#jackal) | [Trilemma](#trilemma) |
+| [Disturber](#disturber) | [Doctor](#doctor) | [Jester](#jester) ||
+| [Eraser](#eraser) | [Mayor](#mayor) | [Opportunist](#opportunist) ||
+| [Evil Ace](#evil-ace) | [Navvy](#navvy) | [Sidekick](#sidekick) ||
+| [Evil Guesser](#guesser) | [Necromancer](#necromancer) | [Vulture](#vulture) ||
+| [Evil Trapper](#trapper) | [Nice Guesser](#guesser) |||
+| [Morphing](#morphing) | [Nice Trapper](#trapper) |||
+| [Reaper](#reaper) | [Oracle](#oracle) |||
+| [Sniper](#sniper) | [Provocateur](#provocateur) |||
 || [Psychic](#psychic) |||
 || [Seer](#seer) |||
 || [Sheriff](#sheriff) |||
@@ -788,6 +827,25 @@ p5p5next : Damned
 | Log Trap Cost | ログトラップの設置コスト
 | Kill Trap Cost | キルトラップの設置コスト
 | Trapper Root Time | トラップ設置時の硬直時間
+
+-----------------------
+
+## Bounty Hunter
+ Bounty Hunterは、指定されたプレイヤーを殺すとより短いキルクールで次のキルを重ねられます。\
+ 一方、指定外のプレイヤーを殺すとキルクールは延びてしまいます。
+  
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+| Changing Bounty Interval | 標的が変化するまでの時間
+| Kill Cool Down Multiplier After Killing Bounty | 標的をキルした際のキルクール倍率
+| Kill Cool Down Multiplier After Killing Others | 標的以外をキルした際のキルクール倍率
+| Show Arrow Pointing Towards The Bounty | 標的をさす矢印を表示するかどうか
+| Bounty Arrow Update Interval | 標的をさす矢印の更新間隔
 
 -----------------------
 
@@ -941,13 +999,17 @@ p5p5next : Damned
 
 ## Madmate
  Madmateはインポスターの肩を持つ狂人です。\
- 人数上ではクルーメイトとして数えられますが、勝利条件はインポスターと同様です。
+ 人数上ではクルーメイトとして数えられますが、勝利条件はインポスターと同様です。\
+ また、設定によってはインポスターが誰かを知ることができ、狂信者としても活躍できます。
  
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
 | Has Impostor Vision | インポスターと同じ視界を持つかどうか
 | Can Invoke Sabotage | サボタージュを起こせるかどうか
+| Can Know Impostors By Tasks | タスクによってインポスターが誰か知れるか
+| Num Of Max Impostors Can Know | 特定できるインポスターの最大人数
+| Num Of Tasks Required To Know Impostors 1 ~ 5 | インポスターの特定までに必要なタスク数(累計)
 
 -----------------------
 
