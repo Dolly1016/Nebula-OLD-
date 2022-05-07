@@ -118,7 +118,8 @@ namespace Nebula.Patches
                 hideFlag = playerData.currentName.Length == 0;
 
                 Helpers.RoleAction(player, (role) => { role.EditDisplayName(player.PlayerId, ref name, hideFlag); });
-                
+                Helpers.RoleAction(PlayerControl.LocalPlayer, (role) => { role.EditOthersDisplayName(player.PlayerId, ref name, hideFlag); });
+
                 player.nameText.text = playerData.currentName+" " +name;
                 if (player == PlayerControl.LocalPlayer)
                 {
@@ -134,6 +135,7 @@ namespace Nebula.Patches
                 //ロールによる色の変更
                 Color color = player.nameText.color;
                 Helpers.RoleAction(player.PlayerId, (role) => { role.EditDisplayNameColor(player.PlayerId, ref color); });
+                Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId, (role) => { role.EditOthersDisplayNameColor(player.PlayerId, ref color); });
                 player.nameText.color = color;
 
                 player.nameText.enabled = !CannotSeeNameTag(player);
@@ -153,6 +155,7 @@ namespace Nebula.Patches
                     /* 名前を編集する */
                     name = "";
                     Helpers.RoleAction(player.TargetPlayerId, (role) => { role.EditDisplayName(player.TargetPlayerId, ref name, false); });
+                    Helpers.RoleAction(PlayerControl.LocalPlayer, (role) => { role.EditOthersDisplayName(player.TargetPlayerId, ref name, false); });
                     if (!name.Equals(""))
                         player.NameText.text = playerData.currentName + " " + name;
                     
@@ -171,6 +174,7 @@ namespace Nebula.Patches
                     //色の変更
                     Color color = player.NameText.color;
                     Helpers.RoleAction(player.TargetPlayerId, (role) => { role.EditDisplayNameColor(player.TargetPlayerId, ref color); });
+                    Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId, (role) => { role.EditOthersDisplayNameColor(player.TargetPlayerId, ref color); });
                     player.NameText.color = color;
 
                 }

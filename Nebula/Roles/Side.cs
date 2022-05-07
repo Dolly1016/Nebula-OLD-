@@ -20,7 +20,9 @@ namespace Nebula.Roles
 
         public static Side Crewmate = new Side("Crewmate", "crewmate", IntroDisplayOption.SHOW_ALL, Palette.CrewmateBlue, (PlayerStatistics statistics, ShipStatus status) =>
         {
-            if (statistics.GetAlivePlayers(Impostor) == 0 && statistics.GetAlivePlayers(Jackal) == 0)
+            if (statistics.GetAlivePlayers(Impostor) == 0 && 
+            statistics.GetAlivePlayers(Jackal) == 0 && 
+            !Game.GameData.data.players.Values.Any((p) => p.IsAlive && p.extraRole.Contains(Roles.SecondarySidekick)))
             {
                 return EndCondition.CrewmateWinByVote;
             }
@@ -63,7 +65,10 @@ namespace Nebula.Roles
                 }
             }
 
-            if (statistics.GetAlivePlayers(Impostor) > 0 && statistics.GetAlivePlayers(Jackal) == 0 && statistics.TotalAlive <= 2 * statistics.GetAlivePlayers(Impostor))
+            if (statistics.GetAlivePlayers(Impostor) > 0 && 
+            statistics.GetAlivePlayers(Jackal) == 0 &&
+            !Game.GameData.data.players.Values.Any((p) => p.IsAlive && p.extraRole.Contains(Roles.SecondarySidekick)) &&
+            statistics.TotalAlive <= 2 * statistics.GetAlivePlayers(Impostor))
             {
                 if (TempData.LastDeathReason == DeathReason.Kill)
                 {
@@ -80,7 +85,7 @@ namespace Nebula.Roles
 
         public static Side Jackal = new Side("Jackal", "jackal", IntroDisplayOption.SHOW_ONLY_ME, NeutralRoles.Jackal.RoleColor, (PlayerStatistics statistics, ShipStatus status) =>
         {
-            if (statistics.GetAlivePlayers(Jackal)*2 >= statistics.TotalAlive && statistics.GetAlivePlayers(Impostor)==0)
+            if (statistics.GetAlivePlayers(Jackal)*2 >= statistics.TotalAlive &&statistics.GetAlivePlayers(Impostor)==0)
             {
                 return EndCondition.JackalWin;
             }

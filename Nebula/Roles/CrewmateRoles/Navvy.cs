@@ -237,6 +237,7 @@ namespace Nebula.Roles.CrewmateRoles
         {
             maxScrewsOption = CreateOption(Color.white, "maxScrews", 5f, 0f, 7f, 1f);
             sealCoolDownOption = CreateOption(Color.white, "sealCoolDown", 5f, 0f, 40f, 2.5f);
+            sealCoolDownOption.suffix = "second";
             ventCoolDownOption = CreateOption(Color.white, "ventCoolDown", 20f, 5f, 60f, 2.5f);
             ventCoolDownOption.suffix = "second";
             ventDurationOption = CreateOption(Color.white, "ventDuration", 10f, 5f, 60f, 2.5f);

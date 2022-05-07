@@ -45,6 +45,7 @@ namespace Nebula.Roles.ExtraRoles
                             {
                                 noticePos = Helpers.playerById(data.id).transform.position;
                                 noticeInterval = Roles.Avenger.murderNoticeIntervalOption.getFloat();
+                                Arrow.arrow.SetActive(true);
                             }
 
                             Arrow.Update(noticePos);
@@ -66,18 +67,16 @@ namespace Nebula.Roles.ExtraRoles
             if (Arrow != null)
             {
                 UnityEngine.Object.Destroy(Arrow.arrow);
+                Arrow = null;
             }
         }
 
-        /*
-        public override void EditDisplayNameColor(byte playerId, ref Color displayColor)
+        public override void OnMeetingEnd()
         {
-            ulong exData = Game.GameData.data.players[playerId].GetExtraRoleData(this);
-            ulong myExData = PlayerControl.LocalPlayer.GetModData().GetExtraRoleData(Roles.Lover);
-
-            if (exData == myExData) displayColor = TargetColor;
+            base.OnMeetingEnd();
+            if (Arrow != null) Arrow.arrow.SetActive(false);
+            noticeInterval = Roles.Avenger.murderNoticeIntervalOption.getFloat();
         }
-        */
 
         public override void OnExiledPre(byte[] voters)
         {

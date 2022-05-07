@@ -239,19 +239,22 @@ namespace Nebula.Module
             messageWriter.EndMessage();
         }
 
-        public void AddPrerequisite(CustomOption option)
+        public CustomOption AddPrerequisite(CustomOption option)
         {
             prerequisiteOptions.Add(option);
+            return this;
         }
 
-        public void AddInvPrerequisite(CustomOption option)
+        public CustomOption AddInvPrerequisite(CustomOption option)
         {
             prerequisiteOptionsInv.Add(option);
+            return this;
         }
 
-        public void AddCustomPrerequisite(Func<bool> func)
+        public CustomOption AddCustomPrerequisite(Func<bool> func)
         {
             prerequisiteOptionsCustom.Add(func);
+            return this;
         }
 
         // Getter

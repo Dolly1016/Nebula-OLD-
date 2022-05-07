@@ -11,11 +11,26 @@ namespace Nebula.Roles.ImpostorRoles
     public class EvilAce : Role
     {
         private Module.CustomOption killCoolDownMultiplierOption;
+        private Module.CustomOption canKnowDeadNonImpostorsRolesOption;
 
         public override void LoadOptionData()
         {
             killCoolDownMultiplierOption = CreateOption(Color.white, "killCoolDown", 0.5f, 0.125f, 1f, 0.125f);
             killCoolDownMultiplierOption.suffix = "cross";
+            canKnowDeadNonImpostorsRolesOption = CreateOption(Color.white, "canKnowDeadNonImpostorsRoles", false);
+        }
+
+        public override void OnAnyoneDied(byte playerId)
+        {
+            try
+            {
+                PlayerControl p = Helpers.playerById(playerId);
+                var data = p.GetModData();
+                //赤文字は何もしない
+                if (data.role.category == RoleCategory.Impostor || data.role == Roles.Spy) return;
+                data.RoleInfo= Helpers.cs(data.role.Color, Language.Language.GetString("role." + data.role.LocalizeName + ".name"));
+            }
+            catch { }
         }
 
         public override void OnRoleRelationSetting()

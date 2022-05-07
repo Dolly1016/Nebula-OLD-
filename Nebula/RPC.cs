@@ -399,11 +399,13 @@ namespace Nebula
 
                 //GlobalMethod
                 Helpers.RoleAction(target, (role) => { role.OnDied(target.PlayerId); });
+                Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId, (role) => { role.OnAnyoneDied(target.PlayerId); });
 
                 //LocalMethod (自身が死んだとき)
                 if (target.PlayerId == PlayerControl.LocalPlayer.PlayerId)
                 {
                     Helpers.RoleAction(target, (role) => { role.OnDied(); });
+                    
 
                     Events.Schedule.RegisterPreMeetingAction(() => {
                         if (!PlayerControl.LocalPlayer.GetModData().IsAlive)
@@ -422,10 +424,12 @@ namespace Nebula
                 Game.GameData.data.players[playerId].Die(Game.PlayerData.PlayerStatus.GetStatusById(statusId), murderId);
 
                 Helpers.RoleAction(player.PlayerId, (role) => role.OnDied(playerId));
+                Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId, (role) => { role.OnAnyoneDied(player.PlayerId); });
 
                 if (player.PlayerId == PlayerControl.LocalPlayer.PlayerId)
                 {
                     Helpers.RoleAction(player.PlayerId, (role) => role.OnDied());
+                    
 
                     Events.Schedule.RegisterPostMeetingAction(() =>
                     {

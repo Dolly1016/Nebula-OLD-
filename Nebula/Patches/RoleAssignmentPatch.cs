@@ -4,6 +4,7 @@ using Nebula.Roles;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using static Nebula.NebulaPlugin;
 
 namespace Nebula.Patches
@@ -327,8 +328,33 @@ namespace Nebula.Patches
             impostors.RemoveAt(index);
         }
 
+        private static Dictionary<string,Role> LoadMetaRoleAssignments()
+        {
+            if (!File.Exists("patches/MetaRoleAssignment.patch")) return new Dictionary<string, Role>();
+
+            var result = new Dictionary<string, Role>();
+            string[] strings;
+            foreach (string token in System.IO.File.ReadLines("patches/MetaRoleAssignment.patch"))
+            {
+                strings = token.Split(":");
+                if (strings.Length != 2) continue;
+                foreach (var role in Roles.Roles.AllRoles)
+                {
+                    if (role.Name == strings[1])
+                    {
+                        result.Add(strings[0], role);
+                        break;
+                    }
+                }
+            }
+            return result;
+        }
+
         private static void assignRoles(AssignMap assignMap)
         {
+            //メタ的な割り当てを読み込む
+            var metaAssignment = LoadMetaRoleAssignments();
+
             Game.GameModeProperty property = Game.GameModeProperty.GetProperty(CustomOptionHolder.GetCustomGameMode());
 
             List<PlayerControl> crewmates = PlayerControl.AllPlayerControls.ToArray().ToList().OrderBy(x => Guid.NewGuid()).ToList();
@@ -337,14 +363,28 @@ namespace Nebula.Patches
 
             if (property.RequireImpostors)
             {
+                //メタ的にインポスターを要求する場合
+                foreach(var entry in metaAssignment)
+                {
+                    if (entry.Value.category != RoleCategory.Impostor) continue;
+                    foreach(var player in PlayerControl.AllPlayerControls)
+                    {
+                        if (player.name != entry.Key) continue;
+                        impostors.Add(player);
+                        break;
+                    }
+                }
+
                 int impostorCount = PlayerControl.GameOptions.NumImpostors;
                 if (PlayerControl.AllPlayerControls.Count < 7 && impostorCount > 1) impostorCount = 1;
                 else if (PlayerControl.AllPlayerControls.Count < 9 && impostorCount > 2) impostorCount = 2;
                 //インポスターを決定する
 
                 var array = Helpers.GetRandomArray(crewmates.Count);
-                for (int i=0;i<impostorCount;i++) {
+                int i = 0;
+                while (impostors.Count < impostorCount) {
                     impostors.Add(crewmates[array[i]]);
+                    i++;
                 }
                 foreach (var imp in impostors)
                 {
@@ -352,10 +392,25 @@ namespace Nebula.Patches
                 }
             }
 
-           
+
 
             /* ロールの割り当て */
+
             AssignRoles roleData = new AssignRoles(crewmates.Count, impostors.Count);
+
+            //メタ的なロールから割り当てる
+            foreach (var entry in metaAssignment)
+            {
+                foreach (var player in PlayerControl.AllPlayerControls)
+                {
+                    if (player.name != entry.Key) continue;
+                    assignMap.Assign(player.PlayerId, entry.Value.id);
+
+                    crewmates.RemoveAll((p)=>p.PlayerId==player.PlayerId);
+                    impostors.RemoveAll((p) => p.PlayerId == player.PlayerId);
+                    break;
+                }
+            }
 
             roleData.neutralData.Assign(assignMap, crewmates);
             roleData.crewmateData.Assign(assignMap, crewmates);

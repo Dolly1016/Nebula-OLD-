@@ -454,10 +454,10 @@ namespace Nebula.Patches
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CompleteTask))]
     public static class CompleteTaskPatch
     {
-
         public static void Postfix(PlayerControl __instance)
         {
-            Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId,(role)=>role.OnTaskComplete());
+            if(__instance.PlayerId==PlayerControl.LocalPlayer.PlayerId)
+                Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId,(role)=>role.OnTaskComplete());
         }
     }
 

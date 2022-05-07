@@ -176,7 +176,7 @@ namespace Nebula.Roles.NeutralRoles
 
         public override void EditDisplayName(byte playerId, ref string displayName, bool hideFlag)
         {
-            bool showFlag = false;
+            bool showFlag = Game.GameData.data.myData.CanSeeEveryoneInfo;
 
             if (PlayerControl.LocalPlayer.PlayerId == playerId) showFlag = true;
             else

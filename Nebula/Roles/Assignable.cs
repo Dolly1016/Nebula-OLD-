@@ -281,6 +281,14 @@ namespace Nebula.Roles
         public virtual void OnAnyoneMurdered(byte murderId, byte targetId) { }
 
         /// <summary>
+        /// 誰かが死んだときに呼び出されます。
+        /// プレイヤー自身のロールについてのみ呼び出されます。
+        /// </summary>
+        /// <param name="playerId">死者のプレイヤーID</param>
+        [RoleLocalMethod]
+        public virtual void OnAnyoneDied(byte playerId) { }
+
+        /// <summary>
         /// 追放されたときに呼び出されます。
         /// 追放画面が始まるときに呼び出されます。
         /// </summary>
@@ -326,11 +334,28 @@ namespace Nebula.Roles
         }
 
         /// <summary>
+        /// 他人の名前の色を編集します。
+        /// </summary>
+        [RoleLocalMethod]
+        public virtual void EditOthersDisplayNameColor(byte playerId, ref Color displayColor)
+        {
+        }
+
+        /// <summary>
         /// 表示名を編集します。
         /// </summary>
         /// <param name="displayName"></param>
         [RoleGlobalMethod]
         public virtual void EditDisplayName(byte playerId,ref string displayName,bool hideFlag)
+        {
+        }
+
+        /// <summary>
+        /// 他人の表示名を編集します。
+        /// </summary>
+        /// <param name="displayName"></param>
+        [RoleLocalMethod]
+        public virtual void EditOthersDisplayName(byte playerId, ref string displayName, bool hideFlag)
         {
         }
 

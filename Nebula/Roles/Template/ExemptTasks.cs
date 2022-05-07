@@ -19,11 +19,15 @@ namespace Nebula.Roles.Template
         protected int InitialExemptTasks { get; set; } = 1;
         //最高タスク免除数
         protected int MaxExemptTasks { get; set; } = 10;
+        //オプションを使用しない場合
+        protected int CustomExemptTasks { get; set; } = 1;
+        //タスク免除オプションを使用するかどうか
+        protected bool UseExemptTasksOption { get; set; } = true;
 
 
         public override void IntroInitialize(PlayerControl __instance)
         {
-            int exempt = (int)exemptTasksOption.getFloat();
+            int exempt = UseExemptTasksOption ? (int)exemptTasksOption.getFloat() : CustomExemptTasks;
             byte result = 0;
             int cutTasks = PlayerControl.LocalPlayer.myTasks.Count<exempt? PlayerControl.LocalPlayer.myTasks.Count:exempt;
             RPCEventInvoker.ExemptTasks(__instance.PlayerId, cutTasks, cutTasks);
@@ -31,7 +35,7 @@ namespace Nebula.Roles.Template
 
         public override void LoadOptionData()
         {
-            exemptTasksOption = CreateOption(Color.white, "exemptTasks", (float)InitialExemptTasks, 0f, (float)MaxExemptTasks, 1f);
+            if (UseExemptTasksOption) exemptTasksOption = CreateOption(Color.white, "exemptTasks", (float)InitialExemptTasks, 0f, (float)MaxExemptTasks, 1f);
         }
 
         //インポスターはModで操作するFakeTaskは所持していない
@@ -46,6 +50,7 @@ namespace Nebula.Roles.Template
                 hasFakeTask, canUseVents, canMoveInVents,
                 ignoreBlackout, useImpostorLightRadius)
         {
+            UseExemptTasksOption = true;
         }
     }
 }

@@ -46,10 +46,20 @@ namespace Nebula.Roles.Template
             return PlayerIcons[playerId];
         }
 
-        public virtual void InitializePlayerIcon(PoolablePlayer player,byte PlayerId,int index){}
+        public virtual void InitializePlayerIcon(PoolablePlayer player,byte PlayerId,int index){
+            Vector3 bottomLeft = new Vector3(-HudManager.Instance.UseButton.transform.localPosition.x, HudManager.Instance.UseButton.transform.localPosition.y, HudManager.Instance.UseButton.transform.localPosition.z);
+
+            player.transform.localPosition = bottomLeft + new Vector3(-0.35f, -0.25f, 0);
+            player.transform.localScale = Vector3.one * 0.35f;
+
+            player.gameObject.SetActive(false);
+        }
 
         public override void CleanUp()
         {
+            foreach(var icon in PlayerIcons.Values)
+                UnityEngine.GameObject.Destroy(icon);
+            
             PlayerIcons.Clear();
         }
 

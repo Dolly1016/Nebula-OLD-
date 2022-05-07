@@ -27,6 +27,7 @@ namespace Nebula.Roles
         public static CrewmateRoles.Madmate Madmate = new CrewmateRoles.Madmate();
 
         public static ImpostorRoles.Impostor Impostor = new ImpostorRoles.Impostor();
+        public static ImpostorRoles.BountyHunter BountyHunter = new ImpostorRoles.BountyHunter();
         public static ImpostorRoles.Camouflager Camouflager = new ImpostorRoles.Camouflager();
         public static ImpostorRoles.Cleaner Cleaner = new ImpostorRoles.Cleaner();
         public static ImpostorRoles.Damned Damned = new ImpostorRoles.Damned();
@@ -77,7 +78,7 @@ namespace Nebula.Roles
         //全てのロールはこの中に含まれている必要があります
         public static List<Role> AllRoles = new List<Role>()
         {
-            Impostor,Camouflager,Cleaner,Damned,Disturber,Eraser,EvilAce,EvilGuesser,EvilTrapper,Morphing,Reaper,Sniper,
+            Impostor,BountyHunter,Camouflager,Cleaner,Damned,Disturber,Eraser,EvilAce,EvilGuesser,EvilTrapper,Morphing,Reaper,Sniper,
             F_Guesser,F_Trapper,
             Arsonist,Avenger,Empiric,Jackal,Jester,Opportunist,Sidekick,Vulture,
             F_Crewmate,

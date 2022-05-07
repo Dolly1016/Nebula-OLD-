@@ -76,6 +76,7 @@ namespace Nebula.Roles.NeutralRoles
                                 {
                                     noticePos = Helpers.playerById(data.id).transform.position;
                                     noticeInterval = avengerNoticeIntervalOption.getFloat();
+                                    Arrow.arrow.SetActive(true);
                                 }
 
                                 Arrow.Update(noticePos);
@@ -97,6 +98,13 @@ namespace Nebula.Roles.NeutralRoles
             myData.currentTarget = Patches.PlayerControlPatch.SetMyTarget();
 
             Patches.PlayerControlPatch.SetPlayerOutline(myData.currentTarget, Palette.ImpostorRed);
+        }
+
+        public override void OnMeetingEnd()
+        {
+            base.OnMeetingEnd();
+            if (Arrow != null) Arrow.arrow.SetActive(false);
+            noticeInterval = Roles.Avenger.avengerNoticeIntervalOption.getFloat();
         }
 
         public override void GlobalInitialize(PlayerControl __instance)
