@@ -28,7 +28,7 @@ namespace Nebula.Roles.CrewmateRoles
         public static Sprite getVitalsSprite()
         {
             if (vitalsSprite) return vitalsSprite;
-            vitalsSprite = HudManager.Instance.UseButton.fastUseSettings[ImageNames.VitalsButton].Image;
+            vitalsSprite = HudManager.Instance.UseButton.fastUseSettings.get_Item(ImageNames.VitalsButton).Image;
             return vitalsSprite;
         }
 

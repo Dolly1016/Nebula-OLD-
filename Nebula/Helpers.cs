@@ -172,7 +172,7 @@ namespace Nebula
             if (player == null) return;
             for (int i = 0; i < player.myTasks.Count; i++)
             {
-                PlayerTask playerTask = player.myTasks[i];
+                PlayerTask playerTask = player.myTasks.get_Item(i);
                 playerTask.OnRemove();
                 UnityEngine.Object.Destroy(playerTask.gameObject);
             }

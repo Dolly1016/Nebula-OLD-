@@ -268,83 +268,86 @@ namespace Nebula.Patches
 
         public static void Postfix(HudManager __instance)
         {
-            if (AmongUsClient.Instance == null) return;
-            if (AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Started) return;
-            if (!Helpers.HasModData(PlayerControl.LocalPlayer.PlayerId)) return;
-
-
-            /* スクリーンの更新 */
-            UpdateFullScreen();
-
-            /* サボタージュを確認 */
-            if (Helpers.SabotageIsActive())
+            try
             {
-                EmergencyPatch.SabotageUpdate();
-            }
-
-            /* ボタン類の更新 */
-            CustomButton.HudUpdate();
-
-            Helpers.RoleAction(PlayerControl.LocalPlayer, (role) => { role.MyUpdate(); });
-            if (!PlayerControl.LocalPlayer.Data.Role.IsImpostor && PlayerControl.LocalPlayer.GetModData().role.VentPermission!=Roles.VentPermission.CanNotUse)
-            {
-                if (Input.GetKeyDown(KeyCode.V))
-                HudManagerStartPatch.Manager.ImpostorVentButton.DoClick();
-            }
-            
-            //死後経過時間を更新
-            foreach(Game.DeadPlayerData deadPlayer in Game.GameData.data.deadPlayers.Values)
-            {
-                deadPlayer.Elapsed += Time.deltaTime;
-            }
-
-            //名前タグの更新
-            ResetNameTagsAndColors();
-
-            //引きずられているプレイヤーの処理
-            UpdateDraggedPlayer();
-
-            //マウス角度の調整
-            Vector3 mouseDirection = Input.mousePosition - new Vector3(Screen.width / 2, Screen.height / 2);
-            Game.GameData.data.myData.getGlobalData().MouseAngle = Mathf.Atan2(mouseDirection.y, mouseDirection.x);
+                if (AmongUsClient.Instance == null) return;
+                if (AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Started) return;
+                if (!Helpers.HasModData(PlayerControl.LocalPlayer.PlayerId)) return;
 
 
-            //インポスターのキルボタンのパッチ
-            if (PlayerControl.LocalPlayer.Data.Role.IsImpostor)
-            {
-                UpdateImpostorKillButton(__instance);
-            }
+                /* スクリーンの更新 */
+                UpdateFullScreen();
 
-            if (PlayerControl.LocalPlayer.GetModData().role.VentPermission!=Roles.VentPermission.CanNotUse)
-            {
-                //ベントの色の設定
-                Color ventColor;
-                foreach (Vent vent in ShipStatus.Instance.AllVents)
+                /* サボタージュを確認 */
+                if (Helpers.SabotageIsActive())
                 {
-                    ventColor = PlayerControl.LocalPlayer.GetModData().role.VentColor;
-                    vent.myRend.material.SetColor("_OutlineColor", ventColor);
-
-                    if (vent.myRend.material.GetColor("_AddColor").a > 0f)
-                        vent.myRend.material.SetColor("_AddColor", ventColor);
+                    EmergencyPatch.SabotageUpdate();
                 }
-            }
+
+                /* ボタン類の更新 */
+                CustomButton.HudUpdate();
+
+                Helpers.RoleAction(PlayerControl.LocalPlayer, (role) => { role.MyUpdate(); });
+                if (!PlayerControl.LocalPlayer.Data.Role.IsImpostor && PlayerControl.LocalPlayer.GetModData().role.VentPermission != Roles.VentPermission.CanNotUse)
+                {
+                    if (Input.GetKeyDown(KeyCode.V))
+                        HudManagerStartPatch.Manager.ImpostorVentButton.DoClick();
+                }
+
+                //死後経過時間を更新
+                foreach (Game.DeadPlayerData deadPlayer in Game.GameData.data.deadPlayers.Values)
+                {
+                    deadPlayer.Elapsed += Time.deltaTime;
+                }
+
+                //名前タグの更新
+                ResetNameTagsAndColors();
+
+                //引きずられているプレイヤーの処理
+                UpdateDraggedPlayer();
+
+                //マウス角度の調整
+                Vector3 mouseDirection = Input.mousePosition - new Vector3(Screen.width / 2, Screen.height / 2);
+                Game.GameData.data.myData.getGlobalData().MouseAngle = Mathf.Atan2(mouseDirection.y, mouseDirection.x);
 
 
-            Events.GlobalEvent.Update();
-            Events.LocalEvent.Update();
+                //インポスターのキルボタンのパッチ
+                if (PlayerControl.LocalPlayer.Data.Role.IsImpostor)
+                {
+                    UpdateImpostorKillButton(__instance);
+                }
 
-            Game.GameData.data.ColliderManager.Update();
+                if (PlayerControl.LocalPlayer.GetModData().role.VentPermission != Roles.VentPermission.CanNotUse)
+                {
+                    //ベントの色の設定
+                    Color ventColor;
+                    foreach (Vent vent in ShipStatus.Instance.AllVents)
+                    {
+                        ventColor = PlayerControl.LocalPlayer.GetModData().role.VentColor;
+                        vent.myRend.material.SetColor("_OutlineColor", ventColor);
 
-            Objects.Ghost.Update();
+                        if (vent.myRend.material.GetColor("_AddColor").a > 0f)
+                            vent.myRend.material.SetColor("_AddColor", ventColor);
+                    }
+                }
 
-            Game.GameData.data.TimerUpdate();
 
-            if (Game.GameData.data.Ghost != null) Game.GameData.data.Ghost.Update();
+                Events.GlobalEvent.Update();
+                Events.LocalEvent.Update();
 
-            PlayerControl.LocalPlayer.myTasks.RemoveAll((Il2CppSystem.Predicate<PlayerTask>)((c) =>
-            {
-                return c.GetComponent<ImportantTextTask>() != null;
-            }));
+                Game.GameData.data.ColliderManager.Update();
+
+                Objects.Ghost.Update();
+
+                Game.GameData.data.TimerUpdate();
+
+                if (Game.GameData.data.Ghost != null) Game.GameData.data.Ghost.Update();
+
+                PlayerControl.LocalPlayer.myTasks.RemoveAll((Il2CppSystem.Predicate<PlayerTask>)((c) =>
+                {
+                    return c.GetComponent<ImportantTextTask>() != null;
+                }));
+            }catch(NullReferenceException excep) { UnityEngine.Debug.Log(excep.StackTrace); }
         }
     }
     

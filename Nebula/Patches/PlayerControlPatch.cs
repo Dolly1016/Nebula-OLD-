@@ -103,7 +103,7 @@ namespace Nebula.Patches
             Il2CppSystem.Collections.Generic.List<GameData.PlayerInfo> allPlayers = GameData.Instance.AllPlayers;
             for (int i = 0; i < allPlayers.Count; i++)
             {
-                GameData.PlayerInfo playerInfo = allPlayers[i];
+                GameData.PlayerInfo playerInfo = allPlayers.get_Item(i);
 
                 if (playerInfo==null || (PlayerControl.LocalPlayer.PlayerId == playerInfo.PlayerId) || (playerInfo.Object==null))
                     continue;
@@ -418,19 +418,24 @@ namespace Nebula.Patches
     {
         public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] float time)
         {
-            if (PlayerControl.GameOptions.KillCooldown <= 0f) return false;
-            float multiplier = 1f;
-            float addition = 0f;
-
-            //キルクールを設定する
-            if (__instance.PlayerId == PlayerControl.LocalPlayer.PlayerId)
+            try
             {
-                Game.GameData.data.myData.getGlobalData().role.SetKillCoolDown(ref multiplier, ref addition);
-            }
+                if (Game.GameData.data == null) return true;
 
-            __instance.killTimer = Mathf.Clamp(time, 0f, PlayerControl.GameOptions.KillCooldown * multiplier + addition);
-            DestroyableSingleton<HudManager>.Instance.KillButton.SetCoolDown(__instance.killTimer, PlayerControl.GameOptions.KillCooldown * multiplier + addition);
-            return false;
+                if (PlayerControl.GameOptions.KillCooldown <= 0f) return false;
+                float multiplier = 1f;
+                float addition = 0f;
+
+                //キルクールを設定する
+                if (__instance.PlayerId == PlayerControl.LocalPlayer.PlayerId)
+                {
+                    Game.GameData.data.myData.getGlobalData().role.SetKillCoolDown(ref multiplier, ref addition);
+                }
+
+                __instance.killTimer = Mathf.Clamp(time, 0f, PlayerControl.GameOptions.KillCooldown * multiplier + addition);
+                DestroyableSingleton<HudManager>.Instance.KillButton.SetCoolDown(__instance.killTimer, PlayerControl.GameOptions.KillCooldown * multiplier + addition);
+                return false;
+            }catch(NullReferenceException excep) { return true; }
         }
     }
 

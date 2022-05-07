@@ -29,7 +29,7 @@ namespace Nebula.Module
 
         public void Load(JToken token)
         {
-            LoadValue(token[Id]);
+            LoadValue(token.get_Item(Id));
         }
         protected virtual void LoadValue(JToken? token)
         {
@@ -88,8 +88,8 @@ namespace Nebula.Module
 
         protected override void LoadValue(JToken? token)
         {
-            Address = SanitizeResourcePath(token?["Address"]?.ToString());
-            Hash = SanitizeResourcePath(token?["Hash"]?.ToString());
+            Address = SanitizeResourcePath(token?.get_Item("Address")?.ToString());
+            Hash = SanitizeResourcePath(token?.get_Item("Hash")?.ToString());
         }
 
         public override void LoadImage(string parent, bool fromDisk = false)
@@ -822,7 +822,7 @@ namespace Nebula.Module
                 }
 
                 string json = await response.Content.ReadAsStringAsync();
-                JToken jobj = JObject.Parse(json)[category];
+                JToken jobj = JObject.Parse(json).get_Item(category);
                 if (!jobj.HasValues) return HttpStatusCode.ExpectationFailed;
 
                 List<Cosmic> cosList = new List<Cosmic>();

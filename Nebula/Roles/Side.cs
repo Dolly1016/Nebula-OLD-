@@ -37,7 +37,7 @@ namespace Nebula.Roles
             //Sabotage
             if (status.Systems != null)
             {
-                ISystemType systemType = status.Systems.ContainsKey(SystemTypes.LifeSupp) ? status.Systems[SystemTypes.LifeSupp] : null;
+                ISystemType systemType = status.Systems.ContainsKey(SystemTypes.LifeSupp) ? status.Systems.get_Item(SystemTypes.LifeSupp) : null;
                 if (systemType != null)
                 {
                     LifeSuppSystemType lifeSuppSystemType = systemType.TryCast<LifeSuppSystemType>();
@@ -47,10 +47,10 @@ namespace Nebula.Roles
                         return EndCondition.ImpostorWinBySabotage;
                     }
                 }
-                ISystemType systemType2 = status.Systems.ContainsKey(SystemTypes.Reactor) ? status.Systems[SystemTypes.Reactor] : null;
+                ISystemType systemType2 = status.Systems.ContainsKey(SystemTypes.Reactor) ? status.Systems.get_Item(SystemTypes.Reactor) : null;
                 if (systemType2 == null)
                 {
-                    systemType2 = status.Systems.ContainsKey(SystemTypes.Laboratory) ? status.Systems[SystemTypes.Laboratory] : null;
+                    systemType2 = status.Systems.ContainsKey(SystemTypes.Laboratory) ? status.Systems.get_Item(SystemTypes.Laboratory) : null;
                 }
                 if (systemType2 != null)
                 {

@@ -770,7 +770,7 @@ namespace Nebula
 
         public static void FixLights()
         {
-            SwitchSystem switchSystem = ShipStatus.Instance.Systems[SystemTypes.Electrical].Cast<SwitchSystem>();
+            SwitchSystem switchSystem = ShipStatus.Instance.Systems.get_Item(SystemTypes.Electrical).Cast<SwitchSystem>();
             switchSystem.ActualSwitches = switchSystem.ExpectedSwitches;
         }
 
@@ -996,10 +996,10 @@ namespace Nebula
                     timer = 0.1f;
                     num = (num + 1) % 3;
 
-                    uvList[0] = (new Vector2((float)num / 3f, 0));
-                    uvList[1] = (new Vector2((float)(num + 1) / 3f, 0));
-                    uvList[2] = (new Vector2((float)num / 3f, 1));
-                    uvList[3] = (new Vector2((float)(num + 1) / 3f, 1));
+                    uvList.set_Item(0, new Vector2((float)num / 3f, 0));
+                    uvList.set_Item(1, new Vector2((float)(num + 1) / 3f, 0));
+                    uvList.set_Item(2, new Vector2((float)num / 3f, 1));
+                    uvList.set_Item(3, new Vector2((float)(num + 1) / 3f, 1));
                     mesh.SetUVs(0, uvList);
                 }
             }, Roles.Roles.Disturber.ignoreBarriorsOption.getSelection() == 1,
@@ -1287,7 +1287,7 @@ namespace Nebula
             var tasks = new Il2CppSystem.Collections.Generic.List<byte>();
 
             for (int i = 0; i < commonTasks; i++)
-                tasks.Add((byte)ShipStatus.Instance.CommonTasks.FirstOrDefault((t) => t.TaskType == PlayerControl.LocalPlayer.myTasks[i].TaskType).Index);
+                tasks.Add((byte)ShipStatus.Instance.CommonTasks.FirstOrDefault((t) => t.TaskType == PlayerControl.LocalPlayer.myTasks.get_Item(i).TaskType).Index);
 
             int num=0;
             var usedTypes = new Il2CppSystem.Collections.Generic.HashSet<TaskTypes>();

@@ -116,10 +116,12 @@ namespace Nebula.Roles.CrewmateRoles
 
         private bool DeadBodyIsInReviveRoom(DeadBody deadBody)
         {
-
-            SystemTypes roomType = Game.GameData.data.deadPlayers[deadBody.ParentId].RespawnRoom;
-            PlainShipRoom room = ShipStatus.Instance.FastRooms[roomType];
-            return room.roomArea.OverlapPoint(deadBody.myCollider.transform.position);
+            try
+            {
+                SystemTypes roomType = Game.GameData.data.deadPlayers[deadBody.ParentId].RespawnRoom;
+                PlainShipRoom room = ShipStatus.Instance.FastRooms.get_Item(roomType);
+                return room.roomArea.OverlapPoint(deadBody.myCollider.transform.position);
+            }catch(KeyNotFoundException excep) { return false; }
         }
 
         private bool DraggingPlayerIsInReviveRoom()
@@ -234,7 +236,7 @@ namespace Nebula.Roles.CrewmateRoles
 
             reviveArrow = new Arrow(Color.cyan);
             reviveArrow.arrow.SetActive(true);
-            reviveArrow.Update(ShipStatus.Instance.FastRooms[roomType].roomArea.transform.position);
+            reviveArrow.Update(ShipStatus.Instance.FastRooms.get_Item(roomType).roomArea.transform.position);
             targetRoom = roomType;
         }
 
@@ -244,7 +246,7 @@ namespace Nebula.Roles.CrewmateRoles
 
             if (reviveArrow != null)
             {
-                reviveArrow.Update(ShipStatus.Instance.FastRooms[targetRoom].roomArea.transform.position);
+                reviveArrow.Update(ShipStatus.Instance.FastRooms.get_Item(targetRoom).roomArea.transform.position);
             }
 
             UpdateFullScreen();

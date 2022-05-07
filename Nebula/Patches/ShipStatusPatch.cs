@@ -30,7 +30,7 @@ namespace Nebula.Patches
                 return true;
             }
 
-            ISystemType systemType = __instance.Systems.ContainsKey(SystemTypes.Electrical) ? __instance.Systems[SystemTypes.Electrical] : null;
+            ISystemType systemType = __instance.Systems.ContainsKey(SystemTypes.Electrical) ? __instance.Systems.get_Item(SystemTypes.Electrical) : null;
             if (systemType == null) return true;
             SwitchSystem switchSystem = systemType.TryCast<SwitchSystem>();
             if (switchSystem == null) return true;

@@ -105,7 +105,7 @@ namespace Nebula.Module
                 if (response.Content == null) return false;
                 string json = response.Content.ReadAsStringAsync().Result;
                 JObject jObj = JObject.Parse(json);
-                JToken? version = jObj["Version"];
+                JToken? version = jObj.get_Item("Version");
                 if (version == null) return false;
                 int Version = int.Parse(version.ToString());
 
@@ -118,12 +118,12 @@ namespace Nebula.Module
                 AnnounceVersion.Value = Version;
 
                 string lang = Language.Language.GetLanguage(SaveManager.LastLanguage);
-                if (jObj[lang]!=null)
-                    Announcement = jObj[lang].ToString();
-                else if (jObj["English"] != null)
-                    Announcement = jObj["English"].ToString();
-                else if (jObj["Japanese"] != null)
-                    Announcement = jObj["Japanese"].ToString();
+                if (jObj.get_Item(lang)!=null)
+                    Announcement = jObj.get_Item(lang).ToString();
+                else if (jObj.get_Item("English") != null)
+                    Announcement = jObj.get_Item("English").ToString();
+                else if (jObj.get_Item("Japanese") != null)
+                    Announcement = jObj.get_Item("Japanese").ToString();
                 else
                 {
                     Announcement = "-Invalid Announcement-";
@@ -268,7 +268,7 @@ namespace Nebula.Module
                 string json = await response.Content.ReadAsStringAsync();
                 JObject data = JObject.Parse(json);
 
-                string[] tagname = data["tag_name"]?.ToString().Split(',');
+                string[] tagname = data.get_Item("tag_name")?.ToString().Split(',');
 
                 if (tagname == null)
                 {
@@ -287,16 +287,16 @@ namespace Nebula.Module
                 if ((modDiff != 0) && (amoDiff == 0))
                 { // Update required
                     hasUpdate = true;
-                    JToken assets = data["assets"];
+                    JToken assets = data.get_Item("assets");
                     if (!assets.HasValues)
                         return false;
 
                     for (JToken current = assets.First; current != null; current = current.Next)
                     {
-                        string browser_download_url = current["browser_download_url"]?.ToString();
-                        if (browser_download_url != null && current["content_type"] != null)
+                        string browser_download_url = current.get_Item("browser_download_url")?.ToString();
+                        if (browser_download_url != null && current.get_Item("content_type") != null)
                         {
-                            if (current["content_type"].ToString().Equals("application/x-msdownload") &&
+                            if (current.get_Item("content_type").ToString().Equals("application/x-msdownload") &&
                                 browser_download_url.EndsWith(".dll"))
                             {
                                 updateURI = browser_download_url;

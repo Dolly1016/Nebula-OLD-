@@ -11,6 +11,8 @@ namespace Nebula.Roles.CrewmateRoles
     {
         int guardLeftId;
         bool changeTrigger;
+
+        public override bool IsGuessableRole { get => false; }
         public override void GlobalInitialize(PlayerControl __instance)
         {
             Game.GameData.data.players[__instance.PlayerId].SetRoleData(guardLeftId, 1);
@@ -78,7 +80,6 @@ namespace Nebula.Roles.CrewmateRoles
         public DamnedCrew():base()
         {
             guardLeftId = Game.GameData.RegisterRoleDataId("damnedCrew.guardLeft");
-            IsGuessableRole = false;
             HideInExclusiveAssignmentOption = true;
         }
     }

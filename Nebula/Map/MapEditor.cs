@@ -55,7 +55,7 @@ namespace Nebula.Map
         protected static Vent CreateVent(SystemTypes room, string ventName,Vector2 position)
         {
             var referenceVent = UnityEngine.Object.FindObjectOfType<Vent>();
-            Vent vent = UnityEngine.Object.Instantiate<Vent>(referenceVent,ShipStatus.Instance.FastRooms[room].transform);
+            Vent vent = UnityEngine.Object.Instantiate<Vent>(referenceVent,ShipStatus.Instance.FastRooms.get_Item(room).transform);
             vent.transform.localPosition = new Vector3(position.x,position.y,-1);
             vent.Left = null;
             vent.Right = null;
@@ -91,7 +91,7 @@ namespace Nebula.Map
         {
             if (!ShipStatus.Instance.FastRooms.ContainsKey(room)) return null;
             GameObject obj = new GameObject(objectName);
-            obj.transform.SetParent(ShipStatus.Instance.FastRooms[room].transform);
+            obj.transform.SetParent(ShipStatus.Instance.FastRooms.get_Item(room).transform);
             obj.transform.localPosition = pos;
             SpriteRenderer renderer = obj.AddComponent<SpriteRenderer>();
             renderer.sprite = sprite;
@@ -159,7 +159,7 @@ namespace Nebula.Map
         protected static void EditConsole(SystemTypes room, string objectName,Action<Console> action)
         {
             if (!ShipStatus.Instance.FastRooms.ContainsKey(room)) return;
-            PlainShipRoom shipRoom = ShipStatus.Instance.FastRooms[room];
+            PlainShipRoom shipRoom = ShipStatus.Instance.FastRooms.get_Item(room);
             Transform transform = shipRoom.transform.FindChild(objectName);
             if (!transform) return;
             GameObject obj = transform.gameObject;

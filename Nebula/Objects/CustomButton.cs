@@ -243,7 +243,7 @@ namespace Nebula.Objects
             {
                 actionButton.OverrideText(buttonText);
 
-                actionButton.buttonLabelText.SetSharedMaterial(HudManager.Instance.UseButton.fastUseSettings[textType].FontMaterial);  
+                actionButton.buttonLabelText.SetSharedMaterial(HudManager.Instance.UseButton.fastUseSettings.get_Item(textType).FontMaterial);  
             }
             actionButton.buttonLabelText.enabled = showButtonText; // Only show the text if it's a kill button
             if (hudManager.UseButton != null)

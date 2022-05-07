@@ -31,7 +31,7 @@ namespace Nebula.Roles.MetaRoles
                         objectPool.CreateOneInactive(objectPool.Prefab);
                     }
                 }
-                poolableBehavior = objectPool.inactiveChildren[objectPool.inactiveChildren.Count - 1];
+                poolableBehavior = objectPool.inactiveChildren.get_Item(objectPool.inactiveChildren.Count - 1);
                 objectPool.inactiveChildren.RemoveAt(objectPool.inactiveChildren.Count - 1);
                 objectPool.activeChildren.Add(poolableBehavior);
                 PoolableBehavior poolableBehavior2 = poolableBehavior;
@@ -111,7 +111,7 @@ namespace Nebula.Roles.MetaRoles
             __instance.controllerNavMenu.ControllerSelectable.Clear();
             __instance.PopulateButtons();
             if(__instance.controllerNavMenu.ControllerSelectable.Count>0)
-                __instance.controllerNavMenu.DefaultButtonSelected = __instance.controllerNavMenu.ControllerSelectable[0];
+                __instance.controllerNavMenu.DefaultButtonSelected = __instance.controllerNavMenu.ControllerSelectable.get_Item(0);
             return false;
         }
         public static void Postfix(InGamePlayerList __instance)

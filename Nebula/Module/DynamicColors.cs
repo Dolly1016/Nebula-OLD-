@@ -127,8 +127,8 @@ namespace Nebula.Module
 
                 Collider.size = new Vector2(0.45f, 0.45f);
 
-                PassiveButton.ClickSound = __instance.ColorChips[0].Button.ClickSound;
-                PassiveButton.OnMouseOut = __instance.ColorChips[0].Button.OnMouseOut;
+                PassiveButton.ClickSound = __instance.ColorChips.get_Item(0).Button.ClickSound;
+                PassiveButton.OnMouseOut = __instance.ColorChips.get_Item(0).Button.OnMouseOut;
                 PassiveButton.OnClick.RemoveAllListeners();
                 PassiveButton.OnClick.AddListener((System.Action)(() =>
                 {
@@ -141,7 +141,7 @@ namespace Nebula.Module
 
             public void OnEnable(PlayerTab __instance)
             {
-                ButtonObject.layer = __instance.ColorChips[0].gameObject.layer;
+                ButtonObject.layer = __instance.ColorChips.get_Item(0).gameObject.layer;
             }
         }
 
@@ -180,8 +180,8 @@ namespace Nebula.Module
 
                 Collider.size = new Vector2(0.68f,0.45f);
 
-                PassiveButton.ClickSound = __instance.ColorChips[0].Button.ClickSound;
-                PassiveButton.OnMouseOut = __instance.ColorChips[0].Button.OnMouseOut;
+                PassiveButton.ClickSound = __instance.ColorChips.get_Item(0).Button.ClickSound;
+                PassiveButton.OnMouseOut = __instance.ColorChips.get_Item(0).Button.OnMouseOut;
                 PassiveButton.OnMouseOver = new UnityEngine.Events.UnityEvent();
                 PassiveButton.OnMouseOver.AddListener((System.Action)(() =>
                 {
@@ -206,11 +206,11 @@ namespace Nebula.Module
 
             public void OnEnable(PlayerTab __instance)
             {
-                ButtonObject.transform.SetParent(__instance.ColorChips[0].transform.parent);
+                ButtonObject.transform.SetParent(__instance.ColorChips.get_Item(0).transform.parent);
                 ButtonObject.transform.localPosition = Position;
-                ButtonObject.layer = __instance.ColorChips[0].gameObject.layer;
+                ButtonObject.layer = __instance.ColorChips.get_Item(0).gameObject.layer;
 
-                SubObject.layer = __instance.ColorChips[0].gameObject.layer;
+                SubObject.layer = __instance.ColorChips.get_Item(0).gameObject.layer;
             }
 
             public void Update()
@@ -688,14 +688,14 @@ namespace Nebula.Module
                     }
                 }
 
-                PaletteObject.transform.SetParent(__instance.ColorChips[0].transform.parent);
+                PaletteObject.transform.SetParent(__instance.ColorChips.get_Item(0).transform.parent);
                 PaletteObject.transform.localPosition = new Vector3(1.8f, 0.35f, -40f);
-                PaletteObject.layer = __instance.ColorChips[0].gameObject.layer;
+                PaletteObject.layer = __instance.ColorChips.get_Item(0).gameObject.layer;
 
                 PaletteRenderer.sprite = GetPalleteSprite();
                 PaletteCollider.radius = 2.1f;
-                PalettePassiveButton.ClickSound = __instance.ColorChips[0].Button.ClickSound;
-                PalettePassiveButton.OnMouseOut = __instance.ColorChips[0].Button.OnMouseOut;
+                PalettePassiveButton.ClickSound = __instance.ColorChips.get_Item(0).Button.ClickSound;
+                PalettePassiveButton.OnMouseOut = __instance.ColorChips.get_Item(0).Button.OnMouseOut;
                 PalettePassiveButton.OnMouseOut.AddListener((UnityEngine.Events.UnityAction)(()=>{
                     PlayerControl.SetPlayerMaterialColors(SaveManager.BodyColor, PlayerCustomizationMenu.Instance.PreviewArea.CurrentBodySprite.BodySprite);
                     PlayerCustomizationMenu.Instance.SetItemName(GetColorName());
@@ -709,14 +709,14 @@ namespace Nebula.Module
 
                 /* ------------------------------------------------------ */
 
-                LPaletteObject.transform.SetParent(__instance.ColorChips[0].transform.parent);
+                LPaletteObject.transform.SetParent(__instance.ColorChips.get_Item(0).transform.parent);
                 LPaletteObject.transform.localPosition = new Vector3(4.5f, 0.35f, -40f);
-                LPaletteObject.layer = __instance.ColorChips[0].gameObject.layer;
+                LPaletteObject.layer = __instance.ColorChips.get_Item(0).gameObject.layer;
 
                 LPaletteRenderer.sprite = GetLPalleteSprite();
                 LPaletteCollider.size = new Vector2(0.3f, 2.7f);
-                LPalettePassiveButton.ClickSound = __instance.ColorChips[0].Button.ClickSound;
-                LPalettePassiveButton.OnMouseOut = __instance.ColorChips[0].Button.OnMouseOut;
+                LPalettePassiveButton.ClickSound = __instance.ColorChips.get_Item(0).Button.ClickSound;
+                LPalettePassiveButton.OnMouseOut = __instance.ColorChips.get_Item(0).Button.OnMouseOut;
                 LPalettePassiveButton.OnClick.RemoveAllListeners();
                 LPalettePassiveButton.OnClick.AddListener((System.Action)(() =>
                 {
@@ -727,14 +727,14 @@ namespace Nebula.Module
                 /* ------------------------------------------------------ */
 
 
-                ChangeModeObject.transform.SetParent(__instance.ColorChips[0].transform.parent);
+                ChangeModeObject.transform.SetParent(__instance.ColorChips.get_Item(0).transform.parent);
                 ChangeModeObject.transform.localPosition = new Vector3(3.8f, -1.4f, -40f);
-                ChangeModeObject.layer = __instance.ColorChips[0].gameObject.layer;
+                ChangeModeObject.layer = __instance.ColorChips.get_Item(0).gameObject.layer;
 
                 ChangeModeRenderer.sprite = GetModeChangeSprite();
                 ChangeModeCollider.size = new Vector2(0.55f, 0.55f);
-                ChangeModePassiveButton.ClickSound = __instance.ColorChips[0].Button.ClickSound;
-                ChangeModePassiveButton.OnMouseOut = __instance.ColorChips[0].Button.OnMouseOut;
+                ChangeModePassiveButton.ClickSound = __instance.ColorChips.get_Item(0).Button.ClickSound;
+                ChangeModePassiveButton.OnMouseOut = __instance.ColorChips.get_Item(0).Button.OnMouseOut;
                 ChangeModePassiveButton.OnClick.RemoveAllListeners();
                 ChangeModePassiveButton.OnClick.AddListener((System.Action)(() =>
                 {
@@ -746,11 +746,11 @@ namespace Nebula.Module
                 /* ------------------------------------------------------ */
 
                 ColorTargetObject.transform.SetParent(PaletteObject.transform);
-                ColorTargetObject.layer = __instance.ColorChips[0].gameObject.layer;
+                ColorTargetObject.layer = __instance.ColorChips.get_Item(0).gameObject.layer;
                 ColorTargetRenderer.sprite = GetColorTargetSprite();
 
                 LTargetObject.transform.SetParent(LPaletteObject.transform);
-                LTargetObject.layer = __instance.ColorChips[0].gameObject.layer;
+                LTargetObject.layer = __instance.ColorChips.get_Item(0).gameObject.layer;
                 LTargetRenderer.sprite = GetLTargetSprite();
 
                 foreach (ColorButton button in ShadowVariations)

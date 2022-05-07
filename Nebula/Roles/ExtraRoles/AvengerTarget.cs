@@ -84,19 +84,50 @@ namespace Nebula.Roles.ExtraRoles
             OnDied();
         }
 
-        public override void OnDied()
+        public PlayerControl? GetAvenger(byte playerId)
         {
-            PlayerControl avenger = null;
+            PlayerControl? avenger = null;
+            var data = Helpers.allPlayersById()[playerId].GetModData();
             foreach (var player in Helpers.allPlayersById().Values)
             {
                 if (player.Data.IsDead) continue;
                 if (player.GetModData().role != Roles.Avenger) continue;
-                if (player.GetModData().GetExtraRoleData(Roles.Lover) != PlayerControl.LocalPlayer.GetModData().GetExtraRoleData(this)) continue;
+                if (player.GetModData().GetExtraRoleData(Roles.Lover) != data.GetExtraRoleData(this)) continue;
 
                 avenger = player;
                 break;
-
             }
+            return avenger;
+        }
+        public bool CheckAvengersMission(byte playerId)
+        {
+            PlayerControl? avenger= GetAvenger(playerId);
+
+            if (avenger == null) return false;
+
+            byte murder = byte.MaxValue;
+            if (Game.GameData.data.deadPlayers.ContainsKey(playerId))
+            {
+                murder = Game.GameData.data.deadPlayers[playerId].MurderId;
+            }
+
+            if (murder == avenger.PlayerId)
+            {
+                //Avengerの目標を達成させる それぞれローカルで反映させる
+                RPCEvents.UpdateRoleData(avenger.PlayerId, Roles.Avenger.avengerCheckerId, 1);
+                return true;
+            }
+            return false;
+        }
+
+        public override void OnDied(byte playerId)
+        {
+            CheckAvengersMission(playerId);
+        }
+
+        public override void OnDied()
+        {
+            PlayerControl? avenger = GetAvenger(PlayerControl.LocalPlayer.PlayerId);
 
             if (avenger == null) return;
 
@@ -106,12 +137,7 @@ namespace Nebula.Roles.ExtraRoles
                 murder = Game.GameData.data.deadPlayers[PlayerControl.LocalPlayer.PlayerId].MurderId;
             }
 
-            if (murder == avenger.PlayerId)
-            {
-                //Avengerの目標を達成させる
-                RPCEventInvoker.UpdateRoleData(avenger.PlayerId, Roles.Avenger.avengerCheckerId, 1);
-            }
-            else
+            if (murder != avenger.PlayerId)
             {
                 //標的を失ったAvengerを自殺させる
                 if (MeetingHud.Instance || ExileController.Instance)

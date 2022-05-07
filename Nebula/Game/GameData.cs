@@ -114,7 +114,7 @@ namespace Nebula.Game
                 SystemTypes? nearest = null;
                 foreach (var room in Game.GameData.data.Rooms)
                 {
-                    float d = ShipStatus.Instance.FastRooms[room].roomArea.Distance(Helpers.allPlayersById()[playerData.id].Collider).distance;
+                    float d = ShipStatus.Instance.FastRooms.get_Item(room).roomArea.Distance(Helpers.allPlayersById()[playerData.id].Collider).distance;
                     if (d > 0.2f)
                     {
                         if (dis > d)
