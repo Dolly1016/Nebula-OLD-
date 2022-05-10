@@ -33,6 +33,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.9.2 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.2,2022.3.29.1/Nebula_v1.9.2.zip)|
 | 1.9.1 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.1,2022.3.29.1/Nebula_v1.9.1.zip)|
 | 1.9.0 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.0,2022.3.29.1/Nebula_v1.9.0.zip)|
 | 1.8.4.2 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.4.2,2022.3.29.1/Nebula_v1.8.4.2.zip)|
@@ -930,12 +931,15 @@ p5p5next : Damned
 -----------------------
 
 ## Evil Ace
- Evil Aceは、味方のインポスターがいなくなったときにキルクールダウンが早まります。
+ Evil Aceは、味方のインポスターがいなくなったときにキルクールダウンが早まります。\
+ また、死んだプレイヤーの役職を知ることもできます。
  
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
 | Kill Cool Down Multiplier | インポスター陣営が1人だけのときにクールダウンにかかる倍率 
+| Can Know Dead Non-Impostors Roles | 死んだプレイヤーの役職を知れるかどうか
+| Can Know Roles Only My Murders | 役職通知を自身がキルしたプレイヤーに限るかどうか
 
 -----------------------
 
