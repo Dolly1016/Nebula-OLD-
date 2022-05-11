@@ -201,7 +201,7 @@ namespace Nebula.Roles.CrewmateRoles
 
         private Role DivineRandomRole(List<Role> excludeRoles, RoleCategory? category)
         {
-            var list=Game.GameData.data.EstimationAI.GetRoleList(category);
+            var list=Game.GameData.data.EstimationAI.GetOracleRoleList(category);
 
             for(int i = 0; i < list.Count; i++)
             {

@@ -244,10 +244,33 @@ namespace Nebula.Roles.RoleAI
 
                 if (entry.Value > 1f && !containIdentifiedRoles) continue;
 
+                result.Add(entry.Key.oracleRole);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// 該当するRoleを返す
+        /// </summary>
+        /// <param name="category">占い先カテゴリ</param>
+        /// <param name="containLikelyRoles"></param>
+        /// <returns></returns>
+        public List<Role> GetOracleRoleList(RoleCategory? category, bool containLikelyRoles = true, bool containIdentifiedRoles = false)
+        {
+            List<Role> result = new List<Role>();
+            foreach (var entry in EstimateMap)
+            {
+                if (category != null && entry.Key.oracleCategory != category) continue;
+
+                if (entry.Value < (containLikelyRoles ? 0f : 1f)) continue;
+
+                if (entry.Value > 1f && !containIdentifiedRoles) continue;
+
                 result.Add(entry.Key);
             }
 
             return result;
-        } 
+        }
     }
 }

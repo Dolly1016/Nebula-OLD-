@@ -74,6 +74,7 @@ namespace Nebula.Patches
                         if (TimeRemaining == null)
                         {
                             TimeRemaining = UnityEngine.Object.Instantiate(HudManager.Instance.TaskText, __instance.transform);
+                            TimeRemaining.text = "";
                             TimeRemaining.alignment = TMPro.TextAlignmentOptions.Center;
                             TimeRemaining.transform.position = Vector3.zero;
                             TimeRemaining.transform.localPosition = new Vector3(0.0f, -1.7f);
@@ -85,9 +86,12 @@ namespace Nebula.Patches
                         {
                             foreach (var sabText in __instance.SabText)
                             {
-                                var text = UnityEngine.Object.Instantiate(sabText, sabText.transform.parent);
-                                text.text = Language.Language.GetString("game.device.restrictOutOfTime");
-                                OutOfTime.Add(text);
+                                if (sabText)
+                                {
+                                    var text = UnityEngine.Object.Instantiate(sabText, sabText.transform.parent);
+                                    text.text = Language.Language.GetString("game.device.restrictOutOfTime");
+                                    OutOfTime.Add(text);
+                                }
                             }
                         }
 

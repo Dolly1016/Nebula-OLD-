@@ -18,9 +18,11 @@
 
 "cosmic.package.innerslothHats" : "Innersloth Hats"
 "cosmic.package.innerslothNameplates" : "Innersloth Nameplates"
+"cosmic.package.innerslothVisors" : "Innersloth Visors"
 "cosmic.package.standardNameplate" : "Standard Collections"
 "cosmic.package.nosCommHat" : "NoS Community Hats"
 "cosmic.package.nosCommNameplate" : "NoS Community Nameplates"
+"cosmic.package.nosCommVisor" : "NoS Community Visors"
 
 "preset.save" : "Save Current Setting"
 "preset.dialog.save" : "Current settings have been saved!"
@@ -391,6 +393,7 @@
 "role.evilAce.info" : "If you're the last impostor, your kill cooldown will be shorter."
 "role.evilAce.killCoolDown" : "Kill Cool Down Multiplier"
 "role.evilAce.canKnowDeadNonImpostorsRoles" : "Can Know Dead Non-Impostors Roles"
+"role.evilAce.canKnowRolesOnlyMyMurders" : "Can Know Roles Only My Murders"
 
 "role.evilGuesser.name" : "Evil Guesser"
 "role.evilGuesser.description" : "Guess and Shoot"

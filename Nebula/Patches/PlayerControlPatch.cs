@@ -381,10 +381,14 @@ namespace Nebula.Patches
     {
         public static void Postfix(GameData __instance, [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] DisconnectReasons reason)
         {
-            if (!AmongUsClient.Instance.IsGameStarted) return;
-            if (Game.GameData.data == null) return;
-            if (player.GetModData() == null) return;
-            player.GetModData().Die(Game.PlayerData.PlayerStatus.Disconnected);
+            try
+            {
+                if (!AmongUsClient.Instance.IsGameStarted) return;
+                if (Game.GameData.data == null) return;
+                if (player.GetModData() == null) return;
+                player.GetModData().Die(Game.PlayerData.PlayerStatus.Disconnected);
+            }
+            catch { }
         }
     }
 

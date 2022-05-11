@@ -12,6 +12,9 @@ namespace Nebula.Roles.CrewmateRoles
 {
     public class Madmate : Template.ExemptTasks
     {
+        public override RoleCategory oracleCategory { get { return RoleCategory.Impostor; } }
+        
+
         private Module.CustomOption CanUseVentsOption;
         private Module.CustomOption HasImpostorVisionOption;
         private Module.CustomOption CanInvokeSabotageOption;

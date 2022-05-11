@@ -6,6 +6,7 @@ namespace Nebula.Roles
     {
 
         public static CrewmateRoles.Crewmate Crewmate = new CrewmateRoles.Crewmate();
+        public static CrewmateRoles.CrewmateWithoutTasks CrewmateWithoutTasks = new CrewmateRoles.CrewmateWithoutTasks();
         public static CrewmateRoles.Agent Agent = new CrewmateRoles.Agent();
         public static CrewmateRoles.Alien Alien = new CrewmateRoles.Alien();
         public static CrewmateRoles.Bait Bait = new CrewmateRoles.Bait();
@@ -82,7 +83,7 @@ namespace Nebula.Roles
             F_Guesser,F_Trapper,
             Arsonist,Avenger,Empiric,Jackal,Jester,Opportunist,Sidekick,Vulture,
             F_Crewmate,
-            Crewmate,Agent,Alien,Bait,Booster,DamnedCrew,Doctor,Mayor,Navvy,Necromancer,NiceGuesser,NiceTrapper,Oracle,Provocateur,Psychic,Seer,Sheriff,Spy,
+            Crewmate,CrewmateWithoutTasks,Agent,Alien,Bait,Booster,DamnedCrew,Doctor,Mayor,Navvy,Necromancer,NiceGuesser,NiceTrapper,Oracle,Provocateur,Psychic,Seer,Sheriff,Spy,
             Madmate,
             Player,
             Halley,Biela,

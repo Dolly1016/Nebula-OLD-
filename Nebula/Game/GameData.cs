@@ -457,6 +457,32 @@ namespace Nebula.Game
 
     public class PlayerData
     {
+        public class CosmicPartTimer
+        {
+            public float Timer { get; set; } = 0f;
+            public int Index { get; set; } = 0;
+        }
+
+        public class CosmicTimer
+        {
+            public CosmicPartTimer Visor { get; }
+            public CosmicPartTimer Hat { get; }
+
+            public CosmicTimer()
+            {
+                Visor = new CosmicPartTimer();
+                Hat = new CosmicPartTimer();
+            }
+        }
+
+        static private Dictionary<byte, CosmicTimer> Cosmic = new Dictionary<byte, CosmicTimer>();
+
+        static public CosmicTimer GetCosmicTimer(byte playerId)
+        {
+            if (!Cosmic.ContainsKey(playerId)) Cosmic[playerId] = new CosmicTimer();
+            return Cosmic[playerId];
+        }
+
         public class PlayerStatus
         {
             static private byte AvailableId = 0;
@@ -559,8 +585,6 @@ namespace Nebula.Game
         public Patches.FinalPlayerData.FinalPlayer? FinalData { get {
                 return Patches.OnGameEndPatch.FinalData.players.FirstOrDefault((p) => p.id == id);
         }}
-
-
 
         public PlayerData(PlayerControl player, string name,PlayerOutfit outfit,Role role)
         {

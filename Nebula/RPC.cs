@@ -429,13 +429,8 @@ namespace Nebula
                 if (player.PlayerId == PlayerControl.LocalPlayer.PlayerId)
                 {
                     Helpers.RoleAction(player.PlayerId, (role) => role.OnDied());
-                    
 
-                    Events.Schedule.RegisterPostMeetingAction(() =>
-                    {
-                        if (!PlayerControl.LocalPlayer.GetModData().IsAlive)
-                            Game.GameData.data.myData.CanSeeEveryoneInfo = true;
-                    });
+                    Game.GameData.data.myData.CanSeeEveryoneInfo = true;
                 }
 
                 if (MeetingHud.Instance != null)

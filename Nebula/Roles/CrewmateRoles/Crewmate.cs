@@ -41,10 +41,10 @@ namespace Nebula.Roles.CrewmateRoles
             return new List<Role>() { Roles.DamnedCrew };
         }
 
-        public Crewmate()
+        public Crewmate(bool hasFakeTask=false)
                 : base("Crewmate", "crewmate", Palette.CrewmateBlue, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                      crewmateSideSet, crewmateSideSet, crewmateEndSet,
-                     false, VentPermission.CanNotUse, false, false, false)
+                     hasFakeTask, VentPermission.CanNotUse, false, false, false)
         {
             IsHideRole = true;
             ValidGamemode = Module.CustomGameMode.Standard;

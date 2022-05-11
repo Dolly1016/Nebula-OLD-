@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -163,6 +164,36 @@ namespace Nebula
 			fileStream.Write(subChunk2, 0, 4);
 
 			//		fileStream.Close();
+		}
+
+		public static string TestFunc()
+        {
+			var methods= typeof(UnityEngine.Object).GetMethods(BindingFlags.Static | BindingFlags.Public);
+			var method = methods.First(m=> m.Name == "FindObjectsOfType" && m.GetParameters().Length==0).MakeGenericMethod(typeof(UnityEngine.SpriteRenderer));
+			object returned = method.Invoke(null, new object[0]);
+			Type type = returned.GetType();
+			var indexer = type.GetMethod("get_Item");
+			UnityEngine.GameObject obj = (indexer.Invoke(returned,new object[] { 0 }) as Component).gameObject;
+			
+			return obj.name;
+		}
+		
+		public static bool IsIndexerPropertyMethod(this MethodInfo method)
+		{
+			var declaringType = method.DeclaringType;
+			if (declaringType is null) return false;
+			var indexerProperty = GetIndexerProperty(method.DeclaringType);
+			if (indexerProperty is null) return false;
+			return method == indexerProperty.GetMethod || method == indexerProperty.SetMethod;
+		}
+
+		private static PropertyInfo GetIndexerProperty(this Type type)
+		{
+			var defaultPropertyAttribute = type.GetCustomAttributes<DefaultMemberAttribute>()
+				.FirstOrDefault();
+			if (defaultPropertyAttribute is null) return null;
+			return type.GetProperty(defaultPropertyAttribute.MemberName,
+				BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 		}
 	}
 }

@@ -49,40 +49,33 @@ namespace Nebula.Module
 
     public class CustomVHatImage : CustomVImage
     {
-        public override void LoadImage(string parent, bool fromDisk = false)
+        public override Sprite CreateSprite(Texture2D texture, Rect rect)
         {
-            Texture2D texture = fromDisk ? Helpers.loadTextureFromDisk(Path.GetDirectoryName(Application.dataPath) + "/" + parent + "/" + Address) : Helpers.loadTextureFromResources(parent + "." + Address);
-            if (texture == null)
-                return;
-            Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.53f, 0.575f), texture.width * 0.375f);
-            if (sprite == null)
-                return;
-            texture.hideFlags |= HideFlags.HideAndDontSave | HideFlags.DontUnloadUnusedAsset;
-            sprite.hideFlags |= HideFlags.HideAndDontSave | HideFlags.DontUnloadUnusedAsset;
-            Image = sprite;
+            return Sprite.Create(texture, rect, new Vector2(0.53f, 0.575f), 112.875f);
         }
 
-        public CustomVHatImage(string Id) : base(Id)
-        {
+        public CustomVHatImage(string Id):base(Id){
         }
     }
-
     public class CustomVImage : CustomVariable
     {
         public static implicit operator bool(CustomVImage image) { return image.Address != null; }
         public string? Hash { get; set; }
         public string? Address { get; set; }
-        public Sprite Image { get; set; }
-
+        public Sprite?[] Images { get; set; }
+        public Texture2D Texture { get; set; }
+        public int Length { get; set; }
+        
         private string SanitizeResourcePath(string res)
         {
-            if (res == null || !res.EndsWith(".png"))
+            if (res == null)
                 return null;
 
             res = res.Replace("\\", "")
                      .Replace("/", "")
                      .Replace("*", "")
                      .Replace("..", "");
+
             return res;
         }
 
@@ -90,6 +83,16 @@ namespace Nebula.Module
         {
             Address = SanitizeResourcePath(token?.get_Item("Address")?.ToString());
             Hash = SanitizeResourcePath(token?.get_Item("Hash")?.ToString());
+            try
+            {
+                Length = int.Parse(token?.get_Item("Length")?.ToString());
+            }
+            catch { Length = 1; }
+        }
+
+        public virtual Sprite CreateSprite(Texture2D texture,Rect rect)
+        {
+            return Sprite.Create(texture, rect, new Vector2(0.5f, 0.5f), 100f);
         }
 
         public override void LoadImage(string parent, bool fromDisk = false)
@@ -98,12 +101,19 @@ namespace Nebula.Module
             Texture2D texture = fromDisk ? Helpers.loadTextureFromDisk(Path.GetDirectoryName(Application.dataPath) + "/" + parent + "/" + Address) : Helpers.loadTextureFromResources(parent + "." + Address);
             if (texture == null)
                 return;
-            Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100f);
-            if (sprite == null)
-                return;
+
             texture.hideFlags |= HideFlags.HideAndDontSave | HideFlags.DontUnloadUnusedAsset;
-            sprite.hideFlags |= HideFlags.HideAndDontSave | HideFlags.DontUnloadUnusedAsset;
-            Image = sprite;
+
+            if (Images.Length != Length) Images = new Sprite?[Length];
+            int width = texture.width / Length;
+            for (int i = 0; i < Length; i++)
+            {
+                Sprite sprite = CreateSprite(texture, new Rect(width * i, 0, width, texture.height));
+                if (sprite == null)
+                    return;
+                sprite.hideFlags |= HideFlags.HideAndDontSave | HideFlags.DontUnloadUnusedAsset;
+                Images[i] = sprite;
+            }
         }
 
         public override bool DoesResourceRequireDownload(string directoryPath, MD5 md5)
@@ -147,7 +157,27 @@ namespace Nebula.Module
         public CustomVImage(string Id):base(Id)
         {
             Hash = Address = null;
-            Image = null;
+            Images = new Sprite[] {};
+            Length = 1;
+        }
+    }
+
+    public class CustomVSecPerFrame: CustomVariable
+    {
+        public float SecPerFrame;
+
+        protected override void LoadValue(JToken? token)
+        {
+            try
+            {
+                SecPerFrame = 1f / ((float)int.Parse(token?.ToString()));
+            }
+            catch { }
+        }
+
+        public CustomVSecPerFrame(string Id) : base(Id)
+        {
+            SecPerFrame = 1f;
         }
     }
 
@@ -222,23 +252,35 @@ namespace Nebula.Module
     {
         public CustomVHatImage I_Main { get; set; }
         public CustomVHatImage I_Flip { get; set; }
-        public CustomVHatImage I_BackFlip { get; set; }
         public CustomVHatImage I_Back { get; set; }
+        public CustomVHatImage I_BackFlip { get; set; }
+        public CustomVHatImage I_Move { get; set; }
+        public CustomVHatImage I_MoveFlip { get; set; }
+        public CustomVHatImage I_MoveBack { get; set; }
+        public CustomVHatImage I_MoveBackFlip { get; set; }
         public CustomVHatImage I_Climb { get; set; }
+        public CustomVHatImage I_ClimbFlip { get; set; }
         public CustomVBool Bounce { get; set; }
         public CustomVBool Adaptive { get; set; }
         public CustomVBool Behind { get; set; }
+        public CustomVSecPerFrame SecPerFrame { get; set; }
 
         protected override IEnumerable<CustomVariable> ExtendedContents()
         {
             yield return I_Main;
             yield return I_Flip;
-            yield return I_BackFlip;
             yield return I_Back;
+            yield return I_BackFlip;
+            yield return I_Move;
+            yield return I_MoveFlip;
+            yield return I_MoveBack;
+            yield return I_MoveBackFlip;
             yield return I_Climb;
+            yield return I_ClimbFlip;
             yield return Bounce;
             yield return Adaptive;
             yield return Behind;
+            yield return SecPerFrame;
             yield break;
         }
 
@@ -246,12 +288,18 @@ namespace Nebula.Module
         {
             I_Main = new CustomVHatImage("Main");
             I_Flip = new CustomVHatImage("Flip");
-            I_BackFlip = new CustomVHatImage("BackFlip");
             I_Back = new CustomVHatImage("Back");
+            I_BackFlip = new CustomVHatImage("BackFlip");
+            I_Move = new CustomVHatImage("Move");
+            I_MoveFlip = new CustomVHatImage("MoveFlip");
+            I_MoveBack = new CustomVHatImage("MoveBack");
+            I_MoveBackFlip = new CustomVHatImage("MoveBackFlip");
             I_Climb = new CustomVHatImage("Climb");
+            I_ClimbFlip = new CustomVHatImage("ClimbFlip");
             Bounce = new CustomVBool("Bounce");
             Adaptive = new CustomVBool("Adaptive");
             Behind = new CustomVBool("Behind");
+            SecPerFrame = new CustomVSecPerFrame("FPS");
         }
     }
 
@@ -271,6 +319,31 @@ namespace Nebula.Module
         }
     }
 
+    public class CustomVisor : CustomItem
+    {
+        public CustomVHatImage I_Main { get; set; }
+        public CustomVHatImage I_Flip { get; set; }
+        public CustomVBool Adaptive { get; set; }
+        public CustomVSecPerFrame SecPerFrame { get; set; }
+
+        protected override IEnumerable<CustomVariable> ExtendedContents()
+        {
+            yield return I_Main;
+            yield return I_Flip;
+            yield return Adaptive;
+            yield return SecPerFrame;
+            yield break;
+        }
+
+        public CustomVisor() : base()
+        {
+            I_Main = new CustomVHatImage("Main");
+            I_Flip = new CustomVHatImage("Flip");
+            Adaptive = new CustomVBool("Adaptive");
+            SecPerFrame = new CustomVSecPerFrame("FPS");
+        }
+    }
+
     [HarmonyPatch]
     public class CustomParts
     {
@@ -278,35 +351,40 @@ namespace Nebula.Module
 
         public static Dictionary<string, CustomHat> CustomHatRegistry = new Dictionary<string, CustomHat>();
         public static Dictionary<string, CustomNamePlate> CustomNamePlateRegistry = new Dictionary<string, CustomNamePlate>();
+        public static Dictionary<string, CustomVisor> CustomVisorRegistry = new Dictionary<string, CustomVisor>();
         public static CustomHat TestHat = null;
         public static CustomNamePlate TestNamePlate = null;
+        public static CustomVisor TestVisor = null;
 
         private static HatData CreateHatBehaviour(CustomHat ch, bool fromDisk = false, bool testOnly = false)
         {
             if (hatShader == null)
                 hatShader = DestroyableSingleton<HatManager>.Instance.PlayerMaterial;
-
-            foreach(var content in ch.Contents())
+            
+            foreach (var content in ch.Contents())
             {
                 content.LoadImage("MoreCosmic/hats", fromDisk);
             }
-
+            
             HatData hat = ScriptableObject.CreateInstance<HatData>();
             hat.hatViewData.viewData= ScriptableObject.CreateInstance<HatViewData>();
             HatViewData viewData = hat.hatViewData.viewData;
-
-            viewData.MainImage = ch.I_Main.Image;
+            
+            viewData.MainImage = ch.I_Main.Images[0];
             if (ch.I_Flip)
-                viewData.LeftMainImage = ch.I_Flip.Image;
+                viewData.LeftMainImage = ch.I_Flip.Images[0];
             if (ch.I_Back)
             {
-                viewData.BackImage = ch.I_Back.Image;
+                viewData.BackImage = ch.I_Back.Images[0];
                 ch.Behind.Value = true;
             }
             if (ch.I_Climb)
-                viewData.ClimbImage = ch.I_Climb.Image;
+                viewData.ClimbImage = ch.I_Climb.Images[0];
+            if (ch.I_ClimbFlip)
+                viewData.LeftClimbImage = ch.I_ClimbFlip.Images[0];
             if (ch.I_BackFlip)
-                viewData.LeftBackImage = ch.I_BackFlip.Image;
+                viewData.LeftBackImage = ch.I_BackFlip.Images[0];
+
             hat.StoreName = ch.Name.Value + "\nby " + ch.Author.Value;
             hat.name = hat.StoreName;
             //hat.Order = 99;
@@ -316,7 +394,6 @@ namespace Nebula.Module
             hat.ChipOffset = new Vector2(0f, 0.2f);
             hat.Free = true;
             hat.NotInStore = true;
-
 
             if (ch.Adaptive.Value && hatShader != null)
                 viewData.AltShader = hatShader;
@@ -330,7 +407,6 @@ namespace Nebula.Module
             {
                 CustomHatRegistry.Add(hat.name, ch);
             }
-
             return hat;
         }
 
@@ -343,7 +419,7 @@ namespace Nebula.Module
 
             NamePlateData np = ScriptableObject.CreateInstance<NamePlateData>();
             np.viewData.viewData = ScriptableObject.CreateInstance<NamePlateViewData>();
-            np.viewData.viewData.Image = ch.I_Plate.Image;
+            np.viewData.viewData.Image = ch.I_Plate.Images[0];
             np.name = ch.Name.Value + "\nby " + ch.Author.Value;
             //np.Order = 99;
             np.ProductId = "nameplate_" + ch.Name.Value.Replace(' ', '_');
@@ -362,6 +438,38 @@ namespace Nebula.Module
             }
 
             return np;
+        }
+
+        private static VisorData CreateVisorData(CustomVisor ch, bool fromDisk = false, bool testOnly = false)
+        {
+            foreach (var content in ch.Contents())
+            {
+                content.LoadImage("MoreCosmic/visors", fromDisk);
+            }
+
+            VisorData vd = ScriptableObject.CreateInstance<VisorData>();
+            vd.viewData.viewData = ScriptableObject.CreateInstance<VisorViewData>();
+            vd.viewData.viewData.IdleFrame = ch.I_Main.Images[0];
+            if (ch.I_Flip)
+                vd.viewData.viewData.LeftIdleFrame = ch.I_Flip.Images[0];
+            vd.name = ch.Name.Value + "\nby " + ch.Author.Value;
+            //np.Order = 99;
+            vd.ProductId = "visor_" + ch.Name.Value.Replace(' ', '_');
+            vd.ChipOffset = new Vector2(0f, 0.2f);
+            vd.Free = true;
+            vd.NotInStore = true;
+
+            if (testOnly)
+            {
+                TestVisor = ch;
+                TestVisor.Condition.Value = vd.name;
+            }
+            else
+            {
+                CustomVisorRegistry.Add(vd.name, ch);
+            }
+
+            return vd;
         }
 
         [HarmonyPatch(typeof(HatManager), nameof(HatManager.GetHatById))]
@@ -428,10 +536,49 @@ namespace Nebula.Module
             }
         }
 
+        [HarmonyPatch(typeof(HatManager), nameof(HatManager.GetVisorById))]
+        private static class VisorManagerPatch
+        {
+            private static bool LOADED;
+            private static bool RUNNING;
+
+            static void Prefix(HatManager __instance)
+            {
+                if (RUNNING) return;
+                RUNNING = true; // prevent simultanious execution
+
+                try
+                {
+                    while (CosmicLoader.visordetails.Count > 0)
+                    {
+                        __instance.allVisors.Add(CreateVisorData(CosmicLoader.visordetails[0], true));
+                        CosmicLoader.visordetails.RemoveAt(0);
+                    }
+                }
+                catch (System.Exception e)
+                {
+                    if (!LOADED)
+                        System.Console.WriteLine("Unable to add Custom Hats\n" + e);
+                }
+                LOADED = true;
+            }
+            static void Postfix(HatManager __instance)
+            {
+                RUNNING = false;
+            }
+        }
+
         [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.HandleAnimation))]
         private static class PlayerPhysicsHandleAnimationPatch
         {
-            private static void Postfix(PlayerPhysics __instance)
+            private static Sprite? UpdateAndGetSprite(Game.PlayerData.CosmicPartTimer cosmicTimer,Sprite?[] sprites)
+            {
+                if (sprites.Length == 0) return null;
+                if (cosmicTimer.Index >= sprites.Length) cosmicTimer.Index = 0;
+                return sprites[cosmicTimer.Index];
+            }
+
+            private static void HandleHat(PlayerPhysics __instance)
             {
                 AnimationClip currentAnimation = __instance.Animator.GetCurrentAnimation();
                 if (currentAnimation == __instance.CurrentAnimationGroup.ClimbAnim || currentAnimation == __instance.CurrentAnimationGroup.ClimbDownAnim) return;
@@ -439,37 +586,57 @@ namespace Nebula.Module
                 if (hp.Hat == null) return;
                 CustomHat extend = hp.Hat.getHatData();
                 if (extend == null) return;
-                if (extend.I_Flip)
+
+                var cosmicTimer = Game.PlayerData.GetCosmicTimer(__instance.myPlayer.PlayerId).Hat;
+                cosmicTimer.Timer -= Time.deltaTime;
+                if (cosmicTimer.Timer < 0f) { cosmicTimer.Timer = extend.SecPerFrame.SecPerFrame; cosmicTimer.Index++; }
+
+                if (currentAnimation == __instance.CurrentAnimationGroup.RunAnim)
                 {
-                    if (__instance.rend.flipX)
-                    {
-                        hp.FrontLayer.sprite = extend.I_Flip.Image;
-                    }
-                    else
-                    {
-                        hp.FrontLayer.sprite = hp.Hat.hatViewData.viewData.MainImage;
-                    }
+                    if (extend.I_Move)
+                        hp.FrontLayer.sprite = UpdateAndGetSprite(cosmicTimer, (__instance.rend.flipX && extend.I_MoveFlip) ? extend.I_MoveFlip.Images : extend.I_Move.Images);
+                    if (extend.I_MoveBack)
+                        hp.BackLayer.sprite = UpdateAndGetSprite(cosmicTimer, (__instance.rend.flipX && extend.I_MoveBackFlip) ? extend.I_MoveBackFlip.Images : extend.I_MoveBack.Images);
                 }
-                if (extend.I_BackFlip)
+                else
                 {
-                    if (__instance.rend.flipX)
-                    {
-                        hp.BackLayer.sprite = extend.I_BackFlip.Image;
-                    }
-                    else
-                    {
-                        hp.BackLayer.sprite = hp.Hat.hatViewData.viewData.BackImage;
-                    }
+                    hp.FrontLayer.sprite = UpdateAndGetSprite(cosmicTimer, (__instance.rend.flipX && extend.I_Flip) ? extend.I_Flip.Images : extend.I_Main.Images);
+                    hp.BackLayer.sprite = UpdateAndGetSprite(cosmicTimer, (__instance.rend.flipX && extend.I_BackFlip) ? extend.I_BackFlip.Images : extend.I_Back.Images);
                 }
+            }
+
+            private static void HandleVisor(PlayerPhysics __instance)
+            {
+                AnimationClip currentAnimation = __instance.Animator.GetCurrentAnimation();
+                if (currentAnimation == __instance.CurrentAnimationGroup.ClimbAnim || currentAnimation == __instance.CurrentAnimationGroup.ClimbDownAnim) return;
+
+                var visor = __instance.myPlayer.VisorSlot;
+                if (visor.currentVisor == null) return;
+                CustomVisor extend = visor.currentVisor.getVisorData();
+                if (extend == null) return;
+
+                var cosmicTimer = Game.PlayerData.GetCosmicTimer(__instance.myPlayer.PlayerId).Visor;
+                cosmicTimer.Timer -= Time.deltaTime;
+                if (cosmicTimer.Timer < 0f) { cosmicTimer.Timer = extend.SecPerFrame.SecPerFrame; cosmicTimer.Index++; }
+
+                visor.Image.sprite = UpdateAndGetSprite(cosmicTimer, (__instance.rend.flipX && extend.I_Flip) ? extend.I_Flip.Images : extend.I_Main.Images);
+            }
+
+            private static void Postfix(PlayerPhysics __instance)
+            {
+                HandleHat(__instance);
+                HandleVisor(__instance);
             }
         }
 
 
         private static List<TMPro.TMP_Text> hatsTabCustomTexts = new List<TMPro.TMP_Text>();
         private static List<TMPro.TMP_Text> nameplatesTabCustomTexts = new List<TMPro.TMP_Text>();
+        private static List<TMPro.TMP_Text> visorsTabCustomTexts = new List<TMPro.TMP_Text>();
 
         public static string innerslothHatPackageName = "innerslothHats";
         public static string innerslothNamePlatePackageName = "innerslothNameplates";
+        public static string innerslothVisorPackageName = "innerslothVisors";
         private static float headerSize = 0.8f;
         private static float headerX = 0.8f;
         private static float inventoryTop = 1.5f;
@@ -496,12 +663,12 @@ namespace Nebula.Module
                     TMPro.TMP_Text title = UnityEngine.Object.Instantiate<TMPro.TMP_Text>(textTemplate, __instance.scroller.Inner);
                     title.transform.parent = __instance.scroller.Inner;
                     title.transform.localPosition = new Vector3(headerX, YStart, inventoryZ);
+                    title.text = Language.Language.GetString("cosmic.package." + packageName);
                     title.alignment = TMPro.TextAlignmentOptions.Center;
-                    title.fontSize *= 1.25f;
+                    title.fontSize = 5f;
                     title.fontWeight = TMPro.FontWeight.Thin;
                     title.enableAutoSizing = false;
                     title.autoSizeTextContainer = true;
-                    title.text = Language.Language.GetString("cosmic.package."+packageName);
                     offset -= headerSize * __instance.YOffset;
                     hatsTabCustomTexts.Add(title);
                 }
@@ -607,12 +774,12 @@ namespace Nebula.Module
                     TMPro.TMP_Text title = UnityEngine.Object.Instantiate<TMPro.TMP_Text>(textTemplate, __instance.scroller.Inner);
                     title.transform.parent = __instance.scroller.Inner;
                     title.transform.localPosition = new Vector3(headerX, YStart, inventoryZ);
+                    title.text = Language.Language.GetString("cosmic.package." + packageName);
                     title.alignment = TMPro.TextAlignmentOptions.Center;
-                    title.fontSize *= 1.25f;
+                    title.fontSize = 5f;
                     title.fontWeight = TMPro.FontWeight.Thin;
                     title.enableAutoSizing = false;
                     title.autoSizeTextContainer = true;
-                    title.text = Language.Language.GetString("cosmic.package." + packageName);
                     offset -= headerSize * __instance.YOffset;
                     nameplatesTabCustomTexts.Add(title);
                 }
@@ -705,6 +872,124 @@ namespace Nebula.Module
             }
         }
 
+        [HarmonyPatch(typeof(VisorsTab), nameof(VisorsTab.OnEnable))]
+        public class VisorTabOnEnablePatch
+        {
+            public static TMPro.TMP_Text textTemplate;
+
+            public static float createVisorPackage(List<System.Tuple<VisorData, CustomVisor>> visors, string packageName, float YStart, VisorsTab __instance)
+            {
+                float offset = YStart;
+
+                if (textTemplate != null)
+                {
+                    TMPro.TMP_Text title = UnityEngine.Object.Instantiate<TMPro.TMP_Text>(textTemplate, __instance.scroller.Inner);
+                    title.transform.parent = __instance.scroller.Inner;
+                    title.transform.localPosition = new Vector3(headerX, YStart, inventoryZ);
+                    title.text = Language.Language.GetString("cosmic.package." + packageName);
+                    title.alignment = TMPro.TextAlignmentOptions.Center;
+                    title.fontSize = 5f;
+                    title.fontWeight = TMPro.FontWeight.Thin;
+                    title.enableAutoSizing = false;
+                    title.autoSizeTextContainer = true;
+                    offset -= headerSize * __instance.YOffset;
+                    visorsTabCustomTexts.Add(title);
+                }
+
+                var numVisors = visors.Count;
+
+                for (int i = 0; i < visors.Count; i++)
+                {
+                    VisorData visor = visors[i].Item1;
+                    CustomVisor ext = visors[i].Item2;
+
+                    float xpos = __instance.XRange.Lerp((i % __instance.NumPerRow) / (__instance.NumPerRow - 1f));
+                    float ypos = offset - (i / __instance.NumPerRow) * __instance.YOffset;
+                    ColorChip colorChip = UnityEngine.Object.Instantiate<ColorChip>(__instance.ColorTabPrefab, __instance.scroller.Inner);
+
+
+                    colorChip.transform.localPosition = new Vector3(xpos, ypos, inventoryZ);
+                    if (ActiveInputManager.currentControlType == ActiveInputManager.InputType.Keyboard)
+                    {
+                        colorChip.Button.OnMouseOver.AddListener((UnityEngine.Events.UnityAction)(() => __instance.SelectVisor(colorChip,visor)));
+                        colorChip.Button.OnMouseOut.AddListener((UnityEngine.Events.UnityAction)(() => __instance.SelectVisor(colorChip, DestroyableSingleton<HatManager>.Instance.GetVisorById(SaveManager.LastVisor))));
+                        colorChip.Button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => __instance.ClickEquip()));
+                    }
+                    else
+                    {
+                        colorChip.Button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => __instance.SelectVisor(colorChip, visor)));
+                    }
+
+
+                    colorChip.Button.ClickMask = __instance.scroller.Hitbox;
+                    colorChip.ProductId = visor.ProductId;
+                    colorChip.Inner.transform.localPosition = visor.ChipOffset;
+                    colorChip.Tag = visor.ProdId;
+                    colorChip.SelectionHighlight.gameObject.SetActive(false);
+
+                    __instance.StartCoroutine(visor.CoLoadViewData((Il2CppSystem.Action<VisorViewData>)((v) => {
+                        colorChip.Inner.FrontLayer.sprite = v.IdleFrame;
+                    })));
+                    
+
+                    __instance.ColorChips.Add(colorChip);
+                }
+
+                return offset - ((numVisors - 1) / __instance.NumPerRow) * __instance.YOffset - headerSize;
+            }
+
+            public static bool Prefix(VisorsTab __instance)
+            {
+                calcItemBounds(__instance);
+
+                VisorData[] unlockedVisors = DestroyableSingleton<HatManager>.Instance.GetUnlockedVisors();
+                Dictionary<string, List<System.Tuple<VisorData, CustomVisor>>> packages = new Dictionary<string, List<System.Tuple<VisorData, CustomVisor>>>();
+
+                Helpers.destroyList(visorsTabCustomTexts);
+                Helpers.destroyList(__instance.ColorChips);
+
+                visorsTabCustomTexts.Clear();
+                __instance.ColorChips.Clear();
+
+                textTemplate = PlayerCustomizationMenu.Instance.itemName;
+
+                foreach (VisorData visor in unlockedVisors)
+                {
+                    CustomVisor ext = visor.getVisorData();
+
+                    if (ext != null)
+                    {
+                        if (!packages.ContainsKey(ext.Package.Value))
+                            packages[ext.Package.Value] = new List<System.Tuple<VisorData, CustomVisor>>();
+                        packages[ext.Package.Value].Add(new System.Tuple<VisorData, CustomVisor>(visor, ext));
+                    }
+                    else
+                    {
+                        if (!packages.ContainsKey(innerslothVisorPackageName))
+                            packages[innerslothVisorPackageName] = new List<System.Tuple<VisorData, CustomVisor>>();
+                        packages[innerslothVisorPackageName].Add(new System.Tuple<VisorData, CustomVisor>(visor, null));
+                    }
+                }
+
+                float YOffset = __instance.YStart;
+
+                var orderedKeys = packages.Keys.OrderBy((string x) => {
+                    if (x == innerslothVisorPackageName) return 1000;
+                    if (x == "developerVisors") return 200;
+                    return 500;
+                });
+
+                foreach (string key in orderedKeys)
+                {
+                    List<System.Tuple<VisorData, CustomVisor>> value = packages[key];
+                    YOffset = createVisorPackage(value, key, YOffset, __instance);
+                }
+
+                __instance.scroller.ContentYBounds.max = -(YOffset + 3.0f + headerSize);
+                return false;
+            }
+        }
+
         [HarmonyPatch]
         public class TabUpdatePatch {
             private static void TabPostFix(InventoryTab __instance)
@@ -750,6 +1035,21 @@ namespace Nebula.Module
                     TabPostFix(__instance);
                 }
             }
+
+            [HarmonyPatch(typeof(VisorsTab), nameof(VisorsTab.Update))]
+            public class VisorsTabUpdatePatch
+            {
+                public static bool Prefix()
+                {
+                    //return false;
+                    return true;
+                }
+
+                public static void Postfix(VisorsTab __instance)
+                {
+                    TabPostFix(__instance);
+                }
+            }
         }
 
 
@@ -766,6 +1066,7 @@ namespace Nebula.Module
 
         public static List<CustomHat> hatdetails = new List<CustomHat>();
         public static List<CustomNamePlate> namePlatedetails = new List<CustomNamePlate>();
+        public static List<CustomVisor> visordetails = new List<CustomVisor>();
 
         private static Task cosmicFetchTask = null;
 
@@ -782,6 +1083,7 @@ namespace Nebula.Module
             System.IO.Directory.CreateDirectory("MoreCosmic");
             System.IO.Directory.CreateDirectory("MoreCosmic/hats");
             System.IO.Directory.CreateDirectory("MoreCosmic/namePlates");
+            System.IO.Directory.CreateDirectory("MoreCosmic/visors");
 
             List<string> repos = new List<string>(cosmicRepos);
 
@@ -796,6 +1098,10 @@ namespace Nebula.Module
                         System.Console.WriteLine($"Repo was not found. : {repo}\n");
 
                     status = await FetchItems(repo, "namePlates", namePlatedetails);
+                    if (status != HttpStatusCode.OK)
+                        System.Console.WriteLine($"Repo was not found. : {repo}\n");
+
+                    status = await FetchItems(repo, "visors", visordetails);
                     if (status != HttpStatusCode.OK)
                         System.Console.WriteLine($"Repo was not found. : {repo}\n");
                 }
@@ -886,6 +1192,17 @@ namespace Nebula.Module
             CustomParts.CustomNamePlateRegistry.TryGetValue(namePlate.name, out ret);
             return ret;
         }
+
+        public static CustomVisor getVisorData(this VisorData visorData)
+        {
+            CustomVisor ret = null;
+            if (CustomParts.TestVisor != null && CustomParts.TestVisor.Condition.Value.Equals(visorData.name))
+            {
+                return CustomParts.TestVisor;
+            }
+            CustomParts.CustomVisorRegistry.TryGetValue(visorData.name, out ret);
+            return ret;
+        }
     }
 
     [HarmonyPatch(typeof(PoolablePlayer), nameof(PoolablePlayer.UpdateFromPlayerOutfit))]
@@ -902,6 +1219,39 @@ namespace Nebula.Module
                 __instance.VisorSlot.transform.localPosition.y,
                 __instance.HatSlot.transform.localPosition.z - 1
                 );
+        }
+    }
+
+    [HarmonyPatch(typeof(VisorLayer), nameof(VisorLayer.SetVisor),typeof(VisorData))]
+    public static class ChangeVisor1Patch
+    {
+        public static void Postfix(VisorLayer __instance,[HarmonyArgument(0)] VisorData data)
+        {
+            var extend = data.getVisorData();
+            if (extend == null || !extend.Adaptive.Value) {
+                __instance.Image.material= DestroyableSingleton<HatManager>.Instance.DefaultShader;
+            }
+            else
+            {
+                __instance.Image.material = DestroyableSingleton<HatManager>.Instance.PlayerMaterial;
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(VisorLayer), nameof(VisorLayer.SetVisor), typeof(VisorData),typeof(VisorViewData))]
+    public static class ChangeVisor2Patch
+    {
+        public static void Postfix(VisorLayer __instance, [HarmonyArgument(0)] VisorData data)
+        {
+            var extend = data.getVisorData();
+            if (extend == null || !extend.Adaptive.Value)
+            {
+                __instance.Image.material = DestroyableSingleton<HatManager>.Instance.DefaultShader;
+            }
+            else
+            {
+                __instance.Image.material = DestroyableSingleton<HatManager>.Instance.PlayerMaterial;
+            }
         }
     }
 }

@@ -46,7 +46,7 @@ namespace Nebula.Roles.ImpostorRoles
         public override void MyPlayerControlUpdate()
         {
             Game.MyPlayerData data = Game.GameData.data.myData;
-            data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(1f);
+            data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(1f,true);
             Patches.PlayerControlPatch.SetPlayerOutline(data.currentTarget, Color.yellow);
         }
 
@@ -60,7 +60,9 @@ namespace Nebula.Roles.ImpostorRoles
             eraserButton = new CustomButton(
                 () =>
                 {
-                    RPCEventInvoker.ChangeRole(Game.GameData.data.myData.currentTarget,Roles.Crewmate);
+                    RPCEventInvoker.ChangeRole(Game.GameData.data.myData.currentTarget,
+                        Game.GameData.data.myData.currentTarget.GetModData().role.HasFakeTask?
+                        Roles.CrewmateWithoutTasks:Roles.Crewmate);
                     Game.GameData.data.myData.currentTarget = null;
 
                     RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, eraseCountId, 1);

@@ -31,6 +31,9 @@ namespace Nebula.Roles
     {
         public byte id { get; private set; }
         public RoleCategory category { get; }
+        public virtual RoleCategory oracleCategory { get { return category; } }
+        public virtual Role oracleRole { get { return this; } }
+
         /// <summary>
         /// 勝ち負け判定に使用する陣営
         /// </summary>

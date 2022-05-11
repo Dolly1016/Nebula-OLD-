@@ -259,6 +259,8 @@ namespace Nebula
             spriteAnim.m_animator.Update(0f);
             */
 
+            //死体のペットは変更しない(生き返ってしまうため)
+            if (target.Data.IsDead) return;
             if (target.CurrentPet) UnityEngine.Object.Destroy(target.CurrentPet.gameObject);
             target.CurrentPet = UnityEngine.Object.Instantiate<PetBehaviour>(DestroyableSingleton<HatManager>.Instance.GetPetById(petId).viewData.viewData);
             target.CurrentPet.transform.position = target.transform.position;
