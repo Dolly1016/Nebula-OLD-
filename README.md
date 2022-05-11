@@ -33,6 +33,8 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.9.2.1 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.2.1,2022.3.29.1/Nebula_v1.9.2.1.zip)|
+| 1.9.2 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.2,2022.3.29.1/Nebula_v1.9.2.zip)|
 | 1.9.1 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.1,2022.3.29.1/Nebula_v1.9.1.zip)|
 | 1.9.0 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.0,2022.3.29.1/Nebula_v1.9.0.zip)|
 | 1.8.4.2 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.4.2,2022.3.29.1/Nebula_v1.8.4.2.zip)|
@@ -165,15 +167,27 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 | Language | Translator | Full Support Version | Download |
 | --- | --- | --- | --- |
 | 日本語 | - | 1.8.1.4 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.1.3,2022.3.29/Japanese.dat)|
-| 日本語 | kihi | 1.8.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.8.2%2Ckihi/Japanese.dat)|
-| 日本語 | Rey | 1.8.1.4 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.8.1.4%2CRey/Japanese.dat)|
+| 日本語 | kihi | 1.9.2.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.9.2.1%2Ckihi/Japanese.dat)|
+| 日本語 | ゆうみや | 1.9.2.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.9.2.1%2Cゆうみや/Japanese.dat)|
+| 日本語 | Rey | 1.9.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.9.1%2CRey/Japanese.dat)|
 | 日本語 | Tanakanira | 1.6.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.6.0%2CTanakanira/Japanese.dat)|
-| 簡体中文 | 四个憨批汉化组 | 1.8.1.4 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CSC%2C1.8.1.4%2C四个憨批汉化组/SChinese.dat)|
-| English | - | 1.9.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.1,2022.3.29.1/English.dat)|
+| 簡体中文 | 四个憨批汉化组 | 1.9.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CSC%2C1.9.1%2C四个憨批汉化组/SChinese.dat)|
+| English | - | 1.9.2.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.2,2022.3.29.1/English.dat)|
 
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+  
+ **Version 1.9.2.1**
+ - カスタムバイザーが正しく動いていなかった問題を修正
+ - プレイヤーの色に準じたカスタムバイザーが使用可能に
+ - Madmateが占いの上でのみインポスター陣営として扱われるように
+ - ペットを引き連れたプレイヤーが死んだ後にカモフラージュを挟むと、ペットが生存者から見えるようになってしまう問題を修正
+  
+ **Version 1.9.2**
+ - カスタムバイザーを追加
+ - アニメーションするハットが使用可能に
+ - Evil Aceに、役職が見える死体を制限するオプション「Can Know Roles Only My Murders」を追加
   
  **Version 1.9.1**
  - Evil Aceに、赤文字除く死体の役職が見えるオプション「Can Know Dead Non-Impostors Roles」を追加
@@ -930,12 +944,15 @@ p5p5next : Damned
 -----------------------
 
 ## Evil Ace
- Evil Aceは、味方のインポスターがいなくなったときにキルクールダウンが早まります。
+ Evil Aceは、味方のインポスターがいなくなったときにキルクールダウンが早まります。\
+ また、死んだプレイヤーの役職を知ることもできます。
  
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
 | Kill Cool Down Multiplier | インポスター陣営が1人だけのときにクールダウンにかかる倍率 
+| Can Know Dead Non-Impostors Roles | 死んだプレイヤーの役職を知れるかどうか
+| Can Know Roles Only My Murders | 役職通知を自身がキルしたプレイヤーに限るかどうか
 
 -----------------------
 
