@@ -171,7 +171,7 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 | 日本語 | Rey | 1.9.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.9.1%2CRey/Japanese.dat)|
 | 日本語 | Tanakanira | 1.6.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.6.0%2CTanakanira/Japanese.dat)|
 | 簡体中文 | 四个憨批汉化组 | 1.9.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CSC%2C1.9.1%2C四个憨批汉化组/SChinese.dat)|
-| English | - | 1.9.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.1,2022.3.29.1/English.dat)|
+| English | - | 1.9.2.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.2,2022.3.29.1/English.dat)|
 
 # 更新履歴
 <details>
