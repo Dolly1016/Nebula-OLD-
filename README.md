@@ -33,6 +33,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.9.2.1 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.2.1,2022.3.29.1/Nebula_v1.9.2.1.zip)|
 | 1.9.2 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.2,2022.3.29.1/Nebula_v1.9.2.zip)|
 | 1.9.1 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.1,2022.3.29.1/Nebula_v1.9.1.zip)|
 | 1.9.0 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.0,2022.3.29.1/Nebula_v1.9.0.zip)|
@@ -176,6 +177,17 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+  
+ **Version 1.9.2.1**
+ - カスタムバイザーが正しく動いていなかった問題を修正
+ - プレイヤーの色に準じたカスタムバイザーが使用可能に
+ - Madmateが占いの上でのみインポスター陣営として扱われるように
+ - ペットを引き連れたプレイヤーが死んだ後にカモフラージュを挟むと、ペットが生存者から見えるようになってしまう問題を修正
+  
+ **Version 1.9.2**
+ - カスタムバイザーを追加
+ - アニメーションするハットが使用可能に
+ - Evil Aceに、役職が見える死体を制限するオプション「Can Know Roles Only My Murders」を追加
   
  **Version 1.9.1**
  - Evil Aceに、赤文字除く死体の役職が見えるオプション「Can Know Dead Non-Impostors Roles」を追加
