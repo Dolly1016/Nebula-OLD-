@@ -141,7 +141,7 @@ namespace Nebula.Roles.NeutralRoles
             }
         }
 
-        public override void OnDied(byte playerId)
+        private void ChangeSidekickToJackal(byte playerId)
         {
             //SidekickをJackalに昇格
 
@@ -162,7 +162,7 @@ namespace Nebula.Roles.NeutralRoles
                     //プレイヤーを抽出し、追加役職としてのSidekickを除去
 
                     if (!player.HasExtraRole(Roles.SecondarySidekick)) continue;
-                    if (player.GetExtraRoleData(Roles.SecondarySidekick)!= (ulong)jackalId) continue;
+                    if (player.GetExtraRoleData(Roles.SecondarySidekick) != (ulong)jackalId) continue;
 
                     RPCEvents.UnsetExtraRole(Roles.SecondarySidekick, player.id);
                 }
@@ -171,6 +171,19 @@ namespace Nebula.Roles.NeutralRoles
                 RPCEvents.UpdateRoleData(player.id, jackalDataId, jackalId);
                 RPCEvents.UpdateRoleData(player.id, leftSidekickDataId, Sidekick.SidekickCanCreateSidekickOption.getBool() ? 1 : 0);
             }
+        }
+
+        public override void FinalizeInGame(PlayerControl __instance)
+        {
+            base.FinalizeInGame(__instance);
+
+            ChangeSidekickToJackal(__instance.PlayerId);
+
+        }
+
+        public override void OnDied(byte playerId)
+        {
+            ChangeSidekickToJackal(playerId);
         }
 
         public override void EditDisplayNameColor(byte playerId, ref Color displayColor)

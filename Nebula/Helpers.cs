@@ -596,6 +596,26 @@ namespace Nebula
             HudManager.Instance.Dialogue.transform.localPosition = new Vector3(0, 0, -920);
             HudManager.Instance.ShowPopUp(Language.Language.GetString(text));
         }
+
+        public static bool AnyShadowsBetween(Vector2 source, Vector2 dirNorm, float mag)
+        {
+            int num = Physics2D.RaycastNonAlloc(source, dirNorm, PhysicsHelpers.castHits, mag, Constants.ShadowMask);
+            bool result = false;
+            Collider2D c;
+            for (int i= 0;i < num;i++)
+            {
+                c = PhysicsHelpers.castHits[i].collider;
+                if (c.isTrigger) continue;
+                if (LightSource.NoShadows.ContainsKey(c.gameObject))
+                    if (LightSource.NoShadows.get_Item(c.gameObject).hitOverride == c) continue;
+                if (LightSource.OneWayShadows.ContainsKey(c.gameObject))
+                    if (LightSource.OneWayShadows.get_Item(c.gameObject).IsIgnored(PlayerControl.LocalPlayer.myLight)) continue;
+
+                result = true;
+                break;
+            }
+            return result;
+        }
     }
 }
 

@@ -132,7 +132,8 @@ namespace Nebula
                     RPCEvents.UnsetExtraRole(Roles.ExtraRole.GetRoleById(reader.ReadByte()), reader.ReadByte());
                     break;
                 case (byte)CustomRPC.ChangeExtraRole:
-                    RPCEvents.ChangeExtraRole(Roles.ExtraRole.GetRoleById(reader.ReadByte()), Roles.ExtraRole.GetRoleById(reader.ReadByte()), reader.ReadUInt64(), reader.ReadByte());
+                    byte removeRole = reader.ReadByte();
+                    RPCEvents.ChangeExtraRole(removeRole == byte.MaxValue ? Roles.ExtraRole.GetRoleById(removeRole) : null, Roles.ExtraRole.GetRoleById(reader.ReadByte()), reader.ReadUInt64(), reader.ReadByte());
                     break;
                 case (byte)CustomRPC.UncheckedMurderPlayer:
                     RPCEvents.UncheckedMurderPlayer(reader.ReadByte(), reader.ReadByte(), reader.ReadByte(), reader.ReadByte());
@@ -343,7 +344,7 @@ namespace Nebula
             Game.GameData.data.players[playerId].extraRole.Remove(role);
         }
 
-        public static void ChangeExtraRole(Roles.ExtraRole removeRole, Roles.ExtraRole addRole, ulong initializeValue, byte playerId)
+        public static void ChangeExtraRole(Roles.ExtraRole? removeRole, Roles.ExtraRole addRole, ulong initializeValue, byte playerId)
         {
             if (removeRole!=null && Helpers.GetModData(playerId).extraRole.Contains(removeRole))
             {
@@ -1196,6 +1197,17 @@ namespace Nebula
             writer.Write(player.PlayerId);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.ChangeExtraRole(removeRole, addRole, initializeValue, player.PlayerId);
+        }
+
+        public static void AddExtraRole(PlayerControl player, Roles.ExtraRole addRole, ulong initializeValue)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ChangeExtraRole, Hazel.SendOption.Reliable, -1);
+            writer.Write(byte.MaxValue);
+            writer.Write(addRole.id);
+            writer.Write(initializeValue);
+            writer.Write(player.PlayerId);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.ChangeExtraRole(null,addRole, initializeValue, player.PlayerId);
         }
 
         public static void RevivePlayer(PlayerControl player)

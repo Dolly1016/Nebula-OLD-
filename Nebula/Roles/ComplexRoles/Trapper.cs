@@ -22,6 +22,7 @@ namespace Nebula.Roles.ComplexRoles
         public Module.CustomOption decelTrapDurationOption;
         public Module.CustomOption commButtonCostOption;
         public Module.CustomOption killButtonCostOption;
+        public Module.CustomOption rootOnPlacingTrapsOption;
         public Module.CustomOption rootTimeOption;
 
         static public Color RoleColor = new Color(206f / 255f, 219f / 255f, 96f / 255f);
@@ -81,7 +82,9 @@ namespace Nebula.Roles.ComplexRoles
             killButtonCostOption = CreateOption(Color.white, "killTrapCost", 2f, 1f, 15f, 1f);
             killButtonCostOption.suffix = "cross";
 
-            rootTimeOption = CreateOption(Color.white, "rootTime", 2f, 0f, 10f, 0.5f);
+            rootOnPlacingTrapsOption = CreateOption(Color.white, "rootOnPlacingTraps", true);
+
+            rootTimeOption = CreateOption(Color.white, "rootTime", 2f, 2f, 3f, 0.5f);
             rootTimeOption.suffix = "second";
 
             FirstRole = Roles.NiceTrapper;

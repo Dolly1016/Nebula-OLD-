@@ -115,7 +115,7 @@ namespace Nebula.Roles.ExtraRoles
                     if (murder != byte.MaxValue && murder != PlayerControl.LocalPlayer.PlayerId)
                     {
                         RPCEventInvoker.ImmediatelyChangeRole(player, Roles.Avenger);
-                        RPCEventInvoker.SetExtraRole(Helpers.playerById(murder), Roles.AvengerTarget, Game.GameData.data.myData.getGlobalData().GetExtraRoleData(this));
+                        RPCEventInvoker.AddExtraRole(Helpers.playerById(murder), Roles.AvengerTarget, Game.GameData.data.myData.getGlobalData().GetExtraRoleData(this));
                         return;
                     }
                 }
@@ -208,16 +208,20 @@ namespace Nebula.Roles.ExtraRoles
                 if (Game.GameData.data.players[playerId].GetExtraRoleData(this) == pairId) showFlag = true;
             }
 
-            if (!showFlag && loversModeOption.getSelection()==1 && Roles.Avenger.everyoneCanKnowExistenceOfAvengerOption.getBool())
+            if (!showFlag && loversModeOption.getSelection()==1 && Roles.Avenger.canKnowExistenceOfAvengerOption.getBool())
             {
-                PlayerControl player = Helpers.playerById(playerId);
-                if (player == null) return;
+                int selection=Roles.Avenger.canKnowExistenceOfAvengerOption.getSelection();
+                var myData= PlayerControl.LocalPlayer.GetModData();
+                if (selection == 1 || (selection == 2 && myData.HasExtraRole(Roles.AvengerTarget) && myData.GetExtraRoleData(Roles.AvengerTarget.id) == Game.GameData.data.players[playerId].GetExtraRoleData(this)))
+                {
+                    PlayerControl player = Helpers.playerById(playerId);
+                    if (player == null) return;
 
+                    bool avengerFlag = false;
+                    ActionForLover(player, (p) => { if (p != player && !p.Data.IsDead && player.Data.IsDead) avengerFlag = true; });
 
-                bool avengerFlag = false;
-                ActionForLover(player, (p) => { if (p != player && !p.Data.IsDead && player.Data.IsDead) avengerFlag = true; });
-
-                if (avengerFlag) { displayName += Helpers.cs(Roles.Avenger.Color, "♥"); return; }
+                    if (avengerFlag) { displayName += Helpers.cs(Roles.Avenger.Color, "♥"); return; }
+                }
             }
 
             if (showFlag)EditDisplayNameForcely(playerId,ref displayName);

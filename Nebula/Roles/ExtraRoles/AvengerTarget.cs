@@ -16,6 +16,13 @@ namespace Nebula.Roles.ExtraRoles
         private float noticeInterval = 0f;
         private Vector2 noticePos = Vector2.zero;
 
+        public override void Initialize(PlayerControl __instance)
+        {
+            base.Initialize(__instance);
+
+            Helpers.PlayFlash(Roles.Avenger.Color);
+        }
+
         public override void MyPlayerControlUpdate()
         {
             if (!Roles.Avenger.murderCanKnowAvengerOption.getBool()) return;

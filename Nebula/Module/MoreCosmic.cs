@@ -66,7 +66,7 @@ namespace Nebula.Module
         public Texture2D Texture { get; set; }
         public int Length { get; set; }
         
-        private string SanitizeResourcePath(string res)
+        private string? SanitizeResourcePath(string res)
         {
             if (res == null)
                 return null;
@@ -118,26 +118,22 @@ namespace Nebula.Module
 
         public override bool DoesResourceRequireDownload(string directoryPath, MD5 md5)
         {
-            if (NebulaPlugin.DebugMode.HasToken("OutputHash"))
-            {
-                if (File.Exists(directoryPath + Address))
-                {
-                    using (var stream = File.OpenRead(directoryPath + Address))
-                    {
-                        var hash = System.BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "").ToLowerInvariant();
-                        NebulaPlugin.Instance.Logger.Print("HASH: " + hash + " (" + directoryPath + Address + ")");
-                    }
-                }
-            }
+            if (Hash == null) return false;
 
             if (!this) return false;
-            if (Hash == null || !File.Exists(directoryPath+Address))
+            if (!File.Exists(directoryPath+Address))
                 return true;
 
             using (var stream = File.OpenRead(directoryPath + Address))
             {
                 var hash = System.BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "").ToLowerInvariant();
-                return !Hash.Equals(hash);
+                var result = !Hash.Equals(hash);
+
+                //ダウンロードが必要と(誤)検出されている場合
+                if (NebulaPlugin.DebugMode.HasToken("OutputHash") && result)
+                    NebulaPlugin.Instance.Logger.Print("HASH: " + hash + " (" + directoryPath + Address + ")");
+
+                return result;
             }
         }
 
@@ -187,7 +183,7 @@ namespace Nebula.Module
 
         protected override void LoadValue(JToken? token)
         {
-            string str = token?.ToString();
+            string? str = token?.ToString();
             if (str != null) Value = bool.Parse(str);
         }
 
@@ -203,7 +199,7 @@ namespace Nebula.Module
 
         protected override void LoadValue(JToken? token)
         {
-            Value = token?.ToString();
+            Value = token?.ToString() ?? Value;
         }
 
         public CustomVString(string Id) : base(Id)
@@ -241,10 +237,10 @@ namespace Nebula.Module
 
         public CustomItem()
         {
-            Author = new CustomVString("Author","Unknown");
-            Package = new CustomVString("Package","Misc.");
+            Author = new CustomVString("Author","");
+            Package = new CustomVString("Package","local");
             Condition = new CustomVString("Condition","none");
-            Name = new CustomVString("Name");
+            Name = new CustomVString("Name","Untitled");
         }
     }
 
@@ -385,7 +381,7 @@ namespace Nebula.Module
             if (ch.I_BackFlip)
                 viewData.LeftBackImage = ch.I_BackFlip.Images[0];
 
-            hat.StoreName = ch.Name.Value + "\nby " + ch.Author.Value;
+            hat.StoreName = ch.Name.Value + (ch.Author.Value.Length == 0 ? "\nfrom Local" : ("\nby " + ch.Author.Value));
             hat.name = hat.StoreName;
             //hat.Order = 99;
             hat.ProductId = "hat_" + ch.Name.Value.Replace(' ', '_');
@@ -420,7 +416,7 @@ namespace Nebula.Module
             NamePlateData np = ScriptableObject.CreateInstance<NamePlateData>();
             np.viewData.viewData = ScriptableObject.CreateInstance<NamePlateViewData>();
             np.viewData.viewData.Image = ch.I_Plate.Images[0];
-            np.name = ch.Name.Value + "\nby " + ch.Author.Value;
+            np.name = ch.Name.Value + (ch.Author.Value.Length == 0 ? "\nfrom Local" : ("\nby " + ch.Author.Value));
             //np.Order = 99;
             np.ProductId = "nameplate_" + ch.Name.Value.Replace(' ', '_');
             np.ChipOffset = new Vector2(0f, 0.2f);
@@ -452,7 +448,7 @@ namespace Nebula.Module
             vd.viewData.viewData.IdleFrame = ch.I_Main.Images[0];
             if (ch.I_Flip)
                 vd.viewData.viewData.LeftIdleFrame = ch.I_Flip.Images[0];
-            vd.name = ch.Name.Value + "\nby " + ch.Author.Value;
+            vd.name = ch.Name.Value + (ch.Author.Value.Length == 0 ? "\nfrom Local" : ("\nby " + ch.Author.Value));
             //np.Order = 99;
             vd.ProductId = "visor_" + ch.Name.Value.Replace(' ', '_');
             vd.ChipOffset = new Vector2(0f, 0.2f);
@@ -745,7 +741,7 @@ namespace Nebula.Module
 
                 var orderedKeys = packages.Keys.OrderBy((string x) => {
                     if (x == innerslothHatPackageName) return 1000;
-                    if (x == "developerHats") return 200;
+                    if (x == "local") return 200;
                     return 500;
                 });
 
@@ -857,7 +853,7 @@ namespace Nebula.Module
 
                 var orderedKeys = packages.Keys.OrderBy((string x) => {
                     if (x == innerslothNamePlatePackageName) return 1000;
-                    if (x == "developerNamePlates") return 200;
+                    if (x == "local") return 200;
                     return 500;
                 });
 
@@ -929,6 +925,8 @@ namespace Nebula.Module
 
                     __instance.StartCoroutine(visor.CoLoadViewData((Il2CppSystem.Action<VisorViewData>)((v) => {
                         colorChip.Inner.FrontLayer.sprite = v.IdleFrame;
+                        if (ext != null && ext.Adaptive.Value)
+                            colorChip.Inner.FrontLayer.material = DestroyableSingleton<HatManager>.Instance.PlayerMaterial;
                     })));
                     
 
@@ -975,7 +973,7 @@ namespace Nebula.Module
 
                 var orderedKeys = packages.Keys.OrderBy((string x) => {
                     if (x == innerslothVisorPackageName) return 1000;
-                    if (x == "developerVisors") return 200;
+                    if (x == "local") return 200;
                     return 500;
                 });
 
@@ -1061,7 +1059,8 @@ namespace Nebula.Module
 
         public static string[] cosmicRepos = new string[]
         {
-            "https://raw.githubusercontent.com/Dolly1016/MoreCosmic/master"
+            "https://raw.githubusercontent.com/Dolly1016/MoreCosmic/master",
+            "MoreCosmic"
         };
 
         public static List<CustomHat> hatdetails = new List<CustomHat>();
@@ -1113,21 +1112,65 @@ namespace Nebula.Module
             running = false;
         }
 
-        public static async Task<HttpStatusCode> FetchItems<Cosmic>(string repo,string category,List<Cosmic> cosmics) where Cosmic : CustomItem, new()
+        public static HttpStatusCode FetchOnlineItems<Cosmic>(string repo,  List<Cosmic> cosmics, out string json, ref HttpClient? http) where Cosmic : CustomItem, new()
         {
-            HttpClient http = new HttpClient();
+            json = "";
+
+            http = new HttpClient();
             http.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue { NoCache = true };
-            var response = await http.GetAsync(new System.Uri($"{repo}/Contents.json"), HttpCompletionOption.ResponseContentRead);
+            var responseTask = http.GetAsync(new System.Uri($"{repo}/Contents.json"), HttpCompletionOption.ResponseContentRead);
+            responseTask.Wait();
+            var response = responseTask.Result;
+
+            if (response.StatusCode != HttpStatusCode.OK) return response.StatusCode;
+            if (response.Content == null)
+            {
+                System.Console.WriteLine("Server returned no data: " + response.StatusCode.ToString());
+                return HttpStatusCode.ExpectationFailed;
+            }
+
             try
             {
-                if (response.StatusCode != HttpStatusCode.OK) return response.StatusCode;
-                if (response.Content == null)
-                {
-                    System.Console.WriteLine("Server returned no data: " + response.StatusCode.ToString());
-                    return HttpStatusCode.ExpectationFailed;
-                }
+                var task = response.Content.ReadAsStringAsync();
+                task.Wait();
+                json = task.Result;
+            }
+            catch (System.Exception ex)
+            {
+                System.Console.WriteLine(ex);
+            }
+            return HttpStatusCode.OK;
+        }
 
-                string json = await response.Content.ReadAsStringAsync();
+        public static HttpStatusCode FetchOfflineItems<Cosmic>(string repo,  List<Cosmic> cosmics, out string json) where Cosmic : CustomItem, new()
+        {
+            try
+            {
+                json = File.ReadAllText($"{repo}/Contents.json");
+                return HttpStatusCode.OK;
+            }
+            catch (System.Exception e)
+            {
+                json = "";
+                return HttpStatusCode.NotFound;
+            }
+        }
+
+        public static async Task<HttpStatusCode> FetchItems<Cosmic>(string repo,string category,List<Cosmic> cosmics) where Cosmic : CustomItem, new()
+        {
+            string json;
+            HttpStatusCode result;
+            HttpClient? http = null;
+
+            if (repo.StartsWith("https://"))
+                result = FetchOnlineItems(repo, cosmics, out json,ref http);
+            else
+                result = FetchOfflineItems(repo, cosmics, out json);
+
+            if (result != HttpStatusCode.OK) return result;
+
+            try
+            {
                 JToken jobj = JObject.Parse(json).get_Item(category);
                 if (!jobj.HasValues) return HttpStatusCode.ExpectationFailed;
 
@@ -1154,10 +1197,12 @@ namespace Nebula.Module
 
                 }
 
-
-                foreach (var content in markedfordownload)
+                if (http != null)
                 {
-                    await content.Download(repo+"/"+category+"/", filePath,http);
+                    foreach (var content in markedfordownload)
+                    {
+                        await content.Download(repo + "/" + category + "/", filePath, http);
+                    }
                 }
 
                 cosmics.AddRange(cosList);
@@ -1202,6 +1247,30 @@ namespace Nebula.Module
             }
             CustomParts.CustomVisorRegistry.TryGetValue(visorData.name, out ret);
             return ret;
+        }
+    }
+
+
+    //y座標のずれを修正
+    [HarmonyPatch(typeof(PoolablePlayer), nameof(PoolablePlayer.Awake))]
+    public static class PoolablePlayerEnablePatch
+    {
+        public static void Postfix(PoolablePlayer __instance)
+        {
+            try
+            {
+                __instance.VisorSlot.transform.localPosition = new Vector3(
+                    __instance.VisorSlot.transform.localPosition.x,
+                    0.575f,
+                    __instance.VisorSlot.transform.localPosition.z
+                    );
+                __instance.HatSlot.transform.localPosition = new Vector3(
+                    __instance.HatSlot.transform.localPosition.x,
+                    0.575f,
+                    __instance.HatSlot.transform.localPosition.z
+                    );
+            }
+            catch { }
         }
     }
 

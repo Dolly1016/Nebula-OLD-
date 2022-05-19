@@ -19,6 +19,16 @@ namespace Nebula.Patches
 
         private static TMPro.TextMeshPro meetingInfoText;
 
+        [HarmonyPatch(typeof(PlayerVoteArea), nameof(PlayerVoteArea.Start))]
+        class PlayerVoteAreaRemovePlayerLevelPatch
+        {
+
+            static void Postfix(PlayerVoteArea __instance)
+            {
+                __instance.transform.FindChild("PlayerLevel").gameObject.SetActive(false);
+            }
+        }
+
         [HarmonyPatch(typeof(PlayerVoteArea), nameof(PlayerVoteArea.SetVote))]
         class PlayerVoteAreaSelectPatch
         {

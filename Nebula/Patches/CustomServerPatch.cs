@@ -44,18 +44,18 @@ namespace Nebula.Patches
         public static void Postfix(RegionMenu __instance)
         {
 
-            var template = DestroyableSingleton<JoinGameButton>.Instance;
-            if (template == null || template.GameIdText == null) return;
+            var template = GameObject.Find("NormalMenu/JoinGameButton/JoinGameMenu/GameIdText");
+            if (template == null) return;
 
             if (ipField == null || ipField.gameObject == null)
             {
-                ipField = UnityEngine.Object.Instantiate(template.GameIdText, __instance.transform);
+                ipField = UnityEngine.Object.Instantiate(template.gameObject, __instance.transform).GetComponent<TextBoxTMP>();
                 ipField.gameObject.name = "IpTextBox";
                 var arrow = ipField.transform.FindChild("arrowEnter");
                 if (arrow == null || arrow.gameObject == null) return;
                 UnityEngine.Object.DestroyImmediate(arrow.gameObject);
 
-                ipField.transform.localPosition = new Vector3(0.2f, -1f, -100f);
+                ipField.transform.localPosition = new Vector3(0.2f, -1.75f, -100f);
                 ipField.characterLimit = 30;
                 ipField.AllowSymbols = true;
                 ipField.ForceUppercase = false;
@@ -85,13 +85,13 @@ namespace Nebula.Patches
 
             if (portField == null || portField.gameObject == null)
             {
-                portField = UnityEngine.Object.Instantiate(template.GameIdText, __instance.transform);
+                portField = UnityEngine.Object.Instantiate(template.gameObject, __instance.transform).GetComponent<TextBoxTMP>();
                 portField.gameObject.name = "PortTextBox";
                 var arrow = portField.transform.FindChild("arrowEnter");
                 if (arrow == null || arrow.gameObject == null) return;
                 UnityEngine.Object.DestroyImmediate(arrow.gameObject);
 
-                portField.transform.localPosition = new Vector3(0.2f, -1.75f, -100f);
+                portField.transform.localPosition = new Vector3(0.2f, -2.5f, -100f);
                 portField.characterLimit = 5;
                 portField.SetText(SavePort.Value.ToString());
                 __instance.StartCoroutine(Effects.Lerp(0.1f, new Action<float>((p) => {

@@ -212,6 +212,7 @@ namespace Nebula.Patches
             {
                 try
                 {
+
                     if (p == PlayerControl.LocalPlayer || p.GetModData().RoleInfo != "" || Game.GameData.data.myData.CanSeeEveryoneInfo)
                     {
                         Transform playerInfoTransform = p.nameText.transform.parent.FindChild("Info");

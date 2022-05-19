@@ -59,13 +59,13 @@ namespace Nebula.Patches
 
         public class CategoryData
         {
-            int roles { get; }
-            List<Role> firstRoles { get; }
-            List<RoleAllocation> secondaryRoles { get; }
+            protected int roles { get; }
+            protected List<Role> firstRoles { get; }
+            protected List<RoleAllocation> secondaryRoles { get; }
 
-            public CategoryData(int min, int max, RoleCategory category)
+            public CategoryData(int min,int max,RoleCategory category)
             {
-                this.roles=(min < max) ? NebulaPlugin.rnd.Next(min, max) : max;
+                this.roles = (min < max) ? NebulaPlugin.rnd.Next(min, max) : max;
                 this.firstRoles = new List<Role>();
                 this.secondaryRoles = new List<RoleAllocation>();
 
@@ -119,6 +119,37 @@ namespace Nebula.Patches
                 {
                     firstRoles.Add(allocation.role);
                 }
+
+
+            }
+
+            //そのロールは排出される可能性があるかどうか
+            public bool Contains(Role role)
+            {
+                if (firstRoles.Contains(role)) return true;
+                if (secondaryRoles.Any((allocation) => { return allocation.role == role; })) return true;
+                return false;
+            }
+
+            public void Remove(Role role)
+            {
+                firstRoles.RemoveAll((r) => { return r == role; });
+                secondaryRoles.RemoveAll((allocation) => { return allocation.role == role; });
+            }
+        }
+
+        public class MultiCategoryData : CategoryData
+        {
+            public MultiCategoryData(int min, int max, RoleCategory category) : base(min, max, category)
+            {
+            }
+        }
+
+        public class SingleCategoryData : CategoryData
+        {
+
+            public SingleCategoryData(int min, int max, RoleCategory category):base(min, max, category)
+            {
             }
 
             public void Assign(AssignMap assignMap, List<PlayerControl> players)
@@ -168,25 +199,12 @@ namespace Nebula.Patches
                     }
                 }
             }
-
-            //そのロールは排出される可能性があるかどうか
-            public bool Contains(Role role)
-            {
-                if (firstRoles.Contains(role)) return true;
-                if (secondaryRoles.Any((allocation) => { return allocation.role == role; })) return true;
-                return false;
-            }
-
-            public void Remove(Role role)
-            {
-                firstRoles.RemoveAll((r) => { return r == role; });
-                secondaryRoles.RemoveAll((allocation) => { return allocation.role == role; });
-            }
         }
 
-        public CategoryData neutralData { get; }
-        public CategoryData crewmateData { get; }
-        public CategoryData impostorData { get; }
+        public SingleCategoryData neutralData { get; }
+        public SingleCategoryData crewmateData { get; }
+        public SingleCategoryData impostorData { get; }
+        public MultiCategoryData multiData { get; }
 
         public AssignRoles(int crewmates, int impostors)
         {
@@ -195,15 +213,15 @@ namespace Nebula.Patches
 
             min = (int)CustomOptionHolder.crewmateRolesCountMin.getFloat();
             max = (int)CustomOptionHolder.crewmateRolesCountMax.getFloat();
-            crewmateData = new CategoryData(min,max,RoleCategory.Crewmate);
+            crewmateData = new SingleCategoryData(min,max,RoleCategory.Crewmate);
 
             min = (int)CustomOptionHolder.impostorRolesCountMin.getFloat();
             max = (int)CustomOptionHolder.impostorRolesCountMax.getFloat();
-            impostorData = new CategoryData(min, max, RoleCategory.Impostor);
+            impostorData = new SingleCategoryData(min, max, RoleCategory.Impostor);
 
             min = (int)CustomOptionHolder.neutralRolesCountMin.getFloat();
             max = (int)CustomOptionHolder.neutralRolesCountMax.getFloat();
-            neutralData = new CategoryData(min, max, RoleCategory.Neutral);
+            neutralData = new SingleCategoryData(min, max, RoleCategory.Neutral);
 
             //ComplexRoleの割り当て
             RoleAllocation[] allocations;

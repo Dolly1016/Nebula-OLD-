@@ -170,9 +170,9 @@ namespace Nebula.Roles.CrewmateRoles
                 if (result.Count < 3)
                 {
                     List<RoleCategory> leftCategory = new List<RoleCategory>();
-                    if (!result.Any<Role>(role => role.category == RoleCategory.Crewmate)) leftCategory.Add(RoleCategory.Crewmate);
-                    if (!result.Any<Role>(role => role.category == RoleCategory.Impostor)) leftCategory.Add(RoleCategory.Impostor);
-                    if (!result.Any<Role>(role => role.category == RoleCategory.Neutral)) leftCategory.Add(RoleCategory.Neutral);
+                    if (!result.Any<Role>(role => role.oracleCategory == RoleCategory.Crewmate)) leftCategory.Add(RoleCategory.Crewmate);
+                    if (!result.Any<Role>(role => role.oracleCategory == RoleCategory.Impostor)) leftCategory.Add(RoleCategory.Impostor);
+                    if (!result.Any<Role>(role => role.oracleCategory == RoleCategory.Neutral)) leftCategory.Add(RoleCategory.Neutral);
 
                     role = DivineRole(target, result, leftCategory[NebulaPlugin.rnd.Next(leftCategory.Count)], relatedRoleChance);
                 }
@@ -221,7 +221,7 @@ namespace Nebula.Roles.CrewmateRoles
             var candidate = new List<Role>();
             foreach(var role in target.GetModData().role.RelatedRoles)
             {
-                if (category != null && role.category == category) continue;
+                if (category != null && role.oracleCategory == category) continue;
                 if (excludeRoles.Contains(role)) continue;
                 if (Game.GameData.data.EstimationAI.GetRoleProbability(role) < 0f) continue;
 

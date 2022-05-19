@@ -113,101 +113,104 @@ namespace Nebula.Patches
             }
 
             public static void Postfix(GameStartManager __instance)
-            {   
-                // Send version as soon as PlayerControl.LocalPlayer exists
-                if (PlayerControl.LocalPlayer != null && !versionSent)
+            {
+                try
                 {
-                    versionSent = true;
-                    Helpers.shareGameVersion();
-
-                    PlayerControl.LocalPlayer.SetColor(PlayerControl.LocalPlayer.PlayerId);
-                    SaveManager.BodyColor=PlayerControl.LocalPlayer.PlayerId;
-                    RPCEventInvoker.SetMyColor();
-                }
-
-                // Host update with version handshake infos
-                if (AmongUsClient.Instance.AmHost)
-                {
-                    __instance.MinPlayers = Game.GameModeProperty.GetProperty(CustomOptionHolder.GetCustomGameMode()).MinPlayers;
-
-                    bool blockStart = false;
-                    string message = "";
-                    foreach (InnerNet.ClientData client in AmongUsClient.Instance.allClients.ToArray())
+                    // Send version as soon as PlayerControl.LocalPlayer exists
+                    if (PlayerControl.LocalPlayer != null && !versionSent)
                     {
-                        if (client.Character == null) continue;
-                        var dummyComponent = client.Character.GetComponent<DummyBehaviour>();
-                        if (dummyComponent != null && dummyComponent.enabled)
-                            continue;
-                        else if (!playerVersions.ContainsKey(client.Id))
+                        versionSent = true;
+                        Helpers.shareGameVersion();
+
+                        PlayerControl.LocalPlayer.SetColor(PlayerControl.LocalPlayer.PlayerId);
+                        SaveManager.BodyColor = PlayerControl.LocalPlayer.PlayerId;
+                        RPCEventInvoker.SetMyColor();
+                    }
+
+                    // Host update with version handshake infos
+                    if (AmongUsClient.Instance.AmHost)
+                    {
+                        __instance.MinPlayers = Game.GameModeProperty.GetProperty(CustomOptionHolder.GetCustomGameMode()).MinPlayers;
+
+                        bool blockStart = false;
+                        string message = "";
+                        foreach (InnerNet.ClientData client in AmongUsClient.Instance.allClients.ToArray())
                         {
-                            blockStart = true;
-                            message += $"<color=#FF0000FF>{Language.Language.GetString("lobby.hasNoNebula").Replace("%NAME%", client.Character.Data.PlayerName)}</color>\n";
-                            
+                            if (client.Character == null) continue;
+                            var dummyComponent = client.Character.GetComponent<DummyBehaviour>();
+                            if (dummyComponent != null && dummyComponent.enabled)
+                                continue;
+                            else if (!playerVersions.ContainsKey(client.Id))
+                            {
+                                blockStart = true;
+                                message += $"<color=#FF0000FF>{Language.Language.GetString("lobby.hasNoNebula").Replace("%NAME%", client.Character.Data.PlayerName)}</color>\n";
+
+                            }
+                            else
+                            {
+                                PlayerVersion version = playerVersions[client.Id];
+                                if (!version.Matches())
+                                {
+                                    message += $"<color=#FF0000FF>{Language.Language.GetString("lobby.hasDifferentNebula").Replace("%NAME%", client.Character.Data.PlayerName)}</color>\n";
+                                    blockStart = true;
+                                }
+                            }
+                        }
+                        if (blockStart)
+                        {
+                            __instance.StartButton.color = __instance.startLabelText.color = Palette.DisabledClear;
+                            __instance.GameStartText.text = message;
+                            __instance.GameStartText.transform.localPosition = __instance.StartButton.transform.localPosition + Vector3.up * 2;
                         }
                         else
                         {
-                            PlayerVersion version = playerVersions[client.Id];
-                            if (!version.Matches())
+                            __instance.StartButton.color = __instance.startLabelText.color = ((__instance.LastPlayerCount >= __instance.MinPlayers) ? Palette.EnabledColor : Palette.DisabledClear);
+                            __instance.GameStartText.transform.localPosition = __instance.StartButton.transform.localPosition;
+                        }
+                    }
+
+                    // Client update with handshake infos
+                    if (!AmongUsClient.Instance.AmHost)
+                    {
+                        if (!playerVersions.ContainsKey(AmongUsClient.Instance.HostId) || !playerVersions[AmongUsClient.Instance.HostId].Matches())
+                        {
+                            kickingTimer += Time.deltaTime;
+                            if (kickingTimer > 10)
                             {
-                                message += $"<color=#FF0000FF>{Language.Language.GetString("lobby.hasDifferentNebula").Replace("%NAME%", client.Character.Data.PlayerName)}</color>\n";
-                                blockStart = true;
+                                kickingTimer = 0;
+                                AmongUsClient.Instance.ExitGame(DisconnectReasons.ExitGame);
+                                SceneChanger.ChangeScene("MainMenu");
+                            }
+
+                            __instance.GameStartText.text = $"<color=#FF0000FF>{Language.Language.GetString("lobby.willEliminatedByMismatchVersion").Replace("%STAY%", Math.Round(10 - kickingTimer).ToString())}</color>\n";
+                            __instance.GameStartText.transform.localPosition = __instance.StartButton.transform.localPosition + Vector3.up * 2;
+                        }
+                        else
+                        {
+                            __instance.GameStartText.transform.localPosition = __instance.StartButton.transform.localPosition;
+                            if (__instance.startState != GameStartManager.StartingStates.Countdown)
+                            {
+                                __instance.GameStartText.text = String.Empty;
                             }
                         }
                     }
-                    if (blockStart)
-                    {
-                        __instance.StartButton.color = __instance.startLabelText.color = Palette.DisabledClear;
-                        __instance.GameStartText.text = message;
-                        __instance.GameStartText.transform.localPosition = __instance.StartButton.transform.localPosition + Vector3.up * 2;
-                    }
-                    else
-                    {
-                        __instance.StartButton.color = __instance.startLabelText.color = ((__instance.LastPlayerCount >= __instance.MinPlayers) ? Palette.EnabledColor : Palette.DisabledClear);
-                        __instance.GameStartText.transform.localPosition = __instance.StartButton.transform.localPosition;
-                    }
-                }
 
-                // Client update with handshake infos
-                if (!AmongUsClient.Instance.AmHost)
-                {
-                    if (!playerVersions.ContainsKey(AmongUsClient.Instance.HostId) || !playerVersions[AmongUsClient.Instance.HostId].Matches())
-                    {
-                        kickingTimer += Time.deltaTime;
-                        if (kickingTimer > 10)
-                        {
-                            kickingTimer = 0;
-                            AmongUsClient.Instance.ExitGame(DisconnectReasons.ExitGame);
-                            SceneChanger.ChangeScene("MainMenu");
-                        }
+                    // Lobby code replacement
+                    //__instance.GameRoomName.text = TheOtherRolesPlugin.StreamerMode.Value ? $"<color={TheOtherRolesPlugin.StreamerModeReplacementColor.Value}>{TheOtherRolesPlugin.StreamerModeReplacementText.Value}</color>" : lobbyCodeText;
 
-                        __instance.GameStartText.text = $"<color=#FF0000FF>{Language.Language.GetString("lobby.willEliminatedByMismatchVersion").Replace("%STAY%", Math.Round(10 - kickingTimer).ToString())}</color>\n";
-                        __instance.GameStartText.transform.localPosition = __instance.StartButton.transform.localPosition + Vector3.up * 2;
-                    }
-                    else
-                    {
-                        __instance.GameStartText.transform.localPosition = __instance.StartButton.transform.localPosition;
-                        if (__instance.startState != GameStartManager.StartingStates.Countdown)
-                        {
-                            __instance.GameStartText.text = String.Empty;
-                        }
-                    }
-                }
+                    // Lobby timer
+                    if (!AmongUsClient.Instance.AmHost || !GameData.Instance) return; // Not host or no instance
 
-                // Lobby code replacement
-                //__instance.GameRoomName.text = TheOtherRolesPlugin.StreamerMode.Value ? $"<color={TheOtherRolesPlugin.StreamerModeReplacementColor.Value}>{TheOtherRolesPlugin.StreamerModeReplacementText.Value}</color>" : lobbyCodeText;
+                    if (update) currentText = __instance.PlayerCounter.text;
 
-                // Lobby timer
-                if (!AmongUsClient.Instance.AmHost || !GameData.Instance) return; // Not host or no instance
+                    timer = Mathf.Max(0f, timer -= Time.deltaTime);
+                    int minutes = (int)timer / 60;
+                    int seconds = (int)timer % 60;
+                    string suffix = $" ({minutes:00}:{seconds:00})";
 
-                if (update) currentText = __instance.PlayerCounter.text;
-
-                timer = Mathf.Max(0f, timer -= Time.deltaTime);
-                int minutes = (int)timer / 60;
-                int seconds = (int)timer % 60;
-                string suffix = $" ({minutes:00}:{seconds:00})";
-
-                __instance.PlayerCounter.text = currentText + suffix;
-                __instance.PlayerCounter.autoSizeTextContainer = true;
+                    __instance.PlayerCounter.text = currentText + suffix;
+                    __instance.PlayerCounter.autoSizeTextContainer = true;
+                }catch(Exception e) { }
 
             }
         }

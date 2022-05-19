@@ -12,10 +12,12 @@ namespace Nebula.Roles.CrewmateRoles
     {
         static public Color RoleColor = new Color(0f / 255f, 247f / 255f, 255f / 255f);
 
+        private Module.CustomOption killerCanKnowBaitKillByFlash;
+
         public class BaitEvent : Events.LocalEvent
         {
             byte murderId;
-            public BaitEvent(byte murderId) : base(0.1f + (float)NebulaPlugin.rnd.NextDouble() * 0.2f)
+            public BaitEvent(byte murderId) : base(0.2f + (float)NebulaPlugin.rnd.NextDouble() * 0.2f)
             {
                 this.murderId = murderId;
             }
@@ -28,14 +30,32 @@ namespace Nebula.Roles.CrewmateRoles
     
         public override void OnMurdered(byte murderId)
         {
+            if (MeetingHud.Instance) return;
+
             //少しの時差の後レポート
             Events.LocalEvent.Activate(new BaitEvent(murderId));
         }
+
+        //キルしたプレイヤーにフラッシュ
+        public override void OnDied(byte playerId)
+        {
+            if (!killerCanKnowBaitKillByFlash.getBool()) return;
+            if (!Game.GameData.data.deadPlayers.ContainsKey(playerId)) return;
+            if (Game.GameData.data.deadPlayers[playerId].MurderId != PlayerControl.LocalPlayer.PlayerId) return;
+            Helpers.PlayQuickFlash(Color);
+        }
+
+
 
         public override void OnRoleRelationSetting()
         {
             RelatedRoles.Add(Roles.Spy);
             RelatedRoles.Add(Roles.Madmate);
+        }
+
+        public override void LoadOptionData()
+        {
+            killerCanKnowBaitKillByFlash = CreateOption(Color.white, "killerCanKnowBaitKillByFlash", true);
         }
 
         public Bait()

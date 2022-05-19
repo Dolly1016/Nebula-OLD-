@@ -75,6 +75,12 @@ namespace Nebula.Patches
             return currentColor;
         }
 
+        static private bool AnyShadowsBetween(Vector2 pos,Vector2 target)
+        {
+            var vector = target - pos;
+            return Helpers.AnyShadowsBetween(pos, vector.normalized, vector.magnitude);
+        }
+
         static void ResetNameTagsAndColors()
         {
             if (PlayerControl.LocalPlayer == null) return;
@@ -89,6 +95,8 @@ namespace Nebula.Patches
             {
                 impostorColor = Color.white;
             }
+            
+
 
             string name;
             Game.PlayerData playerData;
@@ -138,7 +146,31 @@ namespace Nebula.Patches
                 Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId, (role) => { role.EditOthersDisplayNameColor(player.PlayerId, ref color); });
                 player.nameText.color = color;
 
-                player.nameText.enabled = !CannotSeeNameTag(player);
+                
+                bool showNameFlag = !CannotSeeNameTag(player);
+
+                //自分自身以外の名前は適宜隠す
+                if (!PlayerControl.LocalPlayer.Data.IsDead && player != PlayerControl.LocalPlayer && showNameFlag)
+                {
+                    var targetPos = player.transform.position;
+                    
+                    var result = AnyShadowsBetween(PlayerControl.LocalPlayer.transform.position, targetPos);
+                    if (result && (PlayerControl.LocalPlayer.transform.position - targetPos).magnitude < PlayerControl.LocalPlayer.myLight.LightRadius + 5f)
+                    {
+                        //ある程度近いプレイヤーはより精密に判定する
+                        var norm = (targetPos - PlayerControl.LocalPlayer.transform.position).normalized * 0.22f;
+                        
+                        result &= AnyShadowsBetween(PlayerControl.LocalPlayer.transform.position, 
+                            (Vector2)targetPos + new Vector2(norm.y,norm.x));
+                        result &= AnyShadowsBetween(PlayerControl.LocalPlayer.transform.position,
+                            (Vector2)targetPos + new Vector2(-norm.y, -norm.x));
+
+                    }
+                    showNameFlag &= !result;
+                    
+                }
+
+                player.nameText.enabled = showNameFlag;
             }
 
             if (MeetingHud.Instance != null)

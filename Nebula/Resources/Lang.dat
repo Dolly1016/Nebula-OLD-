@@ -23,6 +23,7 @@
 "cosmic.package.nosCommHat" : "NoS Community Hats"
 "cosmic.package.nosCommNameplate" : "NoS Community Nameplates"
 "cosmic.package.nosCommVisor" : "NoS Community Visors"
+"cosmic.package.local" : "Local Cosmics"
 
 "preset.save" : "Save Current Setting"
 "preset.dialog.save" : "Current settings have been saved!"
@@ -175,6 +176,7 @@
 "role.bait.name" : "Bait"
 "role.bait.description" : "Bait Your Enemies"
 "role.bait.info" : "If you killed, your killer will report your body instantly."
+"role.bait.killerCanKnowBaitKillByFlash" : "Killer Can Know Bait Kill By Flash"
 
 "role.comet.name" : "Comet"
 "role.comet.description" : "Run Through"
@@ -517,7 +519,9 @@
 "role.avenger.info" : "Your lover is gone. Now is the time for revenge.\nKill your lover's murderer and survive.\n\nYou are always in my heart. I'll take you the big moment.\n\n - Q : Kill"
 "role.avenger.killCoolDown" : "Kill Cool Down"
 "role.avenger.murderCanKnowAvenger" : "Murder Can Know Avenger"
-"role.avenger.everyoneCanKnowExistenceOfAvenger" : "Everyone Can Know Existence Of Avenger"
+"role.avenger.canKnowExistenceOfAvenger" : "Can Know Existence Of Avenger"
+"role.avenger.canKnowExistenceOfAvenger.everyone" : "Everyone"
+"role.avenger.canKnowExistenceOfAvenger.onlyKiller" : "Only Killer"
 "role.avenger.avengerNoticeIntervalOption" : "Notice Interval For Avenger"
 "role.avenger.murderNoticeIntervalOption" : "Notice Interval For Murder"
 

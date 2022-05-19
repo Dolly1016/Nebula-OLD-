@@ -107,13 +107,14 @@ namespace Nebula.Patches
         public class FinalPlayer
         {
             public string name { get; private set; }
+            public string killer { get; private set; }
             public byte id { get; private set; }
             public Roles.Role role { get; private set; }
             public int totalTasks { get; private set; }
             public int completedTasks { get; private set; }
             public Game.PlayerData.PlayerStatus status { get; set; }
 
-            public FinalPlayer(byte id,string name, Roles.Role role, Game.PlayerData.PlayerStatus status,int totalTasks, int completedTasks)
+            public FinalPlayer(byte id,string name, Roles.Role role, Game.PlayerData.PlayerStatus status,int totalTasks, int completedTasks,string killer="")
             {
                 this.id = id;
                 this.name = name;
@@ -121,6 +122,12 @@ namespace Nebula.Patches
                 this.totalTasks = totalTasks;
                 this.completedTasks = completedTasks;
                 this.status = status;
+                this.killer = killer;
+            }
+
+            public void SetKiller(string killer)
+            {
+                this.killer = killer;
             }
         }
 
@@ -149,8 +156,14 @@ namespace Nebula.Patches
                     name = player.name;
                 else
                     name = player.name + " " + name;
-                players.Add(new FinalPlayer(player.id,name,
-                    player.role, player.Status, player.Tasks.Quota, player.Tasks.Completed));
+                var finalPlayer= new FinalPlayer(player.id,name,
+                    player.role, player.Status, player.Tasks.Quota, player.Tasks.Completed);
+                if (Game.GameData.data.deadPlayers.ContainsKey(player.id))
+                {
+                    byte murder=Game.GameData.data.deadPlayers[player.id].MurderId;
+                    if (murder != byte.MaxValue) finalPlayer.SetKiller(Game.GameData.data.players[murder].name);
+                }
+                players.Add(finalPlayer);
             }
 
             players.Sort((p1, p2) => p1.status.Id - p2.status.Id);
@@ -305,15 +318,17 @@ namespace Nebula.Patches
                 else
                     tasks = player.totalTasks > 0 ? $"<color=#FAD934FF>({player.completedTasks}/{player.totalTasks})</color>" : "";
 
-                roleSummaryText.AppendLine($"{player.name} - {roles} {status}{tasks}");
+                string murder = "";
+                if (player.killer != "") murder = $"<color=#FF5555FF>by " + player.killer+ "</color>";
+                roleSummaryText.AppendLine($"{player.name}{tasks} - {roles} {status} {murder}");
             }
 
             TMPro.TMP_Text roleSummaryTextMesh = roleSummary.GetComponent<TMPro.TMP_Text>();
             roleSummaryTextMesh.alignment = TMPro.TextAlignmentOptions.TopLeft;
             roleSummaryTextMesh.color = Color.white;
-            roleSummaryTextMesh.fontSizeMin = 1.5f;
-            roleSummaryTextMesh.fontSizeMax = 1.5f;
-            roleSummaryTextMesh.fontSize = 1.5f;
+            roleSummaryTextMesh.fontSizeMin = 1.25f;
+            roleSummaryTextMesh.fontSizeMax = 1.25f;
+            roleSummaryTextMesh.fontSize = 1.25f;
 
             var roleSummaryTextMeshRectTransform = roleSummaryTextMesh.GetComponent<RectTransform>();
             roleSummaryTextMeshRectTransform.anchoredPosition = new Vector2(position.x + 3.5f, position.y - 0.1f);

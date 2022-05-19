@@ -20,11 +20,13 @@ namespace Nebula.Roles.NeutralRoles
 
         public int avengerCheckerId;
 
-        public Module.CustomOption everyoneCanKnowExistenceOfAvengerOption;
+        public Module.CustomOption canKnowExistenceOfAvengerOption;
         public Module.CustomOption murderCanKnowAvengerOption;
         private Module.CustomOption avengerKillCoolDownOption;
         private Module.CustomOption avengerNoticeIntervalOption;
         public Module.CustomOption murderNoticeIntervalOption;
+        private Module.CustomOption ventCoolDownOption;
+        private Module.CustomOption ventDurationOption;
 
         /* 矢印 */
         Arrow Arrow;
@@ -40,12 +42,17 @@ namespace Nebula.Roles.NeutralRoles
 
             murderCanKnowAvengerOption = CreateOption(Color.white, "murderCanKnowAvenger", false);
 
-            everyoneCanKnowExistenceOfAvengerOption = CreateOption(Color.white, "everyoneCanKnowExistenceOfAvenger", true);
+            canKnowExistenceOfAvengerOption = CreateOption(Color.white, "canKnowExistenceOfAvenger", new string[] { "option.switch.off", "role.avenger.canKnowExistenceOfAvenger.everyone", "role.avenger.canKnowExistenceOfAvenger.onlyKiller" });
 
             avengerNoticeIntervalOption = CreateOption(Color.white, "avengerNoticeIntervalOption", 10f, 2.5f, 30f, 2.5f);
             avengerNoticeIntervalOption.suffix = "second";
-            murderNoticeIntervalOption = CreateOption(Color.white, "murderNoticeIntervalOption", 10f, 2.5f, 30f, 2.5f);
+            murderNoticeIntervalOption = CreateOption(Color.white, "murderNoticeIntervalOption", 10f, 2.5f, 30f, 2.5f).AddPrerequisite(murderCanKnowAvengerOption);
             murderNoticeIntervalOption.suffix = "second";
+
+            ventCoolDownOption = CreateOption(Color.white, "ventCoolDown", 20f, 5f, 60f, 2.5f);
+            ventCoolDownOption.suffix = "second";
+            ventDurationOption = CreateOption(Color.white, "ventDuration", 10f, 5f, 60f, 2.5f);
+            ventDurationOption.suffix = "second";
         }
 
         
@@ -178,11 +185,21 @@ namespace Nebula.Roles.NeutralRoles
             return player.GetModData().GetRoleData(avengerCheckerId) == 1;
         }
 
+        public override void Initialize(PlayerControl __instance)
+        {
+            base.Initialize(__instance);
+
+            VentCoolDownMaxTimer = ventCoolDownOption.getFloat();
+            VentDurationMaxTimer = ventDurationOption.getFloat();
+
+            Helpers.PlayFlash(Roles.Avenger.Color);
+        }
+
         public Avenger()
             : base("Avenger", "avenger", RoleColor, RoleCategory.Neutral, Side.Avenger, Side.Avenger,
                  new HashSet<Side>() { Side.Avenger }, new HashSet<Side>() { Side.Avenger },
                  new HashSet<Patches.EndCondition>() { },
-                 true, VentPermission.CanUseUnlimittedVent, true, false, false)
+                 true, VentPermission.CanUseLimittedVent, true, false, false)
         {
             avengerCheckerId = Game.GameData.RegisterRoleDataId("avenger.winChecker");
 

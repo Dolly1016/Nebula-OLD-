@@ -95,7 +95,7 @@ namespace Nebula.Objects
             OwnerId = ownerId;
 
             Vector3 pos = new Vector3(position.x, position.y, 0f);
-            if (type.IsBack) pos += new Vector3(0,0, position.y/1000f + 1f);
+            if (type.IsBack) pos += new Vector3(0,0, position.y/1000f + 0.01f);
             else if (type.IsFront) pos += new Vector3(0, 0, position.y / 1000f - 1f);
             GameObject.transform.position = pos += new Vector3(0, 0, position.y / 1000f);
             Renderer = GameObject.AddComponent<SpriteRenderer>();
