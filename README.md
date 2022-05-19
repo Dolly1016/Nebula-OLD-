@@ -33,6 +33,8 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.9.3 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.3,2022.3.29.1/Nebula_v1.9.3.zip)|
+| 1.9.2.2 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.2.2,2022.3.29.1/Nebula_v1.9.2.2.zip)|
 | 1.9.2.1 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.2.1,2022.3.29.1/Nebula_v1.9.2.1.zip)|
 | 1.9.2 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.2,2022.3.29.1/Nebula_v1.9.2.zip)|
 | 1.9.1 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.1,2022.3.29.1/Nebula_v1.9.1.zip)|
@@ -177,6 +179,16 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+  
+ **Version 1.9.3**
+ - 名前が壁を貫通する問題を抑制するように
+ - 会議中のプレイヤーのレベル表示を削除
+ - 会議画面や着せ替え画面でのバイザーおよびハットの位置がずれている問題を修正
+  
+ **Version 1.9.2.2**
+ - テスト用にローカルコスミックを使用可能に
+ - 着せ替え画面で文字の大きさが変わってしまうときがあった問題を修正
+ - プレイヤー色に準じるカスタムバイザーの、着せ替え画面内での表示が適切でない問題を修正
   
  **Version 1.9.2.1**
  - カスタムバイザーが正しく動いていなかった問題を修正
