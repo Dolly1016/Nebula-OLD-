@@ -24,6 +24,7 @@ namespace Nebula.Roles.NeutralRoles
         private Module.CustomOption infectDurationOption;
         private Module.CustomOption canInfectMyKillerOption;
         private Module.CustomOption coastingPhaseOption;
+        private Module.CustomOption canUseVentsOption;
         private Module.CustomOption ventCoolDownOption;
         private Module.CustomOption ventDurationOption;
 
@@ -49,9 +50,10 @@ namespace Nebula.Roles.NeutralRoles
             coastingPhaseOption = CreateOption(Color.white, "coastingPhase", 10f, 0f, 30f, 1f);
             coastingPhaseOption.suffix = "second";
 
-            ventCoolDownOption = CreateOption(Color.white, "ventCoolDown", 20f, 5f, 60f, 2.5f);
+            canUseVentsOption = CreateOption(Color.white, "canUseVents", true);
+            ventCoolDownOption = CreateOption(Color.white, "ventCoolDown", 20f, 5f, 60f, 2.5f).AddPrerequisite(canUseVentsOption);
             ventCoolDownOption.suffix = "second";
-            ventDurationOption = CreateOption(Color.white, "ventDuration", 10f, 5f, 60f, 2.5f);
+            ventDurationOption = CreateOption(Color.white, "ventDuration", 10f, 5f, 60f, 2.5f).AddPrerequisite(canUseVentsOption);
             ventDurationOption.suffix = "second";
         }
 
@@ -61,6 +63,14 @@ namespace Nebula.Roles.NeutralRoles
             if (infectSprite) return infectSprite;
             infectSprite = Helpers.loadSpriteFromResources("Nebula.Resources.InfectButton.png", 115f);
             return infectSprite;
+        }
+
+        public override void GlobalInitialize(PlayerControl __instance)
+        {
+            base.GlobalInitialize(__instance);
+
+            CanMoveInVents = canUseVentsOption.getBool();
+            VentPermission = canUseVentsOption.getBool() ? VentPermission.CanUseLimittedVent : VentPermission.CanNotUse;
         }
 
         public override void Initialize(PlayerControl __instance)

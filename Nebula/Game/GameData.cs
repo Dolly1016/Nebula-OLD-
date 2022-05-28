@@ -1,11 +1,8 @@
-﻿using System;
+﻿using Nebula.Roles;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Nebula.Roles;
 using UnityEngine;
-using PowerTools;
 using static GameData;
 
 namespace Nebula.Game
@@ -370,7 +367,6 @@ namespace Nebula.Game
             }
         }
 
-        private static AudioClip audioDive;
         private void Dive()
         {
             List<Il2CppSystem.Collections.IEnumerator> sequence = new List<Il2CppSystem.Collections.IEnumerator>();
@@ -387,8 +383,7 @@ namespace Nebula.Game
 
                 if (player.PlayerId == PlayerControl.LocalPlayer.PlayerId)
                 {
-                    if (!audioDive) audioDive = Helpers.loadAudioClip("Nebula.Resources.Sounds.Dive.wav", false);
-                    if (Constants.ShouldPlaySfx()) SoundManager.Instance.PlaySound(audioDive, false, 0.8f);
+                    Objects.SoundPlayer.PlaySound(Module.AudioAsset.HadarDive);
                 }
             })));
             sequence.Add(Effects.Wait(player.MyPhysics.CurrentAnimationGroup.EnterVentAnim.length));
@@ -408,7 +403,6 @@ namespace Nebula.Game
             player.MyPhysics.StartCoroutine(Effects.Sequence(refArray));
         }
 
-        private static AudioClip audioGush;
         private void Gush()
         {
             List<Il2CppSystem.Collections.IEnumerator> sequence = new List<Il2CppSystem.Collections.IEnumerator>();
@@ -427,8 +421,7 @@ namespace Nebula.Game
 
                 if (player.PlayerId == PlayerControl.LocalPlayer.PlayerId)
                 {
-                    if (!audioGush) audioGush = Helpers.loadAudioClip("Nebula.Resources.Sounds.Reappear.wav", false);
-                    if (Constants.ShouldPlaySfx()) SoundManager.Instance.PlaySound(audioGush, false, 0.8f);
+                    Objects.SoundPlayer.PlaySound(Module.AudioAsset.HadarReappear);
                 }
             })));
             sequence.Add(Effects.Wait(player.MyPhysics.CurrentAnimationGroup.ExitVentAnim.length));

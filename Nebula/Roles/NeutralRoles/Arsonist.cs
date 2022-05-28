@@ -21,12 +21,13 @@ namespace Nebula.Roles.NeutralRoles
         private Module.CustomOption douseDurationOption;
         private Module.CustomOption douseCoolDownOption;
         private Module.CustomOption douseRangeOption;
+        private Module.CustomOption canUseVentsOption;
 
         public bool WinTrigger { get; set; } = false;
         public byte Winner { get; set; } = Byte.MaxValue;
 
         public override void LoadOptionData()
-        {
+        { 
             douseDurationOption = CreateOption(Color.white, "douseDuration", 3f, 1f, 10f, 0.5f);
             douseDurationOption.suffix = "second";
 
@@ -35,6 +36,9 @@ namespace Nebula.Roles.NeutralRoles
 
             douseRangeOption = CreateOption(Color.white, "douseRange", 1f, 0.5f, 2f, 0.125f);
             douseRangeOption.suffix = "cross";
+
+
+            canUseVentsOption = CreateOption(Color.white, "canUseVents", true);
         }
 
 
@@ -55,6 +59,13 @@ namespace Nebula.Roles.NeutralRoles
 
         static private bool canIgnite = false;
 
+        public override void GlobalInitialize(PlayerControl __instance)
+        {
+            base.GlobalInitialize(__instance);
+
+            CanMoveInVents = canUseVentsOption.getBool();
+            VentPermission = canUseVentsOption.getBool() ? VentPermission.CanUseUnlimittedVent : VentPermission.CanNotUse;
+        }
         public override void Initialize(PlayerControl __instance)
         {
             base.Initialize(__instance);

@@ -23,27 +23,26 @@ namespace Nebula
                       !ExileController.Instance;
             }
         }
-        public static bool ProceedTimer
+        public static bool ProceedTimer(bool isImpostorKillButton)
         {
-            get
+
+            if (PlayerControl.LocalPlayer.inVent) return false;
+            if (MeetingHud.Instance) return false;
+
+            //情報端末以外ではカウントが進む
+            if (MapBehaviour.Instance && MapBehaviour.Instance.IsOpen)
+                return !MapBehaviour.Instance.countOverlay.isActiveAndEnabled;
+
+            if (Minigame.Instance)
             {
-                if (PlayerControl.LocalPlayer.inVent) return false;
-                if (MeetingHud.Instance) return false;
-
-                //情報端末以外ではカウントが進む
-                if (MapBehaviour.Instance && MapBehaviour.Instance.IsOpen)
-                    return !MapBehaviour.Instance.countOverlay.isActiveAndEnabled;
-
-                if (Minigame.Instance)
-                {
-                    if (Minigame.Instance.TryCast<SpawnInMinigame>()) return false;
-                    if (Minigame.Instance.MyNormTask) return true;
-                    if (Minigame.Instance.TryCast<DoorCardSwipeGame>()) return true;
-                    if (Minigame.Instance.TryCast<DoorBreakerGame>()) return true;
-                }
-
-                return PlayerControl.LocalPlayer.CanMove;
+                if (isImpostorKillButton) return false;
+                if (Minigame.Instance.TryCast<SpawnInMinigame>()) return false;
+                if (Minigame.Instance.MyNormTask) return true;
+                if (Minigame.Instance.TryCast<DoorCardSwipeGame>()) return true;
+                if (Minigame.Instance.TryCast<DoorBreakerGame>()) return true;
             }
+
+            return PlayerControl.LocalPlayer.CanMove;
         }
 
         public static Sprite loadSpriteFromResources(Texture2D texture, float pixelsPerUnit, Rect textureRect)
@@ -135,15 +134,6 @@ namespace Nebula
             return iCall_LoadImage.Invoke(tex.Pointer, il2cppArray.Pointer, markNonReadable);
         }
 
-        public static AudioClip loadAudioClip(string path, bool is3DSound)
-        {
-            Module.AudioLoader wav = new Module.AudioLoader(path);
-            NebulaPlugin.Instance.Logger.Print("Audio SampleCount:" + wav.SampleCount + " ,Channels:" + wav.ChannelCount + " ,Frequency:" + wav.Frequency);
-            AudioClip audioClip = AudioClip.Create(Path.GetFileName(path), wav.SampleCount, wav.ChannelCount, wav.Frequency, is3DSound, false);
-            audioClip.SetData(wav.RawData, 0);
-            return audioClip;
-        }
-
         public static PlayerControl playerById(byte id)
         {
             foreach (PlayerControl player in PlayerControl.AllPlayerControls)
@@ -233,10 +223,11 @@ namespace Nebula
 
         public static void SetLook(this PlayerControl target, String playerName, int colorId, string hatId, string visorId, string skinId, string petId)
         {
-            target.RawSetColor(colorId);
             target.RawSetVisor(visorId);
             target.RawSetHat(hatId, colorId);
             target.RawSetSkin(skinId,colorId);
+            target.RawSetColor(colorId);
+            PlayerControl.SetPlayerMaterialColors(colorId, target.VisorSlot.Image);
 
             Game.GameData.data.players[target.PlayerId].currentName = playerName;
 

@@ -34,6 +34,8 @@ namespace Nebula.Objects
         //ボタンの有効化フラグと、一時的な隠しフラグ
         private bool activeFlag,hideFlag;
         public bool FireOnClicked = false;
+        //クールダウンの進みをインポスターキルボタンに合わせる
+        private bool isImpostorKillButton=false;
 
         public bool IsValid { get { return activeFlag; } }
         public bool IsShown { get { return activeFlag && !hideFlag; } }
@@ -77,6 +79,11 @@ namespace Nebula.Objects
             buttonText = label != "" ? Language.Language.GetString(label) : "";
             
             this.showButtonText = (actionButton.graphic.sprite == Sprite || buttonText != "");
+        }
+
+        public void SetButtonCoolDownOption(bool isImpostorKillButton)
+        {
+            this.isImpostorKillButton = isImpostorKillButton;
         }
 
         public CustomButton SetTimer(float timer)
@@ -216,7 +223,7 @@ namespace Nebula.Objects
             {
                 if (HasEffect && isEffectActive)
                     Timer -= Time.deltaTime;
-                else if (Helpers.ProceedTimer)
+                else if (Helpers.ProceedTimer(isImpostorKillButton))
                     Timer -= Time.deltaTime;
             }
 

@@ -18,6 +18,7 @@ namespace Nebula.Roles.CrewmateRoles
 
         private Module.CustomOption OracleCooldownOption;
         private Module.CustomOption OracleCooldownAdditionOption;
+        private Module.CustomOption OracleDurationOption;
         private Module.CustomOption CandidatesOption;
         private Module.CustomOption DieWhenDiviningOpportunistOption;
         private Module.CustomOption DieWhenDiviningOracleOption;
@@ -62,6 +63,23 @@ namespace Nebula.Roles.CrewmateRoles
             oracleButton = new CustomButton(
                 () =>
                 {
+                },
+                () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
+                () => {
+                    if (oracleButton.isEffectActive && Game.GameData.data.myData.currentTarget == null)
+                    {
+                        oracleButton.Timer = 0f;
+                        oracleButton.isEffectActive = false;
+                    }
+                    return Game.GameData.data.myData.currentTarget && PlayerControl.LocalPlayer.CanMove; },
+                () => { oracleButton.Timer = oracleButton.MaxTimer; },
+                getButtonSprite(),
+                new Vector3(-1.8f, 0f, 0),
+                __instance,
+                KeyCode.F,
+                true,
+                OracleDurationOption.getFloat(),
+                ()=> {
                     PlayerControl target = Game.GameData.data.myData.currentTarget;
 
                     if (CannotDivineRole(target.GetModData().role))
@@ -80,37 +98,29 @@ namespace Nebula.Roles.CrewmateRoles
                     string roles = "";
                     int index = 0;
                     float rate = 1f;
-                    foreach(var role in divineResult[target.PlayerId])
+                    foreach (var role in divineResult[target.PlayerId])
                     {
                         if (!roles.Equals(""))
                         {
                             roles += ", ";
                         }
 
-                        if (index % 4 == 3) { roles += "\n";  rate *= 1.8f; }
+                        if (index % 4 == 3) { roles += "\n"; rate *= 1.8f; }
 
-                        roles += Helpers.cs(role.Color,Language.Language.GetString("role." + role.LocalizeName + ".name"));
+                        roles += Helpers.cs(role.Color, Language.Language.GetString("role." + role.LocalizeName + ".name"));
 
                         index++;
                     }
-                    target.GetModData().RoleInfo = roles.Replace("\n","");
-                    message = message.Replace("%ROLES%",roles);
+                    target.GetModData().RoleInfo = roles.Replace("\n", "");
+                    message = message.Replace("%ROLES%", roles);
                     message = message.Replace("%PLAYER%", target.name);
-                    CustomMessage customMessage=CustomMessage.Create(target.transform.position, true, message, 5f, 0.5f, 2f, rate, Color.white);
+                    CustomMessage customMessage = CustomMessage.Create(target.transform.position, true, message, 5f, 0.5f, 2f, rate, Color.white);
                     customMessage.velocity = new Vector3(0f, 0.1f);
 
                     oracleButton.MaxTimer += OracleCooldownAdditionOption.getFloat();
                     oracleButton.Timer = oracleButton.MaxTimer;
                     Game.GameData.data.myData.currentTarget = null;
-
                 },
-                () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
-                () => { return Game.GameData.data.myData.currentTarget && PlayerControl.LocalPlayer.CanMove; },
-                () => { oracleButton.Timer = oracleButton.MaxTimer; },
-                getButtonSprite(),
-                new Vector3(-1.8f, 0f, 0),
-                __instance,
-                KeyCode.F,
                 false,
                 "button.label.oracle"
             );
@@ -143,6 +153,9 @@ namespace Nebula.Roles.CrewmateRoles
 
             OracleCooldownAdditionOption = CreateOption(Color.white, "divineCoolDownAddition", 5f, 0f, 30f, 2.5f);
             OracleCooldownAdditionOption.suffix = "second";
+
+            OracleDurationOption = CreateOption(Color.white, "divineDuration", 1f, 0.5f, 5f, 0.5f);
+            OracleDurationOption.suffix = "second";
 
             CandidatesOption = CreateOption(Color.white, "countOfCandidates", 4f, 1f, 8f, 1f);
 

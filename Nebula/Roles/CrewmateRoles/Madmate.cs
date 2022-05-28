@@ -16,6 +16,7 @@ namespace Nebula.Roles.CrewmateRoles
         
 
         private Module.CustomOption CanUseVentsOption;
+        private Module.CustomOption CanFixSabotageOption;
         private Module.CustomOption HasImpostorVisionOption;
         private Module.CustomOption CanInvokeSabotageOption;
         private Module.CustomOption CanKnowImpostorsByTasksOption;
@@ -32,6 +33,7 @@ namespace Nebula.Roles.CrewmateRoles
 
             CanUseVentsOption = CreateOption(Color.white, "canUseVents", true);
             CanInvokeSabotageOption = CreateOption(Color.white, "canInvokeSabotage", true);
+            CanFixSabotageOption = CreateOption(Color.white, "canFixLightsAndComms", true);
 
             HasImpostorVisionOption = CreateOption(Color.white, "hasImpostorVision", false);
 
@@ -107,6 +109,7 @@ namespace Nebula.Roles.CrewmateRoles
             CanMoveInVents = CanUseVentsOption.getBool();
             VentPermission = CanUseVentsOption.getBool() ? VentPermission.CanUseUnlimittedVent : VentPermission.CanNotUse;
             canInvokeSabotage = CanInvokeSabotageOption.getBool();
+            canFixSabotage = CanFixSabotageOption.getBool();
             UseImpostorLightRadius = HasImpostorVisionOption.getBool();
         }
 

@@ -68,6 +68,7 @@ namespace Nebula.Roles.ImpostorRoles
                 KeyCode.Q
             ).SetTimer(10f);
             killButton.MaxTimer = PlayerControl.GameOptions.KillCooldown;
+            killButton.SetButtonCoolDownOption(true);
         }
 
         public override void ButtonActivate()
@@ -104,6 +105,7 @@ namespace Nebula.Roles.ImpostorRoles
                 foreach (var player in PlayerControl.AllPlayerControls)
                 {
                     if (player.GetModData().role.category == RoleCategory.Impostor) continue;
+                    if (player.GetModData().role == Roles.Spy) continue;
                     if (player.PlayerId == currentBounty) continue;
                     if (player.Data.IsDead) continue;
                     candidates.Add(player.PlayerId);

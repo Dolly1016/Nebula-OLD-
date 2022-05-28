@@ -93,6 +93,9 @@ namespace Nebula.Roles.ComplexRoles
         private static GameObject guesserUI;
         static void guesserOnClick(int buttonTarget, MeetingHud __instance)
         {
+            PlayerControl target = Helpers.playerById((byte)__instance.playerStates[buttonTarget].TargetPlayerId);
+            if (target == null || target.Data.IsDead) return;
+
             if (guesserUI != null || !(__instance.state == MeetingHud.VoteStates.Voted || __instance.state == MeetingHud.VoteStates.NotVoted)) return;
             __instance.playerStates.ToList().ForEach(x => x.gameObject.SetActive(false));
 
@@ -158,6 +161,7 @@ namespace Nebula.Roles.ComplexRoles
                     {
                         PlayerControl focusedTarget = Helpers.playerById((byte)__instance.playerStates[buttonTarget].TargetPlayerId);
                         if (!(__instance.state == MeetingHud.VoteStates.Voted || __instance.state == MeetingHud.VoteStates.NotVoted) || focusedTarget == null) return;
+                        if (target.Data.IsDead) return;
 
                         PlayerControl dyingTarget = (focusedTarget.GetModData().role == role || focusedTarget.GetModData().role.GetImplicateRoles().Contains(role)) ? focusedTarget : PlayerControl.LocalPlayer;
 

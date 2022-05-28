@@ -157,6 +157,7 @@
 "role.trapper.commTrapCost" : "Log Trap Cost"
 "role.trapper.killTrapCost" : "Kill Trap Cost"
 "role.trapper.rootTime" : "Trapper Root Time"
+"role.trapper.killTrapAudibleDistance" : "Kill Trap Audible Distance"
 
 "role.agent.name" : "Agent"
 "role.agent.description" : "Do Your Tasks More"
@@ -282,6 +283,7 @@
 "role.oracle.message" : "%PLAYER% seems %ROLES%."
 "role.oracle.divineCoolDown" : "Divine Cool Down"
 "role.oracle.divineCoolDownAddition" : "Divine Cool Down Addition"
+"role.oracle.divineDuration" : "Divine Duration"
 "role.oracle.countOfCandidates" : "Count Of Candidates"
 "role.oracle.dieWhenDiviningOpportunist" : "Die When Divining Opportunist"
 "role.oracle.dieWhenDiviningOracle" : "Die When Divining Oracle"
@@ -334,6 +336,7 @@
 "role.madmate.canUseVents" : "Can Use Vents"
 "role.madmate.hasImpostorVision" : "Has Impostor Vision"
 "role.madmate.canInvokeSabotage" : "Can Invoke Sabotage"
+"role.madmate.canFixLightsAndComms" : "Can Fix Lights And Comms"
 "role.madmate.canKnowImpostorsByTasks" : "Can Know Impostors By Tasks"
 "role.madmate.numOfMaxImpostorsCanKnow" : "Num Of Max Impostors Can Know"
 "role.madmate.numOfTasksRequiredToKnowImpostors1" : "Num Of Tasks Required To Know Impostors 1"
@@ -436,6 +439,7 @@
 "role.arsonist.douseDuration" : "Douse Duration"
 "role.arsonist.douseCoolDown" : "Douse Cool Down"
 "role.arsonist.douseRange" : "Douse Range"
+"role.arsonist.canUseVents" : "Can Use Vents"
 
 "role.empiric.name" : "Empiric"
 "role.empiric.description" : "Spread a Disease"
@@ -445,6 +449,7 @@
 "role.empiric.infectRange" : "Infect Range"
 "role.empiric.canInfectMyKiller" : "Can Infect My Killer"
 "role.empiric.coastingPhase" : "Coasting Phase After Meetings"
+"role.empiric.canUseVents" : "Can Use Vents"
 "role.empiric.ventCoolDown" : "Vent Cool Down"
 "role.empiric.ventDuration" : "Vent Duration"
 
@@ -467,6 +472,7 @@
 "role.jester.info" : "You have to voted out to win.\n\n - V : Use vents"
 "role.jester.canUseVents" : "Can Use Vents"
 "role.jester.canInvokeSabotage" : "Can Invoke Sabotage"
+"role.jester.canFixLightsAndComms" : "Can Fix Lights And Comms"
 "role.jester.ventCoolDown" : "Vent Cool Down"
 "role.jester.ventDuration" : "Vent Duration"
 
@@ -524,6 +530,7 @@
 "role.avenger.canKnowExistenceOfAvenger.onlyKiller" : "Only Killer"
 "role.avenger.avengerNoticeIntervalOption" : "Notice Interval For Avenger"
 "role.avenger.murderNoticeIntervalOption" : "Notice Interval For Murder"
+"role.avenger.canTakeOverSabotageWin" : "Can Take Over Sabotage Win"
 "role.avenger.ventCoolDown" : "Vent Cool Down"
 "role.avenger.ventDuration" : "Vent Duration"
 

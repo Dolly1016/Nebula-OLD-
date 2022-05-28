@@ -259,6 +259,7 @@ namespace Nebula.Module
         public CustomVBool Bounce { get; set; }
         public CustomVBool Adaptive { get; set; }
         public CustomVBool Behind { get; set; }
+        public CustomVBool HideHands { get; set; }
         public CustomVSecPerFrame SecPerFrame { get; set; }
 
         protected override IEnumerable<CustomVariable> ExtendedContents()
@@ -276,6 +277,7 @@ namespace Nebula.Module
             yield return Bounce;
             yield return Adaptive;
             yield return Behind;
+            yield return HideHands;
             yield return SecPerFrame;
             yield break;
         }
@@ -295,6 +297,7 @@ namespace Nebula.Module
             Bounce = new CustomVBool("Bounce");
             Adaptive = new CustomVBool("Adaptive");
             Behind = new CustomVBool("Behind");
+            HideHands = new CustomVBool("HideHands");
             SecPerFrame = new CustomVSecPerFrame("FPS");
         }
     }
@@ -561,6 +564,23 @@ namespace Nebula.Module
             static void Postfix(HatManager __instance)
             {
                 RUNNING = false;
+            }
+        }
+
+        [HarmonyPatch(typeof(AirshipExileController), nameof(AirshipExileController.PlayerFall))]
+        private static class ExiledPlayerHideHandsPatch
+        {
+            private static void Postfix(AirshipExileController __instance)
+            {
+                HatParent hp = __instance.Player.HatSlot;
+                if (hp.Hat == null) return;
+                CustomHat extend = hp.Hat.getHatData();
+                if (extend == null) return;
+                
+                if (extend.HideHands.Value)
+                {
+                    __instance.Player.gameObject.transform.FindChild("HandSlot").gameObject.SetActive(false);
+                }
             }
         }
 

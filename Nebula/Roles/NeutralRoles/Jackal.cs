@@ -95,6 +95,7 @@ namespace Nebula.Roles.NeutralRoles
                 KeyCode.Q
             ).SetTimer(10f);
             killButton.MaxTimer = KillCoolDownOption.getFloat();
+            killButton.SetButtonCoolDownOption(true);
 
             if (sidekickButton != null)
             {

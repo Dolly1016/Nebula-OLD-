@@ -27,6 +27,7 @@ namespace Nebula.Roles.NeutralRoles
         public Module.CustomOption murderNoticeIntervalOption;
         private Module.CustomOption ventCoolDownOption;
         private Module.CustomOption ventDurationOption;
+        public Module.CustomOption canTakeOverSabotageWinOption;
 
         /* 矢印 */
         Arrow Arrow;
@@ -53,6 +54,8 @@ namespace Nebula.Roles.NeutralRoles
             ventCoolDownOption.suffix = "second";
             ventDurationOption = CreateOption(Color.white, "ventDuration", 10f, 5f, 60f, 2.5f);
             ventDurationOption.suffix = "second";
+
+            canTakeOverSabotageWinOption = CreateOption(Color.white, "canTakeOverSabotageWin", false);
         }
 
         

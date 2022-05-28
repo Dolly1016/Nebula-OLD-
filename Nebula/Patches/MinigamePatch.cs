@@ -17,6 +17,11 @@ namespace Nebula.Patches
 
             if (pc.GetModData().Property.UnderTheFloor) { __result = float.MaxValue; return false; }
 
+            if (!pc.GetModData().role.canFixSabotage)
+            {
+                if (__instance.TaskTypes.Any(x => x == TaskTypes.FixLights || x == TaskTypes.FixComms)) return false;
+            }
+
             if (__instance.AllowImpostor) return true;
             if (!Game.GameData.data.players[pc.PlayerId].role.HasFakeTask) return true;
             if (Game.GameData.data.players[pc.PlayerId].role.HasFakeTask && Game.GameData.data.players[pc.PlayerId].role.FakeTaskIsExecutable) return true;

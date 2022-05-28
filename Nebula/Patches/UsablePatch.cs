@@ -64,4 +64,26 @@ namespace Nebula.Patches
             return false;
         }
     }
+
+    //コミュを直せない役職からミニゲームをブロックする
+    [HarmonyPatch(typeof(TuneRadioMinigame), nameof(TuneRadioMinigame.Begin))]
+    class CommsMinigameBeginPatch
+    {
+        static void Postfix(TuneRadioMinigame __instance)
+        {
+            if (!PlayerControl.LocalPlayer.GetModData().role.canFixSabotage)
+                __instance.Close();
+        }
+    }
+
+    //停電を直せない役職からミニゲームをブロックする
+    [HarmonyPatch(typeof(SwitchMinigame), nameof(SwitchMinigame.Begin))]
+    class LightsMinigameBeginPatch
+    {
+        static void Postfix(SwitchMinigame __instance)
+        {
+            if (!PlayerControl.LocalPlayer.GetModData().role.canFixSabotage)
+                __instance.Close();
+        }
+    }
 }

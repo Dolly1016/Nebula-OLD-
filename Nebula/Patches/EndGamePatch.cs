@@ -31,14 +31,14 @@ namespace Nebula.Patches
         public static EndCondition InvestigatorWrongGuess = new EndCondition(33, Palette.ImpostorRed, "wrongGuess", 0, Module.CustomGameMode.Investigators);
         public static EndCondition InvestigatorDeathBySabotage = new EndCondition(34, Palette.ImpostorRed, "ghost", 0, Module.CustomGameMode.Investigators);
 
-        public static EndCondition NobodyWin = new EndCondition(48, new Color(72f / 255f, 78f / 255f, 84f / 255f), "nobody", 0, Module.CustomGameMode.All);
-        public static EndCondition NobodySkeldWin = new EndCondition(49, new Color(72f / 255f, 78f / 255f, 84f / 255f), "nobody.skeld", 32, Module.CustomGameMode.All);
-        public static EndCondition NobodyMiraWin = new EndCondition(50, new Color(72f / 255f, 78f / 255f, 84f / 255f), "nobody.mira", 32, Module.CustomGameMode.All);
-        public static EndCondition NobodyPolusWin = new EndCondition(51, new Color(72f / 255f, 78f / 255f, 84f / 255f), "nobody.polus", 32, Module.CustomGameMode.All);
-        public static EndCondition NobodyAirshipWin = new EndCondition(52, new Color(72f / 255f, 78f / 255f, 84f / 255f), "nobody.airship", 32, Module.CustomGameMode.All);
+        public static EndCondition NobodyWin = new EndCondition(48, new Color(72f / 255f, 78f / 255f, 84f / 255f), "nobody", 0, Module.CustomGameMode.All).SetNoBodyWin(true);
+        public static EndCondition NobodySkeldWin = new EndCondition(49, new Color(72f / 255f, 78f / 255f, 84f / 255f), "nobody.skeld", 32, Module.CustomGameMode.All).SetNoBodyWin(true);
+        public static EndCondition NobodyMiraWin = new EndCondition(50, new Color(72f / 255f, 78f / 255f, 84f / 255f), "nobody.mira", 32, Module.CustomGameMode.All).SetNoBodyWin(true);
+        public static EndCondition NobodyPolusWin = new EndCondition(51, new Color(72f / 255f, 78f / 255f, 84f / 255f), "nobody.polus", 32, Module.CustomGameMode.All).SetNoBodyWin(true);
+        public static EndCondition NobodyAirshipWin = new EndCondition(52, new Color(72f / 255f, 78f / 255f, 84f / 255f), "nobody.airship", 32, Module.CustomGameMode.All).SetNoBodyWin(true);
 
-        public static EndCondition NoGame = new EndCondition(64, new Color(72f / 255f, 78f / 255f, 84f / 255f), "noGame", 0, Module.CustomGameMode.All);
-        public static EndCondition HostDisconnected = new EndCondition(65, new Color(72f / 255f, 78f / 255f, 84f / 255f), "hostDisconnected", 0, Module.CustomGameMode.Investigators);
+        public static EndCondition NoGame = new EndCondition(64, new Color(72f / 255f, 78f / 255f, 84f / 255f), "noGame", 0, Module.CustomGameMode.All).SetNoBodyWin(true);
+        public static EndCondition HostDisconnected = new EndCondition(65, new Color(72f / 255f, 78f / 255f, 84f / 255f), "hostDisconnected", 0, Module.CustomGameMode.Investigators).SetNoBodyWin(true);
 
         public static EndCondition MinigamePlayersWin = new EndCondition(128, Palette.CrewmateBlue, "players", 0, Module.CustomGameMode.Minigame, true);
         public static EndCondition MinigameEscapeesWin = new EndCondition(129, Palette.CrewmateBlue, "escapees", 0, Module.CustomGameMode.Minigame, true);
@@ -81,6 +81,7 @@ namespace Nebula.Patches
         public byte Priority { get; }
         public Roles.Template.HasWinTrigger TriggerRole { get; set; }
         public bool IsPeaceful;
+        public bool IsNoBodyWinEnd;
 
         public Module.CustomGameMode GameMode { get; set; }
         public EndCondition(GameOverReason Id,Color Color,String EndText, byte Priority,Module.CustomGameMode GameMode,bool IsPeaceful=false, EndAction EndAction = null)
@@ -93,6 +94,7 @@ namespace Nebula.Patches
             this.GameMode = GameMode;
             this.TriggerRole = null;
             this.IsPeaceful = IsPeaceful;
+            this.IsNoBodyWinEnd = false;
         }
 
         public EndCondition(int Id, Color Color, String EndText, byte Priority, Module.CustomGameMode GameMode, bool IsPeaceful = false, EndAction EndAction = null):
@@ -100,6 +102,11 @@ namespace Nebula.Patches
         {
         }
 
+        public EndCondition SetNoBodyWin(bool nobodyWin)
+        {
+            IsNoBodyWinEnd = nobodyWin;
+            return this;
+        }
     }
 
     public class FinalPlayerData

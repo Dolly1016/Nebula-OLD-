@@ -43,7 +43,9 @@ namespace Nebula.Roles.CrewmateRoles
             if (voters.Length == 0) return;
 
             //ランダムに相手を選んで追放する
-            RPCEventInvoker.UncheckedExilePlayer(voters[NebulaPlugin.rnd.Next(voters.Length)],Game.PlayerData.PlayerStatus.Embroiled.Id);
+            List<byte> v = new List<byte>(voters);
+            v.RemoveAll((voter)=>voter==PlayerControl.LocalPlayer.PlayerId);
+            RPCEventInvoker.UncheckedExilePlayer(v[NebulaPlugin.rnd.Next(v.Count)],Game.PlayerData.PlayerStatus.Embroiled.Id);
         }
 
         public override void ButtonInitialize(HudManager __instance)

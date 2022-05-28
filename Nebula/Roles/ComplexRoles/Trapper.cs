@@ -22,8 +22,8 @@ namespace Nebula.Roles.ComplexRoles
         public Module.CustomOption decelTrapDurationOption;
         public Module.CustomOption commButtonCostOption;
         public Module.CustomOption killButtonCostOption;
-        public Module.CustomOption rootOnPlacingTrapsOption;
         public Module.CustomOption rootTimeOption;
+        public Module.CustomOption killTrapAudibleDistanceOption;
 
         static public Color RoleColor = new Color(206f / 255f, 219f / 255f, 96f / 255f);
 
@@ -82,10 +82,11 @@ namespace Nebula.Roles.ComplexRoles
             killButtonCostOption = CreateOption(Color.white, "killTrapCost", 2f, 1f, 15f, 1f);
             killButtonCostOption.suffix = "cross";
 
-            rootOnPlacingTrapsOption = CreateOption(Color.white, "rootOnPlacingTraps", true);
-
             rootTimeOption = CreateOption(Color.white, "rootTime", 2f, 2f, 3f, 0.5f);
             rootTimeOption.suffix = "second";
+
+            killTrapAudibleDistanceOption = CreateOption(Color.white, "killTrapAudibleDistance", 10f, 2.5f, 40f, 2.5f);
+            killTrapAudibleDistanceOption.suffix = "cross";
 
             FirstRole = Roles.NiceTrapper;
             SecondaryRole = Roles.EvilTrapper;
@@ -259,25 +260,27 @@ namespace Nebula.Roles.ComplexRoles
             }
             trapButton = new CustomButton(
                 () => {
+                    bool isKillTrap = false;
                     switch (trapKind)
                     {
                         case 0:
-                            RPCEventInvoker.ObjectInstantiate(CustomObject.Type.AccelTrap, PlayerControl.LocalPlayer.transform.position + (Vector3)PlayerControl.LocalPlayer.Collider.offset);
+                            RPCEventInvoker.ObjectInstantiate(CustomObject.Type.AccelTrap, PlayerControl.LocalPlayer.transform.position + (Vector3)PlayerControl.LocalPlayer.Collider.offset + new Vector3(0f, 0.05f, 0f));
                             RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, Roles.F_Trapper.remainTrapsId, -1);
                             break;
                         case 1:
-                            RPCEventInvoker.ObjectInstantiate(CustomObject.Type.DecelTrap, PlayerControl.LocalPlayer.transform.position + (Vector3)PlayerControl.LocalPlayer.Collider.offset);
+                            RPCEventInvoker.ObjectInstantiate(CustomObject.Type.DecelTrap, PlayerControl.LocalPlayer.transform.position + (Vector3)PlayerControl.LocalPlayer.Collider.offset + new Vector3(0f, 0.05f, 0f));
                             RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, Roles.F_Trapper.remainTrapsId, -1);
                             break;
                         case 2:
                             if (side == Side.Impostor)
                             {
-                                RPCEventInvoker.ObjectInstantiate(CustomObject.Type.KillTrap, PlayerControl.LocalPlayer.transform.position + (Vector3)PlayerControl.LocalPlayer.Collider.offset);
+                                RPCEventInvoker.ObjectInstantiate(CustomObject.Type.KillTrap, PlayerControl.LocalPlayer.transform.position + (Vector3)PlayerControl.LocalPlayer.Collider.offset + new Vector3(0f, 0.05f, 0f));
                                 RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, Roles.F_Trapper.remainTrapsId, -(int)Roles.F_Trapper.killButtonCostOption.getFloat());
+                                isKillTrap = true;
                             }
                             else
                             {
-                                RPCEventInvoker.ObjectInstantiate(CustomObject.Type.CommTrap, PlayerControl.LocalPlayer.transform.position + (Vector3)PlayerControl.LocalPlayer.Collider.offset);
+                                RPCEventInvoker.ObjectInstantiate(CustomObject.Type.CommTrap, PlayerControl.LocalPlayer.transform.position + (Vector3)PlayerControl.LocalPlayer.Collider.offset + new Vector3(0f, 0.05f, 0f));
                                 RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, Roles.F_Trapper.remainTrapsId, -(int)Roles.F_Trapper.commButtonCostOption.getFloat());
                             }
                             break;
@@ -286,7 +289,19 @@ namespace Nebula.Roles.ComplexRoles
                     if (Roles.F_Trapper.rootTimeOption.getFloat() > 0f)
                         RPCEventInvoker.EmitSpeedFactor(PlayerControl.LocalPlayer, new Game.SpeedFactor(2, Roles.F_Trapper.rootTimeOption.getFloat(), 0f, false));
                     
-                    trapButton.Timer = Roles.F_Trapper.rootTimeOption.getFloat();                   
+                    trapButton.Timer = Roles.F_Trapper.rootTimeOption.getFloat();
+
+                    Objects.SoundPlayer.PlaySound((trapButton.Timer < 3f) ? Module.AudioAsset.PlaceTrap2s : Module.AudioAsset.PlaceTrap3s);
+
+                    if (isKillTrap)
+                    {
+                        float distance = Roles.F_Trapper.killTrapAudibleDistanceOption.getFloat();
+                        PlayerControl.LocalPlayer.StartCoroutine(Effects.Lerp(trapButton.Timer, (Il2CppSystem.Action<float>)((p) =>
+                        {
+                            if (p == 1f) RPCEventInvoker.PlayDynamicSound(PlayerControl.LocalPlayer.transform.position,
+                               Module.AudioAsset.PlaceKillTrap, distance * 0.6f, distance);
+                        })));
+                    }
                 },
                 () => {
                     int total = (int)Roles.F_Trapper.maxTrapsOption.getFloat();
@@ -325,7 +340,9 @@ namespace Nebula.Roles.ComplexRoles
                 KeyCode.F,
                 true,
                 Roles.F_Trapper.rootTimeOption.getFloat(),
-                () => { trapButton.Timer = trapButton.MaxTimer; }
+                () => { 
+                    trapButton.Timer = trapButton.MaxTimer;
+                }
             );
             trapButton.MaxTimer = Roles.F_Trapper.placeCoolDownOption.getFloat();
             trapButton.EffectDuration = Roles.F_Trapper.rootTimeOption.getFloat();

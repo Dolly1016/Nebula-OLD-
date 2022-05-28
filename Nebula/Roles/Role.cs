@@ -72,6 +72,7 @@ namespace Nebula.Roles
         public float VentCoolDownMaxTimer { get; set; }
         public bool CanMoveInVents { get; set; }
         public bool canInvokeSabotage { get; set; }
+        public bool canFixSabotage { get; set; }
         public bool RemoveAllTasksOnDead { get; set; }
         /// <summary>
         /// 停電が効かない場合true
@@ -273,6 +274,7 @@ namespace Nebula.Roles
             this.HideInExclusiveAssignmentOption = false;
 
             this.canInvokeSabotage = (category == RoleCategory.Impostor);
+            this.canFixSabotage = true;
 
             this.RelatedRoles = new HashSet<Role>();
 

@@ -137,6 +137,9 @@ namespace Nebula.Roles
         {
             return null;
         },(EndCondition endCondition,PlayerStatistics statistics, ShipStatus status)=> {
+            if (endCondition.IsNoBodyWinEnd) return null;
+            if (Roles.Avenger.canTakeOverSabotageWinOption.getBool() && endCondition == EndCondition.ImpostorWinBySabotage) return null;
+
             foreach(var player in Game.GameData.data.players.Values)
             {
                 if (!player.IsAlive) continue;

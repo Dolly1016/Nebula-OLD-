@@ -26,6 +26,8 @@ namespace Nebula
         SetExtraRole,
         UnsetExtraRole,
         ChangeExtraRole,
+        PlayStaticSound,
+        PlayDynamicSound,
         UncheckedMurderPlayer,
         UncheckedExilePlayer,
         UncheckedCmdReportDeadBody,
@@ -53,6 +55,7 @@ namespace Nebula
         UpdateRestrictTimer,
         UndergroundAction,
         DeathGuage,
+
 
         // Role functionality
 
@@ -134,6 +137,12 @@ namespace Nebula
                 case (byte)CustomRPC.ChangeExtraRole:
                     byte removeRole = reader.ReadByte();
                     RPCEvents.ChangeExtraRole(removeRole == byte.MaxValue ? Roles.ExtraRole.GetRoleById(removeRole) : null, Roles.ExtraRole.GetRoleById(reader.ReadByte()), reader.ReadUInt64(), reader.ReadByte());
+                    break;
+                case (byte)CustomRPC.PlayStaticSound:
+                    RPCEvents.PlayStaticSound((Module.AudioAsset)reader.ReadByte());
+                    break;
+                case (byte)CustomRPC.PlayDynamicSound:
+                    RPCEvents.PlayDynamicSound(new Vector2(reader.ReadSingle(), reader.ReadSingle()), (Module.AudioAsset)reader.ReadByte(), reader.ReadSingle(), reader.ReadSingle());
                     break;
                 case (byte)CustomRPC.UncheckedMurderPlayer:
                     RPCEvents.UncheckedMurderPlayer(reader.ReadByte(), reader.ReadByte(), reader.ReadByte(), reader.ReadByte());
@@ -361,6 +370,16 @@ namespace Nebula
                 addRole.ButtonInitialize(Patches.HudManagerStartPatch.Manager);
                 addRole.ButtonActivate();
             }
+        }
+
+        public static void PlayStaticSound(Module.AudioAsset id)
+        {
+            Objects.SoundPlayer.PlaySound(id);
+        }
+
+        public static void PlayDynamicSound(Vector2 pos,Module.AudioAsset id,float maxDistance,float minDistance)
+        {
+            Objects.SoundPlayer.PlaySound(pos, id, maxDistance, minDistance);
         }
 
         public static void UncheckedMurderPlayer(byte murdererId, byte targetId, byte statusId, byte showAnimation)
@@ -865,7 +884,6 @@ namespace Nebula
             pc.GetModData().Property.UnderTheFloor = underground;
         }
 
-        private static AudioClip audioFear;
         public static void DeathGuage(byte attackerId,byte playerId, float value)
         {
             PlayerControl pc = Helpers.playerById(playerId);
@@ -877,8 +895,7 @@ namespace Nebula
             {
                 if (pc.GetModData().DeathGuage < 1f)
                 {
-                    if (!audioFear) audioFear = Helpers.loadAudioClip("Nebula.Resources.Sounds.Fear.wav", false);
-                    if (Constants.ShouldPlaySfx()) SoundManager.Instance.PlaySound(audioFear, false, 0.8f);
+                    Objects.SoundPlayer.PlaySound(Module.AudioAsset.HadarFear);
                 }
             }
 
@@ -1064,6 +1081,26 @@ namespace Nebula
             writer.Write(PlayerControl.LocalPlayer.PlayerId);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.WinTrigger(role.id,PlayerControl.LocalPlayer.PlayerId);
+        }
+
+        public static void PlayStaticSound(Module.AudioAsset id)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PlayStaticSound, Hazel.SendOption.Reliable, -1);
+            writer.Write((byte)id);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.PlayStaticSound(id);
+        }
+
+        public static void PlayDynamicSound(Vector2 pos, Module.AudioAsset id, float maxDistance, float minDistance)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PlayDynamicSound, Hazel.SendOption.Reliable, -1);
+            writer.Write(pos.x);
+            writer.Write(pos.y);
+            writer.Write((byte)id);
+            writer.Write(maxDistance);
+            writer.Write(minDistance);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.PlayDynamicSound(pos,id,maxDistance,minDistance);
         }
 
         public static void UpdatePlayerControl()

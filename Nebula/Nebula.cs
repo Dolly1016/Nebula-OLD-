@@ -53,7 +53,7 @@ namespace Nebula
         public const string AmongUsVersion = "2022.3.29.1";
         public const string PluginGuid = "jp.dreamingpig.amongus.nebula";
         public const string PluginName = "TheNebula";
-        public const string PluginVersion = "1.9.4";
+        public const string PluginVersion = "1.9.5";
         /*
         public const string PluginVisualVersion = "22.02.14a";
         public const string PluginStage = "Snapshot";
@@ -62,8 +62,8 @@ namespace Nebula
         public const string PluginVisualVersion = PluginVersion;
         public const string PluginStage = "";
         // */
-        public const string PluginVersionForFetch = "1.9.4";
-        public byte[] PluginVersionData = new byte[] { 1, 9, 4, 0 };
+        public const string PluginVersionForFetch = "1.9.5";
+        public byte[] PluginVersionData = new byte[] { 1, 9, 5, 0 };
 
         public static NebulaPlugin Instance;
 
@@ -82,6 +82,9 @@ namespace Nebula
             Logger = new Logger.Logger(true);
 
             Instance = this;
+
+            //アセットバンドルを読み込む
+            Module.AssetLoader.Load();
 
             //サーバー情報を読み込む
             Patches.RegionMenuOpenPatch.Initialize();

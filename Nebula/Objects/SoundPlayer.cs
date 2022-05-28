@@ -1,0 +1,64 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using UnityEngine;
+
+namespace Nebula.Objects
+{
+    class SoundPlayer
+    {
+        static HashSet<SoundPlayer> players = new HashSet<SoundPlayer>();
+
+        AudioSource audioSource;
+        float sec;
+
+        public static void initialize()
+        {
+            foreach(var p in players)
+            {
+                GameObject.Destroy(p.audioSource.gameObject);
+            }
+            players.Clear();
+        }
+
+        private SoundPlayer(Vector2 pos, Module.AudioAsset id,float maxDistance,float minDistance)
+        {
+            this.audioSource = new GameObject().AddComponent<AudioSource>();
+            this.audioSource.priority = 0;
+            this.audioSource.spatialBlend = 1;
+            this.audioSource.clip = Module.AssetLoader.GetAudioClip(id);
+            this.audioSource.loop = false;
+            this.audioSource.playOnAwake = false;
+            this.audioSource.maxDistance = maxDistance;
+            this.audioSource.minDistance = minDistance;
+            this.audioSource.rolloffMode = UnityEngine.AudioRolloffMode.Linear;
+            this.audioSource.PlayOneShot(this.audioSource.clip);
+            sec = audioSource.clip.length + 0.1f;
+        }
+
+        static public void PlaySound(Vector2 pos, Module.AudioAsset id, float maxDistance, float minDistance)
+        {
+            SoundPlayer player = new SoundPlayer(pos,id,maxDistance,minDistance);
+            players.Add(player);
+        }
+
+        static public void PlaySound(Module.AudioAsset id)
+        {
+            if (Constants.ShouldPlaySfx()) SoundManager.Instance.PlaySound(Module.AssetLoader.GetAudioClip(id), false, 0.8f);
+        }
+
+        static public void Update()
+        {
+            foreach(var p in players)
+            {
+                p.sec -= Time.deltaTime;
+                if (p.sec < 0f)
+                {
+                    GameObject.Destroy(p.audioSource.gameObject);
+                    p.audioSource = null;
+                }
+            }
+            players.RemoveWhere((p) => p.audioSource == null);
+        }
+    }
+}

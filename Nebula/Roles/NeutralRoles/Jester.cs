@@ -15,6 +15,7 @@ namespace Nebula.Roles.NeutralRoles
         private Module.CustomOption canInvokeSabotageOption;
         private Module.CustomOption ventCoolDownOption;
         private Module.CustomOption ventDurationOption;
+        private Module.CustomOption canFixSabotageOption;
 
         public override bool OnExiledPost(byte[] voters,byte playerId)
         {
@@ -30,12 +31,14 @@ namespace Nebula.Roles.NeutralRoles
             CanMoveInVents = canUseVentsOption.getBool();
             VentPermission = canUseVentsOption.getBool() ? VentPermission.CanUseLimittedVent : VentPermission.CanNotUse;
             canInvokeSabotage = canInvokeSabotageOption.getBool();
+            canFixSabotage = canFixSabotageOption.getBool();
         }
 
         public override void LoadOptionData()
         {
             canUseVentsOption = CreateOption(Color.white, "canUseVents", true);
             canInvokeSabotageOption = CreateOption(Color.white, "canInvokeSabotage", true);
+            canFixSabotageOption = CreateOption(Color.white, "canFixLightsAndComms", true);
 
             ventCoolDownOption = CreateOption(Color.white, "ventCoolDown", 20f, 5f, 60f, 2.5f);
             ventCoolDownOption.suffix = "second";
