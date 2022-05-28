@@ -33,6 +33,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.9.5 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.5,2022.3.29.1/Nebula_v1.9.5.zip)|
 | 1.9.4 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.4,2022.3.29.1/Nebula_v1.9.4.zip)|
 | 1.9.3 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.3,2022.3.29.1/Nebula_v1.9.3.zip)|
 | 1.9.2.2 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.2.2,2022.3.29.1/Nebula_v1.9.2.2.zip)|
@@ -180,6 +181,23 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+  
+ **Version 1.9.5**
+ - Evil Trapperがキルトラップを設置しおわったときに距離減衰する効果音が発生するように
+ - Evil Trapper, Nice Trapperに、自身にだけ聴こえるトラップの設置音を追加
+ - Trapperに、設置時の硬直時間や設置音に関する新オプション「Trapper Root Time」「Kill Trap Audible Distance」を追加
+ - Oracleの占いが、一定時間の接近が必要とするように仕様変更
+ - Madmate, Jesterに新オプション「Can Fix Lights And Comms」を追加
+ - Arsonist, Empiricに新オプション「Can Use Vents」を追加
+ - Avengerによる乗っ取り勝利からインポスターのサボタージュ勝利を除外できるように
+ - Jackal, Bounty Hunter, Sniperのキルクール減少がバニラのキルボタンに準じるように
+ - dllファイルを軽量化
+ - カスタムハットに新たな属性「HideHands」を追加
+ - Morphingが他人に化けたときにハット・バイザーの色が変わらない問題を修正
+ - トラップがマップに隠されてしまうことがある問題を改善
+ - 会議中に死んだプレイヤーをGuesserが撃ててしまう問題を修正
+ - Provocateurの、追放による巻き込み対象から自分自身を消去
+ - Bounty Hunterの賞金首にSpyが選出されないよう修正
   
  **Version 1.9.4**
  - Baitに新オプション「Killer Can Know Bait Kill By Flash」を追加
