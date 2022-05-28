@@ -299,7 +299,7 @@ namespace Nebula.Roles.ComplexRoles
                         PlayerControl.LocalPlayer.StartCoroutine(Effects.Lerp(trapButton.Timer, (Il2CppSystem.Action<float>)((p) =>
                         {
                             if (p == 1f) RPCEventInvoker.PlayDynamicSound(PlayerControl.LocalPlayer.transform.position,
-                               Module.AudioAsset.PlaceKillTrap, distance * 0.6f, distance);
+                               Module.AudioAsset.PlaceKillTrap, distance, distance * 0.6f);
                         })));
                     }
                 },

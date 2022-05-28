@@ -24,6 +24,14 @@ namespace Nebula.Objects
         private SoundPlayer(Vector2 pos, Module.AudioAsset id,float maxDistance,float minDistance)
         {
             this.audioSource = new GameObject().AddComponent<AudioSource>();
+
+            float v = (SoundManager.SfxVolume + 80) / 80f;
+            v = 1f - v;
+            v = v * v;
+            v = 1f - v;
+            this.audioSource.volume = v;
+
+            this.audioSource.transform.position = pos;
             this.audioSource.priority = 0;
             this.audioSource.spatialBlend = 1;
             this.audioSource.clip = Module.AssetLoader.GetAudioClip(id);
@@ -38,8 +46,11 @@ namespace Nebula.Objects
 
         static public void PlaySound(Vector2 pos, Module.AudioAsset id, float maxDistance, float minDistance)
         {
-            SoundPlayer player = new SoundPlayer(pos,id,maxDistance,minDistance);
-            players.Add(player);
+            if (Constants.ShouldPlaySfx())
+            {
+                SoundPlayer player = new SoundPlayer(pos, id, maxDistance, minDistance);
+                players.Add(player);
+            }
         }
 
         static public void PlaySound(Module.AudioAsset id)
