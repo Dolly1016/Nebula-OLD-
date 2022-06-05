@@ -171,11 +171,11 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 | Language | Translator | Full Support Version | Download |
 | --- | --- | --- | --- |
 | 日本語 | - | 1.8.1.4 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.1.3,2022.3.29/Japanese.dat)|
+| 日本語 | ゆうみや | 1.9.5.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.9.5.1%2Cゆうみや/Japanese.dat)|
+| 日本語 | Rey | 1.9.5.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.9.5.1%2CRey/Japanese.dat)|
 | 日本語 | kihi | 1.9.2.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.9.2.1%2Ckihi/Japanese.dat)|
-| 日本語 | ゆうみや | 1.9.2.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.9.2.1%2Cゆうみや/Japanese.dat)|
-| 日本語 | Rey | 1.9.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.9.1%2CRey/Japanese.dat)|
 | 日本語 | Tanakanira | 1.6.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.6.0%2CTanakanira/Japanese.dat)|
-| 簡体中文 | 四个憨批汉化组 | 1.9.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CSC%2C1.9.1%2C四个憨批汉化组/SChinese.dat)|
+| 簡体中文 | 四个憨批汉化组 | 1.9.5.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CSC%2C1.9.5.1%2C四个憨批汉化组/SChinese.dat)|
 | English | - | 1.9.2.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.2,2022.3.29.1/English.dat)|
 
 # 更新履歴
