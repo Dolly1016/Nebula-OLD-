@@ -33,6 +33,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.9.5.1 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.5.1,2022.3.29.1/Nebula_v1.9.5.1.zip)|
 | 1.9.5 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.5,2022.3.29.1/Nebula_v1.9.5.zip)|
 | 1.9.4 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.4,2022.3.29.1/Nebula_v1.9.4.zip)|
 | 1.9.3 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.3,2022.3.29.1/Nebula_v1.9.3.zip)|
