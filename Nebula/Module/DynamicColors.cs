@@ -17,7 +17,7 @@ namespace Nebula.Module
     public static class DynamicColors
     {
         static public bool IsLightColor(Color color) {
-            return (color.r + color.g + color.b > 1.7);
+            return (color.r + color.g + color.b > 1.2);
         }
 
         public class CustomColor
@@ -185,7 +185,7 @@ namespace Nebula.Module
                 PassiveButton.OnMouseOver = new UnityEngine.Events.UnityEvent();
                 PassiveButton.OnMouseOver.AddListener((System.Action)(() =>
                 {
-                    PlayerControl.SetPlayerMaterialColors(RefBodyId, PlayerCustomizationMenu.Instance.PreviewArea.CurrentBodySprite.BodySprite);
+                    PlayerCustomizationMenu.Instance.PreviewArea.cosmetics.SetColor(RefBodyId);
                     if (Color != null)
                     {
                         PlayerCustomizationMenu.Instance.SetItemName(GetColorName(Color.GetHue(),Color.GetDistance()));
@@ -196,7 +196,7 @@ namespace Nebula.Module
                 PassiveButton.OnClick.AddListener(onClick);
                 PassiveButton.OnClick.AddListener((System.Action)(() =>
                 {
-                    PlayerControl.SetPlayerMaterialColors(SaveManager.BodyColor, PlayerCustomizationMenu.Instance.PreviewArea.CurrentBodySprite.BodySprite);
+                    PlayerCustomizationMenu.Instance.PreviewArea.cosmetics.SetColor(SaveManager.BodyColor);
                     PlayerCustomizationMenu.Instance.SetItemName(GetColorName());
                 }));
                 PassiveButton.enabled = true;
@@ -505,7 +505,7 @@ namespace Nebula.Module
                 }
                 else { return; }
 
-                PlayerControl.SetPlayerMaterialColors(15, PlayerCustomizationMenu.Instance.PreviewArea.CurrentBodySprite.BodySprite);                
+                PlayerCustomizationMenu.Instance.PreviewArea.cosmetics.SetColor(15);
             }
         }
 
@@ -697,7 +697,7 @@ namespace Nebula.Module
                 PalettePassiveButton.ClickSound = __instance.ColorChips.get_Item(0).Button.ClickSound;
                 PalettePassiveButton.OnMouseOut = __instance.ColorChips.get_Item(0).Button.OnMouseOut;
                 PalettePassiveButton.OnMouseOut.AddListener((UnityEngine.Events.UnityAction)(()=>{
-                    PlayerControl.SetPlayerMaterialColors(SaveManager.BodyColor, PlayerCustomizationMenu.Instance.PreviewArea.CurrentBodySprite.BodySprite);
+                    PlayerCustomizationMenu.Instance.PreviewArea.cosmetics.SetColor(SaveManager.BodyColor);
                     PlayerCustomizationMenu.Instance.SetItemName(GetColorName());
                 }));
                 PalettePassiveButton.OnClick.RemoveAllListeners();

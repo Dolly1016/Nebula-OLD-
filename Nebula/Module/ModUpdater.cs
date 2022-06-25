@@ -21,6 +21,7 @@ using System.Collections.Generic;
 
 namespace Nebula.Module
 {
+    
     [HarmonyPatch(typeof(AnnouncementPopUp), nameof(AnnouncementPopUp.UpdateAnnounceText))]
     public static class AnnouncementPatch
     {
@@ -154,7 +155,7 @@ namespace Nebula.Module
             return false;
         }
     }
-
+    
     [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start))]
     public class ModUpdaterButton
     {

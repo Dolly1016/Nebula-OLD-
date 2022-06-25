@@ -125,7 +125,7 @@ namespace Nebula.Roles.CrewmateRoles
                 
                 if (deadPlayerData.MurderId != Byte.MaxValue)
                 {
-                    m_color = Module.DynamicColors.IsLightColor(Palette.PlayerColors[deadPlayerData.Data.id])?
+                    m_color = Module.DynamicColors.IsLightColor(Palette.PlayerColors[deadPlayerData.MurderId])?
                         Language.Language.GetString("role.psychic.color.light"): Language.Language.GetString("role.psychic.color.dark");
                     m_role = Language.Language.GetString("role." + Helpers.GetModData(deadPlayerData.MurderId).role.LocalizeName + ".name");
 

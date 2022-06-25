@@ -272,10 +272,10 @@ namespace Nebula.Patches
                 float num7 = Mathf.Lerp(1f, 0.65f, num4) * 0.9f;
                 Vector3 vector = new Vector3(num7, num7, 1f);
                 poolablePlayer.transform.localScale = vector;
-                poolablePlayer.UpdateFromPlayerOutfit(winningPlayerData2, winningPlayerData2.IsDead);
+                poolablePlayer.UpdateFromPlayerOutfit(winningPlayerData2, PlayerMaterial.MaskType.None, winningPlayerData2.IsDead, true);
                 if (winningPlayerData2.IsDead)
                 {
-                    poolablePlayer.CurrentBodySprite.BodySprite.sprite = __instance.GhostSprite;
+                    poolablePlayer.SetBodyAsGhost();
                     poolablePlayer.SetDeadFlipX(i % 2 == 0);
                 }
                 else
@@ -283,10 +283,8 @@ namespace Nebula.Patches
                     poolablePlayer.SetFlipX(i % 2 == 0);
                 }
 
-                poolablePlayer.NameText.color = Color.white;
-                poolablePlayer.NameText.transform.localScale = new Vector3(1f / vector.x, 1f / vector.y, 1f / vector.z);
-                poolablePlayer.NameText.transform.localPosition = new Vector3(poolablePlayer.NameText.transform.localPosition.x, poolablePlayer.NameText.transform.localPosition.y, -15f);
-                poolablePlayer.NameText.text = winningPlayerData2.PlayerName;
+                poolablePlayer.SetName(winningPlayerData2.PlayerName, new Vector3(1f / vector.x, 1f / vector.y, 1f / vector.z), Color.white, -15f);
+                poolablePlayer.SetNamePosition(new Vector3(0f, -1.31f, -0.5f));
             }
 
             // テキストを追加する

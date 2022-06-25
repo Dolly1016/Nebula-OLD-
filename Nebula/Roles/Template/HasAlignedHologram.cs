@@ -54,8 +54,8 @@ namespace Nebula.Roles.Template
 
                 if (!PlayerIcons[p.PlayerId].gameObject.active)
                 {
-                    PlayerIcons[p.PlayerId].NameText.text = "";
-                    PlayerIcons[p.PlayerId].NameText.enabled = false;
+                    PlayerIcons[p.PlayerId].cosmetics.nameText.text = "";
+                    PlayerIcons[p.PlayerId].cosmetics.nameText.enabled = false;
                 }
             }
         }

@@ -108,8 +108,8 @@ namespace Nebula.Roles.NeutralRoles
         {
             base.InitializePlayerIcon(player, PlayerId, index);
 
-            player.NameText.transform.localScale *= 2f;
-            player.NameText.transform.position += new Vector3(0,0.25f);
+            player.cosmetics.nameText.transform.localScale *= 2f;
+            player.cosmetics.nameText.transform.position += new Vector3(0,0.25f);
         }
 
         public override void ButtonInitialize(HudManager __instance)
@@ -245,25 +245,25 @@ namespace Nebula.Roles.NeutralRoles
             {
                 if (!player.Value.gameObject.active)
                 {
-                    player.Value.NameText.text = "";
+                    player.Value.cosmetics.nameText.text = "";
                     continue;
                 }
 
                 if (activePlayers.Contains(player.Key))
                 {
-                    player.Value.NameText.text = "";
+                    player.Value.cosmetics.nameText.text = "";
                 }
                 else
                 {
                     if (infectProgress.ContainsKey(player.Key))
                     {
-                        player.Value.NameText.text = String.Format("{0:f1}%", infectProgress[player.Key]*100f);
+                        player.Value.cosmetics.nameText.text = String.Format("{0:f1}%", infectProgress[player.Key]*100f);
                     }
                     else
                     {
-                        player.Value.NameText.text = "0.0%";
+                        player.Value.cosmetics.nameText.text = "0.0%";
                     }
-                    player.Value.NameText.color = Color.white;
+                    player.Value.cosmetics.nameText.color = Color.white;
                 }
             }
         }

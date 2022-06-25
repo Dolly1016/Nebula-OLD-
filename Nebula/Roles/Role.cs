@@ -9,8 +9,8 @@ using Nebula.Patches;
 
 namespace Nebula.Roles
 {
-    public delegate EndCondition EndCriteriaChecker(Patches.PlayerStatistics statistics, ShipStatus status);
-    public delegate EndCondition EndTakeoverChecker(EndCondition endCondition,Patches.PlayerStatistics statistics, ShipStatus status);
+    public delegate EndCondition? EndCriteriaChecker(Patches.PlayerStatistics statistics, ShipStatus status);
+    public delegate EndCondition? EndTakeoverChecker(EndCondition endCondition,Patches.PlayerStatistics statistics, ShipStatus status);
 
     public enum RoleCategory
     {

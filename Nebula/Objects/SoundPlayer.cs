@@ -12,7 +12,7 @@ namespace Nebula.Objects
         AudioSource audioSource;
         float sec;
 
-        public static void initialize()
+        public static void Initialize()
         {
             foreach(var p in players)
             {

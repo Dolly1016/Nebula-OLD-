@@ -26,13 +26,13 @@ namespace Nebula.Roles.Template
                     GameData.PlayerInfo data = p.Data;
                     PoolablePlayer player = UnityEngine.Object.Instantiate<PoolablePlayer>(Patches.IntroCutsceneOnDestroyPatch.PlayerPrefab, HudManager.Instance.transform);
                     player.SetSkin(data.DefaultOutfit.SkinId, data.DefaultOutfit.ColorId);
-                    player.Skin.SetColor(data.DefaultOutfit.ColorId);
-                    PlayerControl.SetPlayerMaterialColors(data.DefaultOutfit.ColorId, player.CurrentBodySprite.BodySprite);
+                    player.cosmetics.SetColor(data.DefaultOutfit.ColorId);
+                    player.cosmetics.SetBodyColor(data.DefaultOutfit.ColorId);
                     //PlayerControl.SetPlayerMaterialColors(data.DefaultOutfit.ColorId, player.Body);
                     //DestroyableSingleton<HatManager>.Instance.SetSkin(player.Skin.layer, data.DefaultOutfit.SkinId);
-                    player.HatSlot.SetHat(data.DefaultOutfit.HatId, data.DefaultOutfit.ColorId);
-                    PlayerControl.SetPetImage(data.DefaultOutfit.PetId, data.DefaultOutfit.ColorId, player.PetSlot);
-                    player.NameText.text ="";
+                    player.cosmetics.SetHat(data.DefaultOutfit.HatId, data.DefaultOutfit.ColorId);
+                    PlayerControl.SetPetImage(p.cosmetics.currentPet.Data, data.DefaultOutfit.ColorId, player.cosmetics.currentPet.rend);
+                    player.cosmetics.nameText.text ="";
                     player.SetFlipX(true);
                     PlayerIcons[p.PlayerId] = player;
 

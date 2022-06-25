@@ -572,7 +572,7 @@ namespace Nebula.Module
         {
             private static void Postfix(AirshipExileController __instance)
             {
-                HatParent hp = __instance.Player.HatSlot;
+                HatParent hp = __instance.Player.cosmetics.hat;
                 if (hp.Hat == null) return;
                 CustomHat extend = hp.Hat.getHatData();
                 if (extend == null) return;
@@ -598,7 +598,7 @@ namespace Nebula.Module
             {
                 AnimationClip currentAnimation = __instance.Animator.GetCurrentAnimation();
                 if (currentAnimation == __instance.CurrentAnimationGroup.ClimbAnim || currentAnimation == __instance.CurrentAnimationGroup.ClimbDownAnim) return;
-                HatParent hp = __instance.myPlayer.HatRenderer;
+                HatParent hp = __instance.myPlayer.cosmetics.hat;
                 if (hp.Hat == null) return;
                 CustomHat extend = hp.Hat.getHatData();
                 if (extend == null) return;
@@ -610,14 +610,14 @@ namespace Nebula.Module
                 if (currentAnimation == __instance.CurrentAnimationGroup.RunAnim)
                 {
                     if (extend.I_Move)
-                        hp.FrontLayer.sprite = UpdateAndGetSprite(cosmicTimer, (__instance.rend.flipX && extend.I_MoveFlip) ? extend.I_MoveFlip.Images : extend.I_Move.Images);
+                        hp.FrontLayer.sprite = UpdateAndGetSprite(cosmicTimer, (__instance.myPlayer.cosmetics.FlipX && extend.I_MoveFlip) ? extend.I_MoveFlip.Images : extend.I_Move.Images);
                     if (extend.I_MoveBack)
-                        hp.BackLayer.sprite = UpdateAndGetSprite(cosmicTimer, (__instance.rend.flipX && extend.I_MoveBackFlip) ? extend.I_MoveBackFlip.Images : extend.I_MoveBack.Images);
+                        hp.BackLayer.sprite = UpdateAndGetSprite(cosmicTimer, (__instance.myPlayer.cosmetics.FlipX && extend.I_MoveBackFlip) ? extend.I_MoveBackFlip.Images : extend.I_MoveBack.Images);
                 }
                 else
                 {
-                    hp.FrontLayer.sprite = UpdateAndGetSprite(cosmicTimer, (__instance.rend.flipX && extend.I_Flip) ? extend.I_Flip.Images : extend.I_Main.Images);
-                    hp.BackLayer.sprite = UpdateAndGetSprite(cosmicTimer, (__instance.rend.flipX && extend.I_BackFlip) ? extend.I_BackFlip.Images : extend.I_Back.Images);
+                    hp.FrontLayer.sprite = UpdateAndGetSprite(cosmicTimer, (__instance.myPlayer.cosmetics.FlipX && extend.I_Flip) ? extend.I_Flip.Images : extend.I_Main.Images);
+                    hp.BackLayer.sprite = UpdateAndGetSprite(cosmicTimer, (__instance.myPlayer.cosmetics.FlipX && extend.I_BackFlip) ? extend.I_BackFlip.Images : extend.I_Back.Images);
                 }
             }
 
@@ -626,7 +626,7 @@ namespace Nebula.Module
                 AnimationClip currentAnimation = __instance.Animator.GetCurrentAnimation();
                 if (currentAnimation == __instance.CurrentAnimationGroup.ClimbAnim || currentAnimation == __instance.CurrentAnimationGroup.ClimbDownAnim) return;
 
-                var visor = __instance.myPlayer.VisorSlot;
+                var visor = __instance.myPlayer.cosmetics.visor;
                 if (visor.currentVisor == null) return;
                 CustomVisor extend = visor.currentVisor.getVisorData();
                 if (extend == null) return;
@@ -635,7 +635,7 @@ namespace Nebula.Module
                 cosmicTimer.Timer -= Time.deltaTime;
                 if (cosmicTimer.Timer < 0f) { cosmicTimer.Timer = extend.SecPerFrame.SecPerFrame; cosmicTimer.Index++; }
 
-                visor.Image.sprite = UpdateAndGetSprite(cosmicTimer, (__instance.rend.flipX && extend.I_Flip) ? extend.I_Flip.Images : extend.I_Main.Images);
+                visor.Image.sprite = UpdateAndGetSprite(cosmicTimer, (__instance.myPlayer.cosmetics.FlipX && extend.I_Flip) ? extend.I_Flip.Images : extend.I_Main.Images);
             }
 
             private static void Postfix(PlayerPhysics __instance)
@@ -927,13 +927,13 @@ namespace Nebula.Module
                     colorChip.transform.localPosition = new Vector3(xpos, ypos, inventoryZ);
                     if (ActiveInputManager.currentControlType == ActiveInputManager.InputType.Keyboard)
                     {
-                        colorChip.Button.OnMouseOver.AddListener((UnityEngine.Events.UnityAction)(() => __instance.SelectVisor(colorChip,visor)));
-                        colorChip.Button.OnMouseOut.AddListener((UnityEngine.Events.UnityAction)(() => __instance.SelectVisor(colorChip, DestroyableSingleton<HatManager>.Instance.GetVisorById(SaveManager.LastVisor))));
+                        colorChip.Button.OnMouseOver.AddListener((UnityEngine.Events.UnityAction)(() => __instance.SelectVisor(visor)));
+                        colorChip.Button.OnMouseOut.AddListener((UnityEngine.Events.UnityAction)(() => __instance.SelectVisor(DestroyableSingleton<HatManager>.Instance.GetVisorById(SaveManager.LastVisor))));
                         colorChip.Button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => __instance.ClickEquip()));
                     }
                     else
                     {
-                        colorChip.Button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => __instance.SelectVisor(colorChip, visor)));
+                        colorChip.Button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => __instance.SelectVisor(visor)));
                     }
 
 
@@ -1279,37 +1279,39 @@ namespace Nebula.Module
         {
             try
             {
-                __instance.VisorSlot.transform.localPosition = new Vector3(
-                    __instance.VisorSlot.transform.localPosition.x,
+                __instance.cosmetics.visor.transform.localPosition = new Vector3(
+                    __instance.cosmetics.visor.transform.localPosition.x,
                     0.575f,
-                    __instance.VisorSlot.transform.localPosition.z
+                    __instance.cosmetics.visor.transform.localPosition.z
                     );
-                __instance.HatSlot.transform.localPosition = new Vector3(
-                    __instance.HatSlot.transform.localPosition.x,
+                __instance.cosmetics.hat.transform.localPosition = new Vector3(
+                    __instance.cosmetics.hat.transform.localPosition.x,
                     0.575f,
-                    __instance.HatSlot.transform.localPosition.z
+                    __instance.cosmetics.hat.transform.localPosition.z
                     );
             }
             catch { }
         }
     }
 
+    /*
     [HarmonyPatch(typeof(PoolablePlayer), nameof(PoolablePlayer.UpdateFromPlayerOutfit))]
     public static class PoolablePlayerPatch
     {
         public static void Postfix(PoolablePlayer __instance)
         {
-            if (__instance.VisorSlot?.transform == null || __instance.HatSlot?.transform == null) return;
+            if (__instance.cosmetics.visor?.transform == null || __instance.cosmetics.hat?.transform == null) return;
 
             // fixes a bug in the original where the visor will show up beneath the hat,
             // instead of on top where it's supposed to be
-            __instance.VisorSlot.transform.localPosition = new Vector3(
-                __instance.VisorSlot.transform.localPosition.x,
-                __instance.VisorSlot.transform.localPosition.y,
-                __instance.HatSlot.transform.localPosition.z - 1
+            __instance.cosmetics.visor.transform.localPosition = new Vector3(
+                __instance.cosmetics.visor.transform.localPosition.x,
+                __instance.cosmetics.visor.transform.localPosition.y,
+                __instance.cosmetics.hat.transform.localPosition.z - 1
                 );
         }
     }
+    */
 
     [HarmonyPatch(typeof(VisorLayer), nameof(VisorLayer.SetVisor),typeof(VisorData))]
     public static class ChangeVisor1Patch

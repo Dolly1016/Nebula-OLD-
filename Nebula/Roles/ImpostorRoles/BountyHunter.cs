@@ -132,7 +132,7 @@ namespace Nebula.Roles.ImpostorRoles
 
             try
             {
-                PlayerIcons[currentBounty].NameText.text = ((int)bountyDuration).ToString();
+                PlayerIcons[currentBounty].cosmetics.nameText.text = ((int)bountyDuration).ToString();
             }
             catch{ }
 
@@ -182,8 +182,8 @@ namespace Nebula.Roles.ImpostorRoles
         {
             base.InitializePlayerIcon(player, PlayerId, index);
 
-            player.NameText.transform.localScale *= 5f;
-            player.NameText.transform.position += new Vector3(0, 0.25f);
+            player.cosmetics.nameText.transform.localScale *= 5f;
+            player.cosmetics.nameText.transform.position += new Vector3(0, 0.25f);
         }
 
         public BountyHunter()

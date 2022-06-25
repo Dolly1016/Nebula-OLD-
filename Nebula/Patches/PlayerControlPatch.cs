@@ -129,10 +129,10 @@ namespace Nebula.Patches
 
         static public void SetPlayerOutline(PlayerControl target, Color color)
         {
-            if (target == null || target.MyRend == null) return;
+            if (target == null || target.cosmetics.currentBodySprite.BodySprite == null) return;
 
-            target.MyRend.material.SetFloat("_Outline", 1f);
-            target.MyRend.material.SetColor("_OutlineColor", color);
+            target.cosmetics.currentBodySprite.BodySprite.material.SetFloat("_Outline", 1f);
+            target.cosmetics.currentBodySprite.BodySprite.material.SetColor("_OutlineColor", color);
         }
 
         static public DeadBody SetMyDeadTarget()
@@ -180,9 +180,9 @@ namespace Nebula.Patches
         {
             foreach (PlayerControl target in PlayerControl.AllPlayerControls)
             {
-                if (target == null || target.MyRend == null) continue;
+                if (target == null || target.cosmetics.currentBodySprite.BodySprite == null) continue;
 
-                target.MyRend.material.SetFloat("_Outline", 0f);
+                target.cosmetics.currentBodySprite.BodySprite.material.SetFloat("_Outline", 0f);
             }
         }
 
@@ -215,18 +215,18 @@ namespace Nebula.Patches
 
                     if (p == PlayerControl.LocalPlayer || p.GetModData().RoleInfo != "" || Game.GameData.data.myData.CanSeeEveryoneInfo)
                     {
-                        Transform playerInfoTransform = p.nameText.transform.parent.FindChild("Info");
+                        Transform playerInfoTransform = p.cosmetics.nameText.transform.parent.FindChild("Info");
                         TMPro.TextMeshPro playerInfo = playerInfoTransform != null ? playerInfoTransform.GetComponent<TMPro.TextMeshPro>() : null;
                         if (playerInfo == null)
                         {
-                            playerInfo = UnityEngine.Object.Instantiate(p.nameText, p.nameText.transform.parent);
+                            playerInfo = UnityEngine.Object.Instantiate(p.cosmetics.nameText, p.cosmetics.nameText.transform.parent);
                             playerInfo.fontSize *= 0.75f;
                             playerInfo.gameObject.name = "Info";
                             playerInfo.enabled = true;
                         }
 
                         // Set the position every time bc it sometimes ends up in the wrong place due to camoflauge
-                        playerInfo.transform.localPosition = p.nameText.transform.localPosition + Vector3.up * 0.5f;
+                        playerInfo.transform.localPosition = p.cosmetics.nameText.transform.localPosition + Vector3.up * 0.5f;
 
                         PlayerVoteArea playerVoteArea = MeetingHud.Instance?.playerStates?.FirstOrDefault(x => x.TargetPlayerId == p.PlayerId);
                         Transform meetingInfoTransform = playerVoteArea != null ? playerVoteArea.NameText.transform.parent.FindChild("Info") : null;
@@ -309,23 +309,25 @@ namespace Nebula.Patches
                 data.TransColor = new Color(1f, 1f, 1f, alpha);
             }
 
-            if (player.MyPhysics?.rend != null)
-                player.MyPhysics.rend.color = data.TransColor;
+            if (player.cosmetics.currentBodySprite.BodySprite != null)
+                player.cosmetics.currentBodySprite.BodySprite.color = data.TransColor;
 
-            if (player.MyPhysics?.Skin?.layer != null)
-                player.MyPhysics.Skin.layer.color = data.TransColor;
+            if (player.cosmetics.skin.layer != null)
+                player.cosmetics.skin.layer.color = data.TransColor;
 
-            if (player.HatRenderer != null)
-                player.HatRenderer.color = data.TransColor;
+            if (player.cosmetics.hat.FrontLayer != null)
+                player.cosmetics.hat.FrontLayer.color = data.TransColor;
+            if (player.cosmetics.hat.BackLayer != null)
+                player.cosmetics.hat.BackLayer.color = data.TransColor;
 
-            if (player.CurrentPet?.rend != null)
-                player.CurrentPet.rend.color = data.TransColor;
+            if (player.cosmetics.currentPet.rend != null)
+                player.cosmetics.currentPet.rend.color = data.TransColor;
 
-            if (player.CurrentPet?.shadowRend != null)
-                player.CurrentPet.shadowRend.color = data.TransColor;
+            if (player.cosmetics.currentPet.shadowRend != null)
+                player.cosmetics.currentPet.shadowRend.color = data.TransColor;
 
-            if (player.VisorSlot != null)
-                player.VisorSlot.color = data.TransColor;
+            if (player.cosmetics.visor != null)
+                player.cosmetics.visor.Image.color = data.TransColor;
 
         }
 

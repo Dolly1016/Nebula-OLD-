@@ -264,6 +264,7 @@ namespace Nebula
             Patches.MeetingHudPatch.Initialize();
             Patches.EmergencyPatch.Initialize();
             Objects.Ghost.Initialize();
+            Objects.SoundPlayer.Initialize();
             Patches.CustomOverlays.Reset();
         }
             

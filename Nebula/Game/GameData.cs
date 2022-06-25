@@ -376,7 +376,7 @@ namespace Nebula.Game
                 player.MyPhysics.body.velocity = Vector2.zero;
                 if (player.AmOwner)
                     player.MyPhysics.inputHandler.enabled = true;
-                player.MyPhysics.Skin.SetEnterVent(player.MyPhysics.rend.flipX);
+                player.cosmetics.skin.SetEnterVent(player.cosmetics.FlipX);
                 player.MyPhysics.Animator.Play(player.MyPhysics.CurrentAnimationGroup.EnterVentAnim, 1f);
                 player.MyPhysics.Animator.Time = 0f;
                 player.moveable = false;
@@ -392,7 +392,7 @@ namespace Nebula.Game
                 if (player.AmOwner)
                     player.MyPhysics.inputHandler.enabled = false;
                 player.MyPhysics.myPlayer.Visible = false;
-                player.MyPhysics.Skin.SetIdle(player.MyPhysics.rend.flipX);
+                player.cosmetics.skin.SetIdle(player.cosmetics.FlipX);
                 player.MyPhysics.Animator.Play(player.MyPhysics.CurrentAnimationGroup.IdleAnim, 1f);
                 player.moveable = true;
                 underTheFloor = true;
@@ -412,7 +412,7 @@ namespace Nebula.Game
                 player.MyPhysics.body.velocity = Vector2.zero;
                 if (player.AmOwner)
                     player.MyPhysics.inputHandler.enabled = true;
-                player.MyPhysics.Skin.SetExitVent(player.MyPhysics.rend.flipX);
+                player.cosmetics.skin.SetExitVent(player.cosmetics.FlipX);
                 player.MyPhysics.Animator.Play(player.MyPhysics.CurrentAnimationGroup.ExitVentAnim, 1f);
                 player.MyPhysics.Animator.Time = 0f;
                 player.moveable = false;
@@ -429,7 +429,7 @@ namespace Nebula.Game
             {
                 if (player.AmOwner)
                     player.MyPhysics.inputHandler.enabled = false;
-                player.MyPhysics.Skin.SetIdle(player.MyPhysics.rend.flipX);
+                player.cosmetics.skin.SetIdle(player.cosmetics.FlipX);
                 player.MyPhysics.Animator.Play(player.MyPhysics.CurrentAnimationGroup.IdleAnim, 1f);
                 player.moveable = true;
             })));

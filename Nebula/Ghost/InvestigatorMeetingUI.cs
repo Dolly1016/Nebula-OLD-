@@ -124,7 +124,7 @@ namespace Nebula.Ghost
 
                     if (mask == null)
                     {
-                        mask = player.PlayerIcon.Skin.layer.material.GetInt("_MaskLayer") - 2;
+                        mask = player.PlayerIcon.cosmetics.skin.layer.material.GetInt("_MaskLayer") - 2;
                         player.MaskArea.transform.localPosition = new Vector3(0f, 0.017f, 0.5f);
                         player.MaskArea.transform.localScale = new Vector3(10f, 0.596f, 1f);
                     }

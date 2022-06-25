@@ -128,23 +128,23 @@ namespace Nebula.Patches
                 Helpers.RoleAction(player, (role) => { role.EditDisplayName(player.PlayerId, ref name, hideFlag); });
                 Helpers.RoleAction(PlayerControl.LocalPlayer, (role) => { role.EditOthersDisplayName(player.PlayerId, ref name, hideFlag); });
 
-                player.nameText.text = playerData.currentName+" " +name;
+                player.cosmetics.nameText.text = playerData.currentName+" " +name;
                 if (player == PlayerControl.LocalPlayer)
                 {
                     //自分自身ならロールの色にする
-                    player.nameText.color = playerData.role.Color;
+                    player.cosmetics.nameText.color = playerData.role.Color;
                 }
                 else
                 {
-                    player.nameText.color = Color.white;
+                    player.cosmetics.nameText.color = Color.white;
                 }
-                player.nameText.color = rewriteImpostorColor(playerData, player.nameText.color, (Color)impostorColor);
+                player.cosmetics.nameText.color = rewriteImpostorColor(playerData, player.cosmetics.nameText.color, (Color)impostorColor);
 
                 //ロールによる色の変更
-                Color color = player.nameText.color;
+                Color color = player.cosmetics.nameText.color;
                 Helpers.RoleAction(player.PlayerId, (role) => { role.EditDisplayNameColor(player.PlayerId, ref color); });
                 Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId, (role) => { role.EditOthersDisplayNameColor(player.PlayerId, ref color); });
-                player.nameText.color = color;
+                player.cosmetics.nameText.color = color;
 
                 
                 bool showNameFlag = !CannotSeeNameTag(player);
@@ -170,7 +170,7 @@ namespace Nebula.Patches
                     
                 }
 
-                player.nameText.enabled = showNameFlag;
+                player.cosmetics.nameText.enabled = showNameFlag;
             }
 
             if (MeetingHud.Instance != null)
@@ -372,6 +372,8 @@ namespace Nebula.Patches
                 Events.LocalEvent.Update();
 
                 Game.GameData.data.ColliderManager.Update();
+
+                Objects.SoundPlayer.Update();
 
                 Objects.Ghost.Update();
 
