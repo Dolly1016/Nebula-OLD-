@@ -33,7 +33,8 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
-| 1.9.6 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.6,2022.6.21/Nebula_v1.9.6.zip)|
+| 1.9.6.1 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.6.1,2022.6.21/Nebula_v1.9.6.1.zip)|
+| 1.9.6 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.6,2022.6.21/Nebula_1.9.6.zip)|
 | 1.9.5.1 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.5.1,2022.3.29.1/Nebula_v1.9.5.1.zip)|
 | 1.9.5 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.5,2022.3.29.1/Nebula_v1.9.5.zip)|
 | 1.9.4 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.4,2022.3.29.1/Nebula_v1.9.4.zip)|
@@ -184,6 +185,10 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 <details>
   <summary>クリックで展開</summary>
  
+ **Version 1.9.6.1**
+ - ログインするとクラッシュする問題を修正
+ - Recordsの新たなアドミンを無効化するオプション「Invalidate Secondary Admin」を追加
+  
  **Version 1.9.6**
  - Among Us本体の対応バージョンを v2022.6.21s に引き上げ
  - Psychicが死体の声を聞く時、キラーの色を正しく答えていなかった問題を修正
