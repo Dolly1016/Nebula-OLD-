@@ -33,6 +33,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.9.7 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.7,2022.6.21/Nebula_1.9.7.zip)|
 | 1.9.6.1 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.6.1,2022.6.21/Nebula_v1.9.6.1.zip)|
 | 1.9.6 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.6,2022.6.21/Nebula_1.9.6.zip)|
 | 1.9.5.1 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.5.1,2022.3.29.1/Nebula_v1.9.5.1.zip)|
@@ -184,6 +185,13 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+ 
+ **Version 1.9.7**
+ - Jesterが空砲を使用できるように
+ - Avengerに新たなオプション「Show Flash For Murderer」を追加
+ - カメラの使用に制限がかかっている場合、Polus, Airshipのカメラを切り替えたときに一瞬カメラの映像が見えてしまう問題を修正
+ - Provocateurに投票した人のうち1人が道連れ候補から外れてしまう問題を修正
+ - ゲーム終了画面でバイザーの色が正しく表示されない問題を修正
  
  **Version 1.9.6.1**
  - ログインするとクラッシュする問題を修正
