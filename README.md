@@ -189,6 +189,7 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
  **Version 1.9.7**
  - Jesterが空砲を使用できるように
  - Avengerに新たなオプション「Show Flash For Murderer」を追加
+ - Bounty Hunter, Arsonist, Empiricが正常に動作しない問題を修正
  - カメラの使用に制限がかかっている場合、Polus, Airshipのカメラを切り替えたときに一瞬カメラの映像が見えてしまう問題を修正
  - Provocateurに投票した人のうち1人が道連れ候補から外れてしまう問題を修正
  - ゲーム終了画面でバイザーの色が正しく表示されない問題を修正
