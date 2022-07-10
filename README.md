@@ -33,6 +33,11 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.10.0 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.10.0,2022.6.21/Nebula_v1.10.0.zip)|
+| 1.9.8 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.8,2022.6.21/Nebula_v1.9.8.zip)|
+| 1.9.7 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.7,2022.6.21/Nebula_v1.9.7.zip)|
+| 1.9.6.1 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.6.1,2022.6.21/Nebula_v1.9.6.1.zip)|
+| 1.9.6 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.6,2022.6.21/Nebula_1.9.6.zip)|
 | 1.9.5.1 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.5.1,2022.3.29.1/Nebula_v1.9.5.1.zip)|
 | 1.9.5 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.5,2022.3.29.1/Nebula_v1.9.5.zip)|
 | 1.9.4 | 2022.3.29s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.4,2022.3.29.1/Nebula_v1.9.4.zip)|
@@ -172,16 +177,42 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 | Language | Translator | Full Support Version | Download |
 | --- | --- | --- | --- |
 | 日本語 | - | 1.8.1.4 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.1.3,2022.3.29/Japanese.dat)|
-| 日本語 | ゆうみや | 1.9.5.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.9.5.1%2Cゆうみや/Japanese.dat)|
+| 日本語 | ゆうみや | 1.9.7 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.9.7%2Cゆうみや/Japanese.dat)|
 | 日本語 | Rey | 1.9.5.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.9.5.1%2CRey/Japanese.dat)|
-| 日本語 | kihi | 1.9.2.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.9.2.1%2Ckihi/Japanese.dat)|
+| 日本語 | kihi | 1.9.7 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.9.7%2Ckihi/Japanese.dat)|
 | 日本語 | Tanakanira | 1.6.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.6.0%2CTanakanira/Japanese.dat)|
 | 簡体中文 | 四个憨批汉化组 | 1.9.5.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CSC%2C1.9.5.1%2C四个憨批汉化组/SChinese.dat)|
-| English | - | 1.9.2.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.2,2022.3.29.1/English.dat)|
+| English | - | 1.9.8 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.8,2022.6.21/English.dat)|
 
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+ 
+ **Version 1.10.0**
+ - Buskerを追加
+ - Jackalに新たなオプション「Num Of Killing To Create Sidekick」を追加
+ - ゲーム開始時に緑色のクルーのアニメーションが消えない問題を修正
+ 
+ **Version 1.9.8**
+ - 一部ボタンデザインをかつどんさんのものに刷新
+ - デフォルト言語パックを現状のハットのカテゴリに合わせて更新
+
+ **Version 1.9.7**
+ - Jesterが空砲を使用できるように
+ - Avengerに新たなオプション「Show Flash For Murderer」を追加
+ - Bounty Hunter, Arsonist, Empiricが正常に動作しない問題を修正
+ - カメラの使用に制限がかかっている場合、Polus, Airshipのカメラを切り替えたときに一瞬カメラの映像が見えてしまう問題を修正
+ - Provocateurに投票した人のうち1人が道連れ候補から外れてしまう問題を修正
+ - ゲーム終了画面でバイザーの色が正しく表示されない問題を修正
+ 
+ **Version 1.9.6.1**
+ - ログインするとクラッシュする問題を修正
+ - Recordsの新たなアドミンを無効化するオプション「Invalidate Secondary Admin」を追加
+  
+ **Version 1.9.6**
+ - Among Us本体の対応バージョンを v2022.6.21s に引き上げ
+ - Psychicが死体の声を聞く時、キラーの色を正しく答えていなかった問題を修正
+ - 色選択画面で、ハットやスキンが選択中の色に即座に順応するように
   
  **Version 1.9.5**
  - Evil Trapperがキルトラップを設置しおわったときに距離減衰する効果音が発生するように
