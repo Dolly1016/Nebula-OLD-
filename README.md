@@ -33,6 +33,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.10.0 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.10.0,2022.6.21/Nebula_v1.10.0.zip)|
 | 1.9.8 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.8,2022.6.21/Nebula_v1.9.8.zip)|
 | 1.9.7 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.7,2022.6.21/Nebula_v1.9.7.zip)|
 | 1.9.6.1 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.6.1,2022.6.21/Nebula_v1.9.6.1.zip)|
@@ -186,6 +187,11 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+ 
+ **Version 1.10.0**
+ - Buskerを追加
+ - Jackalに新たなオプション「Num Of Killing To Create Sidekick」を追加
+ - ゲーム開始時に緑色のクルーのアニメーションが消えない問題を修正
  
  **Version 1.9.8**
  - 一部ボタンデザインをかつどんさんのものに刷新
