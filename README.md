@@ -33,6 +33,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.9.8 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.8,2022.6.21/Nebula_1.9.8.zip)|
 | 1.9.7 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.7,2022.6.21/Nebula_1.9.7.zip)|
 | 1.9.6.1 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.6.1,2022.6.21/Nebula_v1.9.6.1.zip)|
 | 1.9.6 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.6,2022.6.21/Nebula_1.9.6.zip)|
@@ -175,17 +176,21 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 | Language | Translator | Full Support Version | Download |
 | --- | --- | --- | --- |
 | 日本語 | - | 1.8.1.4 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.1.3,2022.3.29/Japanese.dat)|
-| 日本語 | ゆうみや | 1.9.5.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.9.5.1%2Cゆうみや/Japanese.dat)|
+| 日本語 | ゆうみや | 1.9.7 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.9.7%2Cゆうみや/Japanese.dat)|
 | 日本語 | Rey | 1.9.5.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.9.5.1%2CRey/Japanese.dat)|
-| 日本語 | kihi | 1.9.2.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.9.2.1%2Ckihi/Japanese.dat)|
+| 日本語 | kihi | 1.9.7 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.9.7%2Ckihi/Japanese.dat)|
 | 日本語 | Tanakanira | 1.6.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.6.0%2CTanakanira/Japanese.dat)|
 | 簡体中文 | 四个憨批汉化组 | 1.9.5.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CSC%2C1.9.5.1%2C四个憨批汉化组/SChinese.dat)|
-| English | - | 1.9.2.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.2,2022.3.29.1/English.dat)|
+| English | - | 1.9.8 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.8,2022.6.21/English.dat)|
 
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
  
+ **Version 1.9.8**
+ - 一部ボタンデザインをかつどんさんのものに刷新
+ - デフォルト言語パックを現状のハットのカテゴリに合わせて更新
+
  **Version 1.9.7**
  - Jesterが空砲を使用できるように
  - Avengerに新たなオプション「Show Flash For Murderer」を追加
