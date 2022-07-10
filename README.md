@@ -814,15 +814,16 @@ Sniperの弾の当たり判定やEmpiric,Alienなどの効果範囲を調べる�
 | [Bounty Hunter](#bountyHunter) | [Agent](#agent) | [Arsonist](#arsonist) | [Drunk](#drunk) |
 | [Camouflager](#camouflager) | [Alien](#alien) | [Avenger](#avenger) | [Guesser](#guesser) |
 | [Cleaner](#cleaner) | [Bait](#bait) | [Empiric](#empiric) | [Lover](#lover) |
-| [Damned](#damned) | [Comet](#comet) | [Jackal](#jackal) | [Trilemma](#trilemma) |
-| [Disturber](#disturber) | [Doctor](#doctor) | [Jester](#jester) ||
-| [Eraser](#eraser) | [Mayor](#mayor) | [Opportunist](#opportunist) ||
-| [Evil Ace](#evil-ace) | [Navvy](#navvy) | [Sidekick](#sidekick) ||
-| [Evil Guesser](#guesser) | [Necromancer](#necromancer) | [Vulture](#vulture) ||
-| [Evil Trapper](#trapper) | [Nice Guesser](#guesser) |||
-| [Morphing](#morphing) | [Nice Trapper](#trapper) |||
-| [Reaper](#reaper) | [Oracle](#oracle) |||
-| [Sniper](#sniper) | [Provocateur](#provocateur) |||
+| [Damned](#damned) | [Busker](#busker) | [Jackal](#jackal) | [Trilemma](#trilemma) |
+| [Disturber](#disturber) | [Comet](#comet) | [Jester](#jester) ||
+| [Eraser](#eraser) | [Doctor](#doctor) | [Opportunist](#opportunist) ||
+| [Evil Ace](#evil-ace) | [Mayor](#mayor) | [Sidekick](#sidekick) ||
+| [Evil Guesser](#guesser) | [Navvy](#navvy) | [Vulture](#vulture) ||
+| [Evil Trapper](#trapper) | [Necromancer](#necromancer) |||
+| [Morphing](#morphing) | [Nice Guesser](#guesser) |||
+| [Reaper](#reaper) | [Nice Trapper](#trapper) |||
+| [Sniper](#sniper) | [Oracle](#oracle) |||
+|| [Provocateur](#provocateur) |||
 || [Psychic](#psychic) |||
 || [Seer](#seer) |||
 || [Sheriff](#sheriff) |||
@@ -1142,6 +1143,21 @@ p5p5next : Damned
  ### オプション
 | オプション名 | 設定内容 |
 |----------|:-------------:|
+
+-----------------------
+
+## Busker
+ Buskerは、死を偽装し、全く別の場所でその身を再び現わせるクルーメイトです。
+ 偽装死をしてから復活するまでの間に、一定時間経過する、死体が消される、あるいは会議が始まってしまうと
+ その死は現実となり、二度と復活できなくなってしまいます。
+ 偽装死をしている間は幽霊となって移動することができます。
+ 復活後、死体は消えてなくなります。
+ 
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+| Pseudocide Cool Down | 偽装死のクールダウン
+| Revive Duration | 復活までの猶予時間
 
 -----------------------
 
