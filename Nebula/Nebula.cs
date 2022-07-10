@@ -53,7 +53,7 @@ namespace Nebula
         public const string AmongUsVersion = "2022.6.21";
         public const string PluginGuid = "jp.dreamingpig.amongus.nebula";
         public const string PluginName = "TheNebula";
-        public const string PluginVersion = "1.9.6";
+        public const string PluginVersion = "1.10.0";
         /*
         public const string PluginVisualVersion = "22.02.14a";
         public const string PluginStage = "Snapshot";
@@ -62,8 +62,8 @@ namespace Nebula
         public const string PluginVisualVersion = PluginVersion;
         public const string PluginStage = "";
         // */
-        public const string PluginVersionForFetch = "1.9.6";
-        public byte[] PluginVersionData = new byte[] { 1, 9, 6, 0 };
+        public const string PluginVersionForFetch = "1.10.0";
+        public byte[] PluginVersionData = new byte[] { 1, 10, 0, 0 };
 
         public static NebulaPlugin Instance;
 
@@ -83,6 +83,7 @@ namespace Nebula
 
             Instance = this;
 
+            
             //アセットバンドルを読み込む
             Module.AssetLoader.Load();
 
@@ -109,12 +110,12 @@ namespace Nebula
             Map.MapData.Load();
 
             //ゴースト情報を読み込む
-            Ghost.GhostInfo.Load();
-            Ghost.Ghost.Load();
-
+            //Ghost.GhostInfo.Load();
+            //Ghost.Ghost.Load();
+            
             // Harmonyパッチ全てを適用する
             Harmony.PatchAll();
-
+            
         }
 
         public static Sprite GetModStamp()

@@ -69,7 +69,7 @@ namespace Nebula.Roles.CrewmateRoles
                     embroilButton.isEffectActive = false;
                 },
                 getButtonSprite(),
-                new Vector3(-1.8f, -0.06f, 0),
+                new Vector3(-1.8f, 0, 0),
                 __instance,
                 KeyCode.F,
                 true,
@@ -78,7 +78,8 @@ namespace Nebula.Roles.CrewmateRoles
                 {
                     embroilButton.MaxTimer += embroilCoolDownAdditionOption.getFloat();
                     embroilButton.Timer = embroilButton.MaxTimer;
-                }
+                },false,
+                "button.label.embroil"
             );
             embroilButton.MaxTimer = embroilCoolDownOption.getFloat();
         }

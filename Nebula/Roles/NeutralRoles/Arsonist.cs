@@ -110,6 +110,7 @@ namespace Nebula.Roles.NeutralRoles
             {
                 //点火可能
                 arsonistButton.Sprite = getIgniteButtonSprite();
+                arsonistButton.SetLabel("button.label.ignite");
                 canIgnite = true;
                 arsonistButton.Timer = 0f;
             }
@@ -150,7 +151,7 @@ namespace Nebula.Roles.NeutralRoles
                     arsonistButton.actionButton.cooldownTimerText.color = Palette.EnabledColor;
                 },
                 getDouseButtonSprite(),
-                new Vector3(-1.8f, -0.06f, 0),
+                new Vector3(-1.8f, 0, 0),
                 __instance,
                 KeyCode.F,
                 true,

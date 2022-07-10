@@ -18,7 +18,11 @@ namespace Nebula.Roles.NeutralRoles
         static private CustomButton sidekickButton;
 
         static public Module.CustomOption CanCreateSidekickOption;
+        static public Module.CustomOption NumOfKillingToCreateSidekickOption;
         static public Module.CustomOption KillCoolDownOption;
+
+        //自身のjackalとしてのキル回数
+        private int numOfKilling=0;
 
         private Sprite sidekickButtonSprite = null;
         public Sprite getSidekickButtonSprite()
@@ -36,6 +40,8 @@ namespace Nebula.Roles.NeutralRoles
             CanCreateSidekickOption = CreateOption(Color.white, "canCreateSidekick", true);
             KillCoolDownOption = CreateOption(Color.white, "killCoolDown", 20f, 10f, 60f, 2.5f);
             KillCoolDownOption.suffix = "second";
+
+            NumOfKillingToCreateSidekickOption = CreateOption(Color.white, "numOfKillingToCreateSidekick", 3,0,10,1).AddPrerequisite(CanCreateSidekickOption);
         }
 
         public override IEnumerable<Assignable> GetFollowRoles()
@@ -72,6 +78,11 @@ namespace Nebula.Roles.NeutralRoles
             __instance.GetModData().SetRoleData(leftSidekickDataId, CanCreateSidekickOption.getBool() ? 1 : 0);
         }
 
+        public override void Initialize(PlayerControl __instance)
+        {
+            numOfKilling = 0;
+        }
+
         public override void ButtonInitialize(HudManager __instance)
         {
             if (killButton != null)
@@ -81,8 +92,8 @@ namespace Nebula.Roles.NeutralRoles
             killButton = new CustomButton(
                 () =>
                 {
-                    Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, Game.GameData.data.myData.currentTarget, Game.PlayerData.PlayerStatus.Dead, true);
-
+                    var r = Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, Game.GameData.data.myData.currentTarget, Game.PlayerData.PlayerStatus.Dead, true);
+                    if (r == Helpers.MurderAttemptResult.PerformKill) numOfKilling++;
                     killButton.Timer = killButton.MaxTimer;
                     Game.GameData.data.myData.currentTarget = null;
                 },
@@ -112,13 +123,14 @@ namespace Nebula.Roles.NeutralRoles
                     Game.GameData.data.myData.currentTarget = null;
                 },
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead && Game.GameData.data.myData.getGlobalData().GetRoleData(leftSidekickDataId)>0; },
-                () => { return Game.GameData.data.myData.currentTarget && PlayerControl.LocalPlayer.CanMove; },
+                () => { return Game.GameData.data.myData.currentTarget && PlayerControl.LocalPlayer.CanMove && numOfKilling>=NumOfKillingToCreateSidekickOption.getFloat(); },
                 () => { sidekickButton.Timer = sidekickButton.MaxTimer; },
                 getSidekickButtonSprite(),
-                new Vector3(0f, -0.06f, 0),
+                new Vector3(0f, 0, 0),
                 __instance,
                 KeyCode.F,
-                true
+                true,
+                "button.label.sidekick"
             );
             sidekickButton.MaxTimer = 20;
         }

@@ -16,6 +16,7 @@ namespace Nebula.Objects
         public Vector3 PositionOffset;
         public float MaxTimer = float.MaxValue;
         public float Timer = 0f;
+        private Action? OnSuspended=null;
         private Action OnClick;
         private Action OnMeetingEnds;
         private Func<bool> HasButton;
@@ -74,6 +75,10 @@ namespace Nebula.Objects
         public CustomButton(Action OnClick, Func<bool> HasButton, Func<bool> CouldUse, Action OnMeetingEnds, Sprite Sprite, Vector3 PositionOffset, HudManager hudManager, KeyCode? hotkey, bool mirror = false, string buttonText = "", ImageNames labelType = ImageNames.UseButton)
         : this(OnClick, HasButton, CouldUse, OnMeetingEnds, Sprite, PositionOffset, hudManager, hotkey, false, 0f, () => { }, mirror, buttonText,labelType) { }
 
+        public void SetSuspendAction(Action OnSuspended)
+        {
+            this.OnSuspended = OnSuspended;
+        }
         public void SetLabel(string label)
         {
             buttonText = label != "" ? Language.Language.GetString(label) : "";
@@ -94,18 +99,25 @@ namespace Nebula.Objects
 
         public void onClickEvent()
         {
-            if (this.Timer < 0f && HasButton() && CouldUse())
+            if (HasButton() && CouldUse())
             {
-                actionButton.graphic.color = new Color(1f, 1f, 1f, 0.3f);
-
-                if (this.HasEffect && !this.isEffectActive)
+                if (this.Timer < 0f)
                 {
-                    this.Timer = this.EffectDuration;
-                    actionButton.cooldownTimerText.color = new Color(0F, 0.8F, 0F);
-                    this.isEffectActive = true;
-                }
+                    actionButton.graphic.color = new Color(1f, 1f, 1f, 0.3f);
 
-                this.OnClick();
+                    if (this.HasEffect && !this.isEffectActive)
+                    {
+                        this.Timer = this.EffectDuration;
+                        actionButton.cooldownTimerText.color = new Color(0F, 0.8F, 0F);
+                        this.isEffectActive = true;
+                    }
+
+                    this.OnClick();
+                }
+                else if(OnSuspended!=null && this.HasEffect && this.isEffectActive)
+                {
+                    this.OnSuspended();
+                }
             }
         }
         public void Destroy()

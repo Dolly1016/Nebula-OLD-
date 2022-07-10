@@ -45,7 +45,7 @@ namespace Nebula.Roles.ImpostorRoles
             camouflageButton = new CustomButton(
                 () =>
                 {
-                    RPCEventInvoker.GlovalEvent(Events.GlobalEvent.Type.Camouflage, camouflageDurationOption.getFloat());
+                    RPCEventInvoker.GlobalEvent(Events.GlobalEvent.Type.Camouflage, camouflageDurationOption.getFloat());
                 },
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
                 () => { return PlayerControl.LocalPlayer.CanMove; },

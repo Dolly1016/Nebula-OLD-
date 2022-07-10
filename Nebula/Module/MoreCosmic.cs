@@ -471,6 +471,7 @@ namespace Nebula.Module
             return vd;
         }
 
+        
         [HarmonyPatch(typeof(HatManager), nameof(HatManager.GetHatById))]
         private static class HatManagerPatch
         {
@@ -566,6 +567,7 @@ namespace Nebula.Module
                 RUNNING = false;
             }
         }
+        
 
         [HarmonyPatch(typeof(AirshipExileController), nameof(AirshipExileController.PlayerFall))]
         private static class ExiledPlayerHideHandsPatch
@@ -1132,7 +1134,7 @@ namespace Nebula.Module
             running = false;
         }
 
-        public static HttpStatusCode FetchOnlineItems<Cosmic>(string repo,  List<Cosmic> cosmics, out string json, ref HttpClient? http) where Cosmic : CustomItem, new()
+        public static HttpStatusCode FetchOnlineItems<Cosmic>(string repo, List<Cosmic> cosmics, out string json, ref HttpClient? http) where Cosmic : CustomItem, new()
         {
             json = "";
 
@@ -1160,6 +1162,7 @@ namespace Nebula.Module
                 System.Console.WriteLine(ex);
             }
             return HttpStatusCode.OK;
+
         }
 
         public static HttpStatusCode FetchOfflineItems<Cosmic>(string repo,  List<Cosmic> cosmics, out string json) where Cosmic : CustomItem, new()
@@ -1343,6 +1346,60 @@ namespace Nebula.Module
             {
                 __instance.Image.material = DestroyableSingleton<HatManager>.Instance.PlayerMaterial;
             }
+        }
+    }
+
+
+    [HarmonyPatch(typeof(CosmeticsLayer), nameof(CosmeticsLayer.SetColor))]
+    public static class ChangeColorPatch
+    {
+        public static void Postfix(CosmeticsLayer __instance, [HarmonyArgument(0)] int color)
+        {
+            PlayerMaterial.SetColors(color, __instance.visor.Image);
+        }
+    }
+
+
+    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RawSetVisor))]
+    public static class RawSetVisorPatch
+    {
+        public static void Postfix(PlayerControl __instance)
+        {
+            PlayerMaterial.SetColors(__instance.CurrentOutfit.ColorId, __instance.cosmetics.visor.Image);
+        }
+    }
+
+    [HarmonyPatch(typeof(CosmeticsLayer), nameof(CosmeticsLayer.SetVisor), typeof(string))]
+    public static class SetVisorPatch
+    {
+        public static void Postfix(CosmeticsLayer __instance)
+        {
+            float a = __instance.visor.Image.color.a;
+            PlayerMaterial.SetColors(__instance.bodyMatProperties.ColorId, __instance.visor.Image);
+            __instance.SetVisorAlpha(a);
+        }
+    }
+
+
+    [HarmonyPatch(typeof(CosmeticsLayer), nameof(CosmeticsLayer.SetVisor),typeof(VisorData))]
+    public static class SetVisor2Patch
+    {
+        public static void Postfix(CosmeticsLayer __instance)
+        {
+            float a = __instance.visor.Image.color.a;
+            PlayerMaterial.SetColors(__instance.bodyMatProperties.ColorId, __instance.visor.Image);
+            __instance.SetVisorAlpha(a);
+        }
+    }
+
+    [HarmonyPatch(typeof(CosmeticsLayer), nameof(CosmeticsLayer.SetVisor), typeof(VisorData), typeof(VisorViewData))]
+    public static class SetVisor3Patch
+    {
+        public static void Postfix(CosmeticsLayer __instance)
+        {
+            float a = __instance.visor.Image.color.a;
+            PlayerMaterial.SetColors(__instance.bodyMatProperties.ColorId, __instance.visor.Image);
+            __instance.SetVisorAlpha(a);
         }
     }
 }

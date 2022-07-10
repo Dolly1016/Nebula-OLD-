@@ -14,53 +14,50 @@ namespace Nebula.Map.Database
             SabotageMap[SystemTypes.Electrical] = new SabotageData(SystemTypes.Electrical, new Vector3(-9.3f, -10.9f), true, false);
             SabotageMap[SystemTypes.Comms] = new SabotageData(SystemTypes.Comms, new Vector3(4.6f, -16.1f), true, false);
 
-            RoomsRelation[SystemTypes.Cafeteria] = new HashSet<SystemTypes>() {
-                SystemTypes.Admin,SystemTypes.Weapons,SystemTypes.MedBay
-            };
-            RoomsRelation[SystemTypes.Weapons] = new HashSet<SystemTypes>() {
-                SystemTypes.LifeSupp,SystemTypes.Cafeteria
-            };
-            RoomsRelation[SystemTypes.LifeSupp] = new HashSet<SystemTypes>() {
-                SystemTypes.Weapons,SystemTypes.Nav
-            };
-            RoomsRelation[SystemTypes.Nav] = new HashSet<SystemTypes>() {
-                SystemTypes.LifeSupp,SystemTypes.Shields
-            };
-            RoomsRelation[SystemTypes.Shields] = new HashSet<SystemTypes>() {
-                SystemTypes.Nav,SystemTypes.Comms
-            };
-            RoomsRelation[SystemTypes.Comms] = new HashSet<SystemTypes>() {
-                SystemTypes.Shields,SystemTypes.Storage
-            };
-            RoomsRelation[SystemTypes.Storage] = new HashSet<SystemTypes>() {
-                SystemTypes.Admin,SystemTypes.Electrical
-            };
-            RoomsRelation[SystemTypes.Electrical] = new HashSet<SystemTypes>() {
-                SystemTypes.Storage,SystemTypes.LowerEngine
-            };
-            RoomsRelation[SystemTypes.LowerEngine] = new HashSet<SystemTypes>() {
-                SystemTypes.Electrical,SystemTypes.Security,SystemTypes.Reactor
-            };
-            RoomsRelation[SystemTypes.Security] = new HashSet<SystemTypes>() {
-                SystemTypes.LowerEngine,SystemTypes.UpperEngine,SystemTypes.Reactor
-            };
-            RoomsRelation[SystemTypes.Reactor] = new HashSet<SystemTypes>() {
-                SystemTypes.LowerEngine,SystemTypes.UpperEngine,SystemTypes.Security
-            };
-            RoomsRelation[SystemTypes.UpperEngine] = new HashSet<SystemTypes>() {
-                SystemTypes.MedBay,SystemTypes.Security,SystemTypes.Reactor
-            };
-            RoomsRelation[SystemTypes.MedBay] = new HashSet<SystemTypes>() {
-                SystemTypes.UpperEngine,SystemTypes.Cafeteria
-            };
-
-            DoorRooms.Add(SystemTypes.Cafeteria);
-            DoorRooms.Add(SystemTypes.Storage);
-            DoorRooms.Add(SystemTypes.Electrical);
-            DoorRooms.Add(SystemTypes.LowerEngine);
-            DoorRooms.Add(SystemTypes.Security);
-            DoorRooms.Add(SystemTypes.UpperEngine);
-            DoorRooms.Add(SystemTypes.MedBay);
+            //カフェ
+            MapPositions.Add(new Vector2(0f, 5.3f));
+            MapPositions.Add(new Vector2(-5.2f, 1.2f));
+            MapPositions.Add(new Vector2(-0.9f, -3.1f));
+            MapPositions.Add(new Vector2(4.6f, 1.2f));
+            //ウェポン
+            MapPositions.Add(new Vector2(10.1f, 3f));
+            //コの字通路/O2
+            MapPositions.Add(new Vector2(9.6f, -3.4f));
+            MapPositions.Add(new Vector2(11.8f, -6.5f));
+            //ナビ
+            MapPositions.Add(new Vector2(16.7f, -4.8f));
+            //シールド
+            MapPositions.Add(new Vector2(9.3f, -10.3f));
+            MapPositions.Add(new Vector2(9.5f, -14.1f));
+            //コミュ上
+            MapPositions.Add(new Vector2(5.2f, -12.2f));
+            //コミュ
+            MapPositions.Add(new Vector2(3.8f, -15.4f));
+            //ストレージ
+            MapPositions.Add(new Vector2(-0.3f, -9.8f));
+            MapPositions.Add(new Vector2(-0.28f, -16.4f));
+            MapPositions.Add(new Vector2(-4.5f, -14.3f));
+            //エレク
+            MapPositions.Add(new Vector2(-9.6f, -11.3f));
+            MapPositions.Add(new Vector2(-7.5f, -8.4f));
+            //ロアエンジン右
+            MapPositions.Add(new Vector2(-12.1f, -11.4f));
+            //ロアエンジン
+            MapPositions.Add(new Vector2(-15.4f, -13.1f));
+            MapPositions.Add(new Vector2(-16.8f, -9.8f));
+            //アッパーエンジン
+            MapPositions.Add(new Vector2(-16.8f, -1f));
+            MapPositions.Add(new Vector2(-15.2f, 2.4f));
+            //セキュ
+            MapPositions.Add(new Vector2(-13.8f, -4.5f));
+            //リアクター
+            MapPositions.Add(new Vector2(-20.9f, -5.4f));
+            //メッドベイ
+            MapPositions.Add(new Vector2(-7.3f, -4.6f));
+            MapPositions.Add(new Vector2(-9.2f, -2.1f));
+            //アドミン
+            MapPositions.Add(new Vector2(2.6f, -7.1f));
+            MapPositions.Add(new Vector2(6.3f, -9.5f));
 
             DoorHackingCanBlockSabotage = true;
 

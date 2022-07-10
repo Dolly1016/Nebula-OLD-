@@ -147,11 +147,14 @@ namespace Nebula.Roles.ImpostorRoles
                 __instance.KillButton.graphic.sprite,
                 new Vector3(0f, 1f, 0),
                 __instance,
-                KeyCode.Q
+                KeyCode.Q,
+                false,
+                 "button.label.snipe"
             ).SetTimer(10f);
             killButton.MaxTimer = snipeCoolDownOption.getFloat();
             killButton.FireOnClicked = true;
             killButton.SetButtonCoolDownOption(true);
+            
         }
 
         public override void ButtonActivate()

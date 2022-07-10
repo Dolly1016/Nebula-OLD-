@@ -24,14 +24,23 @@ namespace Nebula.Roles.Template
                 foreach (PlayerControl p in PlayerControl.AllPlayerControls)
                 {
                     GameData.PlayerInfo data = p.Data;
+                    NebulaPlugin.Instance.Logger.Print("A");
                     PoolablePlayer player = UnityEngine.Object.Instantiate<PoolablePlayer>(Patches.IntroCutsceneOnDestroyPatch.PlayerPrefab, HudManager.Instance.transform);
-                    player.SetSkin(data.DefaultOutfit.SkinId, data.DefaultOutfit.ColorId);
+                    NebulaPlugin.Instance.Logger.Print("B");
+                    player.cosmetics.ResetCosmetics();
+                    NebulaPlugin.Instance.Logger.Print("C");
+                    player.cosmetics.SetSkin(data.DefaultOutfit.SkinId, data.DefaultOutfit.ColorId);
+                    NebulaPlugin.Instance.Logger.Print("D");
                     player.cosmetics.SetColor(data.DefaultOutfit.ColorId);
+                    NebulaPlugin.Instance.Logger.Print("E");
                     player.cosmetics.SetBodyColor(data.DefaultOutfit.ColorId);
+                    NebulaPlugin.Instance.Logger.Print("F");
                     //PlayerControl.SetPlayerMaterialColors(data.DefaultOutfit.ColorId, player.Body);
                     //DestroyableSingleton<HatManager>.Instance.SetSkin(player.Skin.layer, data.DefaultOutfit.SkinId);
-                    player.cosmetics.SetHat(data.DefaultOutfit.HatId, data.DefaultOutfit.ColorId);
-                    PlayerControl.SetPetImage(p.cosmetics.currentPet.Data, data.DefaultOutfit.ColorId, player.cosmetics.currentPet.rend);
+                    if (data.DefaultOutfit.HatId != null) player.cosmetics.SetHat(data.DefaultOutfit.HatId, data.DefaultOutfit.ColorId);
+                    NebulaPlugin.Instance.Logger.Print("G");
+                    player.cosmetics.SetPetIdle(data.DefaultOutfit.PetId, data.DefaultOutfit.ColorId);
+                    NebulaPlugin.Instance.Logger.Print("H");
                     player.cosmetics.nameText.text ="";
                     player.SetFlipX(true);
                     PlayerIcons[p.PlayerId] = player;

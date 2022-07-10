@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Nebula.Objects;
 
 namespace Nebula.Roles.NeutralRoles
 {
@@ -16,6 +17,16 @@ namespace Nebula.Roles.NeutralRoles
         private Module.CustomOption ventCoolDownOption;
         private Module.CustomOption ventDurationOption;
         private Module.CustomOption canFixSabotageOption;
+
+        private Objects.CustomButton blankButton;
+
+        private Sprite blankButtonSprite = null;
+        public Sprite getBlankButtonSprite()
+        {
+            if (blankButtonSprite) return blankButtonSprite;
+            blankButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.SnipeButton.png", 115f);
+            return blankButtonSprite;
+        }
 
         public override bool OnExiledPost(byte[] voters,byte playerId)
         {
@@ -47,6 +58,55 @@ namespace Nebula.Roles.NeutralRoles
             ventDurationOption.suffix = "second";
             ventDurationOption.AddPrerequisite(canUseVentsOption);
         }
+
+        public override void ButtonInitialize(HudManager __instance)
+        {
+            base.ButtonInitialize(__instance);
+            if (blankButton != null)
+            {
+                blankButton.Destroy();
+            }
+            blankButton = new CustomButton(
+                () =>
+                {
+                    RPCEventInvoker.SniperShot();
+                    blankButton.Timer = blankButton.MaxTimer;
+                },
+                () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
+                () => { return PlayerControl.LocalPlayer.CanMove; },
+                () => { blankButton.Timer = blankButton.MaxTimer; },
+                getBlankButtonSprite(),
+                new Vector3(0f, 1f, 0),
+                __instance,
+                KeyCode.Q,
+                false,
+                "button.label.blank"
+            );
+            blankButton.MaxTimer = 5.0f;
+        }
+
+        public override void ButtonActivate()
+        {
+            base.ButtonActivate();
+            blankButton.setActive(true);
+        }
+
+        public override void ButtonDeactivate()
+        {
+            base.ButtonDeactivate();
+            blankButton.setActive(false);
+        }
+
+        public override void CleanUp()
+        {
+            base.CleanUp();
+            if (blankButton != null)
+            {
+                blankButton.Destroy();
+                blankButton = null;
+            }
+        }
+
 
         public override void Initialize(PlayerControl __instance)
         {

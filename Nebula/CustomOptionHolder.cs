@@ -97,6 +97,7 @@ namespace Nebula
         public static CustomOption multipleSpawnPoints;
         public static CustomOption synchronizedSpawning;
         public static CustomOption optimizedMaps;
+        public static CustomOption invalidateSecondaryAdmin;
 
         public static CustomOption emergencyOptions;
         public static CustomOption maxNumberOfMeetings;
@@ -183,6 +184,7 @@ namespace Nebula
             multipleSpawnPoints = CustomOption.Create(10132, Color.white, "option.multipleSpawnPoints", false, mapOptions).SetGameMode(~CustomGameMode.Minigame);
             synchronizedSpawning = CustomOption.Create(10133, Color.white, "option.synchronizedSpawning", false, mapOptions).SetGameMode(~CustomGameMode.Minigame);
             optimizedMaps = CustomOption.Create(10134, Color.white, "option.optimizedMaps", true, mapOptions).SetGameMode(CustomGameMode.All);
+            invalidateSecondaryAdmin = CustomOption.Create(10135, Color.white, "option.invalidateSecondaryAdmin", true, mapOptions).SetGameMode(CustomGameMode.All);
 
             limiterOptions = CustomOption.Create(10140, Color.white, "option.limitOptions", false, null, true).SetGameMode(CustomGameMode.All);
             timeLimitOption = CustomOption.Create(10141, Color.white, "option.timeLimitOption", 20f, 1f, 80f, 1f, limiterOptions).SetGameMode(CustomGameMode.All);

@@ -163,9 +163,9 @@ namespace Nebula.Roles
         [RoleLocalMethod]
         public virtual void OnRoleRelationSetting() { }
 
-        private Module.CustomOption CanBeLoversOption=null;
-        private Module.CustomOption CanBeGuesserOption=null;
-        private Module.CustomOption CanBeDrunkOption=null;
+        protected Module.CustomOption CanBeLoversOption=null;
+        protected Module.CustomOption CanBeGuesserOption=null;
+        protected Module.CustomOption CanBeDrunkOption=null;
         sealed public override void SetupRoleOptionData()
         {
             base.SetupRoleOptionData();

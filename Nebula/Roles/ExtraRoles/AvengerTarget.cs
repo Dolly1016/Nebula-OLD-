@@ -20,7 +20,10 @@ namespace Nebula.Roles.ExtraRoles
         {
             base.Initialize(__instance);
 
-            Helpers.PlayFlash(Roles.Avenger.Color);
+            if (Roles.Avenger.showFlashForMurdererOption.getBool())
+            {
+                Helpers.PlayFlash(Roles.Avenger.Color);
+            }
         }
 
         public override void MyPlayerControlUpdate()

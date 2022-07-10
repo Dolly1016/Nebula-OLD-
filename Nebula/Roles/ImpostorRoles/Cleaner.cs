@@ -34,10 +34,7 @@ namespace Nebula.Roles.ImpostorRoles
                 {
                     byte targetId = deadBodyId;
 
-                    MessageWriter eatWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.CleanDeadBody, Hazel.SendOption.Reliable, -1);
-                    eatWriter.Write(targetId);
-                    AmongUsClient.Instance.FinishRpcImmediately(eatWriter);
-                    RPCEvents.CleanDeadBody(targetId);
+                    RPCEventInvoker.CleanDeadBody(targetId);
 
                     //キル・クリーンボタンのクールダウンは同期する
                     cleanButton.Timer = cleanButton.MaxTimer;

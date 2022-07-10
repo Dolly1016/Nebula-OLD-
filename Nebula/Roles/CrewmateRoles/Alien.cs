@@ -81,7 +81,7 @@ namespace Nebula.Roles.CrewmateRoles
             emiButton = new CustomButton(
                 () =>
                 {
-                    RPCEventInvoker.GlovalEvent(Events.GlobalEvent.Type.EMI, emiDurationOption.getFloat());
+                    RPCEventInvoker.GlobalEvent(Events.GlobalEvent.Type.EMI, emiDurationOption.getFloat());
                 },
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
                 () => { return PlayerControl.LocalPlayer.CanMove; },
@@ -91,12 +91,13 @@ namespace Nebula.Roles.CrewmateRoles
                     emiButton.actionButton.cooldownTimerText.color = Palette.EnabledColor;
                 },
                 getButtonSprite(),
-                new Vector3(-1.8f, -0.06f, 0),
+                new Vector3(-1.8f, 0, 0),
                 __instance,
                 KeyCode.F,
                 true,
                 emiDurationOption.getFloat(),
-                () => { emiButton.Timer = emiButton.MaxTimer; }
+                () => { emiButton.Timer = emiButton.MaxTimer; },false,
+                "button.label.emi"
             );
             emiButton.MaxTimer = emiCoolDownOption.getFloat();
             emiButton.EffectDuration = emiDurationOption.getFloat();

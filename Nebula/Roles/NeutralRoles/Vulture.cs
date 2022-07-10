@@ -49,10 +49,7 @@ namespace Nebula.Roles.NeutralRoles
                 {
                     byte targetId = deadBodyId;
 
-                    MessageWriter eatWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.CleanDeadBody, Hazel.SendOption.Reliable, -1);
-                    eatWriter.Write(targetId);
-                    AmongUsClient.Instance.FinishRpcImmediately(eatWriter);
-                    RPCEvents.CleanDeadBody(targetId);
+                    RPCEventInvoker.CleanDeadBody(targetId);
 
                     Game.GameData.data.myData.getGlobalData().AddRoleData(eatLeftId, -1);
                     int eatLeft = Game.GameData.data.myData.getGlobalData().GetRoleData(eatLeftId);

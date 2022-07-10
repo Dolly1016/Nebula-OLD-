@@ -22,6 +22,7 @@ namespace Nebula.Roles.NeutralRoles
 
         public Module.CustomOption canKnowExistenceOfAvengerOption;
         public Module.CustomOption murderCanKnowAvengerOption;
+        public Module.CustomOption showFlashForMurdererOption;
         private Module.CustomOption avengerKillCoolDownOption;
         private Module.CustomOption avengerNoticeIntervalOption;
         public Module.CustomOption murderNoticeIntervalOption;
@@ -44,6 +45,8 @@ namespace Nebula.Roles.NeutralRoles
             murderCanKnowAvengerOption = CreateOption(Color.white, "murderCanKnowAvenger", false);
 
             canKnowExistenceOfAvengerOption = CreateOption(Color.white, "canKnowExistenceOfAvenger", new string[] { "option.switch.off", "role.avenger.canKnowExistenceOfAvenger.everyone", "role.avenger.canKnowExistenceOfAvenger.onlyKiller" });
+
+            showFlashForMurdererOption = CreateOption(Color.white, "showFlashForMurderer", true);
 
             avengerNoticeIntervalOption = CreateOption(Color.white, "avengerNoticeIntervalOption", 10f, 2.5f, 30f, 2.5f);
             avengerNoticeIntervalOption.suffix = "second";

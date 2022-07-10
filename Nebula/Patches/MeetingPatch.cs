@@ -171,10 +171,7 @@ namespace Nebula.Patches
                     {
                         Voters[player.VotedFor] = new List<byte>();
                     }
-                    else
-                    {
-                        Voters[player.VotedFor].Add(player.TargetPlayerId);
-                    }
+                    Voters[player.VotedFor].Add(player.TargetPlayerId);
                 }
             }
         }

@@ -74,9 +74,10 @@ namespace Nebula.Roles.ImpostorRoles
                     eraserButton.Timer = eraserButton.MaxTimer + eraseCoolDownAdditionOption.getFloat() * PlayerControl.LocalPlayer.GetModData().GetRoleData(eraseCountId); 
                 },
                 getButtonSprite(),
-                new Vector3(-1.8f, -0.06f, 0),
+                new Vector3(-1.8f, 0, 0),
                 __instance,
-                KeyCode.F
+                KeyCode.F,false,
+                "button.label.erase"
             );
             eraserButton.MaxTimer = eraseCoolDownOption.getFloat();
         }

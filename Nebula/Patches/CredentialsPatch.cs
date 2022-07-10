@@ -85,7 +85,6 @@ namespace Nebula.Patches
         {
             static void Postfix(MainMenuManager __instance)
             {
-
                 var amongUsLogo = GameObject.Find("bannerLogo_AmongUs");
                 if (amongUsLogo != null)
                 {
@@ -97,7 +96,7 @@ namespace Nebula.Patches
                 nebulaLogo.transform.position = new Vector3(0f, 0.55f, 0f);
                 var renderer = nebulaLogo.AddComponent<SpriteRenderer>();
                 renderer.sprite = Helpers.loadSpriteFromResources("Nebula.Resources.Logo.png", 340f);
-
+                
                 GameObject.Find("PlayOnlineButton").transform.position = new Vector3(1.025f, -1.5f, 0f);
                 GameObject.Find("PlayLocalButton").transform.position = new Vector3(-1.025f, -1.5f, 0f);
                 GameObject.Find("HowToPlayButton").active = false;

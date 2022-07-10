@@ -104,6 +104,9 @@ namespace Nebula.Patches
 
         public static void setupIntroTeamMembers(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> yourTeam)
         {
+            //ローディング中のアニメーションを終了させる
+            HudManager.Instance.GameLoadAnimation.SetActive(false);
+
             Roles.Role role = Game.GameData.data.players[PlayerControl.LocalPlayer.PlayerId].role;
 
             yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();

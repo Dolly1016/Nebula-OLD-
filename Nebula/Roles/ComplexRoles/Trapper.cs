@@ -335,14 +335,14 @@ namespace Nebula.Roles.ComplexRoles
                 },
                 () => { trapButton.Timer = trapButton.MaxTimer; },
                 FTrapper.getAccelButtonSprite(),
-                new Vector3(-1.8f, -0.06f, 0),
+                new Vector3(-1.8f, 0, 0),
                 __instance,
                 KeyCode.F,
                 true,
                 Roles.F_Trapper.rootTimeOption.getFloat(),
                 () => { 
                     trapButton.Timer = trapButton.MaxTimer;
-                }
+                },false,"button.label.place"
             );
             trapButton.MaxTimer = Roles.F_Trapper.placeCoolDownOption.getFloat();
             trapButton.EffectDuration = Roles.F_Trapper.rootTimeOption.getFloat();

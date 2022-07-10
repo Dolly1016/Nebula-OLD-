@@ -22,6 +22,7 @@ namespace Nebula
         ForceEnd,
         WinTrigger,
         ShareOptions,
+        SetPlayerStatus,
         SetRoles,
         SetExtraRole,
         UnsetExtraRole,
@@ -104,6 +105,9 @@ namespace Nebula
                 case (byte)CustomRPC.SynchronizeTimer:
                     RPCEvents.SynchronizeTimer(reader.ReadSingle());
                     break;
+                case (byte)CustomRPC.SetPlayerStatus:
+                    RPCEvents.SetPlayerStatus(reader.ReadByte(),Game.PlayerData.PlayerStatus.GetStatusById(reader.ReadByte()));
+                    break;
                 case (byte)CustomRPC.UpdatePlayerControl:
                     RPCEvents.UpdatePlayerControl(reader.ReadByte(),reader.ReadSingle());
                     break;
@@ -178,7 +182,7 @@ namespace Nebula
                     RPCEvents.SwapRole(reader.ReadByte(), reader.ReadByte());
                     break;
                 case (byte)CustomRPC.RevivePlayer:
-                    RPCEvents.RevivePlayer(reader.ReadByte());
+                    RPCEvents.RevivePlayer(reader.ReadByte(),reader.ReadBoolean(),reader.ReadBoolean());
                     break;
                 case (byte)CustomRPC.EmitSpeedFactor:
                     RPCEvents.EmitSpeedFactor(reader.ReadByte(), new Game.SpeedFactor(reader.ReadBoolean(), reader.ReadByte(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadBoolean()));
@@ -278,6 +282,10 @@ namespace Nebula
                 Game.GameData.data.Timer = timer;
         }
 
+        public static void SetPlayerStatus(byte playerId, Game.PlayerData.PlayerStatus status)
+        {
+            Game.GameData.data.players[playerId].Status = status;
+        }
 
         public static void SetRandomMap(byte mapId)
         {
@@ -383,14 +391,52 @@ namespace Nebula
             Objects.SoundPlayer.PlaySound(pos, id, maxDistance, minDistance);
         }
 
-        public static void UncheckedMurderPlayer(byte murdererId, byte targetId, byte statusId, byte showAnimation)
+        public static void UncheckedMurderPlayer(byte murdererId, byte targetId, byte statusId, byte showAnimation,bool cutOverlay=false)
         {
             PlayerControl source = Helpers.playerById(murdererId);
             PlayerControl target = Helpers.playerById(targetId);
             if (source != null && target != null)
             {
                 if (showAnimation == 0) Patches.KillAnimationCoPerformKillPatch.hideNextAnimation = true;
-                source.MurderPlayer(target);
+
+                if (cutOverlay)
+                {
+                    //MurderPlayerから必要な処理を抜粋
+                    GameData.PlayerInfo data = target.Data;
+
+                    target.gameObject.layer = LayerMask.NameToLayer("Ghost");
+                    if (source.AmOwner)
+                    {
+                        if (Constants.ShouldPlaySfx())
+                        {
+                            SoundManager.Instance.PlaySound(source.KillSfx, false, 0.8f);
+                        }
+                    }
+                    if (target.AmOwner)
+                    {
+                        StatsManager.Instance.IncrementStat(StringNames.StatsTimesMurdered);
+                        if (Minigame.Instance)
+                        {
+                            try
+                            {
+                                Minigame.Instance.Close();
+                                Minigame.Instance.Close();
+                            }
+                            catch
+                            {
+                            }
+                        }
+                        DestroyableSingleton<HudManager>.Instance.ShadowQuad.gameObject.SetActive(false);
+                        target.cosmetics.SetNameMask(false);
+                        target.RpcSetScanner(false);
+                    }
+                    source.MyPhysics.StartCoroutine(source.KillAnimations.First().CoPerformKill(source, target));
+                }
+                else
+                {
+                    //ふつうにMurderPlayerを呼んで問題ない場合
+                    source.MurderPlayer(target);
+                }
 
                 Game.GameData.data.players[target.PlayerId].Die(Game.PlayerData.PlayerStatus.GetStatusById(statusId), source.PlayerId);
 
@@ -635,18 +681,18 @@ namespace Nebula
             });
         }
 
-        public static void RevivePlayer(byte playerId)
+        public static void RevivePlayer(byte playerId,bool changeStatus, bool gushOnRevive)
         {
             if (Game.GameData.data.GameMode == CustomGameMode.Standard)
             {
-                //Necromancerを確定させる
-                Game.GameData.data.EstimationAI.Determine(Roles.Roles.Necromancer);
+                //NecromancerやBuskerを確定させる
+                Game.GameData.data.EstimationAI.Determine(changeStatus ? (Roles.Role)Roles.Roles.Necromancer : (Roles.Role)Roles.Roles.Busker);
 
                 foreach (DeadBody body in Helpers.AllDeadBodies())
                 {
                     if (body.ParentId != playerId) continue;
 
-                    Game.GameData.data.players[playerId].Revive();
+                    Game.GameData.data.players[playerId].Revive(changeStatus);
                     PlayerControl player = Helpers.playerById(playerId);
                     player.transform.position = body.transform.position;
                     player.Revive(false);
@@ -669,6 +715,13 @@ namespace Nebula
                 player.Revive(false);
                 player.Data.IsDead = false;
                 Game.GameData.data.deadPlayers.Remove(playerId);
+            }
+
+            if (gushOnRevive)
+            {
+                var data = Game.GameData.data.players[playerId];
+                data.Property.SetUnderTheFloorForcely(true);
+                data.Property.UnderTheFloor = false;
             }
         }
 
@@ -1027,6 +1080,15 @@ namespace Nebula
 
     public class RPCEventInvoker
     {
+        public static void SetPlayerStatus(byte playerId, Game.PlayerData.PlayerStatus status)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetPlayerStatus, Hazel.SendOption.Reliable, -1);
+            writer.Write(playerId);
+            writer.Write(status.Id);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.SetPlayerStatus(playerId, status);
+        }
+
         public static void SynchronizeTimer()
         {
             if (!AmongUsClient.Instance.AmHost) return;
@@ -1122,6 +1184,17 @@ namespace Nebula
             writer.Write(showAnimation ? Byte.MaxValue : (byte)0);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.UncheckedMurderPlayer(murdererId, targetId, statusId, showAnimation ? Byte.MaxValue : (byte)0);
+        }
+
+        public static void SuicideWithoutOverlay(byte statusId)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UncheckedMurderPlayer, Hazel.SendOption.Reliable, -1);
+            writer.Write(PlayerControl.LocalPlayer.PlayerId);
+            writer.Write(PlayerControl.LocalPlayer.PlayerId);
+            writer.Write(statusId);
+            writer.Write((byte)0);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.UncheckedMurderPlayer(PlayerControl.LocalPlayer.PlayerId, PlayerControl.LocalPlayer.PlayerId, statusId, (byte)0,true);
         }
 
         public static void UncheckedExilePlayer(byte playerId,byte statusId)
@@ -1248,12 +1321,14 @@ namespace Nebula
             RPCEvents.ChangeExtraRole(null,addRole, initializeValue, player.PlayerId);
         }
 
-        public static void RevivePlayer(PlayerControl player)
+        public static void RevivePlayer(PlayerControl player,bool changeStatusToRevive=true,bool gushOnRevive=false)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RevivePlayer, Hazel.SendOption.Reliable, -1);
             writer.Write(player.PlayerId);
+            writer.Write(changeStatusToRevive);
+            writer.Write(gushOnRevive);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
-            RPCEvents.RevivePlayer(player.PlayerId);
+            RPCEvents.RevivePlayer(player.PlayerId, changeStatusToRevive, gushOnRevive);
         }
 
         public static void EmitSpeedFactor(PlayerControl player, Game.SpeedFactor speedFactor)
@@ -1544,7 +1619,7 @@ namespace Nebula
             RPCEvents.DisturberInvoke(PlayerControl.LocalPlayer.PlayerId, objectId1, objectId2);
         }
 
-        public static void GlovalEvent(Events.GlobalEvent.Type type,float duration,ulong option=0)
+        public static void GlobalEvent(Events.GlobalEvent.Type type,float duration,ulong option=0)
         {
             MessageWriter camouflageWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.GlobalEvent, Hazel.SendOption.Reliable, -1);
             camouflageWriter.Write(type.Id);
@@ -1553,5 +1628,14 @@ namespace Nebula
             AmongUsClient.Instance.FinishRpcImmediately(camouflageWriter);
             RPCEvents.GlobalEvent(type.Id,duration,option);
         }
+
+        public static void CleanDeadBody(byte targetId)
+        {
+            MessageWriter eatWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.CleanDeadBody, Hazel.SendOption.Reliable, -1);
+            eatWriter.Write(targetId);
+            AmongUsClient.Instance.FinishRpcImmediately(eatWriter);
+            RPCEvents.CleanDeadBody(targetId);
+        }
+
     }
 }

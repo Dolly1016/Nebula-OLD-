@@ -211,9 +211,48 @@ namespace Nebula.Patches
             [HarmonyPatch(typeof(PlanetSurveillanceMinigame), nameof(PlanetSurveillanceMinigame.Close))]
             class PlanetSurveillanceMinigameClosePatch
             {
-                static void Prefix(PlanetSurveillanceMinigame __instance)
+                public static void Prefix(PlanetSurveillanceMinigame __instance)
                 {
                     UseCameraTime();
+                }
+            }
+
+            [HarmonyPatch(typeof(PlanetSurveillanceMinigame), nameof(PlanetSurveillanceMinigame.NextCamera))]
+            class PlanetSurveillanceMinigamePulseStaticPatch
+            {
+                public static bool Prefix(PlanetSurveillanceMinigame __instance, [HarmonyArgument(0)] int direction)
+                {
+                    NebulaPlugin.Instance.Logger.Print("A");
+                    if (!CustomOptionHolder.DevicesOption.getBool()) return true;
+                    if (Game.GameData.data.UtilityTimer.CameraTimer > 0f) return true;
+
+                    if (direction != 0 && Constants.ShouldPlaySfx())
+                    {
+                        SoundManager.Instance.PlaySound(__instance.ChangeSound, false, 1f);
+                    }
+                    __instance.Dots[__instance.currentCamera].sprite = __instance.DotDisabled;
+                    
+                    if((__instance.currentCamera + direction) >= 0)
+                    {
+                        __instance.currentCamera = (__instance.currentCamera + direction) % __instance.survCameras.Length;
+                    }
+                    else
+                    {
+                        int self= __instance.currentCamera + direction;
+                        int max = __instance.survCameras.Length;
+                        __instance.currentCamera = (self + -(self / max) * max + max) % max;
+                    }
+
+                    __instance.Dots[__instance.currentCamera].sprite = __instance.DotEnabled;
+                    SurvCamera survCamera = __instance.survCameras[__instance.currentCamera];
+                    __instance.Camera.transform.position = survCamera.transform.position + __instance.survCameras[__instance.currentCamera].Offset;
+                    __instance.LocationName.text = ((survCamera.NewName > StringNames.ExitButton) ? DestroyableSingleton<TranslationController>.Instance.GetString(survCamera.NewName, new UnhollowerBaseLib.Il2CppReferenceArray<Il2CppSystem.Object>(0)) : survCamera.CamName);
+                    if (!PlayerTask.PlayerHasTaskOfType<IHudOverrideTask>(PlayerControl.LocalPlayer))
+                    {
+                        __instance.ViewPort.sharedMaterial = __instance.StaticMaterial;
+                        __instance.ViewPort.material.SetTexture("_MainTex", null);
+                    }
+                    return false;
                 }
             }
         }
@@ -295,13 +334,9 @@ namespace Nebula.Patches
             }
 
 
-            [HarmonyPatch]
+            [HarmonyPatch(typeof(Minigame), nameof(Minigame.Close),new Type[0])]
             class SecurityLogGameClosePatch
             {
-                private static IEnumerable<MethodBase> TargetMethods()
-                {
-                    return typeof(Minigame).GetMethods().Where(x => x.Name == "Close");
-                }
 
                 static void Prefix(Minigame __instance)
                 {

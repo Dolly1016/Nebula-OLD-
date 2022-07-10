@@ -52,6 +52,13 @@ namespace Nebula.Map
             MapEditors[mapId].OptimizeMap();
         }
 
+        public static void MapCustomize(int mapId)
+        {
+            if (!MapEditors.ContainsKey(mapId)) return;
+
+            MapEditors[mapId].MapCustomize();
+        }
+
         protected static Vent CreateVent(SystemTypes room, string ventName,Vector2 position)
         {
             var referenceVent = UnityEngine.Object.FindObjectOfType<Vent>();
@@ -185,6 +192,11 @@ namespace Nebula.Map
         /// マップを最適化します。
         /// </summary>
         public virtual void OptimizeMap(){}
+
+        /// <summary>
+        /// 個別の設定をこの中で行います。
+        /// </summary>
+        public virtual void MapCustomize() { }
 
         public MapEditor(int mapId)
         {

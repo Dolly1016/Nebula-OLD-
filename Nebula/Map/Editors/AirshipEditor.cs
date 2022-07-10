@@ -92,5 +92,16 @@ namespace Nebula.Map.Editors
             panel.gameObject.GetComponent<Console>().usableDistance = 0.9f;
 
         }
+
+        public override void MapCustomize()
+        {
+            if (CustomOptionHolder.invalidateSecondaryAdmin.getBool())
+            {
+                var obj = ShipStatus.Instance.FastRooms.get_Item(SystemTypes.Records).gameObject;
+                //第二のアドミンを無効化
+                GameObject.Destroy(obj.transform.FindChild("records_admin_map").gameObject);
+            }
+
+        }
     }
 }

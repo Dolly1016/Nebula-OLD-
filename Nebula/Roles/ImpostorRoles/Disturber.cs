@@ -110,7 +110,7 @@ namespace Nebula.Roles.ImpostorRoles
                     {
                         foreach(var pole in Poles)
                             RPCEventInvoker.DisturberInvoke(pole[0].Id, pole[1].Id);
-                        RPCEventInvoker.GlovalEvent(Events.GlobalEvent.Type.BlackOut, disturbDurationOption.getFloat() + 2f, (ulong)(disturbBlackOutRateOption.getFloat() * 100f));
+                        RPCEventInvoker.GlobalEvent(Events.GlobalEvent.Type.BlackOut, disturbDurationOption.getFloat() + 2f, (ulong)(disturbBlackOutRateOption.getFloat() * 100f));
                     }
                     else
                     {

@@ -23,7 +23,7 @@ namespace Nebula.Roles.RoleSystem
                     result.Timer = result.MaxTimer;
                 },
                 buttonSprite,
-                new Vector3(-1.8f, -0.06f, 0),
+                new Vector3(-1.8f, 0, 0),
                 __instance,
                 KeyCode.F,
                 true,

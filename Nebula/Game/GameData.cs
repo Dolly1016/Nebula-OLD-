@@ -367,6 +367,11 @@ namespace Nebula.Game
             }
         }
 
+        public void SetUnderTheFloorForcely(bool flag)
+        {
+            underTheFloor = flag;
+        }
+
         private void Dive()
         {
             List<Il2CppSystem.Collections.IEnumerator> sequence = new List<Il2CppSystem.Collections.IEnumerator>();
@@ -381,7 +386,7 @@ namespace Nebula.Game
                 player.MyPhysics.Animator.Time = 0f;
                 player.moveable = false;
 
-                if (player.PlayerId == PlayerControl.LocalPlayer.PlayerId)
+                if (player.PlayerId == PlayerControl.LocalPlayer.PlayerId && player.GetModData().role == Roles.Roles.Hadar)
                 {
                     Objects.SoundPlayer.PlaySound(Module.AudioAsset.HadarDive);
                 }
@@ -419,7 +424,7 @@ namespace Nebula.Game
                 player.MyPhysics.myPlayer.Visible = true;
                 underTheFloor = false;
 
-                if (player.PlayerId == PlayerControl.LocalPlayer.PlayerId)
+                if (player.PlayerId == PlayerControl.LocalPlayer.PlayerId && player.GetModData().role==Roles.Roles.Hadar)
                 {
                     Objects.SoundPlayer.PlaySound(Module.AudioAsset.HadarReappear);
                 }
@@ -486,6 +491,7 @@ namespace Nebula.Game
             public static PlayerStatus Dead = new PlayerStatus("dead");
             public static PlayerStatus Exiled = new PlayerStatus("exiled");
             public static PlayerStatus Disconnected = new PlayerStatus("disconnected");
+            public static PlayerStatus Pseudocide = new PlayerStatus("pseudocide");
             public static PlayerStatus Suicide = new PlayerStatus("suicide");
             public static PlayerStatus Burned=new PlayerStatus("burned");
             public static PlayerStatus Embroiled = new PlayerStatus("embroiled");
@@ -704,11 +710,12 @@ namespace Nebula.Game
             return roleData;
         }
 
-        public void Revive()
+        public void Revive(bool changeStatus = true)
         {
             DeathGuage = 0f;
             IsAlive = true;
-            Status = PlayerStatus.Revived;
+
+            if (changeStatus) Status = PlayerStatus.Revived;
         }
 
         public void Die(PlayerStatus status, byte murderId)
@@ -965,6 +972,7 @@ namespace Nebula.Game
             {
                 Map.MapEditor.OptimizeMap(PlayerControl.GameOptions.MapId);
                 Map.MapEditor.AddVents(PlayerControl.GameOptions.MapId);
+                Map.MapEditor.MapCustomize(PlayerControl.GameOptions.MapId);
             }
 
             if (CustomOptionHolder.TasksOption.getBool())

@@ -14,13 +14,81 @@ namespace Nebula.Map.Database
             SabotageMap[SystemTypes.Electrical] = new SabotageData(SystemTypes.Electrical, new Vector3(10f, -11f), true, false);
             SabotageMap[SystemTypes.Comms] = new SabotageData(SystemTypes.Comms, new Vector3(14f, -15.5f), true, false);
 
-            DoorRooms.Add(SystemTypes.Laboratory);
-            DoorRooms.Add(SystemTypes.Electrical);
-            DoorRooms.Add(SystemTypes.Office);
-            DoorRooms.Add(SystemTypes.Comms);
-            DoorRooms.Add(SystemTypes.Weapons);
-            DoorRooms.Add(SystemTypes.LifeSupp);
-            DoorRooms.Add(SystemTypes.Storage);
+            //ドロップシップ
+            MapPositions.Add(new Vector2(16.7f,-2.6f));
+            //ドロップシップ下
+            MapPositions.Add(new Vector2(14.1f, -10f));
+            MapPositions.Add(new Vector2(22.0f, -7.1f));
+            //エレクトリカル
+            MapPositions.Add(new Vector2(7.5f, -9.7f));
+            MapPositions.Add(new Vector2(3.1f, -11.7f));
+            MapPositions.Add(new Vector2(5.4f, -11.5f));
+            MapPositions.Add(new Vector2(9.6f, -12.1f));
+            //O2
+            MapPositions.Add(new Vector2(4.7f, -19f));
+            MapPositions.Add(new Vector2(2.4f, -17f));
+            MapPositions.Add(new Vector2(3.1f, -21.7f));
+            MapPositions.Add(new Vector2(1.9f, -19.4f));
+            MapPositions.Add(new Vector2(2.4f, -23.6f));
+            MapPositions.Add(new Vector2(6.3f, -21.3f));
+            //Elec,O2,Comm周辺外
+            MapPositions.Add(new Vector2(7.9f, -23.6f));
+            MapPositions.Add(new Vector2(9.4f, -20.1f));
+            MapPositions.Add(new Vector2(8.2f, -16.0f));
+            MapPositions.Add(new Vector2(8.0f, -14.3f));
+            MapPositions.Add(new Vector2(13.4f, -13f));
+            //左上リアクター前通路
+            MapPositions.Add(new Vector2(10.3f, -7.4f));
+            //左上リアクター
+            MapPositions.Add(new Vector2(4.6f, -5f));
+            //Comm
+            MapPositions.Add(new Vector2(11.4f, -15.9f));
+            MapPositions.Add(new Vector2(11.7f, -17.3f));
+            //Weapons
+            MapPositions.Add(new Vector2(13f, -23.5f));
+            //Storage
+            MapPositions.Add(new Vector2(19.4f, -11.2f));
+            //オフィス左下
+            MapPositions.Add(new Vector2(18f, -24.5f));
+            //オフィス
+            MapPositions.Add(new Vector2(18.6f, -21.5f));
+            MapPositions.Add(new Vector2(20.2f, -19.2f));
+            MapPositions.Add(new Vector2(19.6f, -17.6f));
+            MapPositions.Add(new Vector2(19.6f, -16.4f));
+            MapPositions.Add(new Vector2(26.5f, -17.4f));
+            //アドミン
+            MapPositions.Add(new Vector2(20f, -22.5f));
+            MapPositions.Add(new Vector2(21.4f, -25.2f));
+            MapPositions.Add(new Vector2(22.4f, -22.6f));
+            MapPositions.Add(new Vector2(25f, -20.8f));
+            //デコン（左）
+            MapPositions.Add(new Vector2(24.1f, -24.7f));
+            //スペシメン左通路
+            MapPositions.Add(new Vector2(27.7f, -24.7f));
+            MapPositions.Add(new Vector2(33f, -20.6f));
+            //スペシメン
+            MapPositions.Add(new Vector2(36.8f, -21.6f));
+            MapPositions.Add(new Vector2(36.5f, -19.3f));
+            //スペシメン右通路
+            MapPositions.Add(new Vector2(39.2f, -15.2f));
+            //デコン(上)
+            MapPositions.Add(new Vector2(39.8f, -10f));
+            //ラボ
+            MapPositions.Add(new Vector2(34.7f, -10.2f));
+            MapPositions.Add(new Vector2(36.4f, -8f));
+            MapPositions.Add(new Vector2(40.5f, -7.6f));
+            MapPositions.Add(new Vector2(34.5f, -6.2f));
+            MapPositions.Add(new Vector2(31.2f, -7.6f));
+            MapPositions.Add(new Vector2(28.4f, -9.6f));
+            MapPositions.Add(new Vector2(26.5f, -7f));
+            MapPositions.Add(new Vector2(26.5f, -8.3f));
+            //右リアクター
+            MapPositions.Add(new Vector2(24.2f, -4.5f));
+            //ストレージ・ラボ下・オフィス右
+            MapPositions.Add(new Vector2(24f, -14.6f));
+            MapPositions.Add(new Vector2(26f, -12.2f));
+            MapPositions.Add(new Vector2(29.8f, -15.7f));
+
 
             MapScale = 32f;
 

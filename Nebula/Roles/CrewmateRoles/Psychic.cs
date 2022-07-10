@@ -21,12 +21,21 @@ namespace Nebula.Roles.CrewmateRoles
 
         private Dictionary<byte, Arrow> Arrows = new Dictionary<byte, Arrow>();
 
+        private Sprite mapIconSprite = null;
+
         private Sprite buttonSprite = null;
         public Sprite getButtonSprite()
         {
             if (buttonSprite) return buttonSprite;
             buttonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.SearchButton.png", 115f);
             return buttonSprite;
+        }
+
+        public Sprite getMapIconSprite()
+        {
+            if (mapIconSprite) return mapIconSprite;
+            mapIconSprite = Helpers.loadSpriteFromResources("Nebula.Resources.PsychicMapIcon.png", 100f);
+            return mapIconSprite;
         }
 
         public override void Initialize(PlayerControl __instance)
@@ -46,6 +55,7 @@ namespace Nebula.Roles.CrewmateRoles
             }
             searchButton = RoleSystem.TrackSystem.ButtonInitialize(__instance, Arrows,
                 getButtonSprite(), searchDurationOption.getFloat(), searchCoolDownOption.getFloat());
+            searchButton.SetLabel("button.label.search");
         }
 
         public override void ButtonActivate()

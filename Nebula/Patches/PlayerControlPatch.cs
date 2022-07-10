@@ -315,16 +315,22 @@ namespace Nebula.Patches
             if (player.cosmetics.skin.layer != null)
                 player.cosmetics.skin.layer.color = data.TransColor;
 
-            if (player.cosmetics.hat.FrontLayer != null)
-                player.cosmetics.hat.FrontLayer.color = data.TransColor;
-            if (player.cosmetics.hat.BackLayer != null)
-                player.cosmetics.hat.BackLayer.color = data.TransColor;
+            if (player.cosmetics.hat)
+            {
+                if (player.cosmetics.hat.FrontLayer != null)
+                    player.cosmetics.hat.FrontLayer.color = data.TransColor;
+                if (player.cosmetics.hat.BackLayer != null)
+                    player.cosmetics.hat.BackLayer.color = data.TransColor;
+            }
 
-            if (player.cosmetics.currentPet.rend != null)
-                player.cosmetics.currentPet.rend.color = data.TransColor;
+            if (player.cosmetics.currentPet)
+            {
+                if (player.cosmetics.currentPet.rend != null)
+                    player.cosmetics.currentPet.rend.color = data.TransColor;
 
-            if (player.cosmetics.currentPet.shadowRend != null)
-                player.cosmetics.currentPet.shadowRend.color = data.TransColor;
+                if (player.cosmetics.currentPet.shadowRend != null)
+                    player.cosmetics.currentPet.shadowRend.color = data.TransColor;
+            }
 
             if (player.cosmetics.visor != null)
                 player.cosmetics.visor.Image.color = data.TransColor;
