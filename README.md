@@ -1412,7 +1412,8 @@ p5p5next : Damned
 | オプション名 | 設定内容 |
 |----------|:-------------:|
 | Can Create Sidekick | Sidekickを生み出せるかどうか
-| Kill Cool Down | 自身のキルクールダウン
+| Kill Cool Down | 自身のキルクールダウン 
+| Num Of Killing To Create Sidekick | Sidekickを付与するために求められる自身によるキル数
 
 -----------------------
 
