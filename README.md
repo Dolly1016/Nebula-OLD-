@@ -33,6 +33,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.10.1 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.10.1,2022.6.21/Nebula_v1.10.1.zip)|
 | 1.10.0.2 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.10.0.2,2022.6.21/Nebula_v1.10.0.2.zip)|
 | 1.10.0.1 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.10.0.1,2022.6.21/Nebula_v1.10.0.1.zip)|
 | 1.10.0 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.10.0,2022.6.21/Nebula_v1.10.0.zip)|
@@ -189,6 +190,12 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+ 
+ **Version 1.10.1**
+ - Sniperが、周囲の不可視のプレイヤーの存在を知ることができるように
+ - Evil Aceが一度死んだプレイヤーの役職を、現在の生死を問わず見れてしまう問題を修正
+ - 死後の天界視点から復帰した際に設定ボタンや使用ボタンが復活しない問題を修正
+ - ロビーで人数表示がおかしくなってしまう問題を抑制
  
  **Version 1.10.0.2**
  - Buskerで能力を使用した後会議を挟むと視界が広くなってしまう問題を修正
