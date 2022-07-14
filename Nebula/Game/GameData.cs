@@ -581,6 +581,9 @@ namespace Nebula.Game
 
         public float DeathGuage { get; set; }
 
+        //状態として、何らかの理由で見えないプレイヤーであるかどうか
+        public bool isInvisiblePlayer { get; set; }
+
         public Patches.FinalPlayerData.FinalPlayer? FinalData { get {
                 return Patches.OnGameEndPatch.FinalData.players.FirstOrDefault((p) => p.id == id);
         }}
@@ -608,6 +611,7 @@ namespace Nebula.Game
             this.TransColor = Color.white;
             this.Property = new PlayerProperty(player);
             this.DeathGuage = 0f;
+            this.isInvisiblePlayer = false;
         }
 
         public int GetRoleData(int id)

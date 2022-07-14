@@ -56,6 +56,7 @@ namespace Nebula
         UpdateRestrictTimer,
         UndergroundAction,
         DeathGuage,
+        UpdatePlayerVisibility,
 
 
         // Role functionality
@@ -182,7 +183,7 @@ namespace Nebula
                     RPCEvents.SwapRole(reader.ReadByte(), reader.ReadByte());
                     break;
                 case (byte)CustomRPC.RevivePlayer:
-                    RPCEvents.RevivePlayer(reader.ReadByte(),reader.ReadBoolean(),reader.ReadBoolean());
+                    RPCEvents.RevivePlayer(reader.ReadByte(), reader.ReadBoolean(), reader.ReadBoolean(),reader.ReadBoolean());
                     break;
                 case (byte)CustomRPC.EmitSpeedFactor:
                     RPCEvents.EmitSpeedFactor(reader.ReadByte(), new Game.SpeedFactor(reader.ReadBoolean(), reader.ReadByte(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadBoolean()));
@@ -250,6 +251,9 @@ namespace Nebula
                     break;
                 case (byte)CustomRPC.DisturberInvoke:
                     RPCEvents.DisturberInvoke(reader.ReadByte(),reader.ReadUInt64(), reader.ReadUInt64());
+                    break;
+                case (byte)CustomRPC.UpdatePlayerVisibility:
+                    RPCEvents.UpdatePlayerVisibility(reader.ReadByte(), reader.ReadBoolean());
                     break;
             }
         }
@@ -681,7 +685,7 @@ namespace Nebula
             });
         }
 
-        public static void RevivePlayer(byte playerId,bool changeStatus, bool gushOnRevive)
+        public static void RevivePlayer(byte playerId,bool reviveOnCurrentPosition,bool changeStatus, bool gushOnRevive)
         {
             if (Game.GameData.data.GameMode == CustomGameMode.Standard)
             {
@@ -694,7 +698,7 @@ namespace Nebula
 
                     Game.GameData.data.players[playerId].Revive(changeStatus);
                     PlayerControl player = Helpers.playerById(playerId);
-                    player.transform.position = body.transform.position;
+                    if(!reviveOnCurrentPosition)player.transform.position = body.transform.position;
                     player.Revive(false);
                     player.Data.IsDead = false;
                     Game.GameData.data.deadPlayers.Remove(playerId);
@@ -723,6 +727,8 @@ namespace Nebula
                 data.Property.SetUnderTheFloorForcely(true);
                 data.Property.UnderTheFloor = false;
             }
+
+            Game.GameData.data.myData.getGlobalData().role.onRevived(playerId);
         }
 
         public static void EmitSpeedFactor(byte playerId,Game.SpeedFactor speedFactor)
@@ -1076,6 +1082,11 @@ namespace Nebula
             }, Roles.Roles.Disturber.ignoreBarriorsOption.getSelection() == 1,
             (ulong)(Roles.Roles.Disturber.ignoreBarriorsOption.getSelection() == 2 ? 1 << playerId : 0));
         }
+
+        public static void UpdatePlayerVisibility(byte player,bool flag)
+        {
+            Game.GameData.data.players[player].isInvisiblePlayer = !flag;
+        }
     }
 
     public class RPCEventInvoker
@@ -1321,14 +1332,15 @@ namespace Nebula
             RPCEvents.ChangeExtraRole(null,addRole, initializeValue, player.PlayerId);
         }
 
-        public static void RevivePlayer(PlayerControl player,bool changeStatusToRevive=true,bool gushOnRevive=false)
+        public static void RevivePlayer(PlayerControl player,bool reviveOnCurrentPosition=false, bool changeStatusToRevive=true,bool gushOnRevive=false)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RevivePlayer, Hazel.SendOption.Reliable, -1);
             writer.Write(player.PlayerId);
+            writer.Write(reviveOnCurrentPosition);
             writer.Write(changeStatusToRevive);
             writer.Write(gushOnRevive);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
-            RPCEvents.RevivePlayer(player.PlayerId, changeStatusToRevive, gushOnRevive);
+            RPCEvents.RevivePlayer(player.PlayerId, reviveOnCurrentPosition, changeStatusToRevive, gushOnRevive);
         }
 
         public static void EmitSpeedFactor(PlayerControl player, Game.SpeedFactor speedFactor)
@@ -1637,5 +1649,13 @@ namespace Nebula
             RPCEvents.CleanDeadBody(targetId);
         }
 
+        public static void UpdatePlayerVisibility(byte playerId,bool visibility)
+        {
+            MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UpdatePlayerVisibility, Hazel.SendOption.Reliable, -1);
+            messageWriter.Write(playerId);
+            messageWriter.Write(visibility);
+            AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+            RPCEvents.UpdatePlayerVisibility(playerId,visibility);
+        }
     }
 }

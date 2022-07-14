@@ -41,6 +41,7 @@ namespace Nebula.Roles.CrewmateRoles
         {
             HudManager.Instance.ShadowQuad.gameObject.SetActive(false);
             pseudocideFlag = false;
+            RPCEventInvoker.UpdatePlayerVisibility(PlayerControl.LocalPlayer.PlayerId, true);
         }
 
         public override bool CanBeLovers { get { return false; } }
@@ -88,6 +89,7 @@ namespace Nebula.Roles.CrewmateRoles
             buskButton = new CustomButton(
                 () =>
                 {
+                    RPCEventInvoker.UpdatePlayerVisibility(PlayerControl.LocalPlayer.PlayerId, false);
                     RPCEventInvoker.SuicideWithoutOverlay(Game.PlayerData.PlayerStatus.Pseudocide.Id);
                     HudManager.Instance.ShadowQuad.gameObject.SetActive(true);
                     pseudocideFlag = true;
@@ -116,7 +118,7 @@ namespace Nebula.Roles.CrewmateRoles
             buskButton.SetSuspendAction(()=> {
                 if (!checkPseudocide()) return;
                 if (!checkCanReviveOrAlive()) return;
-                RPCEventInvoker.RevivePlayer(PlayerControl.LocalPlayer, false, true);
+                RPCEventInvoker.RevivePlayer(PlayerControl.LocalPlayer, true, false, true);
                 RPCEventInvoker.SetPlayerStatus(PlayerControl.LocalPlayer.PlayerId, Game.PlayerData.PlayerStatus.Alive);
                 buskButton.Timer = buskButton.MaxTimer;
                 buskButton.isEffectActive = false;
@@ -124,6 +126,7 @@ namespace Nebula.Roles.CrewmateRoles
 
                 buskButton.Sprite = getPseudocideButtonSprite();
                 buskButton.SetLabel("button.label.busker.pseudocide");
+                pseudocideFlag = false;
             });
         }
 

@@ -61,6 +61,7 @@ namespace Nebula.Roles.CrewmateRoles
             boostButton = new CustomButton(
                 () =>
                 {
+                    RPCEventInvoker.UpdatePlayerVisibility(PlayerControl.LocalPlayer.PlayerId, false);
                     RPCEventInvoker.EmitSpeedFactor(PlayerControl.LocalPlayer, new Game.SpeedFactor(0,boostDurationOption.getFloat(), boostSpeedOption.getFloat(), false));
                     RPCEventInvoker.EmitAttributeFactor(PlayerControl.LocalPlayer, new Game.PlayerAttributeFactor(Game.PlayerAttribute.Invisible, boostDurationOption.getFloat(), 0, false));
                 },
@@ -71,6 +72,7 @@ namespace Nebula.Roles.CrewmateRoles
                     boostButton.Timer = boostButton.MaxTimer;
                     boostButton.isEffectActive = false;
                     boostButton.actionButton.cooldownTimerText.color = Palette.EnabledColor;
+                    RPCEventInvoker.UpdatePlayerVisibility(PlayerControl.LocalPlayer.PlayerId, true);
                 },
                 getButtonSprite(),
                 new Vector3(-1.8f, 0f, 0),
@@ -78,7 +80,10 @@ namespace Nebula.Roles.CrewmateRoles
                 KeyCode.F,
                 true,
                boostDurationOption.getFloat(),
-               () => { boostButton.Timer = boostButton.MaxTimer; },
+               () => { 
+                   boostButton.Timer = boostButton.MaxTimer;
+                   RPCEventInvoker.UpdatePlayerVisibility(PlayerControl.LocalPlayer.PlayerId,true);
+               },
                 false,
                 "button.label.blaze"
             );

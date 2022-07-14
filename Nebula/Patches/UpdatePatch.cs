@@ -304,6 +304,12 @@ namespace Nebula.Patches
 
         public static void Postfix(HudManager __instance)
         {
+            //アニメーションを無効化
+            if (__instance.GameLoadAnimation.active)
+            {
+                __instance.GameLoadAnimation.SetActive(false);
+            }
+
             try
             {
                 if (AmongUsClient.Instance == null) return;

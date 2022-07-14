@@ -8,6 +8,8 @@ using Nebula.Patches;
 using Nebula.Objects;
 using HarmonyLib;
 using Hazel;
+using System.Collections;
+using BepInEx.IL2CPP.Utils.Collections;
 
 namespace Nebula.Roles.ImpostorRoles
 {
@@ -25,6 +27,8 @@ namespace Nebula.Roles.ImpostorRoles
         public Module.CustomOption showAimAssistOption;
         public Module.CustomOption aimAssistDelayOption;
         public Module.CustomOption aimAssistDurationOption;
+
+        private CustomMessage? message;
 
         private Dictionary<byte,SpriteRenderer> Guides=new Dictionary<byte,SpriteRenderer>();
         private float rifleCounter = 0f;
@@ -218,8 +222,46 @@ namespace Nebula.Roles.ImpostorRoles
             guide.transform.localPosition = new Vector3(Mathf.Cos(angle) * 2f, Mathf.Sin(angle) * 2f, -30f);
         }
 
+        private IEnumerator GetMessageUpdater()
+        {
+            while (true)
+            {
+                bool flag = false;
+                foreach (var p in PlayerControl.AllPlayerControls)
+                {
+                    if (p == PlayerControl.LocalPlayer) continue;
+                    if (p.GetModData().isInvisiblePlayer)
+                    {
+                        if (p.transform.position.Distance(PlayerControl.LocalPlayer.transform.position) < 5.0f)
+                        {
+                            flag = true;
+                            break;
+                        }
+                    }
+                }
+                if (flag) yield return null;
+                else break;
+            }
+        }
+
         public override void MyPlayerControlUpdate()
         {
+            if (message == null || !message.isActive)
+            {
+                foreach (var p in PlayerControl.AllPlayerControls)
+                {
+                    if (p == PlayerControl.LocalPlayer) continue;
+                    if (p.GetModData().isInvisiblePlayer)
+                    {
+                        if (p.transform.position.Distance(PlayerControl.LocalPlayer.transform.position) < 5.0f)
+                        {
+                            message = new CustomMessage(new Vector3(0, -1.5f, 0), false, Language.Language.GetString("role.sniper.nearMessage"), GetMessageUpdater(), 1.0f, Palette.ImpostorRed);
+                            break;
+                        }
+                    }
+                }
+            }
+
             if (equipRifleFlag)
             {
                 RPCEventInvoker.UpdatePlayerControl();
@@ -303,6 +345,8 @@ namespace Nebula.Roles.ImpostorRoles
                 renderer.transform.position = new Vector3(0, 0,-30f);
                 Guides[player.id]=renderer;
             }
+
+            message = null;
         }
 
 

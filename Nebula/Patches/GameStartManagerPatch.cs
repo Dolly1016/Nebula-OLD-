@@ -100,7 +100,9 @@ namespace Nebula.Patches
             {
                 if (!GameData.Instance) return;
 
-                foreach(PlayerControl player in PlayerControl.AllPlayerControls)
+                GameData.Instance.HandleDisconnect();
+
+                foreach (PlayerControl player in PlayerControl.AllPlayerControls)
                 {
                     if (player != null)
                     {

@@ -1,12 +1,15 @@
 ﻿using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 using System;
+using BepInEx.IL2CPP.Utils.Collections;
 
 namespace Nebula.Objects
 {
 
     public class CustomMessage
     {
+        public bool isActive { get; private set; }
 
         private TMPro.TMP_Text text;
         private string currentText;
@@ -67,13 +70,17 @@ namespace Nebula.Objects
             return new CustomMessage(new Vector3(0, -1.8f, 0), false,message, duration, fadeInDuration, fadeOutDuration, 1f,color1, color2);
         }
 
+   
+
         public CustomMessage(Vector3 position,bool stickingMap,string message, float duration, float fadeInDuration, float fadeOutDuration, float fontSizeRate,Color color1 ,Color? color2 =null)
         {
+            
             velocity = null;
             textSwapDuration = 0;
             textSwapGain = 0;
             textSwapLeft = 0;
             textSizeVelocity = null;
+            isActive = true;
 
             
             
@@ -97,9 +104,6 @@ namespace Nebula.Objects
                 text.text = originalText;
 
                 text.transform.localScale *= fontSizeRate;
-
-                Vector3 currentPosition = Camera.main.transform.position;
-                
 
                 gameObject.transform.localPosition = new Vector3(0f, 0f, gameObject.transform.localPosition.z) + position;
                 
@@ -165,8 +169,68 @@ namespace Nebula.Objects
                     {
                         UnityEngine.Object.Destroy(text.gameObject);
                         customMessages.Remove(this);
+                        isActive = false;
                     }
                 })));
+            }
+        }
+
+        private IEnumerator getDestroyer()
+        {
+            UnityEngine.Object.Destroy(text.gameObject);
+            customMessages.Remove(this);
+            isActive = false;
+            yield break;
+        }
+
+        public CustomMessage(Vector3 position, bool stickingMap, string message, IEnumerator updater, float fontSizeRate, Color color)
+        {
+            velocity = null;
+            textSwapDuration = 0;
+            textSwapGain = 0;
+            textSwapLeft = 0;
+            textSizeVelocity = null;
+            isActive = true;
+
+
+
+            RoomTracker roomTracker = HudManager.Instance?.roomTracker;
+
+            if (roomTracker != null)
+            {
+                GameObject gameObject = UnityEngine.Object.Instantiate(HudManager.Instance.roomTracker.gameObject);
+
+                if (!stickingMap)
+                {
+                    gameObject.transform.SetParent(HudManager.Instance.transform);
+                }
+
+                UnityEngine.Object.DestroyImmediate(gameObject.GetComponent<RoomTracker>());
+
+                text = gameObject.GetComponent<TMPro.TMP_Text>();
+
+                String originalText = message;
+                currentText = originalText;
+                text.text = originalText;
+                text.color = color;
+
+                text.transform.localScale *= fontSizeRate;
+
+                Vector3 currentPosition = Camera.main.transform.position;
+
+
+                gameObject.transform.localPosition = new Vector3(0f, 0f, gameObject.transform.localPosition.z) + position;
+
+
+                customMessages.Add(this);
+
+                HudManager.Instance.StartCoroutine(Effects.Sequence(
+                    new UnhollowerBaseLib.Il2CppReferenceArray<Il2CppSystem.Collections.IEnumerator>(
+                        new Il2CppSystem.Collections.IEnumerator[] {
+                        updater.WrapToIl2Cpp(),
+                        getDestroyer().WrapToIl2Cpp()
+                        }
+                    )));
             }
         }
 

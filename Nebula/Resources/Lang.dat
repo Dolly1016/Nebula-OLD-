@@ -440,6 +440,7 @@
 "role.sniper.showAimAssist" : "Show Aim Assist"
 "role.sniper.aimAssistDelay" : "Aim Assist Delay"
 "role.sniper.aimAssistDuration" : "Aim Assist Duration"
+"role.sniper.nearMessage" : "There're some invisible players near you"
 
 "role.arsonist.name" : "Arsonist"
 "role.arsonist.description" : "Let Them Burn"

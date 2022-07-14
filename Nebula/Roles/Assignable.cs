@@ -368,6 +368,15 @@ namespace Nebula.Roles
         {
         }
 
+        /// <summary>
+        /// 誰かが復活したときに呼び出されます。
+        /// </summary>
+        /// <param name="displayName"></param>
+        [RoleGlobalMethod]
+        public virtual void onRevived(byte playerId)
+        {
+        }
+
         /*--------------------------------------------------------------------------------------*/
         /*--------------------------------------------------------------------------------------*/
 

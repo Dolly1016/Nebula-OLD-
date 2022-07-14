@@ -1,9 +1,11 @@
 ﻿using HarmonyLib;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Linq;
 using UnityEngine;
+using BepInEx.IL2CPP.Utils.Collections;
 
 namespace Nebula.Patches
 {
@@ -77,8 +79,29 @@ namespace Nebula.Patches
 		static private float ObserverModeRate = 1f;
 		static public bool ObserverMode = false;
 
+		private static IEnumerator GetEnumerator()
+        {
+			while (true)
+			{
+				if (ObserverMode) break;
+				if (Camera.main.orthographicSize == 3f)
+				{
+					Transform transform = HudManager.Instance.transform.Find("Buttons");
+					if (transform)
+					{
+						transform.gameObject.SetActive(!ObserverMode);
+					}
+					break;
+				}
+				yield return null;
+			}
+			yield break;
+        }
+
 		public static void Postfix(HudManager __instance)
 		{
+			bool lastObserverMode = ObserverMode;
+
 			if (Game.GameData.data != null && Game.GameData.data.myData.CanSeeEveryoneInfo)
 				if (Input.GetKeyDown(KeyCode.M)) ObserverMode = !ObserverMode;
 
@@ -90,6 +113,11 @@ namespace Nebula.Patches
 					|| (MapBehaviour.Instance && MapBehaviour.Instance.IsOpen)
 					|| (Game.GameData.data == null || !Game.GameData.data.myData.CanSeeEveryoneInfo))
 				ObserverMode = false;
+
+            if (ObserverMode != lastObserverMode)
+            {
+				HudManager.Instance.StartCoroutine(GetEnumerator().WrapToIl2Cpp());
+            }
 
 
 			if (ObserverMode)
@@ -121,10 +149,13 @@ namespace Nebula.Patches
 				transform = HudManager.Instance.transform.Find("TaskDisplay");
 				if (transform) transform.gameObject.SetActive(!ObserverMode && ShipStatus.Instance);
 
-				transform = HudManager.Instance.transform.Find("Buttons");
-				if (transform)
+				if (ObserverMode)
 				{
-					transform.gameObject.SetActive(!ObserverMode);
+					transform = HudManager.Instance.transform.Find("Buttons");
+					if (transform)
+					{
+						transform.gameObject.SetActive(!ObserverMode);
+					}
 				}
 			}
 		}

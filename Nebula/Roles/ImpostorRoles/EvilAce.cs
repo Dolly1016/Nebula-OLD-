@@ -36,6 +36,19 @@ namespace Nebula.Roles.ImpostorRoles
             catch { }
         }
 
+
+        public override void onRevived(byte playerId)
+        {
+            //情報を消去する
+            try
+            {
+                PlayerControl p = Helpers.playerById(playerId);
+                var data = p.GetModData();
+                data.RoleInfo = "";
+            }
+            catch { }
+        }
+
         public override void OnRoleRelationSetting()
         {
             RelatedRoles.Add(Roles.Jackal);
