@@ -33,6 +33,9 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.10.1 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.10.1,2022.6.21/Nebula_v1.10.1.zip)|
+| 1.10.0.2 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.10.0.2,2022.6.21/Nebula_v1.10.0.2.zip)|
+| 1.10.0.1 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.10.0.1,2022.6.21/Nebula_v1.10.0.1.zip)|
 | 1.10.0 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.10.0,2022.6.21/Nebula_v1.10.0.zip)|
 | 1.9.8 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.8,2022.6.21/Nebula_v1.9.8.zip)|
 | 1.9.7 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.7,2022.6.21/Nebula_v1.9.7.zip)|
@@ -187,6 +190,18 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+ 
+ **Version 1.10.1**
+ - Sniperが、周囲の不可視のプレイヤーの存在を知ることができるように
+ - Evil Aceが一度死んだプレイヤーの役職を、現在の生死を問わず見れてしまう問題を修正
+ - 死後の天界視点から復帰した際に設定ボタンや使用ボタンが復活しない問題を修正
+ - ロビーで人数表示がおかしくなってしまう問題を抑制
+ 
+ **Version 1.10.0.2**
+ - Buskerで能力を使用した後会議を挟むと視界が広くなってしまう問題を修正
+ 
+ **Version 1.10.0.1**
+ - ゲームモードをフリープレイ以外にすると、Buskerの復活位置が死体の位置で固定される問題を修正
  
  **Version 1.10.0**
  - Buskerを追加
@@ -814,15 +829,16 @@ Sniperの弾の当たり判定やEmpiric,Alienなどの効果範囲を調べる�
 | [Bounty Hunter](#bountyHunter) | [Agent](#agent) | [Arsonist](#arsonist) | [Drunk](#drunk) |
 | [Camouflager](#camouflager) | [Alien](#alien) | [Avenger](#avenger) | [Guesser](#guesser) |
 | [Cleaner](#cleaner) | [Bait](#bait) | [Empiric](#empiric) | [Lover](#lover) |
-| [Damned](#damned) | [Comet](#comet) | [Jackal](#jackal) | [Trilemma](#trilemma) |
-| [Disturber](#disturber) | [Doctor](#doctor) | [Jester](#jester) ||
-| [Eraser](#eraser) | [Mayor](#mayor) | [Opportunist](#opportunist) ||
-| [Evil Ace](#evil-ace) | [Navvy](#navvy) | [Sidekick](#sidekick) ||
-| [Evil Guesser](#guesser) | [Necromancer](#necromancer) | [Vulture](#vulture) ||
-| [Evil Trapper](#trapper) | [Nice Guesser](#guesser) |||
-| [Morphing](#morphing) | [Nice Trapper](#trapper) |||
-| [Reaper](#reaper) | [Oracle](#oracle) |||
-| [Sniper](#sniper) | [Provocateur](#provocateur) |||
+| [Damned](#damned) | [Busker](#busker) | [Jackal](#jackal) | [Trilemma](#trilemma) |
+| [Disturber](#disturber) | [Comet](#comet) | [Jester](#jester) ||
+| [Eraser](#eraser) | [Doctor](#doctor) | [Opportunist](#opportunist) ||
+| [Evil Ace](#evil-ace) | [Mayor](#mayor) | [Sidekick](#sidekick) ||
+| [Evil Guesser](#guesser) | [Navvy](#navvy) | [Vulture](#vulture) ||
+| [Evil Trapper](#trapper) | [Necromancer](#necromancer) |||
+| [Morphing](#morphing) | [Nice Guesser](#guesser) |||
+| [Reaper](#reaper) | [Nice Trapper](#trapper) |||
+| [Sniper](#sniper) | [Oracle](#oracle) |||
+|| [Provocateur](#provocateur) |||
 || [Psychic](#psychic) |||
 || [Seer](#seer) |||
 || [Sheriff](#sheriff) |||
@@ -1145,6 +1161,21 @@ p5p5next : Damned
 
 -----------------------
 
+## Busker
+ Buskerは、死を偽装し、全く別の場所でその身を再び現わせるクルーメイトです。
+ 偽装死をしてから復活するまでの間に、一定時間経過する、死体が消される、あるいは会議が始まってしまうと
+ その死は現実となり、二度と復活できなくなってしまいます。
+ 偽装死をしている間は幽霊となって移動することができます。
+ 復活後、死体は消えてなくなります。
+ 
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+| Pseudocide Cool Down | 偽装死のクールダウン
+| Revive Duration | 復活までの猶予時間
+
+-----------------------
+
 ## Comet
  Cometは一時的に彗星となり、加速し、視野が拡大かつ透明化します。
  
@@ -1388,7 +1419,8 @@ p5p5next : Damned
 | オプション名 | 設定内容 |
 |----------|:-------------:|
 | Can Create Sidekick | Sidekickを生み出せるかどうか
-| Kill Cool Down | 自身のキルクールダウン
+| Kill Cool Down | 自身のキルクールダウン 
+| Num Of Killing To Create Sidekick | Sidekickを付与するために求められる自身によるキル数
 
 -----------------------
 
