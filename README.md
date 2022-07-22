@@ -841,7 +841,7 @@ Sniperの弾の当たり判定やEmpiric,Alienなどの効果範囲を調べる�
 | [Evil Ace](#evil-ace) | [Mayor](#mayor) | [Sidekick](#sidekick) ||
 | [Evil Guesser](#guesser) | [Navvy](#navvy) | [Vulture](#vulture) ||
 | [Evil Trapper](#trapper) | [Necromancer](#necromancer) |||
-| [Jailer(#jailer) | [Nice Guesser](#guesser) |||
+| [Jailer](#jailer) | [Nice Guesser](#guesser) |||
 | [Morphing](#morphing) | [Nice Trapper](#trapper) |||
 | [Reaper](#reaper) | [Oracle](#oracle) |||
 | [Sniper](#sniper) | [Provocateur](#provocateur) |||
