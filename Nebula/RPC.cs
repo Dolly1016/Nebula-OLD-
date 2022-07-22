@@ -66,6 +66,7 @@ namespace Nebula
         SniperSettleRifle,
         SniperShot,
         Morph,
+        MorphCancel,
         CreateSidekick,
         DisturberInvoke
     }
@@ -245,6 +246,9 @@ namespace Nebula
                     break;
                 case (byte)CustomRPC.Morph:
                     RPCEvents.Morph(reader.ReadByte(),reader.ReadByte());
+                    break;
+                case (byte)CustomRPC.MorphCancel:
+                    RPCEvents.MorphCancel(reader.ReadByte());
                     break;
                 case (byte)CustomRPC.CreateSidekick:
                     RPCEvents.CreateSidekick(reader.ReadByte(), reader.ReadByte());
@@ -1006,6 +1010,18 @@ namespace Nebula
             Events.LocalEvent.Activate(new Roles.ImpostorRoles.Morphing.MorphEvent(playerId,targetId));
         }
 
+        public static void MorphCancel(byte playerId)
+        {
+            Events.LocalEvent.Inactivate((Events.LocalEvent e) =>
+            {
+                if (e is Roles.ImpostorRoles.Morphing.MorphEvent)
+                {
+                    return ((Roles.ImpostorRoles.Morphing.MorphEvent)e).PlayerId == playerId;
+                }
+                return false;
+            });
+        }
+
         public static void CreateSidekick(byte playerId, byte jackalId)
         {
             if (Roles.NeutralRoles.Sidekick.SidekickTakeOverOriginalRoleOption.getBool())
@@ -1610,6 +1626,14 @@ namespace Nebula
             writer.Write(targetId);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.Morph(PlayerControl.LocalPlayer.PlayerId, targetId);
+        }
+
+        public static void MorphCancel()
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.MorphCancel, Hazel.SendOption.Reliable, -1);
+            writer.Write(PlayerControl.LocalPlayer.PlayerId);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.MorphCancel(PlayerControl.LocalPlayer.PlayerId);
         }
 
         public static void CreateSidekick(byte targetId,byte jackalId)

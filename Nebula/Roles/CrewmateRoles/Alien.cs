@@ -96,7 +96,8 @@ namespace Nebula.Roles.CrewmateRoles
                 KeyCode.F,
                 true,
                 emiDurationOption.getFloat(),
-                () => { emiButton.Timer = emiButton.MaxTimer; },false,
+                () => { emiButton.Timer = emiButton.MaxTimer; },
+                false,
                 "button.label.emi"
             );
             emiButton.MaxTimer = emiCoolDownOption.getFloat();

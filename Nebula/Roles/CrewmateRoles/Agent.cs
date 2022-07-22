@@ -63,9 +63,11 @@ namespace Nebula.Roles.CrewmateRoles
                 },
                 () => { agentButton.Timer = 0; },
                 getButtonSprite(),
-                new Vector3(-1.8f, -0.06f, 0),
+                new Vector3(-1.8f, 0, 0),
                 __instance,
-                KeyCode.F
+                KeyCode.F,
+                false,
+                "button.label.agent"
             );
             agentButton.MaxTimer = agentButton.Timer = 0;
 

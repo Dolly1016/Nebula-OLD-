@@ -165,9 +165,11 @@ namespace Nebula.Roles.CrewmateRoles
                 },
                 () => { sealButton.Timer = sealButton.MaxTimer; },
                 getSealButtonSprite(),
-                new Vector3(-1.8f, -0.06f, 0),
+                new Vector3(-1.8f, 0f, 0),
                 __instance,
-                KeyCode.F
+                KeyCode.F,
+                false,
+                "button.label.seal"
             );
             sealButton.Timer = sealButton.MaxTimer = sealCoolDownOption.getFloat();
 
@@ -195,7 +197,9 @@ namespace Nebula.Roles.CrewmateRoles
                 getRepairButtonSprite(),
                 new Vector3(0f, 1f, 0),
                 __instance,
-                KeyCode.F
+                KeyCode.F,
+                false,
+                "button.label.repair"
             );
             repairButton.MaxTimer = repairButton.Timer = 0;
         }

@@ -164,7 +164,9 @@ namespace Nebula.Roles.NeutralRoles
                     }
 
                     CheckIgnite();
-                }
+                },
+                false,
+                "button.label.douse"
             );
             arsonistButton.MaxTimer = douseCoolDownOption.getFloat();
             arsonistButton.EffectDuration = douseDurationOption.getFloat();

@@ -223,6 +223,7 @@ namespace Nebula
 
         public static void SetLook(this PlayerControl target, String playerName, int colorId, string hatId, string visorId, string skinId, string petId)
         {
+            target.MyPhysics.ResetAnimState();
             target.RawSetVisor(visorId);
             target.RawSetHat(hatId, colorId);
             target.RawSetSkin(skinId,colorId);

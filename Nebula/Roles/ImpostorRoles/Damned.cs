@@ -1,5 +1,4 @@
 ﻿using System;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,7 +21,7 @@ namespace Nebula.Roles.ImpostorRoles
             RelatedRoles.Add(Roles.Crewmate);
         }
 
-        public virtual bool IsSpawnable()
+        public override bool IsSpawnable()
         {
             return false;
         }

@@ -190,6 +190,8 @@ namespace Nebula.Patches
         {
             public static void Prefix(PlayerControl __instance, [HarmonyArgument(0)] GameData.PlayerInfo meetingTarget)
             {
+                if (meetingTarget == null) EmergencyPatch.meetingsCount++;
+
                 CustomOverlays.OnMeetingStart();
 
                 //票の重み設定をリセット

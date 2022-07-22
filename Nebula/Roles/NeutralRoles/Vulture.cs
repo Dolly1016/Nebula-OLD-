@@ -64,9 +64,11 @@ namespace Nebula.Roles.NeutralRoles
                 () => { return deadBodyId != Byte.MaxValue && PlayerControl.LocalPlayer.CanMove; },
                 () => { eatButton.Timer = eatButton.MaxTimer; },
                 getEatButtonSprite(),
-                new Vector3(-1.8f, -0.06f, 0),
+                new Vector3(-1.8f, 0, 0),
                 __instance,
-                KeyCode.F
+                KeyCode.F,
+                false,
+                "button.label.eat"
             );
             eatButton.MaxTimer = eatButton.Timer = eatCoolDownOption.getFloat();
         }

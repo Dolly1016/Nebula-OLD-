@@ -55,6 +55,19 @@ namespace Nebula.Events
             Events.Add(localEvent);
         }
 
+        static public void Inactivate(Predicate<LocalEvent> predicate)
+        {
+            Events.RemoveAll((e) =>
+            {
+                if (predicate(e))
+                {
+                    e.OnTerminal();
+                    return true;
+                }
+                return false;
+            });
+        }
+
         static public void Initialize()
         {
             Events.Clear();

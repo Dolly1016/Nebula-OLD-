@@ -111,14 +111,21 @@ namespace Nebula.Roles.ImpostorRoles
                     }
                     rifleCounter = 0f;
                     equipRifleFlag = !equipRifleFlag;
+                    
+                    sniperButton.SetLabel(equipRifleFlag? "button.label.unequip" : "button.label.equip");
                 },
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
                 () => { return PlayerControl.LocalPlayer.CanMove; },
-                () => { sniperButton.Timer = sniperButton.MaxTimer; },
+                () => { 
+                    sniperButton.Timer = sniperButton.MaxTimer;
+                    sniperButton.SetLabel("button.label.equip");
+                },
                 getSnipeButtonSprite(),
-                new Vector3(-1.8f, -0.06f, 0),
+                new Vector3(-1.8f, 0f, 0),
                 __instance,
-                KeyCode.F
+                KeyCode.F,
+                false,
+                "button.label.equip"
             );
             sniperButton.Timer = sniperButton.MaxTimer = 0f;
 

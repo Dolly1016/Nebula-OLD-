@@ -15,8 +15,9 @@ namespace Nebula.Roles.ImpostorRoles
     {
         public class MorphEvent : Events.LocalEvent
         {
-            private byte PlayerId, TargetId;
-            
+            public byte PlayerId { get; private set; }
+            public byte TargetId { get; private set; }
+
             public override void OnTerminal()
             {
                 if (Nebula.Events.GlobalEvent.GetAllowUpdateOutfit())
@@ -89,6 +90,7 @@ namespace Nebula.Roles.ImpostorRoles
                         morphId = Game.GameData.data.myData.currentTarget.PlayerId;
                         Game.GameData.data.myData.currentTarget = null;
                         morphButton.Sprite = getMorphButtonSprite();
+                        morphButton.SetLabel("button.label.morph");
                     }
                     else
                     {
@@ -101,17 +103,26 @@ namespace Nebula.Roles.ImpostorRoles
                     morphButton.Timer = morphButton.MaxTimer;
                     morphButton.isEffectActive = false;
                     morphButton.actionButton.cooldownTimerText.color = Palette.EnabledColor;
+                    RPCEventInvoker.MorphCancel();
                 },
                 getSampleButtonSprite(),
-                new Vector3(-1.8f, -0.06f, 0),
+                new Vector3(-1.8f, 0f, 0),
                 __instance,
                 KeyCode.F,
                 true,
                 morphDurationOption.getFloat(),
-                () => { morphButton.Timer = morphButton.MaxTimer; }
+                () => { morphButton.Timer = morphButton.MaxTimer; },
+                false,
+                "button.label.sample"
             );
             morphButton.MaxTimer = morphCoolDownOption.getFloat();
             morphButton.EffectDuration = morphDurationOption.getFloat();
+            morphButton.SetSuspendAction(()=> {
+                morphButton.Timer = morphButton.MaxTimer;
+                morphButton.isEffectActive = false;
+                morphButton.actionButton.cooldownTimerText.color = Palette.EnabledColor;
+                RPCEventInvoker.MorphCancel();
+            });
         }
 
         public override void ButtonActivate()
@@ -135,6 +146,7 @@ namespace Nebula.Roles.ImpostorRoles
         {
             morphId = Byte.MaxValue;
             morphButton.Sprite = getSampleButtonSprite();
+            morphButton.SetLabel(null);
         }
 
         public override void CleanUp()

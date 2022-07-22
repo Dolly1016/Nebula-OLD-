@@ -14,7 +14,7 @@ namespace Nebula.Patches
     public static class EmergencyPatch
     {
         static bool occurredSabotage = false, occurredKill = false, occurredReport = false;
-        static int meetingsCount = 0, maxMeetingsCount = 15;
+        public static int meetingsCount = 0, maxMeetingsCount = 15;
 
         static public int GetVotingTime(int defaultTime)
         {
