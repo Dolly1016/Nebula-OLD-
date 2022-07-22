@@ -33,6 +33,8 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.11.0.1 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.11.0.1,2022.6.21/Nebula_v1.11.0.1.zip)|
+| 1.11 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.11,2022.6.21/Nebula_v1.11.zip)|
 | 1.10.1 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.10.1,2022.6.21/Nebula_v1.10.1.zip)|
 | 1.10.0.2 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.10.0.2,2022.6.21/Nebula_v1.10.0.2.zip)|
 | 1.10.0.1 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.10.0.1,2022.6.21/Nebula_v1.10.0.1.zip)|
@@ -190,6 +192,15 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+  
+ **Version 1.11.0.1**
+ - 緊急会議の回数制限オプションが正常に機能していない問題を修正
+ 
+ **Version 1.11**
+ - 暫定的に Jailer を追加
+ - Morphingが任意のタイミングでモーフを解けるように
+ - 一部ボタンデザインをかつどんさんのものに刷新
+ - Morphやカモフラージュが解けた瞬間にスキンの動作がおかしくなる時がある問題を修正
  
  **Version 1.10.1**
  - Sniperが、周囲の不可視のプレイヤーの存在を知ることができるように
@@ -835,10 +846,10 @@ Sniperの弾の当たり判定やEmpiric,Alienなどの効果範囲を調べる�
 | [Evil Ace](#evil-ace) | [Mayor](#mayor) | [Sidekick](#sidekick) ||
 | [Evil Guesser](#guesser) | [Navvy](#navvy) | [Vulture](#vulture) ||
 | [Evil Trapper](#trapper) | [Necromancer](#necromancer) |||
-| [Morphing](#morphing) | [Nice Guesser](#guesser) |||
-| [Reaper](#reaper) | [Nice Trapper](#trapper) |||
-| [Sniper](#sniper) | [Oracle](#oracle) |||
-|| [Provocateur](#provocateur) |||
+| [Jailer](#jailer) | [Nice Guesser](#guesser) |||
+| [Morphing](#morphing) | [Nice Trapper](#trapper) |||
+| [Reaper](#reaper) | [Oracle](#oracle) |||
+| [Sniper](#sniper) | [Provocateur](#provocateur) |||
 || [Psychic](#psychic) |||
 || [Seer](#seer) |||
 || [Sheriff](#sheriff) |||
@@ -1037,6 +1048,22 @@ p5p5next : Damned
 | Kill Cool Down Multiplier | インポスター陣営が1人だけのときにクールダウンにかかる倍率 
 | Can Know Dead Non-Impostors Roles | 死んだプレイヤーの役職を知れるかどうか
 | Can Know Roles Only My Murders | 役職通知を自身がキルしたプレイヤーに限るかどうか
+
+-----------------------
+
+## Jailer
+ Jailerは遠隔でアドミンを見ることができるインポスターです。
+ アドミン使用中は動くことができません。
+ 
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| F | 遠隔アドミン
+
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+| Ignore Comms. Sabotage | コミュサボ中でも遠隔アドミンを使用できるかどうか
 
 -----------------------
 
