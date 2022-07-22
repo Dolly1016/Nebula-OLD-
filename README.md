@@ -841,10 +841,10 @@ Sniperの弾の当たり判定やEmpiric,Alienなどの効果範囲を調べる�
 | [Evil Ace](#evil-ace) | [Mayor](#mayor) | [Sidekick](#sidekick) ||
 | [Evil Guesser](#guesser) | [Navvy](#navvy) | [Vulture](#vulture) ||
 | [Evil Trapper](#trapper) | [Necromancer](#necromancer) |||
-| [Morphing](#morphing) | [Nice Guesser](#guesser) |||
-| [Reaper](#reaper) | [Nice Trapper](#trapper) |||
-| [Sniper](#sniper) | [Oracle](#oracle) |||
-|| [Provocateur](#provocateur) |||
+| [Jailer(#jailer) | [Nice Guesser](#guesser) |||
+| [Morphing](#morphing) | [Nice Trapper](#trapper) |||
+| [Reaper](#reaper) | [Oracle](#oracle) |||
+| [Sniper](#sniper) | [Provocateur](#provocateur) |||
 || [Psychic](#psychic) |||
 || [Seer](#seer) |||
 || [Sheriff](#sheriff) |||
@@ -1043,6 +1043,22 @@ p5p5next : Damned
 | Kill Cool Down Multiplier | インポスター陣営が1人だけのときにクールダウンにかかる倍率 
 | Can Know Dead Non-Impostors Roles | 死んだプレイヤーの役職を知れるかどうか
 | Can Know Roles Only My Murders | 役職通知を自身がキルしたプレイヤーに限るかどうか
+
+-----------------------
+
+## Jailer
+ Jailerは遠隔でアドミンを見ることができるインポスターです。
+ アドミン使用中は動くことができません。
+ 
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| F | 遠隔アドミン
+
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+| Ignore Comms. Sabotage | コミュサボ中でも遠隔アドミンを使用できるかどうか
 
 -----------------------
 
