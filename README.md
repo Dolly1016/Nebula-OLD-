@@ -33,6 +33,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.11.1 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.11.1,2022.6.21/Nebula_v1.11.1.zip)|
 | 1.11.0.2 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.11.0.2,2022.6.21/Nebula_v1.11.0.2.zip)|
 | 1.11.0.1 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.11.0.1,2022.6.21/Nebula_v1.11.0.1.zip)|
 | 1.11 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.11,2022.6.21/Nebula_v1.11.zip)|
@@ -194,6 +195,12 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 <details>
   <summary>クリックで展開</summary>
   
+ **Version 1.11.1**
+ - Necromancerの復活部屋候補からVentilationを除外
+ - ロビーでの処理を軽量化
+ - 設定項目をタブで細分化
+ - 設定項目のセーブデータの保存形式を変更
+ 
  **Version 1.11.0.2**
  - Impostor陣営が一人以下のとき、Spyが割り当てられないように
  - 開幕の役職開示画面でSpyが透けてしまっていた問題を修正
