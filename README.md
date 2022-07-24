@@ -33,6 +33,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.11.1.2 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.11.1.2,2022.6.21/Nebula_v1.11.1.2.zip)|
 | 1.11.1.1 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.11.1.1,2022.6.21/Nebula_v1.11.1.1.zip)|
 | 1.11.1 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.11.1,2022.6.21/Nebula_v1.11.1.zip)|
 | 1.11.0.2 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.11.0.2,2022.6.21/Nebula_v1.11.0.2.zip)|
@@ -196,6 +197,12 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 <details>
   <summary>クリックで展開</summary>
   
+ **Version 1.11.1.2**
+ - 「Can Be 〇〇」系の設定が隠れてしまっていた問題を修正
+ 
+ **Version 1.11.1.1**
+ - ロビーに一人しかいない場合の動作を修正
+ 
  **Version 1.11.1**
  - Necromancerの復活部屋候補からVentilationを除外
  - ロビーでの処理を軽量化
