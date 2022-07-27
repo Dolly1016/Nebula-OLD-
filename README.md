@@ -33,6 +33,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.11.2 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.11.2,2022.6.21/Nebula_v1.11.2.zip)|
 | 1.11.1.3 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.11.1.3,2022.6.21/Nebula_v1.11.1.3.zip)|
 | 1.11.1.2 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.11.1.2,2022.6.21/Nebula_v1.11.1.2.zip)|
 | 1.11.1.1 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.11.1.1,2022.6.21/Nebula_v1.11.1.1.zip)|
@@ -198,6 +199,10 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 <details>
   <summary>クリックで展開</summary>
   
+ **Version 1.11.2**
+ - 追加役職としてのMadmateを追加
+ - FreePlayでプレイヤーが一人の場合に限り、Dummyを使用できるように
+ 
  **Version 1.11.1.3**
  - ロビーで左側に表示される設定項目の表示に関する軽微な問題を修正
  
