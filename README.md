@@ -33,6 +33,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.12.0.1 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.0.1,2022.6.21/Nebula_v1.12.0.1.zip)|
 | 1.12 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12,2022.6.21/Nebula_v1.12.zip)|
 | 1.11.2 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.11.2,2022.6.21/Nebula_v1.11.2.zip)|
 | 1.11.1.3 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.11.1.3,2022.6.21/Nebula_v1.11.1.3.zip)|
@@ -200,6 +201,9 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 <details>
   <summary>クリックで展開</summary>
   
+ **Version 1.12.0.1**
+ - ロビーで左側に表示される設定項目に関する問題を再度修正
+ 
  **Version 1.12**
  - Raiderを追加
  - Mad BaitがImpostorにキルされたとき、通報が発生しないように
