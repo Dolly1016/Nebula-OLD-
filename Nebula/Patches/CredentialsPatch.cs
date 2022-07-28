@@ -93,9 +93,9 @@ namespace Nebula.Patches
                 }
 
                 var nebulaLogo = new GameObject("bannerLogo_Nebula");
-                nebulaLogo.transform.position = new Vector3(0f, 0.55f, 0f);
+                nebulaLogo.transform.position = new Vector3(0f, 0.4f, 0f);
                 var renderer = nebulaLogo.AddComponent<SpriteRenderer>();
-                renderer.sprite = Helpers.loadSpriteFromResources("Nebula.Resources.Logo.png", 340f);
+                renderer.sprite = Helpers.loadSpriteFromResources("Nebula.Resources.Logo.png", 115f);
                 
                 GameObject.Find("PlayOnlineButton").transform.position = new Vector3(1.025f, -1.5f, 0f);
                 GameObject.Find("PlayLocalButton").transform.position = new Vector3(-1.025f, -1.5f, 0f);

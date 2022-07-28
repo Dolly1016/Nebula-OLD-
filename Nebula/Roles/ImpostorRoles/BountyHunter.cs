@@ -38,6 +38,13 @@ namespace Nebula.Roles.ImpostorRoles
             bountyArrowUpdateIntervalOption.suffix = "second";
         }
 
+        public override void EditCoolDown(CoolDownType type, float count)
+        {
+            killButton.Timer -= count;
+            killButton.actionButton.ShowButtonText("+" + count + "s");
+        }
+
+
         /* ボタン */
         static private CustomButton killButton;
         public override void ButtonInitialize(HudManager __instance)

@@ -136,7 +136,9 @@ namespace Nebula.Roles.NeutralRoles
                 getInfectButtonSprite(),
                 new Vector3(-1.8f, -0.06f, 0),
                 __instance,
-                KeyCode.F
+                KeyCode.F,
+                false,
+                "button.label.infect"
             );
 
             infectButtonString = GameObject.Instantiate(infectButton.actionButton.cooldownTimerText, infectButton.actionButton.cooldownTimerText.transform.parent);

@@ -40,6 +40,7 @@ namespace Nebula.Roles
         public static ComplexRoles.Trapper EvilTrapper = new ComplexRoles.Trapper("EvilTrapper", "evilTrapper", true);
         public static ImpostorRoles.Jailer Jailer = new ImpostorRoles.Jailer();
         public static ImpostorRoles.Morphing Morphing = new ImpostorRoles.Morphing();
+        public static ImpostorRoles.Raider Raider = new ImpostorRoles.Raider();
         public static ImpostorRoles.Reaper Reaper = new ImpostorRoles.Reaper();
         public static ImpostorRoles.Sniper Sniper = new ImpostorRoles.Sniper();
 
@@ -71,6 +72,7 @@ namespace Nebula.Roles
 
         public static ComplexRoles.SecondaryGuesser SecondaryGuesser = new ComplexRoles.SecondaryGuesser();
         public static NeutralRoles.SecondarySidekick SecondarySidekick = new NeutralRoles.SecondarySidekick();
+        public static CrewmateRoles.SecondaryMadmate SecondaryMadmate = new CrewmateRoles.SecondaryMadmate();
         public static ExtraRoles.Drunk Drunk = new ExtraRoles.Drunk();
         public static ExtraRoles.Lover Lover = new ExtraRoles.Lover();
         public static ExtraRoles.Trilemma Trilemma = new ExtraRoles.Trilemma();
@@ -81,7 +83,7 @@ namespace Nebula.Roles
         //全てのロールはこの中に含まれている必要があります
         public static List<Role> AllRoles = new List<Role>()
         {
-            Impostor,BountyHunter,Camouflager,Cleaner,Damned,Disturber,Eraser,EvilAce,EvilGuesser,EvilTrapper,Jailer,Morphing,Reaper,Sniper,
+            Impostor,BountyHunter,Camouflager,Cleaner,Damned,Disturber,Eraser,EvilAce,EvilGuesser,EvilTrapper,Jailer,Morphing,Raider,Reaper,Sniper,
             F_Guesser,F_Trapper,
             Arsonist,Avenger,Empiric,Jackal,Jester,Opportunist,Sidekick,Vulture,
             F_Crewmate,
@@ -97,7 +99,7 @@ namespace Nebula.Roles
 
         public static List<ExtraRole> AllExtraRoles = new List<ExtraRole>()
         {
-            SecondaryGuesser,SecondarySidekick,
+            SecondaryGuesser,SecondarySidekick,SecondaryMadmate,
             Drunk,Lover,Trilemma,
             MetaRole,AvengerTarget
         };

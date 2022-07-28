@@ -11,7 +11,7 @@ namespace Nebula.Roles.MinigameRoles.Hunters
         {
             base.LoadOptionData();
 
-            TopOption.AddCustomPrerequisite(() => { return CustomOptionHolder.escapeHunterOption.getRawString() == "role." + LocalizeName + ".name"; });
+            TopOption.AddCustomPrerequisite(() => { return Module.CustomOption.CurrentGameMode == Module.CustomGameMode.FreePlay || CustomOptionHolder.escapeHunterOption.getRawString() == "role." + LocalizeName + ".name"; });
         }
 
         protected Hunter(string name, string localizeName, Color color, RoleCategory category,

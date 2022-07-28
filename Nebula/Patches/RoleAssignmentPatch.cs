@@ -79,10 +79,13 @@ namespace Nebula.Patches
                     {
                         continue;
                     }
+
                     if (role.IsHideRole || role.ExceptBasicOption)
                     {
                         continue;
                     }
+
+                    if (role.IsUnsuitable) continue;
 
                     //ロールの湧き数
                     int roleCount = role.FixedRoleCount ? role.GetCustomRoleCount() : (int)role.RoleCountOption.getFloat();

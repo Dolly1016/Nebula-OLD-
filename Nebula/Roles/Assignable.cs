@@ -8,6 +8,14 @@ using HarmonyLib;
 
 namespace Nebula.Roles
 {
+    [Flags]
+    public enum CoolDownType
+    {
+        ImpostorsKill = 0x01,
+        ImpostorsAbility = 0x02,
+        CrewmatesKill = 0x04,
+        CrewmatesAbility = 0x08,
+    }
     public class Assignable
     {
         public string Name { get; private set; }
@@ -32,6 +40,8 @@ namespace Nebula.Roles
         /// </summary>
         public bool ExceptBasicOption { get; protected set; }
 
+        public virtual bool IsUnsuitable { get { return false; } }
+
         private int OptionId { get; set; }
 
         private int OptionCapacity { get; set; }
@@ -44,18 +54,18 @@ namespace Nebula.Roles
         /*--------------------------------------------------------------------------------------*/
         /*--------------------------------------------------------------------------------------*/
 
-        public virtual void SetupRoleOptionData()
+        protected void SetupRoleOptionData(Module.CustomOptionTab tab)
         {
             if (ExceptBasicOption)
             {
-                TopOption = Module.CustomOption.Create(OptionAvailableId, Color, "role." + LocalizeName + ".name", new string[] { "option.empty" }, "option.empty", null, true);
+                TopOption = Module.CustomOption.Create(OptionAvailableId, Color, "role." + LocalizeName + ".name", new string[] { "option.empty" }, "option.empty", null, true, false, "", tab);
             }
             else
             {
-                RoleChanceOption = Module.CustomOption.Create(OptionAvailableId, Color, "role." + LocalizeName + ".name", CustomOptionHolder.rates, CustomOptionHolder.rates[0], null, true);
+                RoleChanceOption = Module.CustomOption.Create(OptionAvailableId, Color, "role." + LocalizeName + ".name", CustomOptionHolder.rates, CustomOptionHolder.rates[0], null, true,false,"",tab);
                 TopOption = RoleChanceOption;
             }
-            TopOption.GameMode = ValidGamemode;
+            TopOption.GameMode = ValidGamemode | Module.CustomGameMode.FreePlay;
 
             OptionId = OptionAvailableId + 1;
             OptionAvailableId += OptionCapacity;
@@ -63,9 +73,14 @@ namespace Nebula.Roles
             if (!FixedRoleCount && !ExceptBasicOption)
             {
                 RoleCountOption = Module.CustomOption.Create(OptionId, Color.white, "option.roleCount", 0f, 0f, 15f, 1f, TopOption, false).SetIdentifier("role." + LocalizeName + ".roleCount");
-                RoleCountOption.GameMode = ValidGamemode;
+                RoleCountOption.GameMode = ValidGamemode|Module.CustomGameMode.FreePlay;
                 OptionId++;
             }
+        }
+
+        public virtual void SetupRoleOptionData()
+        {
+            SetupRoleOptionData(Module.CustomOptionTab.None);
         }
 
         /// <summary>
@@ -83,9 +98,9 @@ namespace Nebula.Roles
             {
                 return null;
             }
-            Module.CustomOption option = new Module.CustomOption(OptionId, color, (isGeneral ? "" : "role." + this.LocalizeName + ".") + name, selections, defaultValue, TopOption, false, false, "");
-            option.GameMode = ValidGamemode;
-            
+            Module.CustomOption option = new Module.CustomOption(OptionId, color, (isGeneral ? "" : "role." + this.LocalizeName + ".") + name, selections, defaultValue, TopOption, false, false, "",Module.CustomOptionTab.None);
+            option.GameMode = ValidGamemode | Module.CustomGameMode.FreePlay;
+
             OptionId++;
             return option;
         }
@@ -201,6 +216,11 @@ namespace Nebula.Roles
         /// </summary>
         [RoleLocalMethod]
         public virtual void OnTaskComplete() { }
+
+        public virtual void EditCoolDown(CoolDownType type,float count)
+        {
+
+        }
         
         /*--------------------------------------------------------------------------------------*/
 
@@ -324,6 +344,32 @@ namespace Nebula.Roles
         public virtual void OnDied() { }
 
         /*--------------------------------------------------------------------------------------*/
+
+        //その役職をもつプレイヤーがクルー勝利に与するTaskを持っているかどうか調べます。
+        public virtual bool HasCrewmateTask(byte playerId)
+        {
+            return true;
+        }
+
+        //その役職をもつプレイヤーが実行可能Taskを持っているかどうか調べます。
+        public virtual bool HasExecutableFakeTask(byte playerId)
+        {
+            return false;
+        }
+
+        //その役職をもつプレイヤーがComm,停電サボをなおせるかどうか調べます。
+        public virtual bool CanFixSabotage(byte playerId)
+        {
+            return true;
+        }
+
+        /// <summary>
+        /// 役職の表示名を編集します。
+        /// </summary>
+        [RoleGlobalMethod]
+        public virtual void EditDisplayRoleName(ref string roleName)
+        {
+        }
 
         /// <summary>
         /// 名前の色を編集します。

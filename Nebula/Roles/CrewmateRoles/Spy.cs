@@ -53,6 +53,8 @@ namespace Nebula.Roles.CrewmateRoles
             RelatedRoles.Add(Roles.Provocateur);
         }
 
+        public override bool IsUnsuitable { get { return PlayerControl.GameOptions.NumImpostors <= 1 || PlayerControl.AllPlayerControls.Count < 7; } }
+
         public Spy()
                 : base("Spy", "spy", Palette.ImpostorRed, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                      Crewmate.crewmateSideSet, ImpostorRoles.Impostor.impostorSideSet, Crewmate.crewmateEndSet,

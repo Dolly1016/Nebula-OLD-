@@ -20,6 +20,7 @@ namespace Nebula.Roles.CrewmateRoles
 
         private Module.CustomOption maxVentsOption;
         private Module.CustomOption actOverOption;
+        private Module.CustomOption madmateKillCoolDownOption;
         public override void LoadOptionData()
         {
             base.LoadOptionData();
@@ -27,6 +28,10 @@ namespace Nebula.Roles.CrewmateRoles
             actOverOption = CreateOption(Color.white, "actOverTasks", 1f, 1f, 10f, 1f);
 
             maxVentsOption = CreateOption(Color.white, "maxVents", 3f, 0f, 20f, 1f);
+
+            madmateKillCoolDownOption = CreateOption(Color.white, "killCoolDownBonus", 5f, 2.5f, 20f, 2.5f).
+                AddCustomPrerequisite(() => { return CanBeMadmate && Roles.SecondaryMadmate.IsSpawnable(); });
+            madmateKillCoolDownOption.suffix = "second";
         }
 
         private Sprite buttonSprite = null;
@@ -121,6 +126,13 @@ namespace Nebula.Roles.CrewmateRoles
             base.IntroInitialize(__instance);
         }
 
+        public override void OnTaskComplete() {
+            if (!PlayerControl.LocalPlayer.IsMadmate()) return;
+
+            //Madmate設定 インポスターのキルクールを進める
+            RPCEventInvoker.EditCoolDown(CoolDownType.ImpostorsKill, madmateKillCoolDownOption.getFloat());
+        }
+
         public override void OnRoleRelationSetting()
         {
             RelatedRoles.Add(Roles.EvilGuesser);
@@ -138,6 +150,8 @@ namespace Nebula.Roles.CrewmateRoles
             remainingVentsDataId = Game.GameData.RegisterRoleDataId("agent.remainVents");
 
             VentColor = Palette.CrewmateBlue;
+
+            FakeTaskIsExecutable = true;
         }
     }
 }

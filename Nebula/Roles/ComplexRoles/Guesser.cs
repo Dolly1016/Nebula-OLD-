@@ -43,8 +43,12 @@ namespace Nebula.Roles.ComplexRoles
             return targetSprite;
         }
 
+        public override bool IsSecondaryGenerator { get { return secondoryRoleOption.getBool(); } }
+
         public override void LoadOptionData()
         {
+            TopOption.tab = Module.CustomOptionTab.CrewmateRoles | Module.CustomOptionTab.Modifiers;
+
             secondoryRoleOption = CreateOption(Color.white, "isSecondaryRole", false);
 
             base.LoadOptionData();
@@ -66,6 +70,11 @@ namespace Nebula.Roles.ComplexRoles
 
             FirstRole = Roles.NiceGuesser;
             SecondaryRole = Roles.EvilGuesser;
+
+            CanBeGuesserOption?.AddInvPrerequisite(secondoryRoleOption);
+            CanBeDrunkOption?.AddInvPrerequisite(secondoryRoleOption);
+            CanBeLoversOption?.AddInvPrerequisite(secondoryRoleOption);
+            CanBeMadmateOption?.AddInvPrerequisite(secondoryRoleOption);
         }
 
         public override void SpawnableTest(ref Dictionary<Role, int> DefinitiveRoles, ref HashSet<Role> SpawnableRoles)
@@ -174,7 +183,7 @@ namespace Nebula.Roles.ComplexRoles
                         RPCEventInvoker.UpdateExtraRoleData(PlayerControl.LocalPlayer.PlayerId, Roles.SecondaryGuesser.id, data);
 
                         if (Roles.F_Guesser.canShotSeveralTimesInTheSameMeeting.getBool() &&
-                        Game.GameData.data.myData.getGlobalData().GetExtraRoleData(Roles.SecondaryGuesser) > 1 && dyingTarget != PlayerControl.LocalPlayer)
+                        Game.GameData.data.myData.getGlobalData().GetExtraRoleData(Roles.SecondaryGuesser) >= 1 && dyingTarget != PlayerControl.LocalPlayer)
                             __instance.playerStates.ToList().ForEach(x => { if (x.TargetPlayerId == dyingTarget.PlayerId && x.transform.FindChild("ShootButton") != null) UnityEngine.Object.Destroy(x.transform.FindChild("ShootButton").gameObject); });
                         else
                             __instance.playerStates.ToList().ForEach(x => { if (x.transform.FindChild("ShootButton") != null) UnityEngine.Object.Destroy(x.transform.FindChild("ShootButton").gameObject); });
@@ -293,7 +302,7 @@ namespace Nebula.Roles.ComplexRoles
                 //割り当てられない場合終了
                 if (players.Count == 0) return;
 
-                if (chance < NebulaPlugin.rnd.Next(10)) continue;
+                if (chance <= NebulaPlugin.rnd.Next(10)) continue;
 
                 playerId = players[NebulaPlugin.rnd.Next(players.Count)];
                 assignMap.Assign(playerId, id, 0);
@@ -312,7 +321,7 @@ namespace Nebula.Roles.ComplexRoles
 
             foreach (PlayerControl player in PlayerControl.AllPlayerControls)
             {
-                if (!player.GetModData().role.CanBeGuesser) continue;
+                if (!player.GetModData()?.role.CanBeGuesser ?? true) continue;
 
                 switch (player.GetModData().role.category)
                 {

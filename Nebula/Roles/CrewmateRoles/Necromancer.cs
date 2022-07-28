@@ -175,6 +175,10 @@ namespace Nebula.Roles.CrewmateRoles
 
                     CleanArrow();
                     RPCEventInvoker.RevivePlayer(Helpers.playerById(PlayerControl.LocalPlayer.GetModData().dragPlayerId));
+                    if (PlayerControl.LocalPlayer.IsMadmate())
+                    {
+                        RPCEventInvoker.ImmediatelyChangeRole(Helpers.playerById(PlayerControl.LocalPlayer.GetModData().dragPlayerId), Roles.Madmate);
+                    }
                 },
                 false,
                 "button.label.revive",

@@ -9,6 +9,33 @@ using UnityEngine.UI;
 
 namespace Nebula.Objects
 {
+    public static class ButtonEffect
+    {
+        static public void ShowButtonText(this ActionButton button, string text)
+        {
+            TMPro.TextMeshPro textObj = GameObject.Instantiate(button.cooldownTimerText,button.cooldownTimerText.transform.parent);
+            textObj.color = Color.white;
+            textObj.transform.localScale = new Vector3(0.7f,0.7f);
+            textObj.text = text;
+            textObj.transform.localPosition = new Vector3(0.0f,0.55f);
+            textObj.gameObject.SetActive(true);
+            var vec = textObj.rectTransform.sizeDelta;
+            textObj.rectTransform.sizeDelta = new Vector2(vec.x*5.0f,vec.y);
+
+            HudManager.Instance.StartCoroutine(Effects.Lerp(2f, (Il2CppSystem.Action<float>)((p) => {
+                textObj.transform.localPosition += new Vector3(0.0f, Time.deltaTime * 0.16f);
+                if (p > 0.7f)
+                {
+                    textObj.color = Color.white.AlphaMultiplied(1f - (p - 0.7f) / 0.3f);
+                }
+                if (p == 1f)
+                {
+                    GameObject.Destroy(textObj);
+                }
+            })));
+        }
+    }
+
     public class CustomButton
     {
         public static List<CustomButton> buttons = new List<CustomButton>();

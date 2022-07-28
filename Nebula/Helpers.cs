@@ -469,8 +469,10 @@ namespace Nebula
             return arr;
         }
 
-        static public void RoleAction(Game.PlayerData player, System.Action<Roles.Assignable> action)
+        static public void RoleAction(Game.PlayerData? player, System.Action<Roles.Assignable> action)
         {
+            if (player == null) return;
+
             action.Invoke(player.role);
             foreach (Roles.ExtraRole role in player.extraRole)
             {
@@ -480,12 +482,19 @@ namespace Nebula
         }
         static public void RoleAction(byte playerId, System.Action<Roles.Assignable> action)
         {
-            Game.PlayerData data = Game.GameData.data.players[playerId];
-            action.Invoke(data.role);
-            foreach (Roles.ExtraRole role in data.extraRole)
+            Game.PlayerData data;
+            try
             {
-                action.Invoke(role);
+                data = Game.GameData.data.players[playerId];
+
+                action.Invoke(data.role);
+                foreach (Roles.ExtraRole role in data.extraRole)
+                {
+                    action.Invoke(role);
+                }
+
             }
+            catch(Exception e) { return; }
         }
 
         static public void RoleAction(PlayerControl player, System.Action<Roles.Assignable> action)
@@ -605,6 +614,27 @@ namespace Nebula
 
                 result = true;
                 break;
+            }
+            return result;
+        }
+
+        public static bool AnyNonTriggersBetween(Vector2 source, Vector2 dirNorm, float mag,int layerMask,out float distance)
+        {
+            int num = Physics2D.RaycastNonAlloc(source, dirNorm, PhysicsHelpers.castHits, mag, layerMask);
+            bool result = false;
+            distance = -1f;
+            for (int i = 0; i < num; i++)
+            {
+                if (!PhysicsHelpers.castHits[i].collider.isTrigger)
+                {
+                    result = true;
+
+                    float d = Helpers.Distance(source,PhysicsHelpers.castHits[i].point);
+                    if (d < distance || distance < -0.5f)
+                    {
+                        distance = d;
+                    }
+                }
             }
             return result;
         }

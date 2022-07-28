@@ -13,7 +13,7 @@ namespace Nebula.Roles.ExtraRoles
     {
         private Module.CustomOption maxPairsOption;
         public Module.CustomOption loversModeOption;
-        private Module.CustomOption chanceThatOneLoverIsImpostorOption;
+        public Module.CustomOption chanceThatOneLoverIsImpostorOption;
         private Module.CustomOption canChangeTrilemmaOption;
 
         private PlayerControl trilemmaTarget=null;
@@ -396,6 +396,11 @@ namespace Nebula.Roles.ExtraRoles
             if (maxPairsOption.getFloat() == 0f) return false;
 
             return base.IsSpawnable();
+        }
+
+        public override bool HasCrewmateTask(byte playerId)
+        {
+            return false;
         }
 
         public Lover() : base("Lover", "lover", iconColor[0],0)

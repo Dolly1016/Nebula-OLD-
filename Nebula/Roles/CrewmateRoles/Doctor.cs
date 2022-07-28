@@ -198,6 +198,7 @@ namespace Nebula.Roles.CrewmateRoles
                  Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Crewmate.crewmateEndSet,
                  false, VentPermission.CanNotUse, false, false, false)
         {
+            FakeTaskIsExecutable = true;
         }
     }
 }

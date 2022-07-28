@@ -172,6 +172,14 @@ namespace Nebula.Roles.Template
             }
         }
 
+        public override bool CanBeMadmate
+        {
+            get
+            {
+                return FRole.CanBeMadmate;
+            }
+        }
+
         public override bool IsSpawnable()
         {
             if (FRole.RoleChanceOption.getSelection() == 0) return false;

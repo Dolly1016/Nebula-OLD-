@@ -123,6 +123,9 @@ namespace Nebula
         public static CustomOption MeistersFilterOption;
         public static CustomOption MeistersFuelEnginesOption;
 
+        public static CustomOption SoloFreePlayOption;
+        public static CustomOption CountOfDummiesOption;
+
         public static CustomOption advanceRoleOptions;
 
         public static CustomOption exclusiveAssignmentParent;
@@ -154,27 +157,29 @@ namespace Nebula
 
         public static void Load()
         {
-            presetSelection = CustomOption.Create(1, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.preset", presets, presets[0], null, true).HiddenOnDisplay(true).SetGameMode(CustomGameMode.All).Protect();
-            gameMode = CustomOption.Create(2, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.gameMode", gamemodes, gamemodes[0], null, true).SetGameMode(CustomGameMode.All);
+            presetSelection = CustomOption.Create(1, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.preset", presets, presets[0], null, true,false,"",CustomOptionTab.Settings).HiddenOnDisplay(true).SetGameMode(CustomGameMode.All).Protect();
+            gameMode = CustomOption.Create(2, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.gameMode", gamemodes, gamemodes[0], null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.All);
 
-            crewmateRolesCountMin = CustomOption.Create(10001, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.minimumCrewmateRoles", 0f, 0f, 15f, 1f, null, true).HiddenOnDisplay(true);
-            crewmateRolesCountMax = CustomOption.Create(10002, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.maximumCrewmateRoles", 0f, 0f, 15f, 1f, null, false).HiddenOnDisplay(true);
-            neutralRolesCountMin = CustomOption.Create(10003, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.minimumNeutralRoles", 0f, 0f, 15f, 1f, null, false).HiddenOnDisplay(true);
-            neutralRolesCountMax = CustomOption.Create(10004, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.maximumNeutralRoles", 0f, 0f, 15f, 1f, null, false).HiddenOnDisplay(true);
-            impostorRolesCountMin = CustomOption.Create(10005, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.minimumImpostorRoles", 0f, 0f, 5f, 1f, null, false).HiddenOnDisplay(true);
-            impostorRolesCountMax = CustomOption.Create(10006, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.maximumImpostorRoles", 0f, 0f, 5f, 1f, null, false).HiddenOnDisplay(true);
+            crewmateRolesCountMin = CustomOption.Create(10001, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.minimumCrewmateRoles", 0f, 0f, 15f, 1f, null, true, false, "", CustomOptionTab.Settings | CustomOptionTab.CrewmateRoles).HiddenOnDisplay(true);
+            crewmateRolesCountMax = CustomOption.Create(10002, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.maximumCrewmateRoles", 0f, 0f, 15f, 1f, null, false, false, "", CustomOptionTab.Settings | CustomOptionTab.CrewmateRoles).HiddenOnDisplay(true);
+            neutralRolesCountMin = CustomOption.Create(10003, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.minimumNeutralRoles", 0f, 0f, 15f, 1f, null, false, false, "", CustomOptionTab.Settings | CustomOptionTab.NeutralRoles).HiddenOnDisplay(true);
+            neutralRolesCountMax = CustomOption.Create(10004, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.maximumNeutralRoles", 0f, 0f, 15f, 1f, null, false, false, "", CustomOptionTab.Settings | CustomOptionTab.NeutralRoles).HiddenOnDisplay(true);
+            impostorRolesCountMin = CustomOption.Create(10005, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.minimumImpostorRoles", 0f, 0f, 5f, 1f, null, false, false, "", CustomOptionTab.Settings | CustomOptionTab.ImpostorRoles).HiddenOnDisplay(true);
+            impostorRolesCountMax = CustomOption.Create(10006, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.maximumImpostorRoles", 0f, 0f, 5f, 1f, null, false, false, "", CustomOptionTab.Settings | CustomOptionTab.ImpostorRoles).HiddenOnDisplay(true);
 
+            SoloFreePlayOption = CustomOption.Create(10007, Color.white, "option.soloFreePlayOption", new string[] { "option.empty" }, "option.empty", null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.FreePlay).AddCustomPrerequisite(() => { return PlayerControl.AllPlayerControls.Count == 1; });
+            CountOfDummiesOption = CustomOption.Create(10008, Color.white, "option.countOfDummies", 0,0,14,1, SoloFreePlayOption).SetGameMode(CustomGameMode.All);
 
-            emergencyOptions = CustomOption.Create(10100, Color.white, "option.emergencyOptions", false, null, true).SetGameMode(~CustomGameMode.Minigame);
+            emergencyOptions = CustomOption.Create(10100, Color.white, "option.emergencyOptions", false, null, true,false,"", CustomOptionTab.Settings).SetGameMode(~CustomGameMode.Minigame);
             maxNumberOfMeetings = CustomOption.Create(10101, Color.white, "option.maxNumberOfMeetings", 10, 0, 15, 1, emergencyOptions).SetGameMode(~CustomGameMode.Minigame);
-            deathPenaltyForDiscussionTime = CustomOption.Create(10102, Color.white, "option.deathPenaltyForDiscussionTime", 5f, 0f, 30f, 5f, emergencyOptions).SetGameMode(~CustomGameMode.Minigame);
+            deathPenaltyForDiscussionTime = CustomOption.Create(10102, Color.white, "option.deathPenaltyForDiscussionTime", 5f, 0f, 30f, 1f, emergencyOptions).SetGameMode(~CustomGameMode.Minigame);
             deathPenaltyForDiscussionTime.suffix = "second";
             canUseEmergencyWithoutDeath = CustomOption.Create(10103, Color.white, "option.canUseEmergencyWithoutDeath", false, emergencyOptions).SetGameMode(~CustomGameMode.Minigame);
             canUseEmergencyWithoutSabotage = CustomOption.Create(10104, Color.white, "option.canUseEmergencyWithoutSabotage", false, emergencyOptions).SetGameMode(~CustomGameMode.Minigame);
             canUseEmergencyWithoutReport = CustomOption.Create(10105, Color.white, "option.canUseEmergencyWithoutReport", false, emergencyOptions).SetGameMode(~CustomGameMode.Minigame);
             severeEmergencyLock = CustomOption.Create(10109, Color.white, "option.severeEmergencyLock", false, emergencyOptions).SetGameMode(~CustomGameMode.Minigame);
 
-            mapOptions = CustomOption.Create(10120, Color.white, "option.mapOptions", false, null, true).SetGameMode(CustomGameMode.All);
+            mapOptions = CustomOption.Create(10120, Color.white, "option.mapOptions", false, null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.All);
             dynamicMap = CustomOption.Create(10121, Color.white, "option.playRandomMaps", false, mapOptions).SetGameMode(CustomGameMode.All);
             exceptSkeld = CustomOption.Create(10122, Color.white, "option.exceptSkeld", false, dynamicMap).SetGameMode(CustomGameMode.All);
             exceptMIRA = CustomOption.Create(10123, Color.white, "option.exceptMIRA", false, dynamicMap).SetGameMode(CustomGameMode.All);
@@ -186,13 +191,13 @@ namespace Nebula
             optimizedMaps = CustomOption.Create(10134, Color.white, "option.optimizedMaps", true, mapOptions).SetGameMode(CustomGameMode.All);
             invalidateSecondaryAdmin = CustomOption.Create(10135, Color.white, "option.invalidateSecondaryAdmin", true, mapOptions).SetGameMode(CustomGameMode.All);
 
-            limiterOptions = CustomOption.Create(10140, Color.white, "option.limitOptions", false, null, true).SetGameMode(CustomGameMode.All);
+            limiterOptions = CustomOption.Create(10140, Color.white, "option.limitOptions", false, null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.All);
             timeLimitOption = CustomOption.Create(10141, Color.white, "option.timeLimitOption", 20f, 1f, 80f, 1f, limiterOptions).SetGameMode(CustomGameMode.All);
             timeLimitSecondOption = CustomOption.Create(10142, Color.white, "option.timeLimitSecondOption", 0f, 0f, 55f, 5f, limiterOptions).SetGameMode(CustomGameMode.All);
             timeLimitOption.suffix = "minute";
             timeLimitSecondOption.suffix = "second";
 
-            DevicesOption = CustomOption.Create(10150, Color.white, "option.devicesOption", new string[] {"option.switch.off" , "option.devicesOption.perDiscussion" , "option.devicesOption.perGame"}, "option.switch.off",null,true).SetGameMode(CustomGameMode.All);
+            DevicesOption = CustomOption.Create(10150, Color.white, "option.devicesOption", new string[] {"option.switch.off" , "option.devicesOption.perDiscussion" , "option.devicesOption.perGame"}, "option.switch.off",null,true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.All);
             AdminLimitOption = CustomOption.Create(10151, Color.white, "option.devicesOption.Admin", 30f, 5f, 600f, 5f, DevicesOption).SetGameMode(CustomGameMode.All);
             AdminLimitOption.suffix = "second";
             VitalsLimitOption = CustomOption.Create(10152, Color.white, "option.devicesOption.Vitals", 30f, 5f, 600f, 5f, DevicesOption).SetGameMode(CustomGameMode.All);
@@ -200,7 +205,7 @@ namespace Nebula
             CameraAndDoorLogLimitOption = CustomOption.Create(10153, Color.white, "option.devicesOption.CameraAndDoorLog", 30f, 5f, 600f, 5f, DevicesOption).SetGameMode(CustomGameMode.All);
             CameraAndDoorLogLimitOption.suffix = "second";
 
-            TasksOption = CustomOption.Create(10160, Color.white, "option.tasksOption", false, null, true).SetGameMode(CustomGameMode.All);
+            TasksOption = CustomOption.Create(10160, Color.white, "option.tasksOption", false, null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.All);
             additionalWirings = CustomOption.Create(10161, Color.white, "option.additionalWirings", false, TasksOption).SetGameMode(CustomGameMode.All);
             RandomizedWiringOption = CustomOption.Create(10162, Color.white, "option.randomizedWiring", false, TasksOption).SetGameMode(CustomGameMode.All);
             StepsOfWiringOption = CustomOption.Create(10163, Color.white, "option.stepsOfWiring", 3f, 3f, 10f, 1f, TasksOption).SetGameMode(CustomGameMode.All);
@@ -208,7 +213,7 @@ namespace Nebula
             MeistersFilterOption = CustomOption.Create(10165, Color.white, "option.meistersO2Filter", false, TasksOption).SetGameMode(CustomGameMode.All);
             MeistersFuelEnginesOption = CustomOption.Create(10166, Color.white, "option.meistersFuelEngines", false, TasksOption).SetGameMode(CustomGameMode.All);
 
-            advanceRoleOptions = CustomOption.Create(10190, Color.white, "option.advanceRoleOptions", false, null, true).SetGameMode(CustomGameMode.Standard);
+            advanceRoleOptions = CustomOption.Create(10190, Color.white, "option.advanceRoleOptions", false, null, true, false, "", CustomOptionTab.Settings | CustomOptionTab.CrewmateRoles | CustomOptionTab.ImpostorRoles | CustomOptionTab.NeutralRoles | CustomOptionTab.Modifiers).SetGameMode(CustomGameMode.Standard);
 
             List<string> hunters = new List<string>();
             foreach(Roles.Role role in Roles.Roles.AllRoles)
@@ -216,13 +221,13 @@ namespace Nebula
                 if (role.ValidGamemode == CustomGameMode.Minigame && role.winReasons.Contains(Patches.EndCondition.MinigameHunterWin))
                     hunters.Add("role."+role.LocalizeName+".name");
             }
-            escapeHunterOption = CustomOption.Create(10191, Color.white, "option.escapeHunter", hunters.ToArray(), hunters[0], null, true).SetGameMode(CustomGameMode.Minigame);
+            escapeHunterOption = CustomOption.Create(10191, Color.white, "option.escapeHunter", hunters.ToArray(), hunters[0], null, true, false, "", CustomOptionTab.EscapeRoles).SetGameMode(CustomGameMode.Minigame);
 
             //ロールのオプションを読み込む
             Roles.Role.LoadAllOptionData();
             Roles.ExtraRole.LoadAllOptionData();
 
-            exclusiveAssignmentParent = CustomOption.Create(10200, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.exclusiveAssignment", false, null, true);
+            exclusiveAssignmentParent = CustomOption.Create(10200, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.exclusiveAssignment", false, null, true, false, "", CustomOptionTab.AdvancedSettings).SetGameMode(CustomGameMode.Standard | CustomGameMode.FreePlay);
             exclusiveAssignmentRoles = new List<Roles.Role>();
             foreach(Roles.Role role in Roles.Roles.AllRoles)
             {

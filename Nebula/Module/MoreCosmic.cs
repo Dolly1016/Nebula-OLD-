@@ -1397,6 +1397,8 @@ namespace Nebula.Module
     {
         public static void Postfix(CosmeticsLayer __instance)
         {
+            if (!__instance.visor) return;
+
             float a = __instance.visor.Image.color.a;
             PlayerMaterial.SetColors(__instance.bodyMatProperties.ColorId, __instance.visor.Image);
             __instance.SetVisorAlpha(a);

@@ -146,7 +146,7 @@ namespace Nebula.Roles.ImpostorRoles
         {
             morphId = Byte.MaxValue;
             morphButton.Sprite = getSampleButtonSprite();
-            morphButton.SetLabel(null);
+            morphButton.SetLabel("button.label.sample");
         }
 
         public override void CleanUp()

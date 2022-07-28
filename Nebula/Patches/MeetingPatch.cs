@@ -25,7 +25,10 @@ namespace Nebula.Patches
 
             static void Postfix(PlayerVoteArea __instance)
             {
-                __instance.transform.FindChild("PlayerLevel").gameObject.SetActive(false);
+                try
+                {
+                    __instance.transform.FindChild("PlayerLevel").gameObject.SetActive(false);
+                }catch(Exception e) { }
             }
         }
 
@@ -141,7 +144,7 @@ namespace Nebula.Patches
                 meetingInfoText.text = "";
                 meetingInfoText.gameObject.SetActive(false);
 
-                Helpers.RoleAction(PlayerControl.LocalPlayer, (role) =>
+                Helpers.RoleAction(Game.GameData.data.myData.getGlobalData(), (role) =>
                 {
                     role.MeetingUpdate(__instance,meetingInfoText);
                 });
@@ -167,6 +170,8 @@ namespace Nebula.Patches
 
                 foreach (PlayerVoteArea player in __instance.playerStates)
                 {
+                    if (VoteWeight.ContainsKey(player.TargetPlayerId) && VoteWeight[player.TargetPlayerId] == 0) continue;
+
                     if (!Voters.ContainsKey(player.VotedFor))
                     {
                         Voters[player.VotedFor] = new List<byte>();

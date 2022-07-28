@@ -71,8 +71,9 @@ namespace Nebula.Patches
     {
         static void Postfix(TuneRadioMinigame __instance)
         {
-            if (!PlayerControl.LocalPlayer.GetModData().role.canFixSabotage)
-                __instance.Close();
+            bool cannotFixSabotage = false;
+            Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId, (role) => { cannotFixSabotage |= !role.CanFixSabotage(PlayerControl.LocalPlayer.PlayerId); });
+            if (cannotFixSabotage) __instance.Close();
         }
     }
 
@@ -82,8 +83,9 @@ namespace Nebula.Patches
     {
         static void Postfix(SwitchMinigame __instance)
         {
-            if (!PlayerControl.LocalPlayer.GetModData().role.canFixSabotage)
-                __instance.Close();
+            bool cannotFixSabotage = false;
+            Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId, (role) => { cannotFixSabotage |= !role.CanFixSabotage(PlayerControl.LocalPlayer.PlayerId); });
+            if (cannotFixSabotage) __instance.Close();
         }
     }
 }

@@ -249,8 +249,9 @@ namespace Nebula.Patches
                         var (tasksCompleted, tasksTotal) = TasksHandler.taskInfo(p.Data);
                         string roleNames;
 
-                        if (Game.GameData.data.myData.CanSeeEveryoneInfo || p.GetModData().RoleInfo == "")
+                        if (Game.GameData.data.myData.CanSeeEveryoneInfo || p.GetModData().RoleInfo == "") {
                             roleNames = Helpers.cs(p.GetModData().role.Color, Language.Language.GetString("role." + p.GetModData().role.LocalizeName + ".name"));
+                            Helpers.RoleAction(p.PlayerId, (role) => { role.EditDisplayRoleName(ref roleNames); });}
                         else
                             //カモフラージュ中は表示しない
                             roleNames = p.GetModData().currentName.Length == 0 ? "" : p.GetModData().RoleInfo;
@@ -259,7 +260,12 @@ namespace Nebula.Patches
                         string taskInfo = "";
                         if (p == PlayerControl.LocalPlayer || Game.GameData.data.myData.CanSeeEveryoneInfo)
                         {
-                            if (p.GetModData().role.HasFakeTask)
+                            bool hasFakeTask = false;
+                            Helpers.RoleAction(p.PlayerId, (role) => {
+                                hasFakeTask |= !role.HasCrewmateTask(p.PlayerId);
+                            });
+
+                            if (hasFakeTask)
                                 taskInfo = tasksTotal > 0 ? $"<color=#868686FF>({completedStr}/{tasksTotal})</color>" : "";
                             else
                                 taskInfo = tasksTotal > 0 ? $"<color=#FAD934FF>({completedStr}/{tasksTotal})</color>" : "";

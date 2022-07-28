@@ -36,6 +36,15 @@ namespace Nebula.Roles.CrewmateRoles
                 return Roles.F_Crewmate.CanBeDrunk;
             }
         }
+
+        public override bool CanBeMadmate
+        {
+            get
+            {
+                return Roles.F_Crewmate.CanBeMadmate;
+            }
+        }
+
         public CrewmateWithoutTasks() : base(true)
         {
             HideInExclusiveAssignmentOption = true;

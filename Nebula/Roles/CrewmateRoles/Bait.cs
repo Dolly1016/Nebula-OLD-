@@ -32,6 +32,9 @@ namespace Nebula.Roles.CrewmateRoles
         {
             if (MeetingHud.Instance) return;
 
+            //Baitが発動しない場合
+            if (PlayerControl.LocalPlayer.IsMadmate() && PlayerControl.AllPlayerControls.get_Item(murderId).Data.Role.Role == RoleTypes.Impostor) return;
+            
             //少しの時差の後レポート
             Events.LocalEvent.Activate(new BaitEvent(murderId));
         }
@@ -42,6 +45,10 @@ namespace Nebula.Roles.CrewmateRoles
             if (!killerCanKnowBaitKillByFlash.getBool()) return;
             if (!Game.GameData.data.deadPlayers.ContainsKey(playerId)) return;
             if (Game.GameData.data.deadPlayers[playerId].MurderId != PlayerControl.LocalPlayer.PlayerId) return;
+
+            //Baitが発動しない場合
+            if (Helpers.playerById(playerId).IsMadmate() && PlayerControl.LocalPlayer.Data.Role.Role == RoleTypes.Impostor) return;
+
             Helpers.PlayQuickFlash(Color);
         }
 

@@ -33,6 +33,9 @@ namespace Nebula.Roles.CrewmateRoles
         //キルできる相手かどうか調べる
         private bool CanKill(PlayerControl target)
         {
+            //Madmateなら確定で自殺する
+            if (PlayerControl.LocalPlayer.IsMadmate()) return false;
+
             //個別に設定したい非クルー陣営
             if (target.GetModData().role == Roles.Opportunist && canKillOpportunistOption.getBool()) return true;
 

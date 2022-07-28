@@ -251,25 +251,49 @@ namespace Nebula.Patches
                             break;
                         }
                     }
-                }
 
-                if (CustomOptionHolder.dynamicMap.getBool()&&CustomOptionHolder.mapOptions.getBool())
-                {
-                    // 0 = Skeld
-                    // 1 = Mira HQ
-                    // 2 = Polus
-                    // 3 = Dleks - deactivated
-                    // 4 = Airship
-                    List<byte> possibleMaps = new List<byte>();
-                    if (!CustomOptionHolder.exceptSkeld.getBool()) possibleMaps.Add(0);
-                    if (!CustomOptionHolder.exceptMIRA.getBool()) possibleMaps.Add(1);
-                    if (!CustomOptionHolder.exceptPolus.getBool()) possibleMaps.Add(2);
-                    if (!CustomOptionHolder.exceptAirship.getBool()) possibleMaps.Add(4);
-                    
-                    //候補が無い場合はSkeldにする
-                    if (possibleMaps.Count == 0) possibleMaps.Add(0);
 
-                    RPCEventInvoker.SetRandomMap(possibleMaps[NebulaPlugin.rnd.Next(possibleMaps.Count)]);
+                    if (CustomOptionHolder.dynamicMap.getBool() && CustomOptionHolder.mapOptions.getBool())
+                    {
+                        // 0 = Skeld
+                        // 1 = Mira HQ
+                        // 2 = Polus
+                        // 3 = Dleks - deactivated
+                        // 4 = Airship
+                        List<byte> possibleMaps = new List<byte>();
+                        if (!CustomOptionHolder.exceptSkeld.getBool()) possibleMaps.Add(0);
+                        if (!CustomOptionHolder.exceptMIRA.getBool()) possibleMaps.Add(1);
+                        if (!CustomOptionHolder.exceptPolus.getBool()) possibleMaps.Add(2);
+                        if (!CustomOptionHolder.exceptAirship.getBool()) possibleMaps.Add(4);
+
+                        //候補が無い場合はSkeldにする
+                        if (possibleMaps.Count == 0) possibleMaps.Add(0);
+
+                        RPCEventInvoker.SetRandomMap(possibleMaps[NebulaPlugin.rnd.Next(possibleMaps.Count)]);
+                    }
+
+                    if (CustomOptionHolder.GetCustomGameMode() == Module.CustomGameMode.FreePlay)
+                    {
+                        if (PlayerControl.AllPlayerControls.Count == 1)
+                        {
+                            int num = (int)CustomOptionHolder.CountOfDummiesOption.getFloat();
+                            for (int n = 0; n < num; n++)
+                            {
+                                var playerControl = UnityEngine.Object.Instantiate(AmongUsClient.Instance.PlayerPrefab);
+                                var i = playerControl.PlayerId = (byte)GameData.Instance.GetAvailableId();
+
+                                GameData.Instance.AddPlayer(playerControl);
+                                AmongUsClient.Instance.Spawn(playerControl, -2, InnerNet.SpawnFlags.None);
+
+                                playerControl.transform.position = PlayerControl.LocalPlayer.transform.position;
+                                playerControl.GetComponent<DummyBehaviour>().enabled = false;
+                                playerControl.NetTransform.enabled = true;
+                                playerControl.SetName(Patches.RandomNamePatch.GetRandomName());
+                                playerControl.SetColor(i);
+                                GameData.Instance.RpcSetTasks(playerControl.PlayerId, new byte[0]);
+                            }
+                        }
+                    }
                 }
 
                 return continueStart;

@@ -34,15 +34,28 @@ namespace Nebula.Objects
             public static ObjectTypes.KillTrap KillTrap = new ObjectTypes.KillTrap(2, "KillTrap", "Nebula.Resources.KillTrap.png");
             public static ObjectTypes.InvisibleTrap CommTrap = new ObjectTypes.InvisibleTrap(3, "CommTrap", "Nebula.Resources.CommTrap.png");
             public static ObjectTypes.SniperRifle Rifle = new ObjectTypes.SniperRifle();
+            public static ObjectTypes.RaidAxe Axe = new ObjectTypes.RaidAxe();
             public static ObjectTypes.ElecPole ElecPole = new ObjectTypes.ElecPole();
             public static ObjectTypes.ElecPoleGuide ElecPoleGuide = new ObjectTypes.ElecPoleGuide();
+
+            protected bool isBack { get; set; }
+            protected bool isFront { get; set; }
 
             public byte Id { get; }
             public string ObjectName { get; }
 
-            public bool IsBack { get; set; }
-            public bool IsFront { get; set; }
+            public virtual bool IsBack(CustomObject? obj) { return isBack; }
+            public virtual bool IsFront(CustomObject? obj) { return isFront; }
             public bool CanSeeInShadow { get; set; }
+
+            protected void FixZPosition(CustomObject obj)
+            {
+                Vector3 position = obj.GameObject.transform.position;
+                Vector3 pos = new Vector3(position.x, position.y, 0f);
+                if (IsBack(obj)) obj.GameObject.transform.position += new Vector3(0, 0, position.y / 1000f + 0.001f);
+                else if (IsFront(obj)) obj.GameObject.transform.position += new Vector3(0, 0, position.y / 1000f - 1f);
+                obj.GameObject.transform.position = pos;
+            }
 
             public virtual void Update(CustomObject obj) { }
             public virtual void Update(CustomObject obj,int command) { }
@@ -53,8 +66,8 @@ namespace Nebula.Objects
                 Id = id;
                 this.ObjectName = objectName;
 
-                IsBack = isBack;
-                IsFront = false;
+                this.isBack = isBack;
+                isFront = false;
                 CanSeeInShadow = false;
 
                 AllTypes.Add(Id,this);
@@ -95,8 +108,8 @@ namespace Nebula.Objects
             OwnerId = ownerId;
 
             Vector3 pos = new Vector3(position.x, position.y, 0f);
-            if (type.IsBack) pos += new Vector3(0,0, position.y/1000f + 0.001f);
-            else if (type.IsFront) pos += new Vector3(0, 0, position.y / 1000f - 1f);
+            if (type.IsBack(null)) pos += new Vector3(0,0, position.y/1000f + 0.001f);
+            else if (type.IsFront(null)) pos += new Vector3(0, 0, position.y / 1000f - 1f);
             GameObject.transform.position = pos;
             Renderer = GameObject.AddComponent<SpriteRenderer>();
 

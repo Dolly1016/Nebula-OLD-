@@ -23,8 +23,13 @@ namespace Nebula.Patches
             }
 
             if (__instance.AllowImpostor) return true;
-            if (!Game.GameData.data.players[pc.PlayerId].role.HasFakeTask) return true;
-            if (Game.GameData.data.players[pc.PlayerId].role.HasFakeTask && Game.GameData.data.players[pc.PlayerId].role.FakeTaskIsExecutable) return true;
+
+            bool hasFakeTask = false, fakeTaskIsExecutable = false;
+            Helpers.RoleAction(pc.PlayerId, (role) => { 
+                hasFakeTask |= !role.HasCrewmateTask(pc.PlayerId);
+                fakeTaskIsExecutable |= role.HasExecutableFakeTask(pc.PlayerId);
+            });
+            if ((!hasFakeTask) || fakeTaskIsExecutable) return true;
             __result = float.MaxValue;
             
             return false;

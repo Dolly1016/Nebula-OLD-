@@ -57,7 +57,7 @@ namespace Nebula
         UndergroundAction,
         DeathGuage,
         UpdatePlayerVisibility,
-
+        EditCoolDown,
 
         // Role functionality
 
@@ -65,6 +65,8 @@ namespace Nebula
         MultipleVote,
         SniperSettleRifle,
         SniperShot,
+        RaiderSettleAxe,
+        RaiderThrow,
         Morph,
         MorphCancel,
         CreateSidekick,
@@ -81,7 +83,10 @@ namespace Nebula
             int length;
             switch (packetId)
             {
-
+                case 2:
+                    //標準の設定同期
+                    GameOptionsDataPatch.dirtyFlag = true;
+                    break;
                 case (byte)CustomRPC.ResetVaribles:
                     RPCEvents.ResetVaribles();
                     break;
@@ -231,6 +236,9 @@ namespace Nebula
                 case (byte)CustomRPC.DeathGuage:
                     RPCEvents.DeathGuage(reader.ReadByte(), reader.ReadByte(), reader.ReadSingle());
                     break;
+                case (byte)CustomRPC.EditCoolDown:
+                    RPCEvents.EditCoolDown((Roles.CoolDownType)reader.ReadByte(), reader.ReadSingle());
+                    break;
 
                 case (byte)CustomRPC.SealVent:
                     RPCEvents.SealVent(reader.ReadByte(), reader.ReadInt32());
@@ -243,6 +251,12 @@ namespace Nebula
                     break;
                 case (byte)CustomRPC.SniperShot:
                     RPCEvents.SniperShot(reader.ReadByte());
+                    break;
+                case (byte)CustomRPC.RaiderSettleAxe:
+                    RPCEvents.RaiderSettleAxe(reader.ReadByte());
+                    break;
+                case (byte)CustomRPC.RaiderThrow:
+                    RPCEvents.RaiderThrow(reader.ReadByte(), new Vector2(reader.ReadSingle(), reader.ReadSingle()), reader.ReadSingle());
                     break;
                 case (byte)CustomRPC.Morph:
                     RPCEvents.Morph(reader.ReadByte(),reader.ReadByte());
@@ -780,6 +794,7 @@ namespace Nebula
             {
               
             }
+            GameOptionsDataPatch.dirtyFlag = true;
         }
 
         public static void CleanDeadBody(byte deadBodyId)
@@ -924,6 +939,24 @@ namespace Nebula
             }
         }
 
+        public static void RaiderSettleAxe(byte playerId)
+        {
+            List<Objects.CustomObject> objList = new List<Objects.CustomObject>();
+            foreach (Objects.CustomObject obj in Objects.CustomObject.Objects.Values)
+            {
+                if (obj.OwnerId != playerId) continue;
+                if (obj.ObjectType != Objects.ObjectTypes.RaidAxe.Axe) continue;
+                if (obj.Data[0] != (int)Objects.ObjectTypes.RaidAxe.AxeState.Static) continue;
+
+                objList.Add(obj);
+            }
+
+            foreach (var obj in objList)
+            {
+                obj.Destroy();
+            }
+        }
+
         public static void UpdateRestrictTimer(byte device,float timer)
         {
             switch (device)
@@ -1000,6 +1033,26 @@ namespace Nebula
                     UnityEngine.Object.Destroy(arrow.arrow);
                 }
             })));
+        }
+
+        public static void RaiderThrow(byte murderId,Vector2 pos,float angle)
+        {
+            //Sniperを確定させる
+            Game.GameData.data.EstimationAI.Determine(Roles.Roles.Raider);
+
+            //Axeを投げ状態にする
+            foreach (Objects.CustomObject obj in Objects.CustomObject.Objects.Values)
+            {
+                if (obj.OwnerId != murderId) continue;
+                if (obj.ObjectType != Objects.ObjectTypes.RaidAxe.Axe) continue;
+
+                if (obj.Data[0] == (int)Objects.ObjectTypes.RaidAxe.AxeState.Static)
+                {
+                    Objects.ObjectTypes.RaidAxe.Axe.UpdateState(obj, Objects.ObjectTypes.RaidAxe.AxeState.Thrown);
+                    Objects.ObjectTypes.RaidAxe.Axe.SetAngle(obj, angle);
+                    obj.GameObject.transform.position = pos;
+                }
+            }
         }
 
         public static void Morph(byte playerId,byte targetId)
@@ -1102,6 +1155,14 @@ namespace Nebula
         public static void UpdatePlayerVisibility(byte player,bool flag)
         {
             Game.GameData.data.players[player].isInvisiblePlayer = !flag;
+        }
+
+        public static void EditCoolDown(Roles.CoolDownType coolDownType,float time)
+        {
+            Helpers.RoleAction(Game.GameData.data.myData.getGlobalData(),(role)=>
+            {
+                role.EditCoolDown(coolDownType,time);
+            });
         }
     }
 
@@ -1619,6 +1680,26 @@ namespace Nebula
             RPCEvents.SniperShot(PlayerControl.LocalPlayer.PlayerId);
         }
 
+        public static void RaiderSettleAxe()
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RaiderSettleAxe, Hazel.SendOption.Reliable, -1);
+            writer.Write(PlayerControl.LocalPlayer.PlayerId);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.RaiderSettleAxe(PlayerControl.LocalPlayer.PlayerId);
+        }
+
+        public static void RaiderThrow(Vector2 pos,float angle)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RaiderThrow, Hazel.SendOption.Reliable, -1);
+            writer.Write(PlayerControl.LocalPlayer.PlayerId);
+            writer.Write(pos.x);
+            writer.Write(pos.y);
+            writer.Write(angle);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+
+            RPCEvents.RaiderThrow(PlayerControl.LocalPlayer.PlayerId, pos, angle);
+        }
+
         public static void Morph(byte targetId)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Morph, Hazel.SendOption.Reliable, -1);
@@ -1680,6 +1761,15 @@ namespace Nebula
             messageWriter.Write(visibility);
             AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
             RPCEvents.UpdatePlayerVisibility(playerId,visibility);
+        }
+
+        public static void EditCoolDown(Roles.CoolDownType coolDownType,float time)
+        {
+            MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.EditCoolDown, Hazel.SendOption.Reliable, -1);
+            messageWriter.Write((byte)coolDownType);
+            messageWriter.Write(time);
+            AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+            RPCEvents.EditCoolDown(coolDownType, time);
         }
     }
 }

@@ -114,18 +114,22 @@ namespace Nebula.Patches
         public class FinalPlayer
         {
             public string name { get; private set; }
+            public string roleName { get; private set; }
+            public bool hasFakeTask { get; private set; }
+            public bool hasExecutableFakeTask { get; private set; }
             public string killer { get; private set; }
             public byte id { get; private set; }
-            public Roles.Role role { get; private set; }
             public int totalTasks { get; private set; }
             public int completedTasks { get; private set; }
             public Game.PlayerData.PlayerStatus status { get; set; }
 
-            public FinalPlayer(byte id,string name, Roles.Role role, Game.PlayerData.PlayerStatus status,int totalTasks, int completedTasks,string killer="")
+            public FinalPlayer(byte id,string name, string roleName,bool hasFakeTask,bool hasExecutableFakeTask, Game.PlayerData.PlayerStatus status,int totalTasks, int completedTasks,string killer="")
             {
                 this.id = id;
                 this.name = name;
-                this.role = role;
+                this.roleName = roleName;
+                this.hasFakeTask = hasFakeTask;
+                this.hasExecutableFakeTask = hasExecutableFakeTask;
                 this.totalTasks = totalTasks;
                 this.completedTasks = completedTasks;
                 this.status = status;
@@ -153,18 +157,30 @@ namespace Nebula.Patches
         {
             players = new List<FinalPlayer>();
 
-            string name;
+            string name,roleName;
+            bool hasFakeTask, hasExecutableFakeTask;
+
             foreach (Game.PlayerData player in Game.GameData.data.players.Values)
             {
                 //名前に表示を追加する
                 name = "";
-                Helpers.RoleAction(player.id, (role) => { role.EditDisplayNameForcely(player.id, ref name); });
+                roleName = Helpers.cs(player.role.Color, Language.Language.GetString("role." + player.role.LocalizeName + ".name"));
+                hasFakeTask = false;
+                hasExecutableFakeTask = false;
+
+                Helpers.RoleAction(player.id, (role) => { 
+                    role.EditDisplayNameForcely(player.id, ref name);
+                    role.EditDisplayRoleName(ref roleName);
+                    hasFakeTask |= !role.HasCrewmateTask(player.id);
+                    hasExecutableFakeTask |= role.HasExecutableFakeTask(player.id);
+                });
                 if (name.Equals(""))
                     name = player.name;
                 else
                     name = player.name + " " + name;
+
                 var finalPlayer= new FinalPlayer(player.id,name,
-                    player.role, player.Status, player.Tasks.Quota, player.Tasks.Completed);
+                    roleName,hasFakeTask,hasExecutableFakeTask, player.Status, player.Tasks.Quota, player.Tasks.Completed);
                 if (Game.GameData.data.deadPlayers.ContainsKey(player.id))
                 {
                     byte murder=Game.GameData.data.deadPlayers[player.id].MurderId;
@@ -313,12 +329,12 @@ namespace Nebula.Patches
             
             foreach (FinalPlayerData.FinalPlayer player in OnGameEndPatch.FinalData.players)
             {
-                var roles = string.Join(" ", Helpers.cs(player.role.Color, Language.Language.GetString("role." + player.role.LocalizeName + ".name")));
+                var roles = " " + player.roleName;
 
                 var status = string.Join(" ", Language.Language.GetString("status." + player.status.Status));
 
                 string tasks;
-                if (player.role.HasFakeTask)
+                if (player.hasFakeTask)
                     tasks = player.totalTasks > 0 ? $"<color=#868686FF>({player.completedTasks}/{player.totalTasks})</color>" : "";
                 else
                     tasks = player.totalTasks > 0 ? $"<color=#FAD934FF>({player.completedTasks}/{player.totalTasks})</color>" : "";

@@ -136,7 +136,7 @@ namespace Nebula.Roles.ImpostorRoles
             killButton = new CustomButton(
                 () =>
                 {
-                    PlayerControl target = GetShootPlayer(shotSizeOption.getFloat()*0.2f,shotEffectiveRangeOption.getFloat(), !canKillImpostorsOption.getBool());
+                    PlayerControl target = GetShootPlayer(shotSizeOption.getFloat()*0.4f,shotEffectiveRangeOption.getFloat(), !canKillImpostorsOption.getBool());
                     if (target!=null)
                     {
                         var res=Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, target, Game.PlayerData.PlayerStatus.Sniped, false, false);
@@ -150,6 +150,7 @@ namespace Nebula.Roles.ImpostorRoles
                     {
                         RPCEventInvoker.SniperSettleRifle();
                         equipRifleFlag = false;
+                        sniperButton.SetLabel("button.label.equip");
                     }
                 },
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
@@ -178,6 +179,12 @@ namespace Nebula.Roles.ImpostorRoles
         {
             sniperButton.setActive(false);
             killButton.setActive(false);
+        }
+
+        public override void EditCoolDown(CoolDownType type, float count)
+        {
+            killButton.Timer -= count;
+            killButton.actionButton.ShowButtonText("+" + count + "s");
         }
 
         public byte deadBodyId;

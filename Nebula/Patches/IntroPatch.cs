@@ -118,7 +118,10 @@ namespace Nebula.Patches
             {
                 Roles.Role role = Game.GameData.data.players[PlayerControl.LocalPlayer.PlayerId].role;
 
-                __instance.RoleText.text = Language.Language.GetString("role." + role.LocalizeName + ".name");
+                string roleNames = Language.Language.GetString("role." + role.LocalizeName + ".name");
+                Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId, (role) => { role.EditDisplayRoleName(ref roleNames); });
+
+                __instance.RoleText.text = roleNames;
                 __instance.RoleText.color = role.Color;
                 __instance.RoleBlurbText.text = Language.Language.GetString("role." + role.LocalizeName + ".description");
                 __instance.RoleBlurbText.color = role.Color;
@@ -214,6 +217,17 @@ namespace Nebula.Patches
             {
                 setupIntroTeamText(__instance, ref yourTeam);
             }
+        }
+    }
+
+    [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.CreatePlayer))]
+    class CreatePlayerPatch
+    {
+        public static void Postfix(IntroCutscene __instance,ref PoolablePlayer __result, ref int i,ref int maxDepth, ref GameData.PlayerInfo pData, ref bool impostorPositioning)
+        {
+            if (!impostorPositioning) return;
+
+            __result.SetNameColor(Palette.ImpostorRed);
         }
     }
 

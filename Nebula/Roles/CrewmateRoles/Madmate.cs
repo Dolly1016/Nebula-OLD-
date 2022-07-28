@@ -16,28 +16,34 @@ namespace Nebula.Roles.CrewmateRoles
         
 
         private Module.CustomOption CanUseVentsOption;
-        private Module.CustomOption CanFixSabotageOption;
+        public Module.CustomOption CanFixSabotageOption;
         private Module.CustomOption HasImpostorVisionOption;
         private Module.CustomOption CanInvokeSabotageOption;
         private Module.CustomOption CanKnowImpostorsByTasksOption;
         private Module.CustomOption NumOfMaxImpostorsCanKnowOption;
         private Module.CustomOption[] NumOfTasksRequiredToKnowImpostorsOption;
+        public Module.CustomOption SecondoryRoleOption;
 
         //Local
         private int completedTasks=0;
         private HashSet<byte> knownImpostors=new HashSet<byte>();
 
+        public override bool IsSecondaryGenerator { get { return SecondoryRoleOption.getBool(); } }
         public override void LoadOptionData()
         {
             base.LoadOptionData();
 
-            CanUseVentsOption = CreateOption(Color.white, "canUseVents", true);
-            CanInvokeSabotageOption = CreateOption(Color.white, "canInvokeSabotage", true);
+            TopOption.tab = Module.CustomOptionTab.CrewmateRoles | Module.CustomOptionTab.Modifiers;
+
+            SecondoryRoleOption = CreateOption(Color.white, "isSecondaryRole", false);
+
+            CanUseVentsOption = CreateOption(Color.white, "canUseVents", true).AddInvPrerequisite(SecondoryRoleOption);
+            CanInvokeSabotageOption = CreateOption(Color.white, "canInvokeSabotage", true).AddInvPrerequisite(SecondoryRoleOption);
             CanFixSabotageOption = CreateOption(Color.white, "canFixLightsAndComms", true);
 
-            HasImpostorVisionOption = CreateOption(Color.white, "hasImpostorVision", false);
+            HasImpostorVisionOption = CreateOption(Color.white, "hasImpostorVision", false).AddInvPrerequisite(SecondoryRoleOption);
 
-            CanKnowImpostorsByTasksOption = CreateOption(Color.white, "canKnowImpostorsByTasks", true);
+            CanKnowImpostorsByTasksOption = CreateOption(Color.white, "canKnowImpostorsByTasks", true).AddInvPrerequisite(SecondoryRoleOption);
             NumOfMaxImpostorsCanKnowOption = CreateOption(Color.white, "numOfMaxImpostorsCanKnow", 1f,1f,5f,1f).AddPrerequisite(CanKnowImpostorsByTasksOption);
             NumOfTasksRequiredToKnowImpostorsOption = new Module.CustomOption[5];
             for (int i = 0; i < 5; i++)
@@ -48,6 +54,11 @@ namespace Nebula.Roles.CrewmateRoles
                     .AddPrerequisite(CanKnowImpostorsByTasksOption)
                     .AddCustomPrerequisite(() => { return ((int)NumOfMaxImpostorsCanKnowOption.getFloat()) >= index + 1; });
             }
+
+            CanBeGuesserOption?.AddInvPrerequisite(SecondoryRoleOption);
+            CanBeDrunkOption?.AddInvPrerequisite(SecondoryRoleOption);
+            CanBeLoversOption?.AddInvPrerequisite(SecondoryRoleOption);
+            CanBeMadmateOption?.AddInvPrerequisite(SecondoryRoleOption);
         }
 
         //適切なタイミングでインポスターを発見する
@@ -113,6 +124,8 @@ namespace Nebula.Roles.CrewmateRoles
             UseImpostorLightRadius = HasImpostorVisionOption.getBool();
         }
 
+        public override bool IsUnsuitable { get { return SecondoryRoleOption.getBool(); } }
+
         public Madmate()
                 : base("Madmate", "madmate", Palette.ImpostorRed, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                      Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, ImpostorRoles.Impostor.impostorEndSet,
@@ -120,6 +133,106 @@ namespace Nebula.Roles.CrewmateRoles
         {
             FakeTaskIsExecutable = true;
             UseExemptTasksOption = false;
+        }
+    }
+
+    public class SecondaryMadmate : ExtraRole
+    {
+        //インポスターはModで操作するFakeTaskは所持していない
+        public SecondaryMadmate()
+                : base("Madmate", "madmate", Palette.ImpostorRed, 0)
+        {
+            IsHideRole = true;
+        }
+
+        private void _sub_Assignment(Patches.AssignMap assignMap, List<byte> players, int count)
+        {
+            int chance = Roles.Madmate.RoleChanceOption.getSelection();
+
+            byte playerId;
+            for (int i = 0; i < count; i++)
+            {
+                //割り当てられない場合終了
+                if (players.Count == 0) return;
+
+                if (chance <= NebulaPlugin.rnd.Next(10)) continue;
+
+                playerId = players[NebulaPlugin.rnd.Next(players.Count)];
+                assignMap.Assign(playerId, id, 0);
+                players.Remove(playerId);
+            }
+        }
+
+        public override void Assignment(Patches.AssignMap assignMap)
+        {
+            if (!Roles.Madmate.SecondoryRoleOption.getBool()) return;
+
+            List<byte> crewmates = new List<byte>();
+
+            foreach (PlayerControl player in PlayerControl.AllPlayerControls)
+            {
+                if (!player.GetModData()?.role.CanBeMadmate ?? true) continue;
+
+                switch (player.GetModData()?.role.category)
+                {
+                    case RoleCategory.Crewmate:
+                        crewmates.Add(player.PlayerId);
+                        break;
+                }
+            }
+
+            _sub_Assignment(assignMap, crewmates, (int)Roles.Madmate.RoleCountOption.getFloat());
+        }
+
+
+        public override void EditDisplayRoleName(ref string displayName)
+        {
+            displayName = Helpers.cs(Palette.ImpostorRed, Language.Language.GetString("role.madmate.secondaryPrefix")) + displayName;
+        }
+
+        /// <summary>
+        /// この役職が発生しうるかどうか調べます
+        /// </summary>
+        public override bool IsSpawnable()
+        {
+            if (!Roles.Madmate.SecondoryRoleOption.getBool()) return false;
+            if (Roles.Madmate.RoleChanceOption.getSelection() == 0) return false;
+
+            return true;
+        }
+
+        public override void GlobalInitialize(PlayerControl __instance)
+        {
+            Roles.Madmate.canFixSabotage = Roles.Madmate.CanFixSabotageOption.getBool();
+        }
+
+        public override bool HasCrewmateTask(byte playerId)
+        {
+            return false;
+        }
+
+        public override bool CanFixSabotage(byte playerId)
+        {
+            return Roles.Madmate.canFixSabotage;
+        }
+
+        public override bool CheckAdditionalWin(PlayerControl player, Patches.EndCondition condition)
+        {
+            return Roles.Impostor.winReasons.Contains(condition);
+        }
+    }
+
+
+    public static class MadmateHelper
+    {
+        static public bool IsMadmate(this PlayerControl player)
+        {
+            return player.GetModData()?.HasExtraRole(Roles.SecondaryMadmate) ?? false;
+        }
+
+        static public bool IsMadmate(this Game.PlayerData player)
+        {
+            return player.HasExtraRole(Roles.SecondaryMadmate);
         }
     }
 }

@@ -113,6 +113,11 @@ namespace Nebula.Roles.ExtraRoles
             return condition == EndCondition.TrilemmaWin;
         }
 
+        public override bool HasCrewmateTask(byte playerId)
+        {
+            return false;
+        }
+
         public Trilemma() : base("Trilemma", "trilemma", Lover.iconColor[0], 0)
         {
             ExceptBasicOption = true;

@@ -6,9 +6,9 @@ namespace Nebula.Objects.ObjectTypes
 {
     public class ElecPole : TypeWithImage
     {
-        public ElecPole() : base(5, "ElecPole", "Nebula.Resources.ElecPole.png", false)
+        public ElecPole() : base(6, "ElecPole", "Nebula.Resources.ElecPole.png", false)
         {
-            IsBack = IsFront = false;
+            isBack = isFront = false;
             CanSeeInShadow = true;
         }
 
@@ -20,10 +20,10 @@ namespace Nebula.Objects.ObjectTypes
 
     public class ElecPoleGuide : TypeWithImage
     {
-        public ElecPoleGuide() : base(6, "ElecPoleGuide", "Nebula.Resources.ElecPole.png", false)
+        public ElecPoleGuide() : base(7, "ElecPoleGuide", "Nebula.Resources.ElecPole.png", false)
         {
-            IsBack = false;
-            IsFront = true;
+            isBack = false;
+            isFront = true;
             CanSeeInShadow = true;
         }
 

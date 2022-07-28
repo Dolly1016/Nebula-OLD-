@@ -65,6 +65,9 @@
 "option.minimumImpostorRoles" : "Minimum Impostor Roles"
 "option.maximumImpostorRoles" : "Maximum Impostor Roles"
 
+"option.soloFreePlayOption" : "Solo FreePlay Option"
+"option.countOfDummies" : "Count Of Dummies"
+
 "option.emergencyOptions" : "Emergency Option"
 "option.maxNumberOfMeetings" : "Max Number Of Meetings"
 "option.deathPenaltyForDiscussionTime" : "Death Penalty For Voting Time"
@@ -122,6 +125,7 @@
 "option.canBeLovers" : "Can Be Lovers"
 "option.canBeGuesser" : "Can Be Guesser"
 "option.canBeDrunk" : "Can Be Drunk"
+"option.canBeMadmate" : "Can Be Madmate"
 
 "option.suffix.cross" : "x"
 "option.suffix.second" : "s"
@@ -167,6 +171,7 @@
 "role.agent.exemptTasks" : "Exempt Tasks"
 "role.agent.actOverTasks" : "Act Over Tasks"
 "role.agent.maxVents" : "Max Use Of Vents"
+"role.agent.killCoolDownBonus" : "Kill Cool Down Bonus"
 
 "role.alien.name" : "Alien"
 "role.alien.description" : "Mediate The Ship"
@@ -339,8 +344,10 @@
 "role.spy.ventDuration" : "Vent Duration"
 
 "role.madmate.name" : "Madmate"
+"role.madmate.secondaryPrefix" : "Mad "
 "role.madmate.description" : "Assist the <color=#ff1919ff>Impostors</color>"
 "role.madmate.info" : "Your winning condition equals that of impostors.\nBut you are counted as a crewmate.\n\n - V : Use vents"
+"role.madmate.isSecondaryRole" : "Is Secondary Role"
 "role.madmate.canUseVents" : "Can Use Vents"
 "role.madmate.hasImpostorVision" : "Has Impostor Vision"
 "role.madmate.canInvokeSabotage" : "Can Invoke Sabotage"
@@ -414,7 +421,7 @@
 
 "role.evilTrapper.name" : "Evil Trapper"
 "role.evilTrapper.description" : "Entrap and Kill Crewmates"
-"role.evilTrapper.info" : "You can place some traps.\nKinds of traps can change.\n\n - F : Place trap\n\n - LShift : Change kind of trap"
+"role.evilTrapper.info" : "You can place some traps.\nKinds of traps can change.\n\n - F : Place trap\n - LShift : Change kind of trap"
 
 "role.jailer.name" : "Jailer"
 "role.jailer.info" : "You can use admin anywhere.\n\n - F : Use admin"
@@ -427,6 +434,14 @@
 "role.morphing.morphCoolDown" : "Morph Cool Down"
 "role.morphing.morphDuration" : "Morph Duration"
 
+"role.raider.name" : "Raider"
+"role.raider.info" : "You can throw axes instead of killing.\nThrown axe murder players who hit the axe. \n\n - F : Equip/unequip an axe\n - Q or Click(near by your player) : Throw the axe"
+"role.raider.description" : "Run Rampage"
+"role.raider.throwCoolDown" : "Throw Cool Down"
+"role.raider.axeSize" : "Axe Size"
+"role.raider.axeSpeed" : "Axe Speed"
+"role.raider.canKillImpostors" : "Can Kill Impostors"
+
 "role.reaper.name" : "Reaper"
 "role.reaper.info" : "You can drag dead bodies, and all vents connect each other.\n\n - F : Drag and drop dead bodies"
 "role.reaper.description" : "Kill and Deceive the Crewmates"
@@ -435,7 +450,7 @@
 
 "role.sniper.name" : "Sniper"
 "role.sniper.description" : "Snipe and Shoot"
-"role.sniper.info" : "You can snipe crewmates with sniper rifle.\nBut you cannot kill by standard way.\n\n - F : Hold or hide the rifle\n\n - Q or Click(near by your player) : Kill with rifle"
+"role.sniper.info" : "You can snipe crewmates with sniper rifle.\nBut you cannot kill by standard way.\n\n - F : Hold or hide the rifle\n - Q or Click(near by your player) : Kill with rifle"
 "role.sniper.snipeCoolDown" : "Snipe Cool Down"
 "role.sniper.shotSize" : "Shot Size"
 "role.sniper.shotEffectiveRange" : "Shot Effective Range"
@@ -541,9 +556,9 @@
 "role.avenger.killCoolDown" : "Kill Cool Down"
 "role.avenger.murderCanKnowAvenger" : "Murder Can Know Avenger"
 "role.avenger.canKnowExistenceOfAvenger" : "Can Know Existence Of Avenger"
-"role.avenger.showFlashForMurderer" : "Show Flash For Murderer"
 "role.avenger.canKnowExistenceOfAvenger.everyone" : "Everyone"
 "role.avenger.canKnowExistenceOfAvenger.onlyKiller" : "Only Killer"
+"role.avenger.showFlashForMurderer" : "Show Flash For Murderer"
 "role.avenger.avengerNoticeIntervalOption" : "Notice Interval For Avenger"
 "role.avenger.murderNoticeIntervalOption" : "Notice Interval For Murder"
 "role.avenger.canTakeOverSabotageWin" : "Can Take Over Sabotage Win"
@@ -651,6 +666,7 @@
 "status.misguessed" : "Misguessed"
 "status.trapped" : "Trapped"
 "status.sniped" : "Sniped"
+"status.beaten" : "Beaten"
 "status.cursed" : "Cursed"
 "status.arrested" : "Arrested"
 "status.punished" : "Punished"
@@ -679,6 +695,7 @@
 "button.label.hadar.hide" : "lurk"
 "button.label.hadar.appear" : "raid"
 "button.label.ignite" : "ignite"
+"button.label.infect" : "infect"
 "button.label.involve" : "involve"
 "button.label.morph" : "morph"
 "button.label.oracle" : "oracle"
@@ -690,5 +707,6 @@
 "button.label.search" : "search"
 "button.label.sidekick" : "sidekick"
 "button.label.snipe" : "snipe"
+"button.label.throw" : "throw"
 "button.label.unequip" : "unequip"
 "button.label.vital" : "vitals"

@@ -10,7 +10,7 @@ namespace Nebula.Roles
     public class ExtraRole : Assignable
     {
         public byte id { get; private set; }
-  
+
         //使用済みロールID
         static private byte maxId = 0;
 
@@ -32,7 +32,7 @@ namespace Nebula.Roles
         [RoleGlobalMethod]
         public virtual void OnUnset(byte playerId) { }
 
-        protected ExtraRole(string name, string localizeName, Color color,byte assignmentPriority) :
+        protected ExtraRole(string name, string localizeName, Color color, byte assignmentPriority) :
             base(name, localizeName, color)
         {
             this.id = maxId;
@@ -66,7 +66,7 @@ namespace Nebula.Roles
         /// ExtraRoleを割り振ります。割り振りアルゴリズムは各ロールに委ねられています。
         /// </summary>
         /// <param name="gameData"></param>
-        public virtual void Assignment(Patches.AssignMap assignMap){}
+        public virtual void Assignment(Patches.AssignMap assignMap) { }
 
         /// <summary>
         /// ロールを設定します。
@@ -74,7 +74,8 @@ namespace Nebula.Roles
         /// <param name="player"></param>
         /// <param name="initializeValue"></param>
         [RoleGlobalMethod]
-        public virtual void Setup(Game.PlayerData player) {
+        public virtual void Setup(Game.PlayerData player)
+        {
         }
 
         /// <summary>
@@ -85,6 +86,11 @@ namespace Nebula.Roles
         [RoleLocalMethod]
         public virtual void EditDescriptionString(ref string desctiption)
         {
+        }
+
+        sealed public override void SetupRoleOptionData()
+        {
+            SetupRoleOptionData(Module.CustomOptionTab.Modifiers);
         }
     }
 }

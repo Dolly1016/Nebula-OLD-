@@ -17,6 +17,7 @@ namespace Nebula.Objects.ObjectTypes
             var player = Game.GameData.data.players[obj.OwnerId];
             var targetPosition = Helpers.playerById(obj.OwnerId).transform.position + new Vector3(0.8f * (float)Math.Cos(player.MouseAngle), 0.8f * (float)Math.Sin(player.MouseAngle));
             obj.GameObject.transform.position += (targetPosition - obj.GameObject.transform.position) * 0.4f;
+            FixZPosition(obj);
             obj.Renderer.transform.eulerAngles = new Vector3(0f, 0f, (float)(player.MouseAngle * 360f / Math.PI / 2f));
             if (Math.Cos(player.MouseAngle) < 0.0)
             {

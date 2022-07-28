@@ -111,6 +111,8 @@ namespace Nebula.Game
                 SystemTypes? nearest = null;
                 foreach (var room in Game.GameData.data.Rooms)
                 {
+                    if (room == SystemTypes.Ventilation) continue;
+
                     float d = ShipStatus.Instance.FastRooms.get_Item(room).roomArea.Distance(Helpers.allPlayersById()[playerData.id].Collider).distance;
                     if (d > 0.2f)
                     {
@@ -499,6 +501,7 @@ namespace Nebula.Game
             public static PlayerStatus Misguessed = new PlayerStatus("misguessed");
             public static PlayerStatus Trapped = new PlayerStatus("trapped");
             public static PlayerStatus Sniped = new PlayerStatus("sniped");
+            public static PlayerStatus Beaten = new PlayerStatus("beaten");
             public static PlayerStatus Arrested = new PlayerStatus("arrested");
             public static PlayerStatus Punished = new PlayerStatus("punished");
             public static PlayerStatus Misfire = new PlayerStatus("misfire");
