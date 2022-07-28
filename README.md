@@ -33,6 +33,14 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.12.0.1 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.0.1,2022.6.21/Nebula_v1.12.0.1.zip)|
+| 1.12 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12,2022.6.21/Nebula_v1.12.zip)|
+| 1.11.2 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.11.2,2022.6.21/Nebula_v1.11.2.zip)|
+| 1.11.1.3 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.11.1.3,2022.6.21/Nebula_v1.11.1.3.zip)|
+| 1.11.1.2 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.11.1.2,2022.6.21/Nebula_v1.11.1.2.zip)|
+| 1.11.1.1 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.11.1.1,2022.6.21/Nebula_v1.11.1.1.zip)|
+| 1.11.1 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.11.1,2022.6.21/Nebula_v1.11.1.zip)|
+| 1.11.0.2 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.11.0.2,2022.6.21/Nebula_v1.11.0.2.zip)|
 | 1.11.0.1 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.11.0.1,2022.6.21/Nebula_v1.11.0.1.zip)|
 | 1.11 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.11,2022.6.21/Nebula_v1.11.zip)|
 | 1.10.1 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.10.1,2022.6.21/Nebula_v1.10.1.zip)|
@@ -181,10 +189,10 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 
 | Language | Translator | Full Support Version | Download |
 | --- | --- | --- | --- |
-| 日本語 | - | 1.8.1.4 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.1.3,2022.3.29/Japanese.dat)|
+| 日本語 | - | 1.12.0.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.0.1,2022.6.21/Japanese.dat)|
+| 日本語 | kihi | 1.12.0.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.12.0.1%2Ckihi/Japanese.dat)|
+| 日本語 | Rey | 1.11.0.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.11.0.1%2CRey/Japanese.dat)|
 | 日本語 | ゆうみや | 1.9.7 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.9.7%2Cゆうみや/Japanese.dat)|
-| 日本語 | Rey | 1.9.5.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.9.5.1%2CRey/Japanese.dat)|
-| 日本語 | kihi | 1.9.7 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.9.7%2Ckihi/Japanese.dat)|
 | 日本語 | Tanakanira | 1.6.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.6.0%2CTanakanira/Japanese.dat)|
 | 簡体中文 | 四个憨批汉化组 | 1.9.5.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CSC%2C1.9.5.1%2C四个憨批汉化组/SChinese.dat)|
 | English | - | 1.9.8 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.8,2022.6.21/English.dat)|
@@ -193,6 +201,40 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 <details>
   <summary>クリックで展開</summary>
   
+ **Version 1.12.0.1**
+ - ロビーで左側に表示される設定項目に関する問題を再度修正
+ 
+ **Version 1.12**
+ - Raiderを追加
+ - Mad BaitがImpostorにキルされたとき、通報が発生しないように
+ - ロビーで左側に表示される設定項目にて、陣営ごとの割り当て人数の表示に関する問題を修正
+ - Trapperのトラップの表示に関する仕様に軽微な変更
+ 
+ **Version 1.11.2**
+ - 追加役職としてのMadmateを追加
+ - FreePlayでプレイヤーが一人の場合に限り、Dummyを使用できるように
+ 
+ **Version 1.11.1.3**
+ - ロビーで左側に表示される設定項目の表示に関する軽微な問題を修正
+ 
+ **Version 1.11.1.2**
+ - 「Can Be 〇〇」系の設定が隠れてしまっていた問題を修正
+ 
+ **Version 1.11.1.1**
+ - ロビーに一人しかいない場合の動作を修正
+ 
+ **Version 1.11.1**
+ - Necromancerの復活部屋候補からVentilationを除外
+ - ロビーでの処理を軽量化
+ - 設定項目をタブで細分化
+ - 設定項目のセーブデータの保存形式を変更
+ 
+ **Version 1.11.0.2**
+ - Impostor陣営が一人以下のとき、Spyが割り当てられないように
+ - 開幕の役職開示画面でSpyが透けてしまっていた問題を修正
+ - 会議を挟むとMorphingの画面が暗転してしまう問題を修正
+ - 一部ボタンデザインをかつどんさんのものに刷新
+ 
  **Version 1.11.0.1**
  - 緊急会議の回数制限オプションが正常に機能していない問題を修正
  
@@ -848,9 +890,9 @@ Sniperの弾の当たり判定やEmpiric,Alienなどの効果範囲を調べる�
 | [Evil Trapper](#trapper) | [Necromancer](#necromancer) |||
 | [Jailer](#jailer) | [Nice Guesser](#guesser) |||
 | [Morphing](#morphing) | [Nice Trapper](#trapper) |||
-| [Reaper](#reaper) | [Oracle](#oracle) |||
-| [Sniper](#sniper) | [Provocateur](#provocateur) |||
-|| [Psychic](#psychic) |||
+| [Raider](#raider) | [Oracle](#oracle) |||
+| [Reaper](#reaper) | [Provocateur](#provocateur) |||
+| [Sniper](#sniper) | [Psychic](#psychic) |||
 || [Seer](#seer) |||
 || [Sheriff](#sheriff) |||
 || [Spy](#spy) |||
@@ -1008,7 +1050,8 @@ p5p5next : Damned
 ## Disturber
  Disturberはプレイヤーの動きを妨害するバリアを張ることができるインポスターです。\
  バリアは2つのポールから成り、ポールを設置できるだけ設置すると\
- 次の会議の後から妨害できるようになります。
+ 次の会議の後から妨害できるようになります。\
+ 設定によって、妨害時に停電のような視野狭窄の効果をももたらすことができます。
  
  ### オプション
 | オプション名 | 設定内容 |
@@ -1084,6 +1127,25 @@ p5p5next : Damned
 
 -----------------------
 
+## Raider
+ Raiderは通常のキルは行えませんが、斧を投げることで一気にプレイヤーをキルすることができます。
+ 
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| F | 斧の出し入れ(キルクールが貯まっている場合のみ使用可能)
+| Q | 斧を投げる
+ 
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+| Throw Cool Down | キルクールダウン
+| Axe Size | 斧の当たり判定
+| Axe Speed | 斧の投げ速度
+| Can Kill Impostors | 斧に当たったインポスターを誤殺できるかどうか
+
+-----------------------
+
 ## Reaper
  Reaperは、死体を引きずることができるインポスターです。\
  マップ中のベントが全てのベントに通じているほか、The Skeldでは追加ベントが使用できます。
@@ -1145,6 +1207,8 @@ p5p5next : Damned
  Agentは、他人の代わりにタスクを行うクルーメイトで、ゲーム中に何回かベントを使ってより迅速にタスクを終わらせることができます。\
  また、自身が最低限こなすべきタスクの数は減少しています。
  
+ Mad Agentの場合は、タスクをこなすたびにインポスター陣営全員のキルクールダウンを10秒進めます。
+ 
   ### 操作方法
 | 操作キー | アクション |
 |----------|:-------------:|
@@ -1181,6 +1245,8 @@ p5p5next : Damned
 
 ## Bait
  Baitは、自身をキルした人に強制的にレポートさせます。
+ 
+ Mad Baitの場合は、インポスター陣営によるキルに限り能力を抑制します。
  
  ### オプション
 | オプション名 | 設定内容 |
@@ -1274,6 +1340,8 @@ p5p5next : Damned
 ## Necromancer
  Necromancerは死体を希望する部屋につれていくことで蘇らせることができます。
  
+ Mad Necromancerの場合、蘇ったプレイヤーはMadmateになります。
+ 
  ### 操作方法
 | 操作キー | アクション |
 |----------|:-------------:|
@@ -1354,6 +1422,8 @@ p5p5next : Damned
 
 ## Sheriff
  Sheriffはクルーメイト陣営以外のプレイヤーをキルをすることができるクルーメイトです。
+ 
+ Mad Sheriffの場合、必ず誤殺扱いになります。
  
  ### オプション
 | オプション名 | 設定内容 |
