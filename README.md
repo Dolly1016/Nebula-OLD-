@@ -189,7 +189,7 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 
 | Language | Translator | Full Support Version | Download |
 | --- | --- | --- | --- |
-| 日本語 | - | 1.8.1.4 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.8.1.3,2022.3.29/Japanese.dat)|
+| 日本語 | - | 1.12.0.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.0.1,2022.6.21/Japanese.dat)|
 | 日本語 | ゆうみや | 1.9.7 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.9.7%2Cゆうみや/Japanese.dat)|
 | 日本語 | Rey | 1.9.5.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.9.5.1%2CRey/Japanese.dat)|
 | 日本語 | kihi | 1.9.7 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.9.7%2Ckihi/Japanese.dat)|
