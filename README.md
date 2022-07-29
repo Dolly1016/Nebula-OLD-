@@ -33,6 +33,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.12.1 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.1,2022.6.21/Nebula_v1.12.1.zip)|
 | 1.12.0.1 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.0.1,2022.6.21/Nebula_v1.12.0.1.zip)|
 | 1.12 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12,2022.6.21/Nebula_v1.12.zip)|
 | 1.11.2 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.11.2,2022.6.21/Nebula_v1.11.2.zip)|
@@ -189,7 +190,7 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 
 | Language | Translator | Full Support Version | Download |
 | --- | --- | --- | --- |
-| 日本語 | - | 1.12.0.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.0.1,2022.6.21/Japanese.dat)|
+| 日本語 | - | 1.12.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.0.1,2022.6.21/Japanese.dat)|
 | 日本語 | kihi | 1.12.0.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.12.0.1%2Ckihi/Japanese.dat)|
 | 日本語 | Rey | 1.11.0.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.11.0.1%2CRey/Japanese.dat)|
 | 日本語 | ゆうみや | 1.9.7 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.9.7%2Cゆうみや/Japanese.dat)|
@@ -201,6 +202,18 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 <details>
   <summary>クリックで展開</summary>
   
+ **Version 1.12.1**
+ - Sniperが銃を構える、発砲する、Raiderが斧を投げる効果音を追加
+ - 各種ボタンに対応するキーを表示するように
+ - Raiderの斧の進む方向に矢印を表示するように
+ - Raiderが壁越しに斧を投げられないよう変更
+ - Raiderの斧キルによる死因をBeatenに変更
+ - ロビーで左側に表示されるメニューで追加役職の付与可能性をより適切に表示するように
+ - 0票で投票したMayorをProvocateurが道連れにすることがある不具合を修正
+ - 追加役職としてのGuesser, Madmateの出現確率が指定の確率より10%高くなっていた問題を修正
+ - 背後に表示される設置物が建物に隠れることがある問題を修正
+ - ロビー内での処理に軽微な変更
+ 
  **Version 1.12.0.1**
  - ロビーで左側に表示される設定項目に関する問題を再度修正
  
