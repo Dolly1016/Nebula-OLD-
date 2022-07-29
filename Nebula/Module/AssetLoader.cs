@@ -17,6 +17,10 @@ namespace Nebula.Module
         public static AudioClip PlaceTrap3s;
         public static AudioClip PlaceKillTrap;
 
+        public static AudioClip SniperShot;
+        public static AudioClip SniperEquip;
+        public static AudioClip RaiderThrow;
+
         static public void Load()
         {
             var resourceStream = assembly.GetManifestResourceStream("Nebula.Resources.Assets.nebula_asset");
@@ -29,6 +33,10 @@ namespace Nebula.Module
             PlaceTrap2s = assetBundleBundle.LoadAsset<AudioClip>("PlaceTrap2s.wav").DontUnload();
             PlaceTrap3s = assetBundleBundle.LoadAsset<AudioClip>("PlaceTrap3s.wav").DontUnload();
             PlaceKillTrap = assetBundleBundle.LoadAsset<AudioClip>("PlaceKillTrap.wav").DontUnload();
+
+            SniperShot = assetBundleBundle.LoadAsset<AudioClip>("SniperShot.wav").DontUnload();
+            SniperEquip = assetBundleBundle.LoadAsset<AudioClip>("SniperEquip.wav").DontUnload();
+            RaiderThrow = assetBundleBundle.LoadAsset<AudioClip>("RaiderThrow.wav").DontUnload();
 
         }
 
@@ -53,15 +61,28 @@ namespace Nebula.Module
 
         public static AudioClip GetAudioClip(Module.AudioAsset id)
         {
-            switch ((int)id)
+            switch (id)
             {
-                case 0: return HadarDive;
-                case 1: return HadarReappear;
-                case 2: return HadarFear;
+                case AudioAsset.HadarDive: 
+                    return HadarDive;
+                case AudioAsset.HadarReappear: 
+                    return HadarReappear;
+                case AudioAsset.HadarFear: 
+                    return HadarFear;
 
-                case 3: return PlaceTrap2s;
-                case 4: return PlaceTrap3s;
-                case 5: return PlaceKillTrap;
+                case AudioAsset.PlaceTrap2s: 
+                    return PlaceTrap2s;
+                case AudioAsset.PlaceTrap3s: 
+                    return PlaceTrap3s;
+                case AudioAsset.PlaceKillTrap: 
+                    return PlaceKillTrap;
+
+                case AudioAsset.SniperShot: 
+                    return SniperShot;
+                case AudioAsset.SniperEquip: 
+                    return SniperEquip;
+                case AudioAsset.RaiderThrow: 
+                    return RaiderThrow;
             }
 
             return null;
@@ -75,7 +96,10 @@ namespace Nebula.Module
         HadarFear,
         PlaceTrap2s,
         PlaceTrap3s,
-        PlaceKillTrap
+        PlaceKillTrap,
+        SniperShot,
+        SniperEquip,
+        RaiderThrow
 
     }
 }

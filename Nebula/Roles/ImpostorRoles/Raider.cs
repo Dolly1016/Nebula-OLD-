@@ -87,6 +87,8 @@ namespace Nebula.Roles.ImpostorRoles
             killButton = new CustomButton(
                 () =>
                 {
+                    Objects.SoundPlayer.PlaySound(Module.AudioAsset.RaiderThrow);
+
                     RPCEventInvoker.RaiderThrow(lastAxe.GameObject.transform.position, lastAxe.GameObject.transform.eulerAngles.z);
                     thrownAxe = lastAxe;
                     lastAxe = null;

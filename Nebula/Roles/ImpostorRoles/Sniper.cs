@@ -107,6 +107,7 @@ namespace Nebula.Roles.ImpostorRoles
                     }
                     else
                     {
+                        Objects.SoundPlayer.PlaySound(Module.AudioAsset.SniperEquip);
                         RPCEventInvoker.ObjectInstantiate(Objects.ObjectTypes.SniperRifle.Rifle, PlayerControl.LocalPlayer.transform.position);
                     }
                     rifleCounter = 0f;
@@ -139,6 +140,8 @@ namespace Nebula.Roles.ImpostorRoles
                     PlayerControl target = GetShootPlayer(shotSizeOption.getFloat()*0.4f,shotEffectiveRangeOption.getFloat(), !canKillImpostorsOption.getBool());
                     if (target!=null)
                     {
+                        Objects.SoundPlayer.PlaySound(Module.AudioAsset.SniperShot);
+
                         var res=Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, target, Game.PlayerData.PlayerStatus.Sniped, false, false);
                         if (res != Helpers.MurderAttemptResult.SuppressKill)
                             killButton.Timer = killButton.MaxTimer;
