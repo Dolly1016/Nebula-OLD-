@@ -1,0 +1,54 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <ApplicationIcon />
+    <Win32Resource />
+    <RootNamespace>Nebula</RootNamespace>
+    <AssemblyName>Nebula</AssemblyName>
+    <LangVersion>8.0</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <WarningLevel>4</WarningLevel>
+    <DefineConstants>$(DefineConstants);STEAM</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <WarningLevel>4</WarningLevel>
+    <DefineConstants>STEAM</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\CustomHats\*.png" />
+    <EmbeddedResource Include="Resources\*.png" />
+    <EmbeddedResource Include="Resources\Ghost\*.png" />
+    <EmbeddedResource Include="Resources\Locations\*.png" />
+    <EmbeddedResource Include="Resources\Lang.dat" />
+    <EmbeddedResource Include="Resources\Color.dat" />
+    <EmbeddedResource Include="Resources\RandomName.dat" />
+    <EmbeddedResource Include="Resources\Shaders\*.shader" />
+    <EmbeddedResource Include="Resources\Assets\nebula_asset" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="..\..\Among Us\BepInEx\core\*.dll" />
+    <Reference Include="..\..\Among Us\BepInEx\unhollowed\*.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="6.0.1" />
+  </ItemGroup>
+
+    <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
+        <Message Text="Second occurrence" />
+        <Copy SourceFiles="bin\Release\netstandard2.1\Nebula.dll" DestinationFolder="$(AmongUsPlugins)\" />
+        <Copy SourceFiles="bin\Release\netstandard2.1\Nebula.dll" DestinationFolder="$(AmongUsRelease)\" />
+        <Copy SourceFiles="bin\Release\netstandard2.1\Nebula.dll" DestinationFolder="$(AmongUsRelease)\Nebula\BepInEx\plugins\" />
+    </Target>
+
+</Project>
