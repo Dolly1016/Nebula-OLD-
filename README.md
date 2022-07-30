@@ -33,6 +33,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.12.2 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.2,2022.6.21/Nebula_v1.12.2.zip)|
 | 1.12.1 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.1,2022.6.21/Nebula_v1.12.1.zip)|
 | 1.12.0.1 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.0.1,2022.6.21/Nebula_v1.12.0.1.zip)|
 | 1.12 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12,2022.6.21/Nebula_v1.12.zip)|
@@ -202,6 +203,10 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 <details>
   <summary>クリックで展開</summary>
   
+ **Version 1.12.2**
+ - いくつかの動作を軽量化
+ - AirshipでのDummyの出現位置をエンジンルームに設定
+ 
  **Version 1.12.1**
  - Sniperが銃を構える、発砲する、Raiderが斧を投げる効果音を追加
  - 各種ボタンに対応するキーを表示するように
