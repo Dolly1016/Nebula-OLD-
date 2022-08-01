@@ -27,10 +27,6 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 当ModにはAmong Us内でアップデートができる機能がありますが、対応するVanillaのバージョンが変わる場合\
 最新版への更新ができませんので、こちらから手動でのアップデートをお願いいたします。
 
-また、現在 2022.3.29s では正常に動作するかどうか全てはテストしきれていません。\
-フィードバックを頂けましたら非常に助かります。\
-2022.2.24sのデータのバックアップを取ったうえでのアップデートをおすすめします。
-
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
 | 1.12.4 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.4,2022.6.21/Nebula_v1.12.4.zip)|
