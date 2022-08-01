@@ -205,6 +205,9 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 <details>
   <summary>クリックで展開</summary>
   
+ **Version 1.12.4**
+ - ロビーでメモリリークが発生していた問題を修正
+  
  **Version 1.12.3**
  - Lovers,Trilemmaの勝利条件を改訂
  - Impostor陣営,Jackal陣営の勝利条件に新たな条件を追加
