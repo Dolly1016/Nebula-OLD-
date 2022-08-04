@@ -27,12 +27,13 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 当ModにはAmong Us内でアップデートができる機能がありますが、対応するVanillaのバージョンが変わる場合\
 最新版への更新ができませんので、こちらから手動でのアップデートをお願いいたします。
 
-また、現在 2022.3.29s では正常に動作するかどうか全てはテストしきれていません。\
-フィードバックを頂けましたら非常に助かります。\
-2022.2.24sのデータのバックアップを取ったうえでのアップデートをおすすめします。
-
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.12.5 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.5,2022.6.21/Nebula_v1.12.5.zip)|
+| 1.12.4 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.4,2022.6.21/Nebula_v1.12.4.zip)|
+| 1.12.3 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.3,2022.6.21/Nebula_v1.12.3.zip)|
+| 1.12.2 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.2,2022.6.21/Nebula_v1.12.2.zip)|
+| 1.12.1 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.1,2022.6.21/Nebula_v1.12.1.zip)|
 | 1.12.0.1 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.0.1,2022.6.21/Nebula_v1.12.0.1.zip)|
 | 1.12 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12,2022.6.21/Nebula_v1.12.zip)|
 | 1.11.2 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.11.2,2022.6.21/Nebula_v1.11.2.zip)|
@@ -189,18 +190,45 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 
 | Language | Translator | Full Support Version | Download |
 | --- | --- | --- | --- |
-| 日本語 | - | 1.12.0.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.0.1,2022.6.21/Japanese.dat)|
-| 日本語 | kihi | 1.12.0.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.12.0.1%2Ckihi/Japanese.dat)|
+| 日本語 | - | 1.12.3 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.3,2022.6.21/Japanese.dat)|
+| 日本語 | kihi | 1.12.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.12.1%2Ckihi/Japanese.dat)|
+| 日本語 | ゆうみや | 1.12.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.12.1%2Cゆうみや/Japanese.dat)|
+| 簡体中文 | 四个憨批汉化组 | 1.12.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CSC%2C1.12.1%2C四个憨批汉化组/SChinese.dat)|
 | 日本語 | Rey | 1.11.0.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.11.0.1%2CRey/Japanese.dat)|
-| 日本語 | ゆうみや | 1.9.7 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.9.7%2Cゆうみや/Japanese.dat)|
 | 日本語 | Tanakanira | 1.6.1.2 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.6.0%2CTanakanira/Japanese.dat)|
-| 簡体中文 | 四个憨批汉化组 | 1.9.5.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CSC%2C1.9.5.1%2C四个憨批汉化组/SChinese.dat)|
-| English | - | 1.9.8 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.9.8,2022.6.21/English.dat)|
+| English | - | 1.12.3 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.3,2022.6.21/English.dat)|
 
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+ 
+ **Version 1.12.5**
+ - プレイヤーの色が正しく表示されないことがある問題を抑制
+ 
+ **Version 1.12.4**
+ - ロビーでメモリリークが発生していた問題を修正
   
+ **Version 1.12.3**
+ - Lovers,Trilemmaの勝利条件を改訂
+ - Impostor陣営,Jackal陣営の勝利条件に新たな条件を追加
+ - ロビーで左側に表示されるメニューにAvengerが表示されない問題を修正
+ 
+ **Version 1.12.2**
+ - いくつかの動作を軽量化
+ - AirshipでのDummyの出現位置をエンジンルームに設定
+ 
+ **Version 1.12.1**
+ - Sniperが銃を構える、発砲する、Raiderが斧を投げる効果音を追加
+ - 各種ボタンに対応するキーを表示するように
+ - Raiderの斧の進む方向に矢印を表示するように
+ - Raiderが壁越しに斧を投げられないよう変更
+ - Raiderの斧キルによる死因をBeatenに変更
+ - ロビーで左側に表示されるメニューで追加役職の付与可能性をより適切に表示するように
+ - 0票で投票したMayorをProvocateurが道連れにすることがある不具合を修正
+ - 追加役職としてのGuesser, Madmateの出現確率が指定の確率より10%高くなっていた問題を修正
+ - 背後に表示される設置物が建物に隠れることがある問題を修正
+ - ロビー内での処理に軽微な変更
+ 
  **Version 1.12.0.1**
  - ロビーで左側に表示される設定項目に関する問題を再度修正
  
