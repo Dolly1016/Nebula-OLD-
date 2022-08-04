@@ -29,6 +29,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.12.5 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.5,2022.6.21/Nebula_v1.12.5.zip)|
 | 1.12.4 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.4,2022.6.21/Nebula_v1.12.4.zip)|
 | 1.12.3 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.3,2022.6.21/Nebula_v1.12.3.zip)|
 | 1.12.2 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.2,2022.6.21/Nebula_v1.12.2.zip)|
@@ -200,7 +201,10 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
-  
+ 
+ **Version 1.12.5**
+ - プレイヤーの色が正しく表示されないことがある問題を抑制
+ 
  **Version 1.12.4**
  - ロビーでメモリリークが発生していた問題を修正
   
