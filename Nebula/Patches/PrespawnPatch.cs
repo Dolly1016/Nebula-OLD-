@@ -7,6 +7,7 @@ using HarmonyLib;
 using UnityEngine;
 using TMPro;
 using PowerTools;
+using Nebula.Utilities;
 
 namespace Nebula.Patches
 {
@@ -72,7 +73,7 @@ namespace Nebula.Patches
 							PlayerControl.LocalPlayer.gameObject.SetActive(true);
 							__instance.StopAllCoroutines();
 							PlayerControl.LocalPlayer.NetTransform.RpcSnapTo(spawnAt);
-							DestroyableSingleton<HudManager>.Instance.PlayerCam.SnapToTarget();
+							HudManager.Instance.PlayerCam.SnapToTarget();
 							__instance.Close();
 						}
 					}
@@ -164,7 +165,7 @@ namespace Nebula.Patches
 					{
 						spawnInMinigame.SpawnAt(spawnCandidates[index].SpawnLocation);
 					}));
-					passiveButton.OnMouseOver.AddListener(new System.Action( ()=>HudManager.Instance.StartCoroutine(spawnCandidates[index].GetEnumerator(passiveButton.GetComponent<SpriteRenderer>()))));
+					passiveButton.OnMouseOver.AddListener(new System.Action( ()=> HudManager.Instance.StartCoroutine(spawnCandidates[index].GetEnumerator(passiveButton.GetComponent<SpriteRenderer>()))));
 
 					passiveButton.GetComponent<SpriteAnim>().Stop();
 					passiveButton.GetComponent<SpriteRenderer>().sprite = spawnCandidates[index].GetSprite();

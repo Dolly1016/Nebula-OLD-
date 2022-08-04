@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using HarmonyLib;
 using UnityEngine;
+using Nebula.Utilities;
 
 namespace Nebula.Patches
 {
@@ -57,7 +58,7 @@ namespace Nebula.Patches
                     modStamp.transform.localScale *= 0.6f;
                 }
                 float offset = (AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started) ? 0.75f : 0f;
-                modStamp.transform.position = HudManager.Instance.MapButton.transform.position + Vector3.down * offset;
+                modStamp.transform.position = FastDestroyableSingleton<HudManager>.Instance.MapButton.transform.position + Vector3.down * offset;
             }
 
             static void Postfix(PingTracker __instance)

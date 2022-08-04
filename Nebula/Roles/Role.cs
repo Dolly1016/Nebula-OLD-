@@ -8,6 +8,7 @@ using UnityEngine;
 using Nebula.Patches;
 using Nebula.Objects;
 using Nebula.Roles.CrewmateRoles;
+using Nebula.Utilities;
 
 namespace Nebula.Roles
 {
@@ -143,6 +144,7 @@ namespace Nebula.Roles
 
 
         public virtual List<Role> GetImplicateRoles() { return new List<Role>(); }
+        public virtual List<ExtraRole> GetImplicateExtraRoles() { return new List<ExtraRole>(); }
         /// <summary>
         /// 排他的割り当てオプションに表示しない場合true
         /// </summary>
@@ -200,12 +202,12 @@ namespace Nebula.Roles
         {
             if ((type & CoolDownType.ImpostorsKill) != 0)
             {
-                if (HudManager.Instance.KillButton.gameObject.active)
+                if (FastDestroyableSingleton<HudManager>.Instance.KillButton.gameObject.active)
                 {
                     PlayerControl.LocalPlayer.killTimer -= count;
                     if (PlayerControl.LocalPlayer.killTimer < 0f) PlayerControl.LocalPlayer.killTimer = 0f;
 
-                    HudManager.Instance.KillButton.ShowButtonText("+" + count + "s");
+                    FastDestroyableSingleton<HudManager>.Instance.KillButton.ShowButtonText("+" + count + "s");
                 }
             }
         }
@@ -399,7 +401,7 @@ namespace Nebula.Roles
                 switch (myData.role.introMainDisplaySide.ShowOption)
                 {
                     case Side.IntroDisplayOption.STANDARD:
-                        data = Game.GameData.data.players[player.PlayerId];
+                        data = Game.GameData.data.AllPlayers[player.PlayerId];
 
                         foreach (Side side in data.role.introInfluenceSides)
                         {

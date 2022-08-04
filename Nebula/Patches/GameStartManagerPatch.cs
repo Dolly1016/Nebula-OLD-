@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Hazel;
 using HarmonyLib;
 using UnityEngine;
 using UnhollowerBaseLib;
+using Nebula.Utilities;
 
 namespace Nebula.Patches
 {
@@ -64,7 +62,7 @@ namespace Nebula.Patches
                 }
 
                 
-                foreach(PlayerControl player in PlayerControl.AllPlayerControls)
+                foreach(PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
                 {
                     player.SetColor(player.PlayerId);
                 }
@@ -101,21 +99,21 @@ namespace Nebula.Patches
                 if (!GameData.Instance) return;
 
                 GameData.Instance.HandleDisconnect();
-
-                foreach (PlayerControl player in PlayerControl.AllPlayerControls)
+                
+                foreach (PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
                 {
-                    if (player != null)
+                    if (player != null && player.PlayerId != player.Data.DefaultOutfit.ColorId)
                     {
                         player.SetColor(player.PlayerId);
                     }
                 }
-
                 if (!AmongUsClient.Instance.AmHost) return; // Not host or no instance
                 update = GameData.Instance.PlayerCount != __instance.LastPlayerCount;
             }
 
             public static void Postfix(GameStartManager __instance)
             {
+
                 try
                 {
                     // Send version as soon as PlayerControl.LocalPlayer exists
@@ -285,6 +283,7 @@ namespace Nebula.Patches
                                 GameData.Instance.AddPlayer(playerControl);
                                 AmongUsClient.Instance.Spawn(playerControl, -2, InnerNet.SpawnFlags.None);
 
+                                playerControl.isDummy = true;
                                 playerControl.transform.position = PlayerControl.LocalPlayer.transform.position;
                                 playerControl.GetComponent<DummyBehaviour>().enabled = false;
                                 playerControl.NetTransform.enabled = true;

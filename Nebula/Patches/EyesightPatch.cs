@@ -6,6 +6,7 @@ using System.Reflection.Emit;
 using System.Linq;
 using UnityEngine;
 using BepInEx.IL2CPP.Utils.Collections;
+using Nebula.Utilities;
 
 namespace Nebula.Patches
 {
@@ -79,14 +80,14 @@ namespace Nebula.Patches
 		static private float ObserverModeRate = 1f;
 		static public bool ObserverMode = false;
 
-		private static IEnumerator GetEnumerator()
+		private static IEnumerator GetEnumerator(HudManager __instance)
         {
 			while (true)
 			{
 				if (ObserverMode) break;
 				if (Camera.main.orthographicSize == 3f)
 				{
-					Transform transform = HudManager.Instance.transform.Find("Buttons");
+					Transform transform = __instance.transform.Find("Buttons");
 					if (transform)
 					{
 						transform.gameObject.SetActive(!ObserverMode);
@@ -116,7 +117,7 @@ namespace Nebula.Patches
 
             if (ObserverMode != lastObserverMode)
             {
-				HudManager.Instance.StartCoroutine(GetEnumerator().WrapToIl2Cpp());
+				__instance.StartCoroutine(GetEnumerator(__instance).WrapToIl2Cpp());
             }
 
 
@@ -139,19 +140,19 @@ namespace Nebula.Patches
 				ObserverModeRate = ObserverMode ? 2.0f : 1.0f;
 
 			Camera.main.orthographicSize = 3.0f * Distance * ObserverModeRate;
-			HudManager.Instance.UICamera.orthographicSize = 3.0f;
-			HudManager.Instance.transform.localScale = Vector3.one;
+			__instance.UICamera.orthographicSize = 3.0f;
+			__instance.transform.localScale = Vector3.one;
 
 
-			if (HudManager.Instance) {
+			if (HudManager.InstanceExists) {
 				Transform transform;
 
-				transform = HudManager.Instance.transform.Find("TaskDisplay");
+				transform = __instance.transform.Find("TaskDisplay");
 				if (transform) transform.gameObject.SetActive(!ObserverMode && ShipStatus.Instance);
 
 				if (ObserverMode)
 				{
-					transform = HudManager.Instance.transform.Find("Buttons");
+					transform = __instance.transform.Find("Buttons");
 					if (transform)
 					{
 						transform.gameObject.SetActive(!ObserverMode);

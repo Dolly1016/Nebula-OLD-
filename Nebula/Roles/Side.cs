@@ -22,7 +22,7 @@ namespace Nebula.Roles
         {
             if (statistics.GetAlivePlayers(Impostor) == 0 && 
             statistics.GetAlivePlayers(Jackal) == 0 && 
-            !Game.GameData.data.players.Values.Any((p) => p.IsAlive && p.extraRole.Contains(Roles.SecondarySidekick)))
+            !Game.GameData.data.AllPlayers.Values.Any((p) => p.IsAlive && p.extraRole.Contains(Roles.SecondarySidekick)))
             {
                 return EndCondition.CrewmateWinByVote;
             }
@@ -65,10 +65,12 @@ namespace Nebula.Roles
                 }
             }
 
-            if (statistics.GetAlivePlayers(Impostor) > 0 && 
-            statistics.GetAlivePlayers(Jackal) == 0 &&
-            !Game.GameData.data.players.Values.Any((p) => p.IsAlive && p.extraRole.Contains(Roles.SecondarySidekick)) &&
-            statistics.TotalAlive <= 2 * statistics.GetAlivePlayers(Impostor))
+            if (statistics.AliveImpostors > 0 &&
+            statistics.AliveJackals == 0 &&
+            !Game.GameData.data.AllPlayers.Values.Any((p) => p.IsAlive && p.extraRole.Contains(Roles.SecondarySidekick)) &&
+            statistics.TotalAlive <= (statistics.AliveImpostors-statistics.AliveInLoveImpostors)*2 &&
+            (statistics.AliveImpostorCouple+statistics.AliveImpostorTrilemma==0||
+            statistics.AliveImpostorCouple*2 + statistics.AliveImpostorTrilemma*3 >= statistics.AliveCouple*2+statistics.AliveTrilemma*3))
             {
                 if (TempData.LastDeathReason == DeathReason.Kill)
                 {
@@ -85,7 +87,9 @@ namespace Nebula.Roles
 
         public static Side Jackal = new Side("Jackal", "jackal", IntroDisplayOption.SHOW_ONLY_ME, NeutralRoles.Jackal.RoleColor, (PlayerStatistics statistics, ShipStatus status) =>
         {
-            if (statistics.GetAlivePlayers(Jackal)*2 >= statistics.TotalAlive &&statistics.GetAlivePlayers(Impostor)==0)
+            if ((statistics.AliveJackals-statistics.AliveInLoveJackals)*2 >= statistics.TotalAlive && statistics.GetAlivePlayers(Impostor)-statistics.AliveImpostorsWithSidekick <= 0&&
+            (statistics.AliveJackalCouple + statistics.AliveJackalTrilemma == 0 ||
+            statistics.AliveJackalCouple*2 + statistics.AliveJackalTrilemma*3 >= statistics.AliveCouple*2 + statistics.AliveTrilemma*3))
             {
                 return EndCondition.JackalWin;
             }
@@ -140,7 +144,7 @@ namespace Nebula.Roles
             if (endCondition.IsNoBodyWinEnd) return null;
             if (Roles.Avenger.canTakeOverSabotageWinOption.getBool() && endCondition == EndCondition.ImpostorWinBySabotage) return null;
 
-            foreach(var player in Game.GameData.data.players.Values)
+            foreach(var player in Game.GameData.data.AllPlayers.Values)
             {
                 if (!player.IsAlive) continue;
                 if (player.role != Roles.Avenger) continue;
@@ -171,11 +175,6 @@ namespace Nebula.Roles
         {
             return null;
         });
-
-        public static Side Gambler = new Side("Gambler", "gambler", IntroDisplayOption.SHOW_ONLY_ME, ParlourRoles.Gambler.Color , (PlayerStatistics statistics, ShipStatus status) =>
-          {
-              return null;
-          });
 
         public static Side Extra = new Side("Extra", "extra", IntroDisplayOption.STANDARD, new Color(150, 150, 150), (PlayerStatistics statistics, ShipStatus side) =>
         {
@@ -220,16 +219,17 @@ namespace Nebula.Roles
                 }
             }
 
-
-
-            if (statistics.TotalAlive == 3)
+            //Lovers単独勝利
+            if (statistics.TotalAlive <= 3)
             {
-                foreach(Game.PlayerData player in Game.GameData.data.players.Values)
-                {
-                    if (!player.IsAlive) continue;
-                    if (!player.extraRole.Contains(Roles.Trilemma)) return null;
-                }
-                return EndCondition.TrilemmaWin;
+                if (statistics.AliveCouple == 1 && statistics.AliveTrilemma==0) return EndCondition.LoversWin;
+            }
+
+
+            //Trilemma
+            if (statistics.TotalAlive <= 5)
+            {
+                if (statistics.AliveTrilemma == 1 && statistics.AliveCouple==0) return EndCondition.TrilemmaWin;
             }
 
             if (statistics.TotalAlive == 0)
@@ -244,7 +244,6 @@ namespace Nebula.Roles
             Crewmate, Impostor,
             Jackal, Jester, Vulture, Empiric, Arsonist, Avenger,
             Investigator,
-            Gambler,
             GamePlayer,
             Extra
         };

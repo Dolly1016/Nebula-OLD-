@@ -10,6 +10,7 @@ using HarmonyLib;
 using Hazel;
 using System.Collections;
 using BepInEx.IL2CPP.Utils.Collections;
+using Nebula.Utilities;
 
 namespace Nebula.Roles.ImpostorRoles
 {
@@ -137,11 +138,11 @@ namespace Nebula.Roles.ImpostorRoles
             killButton = new CustomButton(
                 () =>
                 {
+                    Objects.SoundPlayer.PlaySound(Module.AudioAsset.SniperShot);
+
                     PlayerControl target = GetShootPlayer(shotSizeOption.getFloat()*0.4f,shotEffectiveRangeOption.getFloat(), !canKillImpostorsOption.getBool());
                     if (target!=null)
                     {
-                        Objects.SoundPlayer.PlaySound(Module.AudioAsset.SniperShot);
-
                         var res=Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, target, Game.PlayerData.PlayerStatus.Sniped, false, false);
                         if (res != Helpers.MurderAttemptResult.SuppressKill)
                             killButton.Timer = killButton.MaxTimer;
@@ -349,7 +350,7 @@ namespace Nebula.Roles.ImpostorRoles
         {
             equipRifleFlag = false;
 
-            foreach (var player in Game.GameData.data.players.Values)
+            foreach (var player in Game.GameData.data.AllPlayers.Values)
             {
                 if (player.id == PlayerControl.LocalPlayer.PlayerId) continue;
 
@@ -357,7 +358,7 @@ namespace Nebula.Roles.ImpostorRoles
                 var renderer = obj.AddComponent<SpriteRenderer>();
 
                 renderer.sprite = getGuideSprite();
-                renderer.transform.parent = HudManager.Instance.transform;
+                renderer.transform.parent = FastDestroyableSingleton<HudManager>.Instance.transform;
                 renderer.color = new Color(0, 0, 0, 0);
                 renderer.transform.position = new Vector3(0, 0,-30f);
                 Guides[player.id]=renderer;

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using HarmonyLib;
 using UnityEngine;
 using Hazel;
+using Nebula.Utilities;
 
 namespace Nebula.Patches
 {
@@ -244,7 +245,7 @@ namespace Nebula.Patches
                 Helpers.RoleAction(PlayerControl.LocalPlayer, (role) => { role.SetupMeetingButton(MeetingHud.Instance); });
 
 
-                foreach (Game.PlayerData player in Game.GameData.data.players.Values)
+                foreach (Game.PlayerData player in Game.GameData.data.AllPlayers.Values)
                 {
                     player.Speed.OnMeeting();
                     player.Attribute.OnMeeting();
@@ -273,7 +274,7 @@ namespace Nebula.Patches
         {
             static bool Prefix(PlayerVoteArea __instance)
             {
-                if (Game.GameData.data.players.ContainsKey(__instance.TargetPlayerId))
+                if (Game.GameData.data.GetPlayerData(__instance.TargetPlayerId)!=null)
                 {
                     return Game.GameData.data.GameMode != Module.CustomGameMode.Investigators;
                 }

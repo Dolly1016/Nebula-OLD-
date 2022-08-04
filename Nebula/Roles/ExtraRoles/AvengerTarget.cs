@@ -33,7 +33,7 @@ namespace Nebula.Roles.ExtraRoles
             var myGData = Game.GameData.data.myData.getGlobalData();
 
             bool aliveFlag = false;
-            foreach (var data in Game.GameData.data.players.Values)
+            foreach (var data in Game.GameData.data.AllPlayers.Values)
             {
                 if (data.GetExtraRoleData(Roles.Lover) == myGData.GetExtraRoleData(Roles.AvengerTarget))
                 {

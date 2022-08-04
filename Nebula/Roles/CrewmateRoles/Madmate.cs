@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using HarmonyLib;
-using Hazel;
-using Nebula.Objects;
+using Nebula.Utilities;
 
 namespace Nebula.Roles.CrewmateRoles
 {
@@ -27,6 +21,8 @@ namespace Nebula.Roles.CrewmateRoles
         //Local
         private int completedTasks=0;
         private HashSet<byte> knownImpostors=new HashSet<byte>();
+
+        public override List<ExtraRole> GetImplicateExtraRoles() { return new List<ExtraRole>(new ExtraRole[]{ Roles.SecondaryMadmate }); }
 
         public override bool IsSecondaryGenerator { get { return SecondoryRoleOption.getBool(); } }
         public override void LoadOptionData()
@@ -70,7 +66,7 @@ namespace Nebula.Roles.CrewmateRoles
             while ((int)NumOfTasksRequiredToKnowImpostorsOption[knownImpostors.Count].getFloat() <= completedTasks)
             {
                 List<byte> candidates = new List<byte>();
-                foreach (var player in PlayerControl.AllPlayerControls)
+                foreach (var player in PlayerControl.AllPlayerControls.GetFastEnumerator())
                 {
                     if (player.GetModData().role.category != RoleCategory.Impostor) continue;
                     if (knownImpostors.Contains(player.PlayerId)) continue;
@@ -99,7 +95,7 @@ namespace Nebula.Roles.CrewmateRoles
         public override void IntroInitialize(PlayerControl __instance)
         {
             int impostors = 0;
-            foreach (var player in PlayerControl.AllPlayerControls)
+            foreach (var player in PlayerControl.AllPlayerControls.GetFastEnumerator())
                 if (player.GetModData().role.category == RoleCategory.Impostor) impostors++;
             if (impostors > NumOfMaxImpostorsCanKnowOption.getFloat()) impostors = (int)NumOfMaxImpostorsCanKnowOption.getFloat();
 
@@ -169,7 +165,7 @@ namespace Nebula.Roles.CrewmateRoles
 
             List<byte> crewmates = new List<byte>();
 
-            foreach (PlayerControl player in PlayerControl.AllPlayerControls)
+            foreach (PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
                 if (!player.GetModData()?.role.CanBeMadmate ?? true) continue;
 

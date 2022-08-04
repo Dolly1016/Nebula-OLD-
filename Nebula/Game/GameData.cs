@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Nebula.Utilities;
+
 using static GameData;
 
 namespace Nebula.Game
@@ -35,7 +37,7 @@ namespace Nebula.Game
             ulong value = 0;
             dic.TryGetValue(tag, out value);
 
-            foreach(PlayerControl pc in PlayerControl.AllPlayerControls)
+            foreach(PlayerControl pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
                 if (pc.Data.IsDead ? withGhost : withSurvivor)
                     result &= ((value & ((ulong)1 << pc.PlayerId)) != 0);
@@ -67,9 +69,9 @@ namespace Nebula.Game
         {
             if (globalData == null)
             {
-                if (Game.GameData.data.players.ContainsKey(PlayerControl.LocalPlayer.PlayerId))
+                if (Game.GameData.data.AllPlayers.ContainsKey(PlayerControl.LocalPlayer.PlayerId))
                 {
-                    globalData = Game.GameData.data.players[PlayerControl.LocalPlayer.PlayerId];
+                    globalData = Game.GameData.data.playersArray[PlayerControl.LocalPlayer.PlayerId];
                 }
             }
             return globalData;
@@ -834,7 +836,10 @@ namespace Nebula.Game
 
         private static Dictionary<string, int> RoleDataIdMap=new Dictionary<string, int>();
 
-        public Dictionary<byte, PlayerData> players;
+        public Dictionary<byte, PlayerData> AllPlayers;
+        //アクセスまでの時間を短縮する
+        public List<PlayerData?> playersArray;
+
         public Dictionary<byte, DeadPlayerData> deadPlayers;
 
         public MyPlayerData myData;
@@ -854,7 +859,7 @@ namespace Nebula.Game
 
         public Module.CustomGameMode GameMode;
 
-        public Ghost.Ghost Ghost;
+        public Ghost.Ghost? Ghost;
 
         public Objects.CustomMessage CountDownMessage;
 
@@ -870,7 +875,9 @@ namespace Nebula.Game
 
         public GameData()
         {
-            players = new Dictionary<byte, PlayerData>();
+            AllPlayers = new Dictionary<byte, PlayerData>();
+            playersArray = new List<PlayerData>();
+
             deadPlayers = new Dictionary<byte, DeadPlayerData>();
             myData = new MyPlayerData();
             TotalTasks = 0;
@@ -905,10 +912,11 @@ namespace Nebula.Game
         {
             if (LimitRenderer != null) LimitRenderer.Destroy();
 
-            players.Clear();
+            AllPlayers.Clear();
+            playersArray.Clear();
             deadPlayers.Clear();
 
-            foreach(PlayerControl player in PlayerControl.AllPlayerControls)
+            foreach(PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
                 player.MyPhysics.Speed = OriginalSpeed;
             }
@@ -953,7 +961,7 @@ namespace Nebula.Game
             string name = "Unknown";
             PlayerOutfit outfit=null;
             
-            foreach(PlayerControl player in PlayerControl.AllPlayerControls)
+            foreach(PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
                 if (player.PlayerId == playerId)
                 {
@@ -962,7 +970,13 @@ namespace Nebula.Game
                 }
             }
 
-            players.Add(playerId, new PlayerData(Helpers.playerById(playerId), name, outfit, role));
+            var data = new PlayerData(Helpers.playerById(playerId), name, outfit, role);
+            AllPlayers.Add(playerId, data);
+            while(playersArray.Count <= playerId)
+            {
+                playersArray.Add(null);
+            }
+            playersArray[playerId] = data;
         }
 
         public void LoadMapData()
@@ -992,6 +1006,12 @@ namespace Nebula.Game
             {
                 Rooms.Add(type);
             }
+        }
+
+        public PlayerData? GetPlayerData(byte playerId)
+        {
+            if (playersArray.Count < playerId) return null;
+            return playersArray[playerId];
         }
 
         public VentData GetVentData(string name)

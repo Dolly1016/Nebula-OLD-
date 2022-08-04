@@ -25,6 +25,8 @@ namespace Nebula.Roles.ImpostorRoles
 
         private CustomMessage? message;
 
+        private SpriteRenderer? guide;
+
         public override void LoadOptionData()
         {
             throwCoolDownOption = CreateOption(Color.white, "throwCoolDown", 20f, 5f, 60f, 2.5f);
@@ -60,6 +62,8 @@ namespace Nebula.Roles.ImpostorRoles
                     else
                     {
                         lastAxe=RPCEventInvoker.ObjectInstantiate(Objects.ObjectTypes.RaidAxe.Axe, PlayerControl.LocalPlayer.transform.position);
+
+                        __instance.StartCoroutine(GetGuideEnumrator().WrapToIl2Cpp());
                     }
                     equipAxeFlag = !equipAxeFlag;
 
@@ -98,7 +102,7 @@ namespace Nebula.Roles.ImpostorRoles
                     axeButton.SetLabel("button.label.equip");
                 },
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
-                () => { return PlayerControl.LocalPlayer.CanMove && equipAxeFlag; },
+                () => { return PlayerControl.LocalPlayer.CanMove && equipAxeFlag && lastAxe.Renderer.color.g > 0.5f; },
                 () => { killButton.Timer = killButton.MaxTimer; },
                 __instance.KillButton.graphic.sprite,
                 new Vector3(0f, 1f, 0),
@@ -140,6 +144,14 @@ namespace Nebula.Roles.ImpostorRoles
         }
 
         /* 画像 */
+        private Sprite axeGuideSprite = null;
+        public Sprite getAxeGuideSprite()
+        {
+            if (axeGuideSprite) return axeGuideSprite;
+            axeGuideSprite = Helpers.loadSpriteFromResources("Nebula.Resources.RaiderAxeGuide.png", 100f);
+            return axeGuideSprite;
+        }
+
         private Sprite axeButtonSprite = null;
         public Sprite getAxeButtonSprite()
         {
@@ -170,24 +182,83 @@ namespace Nebula.Roles.ImpostorRoles
             }
         }
 
+        private IEnumerator GetGuideEnumrator()
+        {
+            if (guide == null)
+            {
+                GameObject obj = new GameObject();
+                obj.name = "RaiderGuide";
+                obj.transform.SetParent(PlayerControl.LocalPlayer.transform);
+                guide = obj.AddComponent<SpriteRenderer>();
+                guide.sprite = getAxeGuideSprite();
+            }
+            else
+            {
+                guide.gameObject.SetActive(true);
+            }
+
+            float counter = 0f;
+            while (counter<1f)
+            {
+                counter += Time.deltaTime;
+
+                float angle = Game.GameData.data.myData.getGlobalData().MouseAngle;
+                guide.transform.eulerAngles = new Vector3(0f, 0f, angle * 180f / Mathf.PI);
+                guide.transform.localPosition = new Vector3(
+                    Mathf.Cos(angle) * (counter * 0.6f + 1.8f),
+                    Mathf.Sin(angle) * (counter * 0.6f + 1.8f),
+                    -1f);
+                guide.color = new Color(1f, 1f, 1f, 0.9f - (counter * 0.9f));
+
+                yield return null;
+
+                if (!equipAxeFlag)break;
+            }
+
+            if (equipAxeFlag) HudManager.Instance.StartCoroutine(GetGuideEnumrator().WrapToIl2Cpp());
+            else guide.gameObject.SetActive(false);
+
+            yield break;
+        }
+
         public override void MyPlayerControlUpdate()
         {
-            if (thrownAxe != null)
+            if (equipAxeFlag && lastAxe != null)
             {
-                if (thrownAxe.Data[0] == (int)Objects.ObjectTypes.RaidAxe.AxeState.Thrown)
+                if (lastAxe.Data[0] == (int)Objects.ObjectTypes.RaidAxe.AxeState.Static)
                 {
-                    Vector3 pos = thrownAxe.GameObject.transform.position;
-                    float d = 0.4f * axeSizeOption.getFloat();
-                    foreach (var p in PlayerControl.AllPlayerControls)
+                    Vector2 axeVec = (Vector2)lastAxe.GameObject.transform.position - (Vector2)PlayerControl.LocalPlayer.GetTruePosition();
+                    if(PhysicsHelpers.AnyNonTriggersBetween(PlayerControl.LocalPlayer.GetTruePosition(), axeVec.normalized,axeVec.magnitude, Constants.ShipAndObjectsMask))
                     {
-                        if (p.Data.IsDead) continue;
-                        if (p == PlayerControl.LocalPlayer) continue;
-                        if (!canKillImpostorsOption.getBool() && p.Data.Role.Role == RoleTypes.Impostor) continue;
-
-                        if (pos.Distance(p.transform.position) < d) RPCEventInvoker.UncheckedMurderPlayer(PlayerControl.LocalPlayer.PlayerId, p.PlayerId, Game.PlayerData.PlayerStatus.Beaten.Id, false);
+                        lastAxe.Renderer.color = Color.red;
+                    }
+                    else
+                    {
+                        lastAxe.Renderer.color = Color.white;
                     }
                 }
             }
+
+            if (thrownAxe != null)
+            {
+                if (!MeetingHud.Instance)
+                {
+                    if (thrownAxe.Data[0] == (int)Objects.ObjectTypes.RaidAxe.AxeState.Thrown)
+                    {
+                        Vector3 pos = thrownAxe.GameObject.transform.position;
+                        float d = 0.4f * axeSizeOption.getFloat();
+                        foreach (var p in PlayerControl.AllPlayerControls)
+                        {
+                            if (p.Data.IsDead) continue;
+                            if (p == PlayerControl.LocalPlayer) continue;
+                            if (!canKillImpostorsOption.getBool() && p.Data.Role.Role == RoleTypes.Impostor) continue;
+
+                            if (pos.Distance(p.transform.position) < d) RPCEventInvoker.UncheckedMurderPlayer(PlayerControl.LocalPlayer.PlayerId, p.PlayerId, Game.PlayerData.PlayerStatus.Beaten.Id, false);
+                        }
+                    }
+                }
+            }
+
 
             if (message == null || !message.isActive)
             {
@@ -228,6 +299,8 @@ namespace Nebula.Roles.ImpostorRoles
 
             thrownAxe = null;
             lastAxe = null;
+
+            guide = null;
         }
 
 
@@ -251,6 +324,12 @@ namespace Nebula.Roles.ImpostorRoles
                 killButton = null;
             }
 
+            if (guide != null)
+            {
+                GameObject.Destroy(guide);
+                guide = null;
+            }
+
             thrownAxe = null;
             lastAxe = null;
 
@@ -264,6 +343,7 @@ namespace Nebula.Roles.ImpostorRoles
         {
             axeButton = null;
             killButton = null;
+            guide = null;
 
             //通常のキルボタンは使用しない
             HideKillButtonEvenImpostor = true;

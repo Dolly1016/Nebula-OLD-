@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using Nebula.Objects;
+using Nebula.Utilities;
 
 namespace Nebula.Roles.ExtraRoles
 {
@@ -15,6 +16,7 @@ namespace Nebula.Roles.ExtraRoles
         public Module.CustomOption loversModeOption;
         public Module.CustomOption chanceThatOneLoverIsImpostorOption;
         private Module.CustomOption canChangeTrilemmaOption;
+        public Module.CustomOption loversAsIndependentSideOption;
 
         private PlayerControl trilemmaTarget=null;
 
@@ -24,6 +26,23 @@ namespace Nebula.Roles.ExtraRoles
         (Color)new Color32(3, 254, 188, 255) ,
         (Color)new Color32(255, 255, 0, 255) ,
         (Color)new Color32(3, 183, 254, 255) };
+
+        public Game.PlayerData GetLoversData(Game.PlayerData player)
+        {
+            ulong myLoverId = player.GetExtraRoleData(this);
+            PlayerControl target;
+            foreach (Game.PlayerData data in Game.GameData.data.AllPlayers.Values)
+            {
+                if (data == player) continue;
+                if (!data.extraRole.Contains(this)) continue;
+                if (data.GetExtraRoleData(this) == myLoverId)
+                {
+                    return data;
+                }
+            }
+
+            return player;
+        }
 
         private bool IsMyLover(PlayerControl player)
         {
@@ -45,7 +64,7 @@ namespace Nebula.Roles.ExtraRoles
         {
             ulong myLoverId = player.GetModData().GetExtraRoleData(this);
             PlayerControl target;
-            foreach (Game.PlayerData data in Game.GameData.data.players.Values)
+            foreach (Game.PlayerData data in Game.GameData.data.AllPlayers.Values)
             {
                 if (!data.extraRole.Contains(this)) continue;
                 if (data.GetExtraRoleData(this) == myLoverId)
@@ -133,7 +152,7 @@ namespace Nebula.Roles.ExtraRoles
         public override void Assignment(Patches.AssignMap assignMap)
         {
             int maxPairs = maxPairsOption.getSelection();
-            if (maxPairs * 2 > Game.GameData.data.players.Count) maxPairs = Game.GameData.data.players.Count / 2;
+            if (maxPairs * 2 > Game.GameData.data.AllPlayers.Count) maxPairs = Game.GameData.data.AllPlayers.Count / 2;
 
             int pairs = Helpers.CalcProbabilityCount(RoleChanceOption.getSelection(), maxPairs);
 
@@ -187,6 +206,7 @@ namespace Nebula.Roles.ExtraRoles
             maxPairsOption = CreateOption(Color.white, "maxPairs", 1f, 0f, 5f, 1f);
             loversModeOption = CreateOption(Color.white, "mode", new string[] { "role.lover.mode.standard", "role.lover.mode.avenger" });
             chanceThatOneLoverIsImpostorOption = CreateOption(Color.white, "chanceThatOneLoverIsImpostor", CustomOptionHolder.rates);
+            loversAsIndependentSideOption= CreateOption(Color.white, "loversAsIndependentSide",false);
 
             canChangeTrilemmaOption = CreateOption(Color.white, "canChangeTrilemma", true);
             canChangeTrilemmaOption.AddCustomPrerequisite(() => loversModeOption.getSelection() == 0);
@@ -205,14 +225,14 @@ namespace Nebula.Roles.ExtraRoles
             else if (Game.GameData.data.myData.getGlobalData().extraRole.Contains(this))
             {
                 ulong pairId = Game.GameData.data.myData.getGlobalData().GetExtraRoleData(this);
-                if (Game.GameData.data.players[playerId].GetExtraRoleData(this) == pairId) showFlag = true;
+                if (Game.GameData.data.playersArray[playerId].GetExtraRoleData(this) == pairId) showFlag = true;
             }
 
             if (!showFlag && loversModeOption.getSelection()==1 && Roles.Avenger.canKnowExistenceOfAvengerOption.getBool())
             {
                 int selection=Roles.Avenger.canKnowExistenceOfAvengerOption.getSelection();
                 var myData= PlayerControl.LocalPlayer.GetModData();
-                if (selection == 1 || (selection == 2 && myData.HasExtraRole(Roles.AvengerTarget) && myData.GetExtraRoleData(Roles.AvengerTarget.id) == Game.GameData.data.players[playerId].GetExtraRoleData(this)))
+                if (selection == 1 || (selection == 2 && myData.HasExtraRole(Roles.AvengerTarget) && myData.GetExtraRoleData(Roles.AvengerTarget.id) == Game.GameData.data.AllPlayers[playerId].GetExtraRoleData(this)))
                 {
                     PlayerControl player = Helpers.playerById(playerId);
                     if (player == null) return;
@@ -230,7 +250,7 @@ namespace Nebula.Roles.ExtraRoles
         public override void EditDisplayNameForcely(byte playerId, ref string displayName)
         {
             displayName += Helpers.cs(
-                    iconColor[Game.GameData.data.players[playerId].GetExtraRoleData(this) - 1], "♥");
+                    iconColor[Game.GameData.data.AllPlayers[playerId].GetExtraRoleData(this) - 1], "♥");
         }
 
         public override void EditDescriptionString(ref string desctiption)
@@ -250,6 +270,11 @@ namespace Nebula.Roles.ExtraRoles
             {
                 if (player == partner) return;
                 if (partner.Data.IsDead) return;
+                if (condition == EndCondition.LoversWin && !player.Data.IsDead)
+                {
+                    winFlag = true;
+                    return;
+                }
                 if (partner.GetModData().role.CheckWin(partner, condition))
                 {
                     winFlag = true;
@@ -261,7 +286,7 @@ namespace Nebula.Roles.ExtraRoles
                     winFlag |= role.CheckAdditionalWin(partner, condition);
                 });
             });
-            if (winFlag)
+            if (winFlag && condition!=EndCondition.LoversWin)
             {
                 EndGameManagerSetUpPatch.AddEndText(Language.Language.GetString("role.lover.additionalEndText"));
             }
@@ -311,7 +336,7 @@ namespace Nebula.Roles.ExtraRoles
                     {
                         ulong removeId = target.GetModData().GetExtraRoleData(id);
 
-                        foreach(Game.PlayerData data in Game.GameData.data.players.Values)
+                        foreach(Game.PlayerData data in Game.GameData.data.AllPlayers.Values)
                         {
                             if (data.GetExtraRoleData(id) != removeId) continue;
 
@@ -330,7 +355,7 @@ namespace Nebula.Roles.ExtraRoles
                     {
                         ulong removeId = target.GetModData().GetExtraRoleData(Roles.Trilemma.id);
 
-                        foreach (Game.PlayerData data in Game.GameData.data.players.Values)
+                        foreach (Game.PlayerData data in Game.GameData.data.AllPlayers.Values)
                         {
                             if (data.GetExtraRoleData(Roles.Trilemma.id) != removeId) continue;
 

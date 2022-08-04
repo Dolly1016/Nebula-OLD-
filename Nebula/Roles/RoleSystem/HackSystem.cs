@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Nebula.Utilities;
 
 namespace Nebula.Roles.RoleSystem
 {
@@ -13,7 +14,7 @@ namespace Nebula.Roles.RoleSystem
 
             PlayerControl.LocalPlayer.NetTransform.Halt();
             Action<MapBehaviour> tmpAction = (MapBehaviour m) => { m.ShowCountOverlay(); };
-            DestroyableSingleton<HudManager>.Instance.ShowMap(tmpAction);
+            FastDestroyableSingleton<HudManager>.Instance.ShowMap(tmpAction);
         }
     }
 }

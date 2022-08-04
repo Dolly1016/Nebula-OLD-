@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using System.Security.Cryptography;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using Nebula.Utilities;
 
 namespace Nebula.Module
 {
@@ -708,7 +709,7 @@ namespace Nebula.Module
                     if (ActiveInputManager.currentControlType == ActiveInputManager.InputType.Keyboard)
                     {
                         colorChip.Button.OnMouseOver.AddListener((UnityEngine.Events.UnityAction)(() => __instance.SelectHat(hat)));
-                        colorChip.Button.OnMouseOut.AddListener((UnityEngine.Events.UnityAction)(() => __instance.SelectHat(DestroyableSingleton<HatManager>.Instance.GetHatById(SaveManager.LastHat))));
+                        colorChip.Button.OnMouseOut.AddListener((UnityEngine.Events.UnityAction)(() => __instance.SelectHat(FastDestroyableSingleton<HatManager>.Instance.GetHatById(SaveManager.LastHat))));
                         colorChip.Button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => __instance.ClickEquip()));
                     }
                     else
@@ -730,7 +731,7 @@ namespace Nebula.Module
             {
                 calcItemBounds(__instance);
 
-                HatData[] unlockedHats = DestroyableSingleton<HatManager>.Instance.GetUnlockedHats();
+                HatData[] unlockedHats = FastDestroyableSingleton<HatManager>.Instance.GetUnlockedHats();
                 Dictionary<string, List<System.Tuple<HatData, CustomHat>>> packages = new Dictionary<string, List<System.Tuple<HatData, CustomHat>>>();
 
                 Helpers.destroyList(hatsTabCustomTexts);
@@ -818,7 +819,7 @@ namespace Nebula.Module
                     if (ActiveInputManager.currentControlType == ActiveInputManager.InputType.Keyboard)
                     {
                         colorChip.Button.OnMouseOver.AddListener((UnityEngine.Events.UnityAction)(() => __instance.SelectNameplate(nameplate)));
-                        colorChip.Button.OnMouseOut.AddListener((UnityEngine.Events.UnityAction)(() => __instance.SelectNameplate(DestroyableSingleton<HatManager>.Instance.GetNamePlateById(SaveManager.LastNamePlate))));
+                        colorChip.Button.OnMouseOut.AddListener((UnityEngine.Events.UnityAction)(() => __instance.SelectNameplate(FastDestroyableSingleton<HatManager>.Instance.GetNamePlateById(SaveManager.LastNamePlate))));
                         colorChip.Button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => __instance.ClickEquip()));
                     }
                     else
@@ -842,7 +843,7 @@ namespace Nebula.Module
             {
                 calcItemBounds(__instance);
 
-                NamePlateData[] unlockedNameplates = DestroyableSingleton<HatManager>.Instance.GetUnlockedNamePlates();
+                NamePlateData[] unlockedNameplates = FastDestroyableSingleton<HatManager>.Instance.GetUnlockedNamePlates();
                 Dictionary<string, List<System.Tuple<NamePlateData, CustomNamePlate>>> packages = new Dictionary<string, List<System.Tuple<NamePlateData, CustomNamePlate>>>();
 
                 Helpers.destroyList(nameplatesTabCustomTexts);
@@ -930,7 +931,7 @@ namespace Nebula.Module
                     if (ActiveInputManager.currentControlType == ActiveInputManager.InputType.Keyboard)
                     {
                         colorChip.Button.OnMouseOver.AddListener((UnityEngine.Events.UnityAction)(() => __instance.SelectVisor(visor)));
-                        colorChip.Button.OnMouseOut.AddListener((UnityEngine.Events.UnityAction)(() => __instance.SelectVisor(DestroyableSingleton<HatManager>.Instance.GetVisorById(SaveManager.LastVisor))));
+                        colorChip.Button.OnMouseOut.AddListener((UnityEngine.Events.UnityAction)(() => __instance.SelectVisor(FastDestroyableSingleton<HatManager>.Instance.GetVisorById(SaveManager.LastVisor))));
                         colorChip.Button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => __instance.ClickEquip()));
                     }
                     else
@@ -948,7 +949,7 @@ namespace Nebula.Module
                     __instance.StartCoroutine(visor.CoLoadViewData((Il2CppSystem.Action<VisorViewData>)((v) => {
                         colorChip.Inner.FrontLayer.sprite = v.IdleFrame;
                         if (ext != null && ext.Adaptive.Value)
-                            colorChip.Inner.FrontLayer.material = DestroyableSingleton<HatManager>.Instance.PlayerMaterial;
+                            colorChip.Inner.FrontLayer.material = FastDestroyableSingleton<HatManager>.Instance.PlayerMaterial;
                     })));
                     
 
@@ -962,7 +963,7 @@ namespace Nebula.Module
             {
                 calcItemBounds(__instance);
 
-                VisorData[] unlockedVisors = DestroyableSingleton<HatManager>.Instance.GetUnlockedVisors();
+                VisorData[] unlockedVisors = FastDestroyableSingleton<HatManager>.Instance.GetUnlockedVisors();
                 Dictionary<string, List<System.Tuple<VisorData, CustomVisor>>> packages = new Dictionary<string, List<System.Tuple<VisorData, CustomVisor>>>();
 
                 Helpers.destroyList(visorsTabCustomTexts);
@@ -1323,11 +1324,11 @@ namespace Nebula.Module
         {
             var extend = data.getVisorData();
             if (extend == null || !extend.Adaptive.Value) {
-                __instance.Image.material= DestroyableSingleton<HatManager>.Instance.DefaultShader;
+                __instance.Image.material= FastDestroyableSingleton<HatManager>.Instance.DefaultShader;
             }
             else
             {
-                __instance.Image.material = DestroyableSingleton<HatManager>.Instance.PlayerMaterial;
+                __instance.Image.material = FastDestroyableSingleton<HatManager>.Instance.PlayerMaterial;
             }
         }
     }
@@ -1340,11 +1341,11 @@ namespace Nebula.Module
             var extend = data.getVisorData();
             if (extend == null || !extend.Adaptive.Value)
             {
-                __instance.Image.material = DestroyableSingleton<HatManager>.Instance.DefaultShader;
+                __instance.Image.material = FastDestroyableSingleton<HatManager>.Instance.DefaultShader;
             }
             else
             {
-                __instance.Image.material = DestroyableSingleton<HatManager>.Instance.PlayerMaterial;
+                __instance.Image.material = FastDestroyableSingleton<HatManager>.Instance.PlayerMaterial;
             }
         }
     }

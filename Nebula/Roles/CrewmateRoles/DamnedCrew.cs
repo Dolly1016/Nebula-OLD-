@@ -15,7 +15,7 @@ namespace Nebula.Roles.CrewmateRoles
         public override bool IsGuessableRole { get => false; }
         public override void GlobalInitialize(PlayerControl __instance)
         {
-            Game.GameData.data.players[__instance.PlayerId].SetRoleData(guardLeftId, 1);
+            Game.GameData.data.playersArray[__instance.PlayerId].SetRoleData(guardLeftId, 1);
         }
 
         //変身トリガは個人で持つ(役職を交換されても引き継がない)
@@ -25,7 +25,7 @@ namespace Nebula.Roles.CrewmateRoles
         }
 
         public override Helpers.MurderAttemptResult OnMurdered(byte murderId, byte playerId) {
-            if (Game.GameData.data.players[playerId].GetRoleData(guardLeftId) > 0)
+            if (Game.GameData.data.playersArray[playerId].GetRoleData(guardLeftId) > 0)
             {
                 RPCEventInvoker.AddAndUpdateRoleData(playerId,guardLeftId,-1);
                 return Helpers.MurderAttemptResult.BlankKill;

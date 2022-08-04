@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections;
 using System.IO;
 using System.Reflection;
 using UnhollowerBaseLib;
 using UnityEngine;
 using Hazel;
-using HarmonyLib;
 using System.Linq;
 using System.Text;
+using Nebula.Utilities;
 
 namespace Nebula
 {
@@ -136,7 +135,7 @@ namespace Nebula
 
         public static PlayerControl playerById(byte id)
         {
-            foreach (PlayerControl player in PlayerControl.AllPlayerControls)
+            foreach (PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
                 if (player.PlayerId == id)
                     return player;
             return null;
@@ -145,14 +144,14 @@ namespace Nebula
         public static Dictionary<byte, PlayerControl> allPlayersById()
         {
             Dictionary<byte, PlayerControl> res = new Dictionary<byte, PlayerControl>();
-            foreach (PlayerControl player in PlayerControl.AllPlayerControls)
+            foreach (PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
                 res.Add(player.PlayerId, player);
             return res;
         }
 
         public static bool isCustomServer()
         {
-            if (DestroyableSingleton<ServerManager>.Instance == null) return false;
+            if (!DestroyableSingleton<ServerManager>.InstanceExists) return false;
             StringNames n = DestroyableSingleton<ServerManager>.Instance.CurrentRegion.TranslateName;
             return n != StringNames.ServerNA && n != StringNames.ServerEU && n != StringNames.ServerAS;
         }
@@ -230,7 +229,8 @@ namespace Nebula
             target.RawSetColor(colorId);
             target.SetPlayerMaterialColors(target.cosmetics.visor.Image);
 
-            Game.GameData.data.players[target.PlayerId].currentName = playerName;
+            var p=Game.GameData.data.GetPlayerData(target.PlayerId);
+            if (p != null)p.currentName = playerName;
 
             /*
             SkinData nextSkin = DestroyableSingleton<HatManager>.Instance.GetSkinById(skinId);
@@ -254,7 +254,7 @@ namespace Nebula
             //死体のペットは変更しない(生き返ってしまうため)
             if (target.Data.IsDead) return;
             if (target.cosmetics.currentPet) UnityEngine.Object.Destroy(target.cosmetics.currentPet.gameObject);
-            target.cosmetics.currentPet = UnityEngine.Object.Instantiate<PetBehaviour>(DestroyableSingleton<HatManager>.Instance.GetPetById(petId).viewData.viewData);
+            target.cosmetics.currentPet = UnityEngine.Object.Instantiate<PetBehaviour>(FastDestroyableSingleton<HatManager>.Instance.GetPetById(petId).viewData.viewData);
             target.cosmetics.currentPet.transform.position = target.transform.position;
             target.cosmetics.currentPet.Source = target;
             target.cosmetics.currentPet.Visible = target.Visible;
@@ -273,8 +273,11 @@ namespace Nebula
 
         public static void SetOutfit(this PlayerControl target, PlayerControl reference)
         {
-            string name = Game.GameData.data.players[reference.PlayerId].name;
-            Game.PlayerData.PlayerOutfitData outfit = Game.GameData.data.players[reference.PlayerId].CurrentOutfit;
+            var rp = Game.GameData.data.GetPlayerData(reference.PlayerId);
+            if (rp == null) return;
+
+            string name = rp.name;
+            Game.PlayerData.PlayerOutfitData outfit = rp.CurrentOutfit;
             if (outfit == null)
             {
                 return;
@@ -285,22 +288,24 @@ namespace Nebula
 
         public static void ResetOutfit(this PlayerControl target)
         {
-            target.SetOutfit(target.GetModData().name, target.GetModData().Outfit);
+            var p = target.GetModData();
+            if (p == null) return;
+            target.SetOutfit(p.name, p.Outfit);
         }
 
         public static Game.PlayerData? GetModData(byte player)
         {
-            if (Game.GameData.data.players.ContainsKey(player))
+            if (Game.GameData.data.playersArray.Count>player)
             {
-                return Game.GameData.data.players[player];
+                return Game.GameData.data.playersArray[player];
             }
             return null;
         }
 
         public static bool HasModData(byte player)
         {
-            if (Game.GameData.data == null) return false; 
-            return Game.GameData.data.players.ContainsKey(player);
+            if (Game.GameData.data == null) return false;
+            return GetModData(player) != null;
         }
 
         public static Game.PlayerData? GetModData(this PlayerControl player)
@@ -474,9 +479,13 @@ namespace Nebula
             if (player == null) return;
 
             action.Invoke(player.role);
-            foreach (Roles.ExtraRole role in player.extraRole)
+
+            if (player.extraRole.Count > 0)
             {
-                action.Invoke(role);
+                foreach (Roles.ExtraRole role in player.extraRole)
+                {
+                    action.Invoke(role);
+                }
             }
 
         }
@@ -485,14 +494,17 @@ namespace Nebula
             Game.PlayerData data;
             try
             {
-                data = Game.GameData.data.players[playerId];
+                data = Game.GameData.data.AllPlayers[playerId];
 
                 action.Invoke(data.role);
-                foreach (Roles.ExtraRole role in data.extraRole)
-                {
-                    action.Invoke(role);
-                }
 
+                if (data.extraRole.Count > 0)
+                {
+                    foreach (Roles.ExtraRole role in data.extraRole)
+                    {
+                        action.Invoke(role);
+                    }
+                }
             }
             catch(Exception e) { return; }
         }

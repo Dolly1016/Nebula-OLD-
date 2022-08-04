@@ -37,7 +37,7 @@ namespace Nebula.Roles.NeutralRoles
 
         public override void LoadOptionData()
         {
-            TopOption.AddCustomPrerequisite(()=>!Roles.Lover.loversModeOption.IsHidden(CustomOptionHolder.GetCustomGameMode()) &&Roles.Lover.loversModeOption.getSelection()==1);
+            TopOption.AddCustomPrerequisite(() => Roles.Lover.loversModeOption.getSelection() == 1);
 
             avengerKillCoolDownOption = CreateOption(Color.white, "killCoolDown", 20f, 10f, 60f, 2.5f);
             avengerKillCoolDownOption.suffix = "second";
@@ -69,7 +69,7 @@ namespace Nebula.Roles.NeutralRoles
 
             if (myGData.GetRoleData(avengerCheckerId) == 0)
             {
-                foreach(var data in Game.GameData.data.players.Values)
+                foreach(var data in Game.GameData.data.AllPlayers.Values)
                 {
                     if (data.GetExtraRoleData(Roles.AvengerTarget) == myGData.GetExtraRoleData(Roles.Lover))
                     {

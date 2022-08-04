@@ -39,7 +39,7 @@ namespace Nebula.Roles.ImpostorRoles
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
                 () => { return PlayerControl.LocalPlayer.CanMove; },
                 () => {  },
-                HudManager.Instance.UseButton.fastUseSettings.get_Item(ImageNames.AdminMapButton).Image,
+                __instance.UseButton.fastUseSettings.get_Item(ImageNames.AdminMapButton).Image,
                 new Vector3(-1.8f, 0f, 0),
                 __instance,
                 KeyCode.F,

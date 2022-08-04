@@ -52,8 +52,8 @@ namespace Nebula.Objects
             {
                 Vector3 position = obj.GameObject.transform.position;
                 Vector3 pos = new Vector3(position.x, position.y, 0f);
-                if (IsBack(obj)) obj.GameObject.transform.position += new Vector3(0, 0, position.y / 1000f + 0.001f);
-                else if (IsFront(obj)) obj.GameObject.transform.position += new Vector3(0, 0, position.y / 1000f - 1f);
+                if (IsBack(obj)) pos += new Vector3(0, 0, position.y / 1000f + 0.001f);
+                else if (IsFront(obj)) pos += new Vector3(0, 0, position.y / 1000f - 1f);
                 obj.GameObject.transform.position = pos;
             }
 

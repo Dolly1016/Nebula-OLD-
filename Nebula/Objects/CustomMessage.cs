@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using BepInEx.IL2CPP.Utils.Collections;
+using Nebula.Utilities;
 
 namespace Nebula.Objects
 {
@@ -84,7 +85,7 @@ namespace Nebula.Objects
 
             
             
-            RoomTracker roomTracker = HudManager.Instance?.roomTracker;
+            RoomTracker roomTracker = HudManager.Instance.roomTracker;
 
             if (roomTracker != null)
             {
@@ -194,7 +195,7 @@ namespace Nebula.Objects
 
 
 
-            RoomTracker roomTracker = HudManager.Instance?.roomTracker;
+            RoomTracker roomTracker = HudManager.Instance.roomTracker;
 
             if (roomTracker != null)
             {

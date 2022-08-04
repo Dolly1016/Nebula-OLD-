@@ -11,6 +11,7 @@ using Hazel;
 using BepInEx.Configuration;
 using Nebula.Language;
 using BepInEx.IL2CPP.Utils.Collections;
+using Nebula.Utilities;
 
 namespace Nebula.Module
 {
@@ -19,7 +20,7 @@ namespace Nebula.Module
     {
         Standard=0x01,
         Minigame = 0x02,
-        Parlour = 0x04,
+        Ritual = 0x04,
         Investigators = 0x08,
         FreePlay = 0x10,
         All =int.MaxValue
@@ -35,14 +36,15 @@ namespace Nebula.Module
         NeutralRoles        = 0x08,
         Modifiers           = 0x10,
         EscapeRoles         = 0x20,
-        AdvancedSettings    = 0x40
+        AdvancedSettings    = 0x40,
+        MaxValidTabs             = 7
     }
 
     public static class CustomGameModes
     {
         static public List<CustomGameMode> AllGameModes = new List<CustomGameMode>()
         {
-            CustomGameMode.Standard,CustomGameMode.Minigame,CustomGameMode.Parlour,CustomGameMode.Investigators,
+            CustomGameMode.Standard,CustomGameMode.Minigame,CustomGameMode.Ritual,CustomGameMode.Investigators,
             CustomGameMode.FreePlay
         };
 
@@ -265,18 +267,50 @@ namespace Nebula.Module
 
             if (PlayerControl.AllPlayerControls.Count <= 1 || AmongUsClient.Instance?.AmHost == false && PlayerControl.LocalPlayer == null) return;
 
-            MessageWriter messageWriter = AmongUsClient.Instance.StartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ShareOptions, Hazel.SendOption.Reliable);
-            messageWriter.WritePacked((uint)CustomOption.options.Count);
+            uint count = (uint)CustomOption.options.Count;
+            MessageWriter? messageWriter = null;
+            bool startFlag = true;
+            bool firstFlag = true;
+            int written = 0;
 
-            messageWriter.WritePacked((uint)0);
-            messageWriter.WritePacked((uint)PlayerControl.GameOptions.NumImpostors);
-
-            foreach (CustomOption option in CustomOption.options)
+            var itr=CustomOption.options.GetEnumerator();
+            
+            while (itr.MoveNext())
             {
-                messageWriter.WritePacked((uint)option.id);
-                messageWriter.WritePacked((uint)Convert.ToUInt32(option.selection));
+                if (startFlag)
+                {
+                    startFlag = false;
+
+                    messageWriter = AmongUsClient.Instance.StartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ShareOptions, Hazel.SendOption.Reliable);
+                    messageWriter.WritePacked((uint)(count > 50 ? 50 : count));
+                    written = 0;
+
+                    if (firstFlag)
+                    {
+                        firstFlag = false;
+
+                        messageWriter.WritePacked((uint)0);
+                        messageWriter.WritePacked((uint)PlayerControl.GameOptions.NumImpostors);
+                        written++;
+                    }
+                }
+
+                //ひとつずつオプションを書き込む
+                messageWriter?.WritePacked((uint)itr.Current.id);
+                messageWriter?.WritePacked((uint)Convert.ToUInt32(itr.Current.selection));
+                written++;
+
+                //メッセージ終端
+                if (written == 50)
+                {
+                    messageWriter?.EndMessage();
+                    messageWriter = null;
+
+                    startFlag = true;
+                }
             }
-            messageWriter.EndMessage();
+
+            if (messageWriter != null) messageWriter.EndMessage();
         }
 
         public CustomOption AddPrerequisite(CustomOption option)
@@ -635,7 +669,7 @@ namespace Nebula.Module
                     PassiveButton button = stringOption.gameObject.GetComponent<PassiveButton>();
                     button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
                     {
-                        if (Constants.ShouldPlaySfx()) SoundManager.Instance.PlaySound(HudManager.Instance.TaskCompleteSound, false, 0.8f);
+                        if (Constants.ShouldPlaySfx()) SoundManager.Instance.PlaySound(FastDestroyableSingleton<HudManager>.Instance.TaskCompleteSound, false, 0.8f);
                         CustomOptionPreset.Export().Output();
                         Helpers.ShowDialog("preset.dialog.save");
                     }));
@@ -657,7 +691,7 @@ namespace Nebula.Module
                         PassiveButton button = stringOption.gameObject.GetComponent<PassiveButton>();
                         button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
                         {
-                            if (Constants.ShouldPlaySfx()) SoundManager.Instance.PlaySound(HudManager.Instance.TaskUpdateSound, false, 0.8f);
+                            if (Constants.ShouldPlaySfx()) SoundManager.Instance.PlaySound(FastDestroyableSingleton<HudManager>.Instance.TaskUpdateSound, false, 0.8f);
                             bool result = CustomOptionPreset.LoadAndInput("Presets/"+name + ".options");
 
                             CustomOption.ShareOptionSelections();
@@ -805,7 +839,7 @@ namespace Nebula.Module
                 "Settings","CrewmateRoles","ImpostorRoles","NeutralRoles","Modifiers","EscapeRoles","AdvancedSettings"
             };
 
-            for (int i = 0; i < 7; i++)
+            for (int i = 0; i < (int)CustomOptionTab.MaxValidTabs; i++)
             {
                 GameObject lTab = UnityEngine.Object.Instantiate(roleTab, tabParent.transform);
                 lTab.gameObject.name = names[i];
@@ -822,9 +856,9 @@ namespace Nebula.Module
                     leftHighlights[index].enabled = true;
                     CustomOption.CurrentTab = (Module.CustomOptionTab)(1 << index);
                 }));
-                if(((int)CustomOption.CurrentTab&(1<<i))!=0) leftHighlights[0].enabled = true;
+                if(((int)CustomOption.CurrentTab&(1<<i))!=0) leftHighlights[i].enabled = true;
             }
-            HudManager.Instance.StartCoroutine(GetEnumrator(tabParent, leftTabs).WrapToIl2Cpp());
+            FastDestroyableSingleton<HudManager>.Instance.StartCoroutine(GetEnumrator(tabParent, leftTabs).WrapToIl2Cpp());
         }
     }
 
@@ -1183,7 +1217,7 @@ namespace Nebula.Module
 
             int numPages = pages.Count;
             int counter = CustomOptionHolder.optionsPage = CustomOptionHolder.optionsPage % numPages;
-            HudManager.Instance.GameSettings.text = pages[counter].Trim('\r', '\n') + "\n\n" + Language.Language.GetString("option.display.pressTabForMore") + $" ({counter + 1}/{numPages})";
+            FastDestroyableSingleton<HudManager>.Instance.GameSettings.text = pages[counter].Trim('\r', '\n') + "\n\n" + Language.Language.GetString("option.display.pressTabForMore") + $" ({counter + 1}/{numPages})";
         }
     }
 

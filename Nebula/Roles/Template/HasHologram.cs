@@ -9,6 +9,7 @@ using Nebula.Objects;
 using HarmonyLib;
 using Hazel;
 using Nebula.Game;
+using Nebula.Utilities;
 
 namespace Nebula.Roles.Template
 {
@@ -19,7 +20,7 @@ namespace Nebula.Roles.Template
         public override void Initialize(PlayerControl __instance)
         {
             int playerCounter = 0;
-            if (PlayerControl.LocalPlayer != null && HudManager.Instance != null)
+            if (HudManager.InstanceExists && PlayerControl.LocalPlayer != null)
             {
                 foreach (PlayerControl p in PlayerControl.AllPlayerControls)
                 {
@@ -56,7 +57,12 @@ namespace Nebula.Roles.Template
         }
 
         public virtual void InitializePlayerIcon(PoolablePlayer player,byte PlayerId,int index){
-            Vector3 bottomLeft = new Vector3(-HudManager.Instance.UseButton.transform.localPosition.x, HudManager.Instance.UseButton.transform.localPosition.y, HudManager.Instance.UseButton.transform.localPosition.z);
+            HudManager hudManager = FastDestroyableSingleton<HudManager>.Instance;
+
+            Vector3 bottomLeft = new Vector3(
+                -hudManager.UseButton.transform.localPosition.x,
+                hudManager.UseButton.transform.localPosition.y,
+                hudManager.UseButton.transform.localPosition.z);
 
             player.transform.localPosition = bottomLeft + new Vector3(-0.35f, -0.25f, 0);
             player.transform.localScale = Vector3.one * 0.35f;

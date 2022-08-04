@@ -25,7 +25,7 @@ namespace Nebula.Patches
                 return true;
             }
 
-            if (!Game.GameData.data.players.ContainsKey(PlayerControl.LocalPlayer.PlayerId))
+            if (Game.GameData.data.GetPlayerData(PlayerControl.LocalPlayer.PlayerId)==null)
             {
                 return true;
             }
@@ -102,7 +102,15 @@ namespace Nebula.Patches
             }
         }
         */
+    }
 
-        
+    //AirshipにてDummyらのスポーン位置を変更する
+    [HarmonyPatch(typeof(AirshipStatus), nameof(AirshipStatus.SpawnPlayer))]
+    static class AirshipSpawnDummyPatch
+    {
+        static void Postfix(AirshipStatus __instance, [HarmonyArgument(0)] PlayerControl player)
+        {
+            if(player.isDummy) player.NetTransform.SnapTo(new Vector2(-0.66f, -0.5f));
+        }
     }
 }

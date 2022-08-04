@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using Nebula.Objects;
+using Nebula.Utilities;
 
 namespace Nebula.Roles.CrewmateRoles
 {
@@ -28,7 +29,7 @@ namespace Nebula.Roles.CrewmateRoles
         public static Sprite getVitalsSprite()
         {
             if (vitalsSprite) return vitalsSprite;
-            vitalsSprite = HudManager.Instance.UseButton.fastUseSettings.get_Item(ImageNames.VitalsButton).Image;
+            vitalsSprite = FastDestroyableSingleton<HudManager>.Instance.UseButton.fastUseSettings.get_Item(ImageNames.VitalsButton).Image;
             return vitalsSprite;
         }
 
@@ -49,7 +50,7 @@ namespace Nebula.Roles.CrewmateRoles
                 if (panel.IsDiscon)
                 {
                     text.gameObject.SetActive(true);
-                    text.text = Language.Language.GetString("status."+Game.GameData.data.players[panel.PlayerInfo.PlayerId].Status.Status);
+                    text.text = Language.Language.GetString("status."+Game.GameData.data.playersArray[panel.PlayerInfo.PlayerId].Status.Status);
                 }
             }
 
@@ -93,7 +94,7 @@ namespace Nebula.Roles.CrewmateRoles
                 if (__instance.vitals[tuple.Item1].IsDiscon)
                 {
                     tuple.Item2.gameObject.SetActive(true);
-                    tuple.Item2.text = Language.Language.GetString("status." + Game.GameData.data.players[tuple.Item1].Status.Status);
+                    tuple.Item2.text = Language.Language.GetString("status." + Game.GameData.data.playersArray[tuple.Item1].Status.Status);
                 }
             }
         }

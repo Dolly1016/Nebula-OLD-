@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Nebula.Utilities;
 
 namespace Nebula
 {
@@ -306,7 +307,7 @@ namespace Nebula
 
         public static void SetPlayerStatus(byte playerId, Game.PlayerData.PlayerStatus status)
         {
-            Game.GameData.data.players[playerId].Status = status;
+            Game.GameData.data.playersArray[playerId].Status = status;
         }
 
         public static void SetRandomMap(byte mapId)
@@ -366,10 +367,10 @@ namespace Nebula
         /// <param name="playerId"></param>
         public static void SetExtraRole(byte playerId,Roles.ExtraRole role, ulong initializeValue)
         {
-            Game.GameData.data.players[playerId].extraRole.Add(role);
-            Game.GameData.data.players[playerId].SetExtraRoleData(role.id,initializeValue);
+            Game.GameData.data.playersArray[playerId]?.extraRole.Add(role);
+            Game.GameData.data.playersArray[playerId]?.SetExtraRoleData(role.id,initializeValue);
 
-            role.Setup(Game.GameData.data.players[playerId]);
+            role.Setup(Game.GameData.data.playersArray[playerId]);
         }
 
         public static void UnsetExtraRole(Roles.ExtraRole role, byte playerId)
@@ -381,7 +382,7 @@ namespace Nebula
                 role.ButtonDeactivate();
             }
 
-            Game.GameData.data.players[playerId].extraRole.Remove(role);
+            Game.GameData.data.playersArray[playerId].extraRole.Remove(role);
         }
 
         public static void ChangeExtraRole(Roles.ExtraRole? removeRole, Roles.ExtraRole addRole, ulong initializeValue, byte playerId)
@@ -448,7 +449,7 @@ namespace Nebula
                             {
                             }
                         }
-                        DestroyableSingleton<HudManager>.Instance.ShadowQuad.gameObject.SetActive(false);
+                        FastDestroyableSingleton<HudManager>.Instance.ShadowQuad.gameObject.SetActive(false);
                         target.cosmetics.SetNameMask(false);
                         target.RpcSetScanner(false);
                     }
@@ -460,9 +461,9 @@ namespace Nebula
                     source.MurderPlayer(target);
                 }
 
-                Game.GameData.data.players[target.PlayerId].Die(Game.PlayerData.PlayerStatus.GetStatusById(statusId), source.PlayerId);
+                Game.GameData.data.playersArray[target.PlayerId]?.Die(Game.PlayerData.PlayerStatus.GetStatusById(statusId), source.PlayerId);
 
-                if (Game.GameData.data.players[target.PlayerId].role.RemoveAllTasksOnDead)
+                if (Game.GameData.data.playersArray[target.PlayerId].role.RemoveAllTasksOnDead)
                 {
                     target.clearAllTasks();
                     var taskData = target.GetModData().Tasks;
@@ -510,7 +511,7 @@ namespace Nebula
             if (player != null)
             {
                 player.Exiled();
-                Game.GameData.data.players[playerId].Die(Game.PlayerData.PlayerStatus.GetStatusById(statusId), murderId);
+                Game.GameData.data.playersArray[playerId]?.Die(Game.PlayerData.PlayerStatus.GetStatusById(statusId), murderId);
 
                 Helpers.RoleAction(player.PlayerId, (role) => role.OnDied(playerId));
                 Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId, (role) => { role.OnAnyoneDied(player.PlayerId); });
@@ -564,7 +565,7 @@ namespace Nebula
             if (Constants.ShouldPlaySfx()) SoundManager.Instance.PlaySound(Helpers.playerById(targetId).KillSfx, false, 0.8f);
 
             if (PlayerControl.LocalPlayer.PlayerId == targetId)
-                HudManager.Instance.KillOverlay.ShowKillAnimation(Helpers.playerById(killerId).Data, PlayerControl.LocalPlayer.Data);
+                FastDestroyableSingleton<HudManager>.Instance.KillOverlay.ShowKillAnimation(Helpers.playerById(killerId).Data, PlayerControl.LocalPlayer.Data);
 
             if (!Roles.Roles.F_Guesser.secondoryRoleOption.getBool())
             {
@@ -575,7 +576,7 @@ namespace Nebula
 
         public static void UpdateRoleData(byte playerId, int dataId, int newData)
         {
-            Game.GameData.data.players[playerId].SetRoleData(dataId, newData);
+            Game.GameData.data.playersArray[playerId].SetRoleData(dataId, newData);
 
             //自身のロールデータ更新時に呼ぶメソッド群
             if (playerId == PlayerControl.LocalPlayer.PlayerId)
@@ -586,7 +587,7 @@ namespace Nebula
 
         public static void UpdateExtraRoleData(byte playerId, byte roleId, ulong newData)
         {
-            Game.GameData.data.players[playerId].SetExtraRoleData(roleId, newData);
+            Game.GameData.data.playersArray[playerId].SetExtraRoleData(roleId, newData);
 
             //自身のロールデータ更新時に呼ぶメソッド群
             if (playerId == PlayerControl.LocalPlayer.PlayerId)
@@ -607,11 +608,11 @@ namespace Nebula
         {
             if (targetId != Byte.MaxValue)
             {
-                Game.GameData.data.players[playerId].DragPlayer(targetId);
+                Game.GameData.data.playersArray[playerId]?.DragPlayer(targetId);
             }
             else
             {
-                Game.GameData.data.players[playerId].DropPlayer();
+                Game.GameData.data.playersArray[playerId]?.DropPlayer();
             }
         }
 
@@ -664,7 +665,7 @@ namespace Nebula
 
         public static void ImmediatelyChangeRole(byte playerId, byte roleId)
         {
-            Game.PlayerData data = Game.GameData.data.players[playerId];
+            Game.PlayerData data = Game.GameData.data.GetPlayerData(playerId);
 
             if (playerId == PlayerControl.LocalPlayer.PlayerId)
             {
@@ -682,8 +683,10 @@ namespace Nebula
         {
             Events.Schedule.RegisterPostMeetingAction(() =>
             {
-                Game.PlayerData data1 = Game.GameData.data.players[playerId_1];
-                Game.PlayerData data2 = Game.GameData.data.players[playerId_2];
+                Game.PlayerData? data1 = Game.GameData.data.GetPlayerData(playerId_1);
+                Game.PlayerData? data2 = Game.GameData.data.GetPlayerData(playerId_2);
+
+                if (data1 == null || data2 == null) return;
 
                 if (playerId_1 == PlayerControl.LocalPlayer.PlayerId)
                 {
@@ -714,7 +717,7 @@ namespace Nebula
                 {
                     if (body.ParentId != playerId) continue;
 
-                    Game.GameData.data.players[playerId].Revive(changeStatus);
+                    Game.GameData.data.playersArray[playerId]?.Revive(changeStatus);
                     PlayerControl player = Helpers.playerById(playerId);
                     if(!reviveOnCurrentPosition)player.transform.position = body.transform.position;
                     player.Revive(false);
@@ -732,7 +735,7 @@ namespace Nebula
                     UnityEngine.Object.Destroy(body.gameObject);
                 }
 
-                Game.GameData.data.players[playerId].Revive();
+                Game.GameData.data.playersArray[playerId]?.Revive();
                 PlayerControl player = Helpers.playerById(playerId);
                 player.Revive(false);
                 player.Data.IsDead = false;
@@ -741,7 +744,7 @@ namespace Nebula
 
             if (gushOnRevive)
             {
-                var data = Game.GameData.data.players[playerId];
+                var data = Game.GameData.data.playersArray[playerId];
                 data.Property.SetUnderTheFloorForcely(true);
                 data.Property.UnderTheFloor = false;
             }
@@ -751,12 +754,12 @@ namespace Nebula
 
         public static void EmitSpeedFactor(byte playerId,Game.SpeedFactor speedFactor)
         {
-            Game.GameData.data.players[playerId].Speed.Register(speedFactor);
+            Game.GameData.data.playersArray[playerId]?.Speed.Register(speedFactor);
         }
 
         public static void EmitPlayerAttributeFactor(byte playerId, Game.PlayerAttributeFactor attributeFactor)
         {
-            Game.GameData.data.players[playerId].Attribute.Register(attributeFactor);
+            Game.GameData.data.playersArray[playerId]?.Attribute.Register(attributeFactor);
         }
 
         //ホストのイベントを本人に受け継ぐ
@@ -842,28 +845,34 @@ namespace Nebula
 
         public static void ExemptTasks(byte playerId, int cutTasks, int cutQuota)
         {
-            Game.GameData.data.players[playerId].Tasks.AllTasks -= cutTasks;
-            Game.GameData.data.players[playerId].Tasks.DisplayTasks -= cutTasks;
-            Game.GameData.data.players[playerId].Tasks.Quota -= cutQuota;
+            var p = Game.GameData.data.playersArray[playerId];
+            if (p == null) return;
 
-            if (Game.GameData.data.players[playerId].Tasks.AllTasks < 0)
-                Game.GameData.data.players[playerId].Tasks.AllTasks = 0;
-            if (Game.GameData.data.players[playerId].Tasks.DisplayTasks < 0)
-                Game.GameData.data.players[playerId].Tasks.DisplayTasks = 0;
-            if (Game.GameData.data.players[playerId].Tasks.Quota < 0)
-                Game.GameData.data.players[playerId].Tasks.Quota = 0;
+            p.Tasks.AllTasks -= cutTasks;
+            p.Tasks.DisplayTasks -= cutTasks;
+            p.Tasks.Quota -= cutQuota;
+
+            if (p.Tasks.AllTasks < 0)
+                p.Tasks.AllTasks = 0;
+            if (p.Tasks.DisplayTasks < 0)
+                p.Tasks.DisplayTasks = 0;
+            if (p.Tasks.Quota < 0)
+                p.Tasks.Quota = 0;
         }
 
         public static void RefreshTasks(byte playerId, int displayTasks, int addQuota)
         {
-            Game.GameData.data.players[playerId].Tasks.AllTasks += displayTasks;
-            Game.GameData.data.players[playerId].Tasks.DisplayTasks = displayTasks;
-            Game.GameData.data.players[playerId].Tasks.Quota += addQuota;
+            var p = Game.GameData.data.playersArray[playerId];
+            if (p == null) return;
+
+            p.Tasks.AllTasks += displayTasks;
+            p.Tasks.DisplayTasks = displayTasks;
+            p.Tasks.Quota += addQuota;
         }
 
         public static void CompleteTask(byte playerId)
         {
-            Game.GameData.data.players[playerId].Tasks.Completed++;
+            Game.GameData.data.playersArray[playerId].Tasks.Completed++;
         }
 
         public static void FixLights()
@@ -914,7 +923,7 @@ namespace Nebula
                 Game.GameData.data.EstimationAI.Determine(Roles.Roles.Navvy);
             });
 
-            Game.GameData.data.players[playerId].AddRoleData(Roles.Roles.Navvy.remainingScrewsDataId, -1);
+            Game.GameData.data.playersArray[playerId]?.AddRoleData(Roles.Roles.Navvy.remainingScrewsDataId, -1);
         }
 
         public static void MultipleVote(byte playerId, byte count)
@@ -1019,7 +1028,7 @@ namespace Nebula
 
             Vector3 pos = Helpers.playerById(murderId).transform.position;
 
-            HudManager.Instance.StartCoroutine(Effects.Lerp(10f, new Action<float>((p) =>
+            FastDestroyableSingleton<HudManager>.Instance.StartCoroutine(Effects.Lerp(10f, new Action<float>((p) =>
             {
                 arrow.Update(pos);
                 arrow.arrow.transform.eulerAngles = new Vector3(0f, 0f, 0f);
@@ -1126,7 +1135,7 @@ namespace Nebula
             Collider.points = new Vector2[5] { pos1 - center, pos1Upper - center, pos2Upper - center, pos2 - center, pos1 - center };
             Collider.edgeRadius = 0.2f;
 
-            MeshRenderer.material = new Material(HudManager.Instance.MapButton.material);
+            MeshRenderer.material = new Material(FastDestroyableSingleton<HudManager>.Instance.MapButton.material);
             MeshRenderer.material.mainTexture =  vertical ? Roles.Roles.Disturber.getElecAnimSubTexture() : Roles.Roles.Disturber.getElecAnimTexture();
 
             MeshFilter.mesh = mesh;
@@ -1154,7 +1163,7 @@ namespace Nebula
 
         public static void UpdatePlayerVisibility(byte player,bool flag)
         {
-            Game.GameData.data.players[player].isInvisiblePlayer = !flag;
+            Game.GameData.data.playersArray[player].isInvisiblePlayer = !flag;
         }
 
         public static void EditCoolDown(Roles.CoolDownType coolDownType,float time)
@@ -1335,7 +1344,7 @@ namespace Nebula
 
         public static void AddAndUpdateRoleData(byte playerId, int dataId, int addData)
         {
-            int newData = Game.GameData.data.players[playerId].GetRoleData(dataId) + addData;
+            int newData = Game.GameData.data.playersArray[playerId].GetRoleData(dataId) + addData;
             UpdateRoleData(playerId, dataId, newData);
         }
 
@@ -1473,7 +1482,7 @@ namespace Nebula
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.ExemptTasks(playerId, cutTasks, cutQuota);
 
-            int allTasks = Game.GameData.data.players[playerId].Tasks.DisplayTasks;
+            int allTasks = Game.GameData.data.playersArray[playerId].Tasks.DisplayTasks;
             int commonTasks = PlayerControl.GameOptions.NumCommonTasks;
             int longTasks = PlayerControl.GameOptions.NumLongTasks;
             int shortTasks = PlayerControl.GameOptions.NumShortTasks;

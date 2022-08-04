@@ -72,7 +72,7 @@ namespace Nebula.Objects.ObjectTypes
             switch (obj.Data[0])
             {
                 case (int)AxeState.Static:
-                    var player = Game.GameData.data.players[obj.OwnerId];
+                    var player = Game.GameData.data.playersArray[obj.OwnerId];
                     var targetPosition = Helpers.playerById(obj.OwnerId).transform.position + new Vector3(0.4f * (float)Math.Cos(player.MouseAngle), 0.4f * (float)Math.Sin(player.MouseAngle));
                     obj.GameObject.transform.position += (targetPosition - obj.GameObject.transform.position) * 0.4f;
                     obj.Renderer.transform.eulerAngles = new Vector3(0f, 0f, (float)(player.MouseAngle * 360f / Math.PI / 2f));
@@ -86,12 +86,14 @@ namespace Nebula.Objects.ObjectTypes
                         if (obj.Renderer.transform.localScale.y < 0)
                             obj.Renderer.transform.localScale = new Vector3(1f, 1f);
                     }
+                    FixZPosition(obj);
 
                     if (Helpers.playerById(obj.OwnerId).inVent)
                         obj.GameObject.active = false;
                     else
                         obj.GameObject.active = true;
                     break;
+
                 case (int)AxeState.Thrown:
                     float angle = (float)obj.Data[1] / (float)ANGLE_DIVIDE;
                     Vector2 vec = new Vector2(Mathf.Cos(angle / 180f * Mathf.PI), Mathf.Sin(angle / 180f * Mathf.PI));
@@ -109,6 +111,7 @@ namespace Nebula.Objects.ObjectTypes
                             obj.Renderer.transform.localScale.y < 0 ? Time.deltaTime * 2000f : Time.deltaTime * -2000f);
                         
                     }
+                    FixZPosition(obj);
                     break;
             }
         }

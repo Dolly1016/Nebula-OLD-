@@ -12,7 +12,7 @@
 
 "gamemode.standard" : "Standard"
 "gamemode.minigame" : "Escape"
-"gamemode.parlour" : "Coming Soon!"
+"gamemode.ritual" : "Ritual"
 "gamemode.investigators" : "Coming Soon!"
 "gamemode.freePlay" : "Free Play"
 
@@ -545,6 +545,7 @@
 "role.lover.mode.standard" : "Standard"
 "role.lover.mode.avenger" : "Avenger"
 "role.lover.chanceThatOneLoverIsImpostor" : "Chance That One Lover Is Impostor"
+"role.lover.loversAsIndependentSide" : "Lovers As Independent Side"
 "role.lover.canChangeTrilemma" : "Can Change Trilemma"
 "role.lover.additionalEndText" : " <color=#ffffffff>with</color> <color=#fb02beff>Lovers</color>"
 
@@ -639,6 +640,7 @@
 "game.endText.jackal" : "Team Jackal Wins"
 "game.endText.jester" : "Jester Wins"
 "game.endText.vulture" : "Vulture Wins"
+"game.endText.lovers" : "Lovers Win"
 "game.endText.trilemma" : "Trilemma Wins"
 "game.endText.rightGuess" : "Mission Complete"
 "game.endText.wrongGuess" : "Mission Failure..."

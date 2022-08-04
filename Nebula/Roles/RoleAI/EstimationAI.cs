@@ -76,7 +76,7 @@ namespace Nebula.Roles.RoleAI
         public void Initialize()
         {
             //配役人数を調べる
-            foreach (var player in Game.GameData.data.players)
+            foreach (var player in Game.GameData.data.AllPlayers)
                 if (CountEstimateMap.ContainsKey(player.Value.role.category))
                     CountEstimateMap[player.Value.role.category]++;
 

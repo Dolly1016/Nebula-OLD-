@@ -15,9 +15,9 @@ namespace Nebula.Patches
         {
             canUse = couldUse = false;
 
-            if (pc.GetModData().Property.UnderTheFloor) { __result = float.MaxValue; return false; }
+            if (Game.GameData.data.myData.getGlobalData().Property.UnderTheFloor) { __result = float.MaxValue; return false; }
 
-            if (!pc.GetModData().role.canFixSabotage)
+            if (!Game.GameData.data.myData.getGlobalData().role.canFixSabotage)
             {
                 if (__instance.TaskTypes.Any(x => x == TaskTypes.FixLights || x == TaskTypes.FixComms)) return false;
             }
@@ -43,7 +43,7 @@ namespace Nebula.Patches
         {
             canUse = couldUse = false;
 
-            if (pc.GetModData().Property.UnderTheFloor) { __result = float.MaxValue; return false; }
+            if (Game.GameData.data.myData.getGlobalData().Property.UnderTheFloor) { __result = float.MaxValue; return false; }
 
             return true;
         }
@@ -56,7 +56,7 @@ namespace Nebula.Patches
         {
             canUse = couldUse = false;
 
-            if (pc.GetModData().Property.UnderTheFloor) { __result = float.MaxValue; return false; }
+            if (Game.GameData.data.myData.getGlobalData().Property.UnderTheFloor) { __result = float.MaxValue; return false; }
 
             return true;
         }
@@ -69,7 +69,7 @@ namespace Nebula.Patches
         {
             canUse = couldUse = false;
 
-            if (pc.GetModData().Property.UnderTheFloor) { __result = float.MaxValue; return false; }
+            if (Game.GameData.data.myData.getGlobalData().Property.UnderTheFloor) { __result = float.MaxValue; return false; }
 
             return true;
         }
@@ -82,7 +82,7 @@ namespace Nebula.Patches
         {
             canUse = couldUse = false;
 
-            if (pc.GetModData().Property.UnderTheFloor) { __result = float.MaxValue; return false; }
+            if (Game.GameData.data.myData.getGlobalData().Property.UnderTheFloor) { __result = float.MaxValue; return false; }
 
             return true;
         }

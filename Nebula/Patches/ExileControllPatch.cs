@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
+using Nebula.Utilities;
 
 namespace Nebula.Patches
 {
@@ -92,7 +93,7 @@ namespace Nebula.Patches
 
                 if (exiled.GetModData().role.OnExiledPost(voters, exiled.PlayerId))
                 {
-                    Game.GameData.data.players[exiled.PlayerId].Die(Game.PlayerData.PlayerStatus.Exiled);
+                    Game.GameData.data.playersArray[exiled.PlayerId].Die(Game.PlayerData.PlayerStatus.Exiled);
 
                     Helpers.RoleAction(exiled.PlayerId, (role) => { role.OnDied(exiled.PlayerId); });
                     Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId, (role) => { role.OnAnyoneDied(exiled.PlayerId); });

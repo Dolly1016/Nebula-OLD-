@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 using HarmonyLib;
 
@@ -133,7 +131,7 @@ namespace Nebula.Roles.MetaRoles
         {
             if (Game.GameData.data.GameMode != Module.CustomGameMode.FreePlay) return;
 
-            foreach (var player in Game.GameData.data.players.Keys)
+            foreach (var player in Game.GameData.data.AllPlayers.Keys)
             {
                 assignMap.Assign(player, this.id, 0);
             }

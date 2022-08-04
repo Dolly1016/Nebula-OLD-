@@ -64,7 +64,7 @@ namespace Nebula.Roles.ImpostorRoles
 
         public override void SetKillCoolDown(ref float multiplier, ref float addition) {
             int impostorSide = 0;
-            foreach(Game.PlayerData data in Game.GameData.data.players.Values)
+            foreach(Game.PlayerData data in Game.GameData.data.AllPlayers.Values)
             {
                 if (!data.IsAlive)
                 {

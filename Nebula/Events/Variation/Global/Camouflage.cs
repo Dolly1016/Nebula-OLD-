@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Nebula.Utilities;
 
 namespace Nebula.Events.Variation
 {
@@ -20,7 +16,7 @@ namespace Nebula.Events.Variation
             //Camouflagerを確定させる
             Game.GameData.data.EstimationAI.Determine(Roles.Roles.Camouflager);
 
-            foreach (PlayerControl player in PlayerControl.AllPlayerControls)
+            foreach (PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
                 player.SetLook("", 38, "", "", "", "");
             }
@@ -30,7 +26,7 @@ namespace Nebula.Events.Variation
         {
             if (GlobalEvent.IsActive(GlobalEvent.Type.Camouflage)) return;
 
-            foreach(PlayerControl player in PlayerControl.AllPlayerControls)
+            foreach(PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
                 player.ResetOutfit();
             }

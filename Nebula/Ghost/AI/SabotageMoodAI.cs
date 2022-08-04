@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
+﻿using Nebula.Utilities;
 
 namespace Nebula.Ghost.AI
 {
@@ -18,7 +15,7 @@ namespace Nebula.Ghost.AI
                 if (!entry.Value.IsLeadingSabotage) continue;
                 dis = 0;
                 count = 0;
-                foreach (PlayerControl player in PlayerControl.AllPlayerControls)
+                foreach (PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
                 {
                     if (player.Data.IsDead) continue;
 
@@ -46,7 +43,7 @@ namespace Nebula.Ghost.AI
                 if (!entry.Value.IsLeadingSabotage) continue;
                 dis = 0;
                 count = 0;
-                foreach (PlayerControl player in PlayerControl.AllPlayerControls)
+                foreach (PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
                 {
                     if (player.Data.IsDead) continue;
 

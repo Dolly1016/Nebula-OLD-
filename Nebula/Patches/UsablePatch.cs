@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HarmonyLib;
+using Nebula.Utilities;
 
 namespace Nebula.Patches
 {
@@ -41,7 +42,7 @@ namespace Nebula.Patches
     {
         static void Postfix(SabotageButton __instance)
         {
-            if (HudManager.Instance==null) return;
+            if (!HudManager.InstanceExists) return;
             if (Game.GameData.data == null) return;
             if (Game.GameData.data.myData.getGlobalData() == null) return;
 
@@ -60,7 +61,7 @@ namespace Nebula.Patches
             //インポスターなら特段何もしない
             if (PlayerControl.LocalPlayer.Data.Role.TeamType == RoleTeamTypes.Impostor) return true;
 
-            DestroyableSingleton<HudManager>.Instance.ShowMap((Il2CppSystem.Action<MapBehaviour>)((m) => { m.ShowSabotageMap(); }));
+            HudManager.Instance.ShowMap((Il2CppSystem.Action<MapBehaviour>)((m) => { m.ShowSabotageMap(); }));
             return false;
         }
     }

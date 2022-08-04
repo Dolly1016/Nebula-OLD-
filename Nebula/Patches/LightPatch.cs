@@ -20,7 +20,7 @@ namespace Nebula.Patches
                 if (Game.GameData.data == null) return;
                 if (!PlayerControl.LocalPlayer) return;
 
-                var data = PlayerControl.LocalPlayer.GetModData();
+                var data = Game.GameData.data.myData.getGlobalData();
                 if (data == null) return;
 
                 __result |= data.role.UseImpostorLightRadius;

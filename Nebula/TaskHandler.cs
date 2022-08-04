@@ -32,10 +32,9 @@ namespace Nebula
 
         public static Tuple<int, int> taskInfo(GameData.PlayerInfo playerInfo)
         {
-            if (Game.GameData.data.players.ContainsKey(playerInfo.PlayerId))
-            {
-                return Tuple.Create(playerInfo.GetModData().Tasks.Completed, playerInfo.GetModData().Tasks.Quota);
-            }
+            var p = playerInfo.GetModData();
+            if(p!=null)return Tuple.Create(p.Tasks.Completed, p.Tasks.Quota);
+           
             return Tuple.Create(0, 12);
         }
 

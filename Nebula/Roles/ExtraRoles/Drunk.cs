@@ -45,7 +45,7 @@ namespace Nebula.Roles.ExtraRoles
         {
             for(int i = 0; i < playerArray.Count; i++)
             {
-                if (CheckPlayerCondition(Game.GameData.data.players[playerArray[i]], conditionIndex))
+                if (CheckPlayerCondition(Game.GameData.data.playersArray[playerArray[i]], conditionIndex))
                 {
                     assignMap.Assign(playerArray[i], this.id, 0);
                     playerArray.RemoveAt(i);
@@ -58,8 +58,8 @@ namespace Nebula.Roles.ExtraRoles
 
         public override void Assignment(Patches.AssignMap assignMap)
         {
-            List<byte> playerArray = new List<byte>(Helpers.GetRandomArray(Game.GameData.data.players.Keys));
-            playerArray.RemoveAll((id) => { return !Game.GameData.data.players[id].role.CanBeDrunk; });
+            List<byte> playerArray = new List<byte>(Helpers.GetRandomArray(Game.GameData.data.AllPlayers.Keys));
+            playerArray.RemoveAll((id) => { return !Game.GameData.data.playersArray[id].role.CanBeDrunk; });
 
             int leftPlayers = RoleCountOption.getSelection();
 

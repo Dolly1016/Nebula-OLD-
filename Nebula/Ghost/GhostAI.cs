@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
+using Nebula.Utilities;
 
 namespace Nebula.Ghost
 {
@@ -37,7 +36,7 @@ namespace Nebula.Ghost
             Collider2D roomArea = room.roomArea;
             int num = 0;
 
-            foreach (PlayerControl player in PlayerControl.AllPlayerControls)
+            foreach (PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
                 if (player.Data.IsDead) continue;
 

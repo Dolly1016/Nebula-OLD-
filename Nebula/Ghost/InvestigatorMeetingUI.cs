@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Nebula.Utilities;
 
 namespace Nebula.Ghost
 {
@@ -56,7 +55,7 @@ namespace Nebula.Ghost
                 Transform button = UnityEngine.Object.Instantiate(buttonTemplate, buttonParent);
                 Transform buttonMask = UnityEngine.Object.Instantiate(maskTemplate, buttonParent);
                 TMPro.TextMeshPro label = UnityEngine.Object.Instantiate(textTemplate, button);
-                button.GetComponent<SpriteRenderer>().sprite = DestroyableSingleton<HatManager>.Instance.AllNamePlates.get_Item(0).viewData.viewData.Image;
+                button.GetComponent<SpriteRenderer>().sprite = FastDestroyableSingleton<HatManager>.Instance.AllNamePlates.get_Item(0).viewData.viewData.Image;
                 buttons.Add(button);
                 button.gameObject.active = false;
                 int row = i / 4, col = i % 4;
@@ -100,7 +99,7 @@ namespace Nebula.Ghost
 
             float width= 0.578f, intercept= 3.12f;
             int alive = 0;
-            foreach(var player in PlayerControl.AllPlayerControls){
+            foreach(var player in PlayerControl.AllPlayerControls.GetFastEnumerator()){
                 if (!player.Data.IsDead) alive++;
             }
             if (alive == 1)  intercept = 0; else

@@ -45,7 +45,7 @@ namespace Nebula.Roles.NeutralRoles
         {
             if (killButton != null)
             {
-                int jackalId = Game.GameData.data.players[PlayerControl.LocalPlayer.PlayerId].GetRoleData(Roles.Jackal.jackalDataId);
+                int jackalId = Game.GameData.data.AllPlayers[PlayerControl.LocalPlayer.PlayerId].GetRoleData(Roles.Jackal.jackalDataId);
 
                 Game.MyPlayerData data = Game.GameData.data.myData;
                 data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(

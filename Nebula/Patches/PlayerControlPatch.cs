@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using HarmonyLib;
 using UnityEngine;
+using Nebula.Utilities;
 
 namespace Nebula.Patches
 {
@@ -19,7 +18,7 @@ namespace Nebula.Patches
             {
                 return;
             }
-            if (!Game.GameData.data.players.ContainsKey(__instance.PlayerId))
+            if (Game.GameData.data.GetPlayerData(__instance.PlayerId)==null)
             {
                 return;
             }
@@ -51,7 +50,7 @@ namespace Nebula.Patches
             if (!ShipStatus.Instance) return result;
 
 
-            foreach (PlayerControl player in PlayerControl.AllPlayerControls)
+            foreach (PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
                 if (onlyWhiteNames && (player.Data.Role.IsImpostor || player.GetModData().role.DeceiveImpostorInNameDisplay)) continue;
                 if (untargetablePlayers != null && untargetablePlayers.Contains(player.PlayerId)) continue;
@@ -72,7 +71,7 @@ namespace Nebula.Patches
             return SetMyTarget(range,
                     (player) =>
                     {
-                        if (onlyWhiteNames && (player.Role.IsImpostor || Game.GameData.data.players[player.PlayerId].role.DeceiveImpostorInNameDisplay)) return false;
+                        if (onlyWhiteNames && (player.Role.IsImpostor || Game.GameData.data.playersArray[player.PlayerId].role.DeceiveImpostorInNameDisplay)) return false;
                         if (player.Object.inVent && !targetPlayersInVents) return false;
                         if (untargetablePlayers != null && untargetablePlayers.Any(x => x == player.Object.PlayerId)) return false;
                         return true;
@@ -152,7 +151,7 @@ namespace Nebula.Patches
                 }
 
                 invalidFlag = false;
-                foreach (Game.PlayerData data in Game.GameData.data.players.Values)
+                foreach (Game.PlayerData data in Game.GameData.data.AllPlayers.Values)
                 {
                     if (data.dragPlayerId == deadBody.ParentId) { invalidFlag = true; break; }
                 }
@@ -178,7 +177,7 @@ namespace Nebula.Patches
 
         static void ResetPlayerOutlines()
         {
-            foreach (PlayerControl target in PlayerControl.AllPlayerControls)
+            foreach (PlayerControl target in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
                 if (target == null || target.cosmetics.currentBodySprite.BodySprite == null) continue;
 
@@ -208,7 +207,7 @@ namespace Nebula.Patches
                 }
             }
 
-            foreach (PlayerControl p in PlayerControl.AllPlayerControls)
+            foreach (PlayerControl p in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
                 try
                 {
@@ -350,7 +349,7 @@ namespace Nebula.Patches
             {
                 return;
             }
-            if (!Game.GameData.data.players.ContainsKey(__instance.PlayerId))
+            if (Game.GameData.data.GetPlayerData(__instance.PlayerId)==null)
             {
                 return;
             }
@@ -452,7 +451,7 @@ namespace Nebula.Patches
                 }
 
                 __instance.killTimer = Mathf.Clamp(time, 0f, PlayerControl.GameOptions.KillCooldown * multiplier + addition);
-                DestroyableSingleton<HudManager>.Instance.KillButton.SetCoolDown(__instance.killTimer, PlayerControl.GameOptions.KillCooldown * multiplier + addition);
+                HudManager.Instance.KillButton.SetCoolDown(__instance.killTimer, PlayerControl.GameOptions.KillCooldown * multiplier + addition);
                 return false;
             }catch(NullReferenceException excep) { return true; }
         }
@@ -535,9 +534,10 @@ namespace Nebula.Patches
             if (Game.GameData.data != null)
             {
                 var player = __instance.gameObject.GetComponent<PlayerControl>();
-                if (Game.GameData.data.players.ContainsKey(player.PlayerId))
+                var data = Game.GameData.data.GetPlayerData(player.PlayerId);
+                if (data != null)
                 {
-                    Game.GameData.data.players[player.PlayerId].Speed.Reflect();
+                    data.Speed.Reflect();
                     PlayerControl.LocalPlayer.MyPhysics.Speed = Helpers.playerById(player.PlayerId).MyPhysics.Speed;
                 }
                 else
@@ -555,7 +555,7 @@ namespace Nebula.Patches
         {
             if (Game.GameData.data != null)
             {
-                if (Game.GameData.data.players.Count > 0)
+                if (Game.GameData.data.AllPlayers.Count > 0)
                 {
                     Game.GameData.data.myData.getGlobalData().Speed.Reflect();
                 }

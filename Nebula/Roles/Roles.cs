@@ -55,8 +55,6 @@ namespace Nebula.Roles
 
         public static InvestigatorRoles.Investigator Investigator = new InvestigatorRoles.Investigator();
 
-        public static ParlourRoles.Gambler Gambler = new ParlourRoles.Gambler();
-
         public static MinigameRoles.Player Player = new MinigameRoles.Player();
 
         public static MinigameRoles.Escapees.Biela Biela = new MinigameRoles.Escapees.Biela();
@@ -78,6 +76,7 @@ namespace Nebula.Roles
         public static ExtraRoles.Trilemma Trilemma = new ExtraRoles.Trilemma();
         public static ExtraRoles.AvengerTarget AvengerTarget = new ExtraRoles.AvengerTarget();
         public static MetaRoles.MetaRole MetaRole = new MetaRoles.MetaRole();
+        public static RitualRoles.PerkHolder PerkHolder = new RitualRoles.PerkHolder();
 
 
         //全てのロールはこの中に含まれている必要があります
@@ -92,7 +91,6 @@ namespace Nebula.Roles
             Player,
             Halley,Biela,
             Polis,Hadar,
-            Gambler,
             Investigator
             
         };
@@ -101,7 +99,8 @@ namespace Nebula.Roles
         {
             SecondaryGuesser,SecondarySidekick,SecondaryMadmate,
             Drunk,Lover,Trilemma,
-            MetaRole,AvengerTarget
+            MetaRole,AvengerTarget,
+            PerkHolder
         };
 
         public static void ResetWinTrigger()

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;
+using Nebula.Utilities;
 
 namespace Nebula.Objects
 {
@@ -22,7 +23,7 @@ namespace Nebula.Objects
             var vec = textObj.rectTransform.sizeDelta;
             textObj.rectTransform.sizeDelta = new Vector2(vec.x*5.0f,vec.y);
 
-            HudManager.Instance.StartCoroutine(Effects.Lerp(2f, (Il2CppSystem.Action<float>)((p) => {
+            FastDestroyableSingleton<HudManager>.Instance.StartCoroutine(Effects.Lerp(2f, (Il2CppSystem.Action<float>)((p) => {
                 textObj.transform.localPosition += new Vector3(0.0f, Time.deltaTime * 0.16f);
                 if (p > 0.7f)
                 {
@@ -68,6 +69,59 @@ namespace Nebula.Objects
         public bool IsValid { get { return activeFlag; } }
         public bool IsShown { get { return activeFlag && !hideFlag; } }
 
+        private static Texture2D textureKeyBindChara;
+        private static Dictionary<KeyCode, Sprite> spriteKeyBindChara = new Dictionary<KeyCode, Sprite>();
+        private static Dictionary<KeyCode, float> keyBindReyout = new Dictionary<KeyCode, float>();
+        private static Sprite spriteKeyBindBackGround;
+        private static Sprite spriteKeyBindOption;
+
+        static public void Load()
+        {
+            keyBindReyout[KeyCode.Q] = 0f;
+            keyBindReyout[KeyCode.F] = 1f;
+            keyBindReyout[KeyCode.G] = 2f;
+            keyBindReyout[KeyCode.H] = 3f;
+            keyBindReyout[KeyCode.J] = 4f;
+            keyBindReyout[KeyCode.Z] = 5f;
+            keyBindReyout[KeyCode.X] = 6f;
+            keyBindReyout[KeyCode.C] = 7f;
+            keyBindReyout[KeyCode.V] = 8f;
+            keyBindReyout[KeyCode.LeftShift] = 9f;
+            keyBindReyout[KeyCode.RightShift] = 10f;
+        }
+
+        public Sprite? GetKeyBindCharacterSprite(KeyCode? key)
+        {
+            if (key == null) return null;
+            if (!keyBindReyout.ContainsKey(key.Value)) return null;
+
+            if (!textureKeyBindChara) textureKeyBindChara = Helpers.loadTextureFromResources("Nebula.Resources.KeyBindCharacters.png");
+
+            Sprite sprite;
+            if (spriteKeyBindChara.TryGetValue(key.Value, out sprite))
+            {
+                if (sprite) return sprite;
+            }
+            sprite = Helpers.loadSpriteFromResources(textureKeyBindChara, 100f, new Rect(0f, -19f* keyBindReyout[key.Value], 18f, -19f));
+            spriteKeyBindChara[key.Value] = sprite;
+            return sprite;
+        }
+
+        public Sprite GetKeyBindBackgroundSprite()
+        {
+            if (spriteKeyBindBackGround) return spriteKeyBindBackGround;
+            spriteKeyBindBackGround = Helpers.loadSpriteFromResources("Nebula.Resources.KeyBindBackground.png", 100f);
+            return spriteKeyBindBackGround;
+        }
+
+        public Sprite GetKeyBindOptionSprite()
+        {
+            if (spriteKeyBindOption) return spriteKeyBindOption;
+            spriteKeyBindOption = Helpers.loadSpriteFromResources("Nebula.Resources.KeyBindOption.png", 100f);
+            return spriteKeyBindOption;
+        }
+
+
         public CustomButton(Action OnClick, Func<bool> HasButton, Func<bool> CouldUse, Action OnMeetingEnds, Sprite Sprite, Vector3 PositionOffset, HudManager hudManager, KeyCode? hotkey, bool HasEffect, float EffectDuration, Action OnEffectEnds, bool mirror = false, string buttonText = "", ImageNames labelType= ImageNames.UseButton)
         {
             this.hudManager = hudManager;
@@ -89,6 +143,8 @@ namespace Nebula.Objects
             buttons.Add(this);
             actionButton = UnityEngine.Object.Instantiate(hudManager.KillButton, hudManager.KillButton.transform.parent);
             PassiveButton button = actionButton.GetComponent<PassiveButton>();
+
+            SetHotKeyGuide();
             
             SetLabel(buttonText);
             
@@ -101,6 +157,44 @@ namespace Nebula.Objects
 
         public CustomButton(Action OnClick, Func<bool> HasButton, Func<bool> CouldUse, Action OnMeetingEnds, Sprite Sprite, Vector3 PositionOffset, HudManager hudManager, KeyCode? hotkey, bool mirror = false, string buttonText = "", ImageNames labelType = ImageNames.UseButton)
         : this(OnClick, HasButton, CouldUse, OnMeetingEnds, Sprite, PositionOffset, hudManager, hotkey, false, 0f, () => { }, mirror, buttonText,labelType) { }
+
+        public void SetKeyGuide(KeyCode? key, Vector2 pos,bool requireChangeOption)
+        {
+            Sprite? numSprite = GetKeyBindCharacterSprite(key);
+            if (numSprite == null) return;
+
+            GameObject obj = new GameObject();
+            obj.name = "HotKeyGuide";
+            obj.transform.SetParent(actionButton.gameObject.transform);
+            obj.layer = actionButton.gameObject.layer;
+            SpriteRenderer renderer = obj.AddComponent<SpriteRenderer>();
+            renderer.transform.localPosition = (Vector3)pos + new Vector3(0f, 0f, -1f);
+            renderer.sprite = GetKeyBindBackgroundSprite();
+
+            GameObject numObj = new GameObject();
+            numObj.name = "HotKeyText";
+            numObj.transform.SetParent(obj.transform);
+            numObj.layer = actionButton.gameObject.layer;
+            renderer = numObj.AddComponent<SpriteRenderer>();
+            renderer.transform.localPosition = new Vector3(0,0,-1f);
+            renderer.sprite = numSprite;
+
+            if (requireChangeOption)
+            {
+                numObj = new GameObject();
+                numObj.name = "HotKeyOption";
+                numObj.transform.SetParent(obj.transform);
+                numObj.layer = actionButton.gameObject.layer;
+                renderer = numObj.AddComponent<SpriteRenderer>();
+                renderer.transform.localPosition = new Vector3(0.12f, 0.07f, -2f);
+                renderer.sprite = GetKeyBindOptionSprite();
+            }
+        }
+
+        private void SetHotKeyGuide()
+        {
+            SetKeyGuide(hotkey, new Vector2(0.48f, 0.48f),false);
+        }
 
         public void SetSuspendAction(Action OnSuspended)
         {

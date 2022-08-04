@@ -36,15 +36,17 @@ namespace Nebula.Roles.CrewmateRoles
             //Madmateなら確定で自殺する
             if (PlayerControl.LocalPlayer.IsMadmate()) return false;
 
+            var p = target.GetModData();
+
             //個別に設定したい非クルー陣営
-            if (target.GetModData().role == Roles.Opportunist && canKillOpportunistOption.getBool()) return true;
+            if (p.role == Roles.Opportunist && canKillOpportunistOption.getBool()) return true;
 
             //非クルーおよび個別に設定するクルー陣営
-            if (Game.GameData.data.players[target.PlayerId].role.category != RoleCategory.Crewmate) return true;
-            if (target.GetModData().role == Roles.Madmate && canKillMadmateOption.getBool()) return true;
-            if (target.GetModData().role == Roles.Spy && canKillSpyOption.getBool()) return true;
-            if (target.GetModData().role == Roles.Necromancer && canKillNecromancerOption.getBool()) return true;
-            if (target.GetModData().role == Roles.Sheriff && canKillSheriffOption.getBool()) return true;
+            if (p.role.category != RoleCategory.Crewmate) return true;
+            if (p.role == Roles.Madmate && canKillMadmateOption.getBool()) return true;
+            if (p.role == Roles.Spy && canKillSpyOption.getBool()) return true;
+            if (p.role == Roles.Necromancer && canKillNecromancerOption.getBool()) return true;
+            if (p.role == Roles.Sheriff && canKillSheriffOption.getBool()) return true;
 
             return false;
         }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using HarmonyLib;
 using UnityEngine;
 using Hazel;
+using Nebula.Utilities;
 
 namespace Nebula.Patches
 {

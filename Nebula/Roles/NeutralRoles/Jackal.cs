@@ -51,7 +51,7 @@ namespace Nebula.Roles.NeutralRoles
 
         public override void MyPlayerControlUpdate()
         {
-            int jackalId = Game.GameData.data.players[PlayerControl.LocalPlayer.PlayerId].GetRoleData(jackalDataId);
+            int jackalId = Game.GameData.data.AllPlayers[PlayerControl.LocalPlayer.PlayerId].GetRoleData(jackalDataId);
 
             Game.MyPlayerData data = Game.GameData.data.myData;
 
@@ -159,9 +159,9 @@ namespace Nebula.Roles.NeutralRoles
             //SidekickをJackalに昇格
 
             //対象のJackalID
-            int jackalId = Game.GameData.data.players[playerId].GetRoleData(jackalDataId);
+            int jackalId = Game.GameData.data.AllPlayers[playerId].GetRoleData(jackalDataId);
 
-            foreach (Game.PlayerData player in Game.GameData.data.players.Values)
+            foreach (Game.PlayerData player in Game.GameData.data.AllPlayers.Values)
             {
                 if (Sidekick.SidekickTakeOverOriginalRoleOption.getBool())
                 {

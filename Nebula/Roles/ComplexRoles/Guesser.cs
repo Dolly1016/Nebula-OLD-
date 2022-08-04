@@ -1,13 +1,7 @@
-﻿using HarmonyLib;
-using Hazel;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using UnhollowerBaseLib;
-using System.Collections;
-using System;
-using System.Text;
 using UnityEngine;
-using System.Reflection;
+using Nebula.Utilities;
 
 namespace Nebula.Roles.ComplexRoles
 {
@@ -47,7 +41,7 @@ namespace Nebula.Roles.ComplexRoles
 
         public override void LoadOptionData()
         {
-            TopOption.tab = Module.CustomOptionTab.CrewmateRoles | Module.CustomOptionTab.Modifiers;
+            TopOption.tab = Module.CustomOptionTab.CrewmateRoles | Module.CustomOptionTab.ImpostorRoles | Module.CustomOptionTab.Modifiers;
 
             secondoryRoleOption = CreateOption(Color.white, "isSecondaryRole", false);
 
@@ -171,8 +165,14 @@ namespace Nebula.Roles.ComplexRoles
                         PlayerControl focusedTarget = Helpers.playerById((byte)__instance.playerStates[buttonTarget].TargetPlayerId);
                         if (!(__instance.state == MeetingHud.VoteStates.Voted || __instance.state == MeetingHud.VoteStates.NotVoted) || focusedTarget == null) return;
                         if (target.Data.IsDead) return;
-
-                        PlayerControl dyingTarget = (focusedTarget.GetModData().role == role || focusedTarget.GetModData().role.GetImplicateRoles().Contains(role)) ? focusedTarget : PlayerControl.LocalPlayer;
+                        var focusedTargetData = focusedTarget.GetModData();
+                        PlayerControl dyingTarget = 
+                        (
+                        focusedTargetData.role == role ||
+                        focusedTargetData.role.GetImplicateRoles().Contains(role)||
+                        focusedTargetData.role.GetImplicateExtraRoles().Any((role)=>focusedTargetData.HasExtraRole(role))
+                        ) 
+                        ? focusedTarget : PlayerControl.LocalPlayer;
 
                         // Reset the GUI
                         __instance.playerStates.ToList().ForEach(x => x.gameObject.SetActive(true));
@@ -199,7 +199,7 @@ namespace Nebula.Roles.ComplexRoles
             }
             container.transform.localScale *= 0.75f;
 
-            DestroyableSingleton<HatManager>.Instance.GetNamePlateById("nameplate_NoPlate").CoLoadViewData((Il2CppSystem.Action<NamePlateViewData>)((n) =>
+            FastDestroyableSingleton<HatManager>.Instance.GetNamePlateById("nameplate_NoPlate").CoLoadViewData((Il2CppSystem.Action<NamePlateViewData>)((n) =>
             {
                 foreach (var b in buttons)
                     b.GetComponent<SpriteRenderer>().sprite = n.Image;
@@ -319,7 +319,7 @@ namespace Nebula.Roles.ComplexRoles
             List<byte> crewmates = new List<byte>();
             List<byte> neutrals = new List<byte>();
 
-            foreach (PlayerControl player in PlayerControl.AllPlayerControls)
+            foreach (PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
                 if (!player.GetModData()?.role.CanBeGuesser ?? true) continue;
 

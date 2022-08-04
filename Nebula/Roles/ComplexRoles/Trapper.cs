@@ -1,14 +1,8 @@
-﻿using HarmonyLib;
-using Hazel;
-using System.Collections.Generic;
-using System.Linq;
-using UnhollowerBaseLib;
-using System.Collections;
+﻿using System.Collections.Generic;
 using System;
-using System.Text;
 using UnityEngine;
-using System.Reflection;
 using Nebula.Objects;
+using Nebula.Utilities;
 
 namespace Nebula.Roles.ComplexRoles
 {
@@ -64,6 +58,8 @@ namespace Nebula.Roles.ComplexRoles
         public override void LoadOptionData()
         {
             base.LoadOptionData();
+
+            TopOption.tab = Module.CustomOptionTab.CrewmateRoles | Module.CustomOptionTab.ImpostorRoles;
 
             maxTrapsOption = CreateOption(Color.white, "maxTraps", 5f, 1f, 15f, 1f);
             placeCoolDownOption = CreateOption(Color.white, "placeCoolDown", 15f, 5f, 60f, 2.5f);
@@ -191,7 +187,7 @@ namespace Nebula.Roles.ComplexRoles
                     }
                     else if (obj.ObjectType == Objects.ObjectTypes.InvisibleTrap.CommTrap)
                     {
-                        foreach (PlayerControl player in PlayerControl.AllPlayerControls)
+                        foreach (PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
                         {
                             if (player.Data.IsDead) continue;
                             if (detectedPlayers.Contains(player.PlayerId)) continue;
@@ -205,7 +201,7 @@ namespace Nebula.Roles.ComplexRoles
 
                                 byte id = player.PlayerId;
                                 Vector3 pos = obj.GameObject.transform.position;
-                                HudManager.Instance.StartCoroutine(Effects.Lerp(5f, new Action<float>((p) =>
+                                FastDestroyableSingleton<HudManager>.Instance.StartCoroutine(Effects.Lerp(5f, new Action<float>((p) =>
                                 {
                                     arrow.Update(pos);
                                     if (p > 0.8f)
@@ -352,6 +348,8 @@ namespace Nebula.Roles.ComplexRoles
             trapButtonString.enableWordWrapping = false;
             trapButtonString.transform.localScale = Vector3.one * 0.5f;
             trapButtonString.transform.localPosition += new Vector3(-0.05f, 0.7f, 0);
+
+            trapButton.SetKeyGuide(KeyCode.LeftShift,new Vector2(0.48f,0.13f),true);
 
             trapKind = 0;
 

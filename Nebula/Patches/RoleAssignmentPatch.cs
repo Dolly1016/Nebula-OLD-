@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using Nebula.Utilities;
+
 using static Nebula.NebulaPlugin;
 
 namespace Nebula.Patches
@@ -388,7 +390,7 @@ namespace Nebula.Patches
                 foreach(var entry in metaAssignment)
                 {
                     if (entry.Value.category != RoleCategory.Impostor) continue;
-                    foreach(var player in PlayerControl.AllPlayerControls)
+                    foreach(var player in PlayerControl.AllPlayerControls.GetFastEnumerator())
                     {
                         if (player.name != entry.Key) continue;
                         impostors.Add(player);
@@ -422,7 +424,7 @@ namespace Nebula.Patches
             //メタ的なロールから割り当てる
             foreach (var entry in metaAssignment)
             {
-                foreach (var player in PlayerControl.AllPlayerControls)
+                foreach (var player in PlayerControl.AllPlayerControls.GetFastEnumerator())
                 {
                     if (player.name != entry.Key) continue;
                     assignMap.Assign(player.PlayerId, entry.Value.id);

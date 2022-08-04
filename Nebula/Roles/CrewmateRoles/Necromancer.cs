@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Nebula.Objects;
 using UnityEngine;
+using Nebula.Utilities;
 
 namespace Nebula.Roles.CrewmateRoles
 {
@@ -31,7 +32,7 @@ namespace Nebula.Roles.CrewmateRoles
 
             if (FS_BodiesSensor == null)
             {
-                FS_BodiesSensor = GameObject.Instantiate(HudManager.Instance.FullScreen, HudManager.Instance.transform);
+                FS_BodiesSensor = GameObject.Instantiate(FastDestroyableSingleton<HudManager>.Instance.FullScreen, FastDestroyableSingleton<HudManager>.Instance.transform);
                 FS_BodiesSensor.color = Palette.ClearWhite;
                 FS_BodiesSensor.enabled = true;
                 FS_BodiesSensor.gameObject.SetActive(true);
@@ -99,11 +100,11 @@ namespace Nebula.Roles.CrewmateRoles
                  }
                  if (p == 1f && Game.GameData.data.myData.getGlobalData().dragPlayerId == playerId)
                  {
-                     HudManager.Instance.StartCoroutine(Effects.Lerp(1.6f, createMessageAction));
+                     FastDestroyableSingleton<HudManager>.Instance.StartCoroutine(Effects.Lerp(1.6f, createMessageAction));
                  }
              });
 
-            HudManager.Instance.StartCoroutine(Effects.Lerp(1.6f, createMessageAction));
+            FastDestroyableSingleton<HudManager>.Instance.StartCoroutine(Effects.Lerp(1.6f, createMessageAction));
 
             SpawnArrow(GetReviveRooomType(playerId));
         }

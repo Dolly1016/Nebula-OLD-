@@ -27,7 +27,7 @@ namespace Nebula.Roles.CrewmateRoles
 
         public override void GlobalInitialize(PlayerControl __instance)
         {
-            Game.GameData.data.players[__instance.PlayerId].SetRoleData(votesId, 0);
+            Game.GameData.data.playersArray[__instance.PlayerId].SetRoleData(votesId, 0);
         }
 
         public override void OnMeetingStart()

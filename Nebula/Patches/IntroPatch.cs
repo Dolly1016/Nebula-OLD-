@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using System.Collections.Generic;
 using UnityEngine;
+using Nebula.Utilities;
 
 namespace Nebula.Patches
 {
@@ -37,7 +38,7 @@ namespace Nebula.Patches
             if (CustomOptionHolder.limiterOptions.getBool())
             {
                 Game.GameData.data.Timer = CustomOptionHolder.timeLimitOption.getFloat() * 60 + CustomOptionHolder.timeLimitSecondOption.getFloat();
-                Game.GameData.data.LimitRenderer = new Module.TimeLimit(HudManager.Instance);
+                Game.GameData.data.LimitRenderer = new Module.TimeLimit(FastDestroyableSingleton<HudManager>.Instance);
                 RPCEventInvoker.SynchronizeTimer();
             }
 
@@ -46,7 +47,7 @@ namespace Nebula.Patches
             //役職予測を初期化
             Game.GameData.data.EstimationAI.Initialize();
 
-            foreach (Game.PlayerData player in Game.GameData.data.players.Values)
+            foreach (Game.PlayerData player in Game.GameData.data.AllPlayers.Values)
             {
                 Helpers.RoleAction(player, (role) =>
                 {
@@ -70,7 +71,7 @@ namespace Nebula.Patches
                 if (Game.GameModeProperty.GetProperty(Game.GameData.data.GameMode).RequireStartCountDown)
                 {
                     byte count = 10;
-                    HudManager.Instance.StartCoroutine(Effects.Lerp(10f, new System.Action<float>((p) =>
+                    FastDestroyableSingleton<HudManager>.Instance.StartCoroutine(Effects.Lerp(10f, new System.Action<float>((p) =>
                     {
                         if ((byte)((1f - p) * 10f) < count)
                         {
@@ -93,7 +94,7 @@ namespace Nebula.Patches
     {
         public static void setupIntroTeamText(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> yourTeam)
         {
-            Roles.Role role = Game.GameData.data.players[PlayerControl.LocalPlayer.PlayerId].role;
+            Roles.Role role = Game.GameData.data.playersArray[PlayerControl.LocalPlayer.PlayerId].role;
 
             __instance.BackgroundBar.material.color = role.introMainDisplaySide.color;
             __instance.TeamTitle.text = Language.Language.GetString("side." + role.introMainDisplaySide.localizeSide + ".name");
@@ -105,7 +106,7 @@ namespace Nebula.Patches
         public static void setupIntroTeamMembers(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> yourTeam)
         {
 
-            Roles.Role role = Game.GameData.data.players[PlayerControl.LocalPlayer.PlayerId].role;
+            Roles.Role role = Game.GameData.data.playersArray[PlayerControl.LocalPlayer.PlayerId].role;
 
             yourTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             Roles.Role.ExtractDisplayPlayers(ref yourTeam);
@@ -116,7 +117,7 @@ namespace Nebula.Patches
         {
             private static void setUpRoleText(IntroCutscene __instance)
             {
-                Roles.Role role = Game.GameData.data.players[PlayerControl.LocalPlayer.PlayerId].role;
+                Roles.Role role = Game.GameData.data.AllPlayers[PlayerControl.LocalPlayer.PlayerId].role;
 
                 string roleNames = Language.Language.GetString("role." + role.LocalizeName + ".name");
                 Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId, (role) => { role.EditDisplayRoleName(ref roleNames); });
@@ -176,9 +177,9 @@ namespace Nebula.Patches
         {
             public static void Prefix(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> teamToShow)
             {
-                foreach(PlayerControl player in PlayerControl.AllPlayerControls)
+                foreach(PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
                 {
-                    if (Game.GameData.data.players[player.PlayerId].role.category == Roles.RoleCategory.Impostor)
+                    if (Game.GameData.data.AllPlayers[player.PlayerId].role.category == Roles.RoleCategory.Impostor)
                     {
                         DestroyableSingleton<RoleManager>.Instance.SetRole(player, RoleTypes.Impostor);
                     }
@@ -186,7 +187,7 @@ namespace Nebula.Patches
                     {
                         DestroyableSingleton<RoleManager>.Instance.SetRole(player, RoleTypes.Crewmate);
                     }
-                    Game.GameData.data.players[player.PlayerId].role.ReflectRoleEyesight(player.Data.Role);
+                    Game.GameData.data.AllPlayers[player.PlayerId].role.ReflectRoleEyesight(player.Data.Role);
                 }
 
                 //isImpostor = (Game.GameData.data.myData.getGlobalData().role.category == Roles.RoleCategory.Impostor);

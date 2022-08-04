@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Hazel;
 using UnityEngine;
 using Nebula.Objects;
+using Nebula.Utilities;
 
 namespace Nebula.Roles.CrewmateRoles
 {
@@ -39,7 +40,7 @@ namespace Nebula.Roles.CrewmateRoles
 
         private void dieBusker()
         {
-            HudManager.Instance.ShadowQuad.gameObject.SetActive(false);
+            FastDestroyableSingleton<HudManager>.Instance.ShadowQuad.gameObject.SetActive(false);
             pseudocideFlag = false;
             RPCEventInvoker.UpdatePlayerVisibility(PlayerControl.LocalPlayer.PlayerId, true);
         }
@@ -91,7 +92,7 @@ namespace Nebula.Roles.CrewmateRoles
                 {
                     RPCEventInvoker.UpdatePlayerVisibility(PlayerControl.LocalPlayer.PlayerId, false);
                     RPCEventInvoker.SuicideWithoutOverlay(Game.PlayerData.PlayerStatus.Pseudocide.Id);
-                    HudManager.Instance.ShadowQuad.gameObject.SetActive(true);
+                    FastDestroyableSingleton<HudManager>.Instance.ShadowQuad.gameObject.SetActive(true);
                     pseudocideFlag = true;
 
                     buskButton.Sprite = getRiviveButtonSprite();

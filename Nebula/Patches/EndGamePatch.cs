@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using Nebula.Utilities;
 
 namespace Nebula.Patches
 {
@@ -25,7 +26,8 @@ namespace Nebula.Patches
         public static EndCondition EmpiricWin = new EndCondition(19, Roles.NeutralRoles.Empiric.RoleColor, "empiric", 1, Module.CustomGameMode.Standard);
         public static EndCondition VultureWin = new EndCondition(20, Roles.NeutralRoles.Vulture.RoleColor, "vulture", 1, Module.CustomGameMode.Standard);
         public static EndCondition AvengerWin = new EndCondition(21, Roles.NeutralRoles.Avenger.RoleColor, "avenger", 0, Module.CustomGameMode.Standard);
-        public static EndCondition TrilemmaWin = new EndCondition(24, new Color(209f / 255f, 63f / 255f, 138f / 255f), "trilemma",0, Module.CustomGameMode.Standard);
+        public static EndCondition LoversWin = new EndCondition(24, Roles.ExtraRoles.Lover.iconColor[0], "lovers", 0, Module.CustomGameMode.Standard);
+        public static EndCondition TrilemmaWin = new EndCondition(25, new Color(209f / 255f, 63f / 255f, 138f / 255f), "trilemma",0, Module.CustomGameMode.Standard);
 
         public static EndCondition InvestigatorRightGuess = new EndCondition(32, Palette.CrewmateBlue, "rightGuess", 0, Module.CustomGameMode.Investigators,true);
         public static EndCondition InvestigatorWrongGuess = new EndCondition(33, Palette.ImpostorRed, "wrongGuess", 0, Module.CustomGameMode.Investigators);
@@ -44,7 +46,6 @@ namespace Nebula.Patches
         public static EndCondition MinigameEscapeesWin = new EndCondition(129, Palette.CrewmateBlue, "escapees", 0, Module.CustomGameMode.Minigame, true);
         public static EndCondition MinigameHunterWin = new EndCondition(130, Palette.ImpostorRed, "hunter", 0, Module.CustomGameMode.Minigame);
 
-        public static EndCondition ShowDownWin = new EndCondition(256, new Color(255f / 255f, 213f / 255f, 0f / 255f), "showDown", 0, Module.CustomGameMode.Parlour);
 
         
 
@@ -55,11 +56,10 @@ namespace Nebula.Patches
             CrewmateWinByVote ,CrewmateWinByTask,CrewmateWinDisconnect,
             ImpostorWinByKill,ImpostorWinBySabotage,ImpostorWinByVote,ImpostorWinDisconnect,
             JesterWin,JackalWin,ArsonistWin,EmpiricWin,VultureWin,
-            TrilemmaWin,AvengerWin,
+            LoversWin,TrilemmaWin,AvengerWin,
             NoGame,NobodyWin,NobodySkeldWin,NobodyMiraWin,NobodyPolusWin,NobodyAirshipWin,
             InvestigatorRightGuess,InvestigatorWrongGuess,HostDisconnected,
-            MinigamePlayersWin,MinigameEscapeesWin,MinigameHunterWin,
-            ShowDownWin
+            MinigamePlayersWin,MinigameEscapeesWin,MinigameHunterWin
         };
     
         public static EndCondition GetEndCondition(GameOverReason gameOverReason)
@@ -160,7 +160,7 @@ namespace Nebula.Patches
             string name,roleName;
             bool hasFakeTask, hasExecutableFakeTask;
 
-            foreach (Game.PlayerData player in Game.GameData.data.players.Values)
+            foreach (Game.PlayerData player in Game.GameData.data.AllPlayers.Values)
             {
                 //名前に表示を追加する
                 name = "";
@@ -184,7 +184,7 @@ namespace Nebula.Patches
                 if (Game.GameData.data.deadPlayers.ContainsKey(player.id))
                 {
                     byte murder=Game.GameData.data.deadPlayers[player.id].MurderId;
-                    if (murder != byte.MaxValue) finalPlayer.SetKiller(Game.GameData.data.players[murder].name);
+                    if (murder != byte.MaxValue) finalPlayer.SetKiller(Game.GameData.data.playersArray[murder].name);
                 }
                 players.Add(finalPlayer);
             }
@@ -211,9 +211,9 @@ namespace Nebula.Patches
             //勝利者を消去する
             TempData.winners.Clear();
 
-            foreach (PlayerControl player in PlayerControl.AllPlayerControls)
+            foreach (PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
-                if (Game.GameData.data.players[player.PlayerId].role.CheckWin(player, EndCondition))
+                if (Game.GameData.data.playersArray[player.PlayerId].role.CheckWin(player, EndCondition))
                 {
                     TempData.winners.Add(new WinningPlayerData(player.Data));
                 }
@@ -221,7 +221,7 @@ namespace Nebula.Patches
 
             //追加勝利
             bool addedFlag = false;
-            foreach (PlayerControl player in PlayerControl.AllPlayerControls)
+            foreach (PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
                 if (TempData.winners.FindAll((Il2CppSystem.Predicate<WinningPlayerData>)((data) => { return data.PlayerName == player.name; })).Count > 0) continue;
 
@@ -371,6 +371,7 @@ namespace Nebula.Patches
 
             if (!GameData.Instance) return false;
 
+
             var statistics = new PlayerStatistics(__instance);
 
             Patches.EndCondition endCondition = null, temp;
@@ -410,7 +411,23 @@ namespace Nebula.Patches
     public class PlayerStatistics
     {
         private Dictionary<Roles.Side, int> alivePlayers;
+        //頻繁に使用する値のみ予め抽出
+        public int AliveJackals;
+        public int AliveImpostors;
+        public int AliveCrewmates;
+
         public int TotalAlive { get; private set; }
+        public int AliveCouple;
+        public int AliveJackalCouple;
+        public int AliveImpostorCouple;
+        public int AliveTrilemma;
+        public int AliveJackalTrilemma;
+        public int AliveImpostorTrilemma;
+        public int AliveImpostorsWithSidekick;
+
+        //設定次第で適切な値が入る(独立した陣営として見ない場合常に0)
+        public int AliveInLoveImpostors;
+        public int AliveInLoveJackals;
 
         //
         public int GetAlivePlayers(Roles.Side side)
@@ -426,9 +443,19 @@ namespace Nebula.Patches
             alivePlayers = new Dictionary<Roles.Side, int>();
             TotalAlive = 0;
 
+            AliveCouple = 0;
+            AliveJackalCouple = 0;
+            AliveImpostorCouple = 0;
+            AliveTrilemma = 0;
+            AliveJackalTrilemma = 0;
+            AliveImpostorTrilemma = 0;
+            AliveInLoveJackals = 0;
+            AliveInLoveImpostors = 0;
+            AliveImpostorsWithSidekick = 0;
+
             Roles.Side side;
 
-            foreach (GameData.PlayerInfo playerInfo in GameData.Instance.AllPlayers)
+            foreach (GameData.PlayerInfo playerInfo in GameData.Instance.AllPlayers.GetFastEnumerator())
             {
                 try
                 {
@@ -442,7 +469,9 @@ namespace Nebula.Patches
                     }
                     TotalAlive++;
 
-                    side = Game.GameData.data.players[playerInfo.PlayerId].role.side;
+                    var data = Game.GameData.data.playersArray[playerInfo.PlayerId];
+
+                    side = data.role.side;
 
                     if (!alivePlayers.ContainsKey(side))
                     {
@@ -452,10 +481,92 @@ namespace Nebula.Patches
                     {
                         alivePlayers[side] = alivePlayers[side] + 1;
                     }
-                }catch(NullReferenceException exp)
+
+                    if (data.HasExtraRole(Roles.Roles.Lover))
+                    {
+                        var lData=Roles.Roles.Lover.GetLoversData(data);
+                        if (lData != data && lData.id>data.id && lData.IsAlive)
+                        {
+                            AliveCouple++;
+
+                            bool flag = false;
+                            if(data.role.side==Roles.Side.Jackal || lData.HasExtraRole(Roles.Roles.SecondarySidekick))
+                            {
+                                AliveInLoveJackals++;
+                                AliveJackalCouple++;
+                                flag = true;
+                            }
+                            if (lData.role.side == Roles.Side.Jackal || lData.HasExtraRole(Roles.Roles.SecondarySidekick))
+                            {
+                                AliveInLoveJackals++;
+                                if(!flag)AliveJackalCouple++;
+                            }
+
+                            flag = false;
+                            if (data.role.category==Roles.RoleCategory.Impostor)
+                            {
+                                AliveInLoveImpostors++;
+                                AliveImpostorCouple++;
+                                flag = true;
+                            }
+
+                            if (lData.role.category == Roles.RoleCategory.Impostor)
+                            {
+                                AliveInLoveImpostors++;
+                                if(!flag)AliveImpostorCouple++;
+                            }
+                        }
+                    }
+
+                    if (data.HasExtraRole(Roles.Roles.Trilemma))
+                    {
+                        var lData = Roles.Roles.Trilemma.GetLoversData(data);
+                        if (lData[2] == data && lData[0].IsAlive && lData[1].IsAlive)
+                        {
+                            AliveTrilemma++;
+
+                            bool jackalFlag = false, impostorFlag=false;
+
+                            foreach(var d in lData)
+                            {
+                                if ((d.role.side == Roles.Side.Jackal || d.HasExtraRole(Roles.Roles.SecondarySidekick)))
+                                {
+                                    jackalFlag = true;
+                                    AliveInLoveJackals++;
+                                }
+                                if ((d.role.category == Roles.RoleCategory.Impostor))
+                                {
+                                    impostorFlag = true;
+                                    AliveInLoveImpostors++;
+                                }
+                            }
+                            if (jackalFlag) AliveJackalTrilemma++;
+                            if (impostorFlag) AliveImpostorTrilemma++;
+                        }
+                    }
+
+                    if (side == Roles.Side.Impostor)
+                    {
+                        if (data.HasExtraRole(Roles.Roles.SecondarySidekick))
+                        {
+                            AliveImpostorsWithSidekick++;
+                        }
+                    }
+                }
+                catch(NullReferenceException exp)
                 {
                     continue;
                 }
+            }
+
+            AliveCrewmates = GetAlivePlayers(Roles.Side.Crewmate);
+            AliveImpostors = GetAlivePlayers(Roles.Side.Impostor);
+            AliveJackals = GetAlivePlayers(Roles.Side.Jackal);
+
+            if (!Roles.Roles.Lover.loversAsIndependentSideOption.getBool())
+            {
+                AliveInLoveImpostors = 0;
+                AliveInLoveJackals = 0;
             }
         }
     }

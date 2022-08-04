@@ -10,11 +10,32 @@ namespace Nebula.Roles.ExtraRoles
 {
     public class Trilemma : ExtraRole
     {
+        public Game.PlayerData[] GetLoversData(Game.PlayerData player)
+        {
+            Game.PlayerData[] result = new Game.PlayerData[3];
+            int index = 0;
+
+            ulong myLoverId = player.GetExtraRoleData(this);
+            PlayerControl target;
+            foreach (Game.PlayerData data in Game.GameData.data.AllPlayers.Values)
+            {
+                if (!data.extraRole.Contains(this)) continue;
+                if (data.GetExtraRoleData(this) == myLoverId)
+                {
+                    result[index] = data;
+                    index++;
+                }
+            }
+
+            return result;
+        }
+
+
         private void ActionForLover(PlayerControl player, System.Action<PlayerControl> action)
         {
             ulong myLoverId = player.GetModData().GetExtraRoleData(this);
             PlayerControl target;
-            foreach (Game.PlayerData data in Game.GameData.data.players.Values)
+            foreach (Game.PlayerData data in Game.GameData.data.AllPlayers.Values)
             {
                 if (!data.extraRole.Contains(this)) continue;
                 if (data.GetExtraRoleData(this) == myLoverId)
@@ -84,7 +105,7 @@ namespace Nebula.Roles.ExtraRoles
             else if (Game.GameData.data.myData.getGlobalData().extraRole.Contains(this))
             {
                 ulong pairId = Game.GameData.data.myData.getGlobalData().GetExtraRoleData(this);
-                if (Game.GameData.data.players[playerId].GetExtraRoleData(this) == pairId) showFlag = true;
+                if (Game.GameData.data.AllPlayers[playerId].GetExtraRoleData(this) == pairId) showFlag = true;
             }
 
             if (showFlag) EditDisplayNameForcely(playerId, ref displayName);
@@ -93,7 +114,7 @@ namespace Nebula.Roles.ExtraRoles
         public override void EditDisplayNameForcely(byte playerId, ref string displayName)
         {
             displayName += Helpers.cs(
-                    Lover.iconColor[Game.GameData.data.players[playerId].GetExtraRoleData(this) - 1], "♠");
+                    Lover.iconColor[Game.GameData.data.AllPlayers[playerId].GetExtraRoleData(this) - 1], "♠");
         }
 
         public override void EditDescriptionString(ref string desctiption)

@@ -1,11 +1,8 @@
 ﻿using System;
-using System.IO;
-using System.Net.Http;
-using System.Collections.Generic;
-using System.Linq;
 using HarmonyLib;
 using UnityEngine;
 using Nebula.Objects;
+using Nebula.Utilities;
 
 namespace Nebula.Patches
 {
@@ -99,16 +96,12 @@ namespace Nebula.Patches
 
 
             string name;
-            Game.PlayerData playerData;
+            Game.PlayerData? playerData;
             bool hideFlag;
-            foreach (PlayerControl player in PlayerControl.AllPlayerControls)
+            foreach (PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
-                if (!Game.GameData.data.players.ContainsKey(player.PlayerId))
-                {
-                    continue;
-                }
-
-                playerData = Game.GameData.data.players[player.PlayerId];
+                playerData = Game.GameData.data.playersArray[player.PlayerId];
+                if (playerData == null) continue;
 
                 /* 表示・非表示を設定する */
 
@@ -177,12 +170,8 @@ namespace Nebula.Patches
             {
                 foreach (PlayerVoteArea player in MeetingHud.Instance.playerStates)
                 {
-                    if (!Game.GameData.data.players.ContainsKey(player.TargetPlayerId))
-                    {
-                        continue;
-                    }
-
-                    playerData = Game.GameData.data.players[player.TargetPlayerId];
+                    playerData = Game.GameData.data.playersArray[player.TargetPlayerId];
+                    if (playerData == null) continue;
 
                     /* 名前を編集する */
                     name = "";
@@ -234,13 +223,13 @@ namespace Nebula.Patches
             float distance;
             Vector3 targetPosition;
 
-            foreach (PlayerControl player in PlayerControl.AllPlayerControls)
+            foreach (PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
-                if (!Game.GameData.data.players.ContainsKey(player.PlayerId))
+                if (!Game.GameData.data.AllPlayers.ContainsKey(player.PlayerId))
                 {
                     continue;
                 }
-                data = Game.GameData.data.players[player.PlayerId];
+                data = Game.GameData.data.playersArray[player.PlayerId];
 
                 if (data.dragPlayerId==Byte.MaxValue)
                 {
@@ -383,7 +372,7 @@ namespace Nebula.Patches
 
                 Objects.Ghost.Update();
 
-                Game.GameData.data.TimerUpdate();
+                if(CustomOptionHolder.timeLimitOption.getBool())Game.GameData.data.TimerUpdate();
 
                 if (Game.GameData.data.Ghost != null) Game.GameData.data.Ghost.Update();
 

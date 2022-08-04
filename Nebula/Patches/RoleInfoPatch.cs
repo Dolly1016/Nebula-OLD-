@@ -4,6 +4,7 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Collections;
+using Nebula.Utilities;
 
 namespace Nebula.Patches
 {
@@ -35,7 +36,7 @@ namespace Nebula.Patches
 
         private static bool Initialize()
         {
-            HudManager hudManager = DestroyableSingleton<HudManager>.Instance;
+            HudManager hudManager = HudManager.Instance;
             if (hudManager == null) return false;
 
             if (colorBG == null)
@@ -101,7 +102,7 @@ namespace Nebula.Patches
 
         private static void showBlackBG()
         {
-            if (HudManager.Instance == null) return;
+            if (!HudManager.InstanceExists) return;
             if (!Initialize()) return;
 
             meetingUnderlay.sprite = colorBG;
@@ -141,8 +142,10 @@ namespace Nebula.Patches
         {
             if (overlayShown) return;
 
-            HudManager hudManager = DestroyableSingleton<HudManager>.Instance;
-            if (ShipStatus.Instance == null || PlayerControl.LocalPlayer == null || hudManager == null || HudManager.Instance.IsIntroDisplayed || (!PlayerControl.LocalPlayer.CanMove && MeetingHud.Instance == null))
+            if (!HudManager.InstanceExists) return;
+
+            HudManager hudManager = HudManager.Instance;
+            if (ShipStatus.Instance==null || PlayerControl.LocalPlayer == null || HudManager.Instance.IsIntroDisplayed || (!PlayerControl.LocalPlayer.CanMove && MeetingHud.Instance == null))
                 return;
 
             if (!Initialize()) return;
@@ -203,7 +206,7 @@ namespace Nebula.Patches
         {
             if (!overlayShown) return;
 
-            if (MeetingHud.Instance == null) DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
+            if (MeetingHud.Instance == null) HudManager.Instance.SetHudActive(true);
 
             overlayShown = false;
             var underlayTransparent = new Color(0.1f, 0.1f, 0.1f, 0.0f);

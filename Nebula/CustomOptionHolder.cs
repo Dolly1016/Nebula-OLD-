@@ -60,7 +60,7 @@ namespace Nebula
             "option.display.percentage.0" , "option.display.percentage.10", "option.display.percentage.20", "option.display.percentage.30", "option.display.percentage.40",
             "option.display.percentage.50", "option.display.percentage.60", "option.display.percentage.70", "option.display.percentage.80", "option.display.percentage.90", "option.display.percentage.100" };
         public static string[] presets = new string[] { "option.display.preset.1", "option.display.preset.2", "option.display.preset.3", "option.display.preset.4", "option.display.preset.5" };
-        public static string[] gamemodes = new string[] { "gamemode.standard", "gamemode.minigame", "gamemode.parlour", "gamemode.investigators", "gamemode.freePlay" };
+        public static string[] gamemodes = new string[] { "gamemode.standard", "gamemode.minigame", "gamemode.ritual", "gamemode.investigators", "gamemode.freePlay" };
 
         private static byte ToByte(float f)
         {

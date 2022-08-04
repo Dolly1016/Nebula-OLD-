@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Hazel;
 using UnityEngine;
 using Nebula.Objects;
+using Nebula.Utilities;
 
 namespace Nebula.Roles.CrewmateRoles
 {
@@ -76,7 +77,7 @@ namespace Nebula.Roles.CrewmateRoles
             );
             agentButton.MaxTimer = agentButton.Timer = 0;
 
-            ventButtonString = GameObject.Instantiate(agentButton.actionButton.cooldownTimerText, HudManager.Instance.ImpostorVentButton.transform);
+            ventButtonString = GameObject.Instantiate(agentButton.actionButton.cooldownTimerText, FastDestroyableSingleton<HudManager>.Instance.ImpostorVentButton.transform);
             ventButtonString.text = (int)maxVentsOption.getFloat() + "/" + (int)maxVentsOption.getFloat();
             ventButtonString.enableWordWrapping = false;
             ventButtonString.transform.localScale = Vector3.one * 0.5f;
