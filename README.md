@@ -934,12 +934,6 @@ Sniperの弾の当たり判定やEmpiric,Alienなどの効果範囲を調べる�
 
 -----------------------
 
-# 拡張MODの制作方法
-
-BasePluginに以下の属性を新たに付与することで、Nebula on the Shipを前提としたMODを制作することができます。\
-\
-　[BepInDependency("jp.dreamingpig.amongus.nebula",BepInDependency.DependencyFlags.HardDependency)]
-
 # クレジットとリソース
 
 いずれも、敬称略
