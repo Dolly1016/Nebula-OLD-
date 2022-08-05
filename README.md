@@ -29,6 +29,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.12.6.1 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.6.1,2022.6.21/Nebula_v1.12.6.1.zip)|
 | 1.12.6 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.6,2022.6.21/Nebula_v1.12.6.zip)|
 | 1.12.5 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.5,2022.6.21/Nebula_v1.12.5.zip)|
 | 1.12.4 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.4,2022.6.21/Nebula_v1.12.4.zip)|
@@ -202,6 +203,9 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+ 
+ **Version 1.12.6.1**
+ - タスク勝利をできなくしてしまっていたので修正
  
  **Version 1.12.6**
  - プレイヤーの色が正しく反映されない問題を修正
