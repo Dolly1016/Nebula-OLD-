@@ -29,6 +29,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.12.7 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.7,2022.6.21/Nebula_v1.12.7.zip)|
 | 1.12.6.1 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.6.1,2022.6.21/Nebula_v1.12.6.1.zip)|
 | 1.12.6 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.6,2022.6.21/Nebula_v1.12.6.zip)|
 | 1.12.5 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.5,2022.6.21/Nebula_v1.12.5.zip)|
@@ -203,6 +204,10 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+ 
+ **Version 1.12.7**
+ - Raiderの斧が壁を貫通してキルを及ぼす問題を修正
+ - Agentのタスク代行が正常に機能していない問題を修正
  
  **Version 1.12.6.1**
  - タスク勝利をできなくしてしまっていたので修正
