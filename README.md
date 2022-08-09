@@ -29,6 +29,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.12.7.2 | 2022.7.12s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.7.2,2022.6.21/Nebula_v1.12.7.2.zip)|
 | 1.12.7.1 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.7.1,2022.6.21/Nebula_v1.12.7.1.zip)|
 | 1.12.7 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.7,2022.6.21/Nebula_v1.12.7.zip)|
 | 1.12.6.1 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.6.1,2022.6.21/Nebula_v1.12.6.1.zip)|
@@ -205,6 +206,9 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+ 
+ **Version 1.12.7.2**
+ - BepInExのバージョンを最新版のものに差し替え
  
  **Version 1.12.7.1**
  - Raiderの斧が上方の壁にほど近いプレイヤーをキルできない問題を修正
