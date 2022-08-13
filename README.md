@@ -29,6 +29,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.12.8 | 2022.7.12s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.8,2022.7.12/Nebula_v1.12.8.zip)|
 | 1.12.7.4 | 2022.7.12s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.7.4,2022.7.12/Nebula_v1.12.7.4.zip)|
 | 1.12.7.3 | 2022.7.12s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.7.3,2022.7.12/Nebula_v1.12.7.3.zip)|
 | 1.12.7.2 | 2022.7.12s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.7.2,2022.7.12/Nebula_v1.12.7.2.zip)|
@@ -208,6 +209,10 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+ 
+ **Version 1.12.8**
+ - Jesterの空砲・死体掴み能力を任意で付け外しできるようにしました。
+ - 一部タスクがボタンのクールダウンを止めてしまっていた問題を修正しました。
  
  **Version 1.12.7.4**
  - Better Crewlinkとの相性問題を改善しました。
