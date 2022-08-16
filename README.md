@@ -29,6 +29,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.12.9.1 | 2022.7.12s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.9.1,2022.7.12/Nebula_v1.12.9.1.zip)|
 | 1.12.9 | 2022.7.12s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.9,2022.7.12/Nebula_v1.12.9.zip)|
 | 1.12.8 | 2022.7.12s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.8,2022.7.12/Nebula_v1.12.8.zip)|
 | 1.12.7.4 | 2022.7.12s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.7.4,2022.7.12/Nebula_v1.12.7.4.zip)|
@@ -210,6 +211,9 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+ 
+ **Version 1.12.9.1**
+ - Alienは生存中でないとサボタージュを引き起こせないようになりました。
  
  **Version 1.12.9**
  - Alienがサボタージュを引き起こせるようになりました。
