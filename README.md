@@ -29,6 +29,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.12.11 | 2022.8.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.11,2022.8.24/Nebula_v1.12.11.zip)|
 | 1.12.10 | 2022.7.12s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.10,2022.7.12/Nebula_v1.12.10.zip)|
 | 1.12.9.1 | 2022.7.12s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.9.1,2022.7.12/Nebula_v1.12.9.1.zip)|
 | 1.12.9 | 2022.7.12s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.9,2022.7.12/Nebula_v1.12.9.zip)|
@@ -212,6 +213,9 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+ 
+ **Version 1.12.11**
+ - Among Us本体の対応バージョンを v2022.8.24s に引き上げ
  
  **Version 1.12.10**
  - 排他的役職割り当てにいくつかの設定を追加しました。
