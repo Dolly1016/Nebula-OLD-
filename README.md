@@ -29,6 +29,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.13.1 | 2022.8.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.13.1,2022.8.24/Nebula_v1.13.1.zip)|
 | 1.13 | 2022.8.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.13,2022.8.24/Nebula_v1.13.zip)|
 | 1.12.11 | 2022.8.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.11,2022.8.24/Nebula_v1.12.11.zip)|
 | 1.12.10 | 2022.7.12s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.10,2022.7.12/Nebula_v1.12.10.zip)|
@@ -214,6 +215,11 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+ 
+ **Version 1.13.1**
+ - セオノさんのハットを利用できるように
+ - ゲーム内で言語を変更すると一部文字列が正常に表示されなくなる問題を修正
+ - More Cosmicの不足する画像がダウンロードされない問題を修正
  
  **Version 1.13**
  - Chain Shifterを追加
