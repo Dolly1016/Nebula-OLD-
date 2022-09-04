@@ -976,12 +976,12 @@ Sniperの弾の当たり判定やEmpiric,Alienなどの効果範囲を調べる�
 | [Bounty Hunter](#bountyHunter) | [Agent](#agent) | [Arsonist](#arsonist) | [Drunk](#drunk) |
 | [Camouflager](#camouflager) | [Alien](#alien) | [Avenger](#avenger) | [Guesser](#guesser) |
 | [Cleaner](#cleaner) | [Bait](#bait) | [Empiric](#empiric) | [Lover](#lover) |
-| [Damned](#damned) | [Busker](#busker) | [Jackal](#jackal) | [Trilemma](#trilemma) |
-| [Disturber](#disturber) | [Comet](#comet) | [Jester](#jester) ||
-| [Eraser](#eraser) | [Doctor](#doctor) | [Opportunist](#opportunist) ||
-| [Evil Ace](#evil-ace) | [Mayor](#mayor) | [Sidekick](#sidekick) ||
-| [Evil Guesser](#guesser) | [Navvy](#navvy) | [Vulture](#vulture) ||
-| [Evil Trapper](#trapper) | [Necromancer](#necromancer) |||
+| [Damned](#damned) | [Busker](#busker) | [Chain Shifter](#chainShifter) | [Trilemma](#trilemma) |
+| [Disturber](#disturber) | [Comet](#comet) | [Jackal](#jackal) ||
+| [Eraser](#eraser) | [Doctor](#doctor) | [Jester](#jester) ||
+| [Evil Ace](#evil-ace) | [Mayor](#mayor) | [Opportunist](#opportunist) ||
+| [Evil Guesser](#guesser) | [Navvy](#navvy) | [Sidekick](#sidekick) ||
+| [Evil Trapper](#trapper) | [Necromancer](#necromancer) | [Vulture](#vulture) ||
 | [Jailer](#jailer) | [Nice Guesser](#guesser) |||
 | [Morphing](#morphing) | [Nice Trapper](#trapper) |||
 | [Raider](#raider) | [Oracle](#oracle) |||
@@ -1588,6 +1588,22 @@ p5p5next : Damned
 | Coasting Phase After Meetings | 会議後の感染の停滞期
 | Vent Cool Down | ベントのクールダウン
 | Vent Duration | ベントでの潜伏可能時間
+
+-----------------------
+
+## ChainShifter
+ ChainShifterは勝利条件を全く持たない役職です。\
+ 他人と役職を交換することで相手にChainShifterを押し付けてゲームを進めます。
+ 
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| F | 役職を交換する(交換されるのは会議終了時)
+
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+| Is Guessable | Chain ShifterをGuesserの能力で撃つことができるかどうか
 
 -----------------------
 
