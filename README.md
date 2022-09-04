@@ -973,10 +973,10 @@ Sniperの弾の当たり判定やEmpiric,Alienなどの効果範囲を調べる�
 ## Standard
 | Impostors | Crewmates | Neutral | Secondary |
 | ---------- | ---------- | ---------- | ---------- |
-| [Bounty Hunter](#bountyHunter) | [Agent](#agent) | [Arsonist](#arsonist) | [Drunk](#drunk) |
+| [Bounty Hunter](#bounty-hunter) | [Agent](#agent) | [Arsonist](#arsonist) | [Drunk](#drunk) |
 | [Camouflager](#camouflager) | [Alien](#alien) | [Avenger](#avenger) | [Guesser](#guesser) |
 | [Cleaner](#cleaner) | [Bait](#bait) | [Empiric](#empiric) | [Lover](#lover) |
-| [Damned](#damned) | [Busker](#busker) | [Chain Shifter](#chainShifter) | [Trilemma](#trilemma) |
+| [Damned](#damned) | [Busker](#busker) | [Chain Shifter](#chain-shifter) | [Trilemma](#trilemma) |
 | [Disturber](#disturber) | [Comet](#comet) | [Jackal](#jackal) ||
 | [Eraser](#eraser) | [Doctor](#doctor) | [Jester](#jester) ||
 | [Evil Ace](#evil-ace) | [Mayor](#mayor) | [Opportunist](#opportunist) ||
