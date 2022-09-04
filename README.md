@@ -22,13 +22,27 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 詳細の確認と応募は上のDiscordからしていただけます。\
 是非、素敵なデザインをお寄せください！
 
-# ダウンロード
+# Download
 
 当ModにはAmong Us内でアップデートができる機能がありますが、対応するVanillaのバージョンが変わる場合\
 最新版への更新ができませんので、こちらから手動でのアップデートをお願いいたします。
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.13.1 | 2022.8.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.13.1,2022.8.24/Nebula_v1.13.1.zip)|
+| 1.13 | 2022.8.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.13,2022.8.24/Nebula_v1.13.zip)|
+| 1.12.11 | 2022.8.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.11,2022.8.24/Nebula_v1.12.11.zip)|
+| 1.12.10 | 2022.7.12s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.10,2022.7.12/Nebula_v1.12.10.zip)|
+| 1.12.9.1 | 2022.7.12s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.9.1,2022.7.12/Nebula_v1.12.9.1.zip)|
+| 1.12.9 | 2022.7.12s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.9,2022.7.12/Nebula_v1.12.9.zip)|
+| 1.12.8 | 2022.7.12s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.8,2022.7.12/Nebula_v1.12.8.zip)|
+| 1.12.7.4 | 2022.7.12s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.7.4,2022.7.12/Nebula_v1.12.7.4.zip)|
+| 1.12.7.3 | 2022.7.12s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.7.3,2022.7.12/Nebula_v1.12.7.3.zip)|
+| 1.12.7.2 | 2022.7.12s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.7.2,2022.7.12/Nebula_v1.12.7.2.zip)|
+| 1.12.7.1 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.7.1,2022.6.21/Nebula_v1.12.7.1.zip)|
+| 1.12.7 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.7,2022.6.21/Nebula_v1.12.7.zip)|
+| 1.12.6.1 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.6.1,2022.6.21/Nebula_v1.12.6.1.zip)|
+| 1.12.6 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.6,2022.6.21/Nebula_v1.12.6.zip)|
 | 1.12.5 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.5,2022.6.21/Nebula_v1.12.5.zip)|
 | 1.12.4 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.4,2022.6.21/Nebula_v1.12.4.zip)|
 | 1.12.3 | 2022.6.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.3,2022.6.21/Nebula_v1.12.3.zip)|
@@ -190,8 +204,8 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 
 | Language | Translator | Full Support Version | Download |
 | --- | --- | --- | --- |
-| 日本語 | - | 1.12.3 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.3,2022.6.21/Japanese.dat)|
-| 日本語 | kihi | 1.12.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.12.1%2Ckihi/Japanese.dat)|
+| 日本語 | - | 1.12.10 | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.10,2022.7.12/Japanese.dat)|
+| 日本語 | kihi | 1.12.10 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.12.10%2Ckihi/Japanese.dat)|
 | 日本語 | ゆうみや | 1.12.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.12.1%2Cゆうみや/Japanese.dat)|
 | 簡体中文 | 四个憨批汉化组 | 1.12.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CSC%2C1.12.1%2C四个憨批汉化组/SChinese.dat)|
 | 日本語 | Rey | 1.11.0.1 | [Download](https://github.com/Dolly1016/Nebula/releases/download/LANG%2CJP%2C1.11.0.1%2CRey/Japanese.dat)|
@@ -201,6 +215,64 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+ 
+ **Version 1.13.1**
+ - セオノさんのハットを利用できるように
+ - ゲーム内で言語を変更すると一部文字列が正常に表示されなくなる問題を修正
+ - More Cosmicの不足する画像がダウンロードされない問題を修正
+ 
+ **Version 1.13**
+ - Chain Shifterを追加
+ - フリープレイで使用できるDummyが見えない問題を修正
+ - フリープレイで会議を開くとクルー勝利してしまうことがある問題を修正
+ - フリープレイでの役職選択画面の見た目とプレイヤーの挙動を修正
+ - 着せ替え画面で文字の表示がおかしくなる時がある問題を修正
+ - (ハット製作者向け)パッケージを自由に追加できるように
+ 
+ **Version 1.12.11**
+ - Among Us本体の対応バージョンを v2022.8.24s に引き上げ
+ 
+ **Version 1.12.10**
+ - 排他的役職割り当てにいくつかの設定を追加
+ - Morphingの効果時間を最大40秒まで設定できるように
+ 
+ **Version 1.12.9.1**
+ - Alienは生存中でないとサボタージュを引き起こせないよう修正
+ 
+ **Version 1.12.9**
+ - Alienがサボタージュを引き起こせるように
+ - Sheriffの弾数を制限できるように
+ - Doctorのモバイル端末の利用可能時間を常時確認できるように
+ 
+ **Version 1.12.8**
+ - Jesterの空砲・死体掴み能力を任意で付け外しできるように
+ - 一部タスクがボタンのクールダウンを止めてしまっていた問題を修正
+ 
+ **Version 1.12.7.4**
+ - Better Crewlinkとの相性問題を改善しました。
+ - アニメーションするハット/バイザーがより分かりやすくなりました。
+ 
+ **Version 1.12.7.3**
+ - ハット選択画面でメモリリークが発生することがある問題を修正
+ 
+ **Version 1.12.7.2**
+ - BepInExのバージョンを最新版のものに差し替え
+ 
+ **Version 1.12.7.1**
+ - Raiderの斧が上方の壁にほど近いプレイヤーをキルできない問題を修正
+ 
+ **Version 1.12.7**
+ - Raiderの斧が壁を貫通してキルを及ぼす問題を修正
+ - Agentのタスク代行が正常に機能していない問題を修正
+ 
+ **Version 1.12.6.1**
+ - タスク勝利をできなくしてしまっていたので修正
+ 
+ **Version 1.12.6**
+ - プレイヤーの色が正しく反映されない問題を修正
+ - Agent,Opportunistのタスク免除が正しく機能していない問題を修正
+ - Agentの追加タスクの候補からAirshipのタオルタスクを除外
+ - タスク中にボタンのクールダウンが進まないことがある問題を修正
  
  **Version 1.12.5**
  - プレイヤーの色が正しく表示されないことがある問題を抑制
@@ -907,15 +979,15 @@ Sniperの弾の当たり判定やEmpiric,Alienなどの効果範囲を調べる�
 ## Standard
 | Impostors | Crewmates | Neutral | Secondary |
 | ---------- | ---------- | ---------- | ---------- |
-| [Bounty Hunter](#bountyHunter) | [Agent](#agent) | [Arsonist](#arsonist) | [Drunk](#drunk) |
+| [Bounty Hunter](#bounty-hunter) | [Agent](#agent) | [Arsonist](#arsonist) | [Drunk](#drunk) |
 | [Camouflager](#camouflager) | [Alien](#alien) | [Avenger](#avenger) | [Guesser](#guesser) |
 | [Cleaner](#cleaner) | [Bait](#bait) | [Empiric](#empiric) | [Lover](#lover) |
-| [Damned](#damned) | [Busker](#busker) | [Jackal](#jackal) | [Trilemma](#trilemma) |
-| [Disturber](#disturber) | [Comet](#comet) | [Jester](#jester) ||
-| [Eraser](#eraser) | [Doctor](#doctor) | [Opportunist](#opportunist) ||
-| [Evil Ace](#evil-ace) | [Mayor](#mayor) | [Sidekick](#sidekick) ||
-| [Evil Guesser](#guesser) | [Navvy](#navvy) | [Vulture](#vulture) ||
-| [Evil Trapper](#trapper) | [Necromancer](#necromancer) |||
+| [Damned](#damned) | [Busker](#busker) | [Chain Shifter](#chain-shifter) | [Trilemma](#trilemma) |
+| [Disturber](#disturber) | [Comet](#comet) | [Jackal](#jackal) ||
+| [Eraser](#eraser) | [Doctor](#doctor) | [Jester](#jester) ||
+| [Evil Ace](#evil-ace) | [Mayor](#mayor) | [Opportunist](#opportunist) ||
+| [Evil Guesser](#guesser) | [Navvy](#navvy) | [Sidekick](#sidekick) ||
+| [Evil Trapper](#trapper) | [Necromancer](#necromancer) | [Vulture](#vulture) ||
 | [Jailer](#jailer) | [Nice Guesser](#guesser) |||
 | [Morphing](#morphing) | [Nice Trapper](#trapper) |||
 | [Raider](#raider) | [Oracle](#oracle) |||
@@ -933,12 +1005,6 @@ Sniperの弾の当たり判定やEmpiric,Alienなどの効果範囲を調べる�
 ||| [Polis](#polis) |
 
 -----------------------
-
-# 拡張MODの制作方法
-
-BasePluginに以下の属性を新たに付与することで、Nebula on the Shipを前提としたMODを制作することができます。\
-\
-　[BepInDependency("jp.dreamingpig.amongus.nebula",BepInDependency.DependencyFlags.HardDependency)]
 
 # クレジットとリソース
 
@@ -1528,6 +1594,22 @@ p5p5next : Damned
 | Coasting Phase After Meetings | 会議後の感染の停滞期
 | Vent Cool Down | ベントのクールダウン
 | Vent Duration | ベントでの潜伏可能時間
+
+-----------------------
+
+## Chain Shifter
+ ChainShifterは勝利条件を全く持たない役職です。\
+ 他人と役職を交換することで相手にChainShifterを押し付けてゲームを進めます。
+ 
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| F | 役職を交換する(交換されるのは会議終了時)
+
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+| Is Guessable | Chain ShifterをGuesserの能力で撃つことができるかどうか
 
 -----------------------
 
