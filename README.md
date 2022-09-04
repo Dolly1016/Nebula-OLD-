@@ -29,6 +29,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.13 | 2022.8.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.13,2022.8.24/Nebula_v1.13.zip)|
 | 1.12.11 | 2022.8.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.11,2022.8.24/Nebula_v1.12.11.zip)|
 | 1.12.10 | 2022.7.12s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.10,2022.7.12/Nebula_v1.12.10.zip)|
 | 1.12.9.1 | 2022.7.12s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.9.1,2022.7.12/Nebula_v1.12.9.1.zip)|
@@ -213,6 +214,14 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+ 
+ **Version 1.13**
+ - Chain Shifterを追加
+ - フリープレイで使用できるDummyが見えない問題を修正
+ - フリープレイで会議を開くとクルー勝利してしまうことがある問題を修正
+ - フリープレイでの役職選択画面の見た目とプレイヤーの挙動を修正
+ - 着せ替え画面で文字の表示がおかしくなる時がある問題を修正
+ - (ハット製作者向け)パッケージを自由に追加できるように
  
  **Version 1.12.11**
  - Among Us本体の対応バージョンを v2022.8.24s に引き上げ
