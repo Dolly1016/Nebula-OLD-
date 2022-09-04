@@ -1591,7 +1591,7 @@ p5p5next : Damned
 
 -----------------------
 
-## ChainShifter
+## Chain Shifter
  ChainShifterは勝利条件を全く持たない役職です。\
  他人と役職を交換することで相手にChainShifterを押し付けてゲームを進めます。
  
