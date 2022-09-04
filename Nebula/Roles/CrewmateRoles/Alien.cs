@@ -17,6 +17,10 @@ namespace Nebula.Roles.CrewmateRoles
         private Module.CustomOption emiDurationOption;
         private Module.CustomOption emiRangeOption;
         private Module.CustomOption emiInhibitsCrewmatesOption;
+        private Module.CustomOption countOfCallingSabotageOption;
+
+        private int sabotageCount;
+        private TMPro.TextMeshPro sabotageText;
 
         public override void LoadOptionData()
         {
@@ -30,6 +34,8 @@ namespace Nebula.Roles.CrewmateRoles
             emiRangeOption.suffix = "cross";
 
             emiInhibitsCrewmatesOption = CreateOption(Color.white, "emiInhibitsCrewmates", true);
+
+            countOfCallingSabotageOption = CreateOption(Color.white, "countOfCallingSabotage", 1f, 0f, 5f, 1f);
         }
 
 
@@ -42,6 +48,7 @@ namespace Nebula.Roles.CrewmateRoles
             buttonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.EMIButton.png", 115f);
             return buttonSprite;
         }
+
 
         public override void GlobalUpdate(byte playerId)
         {
@@ -72,8 +79,23 @@ namespace Nebula.Roles.CrewmateRoles
             }
         }
 
+        public override bool CanInvokeSabotage => sabotageCount > 0 && !PlayerControl.LocalPlayer.Data.IsDead;
+        public override void MyPlayerControlUpdate()
+        {
+            if(sabotageText)sabotageText.text = sabotageCount + "/" + (int)countOfCallingSabotageOption.getFloat();
+        }
+
+        public override void OnInvokeSabotage(SystemTypes systemType)
+        {
+            sabotageCount--;    
+        }
+
         public override void ButtonInitialize(HudManager __instance)
         {
+            sabotageCount = (int)countOfCallingSabotageOption.getFloat();
+            sabotageText = HudManager.Instance.SabotageButton.CreateButtonUpperText();
+            sabotageText.text = sabotageCount + "/" + (int)countOfCallingSabotageOption.getFloat();
+
             if (emiButton != null)
             {
                 emiButton.Destroy();

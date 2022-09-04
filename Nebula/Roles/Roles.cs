@@ -46,6 +46,7 @@ namespace Nebula.Roles
 
         public static NeutralRoles.Arsonist Arsonist = new NeutralRoles.Arsonist();
         public static NeutralRoles.Avenger Avenger = new NeutralRoles.Avenger();
+        public static NeutralRoles.ChainShifter ChainShifter = new NeutralRoles.ChainShifter();
         public static NeutralRoles.Empiric Empiric = new NeutralRoles.Empiric();
         public static NeutralRoles.Jackal Jackal = new NeutralRoles.Jackal();
         public static NeutralRoles.Sidekick Sidekick = new NeutralRoles.Sidekick();
@@ -63,7 +64,10 @@ namespace Nebula.Roles
         public static MinigameRoles.Hunters.Hadar Hadar = new MinigameRoles.Hunters.Hadar();
         public static MinigameRoles.Hunters.Polis Polis = new MinigameRoles.Hunters.Polis();
 
-        
+        public static RitualRoles.RitualCrewmate RitualCrewmate = new RitualRoles.RitualCrewmate();
+        public static RitualRoles.RitualKiller RitualKiller = new RitualRoles.RitualKiller();
+
+
         public static ComplexRoles.FCrewmate F_Crewmate = new ComplexRoles.FCrewmate();
         public static ComplexRoles.FGuesser F_Guesser = new ComplexRoles.FGuesser();
         public static ComplexRoles.FTrapper F_Trapper = new ComplexRoles.FTrapper();
@@ -84,15 +88,15 @@ namespace Nebula.Roles
         {
             Impostor,BountyHunter,Camouflager,Cleaner,Damned,Disturber,Eraser,EvilAce,EvilGuesser,EvilTrapper,Jailer,Morphing,Raider,Reaper,Sniper,
             F_Guesser,F_Trapper,
-            Arsonist,Avenger,Empiric,Jackal,Jester,Opportunist,Sidekick,Vulture,
+            Arsonist,Avenger,ChainShifter,Empiric,Jackal,Jester,Opportunist,Sidekick,Vulture,
             F_Crewmate,
             Crewmate,CrewmateWithoutTasks,Agent,Alien,Bait,Busker,Comet,DamnedCrew,Doctor,Mayor,Navvy,Necromancer,NiceGuesser,NiceTrapper,Oracle,Provocateur,Psychic,Seer,Sheriff,Spy,
             Madmate,
             Player,
             Halley,Biela,
             Polis,Hadar,
-            Investigator
-            
+            Investigator,
+            RitualCrewmate,RitualKiller
         };
 
         public static List<ExtraRole> AllExtraRoles = new List<ExtraRole>()

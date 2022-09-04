@@ -135,7 +135,7 @@ namespace Nebula.Patches
 
             if (!__instance.AmOwner) return;
 
-            var data = Game.GameData.data.playersArray[__instance.PlayerId];
+            var data = Game.GameData.data.GetPlayerData(__instance.PlayerId);
             if (data == null) return;
 
             HudManager hudManager = HudManager.Instance;
@@ -180,7 +180,7 @@ namespace Nebula.Patches
             else
                 hudManager.ImpostorVentButton.Hide();
             
-            if (role.canInvokeSabotage && showFlag)
+            if (role.CanInvokeSabotage && showFlag)
                 hudManager.SabotageButton.Show();
             else
                 hudManager.SabotageButton.Hide();

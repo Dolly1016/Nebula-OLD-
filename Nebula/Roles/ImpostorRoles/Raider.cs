@@ -253,7 +253,14 @@ namespace Nebula.Roles.ImpostorRoles
                             if (p == PlayerControl.LocalPlayer) continue;
                             if (!canKillImpostorsOption.getBool() && p.Data.Role.Role == RoleTypes.Impostor) continue;
 
-                            if (pos.Distance(p.transform.position) < d) RPCEventInvoker.UncheckedMurderPlayer(PlayerControl.LocalPlayer.PlayerId, p.PlayerId, Game.PlayerData.PlayerStatus.Beaten.Id, false);
+                            if (p.transform.position.Distance(pos) < d)
+                            {
+                                Vector2 vec = ((Vector2)p.GetTruePosition()) - (Vector2)pos;
+                                if (!PhysicsHelpers.AnyNonTriggersBetween(p.GetTruePosition(), vec.normalized, vec.magnitude, Constants.ShipAndAllObjectsMask))
+                                {
+                                    RPCEventInvoker.UncheckedMurderPlayer(PlayerControl.LocalPlayer.PlayerId, p.PlayerId, Game.PlayerData.PlayerStatus.Beaten.Id, false);
+                                }
+                            }
                         }
                     }
                 }

@@ -7,6 +7,40 @@ using Nebula.Utilities;
 
 namespace Nebula.Patches
 {
+    
+    [HarmonyPatch(typeof(GameData), nameof(GameData.SetTasks))]
+    public class PlayerControlSetTaskPatch
+    {
+        public static bool Prefix(GameData __instance, [HarmonyArgument(0)] byte playerId, [HarmonyArgument(1)] UnhollowerBaseLib.Il2CppStructArray<byte> taskTypeIds)
+        {
+            if (playerId != PlayerControl.LocalPlayer.PlayerId) return true;
+
+            GameData.PlayerInfo playerById = __instance.GetPlayerById(playerId);
+            if (playerById == null || playerById.Disconnected || !playerById.Object) return false;
+
+            //Ritualモード
+            if (Game.GameData.data.GameMode == Module.CustomGameMode.Ritual)
+            {
+                RitualPatch.SetTasks(__instance,playerById, taskTypeIds);
+                return false;
+            }
+
+            var tasks = new Il2CppSystem.Collections.Generic.List<GameData.TaskInfo>(taskTypeIds.Length);
+
+            for (int i = 0; i < taskTypeIds.Length; i++)
+            {
+                tasks.Add(new GameData.TaskInfo(taskTypeIds[i], (uint)i));
+            }
+            Game.GameData.data.myData.getGlobalData().role.OnSetTasks(tasks);
+
+            playerById.Tasks = tasks;
+            playerById.Object.SetTasks(playerById.Tasks);
+
+            __instance.SetDirtyBit(1U << (int)playerById.PlayerId);
+
+            return false;
+        }
+    }
 
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetHatAndVisorAlpha))]
     public class PlayerControlSetAlphaPatch
@@ -26,7 +60,7 @@ namespace Nebula.Patches
             PlayerControlPatch.UpdatePlayerVisibility(__instance);
         }
     }
-
+    
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixedUpdate))]
     public class PlayerControlPatch
     {
@@ -102,7 +136,7 @@ namespace Nebula.Patches
             Il2CppSystem.Collections.Generic.List<GameData.PlayerInfo> allPlayers = GameData.Instance.AllPlayers;
             for (int i = 0; i < allPlayers.Count; i++)
             {
-                GameData.PlayerInfo playerInfo = allPlayers.get_Item(i);
+                GameData.PlayerInfo playerInfo = allPlayers[i];
 
                 if (playerInfo==null || (PlayerControl.LocalPlayer.PlayerId == playerInfo.PlayerId) || (playerInfo.Object==null))
                     continue;
@@ -257,17 +291,22 @@ namespace Nebula.Patches
 
                         var completedStr = commsActive ? "?" : tasksCompleted.ToString();
                         string taskInfo = "";
-                        if (p == PlayerControl.LocalPlayer || Game.GameData.data.myData.CanSeeEveryoneInfo)
+                        
+                        if (Game.GameModeProperty.GetProperty(Game.GameData.data.GameMode).CountTasks)
                         {
-                            bool hasFakeTask = false;
-                            Helpers.RoleAction(p.PlayerId, (role) => {
-                                hasFakeTask |= !role.HasCrewmateTask(p.PlayerId);
-                            });
+                            if (p == PlayerControl.LocalPlayer || Game.GameData.data.myData.CanSeeEveryoneInfo)
+                            {
+                                bool hasFakeTask = false;
+                                Helpers.RoleAction(p.PlayerId, (role) =>
+                                {
+                                    hasFakeTask |= !role.HasCrewmateTask(p.PlayerId);
+                                });
 
-                            if (hasFakeTask)
-                                taskInfo = tasksTotal > 0 ? $"<color=#868686FF>({completedStr}/{tasksTotal})</color>" : "";
-                            else
-                                taskInfo = tasksTotal > 0 ? $"<color=#FAD934FF>({completedStr}/{tasksTotal})</color>" : "";
+                                if (hasFakeTask)
+                                    taskInfo = tasksTotal > 0 ? $"<color=#868686FF>({completedStr}/{tasksTotal})</color>" : "";
+                                else
+                                    taskInfo = tasksTotal > 0 ? $"<color=#FAD934FF>({completedStr}/{tasksTotal})</color>" : "";
+                            }
                         }
 
                         string playerInfoText = "";
@@ -300,6 +339,8 @@ namespace Nebula.Patches
         public static void UpdatePlayerVisibility(PlayerControl player)
         {
             var data = player.GetModData();
+            if (data == null) return;
+
             float alpha = data.TransColor.a;
             if (data.Attribute.HasAttribute(Game.PlayerAttribute.Invisible))
                 alpha -= 0.75f * Time.deltaTime;
@@ -342,6 +383,7 @@ namespace Nebula.Patches
 
         }
 
+        
         public static void Postfix(PlayerControl __instance)
         {
             if (AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Started) return;
@@ -349,13 +391,12 @@ namespace Nebula.Patches
             {
                 return;
             }
-            if (Game.GameData.data.GetPlayerData(__instance.PlayerId)==null)
-            {
-                return;
-            }
+            var pData = __instance.GetModData();
+            if (pData == null)return;
+            
 
             //全員に対して実行
-            __instance.GetModData().role.GlobalUpdate(__instance.PlayerId);
+            pData.role.GlobalUpdate(__instance.PlayerId);
             UpdatePlayerVisibility(__instance);
 
             if (__instance.PlayerId == PlayerControl.LocalPlayer.PlayerId)
@@ -372,11 +413,12 @@ namespace Nebula.Patches
                  });
             }
 
-            __instance.GetModData().Speed.Update();
-            __instance.GetModData().Attribute.Update();
+            pData.Speed.Update();
+            pData.Attribute.Update();
         }
+        
     }
-
+    
     [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.HandleAnimation))]
     class PlayerPhysicsHandleAnimationPatch
     {
@@ -456,7 +498,7 @@ namespace Nebula.Patches
             }catch(NullReferenceException excep) { return true; }
         }
     }
-
+    
     [HarmonyPatch(typeof(KillAnimation), nameof(KillAnimation.CoPerformKill))]
     class KillAnimationCoPerformKillPatch
     {
@@ -468,6 +510,7 @@ namespace Nebula.Patches
             hideNextAnimation = false;
         }
     }
+    
 
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CompleteTask))]
     public static class CompleteTaskPatch
@@ -479,6 +522,7 @@ namespace Nebula.Patches
         }
     }
 
+    
     //ベント移動その他
     [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.WalkPlayerTo))]
     class WalkPatch
@@ -508,7 +552,8 @@ namespace Nebula.Patches
             }
         }
     }
-
+    
+    
     //入力による移動
     [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.FixedUpdate))]
     class MyWalkPatch
@@ -525,10 +570,12 @@ namespace Nebula.Patches
             }
         }
     }
-
+    
+    
     [HarmonyPatch(typeof(CustomNetworkTransform), nameof(CustomNetworkTransform.FixedUpdate))]
     class WalkMagnitudePatch
     {
+        
         public static void Prefix(CustomNetworkTransform __instance)
         {
             if (Game.GameData.data != null)
@@ -550,7 +597,8 @@ namespace Nebula.Patches
                 if (PlayerControl.LocalPlayer.MyPhysics.Speed < 0f) PlayerControl.LocalPlayer.MyPhysics.Speed *= -1f;
             }
         }
-
+        
+        
         public static void Postfix(CustomNetworkTransform __instance)
         {
             if (Game.GameData.data != null)
@@ -561,5 +609,8 @@ namespace Nebula.Patches
                 }
             }
         }
+        
     }
+    
+    
 }

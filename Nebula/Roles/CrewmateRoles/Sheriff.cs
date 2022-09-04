@@ -22,6 +22,9 @@ namespace Nebula.Roles.CrewmateRoles
         private Module.CustomOption canKillNecromancerOption;
         private Module.CustomOption canKillSheriffOption;
         private Module.CustomOption canKillOpportunistOption;
+        private Module.CustomOption numberOfShotsOption;
+
+        int shots;
 
         public override void MyPlayerControlUpdate()
         {
@@ -53,6 +56,8 @@ namespace Nebula.Roles.CrewmateRoles
 
         public override void ButtonInitialize(HudManager __instance)
         {
+            shots=(int)numberOfShotsOption.getFloat();
+
             if (killButton != null)
             {
                 killButton.Destroy();
@@ -68,8 +73,10 @@ namespace Nebula.Roles.CrewmateRoles
                         killButton.Timer = killButton.MaxTimer;
                     Game.GameData.data.myData.currentTarget = null;
 
+                    shots--;
+                    killButton.UpperText.text = shots + "/" + (int)numberOfShotsOption.getFloat();
                 },
-                () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
+                () => { return !PlayerControl.LocalPlayer.Data.IsDead && shots > 0; },
                 () => { return Game.GameData.data.myData.currentTarget && PlayerControl.LocalPlayer.CanMove; },
                 () => { killButton.Timer = killButton.MaxTimer; },
                 __instance.KillButton.graphic.sprite,
@@ -78,6 +85,7 @@ namespace Nebula.Roles.CrewmateRoles
                 KeyCode.Q
             );
             killButton.MaxTimer = killCooldownOption.getFloat();
+            killButton.UpperText.text = shots + "/" + (int)numberOfShotsOption.getFloat();
         }
 
         public override void ButtonActivate()
@@ -118,6 +126,8 @@ namespace Nebula.Roles.CrewmateRoles
             canKillSheriffOption = CreateOption(Color.white, "canKillSheriff", false);
 
             canKillOpportunistOption = CreateOption(Color.white, "canKillOpportunist", false);
+
+            numberOfShotsOption = CreateOption(Color.white,"numberOfShots",3,1,15,1);
         }
 
         public Sheriff()

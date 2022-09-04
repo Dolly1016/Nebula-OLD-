@@ -75,6 +75,13 @@ namespace Nebula.Objects
         private static Sprite spriteKeyBindBackGround;
         private static Sprite spriteKeyBindOption;
 
+        private TMPro.TextMeshPro? upperText;
+        public TMPro.TextMeshPro UpperText { get { 
+                if (upperText!=null) return upperText;
+                upperText = actionButton.CreateButtonUpperText();
+                return upperText;
+            } }
+
         static public void Load()
         {
             keyBindReyout[KeyCode.Q] = 0f;
@@ -383,7 +390,7 @@ namespace Nebula.Objects
             {
                 actionButton.OverrideText(buttonText);
 
-                actionButton.buttonLabelText.SetSharedMaterial(HudManager.Instance.UseButton.fastUseSettings.get_Item(textType).FontMaterial);  
+                actionButton.buttonLabelText.SetSharedMaterial(HudManager.Instance.UseButton.fastUseSettings[textType].FontMaterial);  
             }
             actionButton.buttonLabelText.enabled = showButtonText; // Only show the text if it's a kill button
             if (hudManager.UseButton != null)

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HarmonyLib;
+﻿using HarmonyLib;
 using UnityEngine;
 
 namespace Nebula.Patches
@@ -30,7 +25,7 @@ namespace Nebula.Patches
                 return true;
             }
 
-            ISystemType systemType = __instance.Systems.ContainsKey(SystemTypes.Electrical) ? __instance.Systems.get_Item(SystemTypes.Electrical) : null;
+            ISystemType systemType = __instance.Systems.ContainsKey(SystemTypes.Electrical) ? __instance.Systems[SystemTypes.Electrical] : null;
             if (systemType == null) return true;
             SwitchSystem switchSystem = systemType.TryCast<SwitchSystem>();
             if (switchSystem == null) return true;
@@ -110,7 +105,17 @@ namespace Nebula.Patches
     {
         static void Postfix(AirshipStatus __instance, [HarmonyArgument(0)] PlayerControl player)
         {
-            if(player.isDummy) player.NetTransform.SnapTo(new Vector2(-0.66f, -0.5f));
+            if(!player.GetComponent<DummyBehaviour>().enabled) player.NetTransform.SnapTo(new Vector2(-0.66f, -0.5f));
+        }
+    }
+
+    //デフォルトのタスク終了を回避する
+    [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.CheckTaskCompletion))]
+    static class CheckTaskCompletionPatch
+    {
+        static bool Prefix(ShipStatus __instance)
+        {
+            return false;
         }
     }
 }

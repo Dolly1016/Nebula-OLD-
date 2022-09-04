@@ -114,7 +114,7 @@ namespace Nebula.Patches
                     PlainShipRoom plainShipRoom;
                     if (ShipStatus.Instance.FastRooms.ContainsKey(counterArea.RoomType))
                     {
-                        plainShipRoom = ShipStatus.Instance.FastRooms.get_Item(counterArea.RoomType);
+                        plainShipRoom = ShipStatus.Instance.FastRooms[counterArea.RoomType];
                         if (plainShipRoom.roomArea)
                         {
                             int num = plainShipRoom.roomArea.OverlapCollider(__instance.filter, __instance.buffer);

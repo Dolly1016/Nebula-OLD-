@@ -83,6 +83,8 @@ namespace Nebula.Roles.CrewmateRoles
         {
             base.ButtonInitialize(__instance);
 
+            pseudocideFlag = false;
+
             if (buskButton != null)
             {
                 buskButton.Destroy();

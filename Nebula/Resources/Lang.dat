@@ -20,7 +20,6 @@
 "cosmic.package.innerslothNameplates" : "Innersloth Nameplates"
 "cosmic.package.innerslothVisors" : "Innersloth Visors"
 "cosmic.package.standardNameplate" : "Standard Collections"
-"cosmic.package.mememura" : "Mememura Collections"
 "cosmic.package.nosCommHat" : "NoS Community Hats"
 "cosmic.package.nosCommNameplate" : "NoS Community Nameplates"
 "cosmic.package.nosCommVisor" : "NoS Community Visors"
@@ -50,8 +49,6 @@
 "option.display.preset.5" : "Preset 5"
 "option.switch.on" : "<color=#ffffd6ff>On</color>"
 "option.switch.off" : "<color=#606060ff>Off</color>"
-
-"option.empty" : ""
 
 "option.preset" : "Preset"
 "option.gameMode" : "Game Mode"
@@ -90,11 +87,16 @@
 "option.invalidateSecondaryAdmin" : "Invalidate Secondary Admin"
 
 "option.exclusiveAssignment" : "Exclusive Assignment"
-"option.exclusiveAssignment1" : "Assignment Set 1"
-"option.exclusiveAssignment2" : "Assignment Set 2"
-"option.exclusiveAssignment3" : "Assignment Set 3"
-"option.exclusiveAssignment4" : "Assignment Set 4"
-"option.exclusiveAssignment5" : "Assignment Set 5"
+"option.exclusiveAssignment.RaiderAndSniper" : "Raider or Sniper"
+"option.exclusiveAssignment.ArsonistAndEmpiric" : "Arsonist or Empiric"
+"option.exclusiveAssignment.AlienAndNavvy" : "Alien or Navvy"
+"option.exclusiveAssignment.BaitAndProvocateur" : "Bait or Provocateur"
+"option.exclusiveAssignment.PsychicAndSeer" : "Psychic or Seer"
+"option.exclusiveAssignment1" : "Custom Assignment Set 1"
+"option.exclusiveAssignment2" : "Custom Assignment Set 2"
+"option.exclusiveAssignment3" : "Custom Assignment Set 3"
+"option.exclusiveAssignment4" : "Custom Assignment Set 4"
+"option.exclusiveAssignment5" : "Custom Assignment Set 5"
 "option.exclusiveAssignmentRole1" : "Exclusive Role 1"
 "option.exclusiveAssignmentRole2" : "Exclusive Role 2"
 "option.exclusiveAssignmentRole3" : "Exclusive Role 3"
@@ -130,6 +132,10 @@
 "option.suffix.cross" : "x"
 "option.suffix.second" : "s"
 "option.suffix.minute" : "m"
+
+"ritual.mission.formularize" : "Formularize"
+"ritual.rooms.bothEngines" : "Upper&Lower Engine"
+"ritual.rooms.bothDecontaminations" : "Decontamination"
 
 "role.crewmate.name" : "Crewmate"
 "role.crewmate.description" : "Find the <color=#ff1919ff>Impostors</color>"
@@ -180,6 +186,7 @@
 "role.alien.emiDuration" : "E.M.I. Duration"
 "role.alien.emiRange" : "E.M.I. Range"
 "role.alien.emiInhibitsCrewmates" : "E.M.I. Inhibits Crewmates Too"
+"role.alien.countOfCallingSabotage" : "Count Of Calling Sabotage"
 
 "role.bait.name" : "Bait"
 "role.bait.description" : "Bait Your Enemies"
@@ -330,6 +337,7 @@
 "role.sheriff.canKillNecromancer" : "Can Kill Necromancer"
 "role.sheriff.canKillSheriff" : "Can Kill Sheriff"
 "role.sheriff.canKillOpportunist" : "Can Kill Opportunist"
+"role.sheriff.numberOfShots" : "Number Of Shots"
 
 "role.seer.name" : "Seer"
 "role.seer.description" : "You Will See Players Die"
@@ -470,6 +478,11 @@
 "role.arsonist.douseRange" : "Douse Range"
 "role.arsonist.canUseVents" : "Can Use Vents"
 
+"role.chainShifter.name" : "Chain Shifter"
+"role.chainShifter.description" : "Suffer The Calamity"
+"role.chainShifter.info" : "You'll lose if you shift the role with someone.\n\n - F : Shift the role"
+"role.chainShifter.isGuessable" : "Is Guessable"
+
 "role.empiric.name" : "Empiric"
 "role.empiric.description" : "Spread a Disease"
 "role.empiric.info" : "Your winning condition is all alive players infect. You have to do your best to win.\n\n - F : Infect"
@@ -505,6 +518,8 @@
 "role.jester.canFixLightsAndComms" : "Can Fix Lights And Comms"
 "role.jester.ventCoolDown" : "Vent Cool Down"
 "role.jester.ventDuration" : "Vent Duration"
+"role.jester.canDragBodies" : "Can Drag Dead Bodies"
+"role.jester.canFireBlankShots" : "Can Fire Blank Shots"
 
 "role.opportunist.name" : "Opportunist"
 "role.opportunist.description" : "Wait for Opportunity"
@@ -593,12 +608,21 @@
 "role.hadar.damageLevel" : "Damage Level"
 "role.hadar.reappearance" : "Reappear Cool Down"
 
+"role.ritualCrewmate.name" : "Crewmate"
+"role.ritualCrewmate.description" : "Get Out Of The Ritual"
+"role.ritualCrewmate.info" : ""
+
+"role.killer.name" : "Killer"
+"role.killer.description" : "Exterminate Crewmates"
+"role.killer.info" : ""
+
 "role.metaRole.name" : "Free Play"
 "role.metaRole.info" : "You can measure the distance.\n\n - 1 : Set origin at the current position\n - 2 : Open roles menu\n - ESC : Close roles menu"
 
 "side.crewmate.name" : "Crewmate"
 "side.impostor.name" : "Impostor"
 "side.arsonist.name" : "Arsonist"
+"side.chainShifter.name" : "Chain Shifter"
 "side.empiric.name" : "Empiric"
 "side.jackal.name" : "Jackal"
 "side.jester.name" : "Jester"
@@ -606,6 +630,7 @@
 "side.vulture.name" : "Vulture"
 "side.investigator.name" : "Investigator"
 "side.gamePlayer.name" : "Game Player"
+"side.killer.name" : "Killer"
 
 "roles.category.default" : "Default"
 "roles.category.crewmate" : "Crewmate"
@@ -684,6 +709,7 @@
 "button.label.busker.pseudocide" : "pseudocide"
 "button.label.busker.revive" : "revive"
 "button.label.camouflage" : "camo"
+"button.label.chainShift" : "shift"
 "button.label.clean" : "clean"
 "button.label.disturb" : "disturb"
 "button.label.douse" : "douse"
@@ -704,6 +730,7 @@
 "button.label.place" : "place"
 "button.label.revive" : "revive"
 "button.label.repair" : "repair"
+"button.label.ritual.search" : "search"
 "button.label.sample" : "sample"
 "button.label.seal" : "seal"
 "button.label.search" : "search"

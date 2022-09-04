@@ -18,14 +18,15 @@ namespace Nebula.Language
 {
     public class Language
     {
-        static private Language language;
+        static private Language? language=null;
+        static private Dictionary<string, string> defaultLanguageSet=new Dictionary<string, string>();
 
         public Dictionary<string, string> languageSet;
 
 
         public static string GetString(string key)
         {
-            if (language.languageSet.ContainsKey(key))
+            if (language?.languageSet.ContainsKey(key)??false)
             {
                 return language.languageSet[key];
             }
@@ -34,12 +35,21 @@ namespace Nebula.Language
 
         public static bool CheckValidKey(string key)
         {
-            return language.languageSet.ContainsKey(key);
+            return language?.languageSet.ContainsKey(key) ?? true;
         }
+
+        public static void AddDefaultKey(string key,string format)
+        {
+            defaultLanguageSet.Add(key, format);
+            if (!CheckValidKey(key)) language.languageSet.Add(key,format);
+        }
+
+
         public Language()
         {
-            languageSet = new Dictionary<string, string>();
+            languageSet = new Dictionary<string, string>(defaultLanguageSet);
         }
+
 
         public static string GetLanguage(uint language)
         {
@@ -81,6 +91,10 @@ namespace Nebula.Language
             return "English";
         }
 
+        public static void LoadDefaultKey()
+        {
+            AddDefaultKey("option.empty", "");
+        }
         public static void Load()
         {
             string lang = GetLanguage(SaveManager.LastLanguage);
@@ -88,6 +102,12 @@ namespace Nebula.Language
 
             language = new Language();
 
+            language.deserialize(GetDefaultColorStream());
+            language.deserialize(GetDefaultLanguageStream());
+            language.deserialize(@"language\" + lang + "_Color.dat");
+            language.deserialize(@"language\" + lang + ".dat");
+
+            /*
             language.deserialize(GetDefaultColorStream());
             Dictionary<string, string> defaultColorSet = language.languageSet;
 
@@ -130,7 +150,7 @@ namespace Nebula.Language
             {
                 language.languageSet.Add(pair.Key, pair.Value);
             }
-
+            */
 
         }
 
@@ -204,7 +224,11 @@ namespace Nebula.Language
                         WriteIndented = true
                     };
 
-                    languageSet = JsonSerializer.Deserialize<Dictionary<string, string>>("{ " + data + " }", option);
+                    var deserialized = JsonSerializer.Deserialize<Dictionary<string, string>>("{ " + data + " }", option);
+                    foreach(var entry in deserialized)
+                    {
+                        languageSet.Add(entry.Key,entry.Value);
+                    }
 
                     result = true;
                 }

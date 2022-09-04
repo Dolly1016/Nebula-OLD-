@@ -61,7 +61,7 @@ namespace Nebula.Map.Editors
         }
 
         public override void OptimizeMap() {
-            var obj = ShipStatus.Instance.FastRooms.get_Item(SystemTypes.GapRoom).gameObject;
+            var obj = ShipStatus.Instance.FastRooms[SystemTypes.GapRoom].gameObject;
             //インポスターについてのみ影を無効化
             obj.transform.FindChild("Shadow").FindChild("LedgeShadow").GetComponent<OneWayShadows>().IgnoreImpostor = true;
 
@@ -97,7 +97,7 @@ namespace Nebula.Map.Editors
         {
             if (CustomOptionHolder.invalidateSecondaryAdmin.getBool())
             {
-                var obj = ShipStatus.Instance.FastRooms.get_Item(SystemTypes.Records).gameObject;
+                var obj = ShipStatus.Instance.FastRooms[SystemTypes.Records].gameObject;
                 //第二のアドミンを無効化
                 GameObject.Destroy(obj.transform.FindChild("records_admin_map").gameObject);
             }

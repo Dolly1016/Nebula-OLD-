@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using BepInEx.IL2CPP.Utils.Collections;
 using BepInEx;
 using HarmonyLib;
 using BepInEx.IL2CPP;
@@ -50,10 +51,10 @@ namespace Nebula
     {
         public static Module.Random rnd = new Module.Random();
 
-        public const string AmongUsVersion = "2022.6.21";
+        public const string AmongUsVersion = "2022.8.24";
         public const string PluginGuid = "jp.dreamingpig.amongus.nebula";
         public const string PluginName = "TheNebula";
-        public const string PluginVersion = "1.12.5";
+        public const string PluginVersion = "1.13.1";
         /*
         public const string PluginVisualVersion = "22.02.14a";
         public const string PluginStage = "Snapshot";
@@ -62,8 +63,8 @@ namespace Nebula
         public const string PluginVisualVersion = PluginVersion;
         public const string PluginStage = "";
         // */
-        public const string PluginVersionForFetch = "1.12.5";
-        public byte[] PluginVersionData = new byte[] { 1, 12, 5, 0 };
+        public const string PluginVersionForFetch = "1.13.1";
+        public byte[] PluginVersionData = new byte[] { 1, 13, 1, 0 };
 
         public static NebulaPlugin Instance;
 
@@ -90,11 +91,12 @@ namespace Nebula
             //サーバー情報を読み込む
             Patches.RegionMenuOpenPatch.Initialize();
 
+            //言語データを読み込む
+            Language.Language.LoadDefaultKey();
+            Language.Language.Load();
+
             //色データを読み込む
             Module.DynamicColors.Load();
-
-            //言語データを読み込む
-            Language.Language.Load();
 
             //ゲームモードデータを読み込む
             Game.GameModeProperty.Load();
@@ -186,38 +188,42 @@ namespace Nebula
             if (Input.GetKeyDown(KeyCode.F1))
             {
                 var playerControl = UnityEngine.Object.Instantiate(AmongUsClient.Instance.PlayerPrefab);
+
                 var i = playerControl.PlayerId = (byte)GameData.Instance.GetAvailableId();
 
                 bots.Add(playerControl);
                 GameData.Instance.AddPlayer(playerControl);
                 AmongUsClient.Instance.Spawn(playerControl, -2, InnerNet.SpawnFlags.None);
 
-                playerControl.isDummy = true;
                 playerControl.transform.position = PlayerControl.LocalPlayer.transform.position;
-                playerControl.GetComponent<DummyBehaviour>().enabled = false;
-                playerControl.NetTransform.enabled = true;
+                playerControl.GetComponent<DummyBehaviour>().enabled = true;
                 playerControl.SetName(Patches.RandomNamePatch.GetRandomName());
                 playerControl.SetColor((byte)random.Next(Palette.PlayerColors.Length));
+
                 GameData.Instance.RpcSetTasks(playerControl.PlayerId, new byte[0]);
+
+                playerControl.StartCoroutine(playerControl.CoPlayerAppear().WrapToIl2Cpp());
             }
 
             // Spawn dummys
             if (Input.GetKeyDown(KeyCode.F2))
             {
                 var playerControl = UnityEngine.Object.Instantiate(AmongUsClient.Instance.PlayerPrefab);
+
                 var i = playerControl.PlayerId = (byte)GameData.Instance.GetAvailableId();
 
                 bots.Add(playerControl);
                 GameData.Instance.AddPlayer(playerControl);
                 AmongUsClient.Instance.Spawn(playerControl, -2, InnerNet.SpawnFlags.None);
 
-                playerControl.isDummy = true;
                 playerControl.transform.position = PlayerControl.LocalPlayer.transform.position;
                 playerControl.GetComponent<DummyBehaviour>().enabled = true;
-                playerControl.NetTransform.enabled = true;
                 playerControl.SetName(Patches.RandomNamePatch.GetRandomName());
                 playerControl.SetColor((byte)random.Next(Palette.PlayerColors.Length));
+
                 GameData.Instance.RpcSetTasks(playerControl.PlayerId, new byte[0]);
+
+                playerControl.StartCoroutine(playerControl.CoPlayerAppear().WrapToIl2Cpp());
             }
 
             if (Input.GetKeyDown(KeyCode.F8))

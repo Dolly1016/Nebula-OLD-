@@ -25,13 +25,12 @@ namespace Nebula.Roles.Template
         protected bool UseExemptTasksOption { get; set; } = true;
 
 
-        public override void IntroInitialize(PlayerControl __instance)
-        {
+        public override void OnSetTasks(Il2CppSystem.Collections.Generic.List<GameData.TaskInfo> tasks) {
             int exempt = UseExemptTasksOption ? (int)exemptTasksOption.getFloat() : CustomExemptTasks;
-            byte result = 0;
-            int cutTasks = PlayerControl.LocalPlayer.myTasks.Count<exempt? PlayerControl.LocalPlayer.myTasks.Count:exempt;
-            RPCEventInvoker.ExemptTasks(__instance.PlayerId, cutTasks, cutTasks);
+            int cutTasks = tasks.Count < exempt ? tasks.Count : exempt;
+            RPCEventInvoker.ExemptTasks(cutTasks, cutTasks, tasks);
         }
+
 
         public override void LoadOptionData()
         {

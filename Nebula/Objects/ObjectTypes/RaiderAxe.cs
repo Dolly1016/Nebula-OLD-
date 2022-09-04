@@ -18,8 +18,9 @@ namespace Nebula.Objects.ObjectTypes
 
         public RaidAxe() : base(5, "RaidAxe", "Nebula.Resources.RaiderAxe.png", false)
         {
-            CanSeeInShadow = true;
         }
+
+        public override bool CanSeeInShadow(CustomObject? obj) { return obj.Data[0] != (int)AxeState.Static; }
 
         public override bool IsBack(CustomObject? obj) { return obj==null ? false : obj.Data[0] != (int)AxeState.Static; }
         public override bool IsFront(CustomObject? obj) { return obj == null ? true : obj.Data[0] == (int)AxeState.Static; }

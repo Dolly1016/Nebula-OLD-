@@ -9,7 +9,7 @@ namespace Nebula.Objects.ObjectTypes
         public ElecPole() : base(6, "ElecPole", "Nebula.Resources.ElecPole.png", false)
         {
             isBack = isFront = false;
-            CanSeeInShadow = true;
+            canSeeInShadow = true;
         }
 
         public override void Update(CustomObject obj)
@@ -24,7 +24,7 @@ namespace Nebula.Objects.ObjectTypes
         {
             isBack = false;
             isFront = true;
-            CanSeeInShadow = true;
+            canSeeInShadow = true;
         }
 
         public override void Initialize(CustomObject obj)

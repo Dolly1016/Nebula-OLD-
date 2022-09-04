@@ -17,6 +17,8 @@ namespace Nebula.Roles.NeutralRoles
         private Module.CustomOption ventCoolDownOption;
         private Module.CustomOption ventDurationOption;
         private Module.CustomOption canFixSabotageOption;
+        private Module.CustomOption canDragBodiesOption;
+        private Module.CustomOption canFireBlankShotsOption;
 
         private Objects.CustomButton blankButton;
 
@@ -39,7 +41,7 @@ namespace Nebula.Roles.NeutralRoles
         public override void GlobalInitialize(PlayerControl __instance)
         {
             WinTrigger = false;
-            CanMoveInVents = canUseVentsOption.getBool();
+            canMoveInVents = canUseVentsOption.getBool();
             VentPermission = canUseVentsOption.getBool() ? VentPermission.CanUseLimittedVent : VentPermission.CanNotUse;
             canInvokeSabotage = canInvokeSabotageOption.getBool();
             canFixSabotage = canFixSabotageOption.getBool();
@@ -57,44 +59,62 @@ namespace Nebula.Roles.NeutralRoles
             ventDurationOption = CreateOption(Color.white, "ventDuration", 10f, 5f, 60f, 2.5f);
             ventDurationOption.suffix = "second";
             ventDurationOption.AddPrerequisite(canUseVentsOption);
+
+            canDragBodiesOption = CreateOption(Color.white, "canDragBodies", true);
+            canFireBlankShotsOption = CreateOption(Color.white, "canFireBlankShots", true);
         }
 
         public override void ButtonInitialize(HudManager __instance)
         {
-            base.ButtonInitialize(__instance);
+            if (canDragBodiesOption.getBool())
+            {
+                base.ButtonInitialize(__instance);
+            }
+            else
+            {
+                base.CleanUp();
+            }
+            
             if (blankButton != null)
             {
                 blankButton.Destroy();
             }
-            blankButton = new CustomButton(
-                () =>
-                {
-                    RPCEventInvoker.SniperShot();
-                    blankButton.Timer = blankButton.MaxTimer;
-                },
-                () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
-                () => { return PlayerControl.LocalPlayer.CanMove; },
-                () => { blankButton.Timer = blankButton.MaxTimer; },
-                getBlankButtonSprite(),
-                new Vector3(0f, 1f, 0),
-                __instance,
-                KeyCode.Q,
-                false,
-                "button.label.blank"
-            );
-            blankButton.MaxTimer = 5.0f;
+            if (canFireBlankShotsOption.getBool())
+            {
+                blankButton = new CustomButton(
+                    () =>
+                    {
+                        RPCEventInvoker.SniperShot();
+                        blankButton.Timer = blankButton.MaxTimer;
+                    },
+                    () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
+                    () => { return PlayerControl.LocalPlayer.CanMove; },
+                    () => { blankButton.Timer = blankButton.MaxTimer; },
+                    getBlankButtonSprite(),
+                    new Vector3(0f, 1f, 0),
+                    __instance,
+                    KeyCode.Q,
+                    false,
+                    "button.label.blank"
+                );
+                blankButton.MaxTimer = 5.0f;
+            }
+            else
+            {
+                blankButton = null;
+            }
         }
 
         public override void ButtonActivate()
         {
             base.ButtonActivate();
-            blankButton.setActive(true);
+            if(blankButton!=null)blankButton.setActive(true);
         }
 
         public override void ButtonDeactivate()
         {
             base.ButtonDeactivate();
-            blankButton.setActive(false);
+            if (blankButton != null) blankButton.setActive(false);
         }
 
         public override void CleanUp()

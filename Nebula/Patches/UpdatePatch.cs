@@ -92,7 +92,7 @@ namespace Nebula.Patches
             {
                 impostorColor = Color.white;
             }
-            
+
 
 
             string name;
@@ -142,6 +142,7 @@ namespace Nebula.Patches
                 
                 bool showNameFlag = !CannotSeeNameTag(player);
 
+                
                 //自分自身以外の名前は適宜隠す
                 if (!PlayerControl.LocalPlayer.Data.IsDead && player != PlayerControl.LocalPlayer && showNameFlag)
                 {
@@ -162,6 +163,7 @@ namespace Nebula.Patches
                     showNameFlag &= !result;
                     
                 }
+                
 
                 player.cosmetics.nameText.enabled = showNameFlag;
             }
@@ -274,7 +276,7 @@ namespace Nebula.Patches
 
 
             if (MeetingHud.Instance != null) return;
-            if (Game.GameData.data.myData.getGlobalData().role.side == Roles.Side.Impostor)
+            if (PlayerControl.LocalPlayer.Data.Role.IsImpostor)
             {
                 if (Game.GameData.data.myData.getGlobalData().role.HideKillButtonEvenImpostor || !Helpers.ShowButtons)
                 {
@@ -290,7 +292,7 @@ namespace Nebula.Patches
                 }
             }
         }
-
+        
         public static void Postfix(HudManager __instance)
         {
             //アニメーションを無効化
@@ -306,16 +308,16 @@ namespace Nebula.Patches
                 if (!Helpers.HasModData(PlayerControl.LocalPlayer.PlayerId)) return;
 
 
-                /* スクリーンの更新 */
+                // スクリーンの更新
                 UpdateFullScreen();
 
-                /* サボタージュを確認 */
+                // サボタージュを確認
                 if (Helpers.SabotageIsActive())
                 {
                     EmergencyPatch.SabotageUpdate();
                 }
 
-                /* ボタン類の更新 */
+                // ボタン類の更新 
                 CustomButton.HudUpdate();
 
                 Helpers.RoleAction(PlayerControl.LocalPlayer, (role) => { role.MyUpdate(); });
@@ -382,6 +384,6 @@ namespace Nebula.Patches
                 }));
             }catch(NullReferenceException excep) { UnityEngine.Debug.Log(excep.StackTrace); }
         }
+        
     }
-    
 }

@@ -23,7 +23,7 @@ namespace Nebula.Roles.MinigameRoles
             PlayerControl player;
             for (int i = 0; i < PlayerControl.AllPlayerControls.Count; i++)
             {
-                player = PlayerControl.AllPlayerControls.get_Item(i);
+                player = PlayerControl.AllPlayerControls[i];
                 if (i == index)
                 {
                     RPCEventInvoker.ImmediatelyChangeRole(player, hunterRole);

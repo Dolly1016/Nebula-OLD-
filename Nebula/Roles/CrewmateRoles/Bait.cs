@@ -33,7 +33,7 @@ namespace Nebula.Roles.CrewmateRoles
             if (MeetingHud.Instance) return;
 
             //Baitが発動しない場合
-            if (PlayerControl.LocalPlayer.IsMadmate() && PlayerControl.AllPlayerControls.get_Item(murderId).Data.Role.Role == RoleTypes.Impostor) return;
+            if (PlayerControl.LocalPlayer.IsMadmate() && PlayerControl.AllPlayerControls[murderId].Data.Role.Role == RoleTypes.Impostor) return;
             
             //少しの時差の後レポート
             Events.LocalEvent.Activate(new BaitEvent(murderId));

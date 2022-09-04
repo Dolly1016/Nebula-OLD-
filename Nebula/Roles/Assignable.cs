@@ -51,6 +51,9 @@ namespace Nebula.Roles
 
         public Module.CustomGameMode ValidGamemode { get; set; }
 
+        protected bool canFixSabotage { get; set; }
+        public virtual bool CanFixSabotage { get { return canFixSabotage; } }
+
         /*--------------------------------------------------------------------------------------*/
         /*--------------------------------------------------------------------------------------*/
 
@@ -182,6 +185,9 @@ namespace Nebula.Roles
         [RoleLocalMethod]
         public virtual void IntroInitialize(PlayerControl __instance) { }
 
+        [RoleLocalMethod]
+        public virtual void OnSetTasks(Il2CppSystem.Collections.Generic.List<GameData.TaskInfo> tasks){ }
+
         /*--------------------------------------------------------------------------------------*/
 
         /// <summary>
@@ -218,6 +224,16 @@ namespace Nebula.Roles
         public virtual void OnTaskComplete() { }
 
         public virtual void EditCoolDown(CoolDownType type,float count)
+        {
+
+        }
+
+        /// <summary>
+        /// 自身がサボタージュを引き起こすと呼ばれます。
+        /// </summary>
+        /// <param name="systemType"></param>
+        [RoleLocalMethod]
+        public virtual void OnInvokeSabotage(SystemTypes systemType)
         {
 
         }
@@ -355,12 +371,6 @@ namespace Nebula.Roles
         public virtual bool HasExecutableFakeTask(byte playerId)
         {
             return false;
-        }
-
-        //その役職をもつプレイヤーがComm,停電サボをなおせるかどうか調べます。
-        public virtual bool CanFixSabotage(byte playerId)
-        {
-            return true;
         }
 
         /// <summary>
@@ -561,6 +571,8 @@ namespace Nebula.Roles
             this.ValidGamemode = Module.CustomGameMode.Standard;
 
             this.OptionCapacity = 20;
+
+            this.canFixSabotage = true;
         }
     }
 }

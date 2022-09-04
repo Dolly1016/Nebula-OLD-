@@ -46,7 +46,9 @@ namespace Nebula.Objects
 
             public virtual bool IsBack(CustomObject? obj) { return isBack; }
             public virtual bool IsFront(CustomObject? obj) { return isFront; }
-            public bool CanSeeInShadow { get; set; }
+
+            public bool canSeeInShadow { get; set; }
+            public virtual bool CanSeeInShadow(CustomObject? obj) { return canSeeInShadow; }
 
             protected void FixZPosition(CustomObject obj)
             {
@@ -68,7 +70,7 @@ namespace Nebula.Objects
 
                 this.isBack = isBack;
                 isFront = false;
-                CanSeeInShadow = false;
+                canSeeInShadow = false;
 
                 AllTypes.Add(Id,this);
             }
@@ -113,13 +115,13 @@ namespace Nebula.Objects
             GameObject.transform.position = pos;
             Renderer = GameObject.AddComponent<SpriteRenderer>();
 
-            if (ObjectType.CanSeeInShadow) GameObject.layer = LayerMask.NameToLayer("Objects");
-
             Data = new int[0];
 
             PassedMeetings = 0;
 
             ObjectType.Initialize(this);
+
+            if (ObjectType.CanSeeInShadow(this)) GameObject.layer = LayerMask.NameToLayer("Objects");
 
             if (Objects.ContainsKey(id)) Objects[id].Destroy();
             Objects[id] = this;

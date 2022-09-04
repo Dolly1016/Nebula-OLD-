@@ -39,7 +39,7 @@ namespace Nebula.Roles
             //Sabotage
             if (status.Systems != null)
             {
-                ISystemType systemType = status.Systems.ContainsKey(SystemTypes.LifeSupp) ? status.Systems.get_Item(SystemTypes.LifeSupp) : null;
+                ISystemType systemType = status.Systems.ContainsKey(SystemTypes.LifeSupp) ? status.Systems[SystemTypes.LifeSupp] : null;
                 if (systemType != null)
                 {
                     LifeSuppSystemType lifeSuppSystemType = systemType.TryCast<LifeSuppSystemType>();
@@ -49,10 +49,10 @@ namespace Nebula.Roles
                         return EndCondition.ImpostorWinBySabotage;
                     }
                 }
-                ISystemType systemType2 = status.Systems.ContainsKey(SystemTypes.Reactor) ? status.Systems.get_Item(SystemTypes.Reactor) : null;
+                ISystemType systemType2 = status.Systems.ContainsKey(SystemTypes.Reactor) ? status.Systems[SystemTypes.Reactor] : null;
                 if (systemType2 == null)
                 {
-                    systemType2 = status.Systems.ContainsKey(SystemTypes.Laboratory) ? status.Systems.get_Item(SystemTypes.Laboratory) : null;
+                    systemType2 = status.Systems.ContainsKey(SystemTypes.Laboratory) ? status.Systems[SystemTypes.Laboratory] : null;
                 }
                 if (systemType2 != null)
                 {
@@ -155,6 +155,11 @@ namespace Nebula.Roles
             return null;
         });
 
+        public static Side ChainShifter = new Side("ChainShifter", "chainShifter", IntroDisplayOption.SHOW_ONLY_ME, NeutralRoles.ChainShifter.RoleColor, (PlayerStatistics statistics, ShipStatus status) =>
+        {
+            return null;
+        });
+
         public static Side GamePlayer = new Side("GamePlayer", "gamePlayer", IntroDisplayOption.SHOW_ONLY_ME, Palette.CrewmateBlue, (PlayerStatistics statistics, ShipStatus status) =>
         {
             if (Game.GameData.data.GameMode == Module.CustomGameMode.Minigame)
@@ -239,13 +244,28 @@ namespace Nebula.Roles
             return null;
         });
 
+        public static Side RitualCrewmate = new Side("Crewmate", "crewmate", IntroDisplayOption.STANDARD, Palette.CrewmateBlue, (PlayerStatistics statistics, ShipStatus status) =>
+        {
+            return null;
+        });
+
+        public static Side Killer = new Side("Killer", "killer", IntroDisplayOption.STANDARD, Palette.ImpostorRed, (PlayerStatistics statistics, ShipStatus status) =>
+        {
+            if(statistics.TotalAlive == 1 && statistics.GetAlivePlayers(Killer) == 1)
+            {
+
+            }
+            return null;
+        });
+
         public static List<Side> AllSides = new List<Side>()
         {
             Crewmate, Impostor,
-            Jackal, Jester, Vulture, Empiric, Arsonist, Avenger,
+            Jackal, Jester, Vulture, Empiric, Arsonist, Avenger,ChainShifter,
             Investigator,
             GamePlayer,
-            Extra
+            Extra,
+            RitualCrewmate,Killer
         };
 
         public IntroDisplayOption ShowOption { get; }

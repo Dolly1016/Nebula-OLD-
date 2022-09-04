@@ -1,9 +1,11 @@
 ﻿using Nebula.Roles;
 using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using UnityEngine;
 using Nebula.Utilities;
+using BepInEx.IL2CPP.Utils.Collections;
 
 using static GameData;
 
@@ -13,6 +15,7 @@ namespace Nebula.Game
     public enum SynchronizeTag
     {
         PreSpawnMinigame,
+        RitualInitialize
     }
     public class SynchronizeData
     {
@@ -28,6 +31,33 @@ namespace Nebula.Game
             if (!dic.ContainsKey(tag)) dic[tag] = 0;
 
             dic[tag] |= (ulong)1 << playerId;
+        }
+
+        private IEnumerator GetAlignEnumerator(SynchronizeTag tag, bool withGhost, bool withSurvivor = true)
+        {
+            while (!Align(tag, withGhost, withSurvivor))
+            {
+                yield return null;
+            }
+        }
+
+        public Il2CppSystem.Collections.IEnumerator GetAlignEnumeratorIl2Cpp(SynchronizeTag tag, bool withGhost, bool withSurvivor = true)
+        {
+            return GetAlignEnumerator(tag, withGhost, withSurvivor).WrapToIl2Cpp();
+        }
+
+        static private IEnumerator GetStaticAlignEnumerator(SynchronizeTag tag, bool withGhost, bool withSurvivor = true)
+        {
+            while (Game.GameData.data == null)
+            {
+                yield return null;
+            }
+            yield return Game.GameData.data.SynchronizeData.GetAlignEnumerator(tag, withGhost, withSurvivor);
+        }
+
+        static public Il2CppSystem.Collections.IEnumerator GetStaticAlignEnumeratorIl2Cpp(SynchronizeTag tag, bool withGhost, bool withSurvivor = true)
+        {
+            return GetStaticAlignEnumerator(tag, withGhost, withSurvivor).WrapToIl2Cpp();
         }
 
         public bool Align(SynchronizeTag tag, bool withGhost, bool withSurvivor = true)
@@ -115,7 +145,7 @@ namespace Nebula.Game
                 {
                     if (room == SystemTypes.Ventilation) continue;
 
-                    float d = ShipStatus.Instance.FastRooms.get_Item(room).roomArea.Distance(Helpers.allPlayersById()[playerData.id].Collider).distance;
+                    float d = ShipStatus.Instance.FastRooms[room].roomArea.Distance(Helpers.allPlayersById()[playerData.id].Collider).distance;
                     if (d > 0.2f)
                     {
                         if (dis > d)
@@ -339,7 +369,14 @@ namespace Nebula.Game
         public bool IsInfluencedCrewmatesTasks;
 
         public TaskData(bool hasFakeTask,bool fakeTaskIsExecutable){
-            int tasks= PlayerControl.GameOptions.NumCommonTasks + PlayerControl.GameOptions.NumShortTasks + PlayerControl.GameOptions.NumLongTasks; ;
+            int tasks;
+            if (Game.GameModeProperty.GetProperty(Game.GameData.data.GameMode).CountTasks) {
+                tasks = PlayerControl.GameOptions.NumCommonTasks + PlayerControl.GameOptions.NumShortTasks + PlayerControl.GameOptions.NumLongTasks; ;
+            }
+            else
+            {
+                tasks = 0;
+            }
 
             if (hasFakeTask && !fakeTaskIsExecutable) Quota = 0;
             else Quota = tasks;
@@ -832,7 +869,7 @@ namespace Nebula.Game
 
     public class GameData
     {
-        public static GameData data = null;
+        public static GameData? data = null;
 
         private static Dictionary<string, int> RoleDataIdMap=new Dictionary<string, int>();
 
@@ -855,21 +892,32 @@ namespace Nebula.Game
 
         public GameRule GameRule;
 
+        //時間制限カウンタの描画
         public Module.TimeLimit LimitRenderer;
 
+        //ゲームモード
         public Module.CustomGameMode GameMode;
 
+        //ゴースト
         public Ghost.Ghost? Ghost;
 
+        //ミニゲーム開始時のカウントダウン
         public Objects.CustomMessage CountDownMessage;
 
+        //Oracleの役職絞り込み
         public Roles.RoleAI.EstimationAI EstimationAI;
 
+        //情報端末タイマー
         public UtilityTimer UtilityTimer;
 
+        //同期用のデータ
         public SynchronizeData SynchronizeData;
 
+        //当たり判定
         public Objects.ColliderManager ColliderManager;
+
+        //Ritualモード
+        public RitualData RitualData;
 
         public bool IsCanceled;
 
@@ -905,6 +953,8 @@ namespace Nebula.Game
             Timer = 300f;
 
             IsCanceled = false;
+
+            RitualData = new RitualData();
         }
 
         //データを消去します。
@@ -1010,7 +1060,7 @@ namespace Nebula.Game
 
         public PlayerData? GetPlayerData(byte playerId)
         {
-            if (playersArray.Count < playerId) return null;
+            if (playersArray.Count <= playerId) return null;
             return playersArray[playerId];
         }
 

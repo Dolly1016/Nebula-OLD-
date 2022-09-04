@@ -113,7 +113,7 @@ namespace Nebula.Roles.CrewmateRoles
 
         public override void GlobalInitialize(PlayerControl __instance)
         {
-            CanMoveInVents = CanUseVentsOption.getBool();
+            canMoveInVents = CanUseVentsOption.getBool();
             VentPermission = CanUseVentsOption.getBool() ? VentPermission.CanUseUnlimittedVent : VentPermission.CanNotUse;
             canInvokeSabotage = CanInvokeSabotageOption.getBool();
             canFixSabotage = CanFixSabotageOption.getBool();
@@ -199,7 +199,7 @@ namespace Nebula.Roles.CrewmateRoles
 
         public override void GlobalInitialize(PlayerControl __instance)
         {
-            Roles.Madmate.canFixSabotage = Roles.Madmate.CanFixSabotageOption.getBool();
+            canFixSabotage = Roles.Madmate.CanFixSabotageOption.getBool();
         }
 
         public override bool HasCrewmateTask(byte playerId)
@@ -207,10 +207,8 @@ namespace Nebula.Roles.CrewmateRoles
             return false;
         }
 
-        public override bool CanFixSabotage(byte playerId)
-        {
-            return Roles.Madmate.canFixSabotage;
-        }
+        public override bool CanFixSabotage => Roles.Madmate.CanFixSabotage;
+        
 
         public override bool CheckAdditionalWin(PlayerControl player, Patches.EndCondition condition)
         {

@@ -29,7 +29,7 @@ namespace Nebula.Roles.CrewmateRoles
         public static Sprite getVitalsSprite()
         {
             if (vitalsSprite) return vitalsSprite;
-            vitalsSprite = FastDestroyableSingleton<HudManager>.Instance.UseButton.fastUseSettings.get_Item(ImageNames.VitalsButton).Image;
+            vitalsSprite = FastDestroyableSingleton<HudManager>.Instance.UseButton.fastUseSettings[ImageNames.VitalsButton].Image;
             return vitalsSprite;
         }
 
@@ -102,6 +102,14 @@ namespace Nebula.Roles.CrewmateRoles
         public override void OnTaskComplete() {
             gadgetTimer += chargesPerTasksOption.getFloat();
             if (gadgetTimer > maxMobileGadgetChargesOption.getFloat()) gadgetTimer = maxMobileGadgetChargesOption.getFloat();
+        }
+
+        public override void MyPlayerControlUpdate()
+        {
+            if (vitalButton != null)
+            {
+                vitalButton.UpperText.text = (int)gadgetTimer + "s";
+            }
         }
 
         public override void ButtonInitialize(HudManager __instance)

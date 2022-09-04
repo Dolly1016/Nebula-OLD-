@@ -5,6 +5,24 @@ using Nebula.Utilities;
 
 namespace Nebula.Patches
 {
+    [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.CoBegin))]
+    public class CoStartPatch
+    {
+        public static void Postfix(IntroCutscene __instance,ref Il2CppSystem.Collections.IEnumerator __result)
+        {
+            if (CustomOptionHolder.GetCustomGameMode() == Module.CustomGameMode.Ritual)
+            {
+                RPCEventInvoker.RitualSharePerks(PlayerControl.LocalPlayer.PlayerId,new int[] { 0, 0, 0, 0 });
+
+                var enumerators = new UnhollowerBaseLib.Il2CppReferenceArray<Il2CppSystem.Collections.IEnumerator>(3);
+                enumerators[0] = Game.SynchronizeData.GetStaticAlignEnumeratorIl2Cpp(Game.SynchronizeTag.RitualInitialize, true, true);
+                enumerators[1] = Effects.Action((Il2CppSystem.Action)(() => Game.GameData.data.RitualData.SpawnAllPlayers()));
+                enumerators[2] = __result;
+                __result = Effects.Sequence(enumerators);
+            }
+        }
+    }
+    
 
     [HarmonyPatch(typeof(HudManager), nameof(HudManager.Start))]
     static class HudManagerStartPatch

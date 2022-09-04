@@ -45,9 +45,12 @@ namespace Nebula
             {
                 __instance.TotalTasks = 0;
                 __instance.CompletedTasks = 0;
+
+                if (!Game.GameModeProperty.GetProperty(Game.GameData.data.GameMode).CountTasks) return false;
+
                 for (int i = 0; i < __instance.AllPlayers.Count; i++)
                 {
-                    GameData.PlayerInfo playerInfo = __instance.AllPlayers.get_Item(i);
+                    GameData.PlayerInfo playerInfo = __instance.AllPlayers[i];
 
                     //切断されたプレイヤーのタスクは数えない
                     if (Helpers.playerById(playerInfo.PlayerId) == null) continue;

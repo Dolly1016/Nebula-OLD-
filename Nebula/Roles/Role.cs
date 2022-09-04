@@ -77,9 +77,10 @@ namespace Nebula.Roles
         public VentPermission VentPermission { get; set; }
         public float VentDurationMaxTimer { get; set; }
         public float VentCoolDownMaxTimer { get; set; }
-        public bool CanMoveInVents { get; set; }
-        public bool canInvokeSabotage { get; set; }
-        public bool canFixSabotage { get; set; }
+        protected bool canMoveInVents { get; set; }
+        public virtual bool CanMoveInVents { get { return canMoveInVents; } }
+        protected bool canInvokeSabotage { get; set; }
+        public virtual bool CanInvokeSabotage { get { return canInvokeSabotage; } }
         public bool RemoveAllTasksOnDead { get; set; }
         /// <summary>
         /// 停電が効かない場合true
@@ -191,11 +192,6 @@ namespace Nebula.Roles
         public override bool HasExecutableFakeTask(byte playerId)
         {
             return FakeTaskIsExecutable;
-        }
-
-        public override bool CanFixSabotage(byte playerId)
-        {
-            return canFixSabotage;
         }
 
         public override void EditCoolDown(CoolDownType type, float count)
@@ -341,7 +337,7 @@ namespace Nebula.Roles
             this.introInfluenceSides = introInfluenceSides;
 
             this.VentPermission = canUseVents;
-            this.CanMoveInVents = canMoveInVents;
+            this.canMoveInVents = canMoveInVents;
             this.IgnoreBlackout = ignoreBlackout;
 
             this.UseImpostorLightRadius = useImpostorLightRadius;

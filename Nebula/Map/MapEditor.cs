@@ -62,7 +62,7 @@ namespace Nebula.Map
         protected static Vent CreateVent(SystemTypes room, string ventName,Vector2 position)
         {
             var referenceVent = UnityEngine.Object.FindObjectOfType<Vent>();
-            Vent vent = UnityEngine.Object.Instantiate<Vent>(referenceVent,ShipStatus.Instance.FastRooms.get_Item(room).transform);
+            Vent vent = UnityEngine.Object.Instantiate<Vent>(referenceVent,ShipStatus.Instance.FastRooms[room].transform);
             vent.transform.localPosition = new Vector3(position.x,position.y,-1);
             vent.Left = null;
             vent.Right = null;
@@ -94,16 +94,32 @@ namespace Nebula.Map
             return console;
         }
 
-        protected static Console CreateConsole(SystemTypes room,string objectName,Sprite sprite,Vector2 pos)
+        public static Console CreateConsole(SystemTypes room,string objectName,Sprite sprite,Vector2 pos)
         {
             if (!ShipStatus.Instance.FastRooms.ContainsKey(room)) return null;
             GameObject obj = new GameObject(objectName);
-            obj.transform.SetParent(ShipStatus.Instance.FastRooms.get_Item(room).transform);
-            obj.transform.localPosition = pos;
+            obj.transform.SetParent(ShipStatus.Instance.FastRooms[room].transform);
+            obj.transform.localPosition = (Vector3)pos - new Vector3(0, 0, 1f);
             SpriteRenderer renderer = obj.AddComponent<SpriteRenderer>();
             renderer.sprite = sprite;
 
-            return ActivateConsole(objectName);
+            Console c = ActivateConsole(obj);
+            c.Room = room;
+            return c;
+        }
+
+        public static Console CreateConsoleG(SystemTypes room, string objectName, Sprite sprite, Vector2 globalPos)
+        {
+            if (!ShipStatus.Instance.FastRooms.ContainsKey(room)) return null;
+            GameObject obj = new GameObject(objectName);
+            obj.transform.SetParent(ShipStatus.Instance.FastRooms[room].transform);
+            obj.transform.position = (Vector3)globalPos + new Vector3(0, 0, ShipStatus.Instance.FastRooms[room].transform.position.z - 1f);
+            SpriteRenderer renderer = obj.AddComponent<SpriteRenderer>();
+            renderer.sprite = sprite;
+
+            Console c = ActivateConsole(obj);
+            c.Room = room;
+            return c;
         }
 
         private static Material? highlightMaterial = null;
@@ -120,9 +136,15 @@ namespace Nebula.Map
             }
             return new Material(highlightMaterial);
         }
+
         protected static Console ActivateConsole(string objectName)
         {
             GameObject obj = UnityEngine.GameObject.Find(objectName);
+            return ActivateConsole(obj);
+        }
+
+        protected static Console ActivateConsole(GameObject obj)
+        {
             obj.layer = LayerMask.NameToLayer("ShortObjects");
             Console console = obj.GetComponent<Console>();
             PassiveButton button = obj.GetComponent<PassiveButton>();
@@ -166,7 +188,7 @@ namespace Nebula.Map
         protected static void EditConsole(SystemTypes room, string objectName,Action<Console> action)
         {
             if (!ShipStatus.Instance.FastRooms.ContainsKey(room)) return;
-            PlainShipRoom shipRoom = ShipStatus.Instance.FastRooms.get_Item(room);
+            PlainShipRoom shipRoom = ShipStatus.Instance.FastRooms[room];
             Transform transform = shipRoom.transform.FindChild(objectName);
             if (!transform) return;
             GameObject obj = transform.gameObject;

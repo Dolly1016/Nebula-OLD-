@@ -42,12 +42,17 @@ namespace Nebula.Patches
         public static EndCondition NoGame = new EndCondition(64, new Color(72f / 255f, 78f / 255f, 84f / 255f), "noGame", 0, Module.CustomGameMode.All).SetNoBodyWin(true);
         public static EndCondition HostDisconnected = new EndCondition(65, new Color(72f / 255f, 78f / 255f, 84f / 255f), "hostDisconnected", 0, Module.CustomGameMode.Investigators).SetNoBodyWin(true);
 
+        public static EndCondition RitualCrewmateWin = new EndCondition(96, Palette.CrewmateBlue, "escaped", 0, Module.CustomGameMode.Ritual, true);
+        public static EndCondition KillerWin = new EndCondition(97, Palette.ImpostorRed, "killer", 0, Module.CustomGameMode.Ritual, false);
+
         public static EndCondition MinigamePlayersWin = new EndCondition(128, Palette.CrewmateBlue, "players", 0, Module.CustomGameMode.Minigame, true);
         public static EndCondition MinigameEscapeesWin = new EndCondition(129, Palette.CrewmateBlue, "escapees", 0, Module.CustomGameMode.Minigame, true);
         public static EndCondition MinigameHunterWin = new EndCondition(130, Palette.ImpostorRed, "hunter", 0, Module.CustomGameMode.Minigame);
 
-
         
+
+
+
 
 
 
@@ -59,7 +64,8 @@ namespace Nebula.Patches
             LoversWin,TrilemmaWin,AvengerWin,
             NoGame,NobodyWin,NobodySkeldWin,NobodyMiraWin,NobodyPolusWin,NobodyAirshipWin,
             InvestigatorRightGuess,InvestigatorWrongGuess,HostDisconnected,
-            MinigamePlayersWin,MinigameEscapeesWin,MinigameHunterWin
+            MinigamePlayersWin,MinigameEscapeesWin,MinigameHunterWin,
+            RitualCrewmateWin,KillerWin
         };
     
         public static EndCondition GetEndCondition(GameOverReason gameOverReason)

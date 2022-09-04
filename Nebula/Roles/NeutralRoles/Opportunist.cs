@@ -29,7 +29,7 @@ namespace Nebula.Roles.NeutralRoles
         {
             base.GlobalInitialize(__instance);
 
-            CanMoveInVents = canUseVentsOption.getBool();
+            canMoveInVents = canUseVentsOption.getBool();
             VentPermission = canUseVentsOption.getBool() ? VentPermission.CanUseLimittedVent : VentPermission.CanNotUse;
         }
 

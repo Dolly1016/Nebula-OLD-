@@ -19,9 +19,23 @@ namespace Nebula.Patches
 		[HarmonyPatch(typeof(SpawnInMinigame), nameof(SpawnInMinigame.SpawnAt))]
 		public static class PrespawnSpawnAtPatch
 		{
-			public static bool Prefix(SpawnInMinigame __instance, [HarmonyArgument(0)] Vector3 spawnAt)
+			public static bool SpawnAt(SpawnInMinigame __instance, Vector2 spawnAt)
 			{
-				if (!CustomOptionHolder.synchronizedSpawning.getBool()) return true;
+				if (!CustomOptionHolder.synchronizedSpawning.getBool())
+				{
+					if (__instance.amClosing != Minigame.CloseState.None)
+					{
+						return true;
+					}
+					__instance.gotButton = true;
+					PlayerControl.LocalPlayer.gameObject.SetActive(true);
+					__instance.StopAllCoroutines();
+					PlayerControl.LocalPlayer.NetTransform.RpcSnapTo(spawnAt);
+					DestroyableSingleton<HudManager>.Instance.PlayerCam.SnapToTarget();
+					__instance.Close();
+
+					return true;
+				}
 
 				RPCEventInvoker.Synchronize(Game.SynchronizeTag.PreSpawnMinigame,PlayerControl.LocalPlayer.PlayerId);
 				if (__instance.amClosing != Minigame.CloseState.None)
@@ -68,13 +82,13 @@ namespace Nebula.Patches
 
 						if (__instance.amClosing != Minigame.CloseState.None) return;
 
-						if (Game.GameData.data.SynchronizeData.Align(Game.SynchronizeTag.PreSpawnMinigame, false) || p==1f)
+						if (Game.GameData.data.SynchronizeData.Align(Game.SynchronizeTag.PreSpawnMinigame, false) || p == 1f)
 						{
 							PlayerControl.LocalPlayer.gameObject.SetActive(true);
 							__instance.StopAllCoroutines();
+							__instance.Close();
 							PlayerControl.LocalPlayer.NetTransform.RpcSnapTo(spawnAt);
 							HudManager.Instance.PlayerCam.SnapToTarget();
-							__instance.Close();
 						}
 					}
 
@@ -99,6 +113,40 @@ namespace Nebula.Patches
 		[HarmonyPatch(typeof(SpawnInMinigame), nameof(SpawnInMinigame.Begin))]
 		public static class PrespawnBeginPatch
         {
+			public static bool Prefix(SpawnInMinigame __instance)
+            {
+				if (PlayerControl.GameOptions.MapId != 4) return true;
+
+				SpawnInMinigame.SpawnLocation[] array = Enumerable.ToArray<SpawnInMinigame.SpawnLocation>(__instance.Locations);
+				array = array.OrderBy((i) => Guid.NewGuid()).ToArray();
+
+				array = Enumerable.ToArray<SpawnInMinigame.SpawnLocation>(Enumerable.ThenByDescending<SpawnInMinigame.SpawnLocation, float>(Enumerable.OrderBy<SpawnInMinigame.SpawnLocation, float>(Enumerable.Take<SpawnInMinigame.SpawnLocation>(array, __instance.LocationButtons.Length), (SpawnInMinigame.SpawnLocation s) => s.Location.x), (SpawnInMinigame.SpawnLocation s) => s.Location.y));
+				for (int i = 0; i < __instance.LocationButtons.Length; i++)
+				{
+					PassiveButton passiveButton = __instance.LocationButtons[i];
+					SpawnInMinigame.SpawnLocation pt = array[i];
+					passiveButton.OnClick.AddListener((System.Action)(()=>
+					{
+						PrespawnSpawnAtPatch.SpawnAt(__instance, pt.Location);
+					}));
+					passiveButton.GetComponent<SpriteAnim>().Stop();
+					passiveButton.GetComponent<SpriteRenderer>().sprite = pt.Image;
+					passiveButton.GetComponentInChildren<TextMeshPro>().text = DestroyableSingleton<TranslationController>.Instance.GetString(pt.Name, new UnhollowerBaseLib.Il2CppReferenceArray<Il2CppSystem.Object>(0));
+					ButtonAnimRolloverHandler component = passiveButton.GetComponent<ButtonAnimRolloverHandler>();
+					component.StaticOutImage = pt.Image;
+					component.RolloverAnim = pt.Rollover;
+					component.HoverSound = (pt.RolloverSfx ? pt.RolloverSfx : __instance.DefaultRolloverSound);
+				}
+				PlayerControl.LocalPlayer.gameObject.SetActive(false);
+				PlayerControl.LocalPlayer.NetTransform.RpcSnapTo(new Vector2(-25f, 40f));
+				__instance.StartCoroutine(__instance.RunTimer());
+				ControllerManager.Instance.OpenOverlayMenu(__instance.name, null, __instance.DefaultButtonSelected, __instance.ControllerSelectable, false);
+				PlayerControl.HideCursorTemporarily();
+				ConsoleJoystick.SetMode_Menu();
+
+				return false;
+            }
+
 			public static void Postfix(SpawnInMinigame __instance)
             {
 				selected = null;				
@@ -120,11 +168,21 @@ namespace Nebula.Patches
 		[HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.PrespawnStep))]
 		public static class PrespawnStepPatch
 		{
+			public static bool RequireCustomSpawnGame()
+            {
+				if (!CustomOptionHolder.mapOptions.getBool() || !CustomOptionHolder.multipleSpawnPoints.getBool()) return false;
+
+				if (Map.MapData.GetCurrentMapData().SpawnOriginalPositionAtFirst && !ExileController.Instance) return false;
+
+				var spawnCandidates = Map.MapData.GetCurrentMapData().SpawnCandidates;
+				if (spawnCandidates.Count < 3) return false;
+
+				return true;
+			}
+
 			public static void Postfix(ShipStatus __instance, ref Il2CppSystem.Collections.IEnumerator __result)
 			{
-				if (!CustomOptionHolder.mapOptions.getBool() || !CustomOptionHolder.multipleSpawnPoints.getBool()) return;
-
-				if (Map.MapData.GetCurrentMapData().SpawnOriginalPositionAtFirst && !ExileController.Instance) return;
+				if (!RequireCustomSpawnGame()) return;
 
 				var spawnCandidates = Map.MapData.GetCurrentMapData().SpawnCandidates;
 				if (spawnCandidates.Count < 3) return;
@@ -139,6 +197,7 @@ namespace Nebula.Patches
 				SpawnInMinigame.Instance = spawnInMinigame;
 				spawnInMinigame.MyTask = null;
 				spawnInMinigame.MyNormTask = null;
+
 				if (PlayerControl.LocalPlayer)
 				{
 					if (MapBehaviour.Instance)
@@ -161,9 +220,10 @@ namespace Nebula.Patches
 
 					spawnCandidates[index].ReloadTexture();
 
-					passiveButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
+					passiveButton.OnClick.RemoveAllListeners();
+					passiveButton.OnClick.AddListener(new System.Action(() =>
 					{
-						spawnInMinigame.SpawnAt(spawnCandidates[index].SpawnLocation);
+						PrespawnSpawnAtPatch.SpawnAt(spawnInMinigame, spawnCandidates[index].SpawnLocation);
 					}));
 					passiveButton.OnMouseOver.AddListener(new System.Action( ()=> HudManager.Instance.StartCoroutine(spawnCandidates[index].GetEnumerator(passiveButton.GetComponent<SpriteRenderer>()))));
 

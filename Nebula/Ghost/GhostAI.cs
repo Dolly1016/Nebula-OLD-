@@ -28,7 +28,7 @@ namespace Nebula.Ghost
         static protected int GetCountOfAlivePlayers(SystemTypes room,int MaxPlayers)
         {
             if (!ShipStatus.Instance.FastRooms.ContainsKey(room)) return 0;
-            return GetCountOfAlivePlayers(ShipStatus.Instance.FastRooms.get_Item(room), MaxPlayers);
+            return GetCountOfAlivePlayers(ShipStatus.Instance.FastRooms[room], MaxPlayers);
         }
 
         static protected int GetCountOfAlivePlayers(PlainShipRoom room, int MaxPlayers)
@@ -49,7 +49,7 @@ namespace Nebula.Ghost
         static protected int GetCountOfDeadBodies(SystemTypes room, int MaxBodies)
         {
             if (!ShipStatus.Instance.FastRooms.ContainsKey(room)) return 0;
-            return GetCountOfDeadBodies(ShipStatus.Instance.FastRooms.get_Item(room), MaxBodies);
+            return GetCountOfDeadBodies(ShipStatus.Instance.FastRooms[room], MaxBodies);
         }
 
         static protected int GetCountOfDeadBodies(PlainShipRoom room, int MaxBodies)

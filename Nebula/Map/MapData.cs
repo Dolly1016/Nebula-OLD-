@@ -25,6 +25,31 @@ namespace Nebula.Map
         }
     }
 
+    public class RitualSpawnCandidate
+    {
+        public Vector2 pos;
+        public float range;
+        public RitualSpawnCandidate[]? subPos;
+
+        public RitualSpawnCandidate(Vector2 pos, float range = 0f, RitualSpawnCandidate[]? subPos = null)
+        {
+            this.pos = pos;
+            this.range = range;
+            this.subPos = subPos;
+        }
+
+        public Vector2 GetPos()
+        {
+            if (range > 0)
+            {
+                float angle = (float)NebulaPlugin.rnd.NextDouble() * Mathf.PI * 2f;
+                float range = (float)NebulaPlugin.rnd.NextDouble() * this.range;
+                return pos + new Vector2(Mathf.Cos(angle) * range, Mathf.Sin(angle) * range);
+            }
+            return pos;
+        }
+    }
+
     public class WiringData
     {
         HashSet<int>[] WiringCandidate;
@@ -32,6 +57,47 @@ namespace Nebula.Map
         public WiringData()
         {
             WiringCandidate = new HashSet<int>[3] { new HashSet<int>(), new HashSet<int>(), new HashSet<int>() };            
+        }
+    }
+
+    public class VectorRange
+    {
+        float xMin, xMax, yMin, yMax;
+
+        public VectorRange(float x,float y)
+        {
+            this.xMin = this.xMax = x;
+            this.yMin = this.yMax = y;
+        }
+
+        public VectorRange(float x1,float x2,float y1,float y2)
+        {
+            if (x1 < x2)
+            {
+                this.xMin = x1;
+                this.xMax = x2;
+            }
+            else
+            {
+                this.xMin = x2;
+                this.xMax = x1;
+            }
+
+            if (y1 < y2)
+            {
+                this.yMin = y1;
+                this.yMax = y2;
+            }
+            else
+            {
+                this.yMin = y2;
+                this.yMax = y1;
+            }
+        }
+
+        public Vector2 GetVector()
+        {
+            return new Vector2((float)NebulaPlugin.rnd.NextDouble() * (xMax - xMin) + xMin, (float)NebulaPlugin.rnd.NextDouble() * (yMax - yMin) + yMin);
         }
     }
 
@@ -52,11 +118,6 @@ namespace Nebula.Map
         //マップ内の代表点
         public HashSet<Vector2> MapPositions;
 
-        //部屋の関連性
-        public Dictionary<SystemTypes, HashSet<SystemTypes>> RoomsRelation;
-        //ドアを持つ部屋
-        public HashSet<SystemTypes> DoorRooms;
-
         //ドアサボタージュがサボタージュの発生を阻止するかどうか
         public bool DoorHackingCanBlockSabotage;
         //ドアサボタージュの有効時間
@@ -72,6 +133,26 @@ namespace Nebula.Map
         //スポーン位置選択がもとから発生するかどうか
         public bool HasDefaultPrespawnMinigame;
 
+        //Ritualスポーン位置候補
+        public List<RitualSpawnCandidate> RitualSpawnLocations;
+        //Ritualミッション部屋候補(ビットフラグタグと候補)
+        public List<SystemTypes[]> RitualRooms;
+        //Ritualミッション位置候補
+        public Dictionary<SystemTypes, List<VectorRange>> RitualMissionPositions;
+
+        public void RegisterRitualMissionPosition(SystemTypes room,VectorRange range)
+        {
+            if (!RitualMissionPositions.ContainsKey(room))
+            {
+                List<VectorRange> list = new List<VectorRange>();
+                list.Add(range);
+                RitualMissionPositions.Add(room,list);
+            }
+            else
+            {
+                RitualMissionPositions[room].Add(range);
+            }
+        }
         
 
         public static void Load()
@@ -190,8 +271,6 @@ namespace Nebula.Map
             IsModMap = mapId >= 5;
 
             SabotageMap = new Dictionary<SystemTypes, SabotageData>();
-            RoomsRelation = new Dictionary<SystemTypes, HashSet<SystemTypes>>();
-            DoorRooms = new HashSet<SystemTypes>();
             MapPositions = new HashSet<Vector2>();
 
             SpawnCandidates = new List<SpawnCandidate>();
@@ -203,6 +282,10 @@ namespace Nebula.Map
 
             MapScale = 1f;
             DoorHackingDuration = 10f;
+
+            RitualRooms = new List<SystemTypes[]>();
+            RitualSpawnLocations = new List<RitualSpawnCandidate>();
+            RitualMissionPositions = new Dictionary<SystemTypes, List<VectorRange>>();
         }
 
         public void LoadAssets(AmongUsClient __instance)

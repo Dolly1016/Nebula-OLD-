@@ -29,7 +29,7 @@ namespace Nebula.Roles.MetaRoles
                         objectPool.CreateOneInactive(objectPool.Prefab);
                     }
                 }
-                poolableBehavior = objectPool.inactiveChildren.get_Item(objectPool.inactiveChildren.Count - 1);
+                poolableBehavior = objectPool.inactiveChildren[objectPool.inactiveChildren.Count - 1];
                 objectPool.inactiveChildren.RemoveAt(objectPool.inactiveChildren.Count - 1);
                 objectPool.activeChildren.Add(poolableBehavior);
                 PoolableBehavior poolableBehavior2 = poolableBehavior;
@@ -52,6 +52,13 @@ namespace Nebula.Roles.MetaRoles
 
         public static void Postfix(InGamePlayerList __instance)
         {
+            PlayerControl.LocalPlayer.NetTransform.Halt();
+
+            int layer = LayerMask.NameToLayer("KeyMapper");
+
+            __instance.backgroundSprite.gameObject.layer = layer;
+            __instance.backgroundSpriteMask.gameObject.layer = layer;
+
             __instance.backgroundSprite.sortingOrder = 1;
             __instance.backgroundSprite.gameObject.GetComponent<BoxCollider2D>().enabled = false;
 
@@ -67,7 +74,13 @@ namespace Nebula.Roles.MetaRoles
                 component.transform.localPosition = localPosition;
                 component.transform.localScale = new Vector3(0.21f, 1f, 1f);
 
+                component.MaskArea.gameObject.layer = layer;
+                component.NameText.gameObject.layer = layer;
+
+                component.transform.FindChild("PoolablePlayer").gameObject.SetActive(false);
                 var obj = component.transform.FindChild("actualButton").gameObject;
+                obj.layer = layer;
+                obj.transform.GetChild(0).gameObject.layer = layer;
                 var renderer= obj.GetComponent<SpriteRenderer>();
                 var button = obj.GetComponent<PassiveButton>();
                 button.transform.localPosition = new Vector3(0, 0, -1f);
@@ -109,7 +122,7 @@ namespace Nebula.Roles.MetaRoles
             __instance.controllerNavMenu.ControllerSelectable.Clear();
             __instance.PopulateButtons();
             if(__instance.controllerNavMenu.ControllerSelectable.Count>0)
-                __instance.controllerNavMenu.DefaultButtonSelected = __instance.controllerNavMenu.ControllerSelectable.get_Item(0);
+                __instance.controllerNavMenu.DefaultButtonSelected = __instance.controllerNavMenu.ControllerSelectable[0];
             return false;
         }
         public static void Postfix(InGamePlayerList __instance)

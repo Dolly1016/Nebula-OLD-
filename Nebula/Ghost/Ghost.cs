@@ -169,12 +169,7 @@ namespace Nebula.Ghost
             {
                 SabotageMood[entry.Key] = 0f;
             }
-            
-            foreach(var room in map.DoorRooms)
-            {
-                DoorMood[room] = 0f;
-                DoorCoolDown[room] = 0f;
-            }
+           
 
             SabotageKeys = new List<SystemTypes>(SabotageMood.Keys);
             DoorKeys = new List<SystemTypes>(DoorMood.Keys);

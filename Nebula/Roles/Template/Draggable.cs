@@ -60,12 +60,12 @@ namespace Nebula.Roles.Template
 
         public override void ButtonActivate()
         {
-            dragButton.setActive(true);
+            if (dragButton != null)dragButton.setActive(true);
         }
 
         public override void ButtonDeactivate()
         {
-            dragButton.setActive(false);
+            if(dragButton!=null)dragButton.setActive(false);
         }
 
         [RoleLocalMethod]

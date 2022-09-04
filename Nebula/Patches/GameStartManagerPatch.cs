@@ -6,6 +6,7 @@ using HarmonyLib;
 using UnityEngine;
 using UnhollowerBaseLib;
 using Nebula.Utilities;
+using BepInEx.IL2CPP.Utils.Collections;
 
 namespace Nebula.Patches
 {
@@ -283,13 +284,14 @@ namespace Nebula.Patches
                                 GameData.Instance.AddPlayer(playerControl);
                                 AmongUsClient.Instance.Spawn(playerControl, -2, InnerNet.SpawnFlags.None);
 
-                                playerControl.isDummy = true;
                                 playerControl.transform.position = PlayerControl.LocalPlayer.transform.position;
-                                playerControl.GetComponent<DummyBehaviour>().enabled = false;
-                                playerControl.NetTransform.enabled = true;
+                                playerControl.GetComponent<DummyBehaviour>().enabled = true;
                                 playerControl.SetName(Patches.RandomNamePatch.GetRandomName());
                                 playerControl.SetColor(i);
+
                                 GameData.Instance.RpcSetTasks(playerControl.PlayerId, new byte[0]);
+
+                                playerControl.StartCoroutine(playerControl.CoPlayerAppear().WrapToIl2Cpp());
                             }
                         }
                     }

@@ -68,7 +68,7 @@ namespace Nebula.Roles.ImpostorRoles
             morphCoolDownOption = CreateOption(Color.white, "morphCoolDown", 25f, 10f, 60f, 5f);
             morphCoolDownOption.suffix = "second";
 
-            morphDurationOption = CreateOption(Color.white, "morphDuration", 15f, 5f, 30f, 2.5f);
+            morphDurationOption = CreateOption(Color.white, "morphDuration", 15f, 5f, 40f, 2.5f);
             morphDurationOption.suffix = "second";
         }
 

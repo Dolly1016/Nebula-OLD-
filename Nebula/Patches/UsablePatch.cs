@@ -46,7 +46,7 @@ namespace Nebula.Patches
             if (Game.GameData.data == null) return;
             if (Game.GameData.data.myData.getGlobalData() == null) return;
 
-            if (!Game.GameData.data.myData.getGlobalData().role.canInvokeSabotage)
+            if (!Game.GameData.data.myData.getGlobalData().role.CanInvokeSabotage)
             {
                 __instance.SetDisabled();
             }
@@ -73,7 +73,7 @@ namespace Nebula.Patches
         static void Postfix(TuneRadioMinigame __instance)
         {
             bool cannotFixSabotage = false;
-            Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId, (role) => { cannotFixSabotage |= !role.CanFixSabotage(PlayerControl.LocalPlayer.PlayerId); });
+            Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId, (role) => { cannotFixSabotage |= !role.CanFixSabotage; });
             if (cannotFixSabotage) __instance.Close();
         }
     }
@@ -85,7 +85,7 @@ namespace Nebula.Patches
         static void Postfix(SwitchMinigame __instance)
         {
             bool cannotFixSabotage = false;
-            Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId, (role) => { cannotFixSabotage |= !role.CanFixSabotage(PlayerControl.LocalPlayer.PlayerId); });
+            Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId, (role) => { cannotFixSabotage |= !role.CanFixSabotage; });
             if (cannotFixSabotage) __instance.Close();
         }
     }

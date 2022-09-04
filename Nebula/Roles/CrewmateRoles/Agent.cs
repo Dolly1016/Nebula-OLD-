@@ -77,11 +77,8 @@ namespace Nebula.Roles.CrewmateRoles
             );
             agentButton.MaxTimer = agentButton.Timer = 0;
 
-            ventButtonString = GameObject.Instantiate(agentButton.actionButton.cooldownTimerText, FastDestroyableSingleton<HudManager>.Instance.ImpostorVentButton.transform);
+            ventButtonString = FastDestroyableSingleton<HudManager>.Instance.ImpostorVentButton.CreateButtonUpperText();
             ventButtonString.text = (int)maxVentsOption.getFloat() + "/" + (int)maxVentsOption.getFloat();
-            ventButtonString.enableWordWrapping = false;
-            ventButtonString.transform.localScale = Vector3.one * 0.5f;
-            ventButtonString.transform.localPosition += new Vector3(-0.05f, 0.7f, 0);
         }
 
         public override void MyUpdate()
@@ -120,11 +117,6 @@ namespace Nebula.Roles.CrewmateRoles
                 UnityEngine.Object.Destroy(ventButtonString.gameObject);
                 ventButtonString = null;
             }
-        }
-
-        public override void IntroInitialize(PlayerControl __instance)
-        {
-            base.IntroInitialize(__instance);
         }
 
         public override void OnTaskComplete() {

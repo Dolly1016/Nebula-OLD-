@@ -123,6 +123,17 @@ namespace Nebula.Map.Database
 
             MapScale = 30f;
             HasDefaultPrespawnMinigame = true;
+
+            RitualRooms.Add(new SystemTypes[] { SystemTypes.Cockpit });
+            RitualRooms.Add(new SystemTypes[] { SystemTypes.Cockpit,SystemTypes.Comms });
+            RitualRooms.Add(new SystemTypes[] { SystemTypes.Armory, SystemTypes.Comms });
+            RitualRooms.Add(new SystemTypes[] { SystemTypes.Armory});
+            RitualRooms.Add(new SystemTypes[] { SystemTypes.Comms });
+            RitualRooms.Add(new SystemTypes[] { SystemTypes.Engine });
+            RitualRooms.Add(new SystemTypes[] { SystemTypes.Kitchen });
+            RitualRooms.Add(new SystemTypes[] { SystemTypes.ViewingDeck });
+            RitualRooms.Add(new SystemTypes[] { SystemTypes.Kitchen,SystemTypes.ViewingDeck });
+            RitualRooms.Add(new SystemTypes[] { SystemTypes.Security });
         }
     }
 }

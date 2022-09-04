@@ -9,7 +9,7 @@ namespace Nebula.Objects.ObjectTypes
     {
         public Trap(byte id,string objectName, string spriteAddress) : base(id,objectName, spriteAddress, true)
         {
-            CanSeeInShadow = true;
+            canSeeInShadow = true;
         }
     }
 

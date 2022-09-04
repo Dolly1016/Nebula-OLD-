@@ -16,7 +16,6 @@ namespace Nebula.Roles.CrewmateRoles
 
         private CustomButton repairButton;
         private CustomButton sealButton;
-        private TMPro.TMP_Text sealButtonString;
 
         private Vent ventTarget = null;
         //直したことがあるかどうか
@@ -92,7 +91,7 @@ namespace Nebula.Roles.CrewmateRoles
         public override void Initialize(PlayerControl __instance)
         {
             //最初からは使用できない
-            CanMoveInVents = false;
+            canMoveInVents = false;
             VentPermission = VentPermission.CanNotUse;
             hasBeenRepaired = false;
 
@@ -108,7 +107,7 @@ namespace Nebula.Roles.CrewmateRoles
             //設置後はベント使用可能
             if (Game.GameData.data.myData.getGlobalData().GetRoleData(remainingScrewsDataId) == 0)
             {
-                CanMoveInVents = true;
+                canMoveInVents = true;
                 VentPermission = VentPermission.CanUseLimittedVent;
             }
         }
@@ -158,7 +157,7 @@ namespace Nebula.Roles.CrewmateRoles
                 () => {
                     int total = (int)maxScrewsOption.getFloat();
                     int remain = Game.GameData.data.myData.getGlobalData().GetRoleData(remainingScrewsDataId);
-                    sealButtonString.text = $"{remain}/{total}";
+                    sealButton.UpperText.text = $"{remain}/{total}";
 
                     return (ventTarget != null) && remain > 0 && PlayerControl.LocalPlayer.CanMove;
                     
@@ -173,11 +172,6 @@ namespace Nebula.Roles.CrewmateRoles
             );
             sealButton.Timer = sealButton.MaxTimer = sealCoolDownOption.getFloat();
 
-            sealButtonString = GameObject.Instantiate(sealButton.actionButton.cooldownTimerText, sealButton.actionButton.cooldownTimerText.transform.parent);
-            sealButtonString.text = "";
-            sealButtonString.enableWordWrapping = false;
-            sealButtonString.transform.localScale = Vector3.one * 0.5f;
-            sealButtonString.transform.localPosition += new Vector3(-0.05f, 0.7f, 0);
 
             if (repairButton != null)
             {
@@ -223,13 +217,7 @@ namespace Nebula.Roles.CrewmateRoles
                 sealButton.Destroy();
                 sealButton = null;
             }
-
-            if (sealButtonString != null)
-            {
-                UnityEngine.Object.Destroy(sealButtonString.gameObject);
-                sealButtonString = null;
-            }
-
+            
             if (repairButton != null)
             {
                 repairButton.Destroy();

@@ -3,9 +3,11 @@ using Hazel;
 using Nebula.Module;
 using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using UnityEngine;
 using Nebula.Utilities;
+using BepInEx.IL2CPP.Utils.Collections;
 
 namespace Nebula
 {
@@ -71,7 +73,11 @@ namespace Nebula
         Morph,
         MorphCancel,
         CreateSidekick,
-        DisturberInvoke
+        DisturberInvoke,
+
+        InitializeRitualData,
+        RitualSharePerks,
+        RitualUpdate
     }
 
     //RPCを受け取ったときのイベント
@@ -105,7 +111,7 @@ namespace Nebula
                     RPCEvents.VersionHandshake(version, new Guid(reader.ReadBytes(16)), clientId);
                     break;
                 case (byte)CustomRPC.SetMyColor:
-                    RPCEvents.SetMyColor(reader.ReadByte(), new Color(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(),1f),reader.ReadByte());
+                    RPCEvents.SetMyColor(reader.ReadByte(), new Color(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), 1f), reader.ReadByte());
                     break;
                 case (byte)CustomRPC.Synchronize:
                     RPCEvents.Synchronize(reader.ReadByte(), reader.ReadInt32());
@@ -114,41 +120,41 @@ namespace Nebula
                     RPCEvents.SynchronizeTimer(reader.ReadSingle());
                     break;
                 case (byte)CustomRPC.SetPlayerStatus:
-                    RPCEvents.SetPlayerStatus(reader.ReadByte(),Game.PlayerData.PlayerStatus.GetStatusById(reader.ReadByte()));
+                    RPCEvents.SetPlayerStatus(reader.ReadByte(), Game.PlayerData.PlayerStatus.GetStatusById(reader.ReadByte()));
                     break;
                 case (byte)CustomRPC.UpdatePlayerControl:
-                    RPCEvents.UpdatePlayerControl(reader.ReadByte(),reader.ReadSingle());
+                    RPCEvents.UpdatePlayerControl(reader.ReadByte(), reader.ReadSingle());
                     break;
                 case (byte)CustomRPC.ForceEnd:
                     RPCEvents.ForceEnd(reader.ReadByte());
                     break;
                 case (byte)CustomRPC.WinTrigger:
-                    RPCEvents.WinTrigger(reader.ReadByte(),reader.ReadByte());
+                    RPCEvents.WinTrigger(reader.ReadByte(), reader.ReadByte());
                     break;
                 case (byte)CustomRPC.ShareOptions:
                     RPCEvents.ShareOptions((int)reader.ReadPackedUInt32(), reader);
                     break;
                 case (byte)CustomRPC.SetRoles:
-                    int num=reader.ReadInt32();
-                    for (int i= 0;i<num;i++)
+                    int num = reader.ReadInt32();
+                    for (int i = 0; i < num; i++)
                     {
-                        RPCEvents.SetRole(reader.ReadByte(),Roles.Role.GetRoleById(reader.ReadByte()));
+                        RPCEvents.SetRole(reader.ReadByte(), Roles.Role.GetRoleById(reader.ReadByte()));
                     }
                     num = reader.ReadInt32();
-                    for (int i= 0; i < num; i++)
+                    for (int i = 0; i < num; i++)
                     {
                         RPCEvents.SetExtraRole(reader.ReadByte(), Roles.ExtraRole.GetRoleById(reader.ReadByte()), reader.ReadUInt64());
                     }
                     break;
                 case (byte)CustomRPC.SetExtraRole:
-                    RPCEvents.SetExtraRole(reader.ReadByte(),Roles.ExtraRole.GetRoleById(reader.ReadByte()), reader.ReadUInt64());
+                    RPCEvents.SetExtraRole(reader.ReadByte(), Roles.ExtraRole.GetRoleById(reader.ReadByte()), reader.ReadUInt64());
                     break;
                 case (byte)CustomRPC.UnsetExtraRole:
                     RPCEvents.UnsetExtraRole(Roles.ExtraRole.GetRoleById(reader.ReadByte()), reader.ReadByte());
                     break;
                 case (byte)CustomRPC.ChangeExtraRole:
                     byte removeRole = reader.ReadByte();
-                    RPCEvents.ChangeExtraRole(removeRole == byte.MaxValue ? Roles.ExtraRole.GetRoleById(removeRole) : null, Roles.ExtraRole.GetRoleById(reader.ReadByte()), reader.ReadUInt64(), reader.ReadByte());
+                    RPCEvents.ChangeExtraRole(removeRole == byte.MaxValue ? null : Roles.ExtraRole.GetRoleById(removeRole), Roles.ExtraRole.GetRoleById(reader.ReadByte()), reader.ReadUInt64(), reader.ReadByte());
                     break;
                 case (byte)CustomRPC.PlayStaticSound:
                     RPCEvents.PlayStaticSound((Module.AudioAsset)reader.ReadByte());
@@ -166,7 +172,7 @@ namespace Nebula
                     RPCEvents.UncheckedCmdReportDeadBody(reader.ReadByte(), reader.ReadByte());
                     break;
                 case (byte)CustomRPC.CloseUpKill:
-                    RPCEvents.CloseUpKill(reader.ReadByte(),reader.ReadByte(), reader.ReadByte());
+                    RPCEvents.CloseUpKill(reader.ReadByte(), reader.ReadByte(), reader.ReadByte());
                     break;
                 case (byte)CustomRPC.UpdateRoleData:
                     RPCEvents.UpdateRoleData(reader.ReadByte(), reader.ReadInt32(), reader.ReadInt32());
@@ -175,7 +181,7 @@ namespace Nebula
                     RPCEvents.UpdateExtraRoleData(reader.ReadByte(), reader.ReadByte(), reader.ReadUInt64());
                     break;
                 case (byte)CustomRPC.GlobalEvent:
-                    RPCEvents.GlobalEvent(reader.ReadByte(), reader.ReadSingle(),reader.ReadUInt64());
+                    RPCEvents.GlobalEvent(reader.ReadByte(), reader.ReadSingle(), reader.ReadUInt64());
                     break;
                 case (byte)CustomRPC.DragAndDropPlayer:
                     RPCEvents.DragAndDropPlayer(reader.ReadByte(), reader.ReadByte());
@@ -190,7 +196,7 @@ namespace Nebula
                     RPCEvents.SwapRole(reader.ReadByte(), reader.ReadByte());
                     break;
                 case (byte)CustomRPC.RevivePlayer:
-                    RPCEvents.RevivePlayer(reader.ReadByte(), reader.ReadBoolean(), reader.ReadBoolean(),reader.ReadBoolean());
+                    RPCEvents.RevivePlayer(reader.ReadByte(), reader.ReadBoolean(), reader.ReadBoolean(), reader.ReadBoolean());
                     break;
                 case (byte)CustomRPC.EmitSpeedFactor:
                     RPCEvents.EmitSpeedFactor(reader.ReadByte(), new Game.SpeedFactor(reader.ReadBoolean(), reader.ReadByte(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadBoolean()));
@@ -229,7 +235,7 @@ namespace Nebula
                     RPCEvents.CountDownMessage(reader.ReadByte());
                     break;
                 case (byte)CustomRPC.UpdateRestrictTimer:
-                    RPCEvents.UpdateRestrictTimer(reader.ReadByte(),reader.ReadSingle());
+                    RPCEvents.UpdateRestrictTimer(reader.ReadByte(), reader.ReadSingle());
                     break;
                 case (byte)CustomRPC.UndergroundAction:
                     RPCEvents.UndergroundAction(reader.ReadByte(), reader.ReadBoolean());
@@ -260,7 +266,7 @@ namespace Nebula
                     RPCEvents.RaiderThrow(reader.ReadByte(), new Vector2(reader.ReadSingle(), reader.ReadSingle()), reader.ReadSingle());
                     break;
                 case (byte)CustomRPC.Morph:
-                    RPCEvents.Morph(reader.ReadByte(),reader.ReadByte());
+                    RPCEvents.Morph(reader.ReadByte(), reader.ReadByte());
                     break;
                 case (byte)CustomRPC.MorphCancel:
                     RPCEvents.MorphCancel(reader.ReadByte());
@@ -269,10 +275,20 @@ namespace Nebula
                     RPCEvents.CreateSidekick(reader.ReadByte(), reader.ReadByte());
                     break;
                 case (byte)CustomRPC.DisturberInvoke:
-                    RPCEvents.DisturberInvoke(reader.ReadByte(),reader.ReadUInt64(), reader.ReadUInt64());
+                    RPCEvents.DisturberInvoke(reader.ReadByte(), reader.ReadUInt64(), reader.ReadUInt64());
                     break;
                 case (byte)CustomRPC.UpdatePlayerVisibility:
                     RPCEvents.UpdatePlayerVisibility(reader.ReadByte(), reader.ReadBoolean());
+                    break;
+
+                case (byte)CustomRPC.InitializeRitualData:
+                    RPCEvents.InitializeRitualData(reader);
+                    break;
+                case (byte)CustomRPC.RitualSharePerks:
+                    RPCEvents.RitualSharePerks(reader.ReadByte(), new int[] { reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32() });
+                    break;
+                case (byte)CustomRPC.RitualUpdate:
+                    RPCEvents.RitualUpdate(reader);
                     break;
             }
         }
@@ -877,7 +893,7 @@ namespace Nebula
 
         public static void FixLights()
         {
-            SwitchSystem switchSystem = ShipStatus.Instance.Systems.get_Item(SystemTypes.Electrical).Cast<SwitchSystem>();
+            SwitchSystem switchSystem = ShipStatus.Instance.Systems[SystemTypes.Electrical].Cast<SwitchSystem>();
             switchSystem.ActualSwitches = switchSystem.ExpectedSwitches;
         }
 
@@ -904,9 +920,18 @@ namespace Nebula
             }
         }
 
+        private static IEnumerator GetSynchronizeEnumrator(byte playerId, int tag)
+        {
+            while (Game.GameData.data == null)
+            {
+                yield return null;
+            }
+            Game.GameData.data.SynchronizeData.Synchronize((Game.SynchronizeTag)tag, playerId);
+        }
+
         public static void Synchronize(byte playerId,int tag)
         {
-            Game.GameData.data.SynchronizeData.Synchronize((Game.SynchronizeTag)tag, playerId);
+            HudManager.Instance.StartCoroutine(GetSynchronizeEnumrator(playerId,tag).WrapToIl2Cpp());
         }
 
         public static void SealVent(byte playerId, int ventId)
@@ -1151,10 +1176,10 @@ namespace Nebula
                     timer = 0.1f;
                     num = (num + 1) % 3;
 
-                    uvList.set_Item(0, new Vector2((float)num / 3f, 0));
-                    uvList.set_Item(1, new Vector2((float)(num + 1) / 3f, 0));
-                    uvList.set_Item(2, new Vector2((float)num / 3f, 1));
-                    uvList.set_Item(3, new Vector2((float)(num + 1) / 3f, 1));
+                    uvList[0]= new Vector2((float)num / 3f, 0);
+                    uvList[1] = new Vector2((float)(num + 1) / 3f, 0);
+                    uvList[2] = new Vector2((float)num / 3f, 1);
+                    uvList[3] = new Vector2((float)(num + 1) / 3f, 1);
                     mesh.SetUVs(0, uvList);
                 }
             }, Roles.Roles.Disturber.ignoreBarriorsOption.getSelection() == 1,
@@ -1172,6 +1197,50 @@ namespace Nebula
             {
                 role.EditCoolDown(coolDownType,time);
             });
+        }
+
+        private static IEnumerator GetRitualSharePerksEnumerator(byte playerId,int[] perks)
+        {
+            while (Game.GameData.data == null) yield return null;
+            Game.GameData.data.RitualData.RegisterPlayerData(playerId,perks);
+            Game.GameData.data.RitualData.CheckAndSynchronize(AmongUsClient.Instance.AmHost);
+        }
+
+        public static void RitualSharePerks(byte playerId,int[] perks)
+        {
+            HudManager.Instance.StartCoroutine(GetRitualSharePerksEnumerator(playerId,perks).WrapToIl2Cpp());
+        }
+
+        public static void RitualUpdateTaskProgress(int taskNum)
+        {
+            PlayerControl.LocalPlayer.myTasks[taskNum].CastFast<Tasks.NebulaPlayerTask>().NebulaData[2]++;
+        }
+
+        public static void RitualUpdate(MessageReader reader)
+        {
+            switch (reader.ReadInt32())
+            {
+                case 0:
+                    RitualUpdateTaskProgress(reader.ReadInt32());
+                    break;
+
+            }
+        }
+
+        public static void InitializeRitualData(MessageReader reader)
+        {
+            int n = reader.ReadInt32();
+            for (int i = 0; i < n; i++)
+            {
+                Game.GameData.data.RitualData.AddTaskData(Game.RitualData.TaskData.Deserialize(reader));
+            }
+            Game.GameData.data.RitualData.CheckAndSynchronize(AmongUsClient.Instance.AmHost);
+
+            n = reader.ReadInt32();
+            for(int i = 0; i < n; i++)
+            {
+                Game.GameData.data.RitualData.RegisterPlayerSpawnData(reader.ReadByte(), new Vector2(reader.ReadSingle(), reader.ReadSingle()));
+            }
         }
     }
 
@@ -1202,11 +1271,11 @@ namespace Nebula
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.SetRandomMap(mapId);
         }
-        public static void SetRoles(Patches.AssignMap assignMap)
+
+        private static void WriteRolesData(MessageWriter writer, Patches.AssignMap assignMap)
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetRoles, Hazel.SendOption.Reliable, -1);
             writer.Write(assignMap.RoleMap.Count);
-            foreach(var entry in assignMap.RoleMap)
+            foreach (var entry in assignMap.RoleMap)
             {
                 writer.Write(entry.Key);
                 writer.Write(entry.Value);
@@ -1217,9 +1286,33 @@ namespace Nebula
                 writer.Write(tuple.Item1);
                 writer.Write(tuple.Item2.Item1);
                 writer.Write(tuple.Item2.Item2);
-            }
+            }   
+        }
+
+        public static void SetRoles(Patches.AssignMap assignMap)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetRoles, Hazel.SendOption.Reliable, -1);
+
+            WriteRolesData(writer,assignMap);
+
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             //自分自身はもう割り当て済みなので何もしない
+        }
+
+        public static void InitializeRitualData(List<Game.RitualData.TaskData> taskDataList,Dictionary<byte,Game.RitualData.RitualPlayerData> playerData)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.InitializeRitualData, Hazel.SendOption.Reliable, -1);
+            writer.Write(taskDataList.Count);
+            foreach (var t in taskDataList) t.Serialize(writer);
+
+            writer.Write(playerData.Count);
+            foreach(var d in playerData)
+            {
+                writer.Write(d.Key);
+                writer.Write(d.Value.SpawnPos.x);
+                writer.Write(d.Value.SpawnPos.y);
+            }
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
 
         public static void SetMyColor()
@@ -1473,16 +1566,32 @@ namespace Nebula
             RPCEvents.MultipleVote(player.PlayerId, count);
         }
 
-        public static void ExemptTasks(byte playerId, int cutTasks, int cutQuota)
+        public static void ExemptTasks(int cutTasks, int cutQuota,Il2CppSystem.Collections.Generic.List<GameData.TaskInfo> tasks)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ExemptTasks, Hazel.SendOption.Reliable, -1);
-            writer.Write(playerId);
+            writer.Write(PlayerControl.LocalPlayer.PlayerId);
             writer.Write(cutTasks);
             writer.Write(cutQuota);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
-            RPCEvents.ExemptTasks(playerId, cutTasks, cutQuota);
+            RPCEvents.ExemptTasks(PlayerControl.LocalPlayer.PlayerId, cutTasks, cutQuota);
 
-            int allTasks = Game.GameData.data.playersArray[playerId].Tasks.DisplayTasks;
+            for(int i = 0; i < cutTasks; i++)
+            {
+                if (tasks.Count == 0) break;
+                tasks.RemoveAt(NebulaPlugin.rnd.Next(tasks.Count));
+            }
+        }
+
+        public static void ExemptTasks(int cutTasks, int cutQuota)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ExemptTasks, Hazel.SendOption.Reliable, -1);
+            writer.Write(PlayerControl.LocalPlayer.PlayerId);
+            writer.Write(cutTasks);
+            writer.Write(cutQuota);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.ExemptTasks(PlayerControl.LocalPlayer.PlayerId, cutTasks, cutQuota);
+
+            int allTasks = Game.GameData.data.myData.getGlobalData().Tasks.DisplayTasks;
             int commonTasks = PlayerControl.GameOptions.NumCommonTasks;
             int longTasks = PlayerControl.GameOptions.NumLongTasks;
             int shortTasks = PlayerControl.GameOptions.NumShortTasks;
@@ -1509,7 +1618,7 @@ namespace Nebula
             var tasks = new Il2CppSystem.Collections.Generic.List<byte>();
 
             for (int i = 0; i < commonTasks; i++)
-                tasks.Add((byte)ShipStatus.Instance.CommonTasks.FirstOrDefault((t) => t.TaskType == PlayerControl.LocalPlayer.myTasks.get_Item(i).TaskType).Index);
+                tasks.Add((byte)ShipStatus.Instance.CommonTasks.FirstOrDefault((t) => t.TaskType == PlayerControl.LocalPlayer.myTasks[i].TaskType).Index);
 
             int num=0;
             var usedTypes = new Il2CppSystem.Collections.Generic.HashSet<TaskTypes>();
@@ -1563,11 +1672,26 @@ namespace Nebula
 
             unused = new Il2CppSystem.Collections.Generic.List<NormalPlayerTask>();
             foreach (var t in ShipStatus.Instance.NormalTasks)
+            {
+                if (t.TaskType == TaskTypes.PickUpTowels) continue;
                 unused.Add(t);
+            }
             Extensions.Shuffle<NormalPlayerTask>(unused.Cast<Il2CppSystem.Collections.Generic.IList<NormalPlayerTask>>(), 0);
             ShipStatus.Instance.AddTasksFromList(ref num, shortTasks, tasks, usedTypes, unused);
 
-            GameData.Instance.SetTasks(PlayerControl.LocalPlayer.PlayerId, tasks.ToArray().ToArray());
+            GameData.PlayerInfo p = PlayerControl.LocalPlayer.Data;
+
+            //GameData.Instance.SetTasksは初期設定のパッチが通るため使用しない
+            p.Tasks = new Il2CppSystem.Collections.Generic.List<GameData.TaskInfo>(tasks.Count);
+
+            int n = 0;
+            foreach (var t in tasks)
+            {
+                p.Tasks.Add(new GameData.TaskInfo(t, (uint)n));
+                n++;
+            }
+            p.Object.SetTasks(p.Tasks);
+            GameData.Instance.SetDirtyBit(1U << (int)PlayerControl.LocalPlayer.PlayerId);
         }
 
         public static void CompleteTask(byte playerId)
@@ -1779,6 +1903,27 @@ namespace Nebula
             messageWriter.Write(time);
             AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
             RPCEvents.EditCoolDown(coolDownType, time);
+        }
+
+        public static void RitualSharePerks(byte playerId, int[] perks)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RitualSharePerks, Hazel.SendOption.Reliable, -1);
+            writer.Write(playerId);
+            for (int i = 0; i < 4; i++)
+            {
+                writer.Write(perks[i]);
+            }
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.RitualSharePerks(playerId, perks);
+        }
+
+        public static void RitualUpdateTaskProgress(int taskNum)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RitualUpdate, Hazel.SendOption.Reliable, -1);
+            writer.Write((int)0);
+            writer.Write(taskNum);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.RitualUpdateTaskProgress(taskNum);
         }
     }
 }

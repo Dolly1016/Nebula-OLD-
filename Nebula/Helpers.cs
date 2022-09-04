@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -22,6 +23,16 @@ namespace Nebula
                       !ExileController.Instance;
             }
         }
+
+        public static TMPro.TextMeshPro CreateButtonUpperText(this ActionButton button)
+        {
+            TMPro.TextMeshPro text = GameObject.Instantiate(HudManager.Instance.KillButton.cooldownTimerText, button.transform);
+            text.enableWordWrapping = false;
+            text.transform.localScale = Vector3.one * 0.5f;
+            text.transform.localPosition += new Vector3(-0.05f, 0.7f, 0);
+            return text;
+        }
+
         public static bool ProceedTimer(bool isImpostorKillButton)
         {
 
@@ -39,6 +50,8 @@ namespace Nebula
                 if (Minigame.Instance.MyNormTask) return true;
                 if (Minigame.Instance.TryCast<DoorCardSwipeGame>()) return true;
                 if (Minigame.Instance.TryCast<DoorBreakerGame>()) return true;
+                if (Minigame.Instance.TryCast<MultistageMinigame>()) return true;
+                if (Minigame.Instance.TryCast<AutoMultistageMinigame>()) return true;
             }
 
             return PlayerControl.LocalPlayer.CanMove;
@@ -161,7 +174,7 @@ namespace Nebula
             if (player == null) return;
             for (int i = 0; i < player.myTasks.Count; i++)
             {
-                PlayerTask playerTask = player.myTasks.get_Item(i);
+                PlayerTask playerTask = player.myTasks[i];
                 playerTask.OnRemove();
                 UnityEngine.Object.Destroy(playerTask.gameObject);
             }
@@ -223,7 +236,7 @@ namespace Nebula
         public static void SetLook(this PlayerControl target, String playerName, int colorId, string hatId, string visorId, string skinId, string petId)
         {
             target.MyPhysics.ResetAnimState();
-            target.RawSetVisor(visorId);
+            target.RawSetVisor(visorId,colorId);
             target.RawSetHat(hatId, colorId);
             target.RawSetSkin(skinId,colorId);
             target.RawSetColor(colorId);
@@ -620,9 +633,9 @@ namespace Nebula
                 c = PhysicsHelpers.castHits[i].collider;
                 if (c.isTrigger) continue;
                 if (LightSource.NoShadows.ContainsKey(c.gameObject))
-                    if (LightSource.NoShadows.get_Item(c.gameObject).hitOverride == c) continue;
+                    if (LightSource.NoShadows[c.gameObject].hitOverride == c) continue;
                 if (LightSource.OneWayShadows.ContainsKey(c.gameObject))
-                    if (LightSource.OneWayShadows.get_Item(c.gameObject).IsIgnored(PlayerControl.LocalPlayer.myLight)) continue;
+                    if (LightSource.OneWayShadows[c.gameObject].IsIgnored(PlayerControl.LocalPlayer.myLight)) continue;
 
                 result = true;
                 break;
@@ -649,6 +662,18 @@ namespace Nebula
                 }
             }
             return result;
+        }
+
+        public static IEnumerator CoPlayerAppear(this PlayerControl player)
+        {
+            for(int i = 0; i < 2; i++)
+            {
+                yield return null;
+            }
+            player.transform.FindChild("Sprite").gameObject.SetActive(true);
+            player.NetTransform.enabled = true;
+            player.MyPhysics.enabled = true;
+            //player.StartCoroutine(player.MyPhysics.CoSpawnPlayer(LobbyBehaviour.Instance));
         }
     }
 }

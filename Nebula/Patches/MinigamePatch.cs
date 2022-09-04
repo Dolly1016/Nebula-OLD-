@@ -17,7 +17,7 @@ namespace Nebula.Patches
 
             if (Game.GameData.data.myData.getGlobalData().Property.UnderTheFloor) { __result = float.MaxValue; return false; }
 
-            if (!Game.GameData.data.myData.getGlobalData().role.canFixSabotage)
+            if (!Game.GameData.data.myData.getGlobalData().role.CanFixSabotage)
             {
                 if (__instance.TaskTypes.Any(x => x == TaskTypes.FixLights || x == TaskTypes.FixComms)) return false;
             }

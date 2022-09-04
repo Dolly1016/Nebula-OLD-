@@ -99,6 +99,16 @@ namespace Nebula
         public static CustomOption optimizedMaps;
         public static CustomOption invalidateSecondaryAdmin;
 
+
+        public static CustomOption RitualOption;
+        public static CustomOption NumOfMissionsOption;
+        public static CustomOption LengthOfMissionOption;
+        public static CustomOption RitualKillCoolDownOption;
+        public static CustomOption RitualKillFailedPenaltyOption;
+        public static CustomOption RitualSearchCoolDownOption;
+        public static CustomOption RitualSearchableDistanceOption;
+        
+
         public static CustomOption emergencyOptions;
         public static CustomOption maxNumberOfMeetings;
         public static CustomOption deathPenaltyForDiscussionTime;
@@ -129,6 +139,11 @@ namespace Nebula
         public static CustomOption advanceRoleOptions;
 
         public static CustomOption exclusiveAssignmentParent;
+        public static CustomOption exclusiveAssignmentRaiderAndSniper;
+        public static CustomOption exclusiveAssignmentArsonistAndEmpiric;
+        public static CustomOption exclusiveAssignmentAlienAndNavvy;
+        public static CustomOption exclusiveAssignmentBaitAndProvocateur;
+        public static CustomOption exclusiveAssignmentPsychicAndSeer;
         public static List<Tuple<CustomOption,List<CustomOption>>> exclusiveAssignmentList;
         public static List<Roles.Role> exclusiveAssignmentRoles;
 
@@ -138,7 +153,18 @@ namespace Nebula
         {
             if (!exclusiveAssignmentParent.getBool()) return;
 
-            foreach(var tuple in exclusiveAssignmentList)
+            if (exclusiveAssignmentRaiderAndSniper.getBool())
+                exclusiveAssignments.Add(new ExclusiveAssignment(Roles.Roles.Raider,Roles.Roles.Sniper));
+            if (exclusiveAssignmentArsonistAndEmpiric.getBool())
+                exclusiveAssignments.Add(new ExclusiveAssignment(Roles.Roles.Arsonist, Roles.Roles.Empiric));
+            if (exclusiveAssignmentAlienAndNavvy.getBool())
+                exclusiveAssignments.Add(new ExclusiveAssignment(Roles.Roles.Alien, Roles.Roles.Navvy));
+            if (exclusiveAssignmentBaitAndProvocateur.getBool())
+                exclusiveAssignments.Add(new ExclusiveAssignment(Roles.Roles.Bait, Roles.Roles.Provocateur));
+            if (exclusiveAssignmentPsychicAndSeer.getBool())
+                exclusiveAssignments.Add(new ExclusiveAssignment(Roles.Roles.Psychic, Roles.Roles.Seer));
+
+            foreach (var tuple in exclusiveAssignmentList)
             {
                 if (!tuple.Item1.getBool()) continue;
 
@@ -170,7 +196,15 @@ namespace Nebula
             SoloFreePlayOption = CustomOption.Create(10007, Color.white, "option.soloFreePlayOption", new string[] { "option.empty" }, "option.empty", null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.FreePlay).AddCustomPrerequisite(() => { return PlayerControl.AllPlayerControls.Count == 1; });
             CountOfDummiesOption = CustomOption.Create(10008, Color.white, "option.countOfDummies", 0,0,14,1, SoloFreePlayOption).SetGameMode(CustomGameMode.All);
 
-            emergencyOptions = CustomOption.Create(10100, Color.white, "option.emergencyOptions", false, null, true,false,"", CustomOptionTab.Settings).SetGameMode(~CustomGameMode.Minigame);
+            RitualOption = CustomOption.Create(10020, Color.white, "option.ritualOption", new string[] { "option.empty" }, "option.empty", null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.Ritual);
+            NumOfMissionsOption = CustomOption.Create(10021, Color.white, "option.numOfMissions", 3, 1, 8, 1, RitualOption, false, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.Ritual);
+            LengthOfMissionOption = CustomOption.Create(10022, Color.white, "option.lengthOfMission", 10, 4, 20, 1, RitualOption, false, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.Ritual);
+            RitualKillCoolDownOption = CustomOption.Create(10023, Color.white, "option.killCoolDown", 15f, 7.5f, 30f, 2.5f, RitualOption, false, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.Ritual);
+            RitualKillFailedPenaltyOption = CustomOption.Create(10024, Color.white, "option.killFailedPenalty", 3f, 0f, 20f, 0.5f, RitualOption, false, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.Ritual);
+            RitualSearchCoolDownOption = CustomOption.Create(10025, Color.white, "option.searchCoolDown", 10f, 2.5f, 30f, 2.5f, RitualOption, false, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.Ritual);
+            RitualSearchableDistanceOption = CustomOption.Create(10026, Color.white, "option.searchableDistance", 2.5f, 1.25f, 10f, 1.25f, RitualOption, false, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.Ritual);
+
+            emergencyOptions = CustomOption.Create(10100, Color.white, "option.emergencyOptions", false, null, true,false,"", CustomOptionTab.Settings).SetGameMode(~(CustomGameMode.Minigame|CustomGameMode.Ritual));
             maxNumberOfMeetings = CustomOption.Create(10101, Color.white, "option.maxNumberOfMeetings", 10, 0, 15, 1, emergencyOptions).SetGameMode(~CustomGameMode.Minigame);
             deathPenaltyForDiscussionTime = CustomOption.Create(10102, Color.white, "option.deathPenaltyForDiscussionTime", 5f, 0f, 30f, 1f, emergencyOptions).SetGameMode(~CustomGameMode.Minigame);
             deathPenaltyForDiscussionTime.suffix = "second";
@@ -186,8 +220,8 @@ namespace Nebula
             exceptPolus = CustomOption.Create(10124, Color.white, "option.exceptPolus", false, dynamicMap).SetGameMode(CustomGameMode.All);
             exceptAirship = CustomOption.Create(10125, Color.white, "option.exceptAirship", false, dynamicMap).SetGameMode(CustomGameMode.All);
             additionalVents = CustomOption.Create(10130, Color.white, "option.additionalVents", false, mapOptions).SetGameMode(~CustomGameMode.Minigame);
-            multipleSpawnPoints = CustomOption.Create(10132, Color.white, "option.multipleSpawnPoints", false, mapOptions).SetGameMode(~CustomGameMode.Minigame);
-            synchronizedSpawning = CustomOption.Create(10133, Color.white, "option.synchronizedSpawning", false, mapOptions).SetGameMode(~CustomGameMode.Minigame);
+            multipleSpawnPoints = CustomOption.Create(10132, Color.white, "option.multipleSpawnPoints", false, mapOptions).SetGameMode(~(CustomGameMode.Minigame | CustomGameMode.Ritual));
+            synchronizedSpawning = CustomOption.Create(10133, Color.white, "option.synchronizedSpawning", false, mapOptions).SetGameMode(~(CustomGameMode.Minigame | CustomGameMode.Ritual));
             optimizedMaps = CustomOption.Create(10134, Color.white, "option.optimizedMaps", true, mapOptions).SetGameMode(CustomGameMode.All);
             invalidateSecondaryAdmin = CustomOption.Create(10135, Color.white, "option.invalidateSecondaryAdmin", true, mapOptions).SetGameMode(CustomGameMode.All);
 
@@ -205,7 +239,7 @@ namespace Nebula
             CameraAndDoorLogLimitOption = CustomOption.Create(10153, Color.white, "option.devicesOption.CameraAndDoorLog", 30f, 5f, 600f, 5f, DevicesOption).SetGameMode(CustomGameMode.All);
             CameraAndDoorLogLimitOption.suffix = "second";
 
-            TasksOption = CustomOption.Create(10160, Color.white, "option.tasksOption", false, null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.All);
+            TasksOption = CustomOption.Create(10160, Color.white, "option.tasksOption", false, null, true, false, "", CustomOptionTab.Settings).SetGameMode(~CustomGameMode.Ritual);
             additionalWirings = CustomOption.Create(10161, Color.white, "option.additionalWirings", false, TasksOption).SetGameMode(CustomGameMode.All);
             RandomizedWiringOption = CustomOption.Create(10162, Color.white, "option.randomizedWiring", false, TasksOption).SetGameMode(CustomGameMode.All);
             StepsOfWiringOption = CustomOption.Create(10163, Color.white, "option.stepsOfWiring", 3f, 3f, 10f, 1f, TasksOption).SetGameMode(CustomGameMode.All);
@@ -228,6 +262,11 @@ namespace Nebula
             Roles.ExtraRole.LoadAllOptionData();
 
             exclusiveAssignmentParent = CustomOption.Create(10200, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.exclusiveAssignment", false, null, true, false, "", CustomOptionTab.AdvancedSettings).SetGameMode(CustomGameMode.Standard | CustomGameMode.FreePlay);
+            exclusiveAssignmentRaiderAndSniper= CustomOption.Create(10201, Color.white, "option.exclusiveAssignment.RaiderAndSniper", true, exclusiveAssignmentParent);
+            exclusiveAssignmentArsonistAndEmpiric = CustomOption.Create(10202, Color.white, "option.exclusiveAssignment.ArsonistAndEmpiric", true, exclusiveAssignmentParent);
+            exclusiveAssignmentAlienAndNavvy = CustomOption.Create(10203, Color.white, "option.exclusiveAssignment.AlienAndNavvy", true, exclusiveAssignmentParent);
+            exclusiveAssignmentBaitAndProvocateur = CustomOption.Create(10204, Color.white, "option.exclusiveAssignment.BaitAndProvocateur", true, exclusiveAssignmentParent);
+            exclusiveAssignmentPsychicAndSeer = CustomOption.Create(10204, Color.white, "option.exclusiveAssignment.PsychicAndSeer", false, exclusiveAssignmentParent);
             exclusiveAssignmentRoles = new List<Roles.Role>();
             foreach(Roles.Role role in Roles.Roles.AllRoles)
             {
