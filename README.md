@@ -29,7 +29,8 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
-| 1.13.1 | 2022.8.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.13.1,2022.8.24/Nebula_v1.13.1.zip)|
+| 1.13.1.1 | 2022.8.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.13.1.1,2022.8.24/Nebula_v1.13.1.1.zip)|
+| 1.13.1 | 2022.8.24s | 公開停止 |
 | 1.13 | 2022.8.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.13,2022.8.24/Nebula_v1.13.zip)|
 | 1.12.11 | 2022.8.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.11,2022.8.24/Nebula_v1.12.11.zip)|
 | 1.12.10 | 2022.7.12s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.12.10,2022.7.12/Nebula_v1.12.10.zip)|
@@ -215,6 +216,9 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+ 
+ **Version 1.13.1.1**
+ - ユーザーリポジトリに関する権利関係のトラブル回避のための仕様変更
  
  **Version 1.13.1**
  - セオノさんのハットを利用できるように
