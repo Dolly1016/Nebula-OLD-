@@ -608,12 +608,12 @@ namespace Nebula
             }
         }
 
-        public static void destroyList<T>(List<T> items) where T : UnityEngine.Object
+        public static void destroyList<T>(List<T> items) where T : MonoBehaviour
         {
             if (items == null) return;
             foreach (T item in items)
             {
-                UnityEngine.Object.Destroy(item);
+                UnityEngine.Object.Destroy(item.gameObject);
             }
         }
 

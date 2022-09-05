@@ -223,7 +223,6 @@ namespace Nebula.Patches
             {
                 public static bool Prefix(PlanetSurveillanceMinigame __instance, [HarmonyArgument(0)] int direction)
                 {
-                    NebulaPlugin.Instance.Logger.Print("A");
                     if (!CustomOptionHolder.DevicesOption.getBool()) return true;
                     if (Game.GameData.data.UtilityTimer.CameraTimer > 0f) return true;
 

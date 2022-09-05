@@ -227,7 +227,7 @@ namespace Nebula.Language
                     var deserialized = JsonSerializer.Deserialize<Dictionary<string, string>>("{ " + data + " }", option);
                     foreach(var entry in deserialized)
                     {
-                        languageSet.Add(entry.Key,entry.Value);
+                        languageSet[entry.Key]=entry.Value;
                     }
 
                     result = true;

@@ -765,6 +765,7 @@ namespace Nebula.Module
             obj.transform.localPosition = new Vector3(-0.38f, 0.39f, -10f);
             SpriteRenderer renderer = obj.AddComponent<SpriteRenderer>();
             renderer.sprite = GetAnimationMark();
+            renderer.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
         }
 
 
@@ -781,7 +782,10 @@ namespace Nebula.Module
                 {
                     TMPro.TMP_Text title = UnityEngine.Object.Instantiate<TMPro.TMP_Text>(textTemplate, __instance.scroller.Inner);
                     title.GetComponent<TextTranslatorTMP>().enabled = false;
-                    
+                    var mat=title.GetComponent<MeshRenderer>().material;//.shader=PlayerCustomizationMenu.Instance.cubesTab.ColorTabPrefab.
+                    mat.SetFloat("_StencilComp", 4f);
+                    mat.SetFloat("_Stencil", 1f);
+
                     title.transform.parent = __instance.scroller.Inner;
                     title.transform.localPosition = new Vector3(headerX, YStart, inventoryZ);
                     title.text = Language.Language.GetString("cosmic.package." + packageName);
@@ -810,7 +814,7 @@ namespace Nebula.Module
                     colorChip.transform.localPosition = new Vector3(xpos, ypos, inventoryZ);
                     if (ActiveInputManager.currentControlType == ActiveInputManager.InputType.Keyboard)
                     {
-                        colorChip.Button.OnMouseOver.AddListener((UnityEngine.Events.UnityAction)(() => __instance.SelectHat(hat)));
+                        colorChip.Button.OnMouseOver.AddListener((UnityEngine.Events.UnityAction)(() => { __instance.SelectHat(hat); colorChip.SelectionHighlight.maskInteraction = SpriteMaskInteraction.VisibleInsideMask; }));
                         colorChip.Button.OnMouseOut.AddListener((UnityEngine.Events.UnityAction)(() => __instance.SelectHat(FastDestroyableSingleton<HatManager>.Instance.GetHatById(SaveManager.LastHat))));
                         colorChip.Button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => __instance.ClickEquip()));
                     }
@@ -881,6 +885,13 @@ namespace Nebula.Module
                 }
 
                 __instance.scroller.ContentYBounds.max = -(YOffset + 3.0f + headerSize);
+
+                foreach(var cc in __instance.ColorChips)
+                {
+                    cc.Inner.FrontLayer.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+                    cc.Inner.BackLayer.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+                    cc.SelectionHighlight.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+                }
                 return false;
             }
         }
@@ -997,6 +1008,7 @@ namespace Nebula.Module
                 }
 
                 __instance.scroller.ContentYBounds.max = -(YOffset + 3.0f + headerSize);
+
                 return false;
             }
         }
@@ -1121,67 +1133,23 @@ namespace Nebula.Module
                 }
 
                 __instance.scroller.ContentYBounds.max = -(YOffset + 3.0f + headerSize);
+
+                foreach (var cc in __instance.ColorChips)
+                {
+                    cc.SelectionHighlight.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+                }
+
                 return false;
             }
         }
-
-        [HarmonyPatch]
-        public class TabUpdatePatch {
-            private static void TabPostFix(InventoryTab __instance)
-            {
-                // Manually hide all custom TMPro.TMP_Text objects that are outside the ScrollRect
-                foreach (TMPro.TMP_Text customText in hatsTabCustomTexts)
-                {
-                    if (customText != null && customText.transform != null && customText.gameObject != null)
-                    {
-                        bool active = customText.transform.position.y <= inventoryTop && customText.transform.position.y >= inventoryBot;
-                        float epsilon = Mathf.Min(Mathf.Abs(customText.transform.position.y - inventoryTop), Mathf.Abs(customText.transform.position.y - inventoryBot));
-                        if (active != customText.gameObject.active && epsilon > 0.1f) customText.gameObject.SetActive(active);
-                    }
-                }
-            }
-
-
-            [HarmonyPatch(typeof(HatsTab), nameof(HatsTab.Update))]
-            public class HatsTabUpdatePatch
-            {
-                public static void Postfix(HatsTab __instance)
-                {
-                    TabPostFix(__instance);
-                }
-            }
-
-
-            [HarmonyPatch(typeof(NameplatesTab), nameof(NameplatesTab.Update))]
-            public class NamePlateTabUpdatePatch
-            {
-                public static void Postfix(NameplatesTab __instance)
-                {
-                    TabPostFix(__instance);
-                }
-            }
-
-            [HarmonyPatch(typeof(VisorsTab), nameof(VisorsTab.Update))]
-            public class VisorsTabUpdatePatch
-            {
-                public static void Postfix(VisorsTab __instance)
-                {
-                    TabPostFix(__instance);
-                }
-            }
-        }
-
-
     }
 
     public class CosmicLoader
     {
         public static bool running = false;
-
+        public static string userCosmicReposLink = "https://raw.githubusercontent.com/Dolly1016/MoreCosmic/master/UserCosmics.dat";
         public static string[] cosmicRepos = new string[]
         {
-            "https://raw.githubusercontent.com/Dolly1016/MoreCosmic/master",
-            "https://raw.githubusercontent.com/seono968/SeonoHats/master",
             "MoreCosmic"
         };
 
@@ -1190,6 +1158,31 @@ namespace Nebula.Module
         public static List<CustomVisor> visordetails = new List<CustomVisor>();
 
         private static Task cosmicFetchTask = null;
+
+        public static void GetUserCosmicRepos(ref List<string> list)
+        {
+            try
+            {
+                HttpStatusCode result;
+                HttpClient? http = null;
+
+                http = new HttpClient();
+                http.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue { NoCache = true };
+                var responseTask = http.GetAsync(new System.Uri(userCosmicReposLink), HttpCompletionOption.ResponseContentRead);
+                responseTask.Wait();
+                var response = responseTask.Result;
+
+                if (response.StatusCode != HttpStatusCode.OK) return;
+                if (response.Content == null) return;
+
+
+                var task = response.Content.ReadAsStringAsync();
+                task.Wait();
+                string reposText = task.Result;
+                foreach (string repo in reposText.Split("\n")) list.Add(repo);
+            }
+            catch { }
+        }
 
         public static void LaunchCosmicFetcher()
         {
@@ -1207,6 +1200,7 @@ namespace Nebula.Module
             System.IO.Directory.CreateDirectory("MoreCosmic/visors");
 
             List<string> repos = new List<string>(cosmicRepos);
+            GetUserCosmicRepos(ref repos);
 
             foreach (string repo in repos)
             {

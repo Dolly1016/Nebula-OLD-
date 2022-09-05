@@ -182,6 +182,28 @@ namespace Nebula.Patches
             }
         }
 
+        [HarmonyPatch(typeof(MeetingIntroAnimation), nameof(MeetingIntroAnimation.Init))]
+        class MeetingIntroAnimationPatch
+        {
+            public static void Prefix(MeetingIntroAnimation __instance,[HarmonyArgument(1)] ref UnhollowerBaseLib.Il2CppReferenceArray<GameData.PlayerInfo> deadBodies)
+            {
+                List<GameData.PlayerInfo> dBodies = new List<GameData.PlayerInfo>();
+                //既に発見されている死体
+                foreach (var dBody in deadBodies)
+                {
+                    dBodies.Add(dBody);
+                }
+                //遅れて発見された死体
+                foreach (var dBody in Helpers.AllDeadBodies())
+                {
+                    dBodies.Add(GameData.Instance.GetPlayerById(dBody.ParentId));
+                    GameObject.Destroy(dBody.gameObject);
+                }
+                deadBodies = new UnhollowerBaseLib.Il2CppReferenceArray<GameData.PlayerInfo>(dBodies.ToArray());
+            }
+        }
+
+
         [HarmonyPatch(typeof(HudManager), nameof(HudManager.OpenMeetingRoom))]
         class OpenMeetingPatch
         {

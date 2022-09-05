@@ -132,17 +132,12 @@ namespace Nebula.Roles.ComplexRoles
             {
                 //撃てないロールを除外する
                 if (!role.IsGuessableRole || role.category == RoleCategory.Complex||(int)(role.ValidGamemode&Game.GameData.data.GameMode)==0) continue;
-                NebulaPlugin.Instance.Logger.Print("G1");
                 Transform buttonParent = (new GameObject()).transform;
                 buttonParent.SetParent(container);
-                NebulaPlugin.Instance.Logger.Print("G2");
                 Transform button = UnityEngine.Object.Instantiate(buttonTemplate, buttonParent);
                 Transform buttonMask = UnityEngine.Object.Instantiate(maskTemplate, buttonParent);
                 TMPro.TextMeshPro label = UnityEngine.Object.Instantiate(textTemplate, button);
-                NebulaPlugin.Instance.Logger.Print("G3");
-                NebulaPlugin.Instance.Logger.Print("G4");
                 buttons.Add(button);
-                NebulaPlugin.Instance.Logger.Print("G5");
                 int row = i / 5, col = i % 5;
                 buttonParent.localPosition = new Vector3(-3.47f + 1.75f * col, 1.5f - 0.45f * row, -5);
                 buttonParent.localScale = new Vector3(0.55f, 0.55f, 1f);
@@ -151,7 +146,6 @@ namespace Nebula.Roles.ComplexRoles
                 label.transform.localPosition = new Vector3(0, 0, label.transform.localPosition.z);
                 label.transform.localScale *= 1.7f;
                 int copiedIndex = i;
-                NebulaPlugin.Instance.Logger.Print("G6");
 
                 button.GetComponent<PassiveButton>().OnClick.RemoveAllListeners();
                 if (!PlayerControl.LocalPlayer.Data.IsDead) button.GetComponent<PassiveButton>().OnClick.AddListener((System.Action)(() => {
@@ -193,7 +187,6 @@ namespace Nebula.Roles.ComplexRoles
                             dyingTarget.PlayerId == PlayerControl.LocalPlayer.PlayerId ? Game.PlayerData.PlayerStatus.Misguessed : Game.PlayerData.PlayerStatus.Guessed);
                     }
                 }));
-                NebulaPlugin.Instance.Logger.Print("G7");
 
                 i++;
             }

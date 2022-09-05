@@ -12,7 +12,6 @@ namespace Nebula.Ghost.AI
         {
             foreach (var room in ghost.DoorKeys)
             {
-                NebulaPlugin.Instance.Logger.Print("A");
                 ghost.DoorMood[room] += Weight * (float)GhostAI.GetCountOfAlivePlayers(room, MaxPlayer) / (float)MaxPlayer;
             }
         }
