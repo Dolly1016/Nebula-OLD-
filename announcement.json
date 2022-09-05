@@ -1,5 +1,5 @@
 ﻿{
-    "Version": "7",
+    "Version": "8",
     "English": 
 "Hi Crewmates!
 
@@ -9,8 +9,8 @@ and you can join the our Discord with the link on our GitHub.
 Submitted works will be checked and added in the this mod.
 You're exactly a nebula consists of ideas!
 
-Main Features in NoS v1.6.4
- -New role %ROLE:DISTURBER(Disturber)% is added.",
+Main Features in NoS v1.13
+ -New role %ROLE:CHAINSHIFTER(ChainShifter)% is added.",
     "Japanese": 
 "◎More Cosmic! カスタムコス募集のお知らせ
   NebulaのDiscordにて、カスタムハットおよびカスタムネームプレートを募集しています。
@@ -19,8 +19,8 @@ Main Features in NoS v1.6.4
   詳しくはNebula on the Ship のDiscordから(GitHubにリンクがあります)。
   それでは、今日も良い船旅を！
 
-◆アップデート情報 v1.7.0
-  -新役職「%ROLE:DISTURBER(Disturber)%」を追加しました。
-   バリアを張ることでプレイヤーの行動を妨害することができます。
-  -プレイヤーに対して使用するボタンの反応が悪い問題を修正しました。"
+◆アップデート情報 v1.13
+  -新役職「%ROLE:CHAINSHIFTER(ChainShifter)%」を追加しました。
+   %ROLE:CHAINSHIFTER(ChainShifter)%は勝利することはできません。
+   他人と役職を交換することで相手を陥れ、勝利を掴みましょう！"
 }
