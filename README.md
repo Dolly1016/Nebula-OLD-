@@ -29,6 +29,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.13.3 | 2022.8.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.13.3,2022.8.24/Nebula_v1.13.3.zip)|
 | 1.13.2 | 2022.8.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.13.2,2022.8.24/Nebula_v1.13.2.zip)|
 | 1.13.1.2 | 2022.8.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.13.1.2,2022.8.24/Nebula_v1.13.1.2.zip)|
 | 1.13.1.1 | 2022.8.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.13.1.1,2022.8.24/Nebula_v1.13.1.1.zip)|
@@ -218,6 +219,23 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+ 
+ **Version 1.13.3**
+ - Chain Shifterに新オプション「Secondary Guesser Shift」を追加
+ - Chain Shifterが他の役職と入れ替わるとき、タスクが消去されるように
+ - Chain Shifterがシフトしたとき、シフトするプレイヤーの名前をボタンの上に表示するように
+ - Chain Shifterの役職入れ替え時にJackalのキル数を引き継ぐように
+ - 同時スキャンに関する設定「Allow Parallel MedBay Scan」を追加
+ - ゲーム終了時の役職開示画面に詳細表示ボタンを追加
+ - Pキーを押すことで、ゲーム中(タイトル画面以外)でゲーム画面を画像に出力できるように
+ - 歯車設定に画像の出力先を選択するオプション「Screenshot Destination」を追加
+ - Madmateのタスク免除数がひとつ前のゲームの設定に依存してしまう問題を修正
+ - Buskerが一度能力を使用すると、常時不可視のプレイヤーが近くにいる警告の対象になってしまう問題を修正
+ - Avengerの設定がLoversが出現しえないときでも見えてしまう問題を修正
+ - Map Option内のいくつかの設定が、Map Optionを無効にしても反映されてしまう問題を修正
+ - 旧バージョンのスナップショットに更新できないように
+ - 役職の初期化処理の流れを変更
+ - 死体抽出のプログラムを見直し
  
  **Version 1.13.2**
  - 歯車設定にMod用の新たなタブを追加
