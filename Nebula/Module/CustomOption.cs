@@ -1298,7 +1298,7 @@ namespace Nebula.Module
     {
         public static void Prefix(HudManager __instance)
         {
-            if (__instance.GameSettings != null) __instance.GameSettings.fontSize = 1.2f;
+            if(LobbyBehaviour.Instance)if (__instance.GameSettings != null) __instance.GameSettings.fontSize = 1.2f;
         }
     }
 

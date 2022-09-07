@@ -32,7 +32,7 @@ namespace Nebula.Roles.CrewmateRoles
 
             if (FS_BodiesSensor == null)
             {
-                FS_BodiesSensor = GameObject.Instantiate(FastDestroyableSingleton<HudManager>.Instance.FullScreen, FastDestroyableSingleton<HudManager>.Instance.transform);
+                FS_BodiesSensor = GameObject.Instantiate(HudManager.Instance.FullScreen, HudManager.Instance.transform);
                 FS_BodiesSensor.color = Palette.ClearWhite;
                 FS_BodiesSensor.enabled = true;
                 FS_BodiesSensor.gameObject.SetActive(true);

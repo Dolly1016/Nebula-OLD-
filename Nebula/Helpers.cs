@@ -340,6 +340,7 @@ namespace Nebula
 
         public static DeadBody[] AllDeadBodies()
         {
+            //Componentで探すよりタグで探す方が相当はやい
             var bodies=GameObject.FindGameObjectsWithTag("DeadBody");
             DeadBody[] deadBodies = new DeadBody[bodies.Count];
             for (int i = 0; i < bodies.Count; i++) deadBodies[i] = bodies[i].GetComponent<DeadBody>();
@@ -541,7 +542,7 @@ namespace Nebula
         
         static public bool SabotageIsActive()
         {
-            foreach (PlayerTask task in PlayerControl.LocalPlayer.myTasks)
+            foreach (PlayerTask task in PlayerControl.LocalPlayer.myTasks.GetFastEnumerator())
                 if (task.TaskType == TaskTypes.FixLights || task.TaskType == TaskTypes.RestoreOxy || task.TaskType == TaskTypes.ResetReactor || task.TaskType == TaskTypes.ResetSeismic || task.TaskType == TaskTypes.FixComms || task.TaskType == TaskTypes.StopCharles)
                     return true;
             return false;

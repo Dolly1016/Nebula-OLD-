@@ -248,18 +248,19 @@ namespace Nebula.Patches
 
                     if (p == PlayerControl.LocalPlayer || p.GetModData().RoleInfo != "" || Game.GameData.data.myData.CanSeeEveryoneInfo)
                     {
-                        Transform playerInfoTransform = p.cosmetics.nameText.transform.parent.FindChild("Info");
+                        Transform playerInfoTransform = p.cosmetics.nameText.transform.FindChild("Info");
                         TMPro.TextMeshPro playerInfo = playerInfoTransform != null ? playerInfoTransform.GetComponent<TMPro.TextMeshPro>() : null;
                         if (playerInfo == null)
                         {
-                            playerInfo = UnityEngine.Object.Instantiate(p.cosmetics.nameText, p.cosmetics.nameText.transform.parent);
+                            playerInfo = UnityEngine.Object.Instantiate(p.cosmetics.nameText, p.cosmetics.nameText.transform);
                             playerInfo.fontSize *= 0.75f;
                             playerInfo.gameObject.name = "Info";
                             playerInfo.enabled = true;
                         }
 
                         // Set the position every time bc it sometimes ends up in the wrong place due to camoflauge
-                        playerInfo.transform.localPosition = p.cosmetics.nameText.transform.localPosition + Vector3.up * 0.5f;
+                        playerInfo.transform.localPosition = new Vector3(0f, 0.5f / 2.8f, 0f);
+                        playerInfo.transform.localScale = new Vector3(1, 1, 0f);
 
                         PlayerVoteArea playerVoteArea = MeetingHud.Instance?.playerStates?.FirstOrDefault(x => x.TargetPlayerId == p.PlayerId);
                         Transform meetingInfoTransform = playerVoteArea != null ? playerVoteArea.NameText.transform.parent.FindChild("Info") : null;
@@ -325,7 +326,7 @@ namespace Nebula.Patches
                         meetingInfoText = playerInfoText;
 
                         playerInfo.text = playerInfoText;
-                        playerInfo.gameObject.SetActive(p.Visible);
+
                         if (meetingInfo != null) meetingInfo.text = MeetingHud.Instance.state == MeetingHud.VoteStates.Results ? "" : meetingInfoText;
                     }
                 }catch(NullReferenceException exp)
@@ -386,9 +387,6 @@ namespace Nebula.Patches
         
         public static void Postfix(PlayerControl __instance)
         {
-            Utilities.TimeMeasure timeMeasure = new TimeMeasure();
-            
-
             if (AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Started) return;
             if (Game.GameData.data == null)
             {
@@ -397,51 +395,25 @@ namespace Nebula.Patches
             var pData = __instance.GetModData();
             if (pData == null)return;
 
-            timeMeasure.StartTimer();
-
             //全員に対して実行
             pData.role.GlobalUpdate(__instance.PlayerId);
 
-            timeMeasure.LapTime("GlobalUpdate");
-
             UpdatePlayerVisibility(__instance);
-
-            timeMeasure.LapTime("Visibility");
 
             if (__instance.PlayerId == PlayerControl.LocalPlayer.PlayerId)
             {
                 Objects.CustomObject.Update();
-
-                timeMeasure.LapTime("CustomObject");
-
                 UpdateAllPlayersInfo();
-
-                timeMeasure.LapTime("PlayerInfo");
-
                 ResetPlayerOutlines();
-
-                timeMeasure.LapTime("ResetPlayerOutlines");
-
                 ResetDeadBodyOutlines();
-
-                timeMeasure.LapTime("ResetDeadBodyOutlines");
-
                 Helpers.RoleAction(__instance, (role) =>
                  {
                      role.MyPlayerControlUpdate();
                  });
-
-                timeMeasure.LapTime("RoleAction");
             }
 
             pData.Speed.Update();
-
-            timeMeasure.LapTime("Speed");
-
             pData.Attribute.Update();
-
-            timeMeasure.LapTime("Attribute");
-            timeMeasure.Output("PlayerControl");
         }
         
     }

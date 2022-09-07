@@ -600,6 +600,7 @@ namespace Nebula.Patches
     {
         public static bool Prefix(ShipStatus __instance)
         {
+
             if (ExileController.Instance != null)
             {
                 if(SpawnInMinigame.Instance==null)
@@ -608,13 +609,12 @@ namespace Nebula.Patches
 
             if (!GameData.Instance) return false;
 
-
             var statistics = new PlayerStatistics(__instance);
 
             Patches.EndCondition endCondition = null, temp;
             byte priority=Byte.MaxValue;
 
-            foreach(Roles.Side side in Roles.Side.AllSides)
+            foreach (Roles.Side side in Roles.Side.AllSides)
             {   
 
                 temp= side.endCriteriaChecker(statistics, __instance);
@@ -626,6 +626,7 @@ namespace Nebula.Patches
                     priority = temp.Priority;
                 }
             }
+
 
             if (endCondition != null)
             {
@@ -677,6 +678,9 @@ namespace Nebula.Patches
 
         public PlayerStatistics(ShipStatus __instance)
         {
+
+            
+
             alivePlayers = new Dictionary<Roles.Side, int>();
             TotalAlive = 0;
 
@@ -692,6 +696,7 @@ namespace Nebula.Patches
 
             Roles.Side side;
 
+
             foreach (GameData.PlayerInfo playerInfo in GameData.Instance.AllPlayers.GetFastEnumerator())
             {
                 try
@@ -704,9 +709,12 @@ namespace Nebula.Patches
                     {
                         continue;
                     }
+             
                     TotalAlive++;
 
+
                     var data = Game.GameData.data.playersArray[playerInfo.PlayerId];
+
 
                     side = data.role.side;
 

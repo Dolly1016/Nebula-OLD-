@@ -23,7 +23,7 @@ namespace Nebula.Roles.MinigameRoles.Hunters
 
             if (FS_PlayersSensor==null)
             {
-                FS_PlayersSensor = GameObject.Instantiate(FastDestroyableSingleton<HudManager>.Instance.FullScreen, FastDestroyableSingleton<HudManager>.Instance.transform);
+                FS_PlayersSensor = GameObject.Instantiate(HudManager.Instance.FullScreen, HudManager.Instance.transform);
                 FS_PlayersSensor.color = Palette.ImpostorRed.AlphaMultiplied(0f);
                 FS_PlayersSensor.enabled = true;
                 FS_PlayersSensor.gameObject.SetActive(true);

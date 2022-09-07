@@ -101,4 +101,13 @@ namespace Nebula.Patches
             }
         }
     }
+
+    [HarmonyPatch(typeof(ImportantTextTask), nameof(ImportantTextTask.AppendTaskText))]
+    class ImportantTextTaskPatch
+    {
+        public static bool Prefix(ImportantTextTask __instance)
+        {
+            return false;
+        }
+    }
 }

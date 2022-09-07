@@ -118,6 +118,7 @@ namespace Nebula.Patches
         }
     }
 
+    
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixedUpdate))]
     class VentButtonVisibilityPatch
     {
@@ -197,6 +198,7 @@ namespace Nebula.Patches
             }
         }
     }
+    
 
     [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.CoEnterVent))]
     class CoEnterVentPatch

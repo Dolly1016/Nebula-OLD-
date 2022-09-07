@@ -143,6 +143,7 @@ namespace Nebula.Patches
                 bool showNameFlag = !CannotSeeNameTag(player);
 
                 
+                /*
                 //自分自身以外の名前は適宜隠す
                 if (!PlayerControl.LocalPlayer.Data.IsDead && player != PlayerControl.LocalPlayer && showNameFlag)
                 {
@@ -163,6 +164,7 @@ namespace Nebula.Patches
                     showNameFlag &= !result;
                     
                 }
+                */
                 
 
                 player.cosmetics.nameText.enabled = showNameFlag;
@@ -292,7 +294,7 @@ namespace Nebula.Patches
                 }
             }
         }
-        
+
         public static void Postfix(HudManager __instance)
         {
             //アニメーションを無効化
@@ -306,7 +308,6 @@ namespace Nebula.Patches
                 if (AmongUsClient.Instance == null) return;
                 if (AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Started) return;
                 if (!Helpers.HasModData(PlayerControl.LocalPlayer.PlayerId)) return;
-
 
                 // スクリーンの更新
                 UpdateFullScreen();
@@ -343,7 +344,6 @@ namespace Nebula.Patches
                 Vector3 mouseDirection = Input.mousePosition - new Vector3(Screen.width / 2, Screen.height / 2);
                 Game.GameData.data.myData.getGlobalData().MouseAngle = Mathf.Atan2(mouseDirection.y, mouseDirection.x);
 
-
                 //インポスターのキルボタンのパッチ
                 if (PlayerControl.LocalPlayer.Data.Role.IsImpostor)
                 {
@@ -374,15 +374,13 @@ namespace Nebula.Patches
 
                 Objects.Ghost.Update();
 
-                if(CustomOptionHolder.timeLimitOption.getBool())Game.GameData.data.TimerUpdate();
+                if (CustomOptionHolder.timeLimitOption.getBool())Game.GameData.data.TimerUpdate();
 
                 if (Game.GameData.data.Ghost != null) Game.GameData.data.Ghost.Update();
 
-                PlayerControl.LocalPlayer.myTasks.RemoveAll((Il2CppSystem.Predicate<PlayerTask>)((c) =>
-                {
-                    return c.GetComponent<ImportantTextTask>() != null;
-                }));
-            }catch(NullReferenceException excep) { UnityEngine.Debug.Log(excep.StackTrace); }
+            }
+            catch(NullReferenceException excep) { UnityEngine.Debug.Log(excep.StackTrace); }
+
         }
         
     }
