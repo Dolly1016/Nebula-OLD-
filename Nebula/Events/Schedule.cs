@@ -8,8 +8,8 @@ namespace Nebula.Events
 {
     class Schedule
     {
-        static List<System.Action> PreMeetingActions = new List<Action>();
-        static List<System.Action> PostMeetingActions = new List<Action>();
+        static List<Tuple<int,System.Action>> PreMeetingActions = new List<Tuple<int, System.Action>>();
+        static List<Tuple<int, System.Action>> PostMeetingActions = new List<Tuple<int, System.Action>>();
 
         public static void Initialize()
         {
@@ -17,30 +17,32 @@ namespace Nebula.Events
             PostMeetingActions.Clear();
         }
 
-        public static void RegisterPreMeetingAction(Action action)
+        public static void RegisterPreMeetingAction(Action action,int priority)
         {
-            PreMeetingActions.Add(action);
+            PreMeetingActions.Add(new Tuple<int, Action>(priority, action));
         }
 
-        public static void RegisterPostMeetingAction(Action action)
+        public static void RegisterPostMeetingAction(Action action,int priority)
         {
-            PostMeetingActions.Add(action);
+            PostMeetingActions.Add(new Tuple<int, Action>(priority, action));
         }
 
         public static void OnPreMeeting()
         {
-            foreach(Action action in PreMeetingActions)
+            PreMeetingActions.Sort((a, b) => (a.Item1 - b.Item1));
+            foreach(var tuple in PreMeetingActions)
             {
-                action.Invoke();
+                tuple.Item2.Invoke();
             }
             PreMeetingActions.Clear();
         }
 
         public static void OnPostMeeting()
         {
-            foreach (Action action in PostMeetingActions)
+            PostMeetingActions.Sort((a, b) => (a.Item1 - b.Item1));
+            foreach (var tuple in PostMeetingActions)
             {
-                action.Invoke();
+                tuple.Item2.Invoke();
             }
             PostMeetingActions.Clear();
         }

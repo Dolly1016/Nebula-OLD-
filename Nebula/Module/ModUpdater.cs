@@ -159,40 +159,76 @@ namespace Nebula.Module
     [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start))]
     public class ModUpdaterButton
     {
+        private static GameObject GenerateButton(GameObject template,Color color,string text,System.Action? action,ref int buttons)
+        {
+            buttons++;
+
+            var button = UnityEngine.Object.Instantiate(template, null);
+            button.transform.localPosition = new Vector3(button.transform.localPosition.x, button.transform.localPosition.y + ((float)buttons*0.6f), button.transform.localPosition.z);
+
+            var renderer = button.gameObject.GetComponent<SpriteRenderer>();
+            renderer.color = color;
+
+            var child = button.transform.GetChild(0);
+            child.GetComponent<TextTranslatorTMP>().enabled = false;
+            var tmpText = child.GetComponent<TMPro.TMP_Text>();
+            tmpText.SetText(Language.Language.GetString(text));
+            tmpText.color = color;
+
+            PassiveButton passiveButton = button.GetComponent<PassiveButton>();
+            passiveButton.OnClick = new Button.ButtonClickedEvent();
+            if (action != null) passiveButton.OnClick.AddListener(action);
+            passiveButton.OnMouseOut.AddListener((UnityEngine.Events.UnityAction)(() => renderer.color = tmpText.color));
+
+            return button;
+        }
+
         private static void Prefix(MainMenuManager __instance)
         {
             //More Cosmic 更新
             CosmicLoader.LaunchCosmicFetcher();
 
             ModUpdater.LaunchUpdater();
-            if (!ModUpdater.hasUpdate  && !ModUpdater.hasUnprocessableUpdate) return;
 
             var template = GameObject.Find("ExitGameButton");
             if (template == null) return;
 
-            var button = UnityEngine.Object.Instantiate(template, null);
-            button.transform.localPosition = new Vector3(button.transform.localPosition.x, button.transform.localPosition.y + 0.6f, button.transform.localPosition.z);
+            int buttons = 0;
 
-            PassiveButton passiveButton = button.GetComponent<PassiveButton>();
-            passiveButton.OnClick = new Button.ButtonClickedEvent();
-            if(ModUpdater.hasUpdate)
-                passiveButton.OnClick.AddListener((UnityEngine.Events.UnityAction)onClick);
+            List<GameObject> updateButtons = new List<GameObject>();
+            if (ModUpdater.hasUpdate || ModUpdater.hasUnprocessableUpdate || NebulaPlugin.IsSnapshot)
+            {
+                string message;
+                if (ModUpdater.hasUnprocessableUpdate) message = "title.button.existNewerNebula";
+                else if (ModUpdater.hasUpdate) message = "title.button.updateNebula";
+                else message = "title.button.getStableNebula";
+                updateButtons.Add(GenerateButton(template, Color.white, message, !ModUpdater.hasUnprocessableUpdate ? (System.Action)onClickUpdateButton : null, ref buttons));
+                
+                void onClickUpdateButton()
+                {
+                    ModUpdater.ExecuteUpdate(ModUpdater.updateURI);
+                    foreach(var b in updateButtons)b.SetActive(false);
+                }
+            }
 
-            var text = button.transform.GetChild(0).GetComponent<TMPro.TMP_Text>();
-            __instance.StartCoroutine(Effects.Lerp(0.1f, new System.Action<float>((p) => {
-                text.SetText(Language.Language.GetString(ModUpdater.hasUnprocessableUpdate ? "title.button.existNewerNebula":"title.button.updateNebula")); ;
-            })));
+            //最新版(あるいは後続のスナップショット)を所持している場合のみスナップショットを利用可能
+            if (NebulaPlugin.DebugMode.HasToken("Snapshot") && ModUpdater.hasNewestSnapshot)
+            {
+                updateButtons.Add(GenerateButton(template, new Color(0.3f,0.6f,0.75f),"title.button.updateNebulaSnapshot", onClickUpdateSnapshotButton, ref buttons));
+
+                void onClickUpdateSnapshotButton()
+                {
+                    ModUpdater.ExecuteUpdate("https://github.com/Dolly1016/Nebula/releases/download/snapshot/Nebula.dll");
+                    foreach (var b in updateButtons) b.SetActive(false);
+                }
+            }
+
 
             TwitchManager man = DestroyableSingleton<TwitchManager>.Instance;
             ModUpdater.InfoPopup = UnityEngine.Object.Instantiate<GenericPopup>(man.TwitchPopup);
             ModUpdater.InfoPopup.TextAreaTMP.fontSize *= 0.7f;
             ModUpdater.InfoPopup.TextAreaTMP.enableAutoSizing = false;
 
-            void onClick()
-            {
-                ModUpdater.ExecuteUpdate();
-                button.SetActive(false);
-            }
         }
     }
 
@@ -201,6 +237,7 @@ namespace Nebula.Module
         public static bool running = false;
         public static bool hasUpdate = false;
         public static bool hasUnprocessableUpdate = false;
+        public static bool hasNewestSnapshot = false;
         public static string updateURI = null;
         private static Task updateTask = null;
         public static GenericPopup InfoPopup;
@@ -213,7 +250,7 @@ namespace Nebula.Module
             clearOldVersions();
         }
 
-        public static void ExecuteUpdate()
+        public static void ExecuteUpdate(string updateURI)
         {
             string info = Language.Language.GetString("update.pleaseWait");
             ModUpdater.InfoPopup.Show(info); // Show originally
@@ -221,7 +258,7 @@ namespace Nebula.Module
             {
                 if (updateURI != null)
                 {
-                    updateTask = downloadUpdate();
+                    updateTask = downloadUpdate(updateURI);
                 }
                 else
                 {
@@ -254,6 +291,7 @@ namespace Nebula.Module
         {
             try
             {
+                //安定版の確認
 
                 HttpClient http = new HttpClient();
                 //http.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue { NoCache = true };
@@ -273,7 +311,7 @@ namespace Nebula.Module
 
                 if (tagname == null)
                 {
-                    return false; // Something went wrong
+                    return false;
                 }
 
                 if (tagname.Length != 2)
@@ -285,9 +323,9 @@ namespace Nebula.Module
 
                 int modDiff = NebulaPlugin.PluginVersionForFetch.CompareTo(tagname[0]);
                 int amoDiff = NebulaPlugin.AmongUsVersion.CompareTo(tagname[1]);
-                if ((modDiff != 0) && (amoDiff == 0))
+                if (amoDiff == 0)
                 { // Update required
-                    hasUpdate = true;
+                    hasUpdate = (modDiff != 0);
                     JToken assets = data["assets"];
                     if (!assets.HasValues)
                         return false;
@@ -301,7 +339,7 @@ namespace Nebula.Module
                                 browser_download_url.EndsWith(".dll"))
                             {
                                 updateURI = browser_download_url;
-                                return true;
+                                break;
                             }
                         }
                     }
@@ -310,17 +348,48 @@ namespace Nebula.Module
                 {
                     hasUnprocessableUpdate = true;
                 }
+
+                //スナップショットの確認
+                http = new HttpClient();
+                http.DefaultRequestHeaders.Add("User-Agent", "Nebula Updater");
+
+                response = await http.GetAsync(new System.Uri("https://api.github.com/repos/Dolly1016/Nebula/releases/tags/snapshot"), HttpCompletionOption.ResponseContentRead);
+
+                if (response.StatusCode != HttpStatusCode.OK || response.Content == null)
+                {
+                    System.Console.WriteLine("Server returned no data: " + response.StatusCode.ToString());
+                    return false;
+                }
+                json = await response.Content.ReadAsStringAsync();
+                data = JObject.Parse(json);
+
+                string[] body = data["body"]?.ToString().Split(",");
+
+                if (body == null || body.Length!=2)
+                {
+                    return false; // Something went wrong
+                }
+
+                // check version
+                modDiff = NebulaPlugin.PluginVersionForFetch.CompareTo(body[0]);
+                int snapDiff = NebulaPlugin.PluginVisualVersion.CompareTo(body[1]);
+
+                if ((modDiff == 0) && (snapDiff != 0))
+                { // Update required
+                    hasNewestSnapshot = true;
+                }
+
             }
             catch (System.Exception ex)
             {
                 System.Console.WriteLine(ex);
 
             }
-           
-            return false;
+
+            return true;
         }
 
-        public static async Task<bool> downloadUpdate()
+        public static async Task<bool> downloadUpdate(string updateURI)
         {
             try
             {

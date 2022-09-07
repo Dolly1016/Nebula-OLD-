@@ -21,9 +21,6 @@ namespace Nebula.Roles.NeutralRoles
         static public Module.CustomOption NumOfKillingToCreateSidekickOption;
         static public Module.CustomOption KillCoolDownOption;
 
-        //自身のjackalとしてのキル回数
-        private int numOfKilling=0;
-
         private Sprite sidekickButtonSprite = null;
         public Sprite getSidekickButtonSprite()
         {
@@ -34,6 +31,7 @@ namespace Nebula.Roles.NeutralRoles
 
         public int jackalDataId { get; private set; }
         public int leftSidekickDataId { get; private set; }
+        public int killingDataId { get; private set; }
 
         public override void LoadOptionData()
         {
@@ -76,12 +74,9 @@ namespace Nebula.Roles.NeutralRoles
         {
             __instance.GetModData().SetRoleData(jackalDataId,__instance.PlayerId);
             __instance.GetModData().SetRoleData(leftSidekickDataId, CanCreateSidekickOption.getBool() ? 1 : 0);
+            __instance.GetModData().SetRoleData(killingDataId, 0);
         }
 
-        public override void Initialize(PlayerControl __instance)
-        {
-            numOfKilling = 0;
-        }
 
         public override void ButtonInitialize(HudManager __instance)
         {
@@ -93,7 +88,7 @@ namespace Nebula.Roles.NeutralRoles
                 () =>
                 {
                     var r = Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, Game.GameData.data.myData.currentTarget, Game.PlayerData.PlayerStatus.Dead, true);
-                    if (r == Helpers.MurderAttemptResult.PerformKill) numOfKilling++;
+                    if (r == Helpers.MurderAttemptResult.PerformKill) RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, killingDataId, 1);
                     killButton.Timer = killButton.MaxTimer;
                     Game.GameData.data.myData.currentTarget = null;
                 },
@@ -123,7 +118,7 @@ namespace Nebula.Roles.NeutralRoles
                     Game.GameData.data.myData.currentTarget = null;
                 },
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead && Game.GameData.data.myData.getGlobalData().GetRoleData(leftSidekickDataId)>0; },
-                () => { return Game.GameData.data.myData.currentTarget && PlayerControl.LocalPlayer.CanMove && numOfKilling>=NumOfKillingToCreateSidekickOption.getFloat(); },
+                () => { return Game.GameData.data.myData.currentTarget && PlayerControl.LocalPlayer.CanMove && PlayerControl.LocalPlayer.GetModData().GetRoleData(killingDataId) >= NumOfKillingToCreateSidekickOption.getFloat(); },
                 () => { sidekickButton.Timer = sidekickButton.MaxTimer; },
                 getSidekickButtonSprite(),
                 new Vector3(0f, 0, 0),
@@ -177,7 +172,7 @@ namespace Nebula.Roles.NeutralRoles
                     if (!player.HasExtraRole(Roles.SecondarySidekick)) continue;
                     if (player.GetExtraRoleData(Roles.SecondarySidekick) != (ulong)jackalId) continue;
 
-                    RPCEvents.UnsetExtraRole(Roles.SecondarySidekick, player.id);
+                    RPCEvents.ImmediatelyUnsetExtraRole(Roles.SecondarySidekick, player.id);
                 }
 
                 RPCEvents.ImmediatelyChangeRole(player.id, id);
@@ -225,6 +220,7 @@ namespace Nebula.Roles.NeutralRoles
             killButton = null;
             jackalDataId = Game.GameData.RegisterRoleDataId("jackal.identifier");
             leftSidekickDataId = Game.GameData.RegisterRoleDataId("jackal.leftSidekick");
+            killingDataId = Game.GameData.RegisterRoleDataId("jackal.killing");
         }
     }
 }

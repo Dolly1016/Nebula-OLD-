@@ -37,7 +37,7 @@ namespace Nebula.Roles.NeutralRoles
 
         public override void LoadOptionData()
         {
-            TopOption.AddCustomPrerequisite(() => Roles.Lover.loversModeOption.getSelection() == 1);
+            TopOption.AddCustomPrerequisite(() => Roles.Lover.IsSpawnable() && Roles.Lover.loversModeOption.getSelection() == 1);
 
             avengerKillCoolDownOption = CreateOption(Color.white, "killCoolDown", 20f, 10f, 60f, 2.5f);
             avengerKillCoolDownOption.suffix = "second";

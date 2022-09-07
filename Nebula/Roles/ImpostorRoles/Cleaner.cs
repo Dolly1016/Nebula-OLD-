@@ -101,16 +101,6 @@ namespace Nebula.Roles.ImpostorRoles
             }
         }
 
-        public override void Initialize(PlayerControl __instance)
-        {
-
-        }
-
-        public override void GlobalInitialize(PlayerControl __instance)
-        {
-
-        }
-
         public override void CleanUp()
         {
             if (cleanButton != null)

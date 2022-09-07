@@ -19,12 +19,14 @@ namespace Nebula.Roles.NeutralRoles
 
         /* オプション */
         private Module.CustomOption isGuessableOption;
+        private Module.CustomOption secondaryGuesserShiftOption;
 
         private PlayerControl? shiftPlayer;
 
         public override void LoadOptionData()
         {
             isGuessableOption = CreateOption(Color.white, "isGuessable", false);
+            secondaryGuesserShiftOption= CreateOption(Color.white, "guesserMode", new string[] { "role.chainShifter.guesserMode.dontShift", "role.chainShifter.guesserMode.erase", "role.chainShifter.guesserMode.shift" });
         }
 
         public override bool IsGuessableRole { get => isGuessableOption.getBool(); protected set => base.IsGuessableRole = value; }
@@ -53,10 +55,11 @@ namespace Nebula.Roles.NeutralRoles
                     if (Game.GameData.data.myData.currentTarget != null)
                     {
                         shiftPlayer = Game.GameData.data.myData.currentTarget;
+                        shiftButton.UpperText.text = shiftPlayer.name;
                     }
                 },
-                () => { return shiftPlayer == null && !PlayerControl.LocalPlayer.Data.IsDead; },
-                () => { return Game.GameData.data.myData.currentTarget != null && PlayerControl.LocalPlayer.CanMove; },
+                () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
+                () => { return shiftPlayer == null && Game.GameData.data.myData.currentTarget != null && PlayerControl.LocalPlayer.CanMove; },
                 () => { shiftButton.Timer = shiftButton.MaxTimer; },
                 getButtonSprite(),
                 new Vector3(-1.8f, 0, 0),
@@ -72,7 +75,18 @@ namespace Nebula.Roles.NeutralRoles
         {
             if (shiftPlayer != null && !PlayerControl.LocalPlayer.Data.IsDead)
             {
+                switch (secondaryGuesserShiftOption.getSelection())
+                {
+                    case 1:
+                        RPCEventInvoker.UnsetExtraRole(PlayerControl.LocalPlayer, Roles.SecondaryGuesser, true);
+                        RPCEventInvoker.UnsetExtraRole(shiftPlayer, Roles.SecondaryGuesser, true);
+                        break;
+                    case 2:
+                        RPCEventInvoker.SwapExtraRole(PlayerControl.LocalPlayer, shiftPlayer, Roles.SecondaryGuesser, true);
+                        break;
+                }
                 RPCEventInvoker.SwapRole(PlayerControl.LocalPlayer, shiftPlayer);
+
                 shiftPlayer = null;
             }
         }
@@ -108,6 +122,10 @@ namespace Nebula.Roles.NeutralRoles
             shiftPlayer = null;
         }
 
+        public override void FinalizeInGame(PlayerControl __instance)
+        {
+            RPCEventInvoker.ExemptAllTask(__instance.PlayerId);
+        }
 
         public override void CleanUp()
         {

@@ -26,7 +26,7 @@ namespace Nebula.Objects.ObjectTypes
             {
                 //Trapperを考慮に入れる
                 Game.GameData.data.EstimationAI.DetermineMultiply(new Roles.Role[] { Roles.Roles.NiceTrapper, Roles.Roles.EvilTrapper });
-            });
+            },1);
         }
 
         public override void Update(CustomObject obj)

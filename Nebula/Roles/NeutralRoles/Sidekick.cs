@@ -117,7 +117,7 @@ namespace Nebula.Roles.NeutralRoles
 
         }
 
-        public override void GlobalInitialize(PlayerControl __instance)
+        public override void GlobalIntroInitialize(PlayerControl __instance)
         {
             canMoveInVents = SidekickCanUseVentsOption.getBool();
             VentPermission = SidekickCanUseVentsOption.getBool() ? VentPermission.CanUseUnlimittedVent : VentPermission.CanNotUse;

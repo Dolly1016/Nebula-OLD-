@@ -29,6 +29,7 @@ namespace Nebula
         SetRoles,
         SetExtraRole,
         UnsetExtraRole,
+        SwapExtraRole,
         ChangeExtraRole,
         PlayStaticSound,
         PlayDynamicSound,
@@ -52,6 +53,7 @@ namespace Nebula
         ExemptTasks,
         RefreshTasks,
         CompleteTask,
+        ExemptAllTask,
         ObjectInstantiate,
         ObjectUpdate,
         ObjectDestroy,
@@ -150,7 +152,10 @@ namespace Nebula
                     RPCEvents.SetExtraRole(reader.ReadByte(), Roles.ExtraRole.GetRoleById(reader.ReadByte()), reader.ReadUInt64());
                     break;
                 case (byte)CustomRPC.UnsetExtraRole:
-                    RPCEvents.UnsetExtraRole(Roles.ExtraRole.GetRoleById(reader.ReadByte()), reader.ReadByte());
+                    RPCEvents.UnsetExtraRole(Roles.ExtraRole.GetRoleById(reader.ReadByte()), reader.ReadByte(), reader.ReadBoolean());
+                    break;
+                case (byte)CustomRPC.SwapExtraRole:
+                    RPCEvents.SwapExtraRole(Helpers.playerById(reader.ReadByte()), Helpers.playerById(reader.ReadByte()), Roles.ExtraRole.GetRoleById(reader.ReadByte()), reader.ReadBoolean());
                     break;
                 case (byte)CustomRPC.ChangeExtraRole:
                     byte removeRole = reader.ReadByte();
@@ -218,6 +223,9 @@ namespace Nebula
                     break;
                 case (byte)CustomRPC.CompleteTask:
                     RPCEvents.CompleteTask(reader.ReadByte());
+                    break;
+                case (byte)CustomRPC.ExemptAllTask:
+                    RPCEvents.ExemptAllTask(reader.ReadByte());
                     break;
                 case (byte)CustomRPC.ObjectInstantiate:
                     RPCEvents.ObjectInstantiate(reader.ReadByte(), reader.ReadByte(), reader.ReadUInt64(), reader.ReadSingle(), reader.ReadSingle());
@@ -389,7 +397,22 @@ namespace Nebula
             role.Setup(Game.GameData.data.playersArray[playerId]);
         }
 
-        public static void UnsetExtraRole(Roles.ExtraRole role, byte playerId)
+        public static void UnsetExtraRole(Roles.ExtraRole role, byte playerId,bool onMeetingEnd)
+        {
+            if (onMeetingEnd)
+            {
+                Events.Schedule.RegisterPostMeetingAction(() =>
+                {
+                    ImmediatelyUnsetExtraRole(role, playerId);
+                },0);
+            }
+            else
+            {
+                ImmediatelyUnsetExtraRole(role, playerId);
+            }
+        }
+
+        public static void ImmediatelyUnsetExtraRole(Roles.ExtraRole role, byte playerId)
         {
             role.OnUnset(playerId);
 
@@ -405,7 +428,7 @@ namespace Nebula
         {
             if (removeRole!=null && Helpers.GetModData(playerId).extraRole.Contains(removeRole))
             {
-                UnsetExtraRole(removeRole, playerId);
+                ImmediatelyUnsetExtraRole(removeRole, playerId);
             }
             SetExtraRole(playerId,addRole, initializeValue);
 
@@ -418,6 +441,36 @@ namespace Nebula
                 addRole.ButtonInitialize(Patches.HudManagerStartPatch.Manager);
                 addRole.ButtonActivate();
             }
+        }
+
+        public static void SwapExtraRole(PlayerControl player1,PlayerControl player2,Roles.ExtraRole role,bool onMeetingEnd)
+        {
+            if (!onMeetingEnd)
+            {
+                ImmediatelySwapExtraRole(player1, player2, role);
+            }
+            else
+            {
+                Events.Schedule.RegisterPostMeetingAction(() =>
+                {
+                    ImmediatelySwapExtraRole(player1, player2, role);
+                }, 0);
+            }
+        }
+
+        public static void ImmediatelySwapExtraRole(PlayerControl player1, PlayerControl player2, Roles.ExtraRole role)
+        {
+            var modData1 = player1.GetModData();
+            var modData2 = player2.GetModData();
+            ulong extra1 = 0, extra2 = 0;
+            bool hasRole1 = modData1.HasExtraRole(role);
+            bool hasRole2 = modData2.HasExtraRole(role);
+            if (hasRole1) extra1 = modData1.GetExtraRoleData(role.id);
+            if (hasRole2) extra2 = modData2.GetExtraRoleData(role.id);
+
+            if (hasRole1) SetExtraRole(player2.PlayerId, role, extra1); else ImmediatelyUnsetExtraRole(role, player2.PlayerId);
+            if (hasRole2) SetExtraRole(player1.PlayerId, role, extra2); else ImmediatelyUnsetExtraRole(role, player1.PlayerId);
+
         }
 
         public static void PlayStaticSound(Module.AudioAsset id)
@@ -516,7 +569,7 @@ namespace Nebula
                     Events.Schedule.RegisterPreMeetingAction(() => {
                         if (!PlayerControl.LocalPlayer.GetModData().IsAlive)
                             Game.GameData.data.myData.CanSeeEveryoneInfo = true;
-                    });
+                    }, 0);
                 }
             }
         }
@@ -644,7 +697,6 @@ namespace Nebula
             {
                 data.role.CleanUp();
             }
-            data.CleanRoleDataInGame(roleData);
 
             data.role = role;
             if (data.role.category == Roles.RoleCategory.Impostor)
@@ -657,10 +709,8 @@ namespace Nebula
             }
             role.ReflectRoleEyesight(player.Data.Role);
 
-            if (roleData == null)
-            {
-                data.role.GlobalInitialize(player);
-            }
+            data.role.GlobalInitialize(player);
+            data.CleanRoleDataInGame(roleData);
 
             if (isMe)
             {
@@ -669,6 +719,9 @@ namespace Nebula
                 data.role.ButtonActivate();
                 Game.GameData.data.myData.VentCoolDownTimer = data.role.VentCoolDownMaxTimer;
             }
+
+            //役職遍歴を追加する
+            data.AddRoleHistory();
         }
 
         public static void ChangeRole(byte playerId, byte roleId)
@@ -676,7 +729,7 @@ namespace Nebula
             Events.Schedule.RegisterPostMeetingAction(() =>
             {
                 ImmediatelyChangeRole(playerId,roleId);
-            });
+            }, 16);
         }
 
         public static void ImmediatelyChangeRole(byte playerId, byte roleId)
@@ -719,7 +772,7 @@ namespace Nebula
                 //ロールを変更
                 SetUpRole(data1, Helpers.playerById(playerId_1), role2, roleData2);
                 SetUpRole(data2, Helpers.playerById(playerId_2), role1, roleData1);
-            });
+            }, 16);
         }
 
         public static void RevivePlayer(byte playerId,bool reviveOnCurrentPosition,bool changeStatus, bool gushOnRevive)
@@ -891,6 +944,11 @@ namespace Nebula
             Game.GameData.data.playersArray[playerId].Tasks.Completed++;
         }
 
+        public static void ExemptAllTask(byte playerId)
+        {
+            Game.GameData.data.playersArray[playerId].Tasks.Quota = 0;
+        }
+
         public static void FixLights()
         {
             SwitchSystem switchSystem = ShipStatus.Instance.Systems[SystemTypes.Electrical].Cast<SwitchSystem>();
@@ -946,7 +1004,7 @@ namespace Nebula
 
                 //Navvyを確定させる
                 Game.GameData.data.EstimationAI.Determine(Roles.Roles.Navvy);
-            });
+            }, 1);
 
             Game.GameData.data.playersArray[playerId]?.AddRoleData(Roles.Roles.Navvy.remainingScrewsDataId, -1);
         }
@@ -1478,15 +1536,21 @@ namespace Nebula
             RPCEvents.SetExtraRole(player.PlayerId, role, initializeValue);
         }
 
-        public static void UnsetExtraRole(PlayerControl player, Roles.ExtraRole role)
+        public static void ImmediatelyUnsetExtraRole(PlayerControl player, Roles.ExtraRole role)
+        {
+            UnsetExtraRole(player, role, false);
+        }
+
+        public static void UnsetExtraRole(PlayerControl player, Roles.ExtraRole role,bool onMeetingEnd)
         {
             if (!player.GetModData().extraRole.Contains(role)) return;
 
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UnsetExtraRole, Hazel.SendOption.Reliable, -1);
             writer.Write(role.id);
             writer.Write(player.PlayerId);
+            writer.Write(onMeetingEnd);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
-            RPCEvents.UnsetExtraRole(role, player.PlayerId);
+            RPCEvents.UnsetExtraRole(role, player.PlayerId,onMeetingEnd);
         }
 
         public static void ChangeExtraRole(PlayerControl player, Roles.ExtraRole removeRole, Roles.ExtraRole addRole, ulong initializeValue)
@@ -1499,6 +1563,18 @@ namespace Nebula
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.ChangeExtraRole(removeRole, addRole, initializeValue, player.PlayerId);
         }
+
+        public static void SwapExtraRole(PlayerControl player1,PlayerControl player2,Roles.ExtraRole role,bool onMeetingEnd)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SwapExtraRole, Hazel.SendOption.Reliable, -1);
+            writer.Write(player1.PlayerId);
+            writer.Write(player2.PlayerId);
+            writer.Write(role.id);
+            writer.Write(onMeetingEnd);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.SwapExtraRole(player1, player2, role, onMeetingEnd);
+        }
+
 
         public static void AddExtraRole(PlayerControl player, Roles.ExtraRole addRole, ulong initializeValue)
         {
@@ -1700,6 +1776,14 @@ namespace Nebula
             writer.Write(playerId);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.CompleteTask(playerId);
+        }
+
+        public static void ExemptAllTask(byte playerId)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ExemptAllTask, Hazel.SendOption.Reliable, -1);
+            writer.Write(playerId);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.ExemptAllTask(playerId);
         }
 
         public static Objects.CustomObject ObjectInstantiate(Objects.CustomObject.Type objectType,Vector3 position)

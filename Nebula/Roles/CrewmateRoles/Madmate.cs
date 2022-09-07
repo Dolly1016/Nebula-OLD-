@@ -19,7 +19,6 @@ namespace Nebula.Roles.CrewmateRoles
         public Module.CustomOption SecondoryRoleOption;
 
         //Local
-        private int completedTasks=0;
         private HashSet<byte> knownImpostors=new HashSet<byte>();
 
         public override List<ExtraRole> GetImplicateExtraRoles() { return new List<ExtraRole>(new ExtraRole[]{ Roles.SecondaryMadmate }); }
@@ -60,7 +59,12 @@ namespace Nebula.Roles.CrewmateRoles
         //適切なタイミングでインポスターを発見する
         public override void OnTaskComplete()
         {
-            completedTasks++;
+            UpdateKnownImpostors();
+        }
+
+        private void UpdateKnownImpostors()
+        {
+            int completedTasks = Game.GameData.data.myData.getGlobalData().Tasks.Completed;
 
             if (knownImpostors.Count >= NumOfMaxImpostorsCanKnowOption.getFloat()) return;
             while ((int)NumOfTasksRequiredToKnowImpostorsOption[knownImpostors.Count].getFloat() <= completedTasks)
@@ -87,12 +91,13 @@ namespace Nebula.Roles.CrewmateRoles
 
         public override void Initialize(PlayerControl __instance)
         {
-            completedTasks = 0;
             knownImpostors.Clear();
+
+            UpdateKnownImpostors();
         }
 
         //カットするタスクの数を計上したうえで初期化
-        public override void IntroInitialize(PlayerControl __instance)
+        public override void OnSetTasks(Il2CppSystem.Collections.Generic.List<GameData.TaskInfo> tasks)
         {
             int impostors = 0;
             foreach (var player in PlayerControl.AllPlayerControls.GetFastEnumerator())
@@ -103,15 +108,15 @@ namespace Nebula.Roles.CrewmateRoles
             for(int i = 0; i < impostors; i++)
                 if (requireTasks < NumOfTasksRequiredToKnowImpostorsOption[i].getFloat()) requireTasks = (int)NumOfTasksRequiredToKnowImpostorsOption[i].getFloat();
 
-            int tasks=PlayerControl.GameOptions.NumCommonTasks + PlayerControl.GameOptions.NumLongTasks + PlayerControl.GameOptions.NumShortTasks;
-            CustomExemptTasks = tasks - requireTasks;
+            int taskNum=PlayerControl.GameOptions.NumCommonTasks + PlayerControl.GameOptions.NumLongTasks + PlayerControl.GameOptions.NumShortTasks;
+            CustomExemptTasks = taskNum - requireTasks;
             if (CustomExemptTasks < 0) CustomExemptTasks = 0;
 
-            base.IntroInitialize(__instance);
+            base.OnSetTasks(tasks);
 
         }
 
-        public override void GlobalInitialize(PlayerControl __instance)
+        public override void GlobalIntroInitialize(PlayerControl __instance)
         {
             canMoveInVents = CanUseVentsOption.getBool();
             VentPermission = CanUseVentsOption.getBool() ? VentPermission.CanUseUnlimittedVent : VentPermission.CanNotUse;

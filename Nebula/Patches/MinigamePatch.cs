@@ -29,6 +29,7 @@ namespace Nebula.Patches
                 hasFakeTask |= !role.HasCrewmateTask(pc.PlayerId);
                 fakeTaskIsExecutable |= role.HasExecutableFakeTask(pc.PlayerId);
             });
+            if (pc.GetModData().Tasks.Quota == 0) hasFakeTask = true;
             if ((!hasFakeTask) || fakeTaskIsExecutable) return true;
             __result = float.MaxValue;
             
@@ -85,6 +86,19 @@ namespace Nebula.Patches
             if (Game.GameData.data.myData.getGlobalData().Property.UnderTheFloor) { __result = float.MaxValue; return false; }
 
             return true;
+        }
+    }
+
+    [HarmonyPatch(typeof(MedScanMinigame), nameof(MedScanMinigame.FixedUpdate))]
+    class MedScanMinigameFixedUpdatePatch
+    {
+        static void Prefix(MedScanMinigame __instance)
+        {
+            if (CustomOptionHolder.mapOptions.getBool() && CustomOptionHolder.allowParallelMedBayScans.getBool())
+            {
+                __instance.medscan.CurrentUser = PlayerControl.LocalPlayer.PlayerId;
+                __instance.medscan.UsersList.Clear();
+            }
         }
     }
 }

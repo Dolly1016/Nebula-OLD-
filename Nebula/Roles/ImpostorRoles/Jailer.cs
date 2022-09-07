@@ -60,16 +60,6 @@ namespace Nebula.Roles.ImpostorRoles
             adminButton.setActive(false);
         }
 
-        public override void Initialize(PlayerControl __instance)
-        {
-
-        }
-
-        public override void GlobalInitialize(PlayerControl __instance)
-        {
-
-        }
-
         public override void CleanUp()
         {
             if (adminButton != null)

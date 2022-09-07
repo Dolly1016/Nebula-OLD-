@@ -41,6 +41,10 @@ namespace Nebula.Roles.NeutralRoles
         public override void GlobalInitialize(PlayerControl __instance)
         {
             WinTrigger = false;
+        }
+
+        public override void GlobalIntroInitialize(PlayerControl __instance)
+        {
             canMoveInVents = canUseVentsOption.getBool();
             VentPermission = canUseVentsOption.getBool() ? VentPermission.CanUseLimittedVent : VentPermission.CanNotUse;
             canInvokeSabotage = canInvokeSabotageOption.getBool();

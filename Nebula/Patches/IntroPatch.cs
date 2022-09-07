@@ -73,6 +73,9 @@ namespace Nebula.Patches
                     role.GlobalInitialize(pc);
                     role.GlobalIntroInitialize(pc);
                 });
+
+                //遍歴に最初の役職を書き込む
+                player.AddRoleHistory();
             }
 
             Helpers.RoleAction(PlayerControl.LocalPlayer, (role) =>

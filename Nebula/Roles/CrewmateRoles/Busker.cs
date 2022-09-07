@@ -121,6 +121,7 @@ namespace Nebula.Roles.CrewmateRoles
             buskButton.SetSuspendAction(()=> {
                 if (!checkPseudocide()) return;
                 if (!checkCanReviveOrAlive()) return;
+                RPCEventInvoker.UpdatePlayerVisibility(PlayerControl.LocalPlayer.PlayerId, true);
                 RPCEventInvoker.RevivePlayer(PlayerControl.LocalPlayer, true, false, true);
                 RPCEventInvoker.SetPlayerStatus(PlayerControl.LocalPlayer.PlayerId, Game.PlayerData.PlayerStatus.Alive);
                 buskButton.Timer = buskButton.MaxTimer;

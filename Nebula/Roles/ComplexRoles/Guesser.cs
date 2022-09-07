@@ -90,7 +90,7 @@ namespace Nebula.Roles.ComplexRoles
     {
         public static void GlobalInitialize(PlayerControl __instance)
         {
-            Game.GameData.data.myData.getGlobalData().SetExtraRoleData(Roles.SecondaryGuesser.id, (ulong)Roles.F_Guesser.guesserShots.getFloat());
+            __instance.GetModData().SetExtraRoleData(Roles.SecondaryGuesser.id, (ulong)Roles.F_Guesser.guesserShots.getFloat());
         }
 
         private static GameObject guesserUI;

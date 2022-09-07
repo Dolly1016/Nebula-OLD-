@@ -1,20 +1,18 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using BepInEx.IL2CPP.Utils.Collections;
 using BepInEx;
 using HarmonyLib;
 using BepInEx.IL2CPP;
 using UnityEngine;
-using UnityEditor;
-using Hazel;
+using System.Text;
+using System.Collections;
 
 namespace Nebula
 {
+
     public class DebugMode
     {
         private HashSet<string> DebugToken;
@@ -43,6 +41,21 @@ namespace Nebula
         {
             return DebugToken.Contains(token);
         }
+
+        public void SetToken(string token,bool flag)
+        {
+            if (flag) DebugToken.Add(token);
+            else DebugToken.Remove(token);
+        }
+
+        public void OutputToken()
+        {
+            if (!Directory.Exists("patches")) Directory.CreateDirectory("patches");
+
+            StreamWriter writer = new StreamWriter("patches/DebugMode.patch", false, Encoding.Unicode);
+            foreach(var token in DebugToken)writer.WriteLine(token);
+            writer.Close();
+        }
     }
 
     [BepInPlugin(PluginGuid, PluginName, PluginVersion)]
@@ -54,17 +67,14 @@ namespace Nebula
         public const string AmongUsVersion = "2022.8.24";
         public const string PluginGuid = "jp.dreamingpig.amongus.nebula";
         public const string PluginName = "TheNebula";
-        public const string PluginVersion = "1.13.1.1";
-        /*
-        public const string PluginVisualVersion = "22.02.14a";
-        public const string PluginStage = "Snapshot";
-        */
-        // /*
-        public const string PluginVisualVersion = PluginVersion;
-        public const string PluginStage = "";
-        // */
-        public const string PluginVersionForFetch = "1.13.1.1";
-        public byte[] PluginVersionData = new byte[] { 1, 13, 1, 1 };
+        public const string PluginVersion = "1.13.2";
+        public const bool IsSnapshot = true;
+
+        public static string PluginVisualVersion = IsSnapshot ? "22.09.07d" : PluginVersion;
+        public static string PluginStage = IsSnapshot?"Snapshot":"";
+
+        public const string PluginVersionForFetch = "1.13.2";
+        public byte[] PluginVersionData = new byte[] { 1, 13, 2, 0 };
 
         public static NebulaPlugin Instance;
 
@@ -90,6 +100,9 @@ namespace Nebula
 
             //サーバー情報を読み込む
             Patches.RegionMenuOpenPatch.Initialize();
+
+            //クライアントオプションを読み込む
+            Patches.StartOptionMenuPatch.LoadOption();
 
             //言語データを読み込む
             Language.Language.LoadDefaultKey();
@@ -169,8 +182,25 @@ namespace Nebula
             File.WriteAllBytes(fileName + ".png", bytes);
         }
 
+        static public IEnumerator CaptureAndSave()
+        {
+            yield return new WaitForEndOfFrame();
+            Texture2D tex = ScreenCapture.CaptureScreenshotAsTexture();
+
+            File.WriteAllBytes(Patches.NebulaOption.CreateDirAndGetPictureFilePath(out string displayPath), tex.EncodeToPNG());
+        }
+
         public static void Postfix(KeyboardJoystick __instance)
         {
+            //スクリーンショット
+            if (Input.GetKeyDown(KeyCode.P))
+            {
+                if (AmongUsClient.Instance)
+                {
+                    AmongUsClient.Instance.StartCoroutine(CaptureAndSave().WrapToIl2Cpp());
+                }
+            }
+            
             /* ホスト専用コマンド */
             if (AmongUsClient.Instance.AmHost && AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started)
             {
@@ -224,12 +254,6 @@ namespace Nebula
                 GameData.Instance.RpcSetTasks(playerControl.PlayerId, new byte[0]);
 
                 playerControl.StartCoroutine(playerControl.CoPlayerAppear().WrapToIl2Cpp());
-            }
-
-            if (Input.GetKeyDown(KeyCode.F8))
-            {
-                SpriteRenderer r = MapBehaviour.Instance.transform.FindChild("Background").GetComponent<SpriteRenderer>();
-                SaveTexture(r.sprite.texture,"debug");
             }
 
             // Suiside

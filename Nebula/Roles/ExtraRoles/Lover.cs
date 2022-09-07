@@ -344,7 +344,7 @@ namespace Nebula.Roles.ExtraRoles
                             if (data.id == target.PlayerId) continue;
 
                             //ロール消去
-                            RPCEventInvoker.UnsetExtraRole(Helpers.playerById(data.id),this);
+                            RPCEventInvoker.ImmediatelyUnsetExtraRole(Helpers.playerById(data.id),this);
 
                             break;
                         }
@@ -363,7 +363,7 @@ namespace Nebula.Roles.ExtraRoles
                             if (data.id == target.PlayerId) continue;
 
                             //ロール消去
-                            RPCEventInvoker.UnsetExtraRole(Helpers.playerById(data.id), Roles.Trilemma);
+                            RPCEventInvoker.ImmediatelyUnsetExtraRole(Helpers.playerById(data.id), Roles.Trilemma);
                         }
                     }
 

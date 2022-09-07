@@ -782,7 +782,7 @@ namespace Nebula.Module
                 {
                     TMPro.TMP_Text title = UnityEngine.Object.Instantiate<TMPro.TMP_Text>(textTemplate, __instance.scroller.Inner);
                     title.GetComponent<TextTranslatorTMP>().enabled = false;
-                    var mat=title.GetComponent<MeshRenderer>().material;//.shader=PlayerCustomizationMenu.Instance.cubesTab.ColorTabPrefab.
+                    var mat=title.GetComponent<MeshRenderer>().material;
                     mat.SetFloat("_StencilComp", 4f);
                     mat.SetFloat("_Stencil", 1f);
 
@@ -846,7 +846,6 @@ namespace Nebula.Module
                 Helpers.destroyList(hatsTabCustomTexts);
                 Helpers.destroyList(__instance.ColorChips);
 
-                hatsTabCustomTexts.Clear();
                 __instance.ColorChips.Clear();
 
                 textTemplate = __instance.transform.FindChild("Text").gameObject.GetComponent<TMPro.TMP_Text>();
@@ -910,6 +909,9 @@ namespace Nebula.Module
                 {
                     TMPro.TMP_Text title = UnityEngine.Object.Instantiate<TMPro.TMP_Text>(textTemplate, __instance.scroller.Inner);
                     title.GetComponent<TextTranslatorTMP>().enabled = false;
+                    var mat = title.GetComponent<MeshRenderer>().material;
+                    mat.SetFloat("_StencilComp", 4f);
+                    mat.SetFloat("_Stencil", 1f);
 
                     title.transform.parent = __instance.scroller.Inner;
                     title.transform.localPosition = new Vector3(headerX, YStart, inventoryZ);
@@ -1026,6 +1028,9 @@ namespace Nebula.Module
                 {
                     TMPro.TMP_Text title = UnityEngine.Object.Instantiate<TMPro.TMP_Text>(textTemplate, __instance.scroller.Inner);
                     title.GetComponent<TextTranslatorTMP>().enabled = false;
+                    var mat = title.GetComponent<MeshRenderer>().material;
+                    mat.SetFloat("_StencilComp", 4f);
+                    mat.SetFloat("_Stencil", 1f);
 
                     title.transform.parent = __instance.scroller.Inner;
                     title.transform.localPosition = new Vector3(headerX, YStart, inventoryZ);

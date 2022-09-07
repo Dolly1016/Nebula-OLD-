@@ -9,9 +9,11 @@ using Hazel;
 using System.Linq;
 using System.Text;
 using Nebula.Utilities;
+using HarmonyLib;
 
 namespace Nebula
 {
+    [HarmonyPatch]
     public static class Helpers
     {
         public static bool ShowButtons
@@ -338,7 +340,10 @@ namespace Nebula
 
         public static DeadBody[] AllDeadBodies()
         {
-            return UnityEngine.Object.FindObjectsOfType<DeadBody>();
+            var bodies=GameObject.FindGameObjectsWithTag("DeadBody");
+            DeadBody[] deadBodies = new DeadBody[bodies.Count];
+            for (int i = 0; i < bodies.Count; i++) deadBodies[i] = bodies[i].GetComponent<DeadBody>();
+            return deadBodies;
         }
 
         public static float Distance(this Vector3 vector,Vector3 opponent)
@@ -604,7 +609,7 @@ namespace Nebula
             if (items == null) return;
             foreach (T item in items)
             {
-                UnityEngine.Object.Destroy(item);
+                if (item) UnityEngine.Object.Destroy(item);
             }
         }
 
@@ -613,7 +618,7 @@ namespace Nebula
             if (items == null) return;
             foreach (T item in items)
             {
-                UnityEngine.Object.Destroy(item.gameObject);
+                if(item)UnityEngine.Object.Destroy(item.gameObject);
             }
         }
 

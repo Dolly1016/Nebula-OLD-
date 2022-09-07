@@ -57,6 +57,8 @@ namespace Nebula
 
                     if (!Helpers.HasModData(playerInfo.PlayerId)) continue;
 
+                    if (playerInfo.GetModData().Tasks.Quota == 0) continue;
+
                     bool hasFakeTask = false;
                     Helpers.RoleAction(playerInfo.PlayerId, (role) => { hasFakeTask |= !role.HasCrewmateTask(playerInfo.PlayerId); });
                     if (hasFakeTask) continue;

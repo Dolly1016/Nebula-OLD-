@@ -98,6 +98,7 @@ namespace Nebula
         public static CustomOption synchronizedSpawning;
         public static CustomOption optimizedMaps;
         public static CustomOption invalidateSecondaryAdmin;
+        public static CustomOption allowParallelMedBayScans;
 
 
         public static CustomOption RitualOption;
@@ -224,6 +225,7 @@ namespace Nebula
             synchronizedSpawning = CustomOption.Create(10133, Color.white, "option.synchronizedSpawning", false, mapOptions).SetGameMode(~(CustomGameMode.Minigame | CustomGameMode.Ritual));
             optimizedMaps = CustomOption.Create(10134, Color.white, "option.optimizedMaps", true, mapOptions).SetGameMode(CustomGameMode.All);
             invalidateSecondaryAdmin = CustomOption.Create(10135, Color.white, "option.invalidateSecondaryAdmin", true, mapOptions).SetGameMode(CustomGameMode.All);
+            allowParallelMedBayScans = CustomOption.Create(10136, Color.white, "option.allowParallelMedBayScans", false, mapOptions).SetGameMode(CustomGameMode.All);
 
             limiterOptions = CustomOption.Create(10140, Color.white, "option.limitOptions", false, null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.All);
             timeLimitOption = CustomOption.Create(10141, Color.white, "option.timeLimitOption", 20f, 1f, 80f, 1f, limiterOptions).SetGameMode(CustomGameMode.All);

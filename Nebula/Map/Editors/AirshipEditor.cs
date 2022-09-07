@@ -95,7 +95,7 @@ namespace Nebula.Map.Editors
 
         public override void MapCustomize()
         {
-            if (CustomOptionHolder.invalidateSecondaryAdmin.getBool())
+            if (CustomOptionHolder.mapOptions.getBool() && CustomOptionHolder.invalidateSecondaryAdmin.getBool())
             {
                 var obj = ShipStatus.Instance.FastRooms[SystemTypes.Records].gameObject;
                 //第二のアドミンを無効化

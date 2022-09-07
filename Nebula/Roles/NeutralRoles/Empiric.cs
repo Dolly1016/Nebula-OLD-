@@ -65,12 +65,10 @@ namespace Nebula.Roles.NeutralRoles
             return infectSprite;
         }
 
-        public override void GlobalInitialize(PlayerControl __instance)
+        public override void GlobalIntroInitialize(PlayerControl __instance)
         {
-            base.GlobalInitialize(__instance);
-
             canMoveInVents = canUseVentsOption.getBool();
-            VentPermission = canUseVentsOption.getBool() ? VentPermission.CanUseLimittedVent : VentPermission.CanNotUse;
+            VentPermission = canUseVentsOption.getBool() ? VentPermission.CanUseUnlimittedVent : VentPermission.CanNotUse;
         }
 
         public override void Initialize(PlayerControl __instance)

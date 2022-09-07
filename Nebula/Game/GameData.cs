@@ -233,6 +233,8 @@ namespace Nebula.Game
         public void Update()
         {
             int num = Factors.Count;
+            if (num == 0) return;
+
             Factors.RemoveWhere((speed) =>
             {
                 speed.Duration -= Time.deltaTime;
@@ -626,6 +628,9 @@ namespace Nebula.Game
         //状態として、何らかの理由で見えないプレイヤーであるかどうか
         public bool isInvisiblePlayer { get; set; }
 
+        //役職遍歴
+        public List<Tuple<string,string>> roleHistory { get; private set; }
+
         public Patches.FinalPlayerData.FinalPlayer? FinalData { get {
                 return Patches.OnGameEndPatch.FinalData.players.FirstOrDefault((p) => p.id == id);
         }}
@@ -654,6 +659,24 @@ namespace Nebula.Game
             this.Property = new PlayerProperty(player);
             this.DeathGuage = 0f;
             this.isInvisiblePlayer = false;
+            this.roleHistory=new List<Tuple<string, string>>();
+        }
+
+        public void AddRoleHistory()
+        {
+            string shortRole = Helpers.cs(this.role.Color, Language.Language.GetString("role." + this.role.LocalizeName + ".short"));
+            string role = Helpers.cs(this.role.Color, Language.Language.GetString("role." + this.role.LocalizeName + ".name"));
+            Helpers.RoleAction(this, (r) =>
+             {
+                 r.EditDisplayNameForcely(this.id, ref shortRole);
+                 r.EditDisplayRoleName(ref shortRole);
+
+                 r.EditDisplayNameForcely(this.id, ref role);
+                 r.EditDisplayRoleName(ref role);
+             });
+            //同じものは重ねて登録しない
+            if (roleHistory.Count > 0 && roleHistory[roleHistory.Count - 1].Item1 == role) return;
+            roleHistory.Add(new Tuple<string,string>(role,shortRole));
         }
 
         public int GetRoleData(int id)

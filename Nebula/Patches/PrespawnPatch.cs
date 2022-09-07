@@ -21,7 +21,7 @@ namespace Nebula.Patches
 		{
 			public static bool SpawnAt(SpawnInMinigame __instance, Vector2 spawnAt)
 			{
-				if (!CustomOptionHolder.synchronizedSpawning.getBool())
+				if (!CustomOptionHolder.mapOptions.getBool()|| !CustomOptionHolder.synchronizedSpawning.getBool())
 				{
 					if (__instance.amClosing != Minigame.CloseState.None)
 					{
@@ -103,7 +103,7 @@ namespace Nebula.Patches
 		{
 			public static void Postfix(SpawnInMinigame._RunTimer_d__10 __instance)
 			{
-				if (!CustomOptionHolder.synchronizedSpawning.getBool()) return;
+				if (!CustomOptionHolder.mapOptions.getBool() || !CustomOptionHolder.synchronizedSpawning.getBool()) return;
 				
 				if (selected!=null)
 					__instance.__4__this.Text.text = Language.Language.GetString("game.minigame.waitSpawning");
@@ -151,7 +151,7 @@ namespace Nebula.Patches
             {
 				selected = null;				
 
-				if (!CustomOptionHolder.synchronizedSpawning.getBool()) return;
+				if (!CustomOptionHolder.mapOptions.getBool() || !CustomOptionHolder.synchronizedSpawning.getBool()) return;
 
 				foreach(var button in __instance.LocationButtons)
                 {

@@ -1,11 +1,14 @@
 ﻿using HarmonyLib;
 using Hazel;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
 using Nebula.Utilities;
+using System.IO;
+using BepInEx.IL2CPP.Utils.Collections;
 
 namespace Nebula.Patches
 {
@@ -121,6 +124,7 @@ namespace Nebula.Patches
         {
             public string name { get; private set; }
             public string roleName { get; private set; }
+            public string roleDetail { get; private set; }
             public bool hasFakeTask { get; private set; }
             public bool hasExecutableFakeTask { get; private set; }
             public string killer { get; private set; }
@@ -129,11 +133,12 @@ namespace Nebula.Patches
             public int completedTasks { get; private set; }
             public Game.PlayerData.PlayerStatus status { get; set; }
 
-            public FinalPlayer(byte id,string name, string roleName,bool hasFakeTask,bool hasExecutableFakeTask, Game.PlayerData.PlayerStatus status,int totalTasks, int completedTasks,string killer="")
+            public FinalPlayer(byte id,string name, string roleName,string roleDetail,bool hasFakeTask,bool hasExecutableFakeTask, Game.PlayerData.PlayerStatus status,int totalTasks, int completedTasks,string killer="")
             {
                 this.id = id;
                 this.name = name;
                 this.roleName = roleName;
+                this.roleDetail = roleDetail;
                 this.hasFakeTask = hasFakeTask;
                 this.hasExecutableFakeTask = hasExecutableFakeTask;
                 this.totalTasks = totalTasks;
@@ -163,7 +168,7 @@ namespace Nebula.Patches
         {
             players = new List<FinalPlayer>();
 
-            string name,roleName;
+            string name,roleName, roleDetail;
             bool hasFakeTask, hasExecutableFakeTask;
 
             foreach (Game.PlayerData player in Game.GameData.data.AllPlayers.Values)
@@ -174,19 +179,35 @@ namespace Nebula.Patches
                 hasFakeTask = false;
                 hasExecutableFakeTask = false;
 
-                Helpers.RoleAction(player.id, (role) => { 
-                    role.EditDisplayNameForcely(player.id, ref name);
+                Helpers.RoleAction(player.id, (role) =>
+                {
+                    role.EditDisplayNameForcely(player.id, ref roleName);
                     role.EditDisplayRoleName(ref roleName);
                     hasFakeTask |= !role.HasCrewmateTask(player.id);
                     hasExecutableFakeTask |= role.HasExecutableFakeTask(player.id);
                 });
+                roleDetail = roleName;
+
                 if (name.Equals(""))
                     name = player.name;
                 else
                     name = player.name + " " + name;
 
+
+                string shortHistory = "";
+                string history = "";
+                for (int i = 0; i < player.roleHistory.Count - 1; i++)
+                {
+                    history += player.roleHistory[i].Item2 + " → ";
+                    if (i == 0) shortHistory += player.roleHistory[i].Item2 + " → ";
+                    if (i == 1) shortHistory += " ... → ";
+                }
+                roleName = shortHistory + roleName;
+                roleDetail = history + roleDetail;
+            
+
                 var finalPlayer= new FinalPlayer(player.id,name,
-                    roleName,hasFakeTask,hasExecutableFakeTask, player.Status, player.Tasks.Quota, player.Tasks.Completed);
+                    roleName, roleDetail, hasFakeTask,hasExecutableFakeTask, player.Status, player.Tasks.Quota, player.Tasks.Completed);
                 if (Game.GameData.data.deadPlayers.ContainsKey(player.id))
                 {
                     byte murder=Game.GameData.data.deadPlayers[player.id].MurderId;
@@ -252,12 +273,174 @@ namespace Nebula.Patches
         }
     }
 
+    public static class DetailDialog
+    {
+        static EndGameManager endGameManager;
+        static GameObject dialog;
+        static TMPro.TMP_Text saveText;
+        static TMPro.TMP_Text[] text;
+        static PassiveButton button;
+        static PassiveButton saveButton;
+        static SpriteRenderer renderer;
+
+        static Sprite saveButtonSprite;
+        static Sprite getSaveButtonSprite()
+        {
+            if (!saveButtonSprite) saveButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.SavePicButton.png", 100f);
+            return saveButtonSprite;
+        }
+
+        static public void Initialize(EndGameManager endGameManager,ControllerDisconnectHandler handler,TMPro.TMP_Text textTemplate,string[] detail)
+        {
+            DetailDialog.endGameManager = endGameManager;
+
+            handler.enabled = false;
+            handler.name = "DetailDialog";
+            handler.gameObject.SetActive(false);
+            handler.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+
+            dialog = handler.gameObject;
+            renderer = dialog.transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>();
+            button = dialog.transform.GetChild(2).gameObject.GetComponent<PassiveButton>();
+            saveText = dialog.transform.GetChild(1).gameObject.GetComponent<TMPro.TMP_Text>();
+
+            renderer.transform.localScale = new Vector3(1.6f,0.85f,1.0f);
+
+            button.transform.localPosition = new Vector3(0f,-1.95f,0f);
+            button.transform.GetChild(1).GetComponent<TMPro.TextMeshPro>().text = Language.Language.GetString("game.endScreen.close");
+            button.OnClick=new UnityEngine.UI.Button.ButtonClickedEvent();
+            button.OnClick.AddListener((System.Action)Close);
+
+            saveText.transform.localPosition = new Vector3(3.45f, -2.3f, 5f);
+            saveText.alignment = TMPro.TextAlignmentOptions.TopLeft;
+            saveText.color = Color.white;
+            saveText.fontSizeMin = 1.25f;
+            saveText.fontSizeMax = 1.25f;
+            saveText.fontSize = 1.25f;
+            saveText.text = "";
+            
+            saveButton = GameObject.Instantiate(button);
+            saveButton.transform.SetParent(dialog.transform);
+            saveButton.transform.localScale = new Vector3(1f, 1f, 1f);
+            saveButton.transform.localPosition = new Vector3(1.4f, -1.95f, 0f);
+            saveButton.GetComponent<BoxCollider2D>().size = new Vector2(0.39f, 0.39f);
+            SpriteRenderer saveRenderer = saveButton.transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>();
+            saveRenderer.sprite = getSaveButtonSprite();
+            saveRenderer.size = new Vector2(0.45f,0.45f);
+            saveButton.transform.GetChild(1).gameObject.SetActive(false);
+            saveButton.OnClick = new UnityEngine.UI.Button.ButtonClickedEvent();
+            saveButton.OnClick.AddListener((System.Action)(() =>
+            {
+                //四隅の座標を算出
+                float xl = text[0].transform.position.x;
+                float xu = text[text.Length - 1].transform.position.x + text[text.Length - 1].preferredWidth;
+                float yl = text[0].transform.position.y - text[0].preferredHeight;
+                float yu = text[0].transform.position.y;
+
+                endGameManager.StartCoroutine(CaptureAndSave(xl,xu,yl,yu).WrapToIl2Cpp());
+            }));
+
+            text = new TMPro.TMP_Text[detail.Length];
+            float width = 0.0f;
+            for(int i = 0; i < detail.Length; i++)
+            {
+                text[i] = UnityEngine.Object.Instantiate(textTemplate);
+                text[i].transform.SetParent(dialog.transform);
+                text[i].transform.localScale = new Vector3(1f, 1f, 1f);
+                text[i].transform.localPosition = new Vector3(width, 2.1f, 0f);
+                text[i].alignment = TMPro.TextAlignmentOptions.TopLeft;
+                text[i].color = Color.white;
+                text[i].fontSizeMin = 1.5f;
+                text[i].fontSizeMax = 1.5f;
+                text[i].fontSize = 1.5f;
+                text[i].text = detail[i];
+
+                text[i].gameObject.SetActive(true);
+
+                RectTransform rectTransform = text[i].gameObject.GetComponent<RectTransform>();
+                rectTransform.sizeDelta = new Vector2(0f, 0f);
+
+                width += text[i].preferredWidth - 0.05f;
+            }
+
+            //中央に移動させる
+            for (int i = 0; i < detail.Length; i++)
+            {
+                text[i].transform.localPosition -= new Vector3(width / 2.0f, 0f, 0f);
+            }
+
+            renderer.gameObject.SetActive(true);
+            button.gameObject.SetActive(true);
+            saveButton.gameObject.SetActive(true);
+            saveText.gameObject.SetActive(true);
+        }
+
+        static public void Open()
+        {
+            dialog.SetActive(true);
+            dialog.transform.localScale = new Vector3(0.0f, 0.0f, 1.0f);
+            endGameManager.StartCoroutine(Effects.Lerp(0.12f,(Il2CppSystem.Action<float>)(
+                (p) =>
+                {
+                    dialog.transform.localScale = new Vector3(p, p, 1.0f);
+                }
+                )));    
+        }
+
+        static public void Close()
+        {
+            endGameManager.StartCoroutine(Effects.Lerp(0.12f, (Il2CppSystem.Action<float>)(
+                (p) =>
+                {
+                    dialog.transform.localScale = new Vector3(1.0f-p, 1.0f-p, 1.0f);
+                    if (p == 1f) dialog.SetActive(false);
+                }
+                )));
+        }
+
+        static public IEnumerator CaptureAndSave(float xl,float xu,float yl,float yu)
+        {
+            Vector2Int convertVector(Vector3 vec)
+            {
+                return new Vector2Int((int)vec.x, (int)vec.y);
+            }
+            Vector2Int lower = convertVector(Camera.main.WorldToScreenPoint(new Vector2(xl, yl)));
+            Vector2Int upper = convertVector(Camera.main.WorldToScreenPoint(new Vector2(xu, yu)));
+
+            yield return new WaitForEndOfFrame();
+            Texture2D tex = ScreenCapture.CaptureScreenshotAsTexture();
+
+            lower -= new Vector2Int(20, 10);
+            upper += new Vector2Int(40, 20);
+            Color[] colors = tex.GetPixels(lower.x, lower.y, upper.x - lower.x, upper.y - lower.y);
+            Texture2D saveTex = new Texture2D(upper.x - lower.x, upper.y - lower.y, TextureFormat.ARGB32, false);
+            saveTex.SetPixels(colors);
+            File.WriteAllBytes(NebulaOption.CreateDirAndGetPictureFilePath(out string displayPath), saveTex.EncodeToPNG());
+            saveText.text = Language.Language.GetString("game.endScreen.savedResult").Replace("%PATH%", displayPath);
+            saveText.gameObject.SetActive(true);
+            saveButton.gameObject.SetActive(false);
+        }
+    }
+
+    [HarmonyPatch(typeof(EndGameNavigation), nameof(EndGameNavigation.ShowProgression))]
+    public class EndGameNavigationShowProgressionPatch
+    {
+        public static void Postfix(EndGameNavigation __instance) {
+            if (EndGameManagerSetUpPatch.ModDisplay)
+            {
+                EndGameManagerSetUpPatch.ModDisplay.SetActive(false);
+            }
+        }
+    }
+
     [HarmonyPatch(typeof(EndGameManager), nameof(EndGameManager.SetEverythingUp))]
     public class EndGameManagerSetUpPatch
     {
         static HashSet<string> AdditionalTextSet = new HashSet<string>();
 
         public static void AddEndText(string text) { AdditionalTextSet.Add(text); }
+
+        public static GameObject ModDisplay;
 
         public static void Postfix(EndGameManager __instance)
         {
@@ -309,13 +492,16 @@ namespace Nebula.Patches
                 poolablePlayer.SetNamePosition(new Vector3(0f, -1.31f, -0.5f));
             }
 
+            ModDisplay = new GameObject("ModDisplay");
+
             // テキストを追加する
             GameObject bonusText = UnityEngine.Object.Instantiate(__instance.WinText.gameObject);
+            bonusText.transform.SetParent(ModDisplay.transform);
             bonusText.transform.position = new Vector3(__instance.WinText.transform.position.x, __instance.WinText.transform.position.y - 0.5f, __instance.WinText.transform.position.z);
             bonusText.transform.localScale = new Vector3(0.7f, 0.7f, 1f);
             TMPro.TMP_Text textRenderer = bonusText.GetComponent<TMPro.TMP_Text>();
-            textRenderer.text = Language.Language.GetString("game.endText."+OnGameEndPatch.EndCondition.Identifier);
-            foreach(string text in AdditionalTextSet)
+            textRenderer.text = Language.Language.GetString("game.endText." + OnGameEndPatch.EndCondition.Identifier);
+            foreach (string text in AdditionalTextSet)
             {
                 textRenderer.text += text;
             }
@@ -324,42 +510,87 @@ namespace Nebula.Patches
 
             __instance.BackgroundBar.material.SetColor("_Color", OnGameEndPatch.EndCondition.Color);
 
-            var position = Camera.main.ViewportToWorldPoint(new Vector3(0f, 1f, Camera.main.nearClipPlane));
-            GameObject roleSummary = UnityEngine.Object.Instantiate(__instance.WinText.gameObject);
-            roleSummary.transform.position = new Vector3(__instance.Navigation.ExitButton.transform.position.x + 0.1f, position.y - 0.1f, -14f);
-            roleSummary.transform.localScale = new Vector3(1f, 1f, 1f);
+            var position = Camera.main.ScreenToWorldPoint(new Vector2(0, Screen.height));
 
-            //結果表示
-            var roleSummaryText = new StringBuilder();
-            roleSummaryText.AppendLine("Roles breakdown:");
-            
-            foreach (FinalPlayerData.FinalPlayer player in OnGameEndPatch.FinalData.players)
+            TMPro.TMP_Text[] roleSummaryText = new TMPro.TMP_Text[5];
+            for (int i = 0; i < roleSummaryText.Length; i++)
             {
-                var roles = " " + player.roleName;
+                GameObject obj = UnityEngine.Object.Instantiate(__instance.WinText.gameObject);
+                obj.transform.SetParent(ModDisplay.transform);
 
-                var status = string.Join(" ", Language.Language.GetString("status." + player.status.Status));
+                RectTransform roleSummaryTextMeshRectTransform = obj.GetComponent<RectTransform>();
+                roleSummaryTextMeshRectTransform.pivot = new Vector2(0f, 1f);
+                roleSummaryTextMeshRectTransform.anchoredPosition = new Vector3(position.x, position.y - 0.1f, -14f);
+                obj.transform.localScale = new Vector3(1f, 1f, 1f);
 
-                string tasks;
-                if (player.hasFakeTask)
-                    tasks = player.totalTasks > 0 ? $"<color=#868686FF>({player.completedTasks}/{player.totalTasks})</color>" : "";
-                else
-                    tasks = player.totalTasks > 0 ? $"<color=#FAD934FF>({player.completedTasks}/{player.totalTasks})</color>" : "";
-
-                string murder = "";
-                if (player.killer != "") murder = $"<color=#FF5555FF>by " + player.killer+ "</color>";
-                roleSummaryText.AppendLine($"{player.name}{tasks} - {roles} {status} {murder}");
+                roleSummaryText[i] = obj.GetComponent<TMPro.TMP_Text>();
+                roleSummaryText[i].alignment = TMPro.TextAlignmentOptions.TopLeft;
+                roleSummaryText[i].color = Color.white;
+                roleSummaryText[i].fontSizeMin = 1.25f;
+                roleSummaryText[i].fontSizeMax = 1.25f;
+                roleSummaryText[i].fontSize = 1.25f;
             }
 
-            TMPro.TMP_Text roleSummaryTextMesh = roleSummary.GetComponent<TMPro.TMP_Text>();
-            roleSummaryTextMesh.alignment = TMPro.TextAlignmentOptions.TopLeft;
-            roleSummaryTextMesh.color = Color.white;
-            roleSummaryTextMesh.fontSizeMin = 1.25f;
-            roleSummaryTextMesh.fontSizeMax = 1.25f;
-            roleSummaryTextMesh.fontSize = 1.25f;
 
-            var roleSummaryTextMeshRectTransform = roleSummaryTextMesh.GetComponent<RectTransform>();
-            roleSummaryTextMeshRectTransform.anchoredPosition = new Vector2(position.x + 3.5f, position.y - 0.1f);
-            roleSummaryTextMesh.text = roleSummaryText.ToString();
+            //結果表示
+            var playerText = new StringBuilder();
+            var roleText = new StringBuilder();
+            var roleDetailText = new StringBuilder();
+            var statusText = new StringBuilder();
+            var murdererText = new StringBuilder();
+            var taskText = new StringBuilder();
+
+            foreach (FinalPlayerData.FinalPlayer player in OnGameEndPatch.FinalData.players)
+            {
+                playerText.AppendLine("　" + player.name);
+                roleText.AppendLine("　" + player.roleName);
+                roleDetailText.AppendLine("　" + player.roleDetail);
+                statusText.AppendLine("　" + Language.Language.GetString("status." + player.status.Status));
+                murdererText.AppendLine("　" + (player.killer != "" ? $"<color=#FF5555FF>by " + player.killer + "</color>" : ""));
+
+                if (player.hasFakeTask)
+                    taskText.AppendLine("　" + (player.totalTasks > 0 ? $"<color=#868686FF>({player.completedTasks}/{player.totalTasks})</color>" : ""));
+                else
+                    taskText.AppendLine("　" + (player.totalTasks > 0 ? $"<color=#FAD934FF>({player.completedTasks}/{player.totalTasks})</color>" : ""));
+            }
+
+            roleSummaryText[0].text = playerText.ToString();
+            roleSummaryText[1].text = taskText.ToString();
+            roleSummaryText[2].text = roleText.ToString();
+            roleSummaryText[3].text = statusText.ToString();
+            roleSummaryText[4].text = murdererText.ToString();
+
+            float width = 0.0f;
+            for (int i = 0; i < 5; i++)
+            {
+                roleSummaryText[i].transform.position += new Vector3(width, 0f, 0f);
+                width += roleSummaryText[i].preferredWidth - 0.05f;
+            }
+
+            //ダイアログ呼び出しボタン
+            var detailButton = GameObject.Instantiate(__instance.Navigation.ContinueButton.transform.GetChild(0));
+            detailButton.transform.SetParent(ModDisplay.transform);
+            detailButton.transform.localScale = new Vector3(0.6f,0.6f,1f);
+            detailButton.localPosition = roleSummaryText[0].transform.localPosition + new Vector3(1.0f, -roleSummaryText[0].preferredHeight - 0.5f);
+            PassiveButton detailPassiveButton=detailButton.GetComponent<PassiveButton>();
+            detailPassiveButton.OnClick = new UnityEngine.UI.Button.ButtonClickedEvent();
+            detailPassiveButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(()=>DetailDialog.Open()));
+            TMPro.TMP_Text detailButtonText = detailButton.transform.GetChild(0).gameObject.GetComponent<TMPro.TMP_Text>();
+            detailButtonText.text = Language.Language.GetString("game.endScreen.detail");
+            detailButtonText.gameObject.GetComponent<TextTranslatorTMP>().enabled = false;
+
+
+            //ダイアログを作成
+            var detailDialog = GameObject.Instantiate(GameObject.FindObjectOfType<ControllerDisconnectHandler>(), null);
+            DetailDialog.Initialize(__instance, detailDialog, __instance.WinText, new string[] {
+                roleSummaryText[0].text,
+                roleSummaryText[1].text,
+                roleSummaryText[3].text,
+                roleSummaryText[4].text,
+                roleDetailText.ToString()
+            });
+
+            
         }
     }
 

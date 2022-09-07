@@ -62,10 +62,14 @@ namespace Nebula.Roles.NeutralRoles
         public override void GlobalInitialize(PlayerControl __instance)
         {
             base.GlobalInitialize(__instance);
+        }
 
+        public override void GlobalIntroInitialize(PlayerControl __instance)
+        {
             canMoveInVents = canUseVentsOption.getBool();
             VentPermission = canUseVentsOption.getBool() ? VentPermission.CanUseUnlimittedVent : VentPermission.CanNotUse;
         }
+
         public override void Initialize(PlayerControl __instance)
         {
             base.Initialize(__instance);

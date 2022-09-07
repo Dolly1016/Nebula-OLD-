@@ -386,6 +386,9 @@ namespace Nebula.Patches
         
         public static void Postfix(PlayerControl __instance)
         {
+            Utilities.TimeMeasure timeMeasure = new TimeMeasure();
+            
+
             if (AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Started) return;
             if (Game.GameData.data == null)
             {
@@ -393,28 +396,52 @@ namespace Nebula.Patches
             }
             var pData = __instance.GetModData();
             if (pData == null)return;
-            
+
+            timeMeasure.StartTimer();
 
             //全員に対して実行
             pData.role.GlobalUpdate(__instance.PlayerId);
+
+            timeMeasure.LapTime("GlobalUpdate");
+
             UpdatePlayerVisibility(__instance);
+
+            timeMeasure.LapTime("Visibility");
 
             if (__instance.PlayerId == PlayerControl.LocalPlayer.PlayerId)
             {
                 Objects.CustomObject.Update();
 
+                timeMeasure.LapTime("CustomObject");
+
                 UpdateAllPlayersInfo();
+
+                timeMeasure.LapTime("PlayerInfo");
+
                 ResetPlayerOutlines();
+
+                timeMeasure.LapTime("ResetPlayerOutlines");
+
                 ResetDeadBodyOutlines();
+
+                timeMeasure.LapTime("ResetDeadBodyOutlines");
 
                 Helpers.RoleAction(__instance, (role) =>
                  {
                      role.MyPlayerControlUpdate();
                  });
+
+                timeMeasure.LapTime("RoleAction");
             }
 
             pData.Speed.Update();
+
+            timeMeasure.LapTime("Speed");
+
             pData.Attribute.Update();
+
+            timeMeasure.LapTime("Attribute");
+            timeMeasure.Output("PlayerControl");
         }
         
     }
@@ -517,7 +544,9 @@ namespace Nebula.Patches
     {
         public static void Postfix(PlayerControl __instance)
         {
-            if(__instance.PlayerId==PlayerControl.LocalPlayer.PlayerId)
+            GameData.Instance.RecomputeTaskCounts();
+
+            if (__instance.PlayerId==PlayerControl.LocalPlayer.PlayerId)
                 Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId,(role)=>role.OnTaskComplete());
         }
     }

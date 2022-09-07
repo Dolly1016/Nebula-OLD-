@@ -46,7 +46,7 @@ namespace Nebula.Map
 
         public static void OptimizeMap(int mapId)
         {
-            if (!CustomOptionHolder.optimizedMaps.getBool()) return;
+            if (!CustomOptionHolder.mapOptions.getBool() || !CustomOptionHolder.optimizedMaps.getBool()) return;
             if (!MapEditors.ContainsKey(mapId)) return;
 
             MapEditors[mapId].OptimizeMap();

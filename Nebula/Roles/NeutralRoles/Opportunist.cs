@@ -25,10 +25,8 @@ namespace Nebula.Roles.NeutralRoles
         private Module.CustomOption canWinWithVultureOption;
         private Module.CustomOption canWinWithAvengerOption;
 
-        public override void GlobalInitialize(PlayerControl __instance)
+        public override void GlobalIntroInitialize(PlayerControl __instance)
         {
-            base.GlobalInitialize(__instance);
-
             canMoveInVents = canUseVentsOption.getBool();
             VentPermission = canUseVentsOption.getBool() ? VentPermission.CanUseLimittedVent : VentPermission.CanNotUse;
         }
