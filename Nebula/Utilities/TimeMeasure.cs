@@ -13,18 +13,24 @@ namespace Nebula.Utilities
         {
             record = new List<Tuple<string, long>>();
             stopwatch = new Stopwatch();
+            StartTimer();
         }
 
+        //タイマーをスタートします。
         public void StartTimer()
         {
             record.Clear();
             stopwatch.Start();
         }
 
+        //経過時間を記録し、時間をリセットします。
+
         public void LapTime()
         {
             LapTime("");
         }
+        
+        //経過時間を記録し、時間をリセットします。
         public void LapTime(string label)
         {
             stopwatch.Stop();
@@ -32,6 +38,7 @@ namespace Nebula.Utilities
             stopwatch.Restart();
         }
 
+        //計測した時間を纏めて書きだします。
         public void Output(string title)
         {
             StringBuilder output = new StringBuilder();
