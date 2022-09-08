@@ -176,19 +176,6 @@ namespace Nebula.Roles.NeutralRoles
             arsonistButton.EffectDuration = douseDurationOption.getFloat();
         }
 
-        public override void ButtonActivate()
-        {
-            base.ButtonActivate();
-
-            arsonistButton.setActive(true);
-        }
-
-        public override void ButtonDeactivate()
-        {
-            base.ButtonDeactivate();
-
-            arsonistButton.setActive(false);
-        }
 
         public override void MyPlayerControlUpdate()
         {

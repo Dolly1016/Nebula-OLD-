@@ -154,16 +154,6 @@ namespace Nebula.Roles.MinigameRoles.Hunters
             ventButton.MaxTimer = ventButton.Timer = 0f;
         }
 
-        public override void ButtonActivate()
-        {
-            ventButton.setActive(true);
-        }
-
-        public override void ButtonDeactivate()
-        {
-            ventButton.setActive(false);
-        }
-
         public override void CleanUp()
         {
             if (ventButton != null)

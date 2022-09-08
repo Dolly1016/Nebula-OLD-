@@ -612,6 +612,18 @@ namespace Nebula.Patches
         }
         
     }
-    
-    
+
+    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CanMove), MethodType.Getter)]
+    class PlayerCanMovePatch
+    {
+        public static void Postfix(PlayerControl __instance,ref bool __result)
+        {
+            if (__instance != PlayerControl.LocalPlayer) return;
+            if (!__result) return;
+
+            __result &= HudManager.Instance.PlayerCam.Target == PlayerControl.LocalPlayer;
+        }
+    }
+
+
 }

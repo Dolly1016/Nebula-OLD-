@@ -91,15 +91,6 @@ namespace Nebula.Roles.NeutralRoles
             }
         }
 
-        public override void ButtonActivate()
-        {
-            shiftButton.setActive(true);
-        }
-
-        public override void ButtonDeactivate()
-        {
-            shiftButton.setActive(false);
-        }
 
         /* 矢印 */
         Dictionary<byte, Arrow> Arrows;

@@ -127,16 +127,6 @@ namespace Nebula.Roles.CrewmateRoles
             oracleButton.MaxTimer = OracleCooldownOption.getFloat();
         }
 
-        public override void ButtonActivate()
-        {
-            oracleButton.setActive(true);
-        }
-
-        public override void ButtonDeactivate()
-        {
-            oracleButton.setActive(false);
-        }
-
         public override void CleanUp()
         {
             if (oracleButton != null)

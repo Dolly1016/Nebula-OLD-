@@ -141,11 +141,11 @@ namespace Nebula.Roles.ImpostorRoles
                     Objects.SoundPlayer.PlaySound(Module.AudioAsset.SniperShot);
 
                     PlayerControl target = GetShootPlayer(shotSizeOption.getFloat()*0.4f,shotEffectiveRangeOption.getFloat(), !canKillImpostorsOption.getBool());
-                    if (target!=null)
+                    if (target != null)
                     {
-                        var res=Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, target, Game.PlayerData.PlayerStatus.Sniped, false, false);
-                        if (res != Helpers.MurderAttemptResult.SuppressKill)
-                            killButton.Timer = killButton.MaxTimer;
+                        var res = Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, target, Game.PlayerData.PlayerStatus.Sniped, false, false);
+
+                        killButton.Timer = killButton.MaxTimer;
                     }
 
                     RPCEventInvoker.SniperShot();
@@ -171,18 +171,6 @@ namespace Nebula.Roles.ImpostorRoles
             killButton.FireOnClicked = true;
             killButton.SetButtonCoolDownOption(true);
             
-        }
-
-        public override void ButtonActivate()
-        {
-            sniperButton.setActive(true);
-            killButton.setActive(true);
-        }
-
-        public override void ButtonDeactivate()
-        {
-            sniperButton.setActive(false);
-            killButton.setActive(false);
         }
 
         public override void EditCoolDown(CoolDownType type, float count)

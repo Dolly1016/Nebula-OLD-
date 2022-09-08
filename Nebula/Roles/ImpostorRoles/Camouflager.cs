@@ -68,16 +68,6 @@ namespace Nebula.Roles.ImpostorRoles
             camouflageButton.EffectDuration = camouflageDurationOption.getFloat();
         }
 
-        public override void ButtonActivate()
-        {
-            camouflageButton.setActive(true);
-        }
-
-        public override void ButtonDeactivate()
-        {
-            camouflageButton.setActive(false);
-        }
-
         public override void CleanUp()
         {
             if (camouflageButton != null)

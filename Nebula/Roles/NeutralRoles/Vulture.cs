@@ -73,16 +73,6 @@ namespace Nebula.Roles.NeutralRoles
             eatButton.MaxTimer = eatButton.Timer = eatCoolDownOption.getFloat();
         }
 
-        public override void ButtonActivate()
-        {
-            eatButton.setActive(true);
-        }
-
-        public override void ButtonDeactivate()
-        {
-            eatButton.setActive(false);
-        }
-
         /* 矢印 */
         Dictionary<byte, Arrow> Arrows;
 

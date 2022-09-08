@@ -7,9 +7,14 @@ namespace Nebula.Objects.ObjectTypes
 {
     public class SniperRifle : TypeWithImage
     {
-        public SniperRifle() : base(4,"SniperRifle", "Nebula.Resources.SniperRifle.png",false)
+        public SniperRifle() : base(4,"SniperRifle", "Nebula.Resources.SniperRifle.png")
         {
-            isFront = true;
+            
+        }
+
+        public override CustomObject.ObjectOrder GetObjectOrder(CustomObject? obj)
+        {
+            return CustomObject.ObjectOrder.IsFront;
         }
 
         public override void Update(CustomObject obj)

@@ -82,16 +82,6 @@ namespace Nebula.Roles.ImpostorRoles
             eraserButton.MaxTimer = eraseCoolDownOption.getFloat();
         }
 
-        public override void ButtonActivate()
-        {
-            eraserButton.setActive(true);
-        }
-
-        public override void ButtonDeactivate()
-        {
-            eraserButton.setActive(false);
-        }
-
         public override void CleanUp()
         {
             if (eraserButton != null)

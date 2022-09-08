@@ -16,7 +16,7 @@ namespace Nebula.Patches
             if (__instance.isActiveAndEnabled && __instance.currentTarget && !__instance.isCoolingDown && !PlayerControl.LocalPlayer.Data.IsDead && PlayerControl.LocalPlayer.CanMove)
             {
                 Helpers.MurderAttemptResult res = Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, __instance.currentTarget, Game.PlayerData.PlayerStatus.Dead);
-                if (res == Helpers.MurderAttemptResult.BlankKill)
+                if (res != Helpers.MurderAttemptResult.BlankKill)
                 {
                     PlayerControl.LocalPlayer.killTimer = PlayerControl.GameOptions.KillCooldown;
                 }

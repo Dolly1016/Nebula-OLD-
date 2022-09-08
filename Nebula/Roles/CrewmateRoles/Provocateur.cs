@@ -84,20 +84,6 @@ namespace Nebula.Roles.CrewmateRoles
             embroilButton.MaxTimer = embroilCoolDownOption.getFloat();
         }
 
-        public override void ButtonActivate()
-        {
-            base.ButtonActivate();
-
-            embroilButton.setActive(true);
-        }
-
-        public override void ButtonDeactivate()
-        {
-            base.ButtonDeactivate();
-
-            embroilButton.setActive(false);
-        }
-
         public override void CleanUp()
         {
             if (embroilButton != null)

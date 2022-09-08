@@ -139,7 +139,7 @@ namespace Nebula.Roles.ComplexRoles
 
         public override void GlobalInitialize(PlayerControl __instance)
         {
-            Game.GameData.data.myData.getGlobalData().SetRoleData(Roles.F_Trapper.remainTrapsId, (int)Roles.F_Trapper.maxTrapsOption.getFloat());
+            __instance.GetModData().SetRoleData(Roles.F_Trapper.remainTrapsId, (int)Roles.F_Trapper.maxTrapsOption.getFloat());
         }
 
         public override void MyUpdate()
@@ -304,11 +304,11 @@ namespace Nebula.Roles.ComplexRoles
                     int remain = Game.GameData.data.myData.getGlobalData().GetRoleData(Roles.F_Trapper.remainTrapsId);
                     trapButtonString.text = $"{remain}/{total}";
 
-                    return remain > 0 && PlayerControl.LocalPlayer.CanMove;
+                    return remain > 0 && !PlayerControl.LocalPlayer.Data.IsDead;
 
                 },
                 () => {
-                    if (PlayerControl.LocalPlayer.Data.IsDead) return false;
+                    if (!PlayerControl.LocalPlayer.CanMove) return false;
 
                     int left = Game.GameData.data.myData.getGlobalData().GetRoleData(Roles.F_Trapper.remainTrapsId);
 
@@ -356,17 +356,6 @@ namespace Nebula.Roles.ComplexRoles
             //直近にすれ違った人をリセットする
             detectedPlayers.Clear();
         }
-
-        public override void ButtonActivate()
-        {
-            trapButton.setActive(true);
-        }
-
-        public override void ButtonDeactivate()
-        {
-            trapButton.setActive(false);
-        }
-
         public override void CleanUp()
         {
             if (trapButton != null)

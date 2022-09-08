@@ -90,16 +90,6 @@ namespace Nebula.Roles.CrewmateRoles
             boostButton.MaxTimer = boostCooldownOption.getFloat();
         }
     
-        public override void ButtonActivate()
-        {
-            boostButton.setActive(true);
-        }
-
-        public override void ButtonDeactivate()
-        {
-            boostButton.setActive(false);
-        }
-
         public override void CleanUp()
         {
             if (boostButton != null)

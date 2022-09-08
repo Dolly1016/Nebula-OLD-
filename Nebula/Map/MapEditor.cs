@@ -94,12 +94,12 @@ namespace Nebula.Map
             return console;
         }
 
-        public static Console CreateConsole(SystemTypes room,string objectName,Sprite sprite,Vector2 pos)
+        public static Console CreateConsole(SystemTypes room,string objectName,Sprite sprite,Vector2 pos,float z)
         {
             if (!ShipStatus.Instance.FastRooms.ContainsKey(room)) return null;
             GameObject obj = new GameObject(objectName);
             obj.transform.SetParent(ShipStatus.Instance.FastRooms[room].transform);
-            obj.transform.localPosition = (Vector3)pos - new Vector3(0, 0, 1f);
+            obj.transform.localPosition = (Vector3)pos - new Vector3(0, 0, z);
             SpriteRenderer renderer = obj.AddComponent<SpriteRenderer>();
             renderer.sprite = sprite;
 

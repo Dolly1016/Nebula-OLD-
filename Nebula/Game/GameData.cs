@@ -496,6 +496,49 @@ namespace Nebula.Game
         }
     }
 
+    public class GuardStatus
+    {
+        byte myPlayerId;
+        HashSet<byte> Guardians;
+        int SingleUseGuardsNum;
+
+        public GuardStatus(byte playerId)
+        {
+            Guardians = new HashSet<byte>();
+            SingleUseGuardsNum = 0;
+            myPlayerId = playerId;
+        }
+
+        public void AddGuardian(byte playerId)
+        {
+            Guardians.Add(playerId);
+        }
+
+        public void RemoveGuardian(byte playerId)
+        {
+            Guardians.Remove(playerId);
+        }
+
+        public void AddSingleUseGuardian(int num)
+        {
+            SingleUseGuardsNum += num;
+        }
+
+        public bool RPCGuard()
+        {
+            foreach(byte p in Guardians)
+            {
+                if (!Helpers.playerById(p).Data.IsDead) return true;
+            }
+            if (SingleUseGuardsNum > 0)
+            {
+                RPCEventInvoker.ConsumeSingleUseGuard(myPlayerId, 1);
+                return true;
+            }
+            return false;
+        }
+    }
+
     public class PlayerData
     {
         public class CosmicPartTimer
@@ -631,6 +674,8 @@ namespace Nebula.Game
         //役職遍歴
         public List<Tuple<string,string>> roleHistory { get; private set; }
 
+        public GuardStatus guardStatus { get; private set; }
+
         public Patches.FinalPlayerData.FinalPlayer? FinalData { get {
                 return Patches.OnGameEndPatch.FinalData.players.FirstOrDefault((p) => p.id == id);
         }}
@@ -660,6 +705,7 @@ namespace Nebula.Game
             this.DeathGuage = 0f;
             this.isInvisiblePlayer = false;
             this.roleHistory=new List<Tuple<string, string>>();
+            this.guardStatus = new GuardStatus(id);
         }
 
         public void AddRoleHistory()

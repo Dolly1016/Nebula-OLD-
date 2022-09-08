@@ -251,8 +251,9 @@ namespace Nebula.Objects
         public void Destroy()
         {
             setActive(false);
-            UnityEngine.Object.Destroy(actionButton);
+            if(actionButton) UnityEngine.Object.Destroy(actionButton.gameObject);
             actionButton = null;
+            buttons.Remove(this);
         }
 
         public static void HudUpdate()
@@ -304,6 +305,22 @@ namespace Nebula.Objects
                 {
                     System.Console.WriteLine("[WARNING] NullReferenceException from MeetingEndedUpdate().HasButton(), if theres only one warning its fine");
                 }
+            }
+        }
+
+        public static void ButtonActivate()
+        {
+            foreach(var b in buttons)
+            {
+                b.setActive(true);
+            }
+        }
+
+        public static void ButtonInactivate()
+        {
+            foreach (var b in buttons)
+            {
+                b.setActive(false);
             }
         }
 

@@ -188,20 +188,6 @@ namespace Nebula.Roles.CrewmateRoles
             reviveButton.MaxTimer = reviveCoolDownOption.getFloat();
         }
 
-        public override void ButtonActivate()
-        {
-            base.ButtonActivate();
-
-            reviveButton.setActive(true);
-        }
-
-        public override void ButtonDeactivate()
-        {
-            base.ButtonDeactivate();
-
-            reviveButton.setActive(false);
-        }
-
         public override void OnMeetingEnd()
         {
             CleanArrow();

@@ -134,20 +134,6 @@ namespace Nebula.Roles.CrewmateRoles
             });
         }
 
-        public override void ButtonActivate()
-        {
-            base.ButtonActivate();
-
-            buskButton.setActive(true);
-        }
-
-        public override void ButtonDeactivate()
-        {
-            base.ButtonDeactivate();
-
-            buskButton.setActive(false);
-        }
-
         public override void CleanUp()
         {
             if (buskButton != null)

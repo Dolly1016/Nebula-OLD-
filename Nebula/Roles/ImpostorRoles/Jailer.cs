@@ -49,17 +49,6 @@ namespace Nebula.Roles.ImpostorRoles
             adminButton.MaxTimer = 0f;
             adminButton.Timer = 0f;
         }
-
-        public override void ButtonActivate()
-        {
-            adminButton.setActive(true);
-        }
-
-        public override void ButtonDeactivate()
-        {
-            adminButton.setActive(false);
-        }
-
         public override void CleanUp()
         {
             if (adminButton != null)

@@ -149,16 +149,6 @@ namespace Nebula.Roles.RitualRoles
             searchButton.MaxTimer = searchButton.Timer = CustomOptionHolder.RitualSearchCoolDownOption.getFloat();
         }
 
-        public override void ButtonActivate()
-        {
-            searchButton.setActive(true);
-        }
-
-        public override void ButtonDeactivate()
-        {
-            searchButton.setActive(false);
-        }
-
         public override void CleanUp()
         {
             if (searchButton != null)

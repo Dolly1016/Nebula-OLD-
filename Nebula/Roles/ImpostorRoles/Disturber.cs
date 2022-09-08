@@ -136,16 +136,6 @@ namespace Nebula.Roles.ImpostorRoles
             elecButton.HasEffect = false;
         }
 
-        public override void ButtonActivate()
-        {
-            elecButton.setActive(true);
-        }
-
-        public override void ButtonDeactivate()
-        {
-            elecButton.setActive(false);
-        }
-
         public override void Initialize(PlayerControl __instance)
         {
             for (int i = 0; i < 2; i++)

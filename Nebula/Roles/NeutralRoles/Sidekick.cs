@@ -90,23 +90,6 @@ namespace Nebula.Roles.NeutralRoles
                 killButton.MaxTimer = SidekickKillCoolDownOption.getFloat();
             }
         }
-
-        public override void ButtonActivate()
-        {
-            if (killButton != null)
-            {
-                killButton.setActive(true);
-            }
-        }
-
-        public override void ButtonDeactivate()
-        {
-            if (killButton != null)
-            {
-                killButton.setActive(false);
-            }
-        }
-
         public override void CleanUp()
         {
             if (killButton != null)

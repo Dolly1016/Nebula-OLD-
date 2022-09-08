@@ -36,6 +36,7 @@ namespace Nebula
         UncheckedMurderPlayer,
         UncheckedExilePlayer,
         UncheckedCmdReportDeadBody,
+        Guard,
         CloseUpKill,
         UpdateRoleData,
         UpdateExtraRoleData,
@@ -63,6 +64,7 @@ namespace Nebula
         DeathGuage,
         UpdatePlayerVisibility,
         EditCoolDown,
+        KillGuard,
 
         // Role functionality
 
@@ -79,7 +81,8 @@ namespace Nebula
 
         InitializeRitualData,
         RitualSharePerks,
-        RitualUpdate
+        RitualUpdate,
+        DecoySwap
     }
 
     //RPCを受け取ったときのイベント
@@ -176,6 +179,9 @@ namespace Nebula
                 case (byte)CustomRPC.UncheckedCmdReportDeadBody:
                     RPCEvents.UncheckedCmdReportDeadBody(reader.ReadByte(), reader.ReadByte());
                     break;
+                case (byte)CustomRPC.Guard:
+                    RPCEvents.Guard(reader.ReadByte(), reader.ReadByte());
+                    break;
                 case (byte)CustomRPC.CloseUpKill:
                     RPCEvents.CloseUpKill(reader.ReadByte(), reader.ReadByte(), reader.ReadByte());
                     break;
@@ -254,6 +260,9 @@ namespace Nebula
                 case (byte)CustomRPC.EditCoolDown:
                     RPCEvents.EditCoolDown((Roles.CoolDownType)reader.ReadByte(), reader.ReadSingle());
                     break;
+                case (byte)CustomRPC.KillGuard:
+                    RPCEvents.KillGuard(reader.ReadByte(),reader.ReadByte(), reader.ReadByte());
+                    break;
 
                 case (byte)CustomRPC.SealVent:
                     RPCEvents.SealVent(reader.ReadByte(), reader.ReadInt32());
@@ -297,6 +306,9 @@ namespace Nebula
                     break;
                 case (byte)CustomRPC.RitualUpdate:
                     RPCEvents.RitualUpdate(reader);
+                    break;
+                case (byte)CustomRPC.DecoySwap:
+                    RPCEvents.DecoySwap(Helpers.playerById(reader.ReadByte()), Objects.CustomObject.Objects[reader.ReadUInt64()], reader.ReadSingle(), reader.ReadSingle());
                     break;
             }
         }
@@ -414,12 +426,13 @@ namespace Nebula
 
         public static void ImmediatelyUnsetExtraRole(Roles.ExtraRole role, byte playerId)
         {
-            role.OnUnset(playerId);
-
             if (playerId == PlayerControl.LocalPlayer.PlayerId)
             {
-                role.ButtonDeactivate();
+                role.FinalizeInGame(PlayerControl.LocalPlayer);
+                role.CleanUp();
             }
+
+            role.OnUnset(playerId);
 
             Game.GameData.data.playersArray[playerId].extraRole.Remove(role);
         }
@@ -439,7 +452,7 @@ namespace Nebula
             {
                 addRole.Initialize(player);
                 addRole.ButtonInitialize(Patches.HudManagerStartPatch.Manager);
-                addRole.ButtonActivate();
+                Objects.CustomButton.ButtonActivate();
             }
         }
 
@@ -594,24 +607,10 @@ namespace Nebula
 
                 if (MeetingHud.Instance != null)
                 {
-                    foreach (PlayerVoteArea pva in MeetingHud.Instance.playerStates)
-                    {
-                        if (pva.TargetPlayerId == playerId)
-                        {
-                            pva.SetDead(pva.DidReport, true);
-                            pva.Overlay.gameObject.SetActive(true);
-                        }
-
-                        //Give players back their vote if target is shot dead
-                        if (pva.VotedFor != playerId) continue;
-                        pva.UnsetVote();
-                        var voteAreaPlayer = Helpers.playerById(pva.TargetPlayerId);
-                        if (!voteAreaPlayer.AmOwner) continue;
-                        MeetingHud.Instance.ClearVote();
-                    }
+                    MeetingHud.Instance.RecheckPlayerState();
 
                     //ホストは投票終了を今一度調べる
-                    if(AmongUsClient.Instance.AmHost)
+                    if (AmongUsClient.Instance.AmHost)
                         MeetingHud.Instance.CheckForEndVoting();
                 }
             }
@@ -625,6 +624,21 @@ namespace Nebula
             {
                 reporter.ReportDeadBody(target.Data);
             }
+        }
+
+        
+        public static void Guard(byte killerId,byte targetId)
+        {
+            if (targetId == PlayerControl.LocalPlayer.PlayerId)
+            {
+                //自分自身がガードされた場合通知される
+                Helpers.PlayQuickFlash(new Color(167f/255f,221f/255f,237f/255f));
+            }
+
+            Helpers.RoleAction(Game.GameData.data.myData.getGlobalData(), (r) =>
+             {
+                 r.OnAnyoneGuarded(killerId,targetId);
+             });
         }
 
         public static void CloseUpKill(byte killerId,byte targetId,byte statusId)
@@ -709,14 +723,15 @@ namespace Nebula
             }
             role.ReflectRoleEyesight(player.Data.Role);
 
-            data.role.GlobalInitialize(player);
             data.CleanRoleDataInGame(roleData);
+           
+            data.role.GlobalInitialize(player);
 
             if (isMe)
             {
                 data.role.Initialize(player);
                 data.role.ButtonInitialize(Patches.HudManagerStartPatch.Manager);
-                data.role.ButtonActivate();
+                Objects.CustomButton.ButtonActivate();
                 Game.GameData.data.myData.VentCoolDownTimer = data.role.VentCoolDownMaxTimer;
             }
 
@@ -990,6 +1005,29 @@ namespace Nebula
         public static void Synchronize(byte playerId,int tag)
         {
             HudManager.Instance.StartCoroutine(GetSynchronizeEnumrator(playerId,tag).WrapToIl2Cpp());
+        }
+
+        public static void KillGuard(byte playerId,byte type,byte value)
+        {
+            switch (type)
+            {
+                case 0:
+                    //Guardian追加
+                    Game.GameData.data.GetPlayerData(playerId).guardStatus.AddGuardian(value);
+                    break;
+                case 1:
+                    //SingleUseGuard追加
+                    Game.GameData.data.GetPlayerData(playerId).guardStatus.AddSingleUseGuardian(value);
+                    break;
+                case 2:
+                    //SingleUseGuard消費
+                    Game.GameData.data.GetPlayerData(playerId).guardStatus.AddSingleUseGuardian(-value);
+                    break;
+                case 3:
+                    //Guardian削除
+                    Game.GameData.data.GetPlayerData(playerId).guardStatus.RemoveGuardian(value);
+                    break;
+            }
         }
 
         public static void SealVent(byte playerId, int ventId)
@@ -1300,6 +1338,18 @@ namespace Nebula
                 Game.GameData.data.RitualData.RegisterPlayerSpawnData(reader.ReadByte(), new Vector2(reader.ReadSingle(), reader.ReadSingle()));
             }
         }
+
+        public static void DecoySwap(PlayerControl player,Objects.CustomObject decoy,float x,float y)
+        {
+            bool playerFlip = player.cosmetics.FlipX;
+            bool decoyFlip = decoy.Renderer.flipX;
+
+            player.NetTransform.SnapTo(decoy.GameObject.transform.position);
+            decoy.GameObject.transform.position = new Vector3(x,y);
+
+            player.cosmetics.SetFlipX(decoyFlip);
+            decoy.Renderer.flipX = playerFlip;
+        }
     }
 
     public class RPCEventInvoker
@@ -1432,6 +1482,15 @@ namespace Nebula
             writer.Write(showAnimation ? Byte.MaxValue : (byte)0);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.UncheckedMurderPlayer(murdererId, targetId, statusId, showAnimation ? Byte.MaxValue : (byte)0);
+        }
+
+        public static void Guard(byte murdererId, byte targetId)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Guard, Hazel.SendOption.Reliable, -1);
+            writer.Write(murdererId);
+            writer.Write(targetId);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.Guard(murdererId, targetId);
         }
 
         public static void SuicideWithoutOverlay(byte statusId)
@@ -1790,8 +1849,8 @@ namespace Nebula
         {
             ulong id;
             while (true) {
-                id = (ulong)NebulaPlugin.rnd.Next(64);
-                if (!Objects.CustomObject.Objects.ContainsKey((id + (ulong)PlayerControl.LocalPlayer.PlayerId * 64))) break;
+                id = (ulong)NebulaPlugin.rnd.Next((int)Objects.CustomObject.MAX_PLAYER_OBJECTS);
+                if (!Objects.CustomObject.Objects.ContainsKey((id + (ulong)PlayerControl.LocalPlayer.PlayerId * Objects.CustomObject.MAX_PLAYER_OBJECTS))) break;
             }
             id = id + (ulong)PlayerControl.LocalPlayer.PlayerId;
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ObjectInstantiate, Hazel.SendOption.Reliable, -1);
@@ -2008,6 +2067,67 @@ namespace Nebula
             writer.Write(taskNum);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.RitualUpdateTaskProgress(taskNum);
+        }
+
+        public static void DecoySwap(Objects.CustomObject decoy)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.DecoySwap, Hazel.SendOption.Reliable, -1);
+            writer.Write(PlayerControl.LocalPlayer.PlayerId);
+            writer.Write(decoy.Id);
+            writer.Write(PlayerControl.LocalPlayer.transform.position.x);
+            writer.Write(PlayerControl.LocalPlayer.transform.position.y);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.DecoySwap(PlayerControl.LocalPlayer,decoy, PlayerControl.LocalPlayer.transform.position.x, PlayerControl.LocalPlayer.transform.position.y);
+        }
+
+        public static void AddGuardian(PlayerControl player,PlayerControl guardian)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.KillGuard, Hazel.SendOption.Reliable, -1);
+            writer.Write(player.PlayerId);
+            writer.Write((byte)0);
+            writer.Write(guardian.PlayerId);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.KillGuard(player.PlayerId, 0, guardian.PlayerId);
+        }
+
+        public static void RemoveGuardian(PlayerControl player, PlayerControl guardian)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.KillGuard, Hazel.SendOption.Reliable, -1);
+            writer.Write(player.PlayerId);
+            writer.Write((byte)3);
+            writer.Write(guardian.PlayerId);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.KillGuard(player.PlayerId, 3, guardian.PlayerId);
+        }
+
+        public static void AddSingleUseGuard(PlayerControl player, int num)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.KillGuard, Hazel.SendOption.Reliable, -1);
+            writer.Write(player.PlayerId);
+            writer.Write((byte)1);
+            writer.Write((byte)num);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.KillGuard(player.PlayerId, 0, (byte)num);
+        }
+
+        public static void ConsumeSingleUseGuard(byte player, int num)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.KillGuard, Hazel.SendOption.Reliable, -1);
+            writer.Write(player);
+            writer.Write((byte)2);
+            writer.Write((byte)num);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.KillGuard(player, 0, (byte)num);
+        }
+
+        public static void ConsumeSingleUseGuard(PlayerControl player, int num)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.KillGuard, Hazel.SendOption.Reliable, -1);
+            writer.Write(player.PlayerId);
+            writer.Write((byte)2);
+            writer.Write((byte)num);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.KillGuard(player.PlayerId, 0, (byte)num);
         }
     }
 }

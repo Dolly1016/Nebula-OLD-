@@ -60,16 +60,6 @@ namespace Nebula.Roles.ImpostorRoles
             cleanButton.Timer = cleanButton.MaxTimer;
         }
 
-        public override void ButtonActivate()
-        {
-            cleanButton.setActive(true);
-        }
-
-        public override void ButtonDeactivate()
-        {
-            cleanButton.setActive(false);
-        }
-
         public byte deadBodyId;
 
 

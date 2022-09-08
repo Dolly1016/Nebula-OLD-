@@ -197,19 +197,6 @@ namespace Nebula.Roles.CrewmateRoles
             );
             repairButton.MaxTimer = repairButton.Timer = 0;
         }
-
-        public override void ButtonActivate()
-        {
-            sealButton.setActive(true);
-            repairButton.setActive(true);
-        }
-
-        public override void ButtonDeactivate()
-        {
-            sealButton.setActive(false);
-            repairButton.setActive(false);
-        }
-
         public override void CleanUp()
         {
             if (sealButton != null)

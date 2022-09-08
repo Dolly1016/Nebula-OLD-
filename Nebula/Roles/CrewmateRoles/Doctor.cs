@@ -150,15 +150,6 @@ namespace Nebula.Roles.CrewmateRoles
             vitalButton.Timer = vitalButton.MaxTimer = 0f;
         }
 
-        public override void ButtonActivate()
-        {
-            vitalButton.setActive(true);
-        }
-
-        public override void ButtonDeactivate()
-        {
-            vitalButton.setActive(false);
-        }
 
         public override void CleanUp()
         {

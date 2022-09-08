@@ -150,16 +150,6 @@ namespace Nebula.Roles.NeutralRoles
             killButton.MaxTimer = avengerKillCoolDownOption.getFloat();
         }
 
-        public override void ButtonActivate()
-        {
-            killButton.setActive(true);
-        }
-
-        public override void ButtonDeactivate()
-        {
-            killButton.setActive(false);
-        }
-
         public override void CleanUp()
         {
             if (killButton != null)

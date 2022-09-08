@@ -53,19 +53,9 @@ namespace Nebula.Roles.CrewmateRoles
             {
                 searchButton.Destroy();
             }
-            searchButton = RoleSystem.TrackSystem.ButtonInitialize(__instance, Arrows,
+            searchButton = RoleSystem.TrackSystem.DeadBodySearch_ButtonInitialize(__instance, Arrows,
                 getButtonSprite(), searchDurationOption.getFloat(), searchCoolDownOption.getFloat());
             searchButton.SetLabel("button.label.search");
-        }
-
-        public override void ButtonActivate()
-        {
-            searchButton.setActive(true);
-        }
-
-        public override void ButtonDeactivate()
-        {
-            searchButton.setActive(false);
         }
 
         public override void CleanUp()
@@ -115,7 +105,7 @@ namespace Nebula.Roles.CrewmateRoles
 
         public override void MyPlayerControlUpdate()
         {
-            RoleSystem.TrackSystem.MyControlUpdate(searchButton.isEffectActive && !PlayerControl.LocalPlayer.Data.IsDead, Arrows);
+            RoleSystem.TrackSystem.DeadBodySearch_MyControlUpdate(searchButton.isEffectActive && !PlayerControl.LocalPlayer.Data.IsDead, Arrows);
 
             deathMessageInterval -= Time.deltaTime;
             if (deathMessageInterval > 0) return;

@@ -116,19 +116,6 @@ namespace Nebula.Roles.ImpostorRoles
             killButton.SetButtonCoolDownOption(true);
 
         }
-
-        public override void ButtonActivate()
-        {
-            axeButton.setActive(true);
-            killButton.setActive(true);
-        }
-
-        public override void ButtonDeactivate()
-        {
-            axeButton.setActive(false);
-            killButton.setActive(false);
-        }
-
         public override void EditCoolDown(CoolDownType type, float count)
         {
             killButton.Timer -= count;
@@ -258,7 +245,7 @@ namespace Nebula.Roles.ImpostorRoles
                                 Vector2 vec = ((Vector2)p.GetTruePosition()) - (Vector2)pos;
                                 if (!PhysicsHelpers.AnyNonTriggersBetween(p.GetTruePosition(), vec.normalized, vec.magnitude, Constants.ShipAndAllObjectsMask))
                                 {
-                                    RPCEventInvoker.UncheckedMurderPlayer(PlayerControl.LocalPlayer.PlayerId, p.PlayerId, Game.PlayerData.PlayerStatus.Beaten.Id, false);
+                                    var res = Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, p, Game.PlayerData.PlayerStatus.Beaten, false, false);
                                 }
                             }
                         }

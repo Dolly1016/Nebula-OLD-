@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace Nebula.Roles.RoleSystem
 {
     static public class TrackSystem
     {
-        static public Objects.CustomButton ButtonInitialize(HudManager __instance, Dictionary<byte,Objects.Arrow> arrows,Sprite buttonSprite, float duration, float coolDown)
+        static public Objects.CustomButton DeadBodySearch_ButtonInitialize(HudManager __instance, Dictionary<byte,Objects.Arrow> arrows,Sprite buttonSprite, float duration, float coolDown)
         {
             Objects.CustomButton result = null;
             result = new Objects.CustomButton(
@@ -37,7 +35,7 @@ namespace Nebula.Roles.RoleSystem
             return result;
         }
 
-        static public void MyControlUpdate(bool showFlag, Dictionary<byte, Objects.Arrow> arrows)
+        static public void DeadBodySearch_MyControlUpdate(bool showFlag, Dictionary<byte, Objects.Arrow> arrows)
         {
             if (!showFlag)
             {
@@ -90,6 +88,25 @@ namespace Nebula.Roles.RoleSystem
                     arrows[body.ParentId].Update(body.transform.position);
                 }
             }
+        }
+
+        static public void PlayerTrack_MyControlUpdate(ref Objects.Arrow? arrow,PlayerControl? target)
+        {
+            if (target == null)
+            {
+                if (arrow != null)
+                {
+                    GameObject.Destroy(arrow.arrow);
+                    arrow = null;
+                }
+                return;
+            }
+
+            if (arrow == null)
+            {
+                arrow = new Objects.Arrow(Color.red);
+            }
+            arrow.Update(target.transform.position);
         }
     }
 }

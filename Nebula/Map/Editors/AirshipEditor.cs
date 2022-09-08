@@ -25,7 +25,7 @@ namespace Nebula.Map.Editors
             ActivateWiring("task_electricalside2", 3).Room=SystemTypes.Armory;
             ActivateWiring("task_wireShower", 4);
             ActivateWiring("taks_wiresLounge", 5);
-            CreateConsole(SystemTypes.Medical, "task_wireMedical", GetMedicalSprite(), new Vector2(-0.84f, 5.63f));
+            CreateConsole(SystemTypes.Medical, "task_wireMedical", GetMedicalSprite(), new Vector2(-0.84f, 5.63f),0f);
             ActivateWiring("task_wireMedical", 6).Room = SystemTypes.Medical;
             ActivateWiring("panel_wireHallwayL", 7);
             ActivateWiring("task_wiresStorage", 8);

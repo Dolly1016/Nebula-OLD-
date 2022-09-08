@@ -58,16 +58,6 @@ namespace Nebula.Roles.Template
             dragButton.Timer = 0;
         }
 
-        public override void ButtonActivate()
-        {
-            if (dragButton != null)dragButton.setActive(true);
-        }
-
-        public override void ButtonDeactivate()
-        {
-            if(dragButton!=null)dragButton.setActive(false);
-        }
-
         [RoleLocalMethod]
         public virtual void OnDragPlayer(byte playerId)
         {

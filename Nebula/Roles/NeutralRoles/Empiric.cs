@@ -146,19 +146,6 @@ namespace Nebula.Roles.NeutralRoles
             infectButtonString.transform.localPosition += new Vector3(-0.05f, 0.7f, 0);
         }
 
-        public override void ButtonActivate()
-        {
-            base.ButtonActivate();
-
-            infectButton.setActive(true);
-        }
-
-        public override void ButtonDeactivate()
-        {
-            base.ButtonDeactivate();
-
-            infectButton.setActive(false);
-        }
 
         public override void OnMeetingStart()
         {

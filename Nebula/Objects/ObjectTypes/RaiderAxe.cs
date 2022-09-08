@@ -16,14 +16,23 @@ namespace Nebula.Objects.ObjectTypes
             Crashed
         }
 
-        public RaidAxe() : base(5, "RaidAxe", "Nebula.Resources.RaiderAxe.png", false)
+        public RaidAxe() : base(5, "RaidAxe", "Nebula.Resources.RaiderAxe.png")
         {
         }
 
         public override bool CanSeeInShadow(CustomObject? obj) { return obj.Data[0] != (int)AxeState.Static; }
 
-        public override bool IsBack(CustomObject? obj) { return obj==null ? false : obj.Data[0] != (int)AxeState.Static; }
-        public override bool IsFront(CustomObject? obj) { return obj == null ? true : obj.Data[0] == (int)AxeState.Static; }
+        public override CustomObject.ObjectOrder GetObjectOrder(CustomObject? obj) {
+            if (obj == null)
+            {
+                return CustomObject.ObjectOrder.IsFront;
+            }
+            if (obj.Data[0] != (int)AxeState.Static)
+            {
+                return CustomObject.ObjectOrder.IsBack;
+            }
+            return CustomObject.ObjectOrder.IsFront;
+        }
 
         private Sprite CrashedSprite;
         private Sprite ThrownSprite;

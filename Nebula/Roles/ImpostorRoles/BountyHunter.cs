@@ -78,16 +78,6 @@ namespace Nebula.Roles.ImpostorRoles
             killButton.SetButtonCoolDownOption(true);
         }
 
-        public override void ButtonActivate()
-        {
-            killButton.setActive(true);
-        }
-
-        public override void ButtonDeactivate()
-        {
-            killButton.setActive(false);
-        }
-
         public override void CleanUp()
         {
             base.CleanUp();

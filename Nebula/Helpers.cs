@@ -385,11 +385,19 @@ namespace Nebula
             BlankKill
         }
 
-        public static MurderAttemptResult checkMuderAttempt(PlayerControl killer, PlayerControl target, bool blockRewind = false)
+        private static MurderAttemptResult checkMuderAttempt(PlayerControl killer, PlayerControl target, bool blockRewind = false)
         {
             MurderAttemptResult result= MurderAttemptResult.PerformKill;
+            var targetData = target.GetModData();
+
+            if (targetData.guardStatus.RPCGuard())
+            {
+                RPCEventInvoker.Guard(killer.PlayerId,target.PlayerId);
+                return MurderAttemptResult.SuppressKill;
+            }
+
             //GlobalMethod
-            result=target.GetModData().role.OnMurdered(killer.PlayerId, target.PlayerId);
+            result=targetData.role.OnMurdered(killer.PlayerId, target.PlayerId);
             if (result != MurderAttemptResult.PerformKill)
             {
                 return result;
@@ -400,10 +408,16 @@ namespace Nebula
         public static MurderAttemptResult checkMuderAttemptAndKill(PlayerControl killer, PlayerControl target,Game.PlayerData.PlayerStatus status, bool isMeetingStart = false, bool showAnimation = true)
         {
             MurderAttemptResult murder = checkMuderAttempt(killer, target, isMeetingStart);
-            if (murder == MurderAttemptResult.PerformKill)
+            switch (murder)
             {
-                RPCEventInvoker.UncheckedMurderPlayer(killer.PlayerId,target.PlayerId, status.Id, showAnimation);
+                case MurderAttemptResult.PerformKill:
+                    RPCEventInvoker.UncheckedMurderPlayer(killer.PlayerId, target.PlayerId, status.Id, showAnimation);
+                    break;
+                case MurderAttemptResult.SuppressKill:
+                    target.ShowFailedMurder();
+                    break;
             }
+            
             return murder;
         }
 
@@ -680,6 +694,13 @@ namespace Nebula
             player.NetTransform.enabled = true;
             player.MyPhysics.enabled = true;
             //player.StartCoroutine(player.MyPhysics.CoSpawnPlayer(LobbyBehaviour.Instance));
+        }
+
+        public static void SetTargetWithLight(this FollowerCamera camera,MonoBehaviour target)
+        {
+            camera.Target=target;
+            PlayerControl.LocalPlayer.myLight.transform.SetParent(target.transform,false);
+            if (target != PlayerControl.LocalPlayer) PlayerControl.LocalPlayer.NetTransform.Halt();
         }
     }
 }

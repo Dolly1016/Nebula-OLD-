@@ -5,9 +5,9 @@ using UnityEngine;
 
 namespace Nebula.Objects.ObjectTypes
 {
-    public class Trap : TypeWithImage
+    public class Trap : DelayedObject
     {
-        public Trap(byte id,string objectName, string spriteAddress) : base(id,objectName, spriteAddress, true)
+        public Trap(byte id,string objectName, string spriteAddress) : base(id,objectName, spriteAddress)
         {
             canSeeInShadow = true;
         }
@@ -28,11 +28,6 @@ namespace Nebula.Objects.ObjectTypes
                 Game.GameData.data.EstimationAI.DetermineMultiply(new Roles.Role[] { Roles.Roles.NiceTrapper, Roles.Roles.EvilTrapper });
             },1);
         }
-
-        public override void Update(CustomObject obj)
-        {
-            CustomObject.Type.VisibleObjectUpdate(obj);
-        }
     }
 
     public class InvisibleTrap : Trap
@@ -41,15 +36,6 @@ namespace Nebula.Objects.ObjectTypes
         {
         }
 
-        public override void Update(CustomObject obj)
-        {
-            if (obj.OwnerId != PlayerControl.LocalPlayer.PlayerId && !Game.GameData.data.myData.CanSeeEveryoneInfo) obj.GameObject.active = false;
-            if (obj.PassedMeetings == 0)
-            {
-                if (obj.Renderer.color.a != 0.5f) obj.Renderer.color = new Color(1f, 1f, 1f, 0.5f);
-            }
-            else if (obj.Renderer.color.a < 1f) obj.Renderer.color = new Color(1f, 1f, 1f, 1f);
-        }
     }
 
     public class KillTrap : InvisibleTrap
@@ -89,12 +75,7 @@ namespace Nebula.Objects.ObjectTypes
             }
             else
             {
-                if (obj.OwnerId != PlayerControl.LocalPlayer.PlayerId && !Game.GameData.data.myData.CanSeeEveryoneInfo) obj.GameObject.active = false;
-                if (obj.PassedMeetings == 0)
-                {
-                    if (obj.Renderer.color.a != 0.5f) obj.Renderer.color = new Color(1f, 1f, 1f, 0.5f);
-                }
-                else if (obj.Renderer.color.a < 1f) obj.Renderer.color = new Color(1f, 1f, 1f, 1f);
+                base.Update(obj);
             }
         }
     }

@@ -17,7 +17,7 @@ namespace Nebula.Objects.ObjectTypes
             return Sprite;
         }
 
-        public TypeWithImage(byte id,string objectName, string spriteAddress, bool isBack) : base(id,objectName, isBack)
+        public TypeWithImage(byte id,string objectName, string spriteAddress) : base(id,objectName)
         {
             SpriteAddress = spriteAddress;
         }
@@ -25,6 +25,33 @@ namespace Nebula.Objects.ObjectTypes
         public override void Initialize(CustomObject obj)
         {
             obj.Renderer.sprite = GetSprite();
+        }
+    }
+
+    public class DelayedObject : TypeWithImage
+    {
+        public DelayedObject(byte id, string objectName, string spriteAddress) : base(id, objectName, spriteAddress)
+        {
+        }
+
+        protected virtual bool canSeeOnlyMe { get { return false; } }
+
+        public override void Update(CustomObject obj)
+        {
+            if (canSeeOnlyMe && obj.OwnerId != PlayerControl.LocalPlayer.PlayerId && !Game.GameData.data.myData.CanSeeEveryoneInfo) { obj.GameObject.active = false; return; }
+            
+            if (obj.PassedMeetings == 0)
+            {
+                if (obj.OwnerId != PlayerControl.LocalPlayer.PlayerId || Game.GameData.data.myData.CanSeeEveryoneInfo)
+                {
+                    if (obj.Renderer.color.a != 0f) obj.Renderer.color = new Color(1f, 1f, 1f, 0f);
+                }
+                else
+                {
+                    if (obj.Renderer.color.a != 0.5f) obj.Renderer.color = new Color(1f, 1f, 1f, 0.5f);
+                }
+            }
+            else if (obj.Renderer.color.a < 1f) obj.Renderer.color = new Color(1f, 1f, 1f, 1f);
         }
     }
 }

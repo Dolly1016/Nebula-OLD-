@@ -44,7 +44,8 @@ namespace Nebula.Roles.ImpostorRoles
         private Module.CustomOption morphCoolDownOption;
         private Module.CustomOption morphDurationOption;
 
-        private byte morphId;
+        private PlayerControl? morphTarget;
+        private Objects.Arrow? arrow;
 
         private Sprite sampleButtonSprite = null;
         public Sprite getSampleButtonSprite()
@@ -74,7 +75,7 @@ namespace Nebula.Roles.ImpostorRoles
 
         public override void ButtonInitialize(HudManager __instance)
         {
-            morphId = Byte.MaxValue;
+            morphTarget = null;
 
             if (morphButton != null)
             {
@@ -83,22 +84,22 @@ namespace Nebula.Roles.ImpostorRoles
             morphButton = new CustomButton(
                 () =>
                 {
-                    if (morphId == Byte.MaxValue)
+                    if (morphTarget == null)
                     {
                         morphButton.Timer = 3f;
                         morphButton.isEffectActive = false;
-                        morphId = Game.GameData.data.myData.currentTarget.PlayerId;
+                        morphTarget = Game.GameData.data.myData.currentTarget;
                         Game.GameData.data.myData.currentTarget = null;
                         morphButton.Sprite = getMorphButtonSprite();
                         morphButton.SetLabel("button.label.morph");
                     }
                     else
                     {
-                        RPCEventInvoker.Morph(morphId);
+                        RPCEventInvoker.Morph(morphTarget.PlayerId);
                     }
                 },
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
-                () => { return PlayerControl.LocalPlayer.CanMove && (morphId!=Byte.MaxValue||Game.GameData.data.myData.currentTarget!=null); },
+                () => { return PlayerControl.LocalPlayer.CanMove && (morphTarget!=null||Game.GameData.data.myData.currentTarget!=null); },
                 () => {
                     morphButton.Timer = morphButton.MaxTimer;
                     morphButton.isEffectActive = false;
@@ -125,26 +126,18 @@ namespace Nebula.Roles.ImpostorRoles
             });
         }
 
-        public override void ButtonActivate()
-        {
-            morphButton.setActive(true);
-        }
-
-        public override void ButtonDeactivate()
-        {
-            morphButton.setActive(false);
-        }
-
         public override void MyPlayerControlUpdate()
         {
             Game.MyPlayerData data = Game.GameData.data.myData;
             data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(1f);
             Patches.PlayerControlPatch.SetPlayerOutline(data.currentTarget, Color.yellow);
+
+            RoleSystem.TrackSystem.PlayerTrack_MyControlUpdate(ref arrow,morphTarget);
         }
 
         public override void OnMeetingEnd()
         {
-            morphId = Byte.MaxValue;
+            morphTarget = null;
             morphButton.Sprite = getSampleButtonSprite();
             morphButton.SetLabel("button.label.sample");
         }
@@ -155,6 +148,11 @@ namespace Nebula.Roles.ImpostorRoles
             {
                 morphButton.Destroy();
                 morphButton = null;
+            }
+            if (arrow != null)
+            {
+                GameObject.Destroy(arrow.arrow);
+                arrow = null;
             }
         }
 

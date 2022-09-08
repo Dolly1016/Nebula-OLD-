@@ -1,14 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
+using UnhollowerRuntimeLib;
 
 namespace Nebula.Objects
 {
+    public class CustomObjectBehaviour : MonoBehaviour
+    {
+        static CustomObjectBehaviour()
+        {
+            ClassInjector.RegisterTypeInIl2Cpp<CustomObjectBehaviour>();
+        }
+    }
+
     public class CustomObject
     {
+        public const ulong MAX_PLAYER_OBJECTS = 2^32;
+        public enum ObjectOrder
+        {
+            IsBack,
+            IsFront,
+            IsOnSameRow
+        }
+
         public class Type
         {
             protected static void VisibleObjectUpdate(CustomObject obj)
@@ -37,25 +52,30 @@ namespace Nebula.Objects
             public static ObjectTypes.RaidAxe Axe = new ObjectTypes.RaidAxe();
             public static ObjectTypes.ElecPole ElecPole = new ObjectTypes.ElecPole();
             public static ObjectTypes.ElecPoleGuide ElecPoleGuide = new ObjectTypes.ElecPoleGuide();
-
-            protected bool isBack { get; set; }
-            protected bool isFront { get; set; }
+            public static ObjectTypes.Decoy Decoy = new ObjectTypes.Decoy();
+            public static ObjectTypes.DelayedObject Antenna = new ObjectTypes.DelayedObject(9, "Antenna", "Nebula.Resources.Antenna.png");
 
             public byte Id { get; }
             public string ObjectName { get; }
 
-            public virtual bool IsBack(CustomObject? obj) { return isBack; }
-            public virtual bool IsFront(CustomObject? obj) { return isFront; }
+            public virtual ObjectOrder GetObjectOrder(CustomObject? obj) { return ObjectOrder.IsBack; }
 
             public bool canSeeInShadow { get; set; }
             public virtual bool CanSeeInShadow(CustomObject? obj) { return canSeeInShadow; }
-
+            public virtual bool RequireMonoBehaviour { get { return false; } }
             protected void FixZPosition(CustomObject obj)
             {
                 Vector3 position = obj.GameObject.transform.position;
-                Vector3 pos = new Vector3(position.x, position.y, 0f);
-                if (IsBack(obj)) pos += new Vector3(0, 0, position.y / 1000f + 0.001f);
-                else if (IsFront(obj)) pos += new Vector3(0, 0, position.y / 1000f - 1f);
+                Vector3 pos = new Vector3(position.x, position.y, position.y / 1000f);
+                switch (GetObjectOrder(obj))
+                {
+                    case ObjectOrder.IsBack:
+                        pos += new Vector3(0, 0, 0.001f);
+                        break;
+                    case ObjectOrder.IsFront:
+                        pos += new Vector3(0, 0, -1f);
+                        break;
+                }
                 obj.GameObject.transform.position = pos;
             }
 
@@ -63,13 +83,11 @@ namespace Nebula.Objects
             public virtual void Update(CustomObject obj,int command) { }
             public virtual void Initialize(CustomObject obj) { }
 
-            public Type(byte id,string objectName,bool isBack = true)
+            public Type(byte id,string objectName)
             {
                 Id = id;
                 this.ObjectName = objectName;
 
-                this.isBack = isBack;
-                isFront = false;
                 canSeeInShadow = false;
 
                 AllTypes.Add(Id,this);
@@ -86,6 +104,8 @@ namespace Nebula.Objects
         public ulong Id { get; }
         public int PassedMeetings { get; set; }
         public int[] Data { get; set; }
+
+        public CustomObjectBehaviour? Behaviour { get; private set; }
 
         static public void RegisterUpdater(Action<PlayerControl> action)
         {
@@ -109,11 +129,21 @@ namespace Nebula.Objects
             Id = id;
             OwnerId = ownerId;
 
-            Vector3 pos = new Vector3(position.x, position.y, 0f);
-            if (type.IsBack(null)) pos += new Vector3(0,0, position.y/1000f + 0.001f);
-            else if (type.IsFront(null)) pos += new Vector3(0, 0, position.y / 1000f - 1f);
+            Vector3 pos = new Vector3(position.x, position.y, position.y / 1000f);
+            switch (type.GetObjectOrder(null))
+            {
+                case ObjectOrder.IsBack:
+                    pos += new Vector3(0, 0, 0.001f);
+                    break;
+                case ObjectOrder.IsFront:
+                    pos += new Vector3(0, 0, -1f);
+                    break;
+            }
             GameObject.transform.position = pos;
             Renderer = GameObject.AddComponent<SpriteRenderer>();
+
+            if (type.RequireMonoBehaviour) Behaviour = GameObject.AddComponent<CustomObjectBehaviour>();
+            else Behaviour = null;
 
             Data = new int[0];
 
@@ -121,7 +151,7 @@ namespace Nebula.Objects
 
             ObjectType.Initialize(this);
 
-            if (ObjectType.CanSeeInShadow(this)) GameObject.layer = LayerMask.NameToLayer("Objects");
+            if (ObjectType.CanSeeInShadow(this)) GameObject.layer = LayerExpansion.GetObjectsLayer();
 
             if (Objects.ContainsKey(id)) Objects[id].Destroy();
             Objects[id] = this;
@@ -132,8 +162,8 @@ namespace Nebula.Objects
             ulong id;
             while (true)
             {
-                id = (ulong)NebulaPlugin.rnd.Next(64);
-                if (!Objects.ContainsKey((id + (ulong)PlayerControl.LocalPlayer.PlayerId * 64))) break;
+                id = (ulong)NebulaPlugin.rnd.Next((int)MAX_PLAYER_OBJECTS);
+                if (!Objects.ContainsKey((id + (ulong)PlayerControl.LocalPlayer.PlayerId * MAX_PLAYER_OBJECTS))) break;
             }
             return new CustomObject(PlayerControl.LocalPlayer.PlayerId, type, id, position);
         }
@@ -142,6 +172,10 @@ namespace Nebula.Objects
             //オブジェクトに対するアップデート関数
             foreach(CustomObject obj in Objects.Values)
             {
+                if (obj.ObjectType.CanSeeInShadow(obj)) obj.GameObject.layer = LayerExpansion.GetObjectsLayer();
+                else obj.GameObject.layer = LayerExpansion.GetDefaultLayer();
+
+
                 obj.ObjectType.Update(obj);
             }
 

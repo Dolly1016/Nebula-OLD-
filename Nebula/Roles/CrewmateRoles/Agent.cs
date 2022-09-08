@@ -95,15 +95,6 @@ namespace Nebula.Roles.CrewmateRoles
             ventButtonString.text = (int)remain + "/" + (int)maxVentsOption.getFloat();
         }
 
-        public override void ButtonActivate()
-        {
-            agentButton.setActive(true);
-        }
-
-        public override void ButtonDeactivate()
-        {
-            agentButton.setActive(false);
-        }
 
         public override void CleanUp()
         {

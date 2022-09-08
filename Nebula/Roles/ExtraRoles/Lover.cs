@@ -394,18 +394,6 @@ namespace Nebula.Roles.ExtraRoles
             trilemmaTarget = null;
         }
 
-        public override void ButtonActivate()
-        {
-            if(involveButton!=null)
-            involveButton.setActive(true);
-        }
-
-        public override void ButtonDeactivate()
-        {
-            if(involveButton!=null)
-            involveButton.setActive(false);
-        }
-
         public override void CleanUp()
         {
             if (involveButton != null)

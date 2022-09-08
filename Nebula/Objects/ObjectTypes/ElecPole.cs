@@ -4,27 +4,28 @@ using System.Text;
 
 namespace Nebula.Objects.ObjectTypes
 {
-    public class ElecPole : TypeWithImage
+    public class ElecPole : DelayedObject
     {
-        public ElecPole() : base(6, "ElecPole", "Nebula.Resources.ElecPole.png", false)
+        public ElecPole() : base(6, "ElecPole", "Nebula.Resources.ElecPole.png")
         {
-            isBack = isFront = false;
             canSeeInShadow = true;
         }
 
-        public override void Update(CustomObject obj)
+        public override CustomObject.ObjectOrder GetObjectOrder(CustomObject? obj)
         {
-            CustomObject.Type.VisibleObjectUpdate(obj);
+            return CustomObject.ObjectOrder.IsOnSameRow;
         }
     }
 
     public class ElecPoleGuide : TypeWithImage
     {
-        public ElecPoleGuide() : base(7, "ElecPoleGuide", "Nebula.Resources.ElecPole.png", false)
+        public ElecPoleGuide() : base(7, "ElecPoleGuide", "Nebula.Resources.ElecPole.png")
         {
-            isBack = false;
-            isFront = true;
             canSeeInShadow = true;
+        }
+        public override CustomObject.ObjectOrder GetObjectOrder(CustomObject? obj)
+        {
+            return CustomObject.ObjectOrder.IsFront;
         }
 
         public override void Initialize(CustomObject obj)

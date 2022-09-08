@@ -68,16 +68,6 @@ namespace Nebula.Roles.MinigameRoles.Hunters
             arrestButton.MaxTimer = arrestButton.Timer = ArrestCoolDownOption.getFloat();
         }
 
-        public override void ButtonActivate()
-        {
-            arrestButton.setActive(true);
-        }
-
-        public override void ButtonDeactivate()
-        {
-            arrestButton.setActive(false);
-        }
-
         public override void CleanUp()
         {
             if (arrestButton != null)

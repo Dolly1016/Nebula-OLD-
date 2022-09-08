@@ -26,7 +26,7 @@ namespace Nebula.Patches
         {
             static void Postfix(MapBehaviour __instance)
             {
-                if (Game.GameData.data.myData.getGlobalData().role.CanInvokeSabotage)
+                if (Game.GameData.data.myData.getGlobalData().role.CanInvokeSabotage && !MeetingHud.Instance)
                 {
                     if (__instance.IsOpen)
                     {
@@ -70,6 +70,23 @@ namespace Nebula.Patches
                     DestroyableSingleton<HudManager>.Instance.SetHudActive(false);
                     return false;
                 }
+            }
+
+        }
+    }
+
+    [HarmonyPatch]
+    class MapUpdatePatch
+    {
+        [HarmonyPatch(typeof(MapBehaviour), nameof(MapBehaviour.FixedUpdate))]
+        class MapBehaviourShowNormalMapPatch
+        {
+            static void Postfix(MapBehaviour __instance)
+            {
+                Helpers.RoleAction(Game.GameData.data.myData.getGlobalData(), (r) =>
+                 {
+                     r.MyMapUpdate(__instance);
+                 });
             }
 
         }

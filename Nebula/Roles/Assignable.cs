@@ -158,17 +158,6 @@ namespace Nebula.Roles
         [RoleLocalMethod]
         public virtual void ButtonInitialize(HudManager __instance) { }
 
-        /// <summary>
-        /// ボタンを有効化します。自身のロールについてのみ行います。
-        /// </summary>
-        [RoleLocalMethod]
-        public virtual void ButtonActivate() { }
-
-        /// <summary>
-        /// ボタンを無効化します。自身のロールについてのみ行います。
-        /// </summary>
-        [RoleLocalMethod]
-        public virtual void ButtonDeactivate() { }
 
         /*--------------------------------------------------------------------------------------*/
 
@@ -216,6 +205,12 @@ namespace Nebula.Roles
         /// </summary>
         [RoleLocalMethod]
         public virtual void MyUpdate() { }
+
+        /// <summary>
+        /// マップを開いている間のみ呼び出されます。
+        /// </summary>
+        [RoleLocalMethod]
+        public virtual void MyMapUpdate(MapBehaviour mapBehaviour) { }
 
         /// <summary>
         /// タスクを完了すると呼び出されます。
@@ -306,6 +301,16 @@ namespace Nebula.Roles
         public virtual void OnMeetingEnd() { }
 
         /*--------------------------------------------------------------------------------------*/
+
+        /// <summary>
+        /// 誰かがガードされたときに呼び出されます。
+        /// プレイヤー自身のロールについてのみ呼び出されます。
+        /// </summary>
+        /// <param name="murderId">殺害者のプレイヤーID</param>
+        /// <param name="targetId">被害者のプレイヤーID</param>
+        [RoleLocalMethod]
+        public virtual void OnAnyoneGuarded(byte murderId, byte targetId) { }
+
 
         /// <summary>
         /// 誰かが殺害されたときに呼び出されます。
@@ -494,7 +499,7 @@ namespace Nebula.Roles
         /*--------------------------------------------------------------------------------------*/
 
         /// <summary>
-        /// その役職のプレイヤーが殺害されて死んだときに呼び出されます。
+        /// その役職のプレイヤーが殺害されるときに呼び出されます。
         /// </summary>
         /// <param name="murderId">殺害者のID</param>
         /// <param name="playerId">死亡者のID</param>

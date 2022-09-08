@@ -200,6 +200,9 @@ namespace Nebula.Patches
                     GameObject.Destroy(dBody.gameObject);
                 }
                 deadBodies = new UnhollowerBaseLib.Il2CppReferenceArray<GameData.PlayerInfo>(dBodies.ToArray());
+
+                //生死を再確認
+                MeetingHud.Instance.RecheckPlayerState();
             }
         }
 

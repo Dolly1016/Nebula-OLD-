@@ -126,16 +126,6 @@ namespace Nebula.Roles.CrewmateRoles
             emiButton.EffectDuration = emiDurationOption.getFloat();
         }
 
-        public override void ButtonActivate()
-        {
-            emiButton.setActive(true);
-        }
-
-        public override void ButtonDeactivate()
-        {
-            emiButton.setActive(false);
-        }
-
         public override void CleanUp()
         {
             if (emiButton != null)

@@ -109,18 +109,6 @@ namespace Nebula.Roles.NeutralRoles
             }
         }
 
-        public override void ButtonActivate()
-        {
-            base.ButtonActivate();
-            if(blankButton!=null)blankButton.setActive(true);
-        }
-
-        public override void ButtonDeactivate()
-        {
-            base.ButtonDeactivate();
-            if (blankButton != null) blankButton.setActive(false);
-        }
-
         public override void CleanUp()
         {
             base.CleanUp();
