@@ -36,6 +36,8 @@ namespace Nebula.Objects.ObjectTypes
         {
         }
 
+        protected override bool canSeeOnlyMe { get { return true; } }
+
     }
 
     public class KillTrap : InvisibleTrap

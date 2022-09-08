@@ -629,12 +629,6 @@ namespace Nebula
         
         public static void Guard(byte killerId,byte targetId)
         {
-            if (targetId == PlayerControl.LocalPlayer.PlayerId)
-            {
-                //自分自身がガードされた場合通知される
-                Helpers.PlayQuickFlash(new Color(167f/255f,221f/255f,237f/255f));
-            }
-
             Helpers.RoleAction(Game.GameData.data.myData.getGlobalData(), (r) =>
              {
                  r.OnAnyoneGuarded(killerId,targetId);

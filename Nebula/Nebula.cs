@@ -9,6 +9,7 @@ using BepInEx.IL2CPP;
 using UnityEngine;
 using System.Text;
 using System.Collections;
+using System.Reflection;
 
 namespace Nebula
 {
@@ -70,7 +71,7 @@ namespace Nebula
         public const string PluginVersion = "1.13.3";
         public const bool IsSnapshot = true;
 
-        public static string PluginVisualVersion = IsSnapshot ? "22.09.08c" : PluginVersion;
+        public static string PluginVisualVersion = IsSnapshot ? "22.09.09a" : PluginVersion;
         public static string PluginStage = IsSnapshot?"Snapshot":"";
 
         public const string PluginVersionForFetch = "1.13.3";
@@ -86,6 +87,18 @@ namespace Nebula
 
         public Logger.Logger Logger;
 
+        private void InstallCPUAffinityEditor()
+        {
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            Stream stream = assembly.GetManifestResourceStream("Nebula.Resources.CPUAffinityEditor.exe");
+            var file=File.Create("CPUAffinityEditor.exe");
+            byte[] data = new byte[stream.Length];
+            stream.Read(data);
+            file.Write(data);
+            stream.Close();
+            file.Close();
+        }
+
         override public void Load()
         {
             DebugMode = new DebugMode();
@@ -94,6 +107,8 @@ namespace Nebula
 
             Instance = this;
 
+            //CPUAffinityEditorを生成
+            InstallCPUAffinityEditor();
             
             //アセットバンドルを読み込む
             Module.AssetLoader.Load();

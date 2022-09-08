@@ -15,6 +15,11 @@
 "config.option.pictureDest.myPictures" : "My Pictures"
 "config.option.pictureDest.myDocuments" : "My Documents"
 "config.option.pictureDest.desktop" : "Desktop"
+"config.option.processorAffinity" : "Processor Affinity"
+"config.option.processorAffinity.dontCare" : "Don't Care"
+"config.option.processorAffinity.dualCore" : "Dual Core"
+"config.option.processorAffinity.tripleCore" : "Triple Core"
+"config.option.processorAffinity.quadCore" : "Quad Core"
 
 "lobby.hasNoNebula" : "%NAME% has a different or no version of Nebula on the Ship"
 "lobby.hasDifferentNebula" : "%NAME% has a different version of Nebula on the Ship"
@@ -349,7 +354,7 @@
 "role.provocateur.embroilDuration" : "Embroil Duration"
 
 "role.psychic.name" : "Psychic"
-"role.Psychic.short" : "P"
+"role.psychic.short" : "P"
 "role.psychic.description" : "Gather Testimony"
 "role.psychic.info" : "You can see the message of the dead.\nThis messages disappear when a meeting start."
 "role.psychic.searchCoolDown" : "Search Cool Down"
@@ -481,8 +486,8 @@
 
 "role.jailer.name" : "Jailer"
 "role.jailer.short" : "J"
-"role.jailer.description" : "Be Under the Control"
 "role.jailer.info" : "You can use admin anywhere.\n\n - F : Use admin"
+"role.jailer.description" : "Be Under the Control"
 "role.jailer.ignoreCommSabotage" : "Ignore Comms. Sabotage"
 
 "role.marionette.name" : "Marionette"
@@ -698,7 +703,7 @@
 "role.killer.info" : ""
 
 "role.metaRole.name" : "Free Play"
-"role.metaRole.info" : "You can measure the distance.\n\n - 1 : Set origin at the current position\n - 2 : Open roles menu\n - 3 : Suicide\n - 4 : Revive\n - ESC : Close roles menu"
+"role.metaRole.info" : "You can measure the distance.\n\n - 1 : Set origin at the current position\n - 2 : Open roles menu\n - ESC : Close roles menu"
 
 "side.crewmate.name" : "Crewmate"
 "side.impostor.name" : "Impostor"

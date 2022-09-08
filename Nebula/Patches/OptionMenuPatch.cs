@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using HarmonyLib;
 using UnityEngine;
 using BepInEx.Configuration;
+using System.Diagnostics;
 
 namespace Nebula.Patches
 {
@@ -15,14 +16,20 @@ namespace Nebula.Patches
         MyPictures,
         MyDocuments,
         Desktop
-
-
+    }
+    public enum ProcessorAffinity
+    {
+        DontCare,
+        DualCore,
+        TripleCore,
+        QuadCore
     }
 
 
     public class NebulaOption
     {
         static public ConfigEntry<int> configPictureDest;
+        static public ConfigEntry<int> configProcessorAffinity;
 
         static public string GetPicturePath(NebulaPictureDest dest)
         {
@@ -88,6 +95,58 @@ namespace Nebula.Patches
             }
             return "";
         }
+
+        static public string GetProcessorAffinityMode()
+        {
+            switch ((ProcessorAffinity)configProcessorAffinity.Value)
+            {
+                case ProcessorAffinity.DontCare:
+                    return Language.Language.GetString("config.option.processorAffinity.dontCare");
+                case ProcessorAffinity.DualCore:
+                    return Language.Language.GetString("config.option.processorAffinity.dualCore");
+                case ProcessorAffinity.TripleCore:
+                    return Language.Language.GetString("config.option.processorAffinity.tripleCore");
+                case ProcessorAffinity.QuadCore:
+                    return Language.Language.GetString("config.option.processorAffinity.quadCore");
+            }
+            return "";
+        }
+
+        static public void ReflectProcessorAffinity()
+        {
+            try
+            {
+                string? affinity = null;
+                switch ((ProcessorAffinity)configProcessorAffinity.Value)
+                {
+                    case ProcessorAffinity.DualCore:
+                        affinity = 0b00110.ToString();
+                        break;
+                    case ProcessorAffinity.TripleCore:
+                        affinity = 0b01110.ToString();
+                        break;
+                    case ProcessorAffinity.QuadCore:
+                        affinity = 0b11110.ToString();
+                        break;
+                }
+
+                if (affinity == null) return;
+
+                var process = System.Diagnostics.Process.GetCurrentProcess();
+                string id = process.Id.ToString();
+                
+                ProcessStartInfo processStartInfo = new ProcessStartInfo();
+                processStartInfo.FileName = "CPUAffinityEditor.exe";
+                processStartInfo.Arguments = id + " " + affinity;
+                processStartInfo.CreateNoWindow = true;
+                processStartInfo.UseShellExecute = false;
+                Process.Start(processStartInfo);
+            }
+            catch
+            {
+                NebulaPlugin.Instance.Logger.Print("Error");
+            }
+        }
     }
 
     [HarmonyPatch(typeof(OptionsMenuBehaviour), nameof(OptionsMenuBehaviour.Start))]
@@ -97,6 +156,8 @@ namespace Nebula.Patches
         static public void LoadOption()
         {
             NebulaOption.configPictureDest = NebulaPlugin.Instance.Config.Bind("Config", "PicutureDest", 0);
+            NebulaOption.configProcessorAffinity = NebulaPlugin.Instance.Config.Bind("Config", "ProcessorAffinity", 0);
+            NebulaOption.ReflectProcessorAffinity();
         }
 
         static public void UpdateToggleText(this ToggleButtonBehaviour button,bool on,string text)
@@ -127,6 +188,7 @@ namespace Nebula.Patches
         static ToggleButtonBehaviour debugOutputHash;
 
         static ToggleButtonBehaviour pictureDest;
+        static ToggleButtonBehaviour processorAffinity;
 
         public static void Postfix(OptionsMenuBehaviour __instance)
         {
@@ -199,6 +261,23 @@ namespace Nebula.Patches
                 pictureDest.UpdateButtonText(Language.Language.GetString("config.option.pictureDest"),NebulaOption.GetPictureDestMode());
             }));
 
+            //ProcessorAffinity
+            var processorAffinityButton = GameObject.Instantiate(toggleButtonTemplate, null);
+            processorAffinityButton.transform.SetParent(nebulaTab.transform);
+            processorAffinityButton.transform.localScale = new Vector3(1f, 1f, 1f);
+            processorAffinityButton.transform.localPosition = new Vector3(1.3f, 0f, 0f);
+            processorAffinityButton.name = "ProcessorAffinity";
+            processorAffinity = processorAffinityButton.GetComponent<ToggleButtonBehaviour>();
+            passiveButton = processorAffinityButton.GetComponent<PassiveButton>();
+            passiveButton.OnClick = new UnityEngine.UI.Button.ButtonClickedEvent();
+            passiveButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
+            {
+                NebulaOption.configProcessorAffinity.Value++;
+                NebulaOption.configProcessorAffinity.Value %= 4;
+                processorAffinity.UpdateButtonText(Language.Language.GetString("config.option.processorAffinity"), NebulaOption.GetProcessorAffinityMode());
+                NebulaOption.ReflectProcessorAffinity();
+            }));
+
             //タブを追加する
 
             tabs[tabs.Count - 1] = (GameObject.Instantiate(tabs[1], null));
@@ -220,6 +299,7 @@ namespace Nebula.Patches
                 debugSnapshot.UpdateToggleText(NebulaPlugin.DebugMode.HasToken("Snapshot"),Language.Language.GetString("config.debug.snapshot"));
                 debugOutputHash.UpdateToggleText(NebulaPlugin.DebugMode.HasToken("OutputHash"), Language.Language.GetString("config.debug.outputHash"));
                 pictureDest.UpdateButtonText(Language.Language.GetString("config.option.pictureDest"), NebulaOption.GetPictureDestMode());
+                processorAffinity.UpdateButtonText(Language.Language.GetString("config.option.processorAffinity"), NebulaOption.GetProcessorAffinityMode());
 
                 passiveButton.OnMouseOver.Invoke();
             }

@@ -19,6 +19,7 @@ namespace Nebula.Roles.CrewmateRoles
         private CustomOption maxAntennaOption;
         private CustomOption placeCoolDownOption;
         private CustomOption antennaEffectiveRangeOption;
+        private CustomOption showGuardFlashOption;
 
         public int remainAntennasId { get; private set; }
 
@@ -38,6 +39,7 @@ namespace Nebula.Roles.CrewmateRoles
             placeCoolDownOption.suffix = "second";
             antennaEffectiveRangeOption = CreateOption(Color.white, "antennaEffectiveRange", 5f, 1.25f, 20f, 1.25f);
             antennaEffectiveRangeOption.suffix = "cross";
+            showGuardFlashOption = CreateOption(Color.white, "showGuardFlash", false);
         }
 
         public override void Initialize(PlayerControl __instance)
@@ -108,7 +110,7 @@ namespace Nebula.Roles.CrewmateRoles
                     showFlag = true;
                     break;
                 }
-                indicatorsPool.Get().transform.localPosition = MapBehaviourExpansion.ConvertMapLocalPosition(p.transform.position, p.ParentId);
+                if (showFlag) indicatorsPool.Get().transform.localPosition = MapBehaviourExpansion.ConvertMapLocalPosition(p.transform.position, p.ParentId);
             }
         }
 
@@ -141,11 +143,17 @@ namespace Nebula.Roles.CrewmateRoles
                 data.currentTarget = Patches.PlayerControlPatch.SetMyTarget();
                 Patches.PlayerControlPatch.SetPlayerOutline(data.currentTarget, Color.yellow);
             }
+            else
+            {
+                Patches.PlayerControlPatch.SetPlayerOutline(guardPlayer, RoleColor);
+            }
         }
 
         public override void OnAnyoneGuarded(byte murderId, byte targetId)
         {
             if (guardPlayer == null) return;
+            if (!showGuardFlashOption.getBool()) return;
+
             if (targetId == guardPlayer.PlayerId)
             {
                 Helpers.PlayQuickFlash(RoleColor);
