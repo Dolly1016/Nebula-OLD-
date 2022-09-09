@@ -17,9 +17,9 @@
 "config.option.pictureDest.desktop" : "Desktop"
 "config.option.processorAffinity" : "Processor Affinity"
 "config.option.processorAffinity.dontCare" : "Don't Care"
-"config.option.processorAffinity.dualCore" : "Dual Core"
-"config.option.processorAffinity.tripleCore" : "Triple Core"
-"config.option.processorAffinity.quadCore" : "Quad Core"
+"config.option.processorAffinity.only2" : "1,2"
+"config.option.processorAffinity.only3" : "1~3"
+"config.option.processorAffinity.only4" : "1~4"
 
 "lobby.hasNoNebula" : "%NAME% has a different or no version of Nebula on the Ship"
 "lobby.hasDifferentNebula" : "%NAME% has a different version of Nebula on the Ship"

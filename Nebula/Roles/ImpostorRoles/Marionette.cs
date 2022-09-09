@@ -85,6 +85,8 @@ namespace Nebula.Roles.ImpostorRoles
                 () => { return PlayerControl.LocalPlayer.CanMove || HudManager.Instance.PlayerCam.Target != PlayerControl.LocalPlayer; },
                 () => {
                     marionetteButton.Timer = 10f;
+                    marionetteButton.Sprite = getDecoyButtonSprite();
+                    marionetteButton.SetLabel("button.label.decoy");
                 },
                 getDecoyButtonSprite(),
                 new Vector3(-1.8f, 0f, 0),
@@ -145,7 +147,13 @@ namespace Nebula.Roles.ImpostorRoles
         public override void OnMeetingStart()
         {
             HudManager.Instance.PlayerCam.SetTargetWithLight(PlayerControl.LocalPlayer);
+            if (decoy != null)
+            {
+                RPCEventInvoker.ObjectDestroy(decoy);
+                decoy = null;
+            }
         }
+
 
         //デコイをマップに表示
         public override void MyMapUpdate(MapBehaviour mapBehaviour)

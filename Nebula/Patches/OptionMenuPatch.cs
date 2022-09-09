@@ -20,9 +20,9 @@ namespace Nebula.Patches
     public enum ProcessorAffinity
     {
         DontCare,
-        DualCore,
-        TripleCore,
-        QuadCore
+        Only2,
+        Only3,
+        Only4
     }
 
 
@@ -102,12 +102,12 @@ namespace Nebula.Patches
             {
                 case ProcessorAffinity.DontCare:
                     return Language.Language.GetString("config.option.processorAffinity.dontCare");
-                case ProcessorAffinity.DualCore:
-                    return Language.Language.GetString("config.option.processorAffinity.dualCore");
-                case ProcessorAffinity.TripleCore:
-                    return Language.Language.GetString("config.option.processorAffinity.tripleCore");
-                case ProcessorAffinity.QuadCore:
-                    return Language.Language.GetString("config.option.processorAffinity.quadCore");
+                case ProcessorAffinity.Only2:
+                    return Language.Language.GetString("config.option.processorAffinity.only2");
+                case ProcessorAffinity.Only3:
+                    return Language.Language.GetString("config.option.processorAffinity.only3");
+                case ProcessorAffinity.Only4:
+                    return Language.Language.GetString("config.option.processorAffinity.only4");
             }
             return "";
         }
@@ -119,13 +119,13 @@ namespace Nebula.Patches
                 string? affinity = null;
                 switch ((ProcessorAffinity)configProcessorAffinity.Value)
                 {
-                    case ProcessorAffinity.DualCore:
+                    case ProcessorAffinity.Only2:
                         affinity = 0b00110.ToString();
                         break;
-                    case ProcessorAffinity.TripleCore:
+                    case ProcessorAffinity.Only3:
                         affinity = 0b01110.ToString();
                         break;
-                    case ProcessorAffinity.QuadCore:
+                    case ProcessorAffinity.Only4:
                         affinity = 0b11110.ToString();
                         break;
                 }
