@@ -20,9 +20,9 @@ namespace Nebula.Patches
     public enum ProcessorAffinity
     {
         DontCare,
-        Only2,
-        Only3,
-        Only4
+        DualCoreHT,
+        DualCore,
+        SingleCore
     }
 
 
@@ -30,6 +30,7 @@ namespace Nebula.Patches
     {
         static public ConfigEntry<int> configPictureDest;
         static public ConfigEntry<int> configProcessorAffinity;
+        static public ConfigEntry<bool> configPrioritizeAmongUs;
 
         static public string GetPicturePath(NebulaPictureDest dest)
         {
@@ -101,43 +102,66 @@ namespace Nebula.Patches
             switch ((ProcessorAffinity)configProcessorAffinity.Value)
             {
                 case ProcessorAffinity.DontCare:
-                    return Language.Language.GetString("config.option.processorAffinity.dontCare");
-                case ProcessorAffinity.Only2:
-                    return Language.Language.GetString("config.option.processorAffinity.only2");
-                case ProcessorAffinity.Only3:
-                    return Language.Language.GetString("config.option.processorAffinity.only3");
-                case ProcessorAffinity.Only4:
-                    return Language.Language.GetString("config.option.processorAffinity.only4");
+                    return Language.Language.GetString("config.option.processorRestriction.dontCare");
+                case ProcessorAffinity.DualCoreHT:
+                    return Language.Language.GetString("config.option.processorRestriction.dualCoreHT");
+                case ProcessorAffinity.DualCore:
+                    return Language.Language.GetString("config.option.processorRestriction.dualCore");
+                case ProcessorAffinity.SingleCore:
+                    return Language.Language.GetString("config.option.processorRestriction.singleCore");
             }
             return "";
+        }
+
+        static public void ReflectProcessorPriority()
+        {
+            try
+            {
+                var process = System.Diagnostics.Process.GetCurrentProcess();
+                string id = process.Id.ToString();
+
+                ProcessStartInfo processStartInfo = new ProcessStartInfo();
+                processStartInfo.FileName = "CPUAffinityEditor.exe";
+                processStartInfo.Arguments = id + " " + (configPrioritizeAmongUs.Value ? "Enable" : "Disable");
+                processStartInfo.CreateNoWindow = true;
+                processStartInfo.UseShellExecute = false;
+                Process.Start(processStartInfo);
+            }
+            catch
+            {
+                NebulaPlugin.Instance.Logger.Print("Error");
+            }
         }
 
         static public void ReflectProcessorAffinity()
         {
             try
             {
-                string? affinity = null;
+                string? mode = null;
                 switch ((ProcessorAffinity)configProcessorAffinity.Value)
                 {
-                    case ProcessorAffinity.Only2:
-                        affinity = 0b00110.ToString();
+                    case ProcessorAffinity.DontCare:
+                        mode = "0";
                         break;
-                    case ProcessorAffinity.Only3:
-                        affinity = 0b01110.ToString();
+                    case ProcessorAffinity.DualCoreHT:
+                        mode = "2HT";
                         break;
-                    case ProcessorAffinity.Only4:
-                        affinity = 0b11110.ToString();
+                    case ProcessorAffinity.DualCore:
+                        mode = "2";
+                        break;
+                    case ProcessorAffinity.SingleCore:
+                        mode = "1";
                         break;
                 }
 
-                if (affinity == null) return;
+                if (mode == null) return;
 
                 var process = System.Diagnostics.Process.GetCurrentProcess();
                 string id = process.Id.ToString();
                 
                 ProcessStartInfo processStartInfo = new ProcessStartInfo();
                 processStartInfo.FileName = "CPUAffinityEditor.exe";
-                processStartInfo.Arguments = id + " " + affinity;
+                processStartInfo.Arguments = id + " " + mode;
                 processStartInfo.CreateNoWindow = true;
                 processStartInfo.UseShellExecute = false;
                 Process.Start(processStartInfo);
@@ -157,7 +181,9 @@ namespace Nebula.Patches
         {
             NebulaOption.configPictureDest = NebulaPlugin.Instance.Config.Bind("Config", "PicutureDest", 0);
             NebulaOption.configProcessorAffinity = NebulaPlugin.Instance.Config.Bind("Config", "ProcessorAffinity", 0);
+            NebulaOption.configPrioritizeAmongUs = NebulaPlugin.Instance.Config.Bind("Config", "PrioritizeAmongUs", false);
             NebulaOption.ReflectProcessorAffinity();
+            NebulaOption.ReflectProcessorPriority();
         }
 
         static public void UpdateToggleText(this ToggleButtonBehaviour button,bool on,string text)
@@ -187,8 +213,93 @@ namespace Nebula.Patches
         static ToggleButtonBehaviour debugSnapshot;
         static ToggleButtonBehaviour debugOutputHash;
 
-        static ToggleButtonBehaviour pictureDest;
         static ToggleButtonBehaviour processorAffinity;
+        static ToggleButtonBehaviour prioritizeAmongUs;
+        static ToggleButtonBehaviour pictureDest;
+
+        private static GameObject ShowConfirmDialogue(Transform parent,GameObject buttonTemplate, string text,System.Action yesAction)
+        {
+            GameObject result;
+            TMPro.TMP_Text tmpText;
+            SpriteRenderer background;
+
+            if (HudManager.InstanceExists)
+            {
+                var dialogue = GameObject.Instantiate(HudManager.Instance.Dialogue, parent);
+                dialogue.transform.localScale = new Vector3(1,1,1);
+                GameObject.Destroy(dialogue.BackButton.gameObject);
+                background = dialogue.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>();
+
+                tmpText =dialogue.target;
+                result = dialogue.gameObject;
+            }
+            else
+            {
+                var dialogue = GameObject.Instantiate(DestroyableSingleton<Twitch.TwitchManager>.Instance.TwitchPopup, parent);
+                dialogue.transform.localScale = new Vector3(1, 1, 1);
+                dialogue.transform.localPosition = new Vector3(0f,0f,-10f);
+                dialogue.destroyOnClose = true;
+                GameObject.Destroy(dialogue.gameObject.transform.GetChild(2).gameObject);
+                background=dialogue.gameObject.transform.GetChild(3).GetComponent<SpriteRenderer>();
+
+                tmpText = dialogue.TextAreaTMP;
+                result = dialogue.gameObject;
+            }
+
+            background.size = new Vector2(5f, 2f);
+
+            tmpText.gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(0,0);
+            tmpText.gameObject.transform.localScale = new Vector3(1f, 1f, 1f);
+            tmpText.gameObject.transform.localPosition = new Vector3(0f, 0.48f, -1f);
+            tmpText.alignment = TMPro.TextAlignmentOptions.Center;
+            tmpText.fontSize = 2;
+            tmpText.fontSizeMin = 2;
+            tmpText.fontSizeMax = 2;
+            tmpText.enableAutoSizing = false;
+            tmpText.enableWordWrapping = false;
+            tmpText.text = text;
+
+            PassiveButton passiveButton;
+            GameObject textObj;
+
+            //いいえボタン
+            var noButton = GameObject.Instantiate(buttonTemplate, null);
+            noButton.transform.SetParent(result.transform);
+            noButton.transform.localScale = new Vector3(1f, 1f, 1f);
+            noButton.transform.localPosition = new Vector3(-0.9f, -0.6f, -1f);
+            noButton.name = "NoButton";
+            textObj = noButton.transform.GetChild(1).gameObject;
+            textObj.GetComponent<TMPro.TMP_Text>().text = Language.Language.GetString("config.option.no");
+            textObj.GetComponent<TextTranslatorTMP>().enabled = false;
+            passiveButton = noButton.GetComponent<PassiveButton>();
+            passiveButton.OnClick = new UnityEngine.UI.Button.ButtonClickedEvent();
+            passiveButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
+            {
+                GameObject.Destroy(result);
+            }
+            ));
+
+            //はいボタン
+            var yesButton = GameObject.Instantiate(buttonTemplate, null);
+            yesButton.transform.SetParent(result.transform);
+            yesButton.transform.localScale = new Vector3(1f, 1f, 1f);
+            yesButton.transform.localPosition = new Vector3(0.9f, -0.6f, -1f);
+            yesButton.name = "YesButton";
+            textObj = yesButton.transform.GetChild(1).gameObject;
+            textObj.GetComponent<TMPro.TMP_Text>().text = Language.Language.GetString("config.option.yes");
+            textObj.GetComponent<TextTranslatorTMP>().enabled = false;
+            passiveButton = yesButton.GetComponent<PassiveButton>();
+            passiveButton.OnClick = new UnityEngine.UI.Button.ButtonClickedEvent();
+            passiveButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
+            {
+                yesAction();
+                GameObject.Destroy(result);
+            }
+            ));
+
+            result.SetActive(true);
+            return result;
+        }
 
         public static void Postfix(OptionsMenuBehaviour __instance)
         {
@@ -245,27 +356,11 @@ namespace Nebula.Patches
             }
             ));
 
-            //PictureDest
-            var pictureDestButton = GameObject.Instantiate(toggleButtonTemplate, null);
-            pictureDestButton.transform.SetParent(nebulaTab.transform);
-            pictureDestButton.transform.localScale = new Vector3(1f, 1f, 1f);
-            pictureDestButton.transform.localPosition = new Vector3(-1.3f, 0f, 0f);
-            pictureDestButton.name = "PictureDest";
-            pictureDest = pictureDestButton.GetComponent<ToggleButtonBehaviour>();
-            passiveButton = pictureDestButton.GetComponent<PassiveButton>();
-            passiveButton.OnClick = new UnityEngine.UI.Button.ButtonClickedEvent();
-            passiveButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
-            {
-                NebulaOption.configPictureDest.Value++;
-                NebulaOption.configPictureDest.Value %= 4;
-                pictureDest.UpdateButtonText(Language.Language.GetString("config.option.pictureDest"),NebulaOption.GetPictureDestMode());
-            }));
-
             //ProcessorAffinity
             var processorAffinityButton = GameObject.Instantiate(toggleButtonTemplate, null);
             processorAffinityButton.transform.SetParent(nebulaTab.transform);
             processorAffinityButton.transform.localScale = new Vector3(1f, 1f, 1f);
-            processorAffinityButton.transform.localPosition = new Vector3(1.3f, 0f, 0f);
+            processorAffinityButton.transform.localPosition = new Vector3(-1.3f, 0f, 0f);
             processorAffinityButton.name = "ProcessorAffinity";
             processorAffinity = processorAffinityButton.GetComponent<ToggleButtonBehaviour>();
             passiveButton = processorAffinityButton.GetComponent<PassiveButton>();
@@ -274,8 +369,52 @@ namespace Nebula.Patches
             {
                 NebulaOption.configProcessorAffinity.Value++;
                 NebulaOption.configProcessorAffinity.Value %= 4;
-                processorAffinity.UpdateButtonText(Language.Language.GetString("config.option.processorAffinity"), NebulaOption.GetProcessorAffinityMode());
+                processorAffinity.UpdateButtonText(Language.Language.GetString("config.option.processorRestriction"), NebulaOption.GetProcessorAffinityMode());
                 NebulaOption.ReflectProcessorAffinity();
+            }));
+
+            //PrioritizeAmongUs
+            var prioritizeAmongUsButton = GameObject.Instantiate(toggleButtonTemplate, null);
+            prioritizeAmongUsButton.transform.SetParent(nebulaTab.transform);
+            prioritizeAmongUsButton.transform.localScale = new Vector3(1f, 1f, 1f);
+            prioritizeAmongUsButton.transform.localPosition = new Vector3(1.3f, 0f, 0f);
+            prioritizeAmongUsButton.name = "PrioritizeAmongUs";
+            prioritizeAmongUs = prioritizeAmongUsButton.GetComponent<ToggleButtonBehaviour>();
+            passiveButton = prioritizeAmongUsButton.GetComponent<PassiveButton>();
+            passiveButton.OnClick = new UnityEngine.UI.Button.ButtonClickedEvent();
+            passiveButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
+            {
+                if (!NebulaOption.configPrioritizeAmongUs.Value)
+                {
+                    ShowConfirmDialogue(nebulaTab.transform, applyButtonTemplate, Language.Language.GetString("config.option.prioritizeAmongUs.confirm"), () =>
+                    {
+                        NebulaOption.configPrioritizeAmongUs.Value = true;
+                        prioritizeAmongUs.UpdateToggleText(true,Language.Language.GetString("config.option.prioritizeAmongUs"));
+                        NebulaOption.ReflectProcessorPriority();
+                    });
+                }
+                else
+                {
+                    NebulaOption.configPrioritizeAmongUs.Value = false;
+                    prioritizeAmongUs.UpdateToggleText(false, Language.Language.GetString("config.option.prioritizeAmongUs"));
+                    NebulaOption.ReflectProcessorPriority();
+                }
+            }));
+
+            //PictureDest
+            var pictureDestButton = GameObject.Instantiate(toggleButtonTemplate, null);
+            pictureDestButton.transform.SetParent(nebulaTab.transform);
+            pictureDestButton.transform.localScale = new Vector3(1f, 1f, 1f);
+            pictureDestButton.transform.localPosition = new Vector3(-1.3f, -0.5f, 0f);
+            pictureDestButton.name = "PictureDest";
+            pictureDest = pictureDestButton.GetComponent<ToggleButtonBehaviour>();
+            passiveButton = pictureDestButton.GetComponent<PassiveButton>();
+            passiveButton.OnClick = new UnityEngine.UI.Button.ButtonClickedEvent();
+            passiveButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
+            {
+                NebulaOption.configPictureDest.Value++;
+                NebulaOption.configPictureDest.Value %= 4;
+                pictureDest.UpdateButtonText(Language.Language.GetString("config.option.pictureDest"), NebulaOption.GetPictureDestMode());
             }));
 
             //タブを追加する
@@ -299,7 +438,8 @@ namespace Nebula.Patches
                 debugSnapshot.UpdateToggleText(NebulaPlugin.DebugMode.HasToken("Snapshot"),Language.Language.GetString("config.debug.snapshot"));
                 debugOutputHash.UpdateToggleText(NebulaPlugin.DebugMode.HasToken("OutputHash"), Language.Language.GetString("config.debug.outputHash"));
                 pictureDest.UpdateButtonText(Language.Language.GetString("config.option.pictureDest"), NebulaOption.GetPictureDestMode());
-                processorAffinity.UpdateButtonText(Language.Language.GetString("config.option.processorAffinity"), NebulaOption.GetProcessorAffinityMode());
+                processorAffinity.UpdateButtonText(Language.Language.GetString("config.option.processorRestriction"), NebulaOption.GetProcessorAffinityMode());
+                prioritizeAmongUs.UpdateToggleText(NebulaOption.configPrioritizeAmongUs.Value, Language.Language.GetString("config.option.prioritizeAmongUs"));
 
                 passiveButton.OnMouseOver.Invoke();
             }
