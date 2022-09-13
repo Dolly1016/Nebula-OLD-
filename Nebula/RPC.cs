@@ -78,6 +78,7 @@ namespace Nebula
         MorphCancel,
         CreateSidekick,
         DisturberInvoke,
+        UpdatePlayersIconInfo,
 
         InitializeRitualData,
         RitualSharePerks,
@@ -297,6 +298,9 @@ namespace Nebula
                 case (byte)CustomRPC.UpdatePlayerVisibility:
                     RPCEvents.UpdatePlayerVisibility(reader.ReadByte(), reader.ReadBoolean());
                     break;
+                case (byte)CustomRPC.UpdatePlayersIconInfo:
+                    RPCEvents.UpdatePlayersIconInfo(reader);
+                    break;
 
                 case (byte)CustomRPC.InitializeRitualData:
                     RPCEvents.InitializeRitualData(reader);
@@ -308,7 +312,7 @@ namespace Nebula
                     RPCEvents.RitualUpdate(reader);
                     break;
                 case (byte)CustomRPC.DecoySwap:
-                    RPCEvents.DecoySwap(Helpers.playerById(reader.ReadByte()), Objects.CustomObject.Objects[reader.ReadUInt64()], reader.ReadSingle(), reader.ReadSingle());
+                    RPCEvents.DecoySwap(Helpers.playerById(reader.ReadByte()), Objects.CustomObject.GetObject(reader.ReadUInt64()), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
                     break;
             }
         }
@@ -431,6 +435,7 @@ namespace Nebula
                 role.FinalizeInGame(PlayerControl.LocalPlayer);
                 role.CleanUp();
             }
+            role.GlobalFinalizeInGame(Helpers.playerById(playerId));
 
             role.OnUnset(playerId);
 
@@ -750,6 +755,7 @@ namespace Nebula
                 data.role.FinalizeInGame(PlayerControl.LocalPlayer);
                 data.role.CleanUp();
             }
+            data.role.GlobalFinalizeInGame(Helpers.playerById(playerId));
 
             //ロールを変更
             SetUpRole(data, Helpers.playerById(playerId), Roles.Role.GetRoleById(roleId));
@@ -770,10 +776,13 @@ namespace Nebula
                 {
                     data1.role.FinalizeInGame(PlayerControl.LocalPlayer);
                 }
+                data1.role.GlobalFinalizeInGame(Helpers.playerById(playerId_1));
+                
                 if (playerId_2 == PlayerControl.LocalPlayer.PlayerId)
                 {
                     data2.role.FinalizeInGame(PlayerControl.LocalPlayer);
                 }
+                data2.role.GlobalFinalizeInGame(Helpers.playerById(playerId_2));
 
                 Dictionary<int, int> roleData1 = data1.ExtractRoleData(), roleData2 = data2.ExtractRoleData();
                 Roles.Role role1 = data1.role, role2 = data2.role;
@@ -1333,16 +1342,63 @@ namespace Nebula
             }
         }
 
-        public static void DecoySwap(PlayerControl player,Objects.CustomObject decoy,float x,float y)
+        public static void DecoySwap(PlayerControl player, Objects.CustomObject? decoy, float playerX, float playerY, float decoyX, float decoyY)
         {
             bool playerFlip = player.cosmetics.FlipX;
             bool decoyFlip = decoy.Renderer.flipX;
 
-            player.NetTransform.SnapTo(decoy.GameObject.transform.position);
-            decoy.GameObject.transform.position = new Vector3(x,y);
+            player.NetTransform.SnapTo(new Vector2(decoyX, decoyY));
+            if (decoy) decoy.GameObject.transform.position = new Vector3(playerX, playerY);
 
             player.cosmetics.SetFlipX(decoyFlip);
-            decoy.Renderer.flipX = playerFlip;
+            if (decoy) decoy.Renderer.flipX = playerFlip;
+        }
+
+        public static void UpdatePlayersIconInfo(MessageReader reader)
+        {
+            byte playerId=reader.ReadByte();
+            Roles.Role role = Roles.Role.GetRoleById(reader.ReadByte());
+
+            var info= (Module.Information.PlayersIconInformation?) Module.Information.UpperInformationManager.GetInformation((i) =>
+            {
+                return i is Module.Information.PlayersIconInformation &&
+                ((Module.Information.PlayersIconInformation)i).relatedPlayerId == playerId &&
+                ((Module.Information.PlayersIconInformation)i).relatedRole == role;
+            });
+
+            if (info == null) return;
+
+            int length = reader.ReadInt32();
+            byte id, data;
+            for(int i = 0; i < length; i++)
+            {
+                id = reader.ReadByte();
+                data = reader.ReadByte();
+
+                if (data == byte.MaxValue) info.SetActive(id,false);
+                else
+                {
+                    info.SetActive(id, true);
+                    if (data == 100)
+                    {
+                        info.SetText(id,"");
+                        info.SetSemitransparent(id, false);
+                    }
+                    else 
+                    {
+                        info.SetSemitransparent(id, true);
+
+                        if (data == 0)
+                        {
+                            info.SetText(id, "");
+                        }
+                        else
+                        {
+                            info.SetText(id, data.ToString() + "%");
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -2070,8 +2126,10 @@ namespace Nebula
             writer.Write(decoy.Id);
             writer.Write(PlayerControl.LocalPlayer.transform.position.x);
             writer.Write(PlayerControl.LocalPlayer.transform.position.y);
+            writer.Write(decoy.GameObject.transform.position.x);
+            writer.Write(decoy.GameObject.transform.position.y);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
-            RPCEvents.DecoySwap(PlayerControl.LocalPlayer,decoy, PlayerControl.LocalPlayer.transform.position.x, PlayerControl.LocalPlayer.transform.position.y);
+            RPCEvents.DecoySwap(PlayerControl.LocalPlayer, decoy, PlayerControl.LocalPlayer.transform.position.x, PlayerControl.LocalPlayer.transform.position.y, decoy.GameObject.transform.position.x, decoy.GameObject.transform.position.y);
         }
 
         public static void AddGuardian(PlayerControl player,PlayerControl guardian)
@@ -2122,6 +2180,24 @@ namespace Nebula
             writer.Write((byte)num);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.KillGuard(player.PlayerId, 0, (byte)num);
+        }
+
+        public static void UpdatePlayersIconInfo(Roles.Role role,List<byte> activePlayers,Dictionary<byte, float>? progress)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UpdatePlayersIconInfo, Hazel.SendOption.Reliable, -1);
+            writer.Write(PlayerControl.LocalPlayer.PlayerId);
+            writer.Write(role.id);
+            writer.Write((int)PlayerControl.AllPlayerControls.Count);
+
+            foreach(var p in PlayerControl.AllPlayerControls)
+            {
+                writer.Write(p.PlayerId);
+                if (p==PlayerControl.LocalPlayer || p.Data.IsDead || p.Data.Disconnected) writer.Write(byte.MaxValue);
+                else if (activePlayers.Contains(p.PlayerId)) writer.Write((byte)100);
+                else if (progress != null && progress.ContainsKey(p.PlayerId)) writer.Write((byte)(progress[p.PlayerId] * 100f));
+                else writer.Write((byte)0);
+            }
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
     }
 }

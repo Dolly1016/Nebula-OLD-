@@ -609,14 +609,29 @@ namespace Nebula.Game
         }
         public class PlayerOutfitData
         {
+            public int Priority { get; }
             public int ColorId { get; }
             public string HatId { get; }
             public string VisorId { get; }
             public string SkinId { get; }
             public string PetId { get; }
+            public string? Name { get; set; }
 
-            public PlayerOutfitData(PlayerOutfit outfit)
+            public PlayerOutfitData(int priority, string? name,int color,string hat,string visor,string skin,string pet)
             {
+                Priority = priority;
+                Name = name;
+                ColorId = color;
+                HatId = hat;
+                VisorId = visor;
+                SkinId = skin;
+                PetId = pet;
+            }
+
+            public PlayerOutfitData(int priority,PlayerOutfit outfit)
+            {
+                Priority = priority;
+                Name = outfit.PlayerName;
                 ColorId = outfit.ColorId;
                 HatId = outfit.HatId;
                 VisorId = outfit.VisorId;
@@ -624,8 +639,10 @@ namespace Nebula.Game
                 PetId = outfit.PetId;
             }
 
-            public PlayerOutfitData(PlayerOutfitData outfit)
+            public PlayerOutfitData(int priority, string name, PlayerOutfitData outfit)
             {
+                Priority = priority;
+                Name = name;
                 ColorId = outfit.ColorId;
                 HatId = outfit.HatId;
                 VisorId = outfit.VisorId;
@@ -649,6 +666,7 @@ namespace Nebula.Game
 
         public PlayerOutfitData Outfit { get; }
         public PlayerOutfitData CurrentOutfit { set; get; }
+        public List<PlayerOutfitData> AllOutfits { get; private set; }
         public string currentName { get; set; }
         public byte dragPlayerId { get; set; }
 
@@ -690,8 +708,11 @@ namespace Nebula.Game
             this.roleData = new Dictionary<int, int>();
             this.extraRoleData = new Dictionary<byte, ulong>();
             this.IsAlive = true;
-            this.Outfit = new PlayerOutfitData(outfit);
-            this.CurrentOutfit = new PlayerOutfitData(outfit);
+
+            this.CurrentOutfit = this.Outfit = new PlayerOutfitData(0, outfit);
+            this.AllOutfits = new List<PlayerOutfitData>();
+            AddOutfit(this.Outfit);
+
             this.currentName = name;
             this.dragPlayerId = Byte.MaxValue;
             this.Speed = new SpeedFactorManager(player.PlayerId) ;
@@ -706,6 +727,35 @@ namespace Nebula.Game
             this.isInvisiblePlayer = false;
             this.roleHistory=new List<Tuple<string, string>>();
             this.guardStatus = new GuardStatus(id);
+            
+        }
+
+        public void RemoveOutfit(PlayerOutfitData outfit)
+        {
+            this.AllOutfits.Remove(outfit);
+            UpdateOutfit();
+        }
+
+        public void AddOutfit(PlayerOutfitData outfit)
+        {
+            this.AllOutfits.Add(outfit);
+            UpdateOutfit();
+        }
+
+        public void UpdateOutfit()
+        {
+            AllOutfits = new List<PlayerOutfitData>(this.AllOutfits.OrderBy((outfit) => outfit.Priority));
+            CurrentOutfit = AllOutfits[AllOutfits.Count-1];
+            Helpers.playerById(id).SetLook(CurrentOutfit);
+        }
+
+        public PlayerOutfitData GetOutfitData(int maxPriority)
+        {
+            for(int i = AllOutfits.Count - 1; i >= 0; i--)
+            {
+                if (AllOutfits[i].Priority <= maxPriority) return AllOutfits[i];
+            }
+            return AllOutfits[0];
         }
 
         public void AddRoleHistory()
@@ -961,9 +1011,6 @@ namespace Nebula.Game
 
         public GameRule GameRule;
 
-        //時間制限カウンタの描画
-        public Module.TimeLimit LimitRenderer;
-
         //ゲームモード
         public Module.CustomGameMode GameMode;
 
@@ -1007,8 +1054,6 @@ namespace Nebula.Game
             GameRule = new GameRule();
             GameMode = Module.CustomGameModes.GetGameMode(CustomOptionHolder.gameMode.getSelection());
 
-            LimitRenderer = null;
-
             Ghost = null;
             CountDownMessage = null;
 
@@ -1029,7 +1074,7 @@ namespace Nebula.Game
         //データを消去します。
         private void Clear()
         {
-            if (LimitRenderer != null) LimitRenderer.Destroy();
+            Module.Information.UpperInformationManager.RemoveAll();
 
             AllPlayers.Clear();
             playersArray.Clear();
@@ -1156,9 +1201,10 @@ namespace Nebula.Game
 
         public void TimerUpdate()
         {
-            if (Timer > 0f) Timer -= Time.deltaTime;
-
-            if (LimitRenderer != null) LimitRenderer.Update();
+            if (Timer > 0f)
+            {
+                if(!ExileController.Instance)Timer -= Time.deltaTime;
+            }
         }
     }
     

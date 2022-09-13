@@ -17,20 +17,19 @@ namespace Nebula.Roles.ImpostorRoles
         {
             public byte PlayerId { get; private set; }
             public byte TargetId { get; private set; }
+            private Game.PlayerData.PlayerOutfitData outfit;
 
             public override void OnTerminal()
             {
-                if (Nebula.Events.GlobalEvent.GetAllowUpdateOutfit())
-                    Helpers.playerById(PlayerId).ResetOutfit();
+                Helpers.GetModData(PlayerId).RemoveOutfit(outfit);
             }
 
             public override void OnActivate()
             {
-                if(Nebula.Events.GlobalEvent.GetAllowUpdateOutfit())
-                    Helpers.playerById(PlayerId).SetOutfit(Helpers.playerById(TargetId));
+                outfit=Helpers.playerById(PlayerId).AddOutfit(Helpers.playerById(TargetId), 80);
             }
 
-            public MorphEvent(byte playerId,byte targetId):base(Roles.Morphing.morphDurationOption.getFloat())
+            public MorphEvent(byte playerId,byte targetId):base(Roles.Morphing.morphDurationOption.getFloat()-1f)
             {
                 PlayerId = playerId;
                 TargetId = targetId;

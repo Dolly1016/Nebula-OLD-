@@ -12,6 +12,14 @@ namespace Nebula.Objects
         {
             ClassInjector.RegisterTypeInIl2Cpp<CustomObjectBehaviour>();
         }
+        
+        public void OnDestroy()
+        {
+            if (HudManager.Instance.PlayerCam.Target == this)
+            {
+                HudManager.Instance.PlayerCam.SetTargetWithLight(PlayerControl.LocalPlayer);
+            }
+        }
     }
 
     public class CustomObject
@@ -97,13 +105,15 @@ namespace Nebula.Objects
         public static Dictionary<ulong,CustomObject> Objects=new Dictionary<ulong, CustomObject>();
         public static HashSet<System.Action<PlayerControl>> ObjectUpdateFunctions = new HashSet<Action<PlayerControl>>();
         public static Dictionary<Type, Func<CustomObject>> Constructors = new Dictionary<Type, Func<CustomObject>>();
-        public GameObject GameObject { get; private set; }
+        public GameObject? GameObject { get; private set; }
         public SpriteRenderer Renderer { get; private set; }
         public byte OwnerId { get; set; }
         public Type ObjectType { get; }
         public ulong Id { get; }
         public int PassedMeetings { get; set; }
         public int[] Data { get; set; }
+
+        static public implicit operator bool(CustomObject obj) { return obj.GameObject == null || obj.GameObject; }
 
         public CustomObjectBehaviour? Behaviour { get; private set; }
 
@@ -224,8 +234,13 @@ namespace Nebula.Objects
 
         public void Destroy()
         {
+            if (HudManager.Instance.PlayerCam.Target.gameObject == GameObject)
+            {
+                HudManager.Instance.PlayerCam.SetTargetWithLight(PlayerControl.LocalPlayer);
+            }
             UnityEngine.Object.Destroy(GameObject);
             Objects.Remove(this.Id);
+            GameObject = null;
         }
 
         //コマンドを受け付けた際のアップデート
@@ -246,6 +261,15 @@ namespace Nebula.Objects
         static public void Load()
         {
 
+        }
+
+        static public CustomObject? GetObject(ulong id)
+        {
+            if (Objects.ContainsKey(id))
+            {
+                return Objects[id];
+            }
+            return null;
         }
     }
 }

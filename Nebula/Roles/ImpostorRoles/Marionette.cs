@@ -14,13 +14,58 @@ namespace Nebula.Roles.ImpostorRoles
 {
     public class Marionette : Role
     {
+        public class DecoyEvent : Events.LocalEvent
+        {
+            CustomObject decoy;
+            public DecoyEvent(CustomObject decoy,float duration) : base(duration)
+            {
+                this.decoy = decoy;
+            }
+
+            public override void OnTerminal()
+            {
+                if (decoy) { RPCEventInvoker.ObjectDestroy(decoy); }
+            }
+
+            public override void LocalUpdate()
+            {
+                if (Roles.Marionette.marionetteButton != null)
+                    Roles.Marionette.marionetteButton.UpperText.text = ((int)duration).ToString();
+            }
+        }
+
+
+
+        private CustomButton placeButton;
         private CustomButton marionetteButton;
         private CustomButton cameraButton;
 
         private Module.CustomOption swapCoolDownOption;
+        private Module.CustomOption decoyDurationOption;
 
         private CustomObject? decoy;
         private SpriteRenderer? decoyIndicator;
+        private int marionetteMode;
+
+        private void ChangeMarionetteMode()
+        {
+            SetMarionetteMode((marionetteMode + 1) % 2);
+        }
+
+        private void SetMarionetteMode(int mode)
+        {
+            marionetteMode = mode;
+            if (marionetteMode == 0)
+            {
+                marionetteButton.Sprite = getSwapButtonSprite();
+                marionetteButton.SetLabel("button.label.swap");
+            }
+            else
+            {
+                marionetteButton.Sprite = getDestroyButtonSprite();
+                marionetteButton.SetLabel("button.label.destroy");
+            }
+        }
 
         private Sprite decoyButtonSprite = null;
         public Sprite getDecoyButtonSprite()
@@ -37,6 +82,13 @@ namespace Nebula.Roles.ImpostorRoles
             swapButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.DecoySwapButton.png", 115f);
             return swapButtonSprite;
         }
+        private Sprite destroyButtonSprite = null;
+        public Sprite getDestroyButtonSprite()
+        {
+            if (destroyButtonSprite) return destroyButtonSprite;
+            destroyButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.DecoyDestroyButton.png", 115f);
+            return destroyButtonSprite;
+        }
 
         private Sprite monitorButtonSprite = null;
         public Sprite getMonitorButtonSprite()
@@ -48,15 +100,51 @@ namespace Nebula.Roles.ImpostorRoles
 
         public override void LoadOptionData()
         {
+            decoyDurationOption = CreateOption(Color.white, "decoyDuration", 45f, 15f, 300f, 5f);
+            decoyDurationOption.suffix = "second";
+
             swapCoolDownOption = CreateOption(Color.white, "swapCoolDown", 5f, 0f, 40f, 0.5f);
             swapCoolDownOption.suffix = "second";
         }
 
         public override void ButtonInitialize(HudManager __instance)
         {
+
             decoy = null;
             decoyIndicator = null;
 
+            if (placeButton != null)
+            {
+                placeButton.Destroy();
+            }
+            placeButton = new CustomButton(
+                () =>
+                {
+                    decoy = RPCEventInvoker.ObjectInstantiate(Objects.CustomObject.Type.Decoy, PlayerControl.LocalPlayer.transform.position);
+
+                    placeButton.Timer = placeButton.MaxTimer;
+                    marionetteButton.Timer = marionetteButton.MaxTimer;
+                    marionetteMode = 0;
+
+                    Events.LocalEvent.Activate(new DecoyEvent(decoy,decoyDurationOption.getFloat()));
+
+                    SetMarionetteMode(0);
+                },
+                () => { return !PlayerControl.LocalPlayer.Data.IsDead && decoy==null; },
+                () => { return PlayerControl.LocalPlayer.CanMove || HudManager.Instance.PlayerCam.Target != PlayerControl.LocalPlayer; },
+                () => {
+                    placeButton.Timer = 10f;
+                },
+                getDecoyButtonSprite(),
+                new Vector3(-1.8f, 0f, 0),
+                __instance,
+                KeyCode.F,
+                false,
+                "button.label.decoy"
+            );
+            placeButton.MaxTimer = 10f;
+
+            marionetteMode = 0;
             if (marionetteButton != null)
             {
                 marionetteButton.Destroy();
@@ -64,29 +152,24 @@ namespace Nebula.Roles.ImpostorRoles
             marionetteButton = new CustomButton(
                 () =>
                 {
-                    if (decoy == null)
+                    if (marionetteMode == 0)
                     {
-                        marionetteButton.isEffectActive = false;
-                        decoy = RPCEventInvoker.ObjectInstantiate(Objects.CustomObject.Type.Decoy, PlayerControl.LocalPlayer.transform.position);
-                        Game.GameData.data.myData.currentTarget = null;
-                        marionetteButton.Sprite = getSwapButtonSprite();
-                        marionetteButton.SetLabel("button.label.swap");
-
-                        marionetteButton.Timer = marionetteButton.MaxTimer = swapCoolDownOption.getFloat();
-                    }
-                    else
-                    {
-                        marionetteButton.Timer = marionetteButton.MaxTimer;
                         RPCEventInvoker.DecoySwap(decoy);
                         if (HudManager.Instance.PlayerCam.Target != PlayerControl.LocalPlayer) HudManager.Instance.PlayerCam.SetTargetWithLight(PlayerControl.LocalPlayer);
                     }
+                    else
+                    {
+                        RPCEventInvoker.ObjectDestroy(decoy);
+                        decoy = null;
+                        placeButton.Timer = placeButton.MaxTimer;
+                    }
+                    marionetteButton.Timer = marionetteButton.MaxTimer;
                 },
-                () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
+                () => { return !PlayerControl.LocalPlayer.Data.IsDead && decoy != null && decoy.GameObject!=null; },
                 () => { return PlayerControl.LocalPlayer.CanMove || HudManager.Instance.PlayerCam.Target != PlayerControl.LocalPlayer; },
                 () => {
                     marionetteButton.Timer = 10f;
-                    marionetteButton.Sprite = getDecoyButtonSprite();
-                    marionetteButton.SetLabel("button.label.decoy");
+                    SetMarionetteMode(0);
                 },
                 getDecoyButtonSprite(),
                 new Vector3(-1.8f, 0f, 0),
@@ -96,6 +179,7 @@ namespace Nebula.Roles.ImpostorRoles
                 "button.label.decoy"
             );
             marionetteButton.MaxTimer = 10f;
+            marionetteButton.SetKeyGuide(KeyCode.LeftShift, new Vector2(0.48f, 0.13f), true);
 
             if (cameraButton != null)
             {
@@ -119,6 +203,22 @@ namespace Nebula.Roles.ImpostorRoles
                 false,
                 "button.label.monitor"
             );
+
+            SetMarionetteMode(0);
+        }
+
+        public override void MyUpdate()
+        {
+            if (decoy != null && decoy.GameObject==null)
+            {
+                decoy = null;
+                placeButton.Timer = placeButton.MaxTimer;
+            }
+            if (Input.GetKeyDown(KeyCode.LeftShift))
+            {
+                ChangeMarionetteMode();
+            }
+        
         }
 
         public override void CleanUp()
@@ -142,6 +242,11 @@ namespace Nebula.Roles.ImpostorRoles
             HudManager.Instance.PlayerCam.SetTargetWithLight(PlayerControl.LocalPlayer);
             if(decoyIndicator!=null && decoyIndicator.gameObject) GameObject.Destroy(decoyIndicator.gameObject);
             decoyIndicator = null;
+        }
+
+        public override void OnDied()
+        {
+            HudManager.Instance.PlayerCam.SetTargetWithLight(PlayerControl.LocalPlayer);
         }
 
         public override void OnMeetingStart()

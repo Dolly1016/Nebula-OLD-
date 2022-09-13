@@ -3,6 +3,7 @@ using HarmonyLib;
 using UnityEngine;
 using Nebula.Objects;
 using Nebula.Utilities;
+using System.Linq;
 
 namespace Nebula.Patches
 {
@@ -375,6 +376,8 @@ namespace Nebula.Patches
                 Objects.Ghost.Update();
 
                 if (CustomOptionHolder.timeLimitOption.getBool())Game.GameData.data.TimerUpdate();
+
+                Module.Information.UpperInformationManager.Update();
 
                 if (Game.GameData.data.Ghost != null) Game.GameData.data.Ghost.Update();
 

@@ -85,6 +85,7 @@ namespace Nebula.Roles.NeutralRoles
                         RPCEventInvoker.SwapExtraRole(PlayerControl.LocalPlayer, shiftPlayer, Roles.SecondaryGuesser, true);
                         break;
                 }
+                RPCEventInvoker.SwapExtraRole(PlayerControl.LocalPlayer, shiftPlayer, Roles.SecondaryMadmate, true);
                 RPCEventInvoker.SwapRole(PlayerControl.LocalPlayer, shiftPlayer);
 
                 shiftPlayer = null;

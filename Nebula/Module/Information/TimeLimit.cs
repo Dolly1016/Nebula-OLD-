@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace Nebula.Module
+namespace Nebula.Module.Information
 {
-    public class TimeLimit
+    public class TimeLimit : UpperInformation
     {
         SpriteRenderer[]? Renderers;
         static Sprite[] Sprites=null;
@@ -14,18 +14,21 @@ namespace Nebula.Module
         float Rate;
         Color Color;
 
-        private void SetPos(SpriteRenderer[] renderers,float y)
+        private void SetPos(SpriteRenderer[] renderers)
         {
-            renderers[0].transform.localPosition = new Vector3(-0.28f, y, -400f);
-            renderers[1].transform.localPosition = new Vector3(-0.06f, y, -400f);
-            renderers[2].transform.localPosition = new Vector3(0.0f, y, -400f);
-            renderers[3].transform.localPosition = new Vector3(0.25f, y, -400f);
-            renderers[4].transform.localPosition = new Vector3(0.47f, y, -400f);
-            renderers[5].transform.localPosition = new Vector3(0.59f, y, -400f);
+            renderers[0].transform.localPosition = new Vector3(-0.28f, 0, -400f);
+            renderers[1].transform.localPosition = new Vector3(-0.06f, 0, -400f);
+            renderers[2].transform.localPosition = new Vector3(0.0f, 0, -400f);
+            renderers[3].transform.localPosition = new Vector3(0.25f, 0, -400f);
+            renderers[4].transform.localPosition = new Vector3(0.47f, 0, -400f);
+            renderers[5].transform.localPosition = new Vector3(0.59f, 0, -400f);
         }
 
-        public TimeLimit(HudManager __instance)
+        public TimeLimit():base("TimeLimit")
         {
+            width = 0f;
+            height = 0.2f;
+
             Texture = Helpers.loadTextureFromResources("Nebula.Resources.Timer.png");
 
             Sprites = new Sprite[12];
@@ -41,13 +44,13 @@ namespace Nebula.Module
             for (int i = 0; i < Renderers.Length; i++)
             {
                 Renderers[i] = new UnityEngine.GameObject("Timer" + i).AddComponent<SpriteRenderer>();
-                Renderers[i].transform.SetParent(__instance.transform);
+                Renderers[i].transform.SetParent(gameObject.transform);
                 Renderers[i].gameObject.layer = UnityEngine.LayerMask.NameToLayer("UI");
 
                 Renderers[i].sortingOrder = 0;
             }
 
-            SetPos(Renderers,2.7f);
+            SetPos(Renderers);
 
             Renderers[2].sprite = Sprites[10];
             Renderers[5].sprite = Sprites[11];
@@ -56,15 +59,7 @@ namespace Nebula.Module
             Color = Color.white;
         }
 
-        public void Destroy()
-        {
-            foreach(var Renderer in Renderers)
-            {
-                UnityEngine.Object.Destroy(Renderer);
-            }
-        }
-
-        private void RenderersUpdate(SpriteRenderer[] renderers,float y)
+        private void RenderersUpdate(SpriteRenderer[] renderers)
         {
             renderers[4].sprite = Sprites[Timer % 10];
             renderers[3].sprite = Sprites[(Timer % 60) / 10];
@@ -76,7 +71,7 @@ namespace Nebula.Module
                 renderer.transform.localScale = new Vector3(Rate, Rate);
                 renderer.color = Color;
 
-                SetPos(renderers,y);
+                SetPos(renderers);
             }
 
             //一番上の桁の表示・非表示
@@ -90,7 +85,7 @@ namespace Nebula.Module
             }
         }
 
-        public void Update()
+        public override bool Update()
         {
             bool ChangeFlag = false;
             if (Timer != (int)Game.GameData.data.Timer)
@@ -110,7 +105,10 @@ namespace Nebula.Module
                 }
             }
 
-            if (Timer < 60)
+            if (ExileController.Instance)
+            {
+                Color = new Color(0.5f, 0.5f, 0.5f);
+            }else if (Timer < 60)
             {
                 Color = new Color(0.7f, 0f, 0f);
             }
@@ -126,7 +124,9 @@ namespace Nebula.Module
 
             Rate -= (Rate - 1f) * 0.1f;
 
-            RenderersUpdate(Renderers, 2.7f);
+            RenderersUpdate(Renderers);
+
+            return true;
         }
     }
 }

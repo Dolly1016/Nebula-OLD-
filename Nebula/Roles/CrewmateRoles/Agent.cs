@@ -64,7 +64,7 @@ namespace Nebula.Roles.CrewmateRoles
                 () => {
                     Game.TaskData task = PlayerControl.LocalPlayer.GetModData().Tasks;
 
-                    return task.AllTasks==task.Completed && PlayerControl.LocalPlayer.CanMove;
+                    return task.AllTasks == task.Completed && PlayerControl.LocalPlayer.CanMove && task.Quota > 0;
 
                 },
                 () => { agentButton.Timer = 0; },

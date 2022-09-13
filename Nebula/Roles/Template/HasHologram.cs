@@ -27,12 +27,11 @@ namespace Nebula.Roles.Template
                     GameData.PlayerInfo data = p.Data;
                     PoolablePlayer player = UnityEngine.Object.Instantiate<PoolablePlayer>(Patches.IntroCutsceneOnDestroyPatch.PlayerPrefab, HudManager.Instance.transform);
                     player.cosmetics.ResetCosmetics();
-                    player.cosmetics.SetSkin(data.DefaultOutfit.SkinId, data.DefaultOutfit.ColorId);
                     player.cosmetics.SetColor(data.DefaultOutfit.ColorId);
                     player.cosmetics.SetBodyColor(data.DefaultOutfit.ColorId);
-                    //PlayerControl.SetPlayerMaterialColors(data.DefaultOutfit.ColorId, player.Body);
-                    //DestroyableSingleton<HatManager>.Instance.SetSkin(player.Skin.layer, data.DefaultOutfit.SkinId);
+                    if (data.DefaultOutfit.SkinId != null) player.cosmetics.SetSkin(data.DefaultOutfit.SkinId, data.DefaultOutfit.ColorId);
                     if (data.DefaultOutfit.HatId != null) player.cosmetics.SetHat(data.DefaultOutfit.HatId, data.DefaultOutfit.ColorId);
+                    if (data.DefaultOutfit.VisorId != null) player.cosmetics.SetVisor(data.DefaultOutfit.VisorId, data.DefaultOutfit.ColorId);
                     player.cosmetics.SetPetIdle(data.DefaultOutfit.PetId, data.DefaultOutfit.ColorId);
                     player.cosmetics.nameText.text ="";
                     player.SetFlipX(true);
@@ -64,8 +63,8 @@ namespace Nebula.Roles.Template
 
         public override void CleanUp()
         {
-            foreach(var icon in PlayerIcons.Values)
-                UnityEngine.GameObject.Destroy(icon);
+            foreach (var icon in PlayerIcons.Values)
+                UnityEngine.GameObject.Destroy(icon.gameObject);
             
             PlayerIcons.Clear();
         }

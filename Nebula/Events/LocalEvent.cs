@@ -34,6 +34,11 @@ namespace Nebula.Events
 
         }
 
+        public virtual void LocalUpdate()
+        {
+
+        }
+
         protected LocalEvent(float duration)
         {
             this.duration = duration;
@@ -43,6 +48,7 @@ namespace Nebula.Events
         {
             foreach (LocalEvent localEvent in Events)
             {
+                localEvent.LocalUpdate();
                 localEvent.duration -= Time.deltaTime;
             }
 

@@ -69,6 +69,8 @@ namespace Nebula.Patches
 		public static void Prefix(PlayerControl __instance, [HarmonyArgument(0)] GameData.PlayerInfo meetingTarget)
 		{
 			EyesightPatch.ObserverMode = false;
+			EyesightPatch.ObserverTarget = 0;
+			HudManager.Instance.PlayerCam.SetTargetWithLight(PlayerControl.LocalPlayer);
 		}
 	}
 
@@ -79,6 +81,7 @@ namespace Nebula.Patches
 		static private float Distance = 1f;
 		static private float ObserverModeRate = 1f;
 		static public bool ObserverMode = false;
+		static public int ObserverTarget = 0;
 
 		private static IEnumerator GetEnumerator(HudManager __instance)
         {
@@ -99,12 +102,60 @@ namespace Nebula.Patches
 			yield break;
         }
 
+		private static void ChangeObserverTarget(bool increamentFlag)
+        {
+			int lastTarget = ObserverTarget;
+            while (true)
+            {
+				if (increamentFlag) ObserverTarget++; else ObserverTarget--;
+
+				if (ObserverTarget < 0) ObserverTarget = PlayerControl.AllPlayerControls.Count - 1;
+				else if (ObserverTarget >= PlayerControl.AllPlayerControls.Count) ObserverTarget = 0;
+
+				//一周分調べたら終了
+				if (lastTarget == ObserverTarget) break;
+
+				var p = PlayerControl.AllPlayerControls[ObserverTarget];
+				if (!p) continue;
+				if (p.Data.IsDead) continue;
+
+				HudManager.Instance.PlayerCam.SetTargetWithLight(p);
+
+				break;
+			}
+        }
+
 		public static void Postfix(HudManager __instance)
 		{
 			bool lastObserverMode = ObserverMode;
 
 			if (Game.GameData.data != null && Game.GameData.data.myData.CanSeeEveryoneInfo)
+			{
 				if (Input.GetKeyDown(KeyCode.M)) ObserverMode = !ObserverMode;
+				if (Input.GetKeyDown(KeyCode.Comma))
+				{
+					ChangeObserverTarget(false);
+					Objects.PlayerList.Instance.Show();
+					Objects.PlayerList.Instance.SelectPlayer(PlayerControl.AllPlayerControls[ObserverTarget].PlayerId);
+				}
+				if (Input.GetKeyDown(KeyCode.Period))
+				{
+					ChangeObserverTarget(true);
+					Objects.PlayerList.Instance.Show();
+					Objects.PlayerList.Instance.SelectPlayer(PlayerControl.AllPlayerControls[ObserverTarget].PlayerId);
+				}
+				if (Input.GetKeyDown(KeyCode.Escape))
+				{
+					__instance.PlayerCam.SetTargetWithLight(PlayerControl.LocalPlayer);
+					Objects.PlayerList.Instance.Close();
+				}
+				if(__instance.PlayerCam.Target != PlayerControl.LocalPlayer && __instance.PlayerCam.Target is PlayerControl && ((PlayerControl)__instance.PlayerCam.Target).Data.IsDead)
+                {
+					ChangeObserverTarget(true);
+				}
+
+				Objects.PlayerList.Instance.ListUpPlayers((b)=>!Helpers.playerById(b).Data.IsDead);
+			}
 
 			if (AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Started
 					|| !ShipStatus.Instance
@@ -113,7 +164,9 @@ namespace Nebula.Patches
 					|| Minigame.Instance
 					|| (MapBehaviour.Instance && MapBehaviour.Instance.IsOpen)
 					|| (Game.GameData.data == null || !Game.GameData.data.myData.CanSeeEveryoneInfo))
+			{
 				ObserverMode = false;
+			}
 
             if (ObserverMode != lastObserverMode)
             {

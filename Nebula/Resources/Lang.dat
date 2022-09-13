@@ -250,6 +250,7 @@
 "role.guardian.maxAntennas" : "Max Antennas"
 "role.guardian.placeCoolDown" : "Place Cool Down"
 "role.guardian.antennaEffectiveRange" : "Antenna Effective Range"
+"role.guardian.showGuardFlash" : "Show Guard Flash"
 
 "role.mayor.name" : "Mayor"
 "role.mayor.short" : "M"
@@ -498,6 +499,7 @@
 "role.marionette.short" : "Mr"
 "role.marionette.description" : "There Is No Intention"
 "role.marionette.info" : ""
+"role.marionette.decoyDuration" : "Decoy Duration"
 "role.marionette.swapCoolDown" : "Swap Cool Down"
 
 "role.morphing.name" : "Morphing"
@@ -733,6 +735,8 @@
 "game.message.countDown" : "Starting in %COUNT%s"
 "game.message.start" : "Game Start!"
 
+"game.message.observerGuide" : "[M]:Overlooking  [<][>]:Change Eyesight [Esc]:Come Back to My Eyesight"
+
 "game.spawnLocation.Dropship" : "Dropship"
 "game.spawnLocation.Electrical" : "Electrical"
 "game.spawnLocation.Laboratory" : "Laboratory"
@@ -806,6 +810,7 @@
 "button.label.chainShift" : "shift"
 "button.label.clean" : "clean"
 "button.label.decoy" : "decoy"
+"button.label.destroy" : "destroy"
 "button.label.disturb" : "disturb"
 "button.label.douse" : "douse"
 "button.label.drag" : "drag"

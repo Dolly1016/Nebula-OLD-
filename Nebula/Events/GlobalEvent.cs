@@ -77,16 +77,10 @@ namespace Nebula.Events
 
         }
 
-
-        //このイベントが発生している時、プレイヤーの見た目の変更の反映を許すかどうか
-        public bool AllowUpdateOutfit { get; protected set; }
-
         protected GlobalEvent(Type type,float duration, ulong option)
         {
             this.type = type;
             this.duration = duration;
-
-            this.AllowUpdateOutfit = true;
         }
 
         static public bool IsActive(Type type)
@@ -143,15 +137,6 @@ namespace Nebula.Events
             }
 
             Events.RemoveAll(e => e.CheckTerminal());
-        }
-
-        static public bool GetAllowUpdateOutfit()
-        {
-            foreach (GlobalEvent globalEvent in Events)
-            {
-                if (! globalEvent.AllowUpdateOutfit) return false;
-            }
-            return true;
         }
     }
 }

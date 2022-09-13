@@ -115,6 +115,8 @@ namespace Nebula.Patches
         {
 			public static bool Prefix(SpawnInMinigame __instance)
             {
+				SpawnInMinigame.Instance = __instance;
+
 				if (PlayerControl.GameOptions.MapId != 4) return true;
 
 				SpawnInMinigame.SpawnLocation[] array = Enumerable.ToArray<SpawnInMinigame.SpawnLocation>(__instance.Locations);

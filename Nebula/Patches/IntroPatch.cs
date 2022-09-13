@@ -53,12 +53,19 @@ namespace Nebula.Patches
 
             PlayerPrefab = __instance.PlayerPrefab;
 
+            Module.Information.UpperInformationManager.Initialize();
             if (CustomOptionHolder.limiterOptions.getBool())
             {
                 Game.GameData.data.Timer = CustomOptionHolder.timeLimitOption.getFloat() * 60 + CustomOptionHolder.timeLimitSecondOption.getFloat();
-                Game.GameData.data.LimitRenderer = new Module.TimeLimit(FastDestroyableSingleton<HudManager>.Instance);
+
+                new Module.Information.TimeLimit();
+
                 RPCEventInvoker.SynchronizeTimer();
             }
+
+            new Module.Information.TextInformation(Language.Language.GetString("game.message.observerGuide"));
+
+            new Objects.PlayerList(PlayerPrefab);
 
             Roles.Roles.StaticInitialize();
             

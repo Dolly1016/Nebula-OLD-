@@ -32,6 +32,7 @@ namespace Nebula
             text.enableWordWrapping = false;
             text.transform.localScale = Vector3.one * 0.5f;
             text.transform.localPosition += new Vector3(-0.05f, 0.7f, 0);
+            text.gameObject.SetActive(true);
             return text;
         }
 
@@ -235,7 +236,7 @@ namespace Nebula
             return result;
         }
 
-        public static void SetLook(this PlayerControl target, String playerName, int colorId, string hatId, string visorId, string skinId, string petId)
+        public static void SetLook(this PlayerControl target, string? playerName, int colorId, string hatId, string visorId, string skinId, string petId)
         {
             target.MyPhysics.ResetAnimState();
             target.RawSetVisor(visorId,colorId);
@@ -244,68 +245,69 @@ namespace Nebula
             target.RawSetColor(colorId);
             target.SetPlayerMaterialColors(target.cosmetics.visor.Image);
 
-            var p=Game.GameData.data.GetPlayerData(target.PlayerId);
-            if (p != null)p.currentName = playerName;
-
-            /*
-            SkinData nextSkin = DestroyableSingleton<HatManager>.Instance.GetSkinById(skinId);
-            PlayerPhysics playerPhysics = target.MyPhysics;
-            AnimationClip clip = null;
-            var spriteAnim = playerPhysics.Skin.animator;
-            var currentPhysicsAnim = playerPhysics.Animator.GetCurrentAnimation();
-            if (currentPhysicsAnim == playerPhysics.CurrentAnimationGroup.RunAnim) clip = nextSkin.viewData.viewData.RunAnim;
-            else if (currentPhysicsAnim == playerPhysics.CurrentAnimationGroup.SpawnAnim) clip = nextSkin.viewData.viewData.SpawnAnim;
-            else if (currentPhysicsAnim == playerPhysics.CurrentAnimationGroup.EnterVentAnim) clip = nextSkin.viewData.viewData.EnterVentAnim;
-            else if (currentPhysicsAnim == playerPhysics.CurrentAnimationGroup.ExitVentAnim) clip = nextSkin.viewData.viewData.ExitVentAnim;
-            else if (currentPhysicsAnim == playerPhysics.CurrentAnimationGroup.IdleAnim) clip = nextSkin.viewData.viewData.IdleAnim;
-            else clip = nextSkin.viewData.viewData.IdleAnim;
-            float progress = playerPhysics.Animator.m_animator.GetCurrentAnimatorStateInfo(0).normalizedTime;
-            playerPhysics.Skin.skin = nextSkin.viewData.viewData;
-            spriteAnim.Play(clip, 1f);
-            spriteAnim.m_animator.Play("a", 0, progress % 1);
-            spriteAnim.m_animator.Update(0f);
-            */
+            var p = Game.GameData.data?.GetPlayerData(target.PlayerId) ?? null;
+            if (p != null && playerName != null) p.currentName = playerName;
 
             //死体のペットは変更しない(生き返ってしまうため)
             if (target.Data.IsDead) return;
             if (target.cosmetics.currentPet) UnityEngine.Object.Destroy(target.cosmetics.currentPet.gameObject);
-            target.cosmetics.currentPet = UnityEngine.Object.Instantiate<PetBehaviour>(FastDestroyableSingleton<HatManager>.Instance.GetPetById(petId).viewData.viewData);
-            target.cosmetics.currentPet.transform.position = target.transform.position;
-            target.cosmetics.currentPet.Source = target;
-            target.cosmetics.currentPet.Visible = target.Visible;
-            target.SetPlayerMaterialColors(target.cosmetics.currentPet.rend);
+
+            try
+            {
+                target.cosmetics.currentPet = UnityEngine.Object.Instantiate<PetBehaviour>(FastDestroyableSingleton<HatManager>.Instance.GetPetById(petId).viewData.viewData);
+                target.cosmetics.currentPet.transform.position = target.transform.position;
+                target.cosmetics.currentPet.Source = target;
+                target.cosmetics.currentPet.Visible = target.Visible;
+                target.SetPlayerMaterialColors(target.cosmetics.currentPet.rend);
+            }
+            catch { 
+                //ペットが存在しない場合は例外が発生する
+            }
         }
 
-        public static void SetOutfit(this PlayerControl target, string name,Game.PlayerData.PlayerOutfitData outfit)
+        public static void SetLook(this PlayerControl target,Game.PlayerData.PlayerOutfitData outfit)
         {
             if (outfit == null)
             {
                 return;
             }
 
-            target.SetLook(name, outfit.ColorId, outfit.HatId, outfit.VisorId, outfit.SkinId, outfit.PetId);
+            target.SetLook(outfit.Name, outfit.ColorId, outfit.HatId, outfit.VisorId, outfit.SkinId, outfit.PetId);
         }
 
-        public static void SetOutfit(this PlayerControl target, PlayerControl reference)
+        public static Game.PlayerData.PlayerOutfitData? AddOutfit(this PlayerControl target, string? playerName, int colorId, string hatId, string visorId, string skinId, string petId, int priority)
+        {
+            var outfit = new Game.PlayerData.PlayerOutfitData(priority, playerName, colorId, hatId, visorId, skinId, petId);
+            target.GetModData().AddOutfit(outfit);
+            return outfit;
+        }
+
+        public static Game.PlayerData.PlayerOutfitData? AddOutfit(this PlayerControl target, PlayerControl reference,int priority)
         {
             var rp = Game.GameData.data.GetPlayerData(reference.PlayerId);
-            if (rp == null) return;
+            if (rp == null) return null ;
 
             string name = rp.name;
-            Game.PlayerData.PlayerOutfitData outfit = rp.CurrentOutfit;
+            Game.PlayerData.PlayerOutfitData outfit = new Game.PlayerData.PlayerOutfitData(priority, rp.name, rp.Outfit);
             if (outfit == null)
             {
-                return;
+                return null;
             }
-
-            target.SetLook(name, outfit.ColorId, outfit.HatId, outfit.VisorId, outfit.SkinId, outfit.PetId);
+            target.GetModData().AddOutfit(outfit);
+            return outfit;
         }
 
-        public static void ResetOutfit(this PlayerControl target)
+        public static void AddOutfit(this PlayerControl target, Game.PlayerData.PlayerOutfitData outfit)
         {
-            var p = target.GetModData();
-            if (p == null) return;
-            target.SetOutfit(p.name, p.Outfit);
+            target.GetModData().AddOutfit(outfit);
+        }
+
+        public static bool RemoveOutfit(this PlayerControl target, Game.PlayerData.PlayerOutfitData outfit)
+        {
+            var data = Game.GameData.data.GetPlayerData(target.PlayerId);
+            if (data== null) return false;
+            data.RemoveOutfit(outfit);
+            return true;
         }
 
         public static Game.PlayerData? GetModData(byte player)

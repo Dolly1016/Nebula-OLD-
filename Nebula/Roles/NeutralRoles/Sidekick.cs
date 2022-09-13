@@ -27,7 +27,7 @@ namespace Nebula.Roles.NeutralRoles
 
         public override void LoadOptionData()
         {
-            TopOption.AddPrerequisite(Jackal.CanCreateSidekickOption);
+            TopOption.AddPrerequisite(Jackal.CanCreateSidekickOption).AddCustomPrerequisite(()=>Roles.Jackal.IsSpawnable());
 
             SidekickCanKillOption = CreateOption(Color.white, "canKill", false);
             SidekickKillCoolDownOption = CreateOption(Color.white, "killCoolDown", 20f, 10f, 60f, 2.5f);

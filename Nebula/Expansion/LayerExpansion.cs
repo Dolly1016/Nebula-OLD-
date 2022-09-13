@@ -10,6 +10,7 @@ namespace Nebula
         static int? defaultLayer=null;
         static int? shortObjectsLayer = null;
         static int? objectsLayer = null;
+        static int? uiLayer = null;
 
         static public int GetDefaultLayer()
         {
@@ -27,6 +28,12 @@ namespace Nebula
         {
             if (objectsLayer == null) objectsLayer = LayerMask.NameToLayer("Objects");
             return objectsLayer.Value;
+        }
+
+        static public int GetUILayer()
+        {
+            if (uiLayer == null) uiLayer = LayerMask.NameToLayer("UI");
+            return uiLayer.Value;
         }
     }
 }

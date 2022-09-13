@@ -1,34 +1,34 @@
 ﻿using Nebula.Utilities;
+using System;
+using System.Collections.Generic;
 
 namespace Nebula.Events.Variation
 {
     class Camouflage : GlobalEvent
     {
-        public Camouflage(float duration, ulong option) :base(GlobalEvent.Type.Camouflage,duration,option)
-        {
-            AllowUpdateOutfit = false;
+        Game.PlayerData.PlayerOutfitData outfit;
+
+        public Camouflage(float duration, ulong option) :base(GlobalEvent.Type.Camouflage,duration-1f,option){
         }
+        
 
         public override void OnActivate()
         {
-            if (GlobalEvent.IsActive(GlobalEvent.Type.Camouflage)) return;
-
             //Camouflagerを確定させる
             Game.GameData.data.EstimationAI.Determine(Roles.Roles.Camouflager);
 
+            outfit = new Game.PlayerData.PlayerOutfitData(100,"",38,"","","","");
             foreach (PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
-                player.SetLook("", 38, "", "", "", "");
+                player.AddOutfit(outfit);
             }
         }
 
         public override void OnTerminal()
         {
-            if (GlobalEvent.IsActive(GlobalEvent.Type.Camouflage)) return;
-
-            foreach(PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
+            foreach (PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
-                player.ResetOutfit();
+                player.RemoveOutfit(outfit);
             }
         }
     }

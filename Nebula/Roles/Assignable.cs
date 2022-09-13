@@ -482,6 +482,14 @@ namespace Nebula.Roles
         public virtual void GlobalIntroInitialize(PlayerControl __instance) { }
 
         /// <summary>
+        /// ゲーム中にロールが変更される際に呼ばれます。
+        /// 全てのプレイヤーに対して呼び出されます。
+        /// </summary>
+        /// <param name="__instance"></param>
+        [RoleGlobalMethod]
+        public virtual void GlobalFinalizeInGame(PlayerControl __instance) { }
+
+        /// <summary>
         /// プレイヤーごとの追加勝利を確認します。
         /// </summary>
         /// <param name="condition"></param>

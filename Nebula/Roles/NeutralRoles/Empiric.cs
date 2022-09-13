@@ -31,6 +31,7 @@ namespace Nebula.Roles.NeutralRoles
         private int leftInfect;
         private Dictionary<byte, float> infectProgress;
         private float coasting;
+        private float infoUpdateCounter=0f;
 
         public bool WinTrigger { get; set; } = false;
         public byte Winner { get; set; } = Byte.MaxValue;
@@ -172,7 +173,7 @@ namespace Nebula.Roles.NeutralRoles
             Patches.PlayerControlPatch.SetPlayerOutline(data.currentTarget, Color.yellow);
 
             //感染停滞期を進める
-            if (MeetingHud.Instance == null)
+            if (MeetingHud.Instance == null && SpawnInMinigame.Instance==null && ExileController.Instance ==null)
             {
                 coasting -= Time.deltaTime;
             }
@@ -253,6 +254,29 @@ namespace Nebula.Roles.NeutralRoles
                     player.Value.cosmetics.nameText.color = Color.white;
                 }
             }
+
+            infoUpdateCounter += Time.deltaTime;
+            if (infoUpdateCounter > 0.5f)
+            {
+                RPCEventInvoker.UpdatePlayersIconInfo(this,activePlayers,infectProgress);
+                infoUpdateCounter = 0f;
+            }
+        }
+
+        public override void GlobalInitialize(PlayerControl __instance)
+        {
+            base.GlobalInitialize(__instance);
+
+            new Module.Information.PlayersIconInformation(Helpers.cs(RoleColor,__instance.name),__instance.PlayerId,this);
+        }
+
+        public override void GlobalFinalizeInGame(PlayerControl __instance)
+        {
+            Module.Information.UpperInformationManager.Remove((i) =>
+            i is Module.Information.PlayersIconInformation &&
+            ((Module.Information.PlayersIconInformation)i).relatedPlayerId == __instance.PlayerId &&
+            ((Module.Information.PlayersIconInformation)i).relatedRole == this
+            );
         }
 
         public Empiric()

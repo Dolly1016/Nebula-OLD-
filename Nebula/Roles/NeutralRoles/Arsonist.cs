@@ -26,6 +26,8 @@ namespace Nebula.Roles.NeutralRoles
         public bool WinTrigger { get; set; } = false;
         public byte Winner { get; set; } = Byte.MaxValue;
 
+        private float infoUpdateCounter = 0.0f;
+
         public override void LoadOptionData()
         { 
             douseDurationOption = CreateOption(Color.white, "douseDuration", 3f, 1f, 10f, 0.5f);
@@ -58,11 +60,6 @@ namespace Nebula.Roles.NeutralRoles
         }
 
         static private bool canIgnite = false;
-
-        public override void GlobalInitialize(PlayerControl __instance)
-        {
-            base.GlobalInitialize(__instance);
-        }
 
         public override void GlobalIntroInitialize(PlayerControl __instance)
         {
@@ -184,12 +181,44 @@ namespace Nebula.Roles.NeutralRoles
             Game.MyPlayerData data = Game.GameData.data.myData;
             data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(1.8f*douseRangeOption.getFloat(), false, false, activePlayers);
             Patches.PlayerControlPatch.SetPlayerOutline(data.currentTarget, Color.yellow);
+
+            infoUpdateCounter += Time.deltaTime;
+            if (infoUpdateCounter > 0.5f)
+            {
+                RPCEventInvoker.UpdatePlayersIconInfo(this, activePlayers, null);
+                infoUpdateCounter = 0f;
+            }
         }
 
         public override void OnRoleRelationSetting()
         {
             RelatedRoles.Add(Roles.Empiric);
             RelatedRoles.Add(Roles.EvilAce);
+        }
+
+        public override void GlobalInitialize(PlayerControl __instance)
+        {
+            base.GlobalInitialize(__instance);
+
+            new Module.Information.PlayersIconInformation(Helpers.cs(RoleColor, __instance.name), __instance.PlayerId, this);
+        }
+
+        public override void OnDied (byte playerId)
+        {
+            Module.Information.UpperInformationManager.Remove((i) =>
+            i is Module.Information.PlayersIconInformation &&
+            ((Module.Information.PlayersIconInformation)i).relatedPlayerId == playerId &&
+            ((Module.Information.PlayersIconInformation)i).relatedRole == this
+            );
+        }
+
+        public override void GlobalFinalizeInGame(PlayerControl __instance)
+        {
+            Module.Information.UpperInformationManager.Remove((i) =>
+            i is Module.Information.PlayersIconInformation &&
+            ((Module.Information.PlayersIconInformation)i).relatedPlayerId == __instance.PlayerId &&
+            ((Module.Information.PlayersIconInformation)i).relatedRole == this
+            );
         }
 
         public Arsonist()
