@@ -83,7 +83,8 @@ namespace Nebula
         InitializeRitualData,
         RitualSharePerks,
         RitualUpdate,
-        DecoySwap
+        DecoySwap,
+        Paint
     }
 
     //RPCを受け取ったときのイベント
@@ -313,6 +314,9 @@ namespace Nebula
                     break;
                 case (byte)CustomRPC.DecoySwap:
                     RPCEvents.DecoySwap(Helpers.playerById(reader.ReadByte()), Objects.CustomObject.GetObject(reader.ReadUInt64()), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+                    break;
+                case (byte)CustomRPC.Paint:
+                    RPCEvents.Paint(Helpers.playerById(reader.ReadByte()), new Game.PlayerData.PlayerOutfitData(reader));
                     break;
             }
         }
@@ -1400,6 +1404,14 @@ namespace Nebula
                 }
             }
         }
+
+        public static void Paint(PlayerControl player,Game.PlayerData.PlayerOutfitData outfit)
+        {
+            Events.Schedule.RegisterPostMeetingAction(
+                () => {
+                    player.GetModData().AddOutfit(outfit);
+                }, 50);
+        }
     }
 
     public class RPCEventInvoker
@@ -2198,6 +2210,15 @@ namespace Nebula
                 else writer.Write((byte)0);
             }
             AmongUsClient.Instance.FinishRpcImmediately(writer);
+        }
+
+        public static void Paint(PlayerControl player,Game.PlayerData.PlayerOutfitData outfit)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Paint, Hazel.SendOption.Reliable, -1);
+            writer.Write(player.PlayerId);
+            outfit.Serialize(writer);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.Paint(player,outfit);
         }
     }
 }
