@@ -284,7 +284,7 @@ namespace Nebula
                     RPCEvents.RaiderThrow(reader.ReadByte(), new Vector2(reader.ReadSingle(), reader.ReadSingle()), reader.ReadSingle());
                     break;
                 case (byte)CustomRPC.Morph:
-                    RPCEvents.Morph(reader.ReadByte(), reader.ReadByte());
+                    RPCEvents.Morph(reader.ReadByte(), reader);
                     break;
                 case (byte)CustomRPC.MorphCancel:
                     RPCEvents.MorphCancel(reader.ReadByte());
@@ -1188,12 +1188,12 @@ namespace Nebula
             }
         }
 
-        public static void Morph(byte playerId,byte targetId)
+        public static void Morph(byte playerId,MessageReader reader)
         {
             //Morphingを確定させる
             Game.GameData.data.EstimationAI.Determine(Roles.Roles.Morphing);
 
-            Events.LocalEvent.Activate(new Roles.ImpostorRoles.Morphing.MorphEvent(playerId,targetId));
+            Events.LocalEvent.Activate(new Roles.ImpostorRoles.Morphing.MorphEvent(playerId,targetId,reader));
         }
 
         public static void MorphCancel(byte playerId)
@@ -2026,13 +2026,13 @@ namespace Nebula
             RPCEvents.RaiderThrow(PlayerControl.LocalPlayer.PlayerId, pos, angle);
         }
 
-        public static void Morph(byte targetId)
+        public static void Morph(Game.PlayerData.PlayerOutfitData outfit)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Morph, Hazel.SendOption.Reliable, -1);
             writer.Write(PlayerControl.LocalPlayer.PlayerId);
-            writer.Write(targetId);
+            outfit.Serialize(writer);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
-            RPCEvents.Morph(PlayerControl.LocalPlayer.PlayerId, targetId);
+            RPCEvents.Morph(PlayerControl.LocalPlayer.PlayerId, outfit);
         }
 
         public static void MorphCancel()

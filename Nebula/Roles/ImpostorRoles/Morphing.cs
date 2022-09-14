@@ -26,13 +26,14 @@ namespace Nebula.Roles.ImpostorRoles
 
             public override void OnActivate()
             {
-                outfit=Helpers.playerById(PlayerId).AddOutfit(Helpers.playerById(TargetId), 80);
+                this.outfit = Helpers.playerById(PlayerId).AddOutfit(outfit, 80) ;
             }
 
-            public MorphEvent(byte playerId,byte targetId):base(Roles.Morphing.morphDurationOption.getFloat()-1f)
+            public MorphEvent(byte playerId,byte targetId, Game.PlayerData.PlayerOutfitData outfit) :base(Roles.Morphing.morphDurationOption.getFloat()-1f)
             {
                 PlayerId = playerId;
                 TargetId = targetId;
+                this.outfit = outfit;
                 SpreadOverMeeting = false;
             }
 
@@ -44,6 +45,7 @@ namespace Nebula.Roles.ImpostorRoles
         private Module.CustomOption morphDurationOption;
 
         private PlayerControl? morphTarget;
+        private Game.PlayerData.PlayerOutfitData morphOutfit;
         private Objects.Arrow? arrow;
 
         private Sprite sampleButtonSprite = null;
@@ -91,10 +93,11 @@ namespace Nebula.Roles.ImpostorRoles
                         Game.GameData.data.myData.currentTarget = null;
                         morphButton.Sprite = getMorphButtonSprite();
                         morphButton.SetLabel("button.label.morph");
+                        morphOutfit = morphTarget.GetModData().GetOutfitData(50);
                     }
                     else
                     {
-                        RPCEventInvoker.Morph(morphTarget.PlayerId);
+                        RPCEventInvoker.Morph(morphOutfit);
                     }
                 },
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead; },

@@ -649,6 +649,22 @@ namespace Nebula.Game
                 SkinId = outfit.SkinId;
                 PetId = outfit.PetId;
             }
+
+            public void Serialize(MessageWriter writer)
+            {
+                writer.Write(Priority);
+                writer.Write(Name);
+                writer.Write(ColorId);
+                writer.Write(HatId);
+                writer.Write(VisorId);
+                writer.Write(SkinId);
+                writer.Write(PetId);
+            }
+
+            public PlayerOutfitData(MessageReader reader)
+            {
+                return new PlayerOutfitData(reader.ReadInt32(),reader.ReadString(),reader.ReadInt32(),reader.ReadString(),reader.ReadString(), reader.ReadString(), reader.ReadString());
+            }
         }
 
         public byte id { get; }
