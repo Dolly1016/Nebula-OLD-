@@ -29,6 +29,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.14 | 2022.8.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.14,2022.8.24/Nebula_v1.14.zip)|
 | 1.13.3 | 2022.8.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.13.3,2022.8.24/Nebula_v1.13.3.zip)|
 | 1.13.2 | 2022.8.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.13.2,2022.8.24/Nebula_v1.13.2.zip)|
 | 1.13.1.2 | 2022.8.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.13.1.2,2022.8.24/Nebula_v1.13.1.2.zip)|
@@ -219,6 +220,23 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+ 
+ **Version 1.14**
+ - Marionette, Guardian を追加
+ - 死亡後、EmpiricやArsonistの進行状況や生存者視点を見れるように
+ - 追放画面中にタイマーが進まないよう変更
+ - 死亡後に利用可能なアクションが画面上部に表示されるように
+ - カモフラージュ中にMorphingが変身できるように仕様変更
+ - デフォルトで日本語の言語パックを追加
+ - ローカルハットのハッシュ値を出力できるように
+ - 歯車設定に「Processor Restriction」「Prioritize Among Us」を追加
+ - 千里眼モードで会議に入るとタスクを進められなくなる問題を修正
+ - Sidekickの設定が意図しないタイミングで表示される問題を修正
+ - Airshipで、ホストが湧き位置選択画面を終了しないとゲームが終了しない問題を修正
+ - Empiricの感染が会議終了後に進んでしまう問題を修正
+ - Buskerが会議直前に復活した場合、会議中Buskerが死んでいるように見えてしまうことがある問題を修正
+ - AlienやJesterが会議中にサボタージュマップを開けてしまう問題を修正
+ - Evil/Nice Trapperの設置ボタンが意図しないタイミングで表示されていた問題を修正
  
  **Version 1.13.3**
  - Chain Shifterに新オプション「Secondary Guesser Shift」を追加
