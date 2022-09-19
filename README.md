@@ -29,6 +29,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.14.1 | 2022.8.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.14.1,2022.8.24/Nebula_v1.14.1.zip)|
 | 1.14 | 2022.8.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.14,2022.8.24/Nebula_v1.14.zip)|
 | 1.13.3 | 2022.8.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.13.3,2022.8.24/Nebula_v1.13.3.zip)|
 | 1.13.2 | 2022.8.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.13.2,2022.8.24/Nebula_v1.13.2.zip)|
@@ -220,6 +221,15 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+ 
+ **Version 1.14.1**
+ - 新オプションカテゴリ「Sabotage Option」を追加
+ - 使用できるAdminを指定できるオプション「Invalidate Primary Admin」を追加
+ - アドミンの表示範囲を旧式のものに戻すオプション「Use Classic Admin」を追加
+ - 色の明暗表示をリワーク
+ - Trapperの不可視のトラップがTrapperに限り全て見えるように
+ - Marionetteのデコイ設置ボタンが正しく消えない問題を修正
+ - 会議中にAvengerが死亡してもグレーのハートマークが消えない問題を修正
  
  **Version 1.14**
  - Marionette, Guardian を追加
