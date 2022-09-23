@@ -183,8 +183,10 @@ namespace Nebula.Patches
                     Helpers.RoleAction(player.TargetPlayerId, (role) => { role.EditDisplayName(player.TargetPlayerId, ref name, false); });
                     Helpers.RoleAction(PlayerControl.LocalPlayer, (role) => { role.EditOthersDisplayName(player.TargetPlayerId, ref name, false); });
                     if (!name.Equals(""))
-                        player.NameText.text = playerData.currentName + " " + name;
-                    
+                        player.NameText.text = playerData.name + " " + name;
+                    else
+                        player.NameText.text = playerData.name;
+
                     if (player.TargetPlayerId == PlayerControl.LocalPlayer.PlayerId)
                     {
                         //自分自身ならロールの色にする
@@ -296,6 +298,27 @@ namespace Nebula.Patches
             }
         }
 
+        public static void MapUpdate()
+        {
+            MapBehaviour __instance = MapBehaviour.Instance;
+
+            bool lastMinimapFlag = MapBehaviorPatch.minimapFlag;
+
+            if (Minigame.Instance)
+                MapBehaviorPatch.minimapFlag = true;
+            else if (!MeetingHud.Instance && !__instance.countOverlay.gameObject.activeSelf && !__instance.infectedOverlay.gameObject.activeSelf && !PlayerControl.LocalPlayer.Data.IsDead)
+            {
+                if (Input.GetKeyDown(KeyCode.V)) MapBehaviorPatch.minimapFlag = !MapBehaviorPatch.minimapFlag;
+            }
+            else
+                MapBehaviorPatch.minimapFlag = false;
+
+            if (__instance.IsOpen && lastMinimapFlag != MapBehaviorPatch.minimapFlag) DestroyableSingleton<HudManager>.Instance.SetHudActive(MapBehaviorPatch.minimapFlag);
+
+            MapBehaviorPatch.UpdateMapSize(__instance);
+            __instance.transform.GetChild(2).gameObject.SetActive(!MapBehaviorPatch.minimapFlag);
+        }
+
         public static void Postfix(HudManager __instance)
         {
             //アニメーションを無効化
@@ -321,6 +344,8 @@ namespace Nebula.Patches
 
                 // ボタン類の更新 
                 CustomButton.HudUpdate();
+
+                if (MapBehaviour.Instance && MapBehaviour.Instance.gameObject.active) MapUpdate();
 
                 Helpers.RoleAction(PlayerControl.LocalPlayer, (role) => { role.MyUpdate(); });
                 if (!PlayerControl.LocalPlayer.Data.Role.IsImpostor && PlayerControl.LocalPlayer.GetModData().role.VentPermission != Roles.VentPermission.CanNotUse)

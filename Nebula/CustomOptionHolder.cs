@@ -97,7 +97,9 @@ namespace Nebula
         public static CustomOption multipleSpawnPoints;
         public static CustomOption synchronizedSpawning;
         public static CustomOption optimizedMaps;
+        public static CustomOption invalidatePrimaryAdmin;
         public static CustomOption invalidateSecondaryAdmin;
+        public static CustomOption useClassicAdmin;
         public static CustomOption allowParallelMedBayScans;
 
 
@@ -133,6 +135,16 @@ namespace Nebula
         public static CustomOption MeistersManifoldsOption;
         public static CustomOption MeistersFilterOption;
         public static CustomOption MeistersFuelEnginesOption;
+
+        public static CustomOption SabotageOption;
+        public static CustomOption SabotageCoolDownOption;
+        public static CustomOption SkeldReactorTimeLimitOption;
+        public static CustomOption SkeldO2TimeLimitOption;
+        public static CustomOption MIRAReactorTimeLimitOption;
+        public static CustomOption MIRAO2TimeLimitOption;
+        public static CustomOption SeismicStabilizersTimeLimitOption;
+        public static CustomOption AvertCrashTimeLimitOption;
+        public static CustomOption BlackOutStrengthOption;
 
         public static CustomOption SoloFreePlayOption;
         public static CustomOption CountOfDummiesOption;
@@ -184,7 +196,7 @@ namespace Nebula
 
         public static void Load()
         {
-            presetSelection = CustomOption.Create(1, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.preset", presets, presets[0], null, true,false,"",CustomOptionTab.Settings).HiddenOnDisplay(true).SetGameMode(CustomGameMode.All).Protect();
+            presetSelection = CustomOption.Create(1, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.preset", presets, presets[0], null, true, false, "", CustomOptionTab.Settings).HiddenOnDisplay(true).SetGameMode(CustomGameMode.All).Protect();
             gameMode = CustomOption.Create(2, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.gameMode", gamemodes, gamemodes[0], null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.All);
 
             crewmateRolesCountMin = CustomOption.Create(10001, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.minimumCrewmateRoles", 0f, 0f, 15f, 1f, null, true, false, "", CustomOptionTab.Settings | CustomOptionTab.CrewmateRoles).HiddenOnDisplay(true);
@@ -195,7 +207,7 @@ namespace Nebula
             impostorRolesCountMax = CustomOption.Create(10006, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.maximumImpostorRoles", 0f, 0f, 5f, 1f, null, false, false, "", CustomOptionTab.Settings | CustomOptionTab.ImpostorRoles).HiddenOnDisplay(true);
 
             SoloFreePlayOption = CustomOption.Create(10007, Color.white, "option.soloFreePlayOption", new string[] { "option.empty" }, "option.empty", null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.FreePlay).AddCustomPrerequisite(() => { return PlayerControl.AllPlayerControls.Count == 1; });
-            CountOfDummiesOption = CustomOption.Create(10008, Color.white, "option.countOfDummies", 0,0,14,1, SoloFreePlayOption).SetGameMode(CustomGameMode.All);
+            CountOfDummiesOption = CustomOption.Create(10008, Color.white, "option.countOfDummies", 0, 0, 14, 1, SoloFreePlayOption).SetGameMode(CustomGameMode.All);
 
             RitualOption = CustomOption.Create(10020, Color.white, "option.ritualOption", new string[] { "option.empty" }, "option.empty", null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.Ritual);
             NumOfMissionsOption = CustomOption.Create(10021, Color.white, "option.numOfMissions", 3, 1, 8, 1, RitualOption, false, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.Ritual);
@@ -205,7 +217,7 @@ namespace Nebula
             RitualSearchCoolDownOption = CustomOption.Create(10025, Color.white, "option.searchCoolDown", 10f, 2.5f, 30f, 2.5f, RitualOption, false, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.Ritual);
             RitualSearchableDistanceOption = CustomOption.Create(10026, Color.white, "option.searchableDistance", 2.5f, 1.25f, 10f, 1.25f, RitualOption, false, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.Ritual);
 
-            emergencyOptions = CustomOption.Create(10100, Color.white, "option.emergencyOptions", false, null, true,false,"", CustomOptionTab.Settings).SetGameMode(~(CustomGameMode.Minigame|CustomGameMode.Ritual));
+            emergencyOptions = CustomOption.Create(10100, Color.white, "option.emergencyOptions", false, null, true, false, "", CustomOptionTab.Settings).SetGameMode(~(CustomGameMode.Minigame | CustomGameMode.Ritual));
             maxNumberOfMeetings = CustomOption.Create(10101, Color.white, "option.maxNumberOfMeetings", 10, 0, 15, 1, emergencyOptions).SetGameMode(~CustomGameMode.Minigame);
             deathPenaltyForDiscussionTime = CustomOption.Create(10102, Color.white, "option.deathPenaltyForDiscussionTime", 5f, 0f, 30f, 1f, emergencyOptions).SetGameMode(~CustomGameMode.Minigame);
             deathPenaltyForDiscussionTime.suffix = "second";
@@ -224,8 +236,10 @@ namespace Nebula
             multipleSpawnPoints = CustomOption.Create(10132, Color.white, "option.multipleSpawnPoints", false, mapOptions).SetGameMode(~(CustomGameMode.Minigame | CustomGameMode.Ritual));
             synchronizedSpawning = CustomOption.Create(10133, Color.white, "option.synchronizedSpawning", false, mapOptions).SetGameMode(~(CustomGameMode.Minigame | CustomGameMode.Ritual));
             optimizedMaps = CustomOption.Create(10134, Color.white, "option.optimizedMaps", true, mapOptions).SetGameMode(CustomGameMode.All);
-            invalidateSecondaryAdmin = CustomOption.Create(10135, Color.white, "option.invalidateSecondaryAdmin", true, mapOptions).SetGameMode(CustomGameMode.All);
-            allowParallelMedBayScans = CustomOption.Create(10136, Color.white, "option.allowParallelMedBayScans", false, mapOptions).SetGameMode(CustomGameMode.All);
+            invalidatePrimaryAdmin = CustomOption.Create(10135, Color.white, "option.invalidatePrimaryAdmin", new string[] { "option.switch.off", "option.invalidatePrimaryAdmin.onlyAirship", "option.switch.on" }, "option.empty", mapOptions).SetGameMode(CustomGameMode.All);
+            invalidateSecondaryAdmin = CustomOption.Create(10136, Color.white, "option.invalidateSecondaryAdmin", true, mapOptions).SetGameMode(CustomGameMode.All);
+            useClassicAdmin = CustomOption.Create(10137, Color.white, "option.useClassicAdmin", false, mapOptions).SetGameMode(CustomGameMode.All);
+            allowParallelMedBayScans = CustomOption.Create(10138, Color.white, "option.allowParallelMedBayScans", false, mapOptions).SetGameMode(CustomGameMode.All);
 
             limiterOptions = CustomOption.Create(10140, Color.white, "option.limitOptions", false, null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.All);
             timeLimitOption = CustomOption.Create(10141, Color.white, "option.timeLimitOption", 20f, 1f, 80f, 1f, limiterOptions).SetGameMode(CustomGameMode.All);
@@ -233,7 +247,7 @@ namespace Nebula
             timeLimitOption.suffix = "minute";
             timeLimitSecondOption.suffix = "second";
 
-            DevicesOption = CustomOption.Create(10150, Color.white, "option.devicesOption", new string[] {"option.switch.off" , "option.devicesOption.perDiscussion" , "option.devicesOption.perGame"}, "option.switch.off",null,true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.All);
+            DevicesOption = CustomOption.Create(10150, Color.white, "option.devicesOption", new string[] { "option.switch.off", "option.devicesOption.perDiscussion", "option.devicesOption.perGame" }, "option.switch.off", null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.All);
             AdminLimitOption = CustomOption.Create(10151, Color.white, "option.devicesOption.Admin", 30f, 5f, 600f, 5f, DevicesOption).SetGameMode(CustomGameMode.All);
             AdminLimitOption.suffix = "second";
             VitalsLimitOption = CustomOption.Create(10152, Color.white, "option.devicesOption.Vitals", 30f, 5f, 600f, 5f, DevicesOption).SetGameMode(CustomGameMode.All);
@@ -249,8 +263,26 @@ namespace Nebula
             MeistersFilterOption = CustomOption.Create(10165, Color.white, "option.meistersO2Filter", false, TasksOption).SetGameMode(CustomGameMode.All);
             MeistersFuelEnginesOption = CustomOption.Create(10166, Color.white, "option.meistersFuelEngines", false, TasksOption).SetGameMode(CustomGameMode.All);
 
-            advanceRoleOptions = CustomOption.Create(10190, Color.white, "option.advanceRoleOptions", false, null, true, false, "", CustomOptionTab.Settings | CustomOptionTab.CrewmateRoles | CustomOptionTab.ImpostorRoles | CustomOptionTab.NeutralRoles | CustomOptionTab.Modifiers).SetGameMode(CustomGameMode.Standard);
+            SabotageOption = CustomOption.Create(10170, Color.white, "option.sabotageOption", false, null, true, false, "", CustomOptionTab.Settings).SetGameMode(~(CustomGameMode.Ritual | CustomGameMode.Minigame));
+            SabotageCoolDownOption = CustomOption.Create(10171, Color.white, "option.sabotageCoolDown", 30f, 5f, 60f, 5f, SabotageOption).SetGameMode(CustomGameMode.All);
+            SabotageCoolDownOption.suffix = "second";
+            SkeldReactorTimeLimitOption = CustomOption.Create(10172, Color.white, "option.skeldReactorTimeLimit", 30f, 15f, 60f, 5f, SabotageOption).SetGameMode(CustomGameMode.All);
+            SkeldReactorTimeLimitOption.suffix = "second";
+            SkeldO2TimeLimitOption = CustomOption.Create(10173, Color.white, "option.skeldO2TimeLimit", 30f, 15f, 60f, 5f, SabotageOption).SetGameMode(CustomGameMode.All);
+            SkeldO2TimeLimitOption.suffix = "second";
+            MIRAReactorTimeLimitOption = CustomOption.Create(10174, Color.white, "option.MIRAReactorTimeLimit", 45f, 20f, 80f, 5f, SabotageOption).SetGameMode(CustomGameMode.All);
+            MIRAReactorTimeLimitOption.suffix = "second";
+            MIRAO2TimeLimitOption = CustomOption.Create(10175, Color.white, "option.MIRAO2TimeLimit", 45f, 20f, 80f, 5f, SabotageOption).SetGameMode(CustomGameMode.All);
+            MIRAO2TimeLimitOption.suffix = "second";
+            SeismicStabilizersTimeLimitOption = CustomOption.Create(10176, Color.white, "option.seismicStabilizersTimeLimit", 60f, 20f, 120f, 5f, SabotageOption).SetGameMode(CustomGameMode.All);
+            SeismicStabilizersTimeLimitOption.suffix = "second";
+            AvertCrashTimeLimitOption = CustomOption.Create(10177, Color.white, "option.avertCrashTimeLimit", 90f, 20f, 180f, 5f, SabotageOption).SetGameMode(CustomGameMode.All);
+            AvertCrashTimeLimitOption.suffix = "second";
+            BlackOutStrengthOption = CustomOption.Create(10178, Color.white, "option.blackOutStrength", 1f, 0.125f, 2f, 0.125f, SabotageOption).SetGameMode(CustomGameMode.All);
+            BlackOutStrengthOption.suffix = "cross";
 
+            advanceRoleOptions = CustomOption.Create(10190, Color.white, "option.advanceRoleOptions", false, null, true, false, "", CustomOptionTab.Settings | CustomOptionTab.CrewmateRoles | CustomOptionTab.ImpostorRoles | CustomOptionTab.NeutralRoles | CustomOptionTab.Modifiers).SetGameMode(CustomGameMode.Standard);
+        
             List<string> hunters = new List<string>();
             foreach(Roles.Role role in Roles.Roles.AllRoles)
             {

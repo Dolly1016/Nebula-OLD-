@@ -20,7 +20,7 @@ namespace Nebula
         {
             get
             {
-                return !(MapBehaviour.Instance && MapBehaviour.Instance.IsOpen) &&
+                return (!(MapBehaviour.Instance && MapBehaviour.Instance.IsOpen) || Patches.MapBehaviorPatch.minimapFlag) &&
                       !MeetingHud.Instance &&
                       !ExileController.Instance;
             }
@@ -243,7 +243,6 @@ namespace Nebula
             target.RawSetHat(hatId, colorId);
             target.RawSetSkin(skinId,colorId);
             target.RawSetColor(colorId);
-            target.SetPlayerMaterialColors(target.cosmetics.visor.Image);
 
             var p = Game.GameData.data?.GetPlayerData(target.PlayerId) ?? null;
             if (p != null && playerName != null) p.currentName = playerName;

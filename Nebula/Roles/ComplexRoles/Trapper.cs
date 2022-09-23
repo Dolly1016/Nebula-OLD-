@@ -219,14 +219,11 @@ namespace Nebula.Roles.ComplexRoles
                     }
                 }
             }
+        }
 
-
-            if (Input.GetKeyDown(KeyCode.LeftShift))
-            {
-                trapKind++;
-                if (trapKind > 2) trapKind = 0;
-            }
-            else { return; }
+        private void SetTrapType(int type)
+        {
+            trapKind = (byte)(type % 3);
 
             switch (trapKind)
             {
@@ -247,6 +244,11 @@ namespace Nebula.Roles.ComplexRoles
                     }
                     break;
             }
+        }
+
+        private void ChangeTrapType()
+        {
+            SetTrapType(trapKind + 1);
         }
         public override void ButtonInitialize(HudManager __instance)
         {
@@ -349,7 +351,7 @@ namespace Nebula.Roles.ComplexRoles
             trapButtonString.transform.localScale = Vector3.one * 0.5f;
             trapButtonString.transform.localPosition += new Vector3(-0.05f, 0.7f, 0);
 
-            trapButton.SetKeyGuide(KeyCode.LeftShift,new Vector2(0.48f,0.13f),true);
+            trapButton.SetAidAction(KeyCode.LeftShift,true, ChangeTrapType);
 
             trapKind = 0;
 

@@ -7,6 +7,34 @@ namespace Nebula.Patches
     [HarmonyPatch]
     class MapBehaviorPatch
     {
+        static public void UpdateMapSize(MapBehaviour __instance)
+        {
+            if (minimapFlag)
+            {
+                __instance.gameObject.transform.localScale = new Vector3(0.225f, 0.225f, 1f);
+                __instance.gameObject.transform.localPosition = new Vector3(4.2f, 0f,-100f);
+            }
+            else
+            {
+                __instance.gameObject.transform.localScale = new Vector3(1f, 1f, 1f);
+                __instance.gameObject.transform.localPosition = new Vector3(0f, 0f, -25f);
+            }
+
+            
+        }
+
+        public static bool minimapFlag = false;
+
+        [HarmonyPatch(typeof(MapBehaviour), nameof(MapBehaviour.Awake))]
+        class MapBehaviourAwakePatch
+        {
+            static void Prefix(MapBehaviour __instance)
+            {
+                minimapFlag = false;
+            }
+
+        }
+
         [HarmonyPatch(typeof(MapBehaviour), nameof(MapBehaviour.GenericShow))]
         class MapBehaviourShowNormalMapPatch
         {
@@ -34,8 +62,13 @@ namespace Nebula.Patches
                         __instance.ColorControl.SetColor(Palette.ImpostorRed);
                         DestroyableSingleton<HudManager>.Instance.SetHudActive(false);
                         ConsoleJoystick.SetMode_Sabotage();
+                        return;
                     }
                 }
+
+
+                if(__instance.IsOpen) DestroyableSingleton<HudManager>.Instance.SetHudActive(MapBehaviorPatch.minimapFlag);
+                MapBehaviorPatch.UpdateMapSize(__instance);
             }
 
         }
@@ -67,7 +100,7 @@ namespace Nebula.Patches
                     __instance.GenericShow();
                     __instance.taskOverlay.Show();
                     __instance.ColorControl.SetColor(new Color(0.05f, 0.2f, 1f, 1f));
-                    DestroyableSingleton<HudManager>.Instance.SetHudActive(false);
+                    DestroyableSingleton<HudManager>.Instance.SetHudActive(MapBehaviorPatch.minimapFlag);
                     return false;
                 }
             }
@@ -79,7 +112,7 @@ namespace Nebula.Patches
     class MapUpdatePatch
     {
         [HarmonyPatch(typeof(MapBehaviour), nameof(MapBehaviour.FixedUpdate))]
-        class MapBehaviourShowNormalMapPatch
+        class MapBehaviourUpdatePatch
         {
             static void Postfix(MapBehaviour __instance)
             {

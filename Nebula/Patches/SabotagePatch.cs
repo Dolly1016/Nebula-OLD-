@@ -28,4 +28,30 @@ namespace Nebula.Patches
         }
     }
 
+    //サボクールダウン
+    [HarmonyPatch(typeof(SabotageSystemType), nameof(SabotageSystemType.RepairDamage))]
+    class SabotageCoolDownPatch
+    {
+        static void Postfix(SabotageSystemType __instance)
+        {
+            if (__instance.Timer > 0f) return;
+            if (MeetingHud.Instance) return;
+            if (!CustomOptionHolder.SabotageOption.getBool()) return;
+
+            __instance.Timer = CustomOptionHolder.SabotageCoolDownOption.getFloat();
+        }
+    }
+
+    //サボクールダウンの割合表示
+    [HarmonyPatch(typeof(SabotageSystemType), nameof(SabotageSystemType.PercentCool),MethodType.Getter)]
+    class SabotageCoolDownGetterPatch
+    {
+        static bool Prefix(SabotageSystemType __instance,ref float __result)
+        {
+            if (!CustomOptionHolder.SabotageOption.getBool()) return true;
+
+            __result = __instance.Timer / CustomOptionHolder.SabotageCoolDownOption.getFloat();
+            return false;
+        }
+    }
 }

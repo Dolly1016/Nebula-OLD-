@@ -121,7 +121,19 @@ namespace Nebula.Module
 
         public override bool DoesResourceRequireDownload(string directoryPath, MD5 md5)
         {
-            if (Hash == null) return false;
+            if (Hash == null)
+            {
+                //ローカルコスミックのハッシュを出力
+                if (File.Exists(directoryPath + Address) && NebulaPlugin.DebugMode.HasToken("OutputHash"))
+                {
+                    using (var stream = File.OpenRead(directoryPath + Address))
+                    {
+                        var hash = System.BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "").ToLowerInvariant();
+                        NebulaPlugin.Instance.Logger.Print("HASH: " + hash + " (" + directoryPath + Address + ")");
+                    }
+                }
+                return false;
+            }
 
             if (!this) return false;
             if (!File.Exists(directoryPath + Address))return true;
@@ -1423,6 +1435,19 @@ namespace Nebula.Module
                     0.575f,
                     __instance.cosmetics.hat.transform.localPosition.z
                     );
+            }
+            catch { }
+        }
+    }
+
+    [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.ResetAnimState))]
+    public static class MeetingHatFixPatch
+    {
+        public static void Postfix(PlayerPhysics __instance)
+        {
+            try
+            {
+                __instance.myPlayer.cosmetics.SetHatColor(Game.GameData.data.GetPlayerData(__instance.myPlayer.PlayerId).CurrentOutfit.ColorId);
             }
             catch { }
         }

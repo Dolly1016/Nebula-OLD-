@@ -110,4 +110,42 @@ namespace Nebula.Patches
             return false;
         }
     }
+
+    [HarmonyPatch(typeof(Minigame), nameof(Minigame.Begin))]
+    class MinigameBeginPatch
+    {
+        public static bool Prefix(Minigame __instance,[HarmonyArgument(0)] PlayerTask task)
+        {
+            Minigame.Instance = __instance;
+            __instance.MyTask = task;
+            try
+            {
+                __instance.MyNormTask = task.Cast<NormalPlayerTask>();
+            }
+            catch { __instance.MyNormTask = null; }
+            if (PlayerControl.LocalPlayer)
+            {
+                if (MapBehaviour.Instance && !MapBehaviorPatch.minimapFlag)MapBehaviour.Instance.Close();
+                
+                PlayerControl.LocalPlayer.NetTransform.Halt();
+            }
+            __instance.StartCoroutine(__instance.CoAnimateOpen());
+
+            return false;
+        }
+    }
+
+    [HarmonyPatch(typeof(NormalPlayerTask), nameof(NormalPlayerTask.NextStep))]
+    class NextStepPatch
+    {
+        public static void Finalizer(NormalPlayerTask __instance)
+        {
+            if (MapBehaviour.Instance && MapBehaviour.Instance.IsOpen)
+            {
+                MapBehaviour.Instance.taskOverlay.Hide();
+                MapBehaviour.Instance.taskOverlay.Show();
+            }
+        }
+    }
+
 }

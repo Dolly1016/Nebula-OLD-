@@ -159,12 +159,12 @@ namespace Nebula.Module
     [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start))]
     public class ModUpdaterButton
     {
-        private static GameObject GenerateButton(GameObject template,Color color,string text,System.Action? action,ref int buttons)
+        private static GameObject GenerateButton(GameObject template,Color color,string text,System.Action? action,bool mirror,ref int buttons)
         {
             buttons++;
 
             var button = UnityEngine.Object.Instantiate(template, null);
-            button.transform.localPosition = new Vector3(button.transform.localPosition.x, button.transform.localPosition.y + ((float)buttons*0.6f), button.transform.localPosition.z);
+            button.transform.localPosition = new Vector3(mirror ? -button.transform.localPosition.x : button.transform.localPosition.x, button.transform.localPosition.y + ((float)buttons * 0.6f), button.transform.localPosition.z);
 
             var renderer = button.gameObject.GetComponent<SpriteRenderer>();
             renderer.color = color;
@@ -202,7 +202,7 @@ namespace Nebula.Module
                 if (ModUpdater.hasUnprocessableUpdate) message = "title.button.existNewerNebula";
                 else if (ModUpdater.hasUpdate) message = "title.button.updateNebula";
                 else message = "title.button.getStableNebula";
-                updateButtons.Add(GenerateButton(template, Color.white, message, !ModUpdater.hasUnprocessableUpdate ? (System.Action)onClickUpdateButton : null, ref buttons));
+                updateButtons.Add(GenerateButton(template, Color.white, message, !ModUpdater.hasUnprocessableUpdate ? (System.Action)onClickUpdateButton : null, false,ref buttons));
                 
                 void onClickUpdateButton()
                 {
@@ -214,7 +214,7 @@ namespace Nebula.Module
             //最新版(あるいは後続のスナップショット)を所持している場合のみスナップショットを利用可能
             if (NebulaPlugin.DebugMode.HasToken("Snapshot") && ModUpdater.hasNewestSnapshot)
             {
-                updateButtons.Add(GenerateButton(template, new Color(0.3f,0.6f,0.75f),"title.button.updateNebulaSnapshot", onClickUpdateSnapshotButton, ref buttons));
+                updateButtons.Add(GenerateButton(template, new Color(0.3f,0.6f,0.75f),"title.button.updateNebulaSnapshot", onClickUpdateSnapshotButton, false, ref buttons));
 
                 void onClickUpdateSnapshotButton()
                 {
@@ -222,6 +222,11 @@ namespace Nebula.Module
                     foreach (var b in updateButtons) b.SetActive(false);
                 }
             }
+
+            int mirrorButtons = -1;
+
+            GenerateButton(template, new Color(29f / 255f, 161f / 255f, 242f / 255f), "title.button.twitter", () => Application.OpenURL("https://twitter.com/NebulaOnTheShip"), true, ref mirrorButtons);
+            GenerateButton(template, new Color(86f / 255f, 97f / 255f, 234f / 255f), "title.button.discord", () => Application.OpenURL("https://discord.gg/kHNZD4pq9E"), true, ref mirrorButtons);
 
 
             TwitchManager man = DestroyableSingleton<TwitchManager>.Instance;

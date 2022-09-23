@@ -59,6 +59,13 @@ namespace Nebula.Map
             MapEditors[mapId].MapCustomize();
         }
 
+        public static void ModifySabotage(int mapId)
+        {
+            if (!MapEditors.ContainsKey(mapId)) return;
+
+            MapEditors[mapId].ModifySabotage();
+        }
+
         protected static Vent CreateVent(SystemTypes room, string ventName,Vector2 position)
         {
             var referenceVent = UnityEngine.Object.FindObjectOfType<Vent>();
@@ -209,6 +216,8 @@ namespace Nebula.Map
         public virtual void AddWirings() { }
 
         public virtual void FixTasks() { }
+
+        public virtual void ModifySabotage() { }
 
         /// <summary>
         /// マップを最適化します。
