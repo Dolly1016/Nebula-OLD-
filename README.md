@@ -1047,15 +1047,16 @@ Sniperの弾の当たり判定やEmpiric,Alienなどの効果範囲を調べる�
 | [Damned](#damned) | [Busker](#busker) | [Chain Shifter](#chain-shifter) | [Trilemma](#trilemma) |
 | [Disturber](#disturber) | [Comet](#comet) | [Jackal](#jackal) ||
 | [Eraser](#eraser) | [Doctor](#doctor) | [Jester](#jester) ||
-| [Evil Ace](#evil-ace) | [Mayor](#mayor) | [Opportunist](#opportunist) ||
-| [Evil Guesser](#guesser) | [Navvy](#navvy) | [Sidekick](#sidekick) ||
-| [Evil Trapper](#trapper) | [Necromancer](#necromancer) | [Vulture](#vulture) ||
-| [Jailer](#jailer) | [Nice Guesser](#guesser) |||
+| [Evil Ace](#evil-ace) | [Guardian](#guardian) | [Opportunist](#opportunist) ||
+| [Evil Guesser](#guesser) | [Mayor](#mayor) | [Sidekick](#sidekick) ||
+| [Evil Trapper](#trapper) | [Navvy](#navvy) | [Vulture](#vulture) ||
+| [Jailer](#jailer) | [Necromancer](#necromancer) |||
+| [Marionette](#marionette) | [Nice Guesser](#guesser) |||
 | [Morphing](#morphing) | [Nice Trapper](#trapper) |||
-| [Raider](#raider) | [Oracle](#oracle) |||
-| [Reaper](#reaper) | [Provocateur](#provocateur) |||
-| [Sniper](#sniper) | [Psychic](#psychic) |||
-|| [Seer](#seer) |||
+| [Painter](#painter) | [Oracle](#oracle) |||
+| [Raider](#raider) | [Provocateur](#provocateur) |||
+| [Reaper](#reaper) | [Psychic](#psychic) |||
+| [Sniper](#sniper) | [Seer](#seer) |||
 || [Sheriff](#sheriff) |||
 || [Spy](#spy) |||
 || [Madmate](#madmate) |||
@@ -1266,6 +1267,24 @@ p5p5next : Damned
 
 -----------------------
 
+## Marionette
+ Marionetteは自身と位置や視点を入れ替えられるデコイを設置できます。
+ 
+ 
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| F | (デコイ未設置時)デコイ設置, (デコイ設置時)デコイ破壊/位置交換
+| G | 視点交換
+
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+| Decoy Duration | デコイの設置クールダウン
+| Swap Cool Down | 位置入れ替えクールダウン
+
+-----------------------
+
 ## Morphing
  Morphingは、サンプルを採取したプレイヤーに化けることができます。
  
@@ -1280,6 +1299,23 @@ p5p5next : Damned
 |----------|:-------------:|
 | Morph Cool Down | モーフィングのクールダウン
 | Morph Duration | モーフィングの効果時間
+
+-----------------------
+
+## Painter
+ Painterは、他プレイヤーを自身かサンプルを採取したプレイヤーの見た目に変えることができます。
+ 
+ 
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| F | サンプルの採取/ペイント
+
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+| Paint Cool Down | ペイントのクールダウン
+| Change Look Immediately | 即座に見た目が変わるかどうか(オフの場合会議を挟むと姿が変わる)
 
 -----------------------
 
@@ -1444,7 +1480,7 @@ p5p5next : Damned
 -----------------------
 
 ## Doctor
- Doctorはバイタルで、プレイヤーの死因を知ることができ、遠隔でバイタルをみることができます。\
+ Doctorはバイタルで、プレイヤーの死因を知ることができ、遠隔でバイタルをみることができます。
  
   ### 操作方法
 | 操作キー | アクション |
@@ -1457,6 +1493,25 @@ p5p5next : Damned
 | Mobile Gadget Charges | バイタルガジェットの初期充電量
 | Max Mobile Gadget Charges | バイタルガジェットの最大充電量
 | Charges Per Tasks | タスクあたりのバイタルガジェット充電量
+
+-----------------------
+
+## Guardian
+ Guardianは周囲のプレイヤーの存在をマップ上に表示するアンテナを設置できるほか、プレイヤーを一人守ることができます。
+ 
+  ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| F | アンテナ設置
+| G | ガード付与
+
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+| Max Antennas | アンテナの最大設置可能数
+| Place Cool Down | アンテナの設置クールダウン
+| Antenna Effective Range | アンテナの効果範囲
+| Show Guard Flash | ガードしたプレイヤーが切られた際にフラッシュを再生するかどうか
 
 -----------------------
 
