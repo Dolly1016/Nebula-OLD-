@@ -51,7 +51,20 @@ namespace Nebula.Patches
             }
             else
             {
-                rate = Mathf.Lerp(__instance.MinLightRadius * role.LightRadiusMin, __instance.MaxLightRadius * role.LightRadiusMax, rate);
+                float min = __instance.MinLightRadius / __instance.MaxLightRadius;
+                if (CustomOptionHolder.SabotageOption.getBool())
+                {
+                    float p = CustomOptionHolder.BlackOutStrengthOption.getFloat();
+                    if (p < 1f)
+                    {
+                        min = min + (1f - min) * (1f - p);
+                    }else if (p > 1f)
+                    {
+                        min /= CustomOptionHolder.BlackOutStrengthOption.getFloat();
+                    }
+                }
+
+                rate = Mathf.Lerp(__instance.MaxLightRadius * min * role.LightRadiusMin, __instance.MaxLightRadius * role.LightRadiusMax, rate);
                 foreach(var e in Events.GlobalEvent.Events)
                 {
                     if (e is Events.Variation.BlackOut)
@@ -85,6 +98,27 @@ namespace Nebula.Patches
         public static void Postfix(ShipStatus __instance)
         {
             Game.GameData.data.LoadMapData();
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.OnEnable))]
+        public static void Postfix3(ShipStatus __instance)
+        {
+            Game.GameData.data.ModifyShipStatus();
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(PolusShipStatus), nameof(PolusShipStatus.OnEnable))]
+        public static void Postfix4(PolusShipStatus __instance)
+        {
+            Game.GameData.data.ModifyShipStatus();
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(AirshipStatus), nameof(AirshipStatus.OnEnable))]
+        public static void Postfix5(AirshipStatus __instance)
+        {
+            Game.GameData.data.ModifyShipStatus();
         }
 
         /*

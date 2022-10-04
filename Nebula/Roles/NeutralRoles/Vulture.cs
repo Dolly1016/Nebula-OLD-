@@ -69,8 +69,8 @@ namespace Nebula.Roles.NeutralRoles
                 KeyCode.F,
                 false,
                 "button.label.eat"
-            );
-            eatButton.MaxTimer = eatButton.Timer = eatCoolDownOption.getFloat();
+            ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());
+            eatButton.MaxTimer = eatCoolDownOption.getFloat();
         }
 
         /* 矢印 */

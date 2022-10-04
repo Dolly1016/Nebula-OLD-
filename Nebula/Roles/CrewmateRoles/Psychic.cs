@@ -54,7 +54,7 @@ namespace Nebula.Roles.CrewmateRoles
                 searchButton.Destroy();
             }
             searchButton = RoleSystem.TrackSystem.DeadBodySearch_ButtonInitialize(__instance, Arrows,
-                getButtonSprite(), searchDurationOption.getFloat(), searchCoolDownOption.getFloat());
+                getButtonSprite(), searchDurationOption.getFloat(), searchCoolDownOption.getFloat()).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat()); ;
             searchButton.SetLabel("button.label.search");
         }
 

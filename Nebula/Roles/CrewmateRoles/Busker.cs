@@ -115,7 +115,7 @@ namespace Nebula.Roles.CrewmateRoles
                () => { dieBusker(); },
                 false,
                 "button.label.busker.pseudocide"
-            );
+            ).SetTimer(CustomOptionHolder.InitialModestAbilityCoolDownOption.getFloat());
             buskButton.MaxTimer = buskCoolDownOption.getFloat();
 
             buskButton.SetSuspendAction(()=> {

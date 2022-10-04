@@ -16,7 +16,6 @@ namespace Nebula.Roles.ImpostorRoles
         public class MorphEvent : Events.LocalEvent
         {
             public byte PlayerId { get; private set; }
-            public byte TargetId { get; private set; }
             private Game.PlayerData.PlayerOutfitData outfit;
 
             public override void OnTerminal()
@@ -26,13 +25,12 @@ namespace Nebula.Roles.ImpostorRoles
 
             public override void OnActivate()
             {
-                this.outfit = Helpers.playerById(PlayerId).AddOutfit(outfit, 80) ;
+                Helpers.GetModData(PlayerId).AddOutfit(outfit);
             }
 
-            public MorphEvent(byte playerId,byte targetId, Game.PlayerData.PlayerOutfitData outfit) :base(Roles.Morphing.morphDurationOption.getFloat()-1f)
+            public MorphEvent(byte playerId, Game.PlayerData.PlayerOutfitData outfit) :base(Roles.Morphing.morphDurationOption.getFloat())
             {
                 PlayerId = playerId;
-                TargetId = targetId;
                 this.outfit = outfit;
                 SpreadOverMeeting = false;
             }
@@ -93,7 +91,7 @@ namespace Nebula.Roles.ImpostorRoles
                         Game.GameData.data.myData.currentTarget = null;
                         morphButton.Sprite = getMorphButtonSprite();
                         morphButton.SetLabel("button.label.morph");
-                        morphOutfit = morphTarget.GetModData().GetOutfitData(50);
+                        morphOutfit = morphTarget.GetModData().GetOutfitData(50).Clone(80);
                     }
                     else
                     {
@@ -117,7 +115,7 @@ namespace Nebula.Roles.ImpostorRoles
                 () => { morphButton.Timer = morphButton.MaxTimer; },
                 false,
                 "button.label.sample"
-            );
+            ).SetTimer(CustomOptionHolder.InitialModestAbilityCoolDownOption.getFloat());
             morphButton.MaxTimer = morphCoolDownOption.getFloat();
             morphButton.EffectDuration = morphDurationOption.getFloat();
             morphButton.SetSuspendAction(()=> {

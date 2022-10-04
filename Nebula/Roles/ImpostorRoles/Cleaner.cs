@@ -49,9 +49,8 @@ namespace Nebula.Roles.ImpostorRoles
                 KeyCode.F,
                 false,
                 "button.label.clean"
-            );
+            ).SetTimer(CustomOptionHolder.InitialForcefulAbilityCoolDownOption.getFloat());
             cleanButton.MaxTimer=cleanCoolDownOption.getFloat();
-            cleanButton.Timer = cleanButton.MaxTimer;
         }
 
         public override void OnKillPlayer(byte targetId)

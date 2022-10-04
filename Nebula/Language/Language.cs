@@ -104,6 +104,10 @@ namespace Nebula.Language
 
             language.deserialize(GetDefaultColorStream());
             language.deserialize(GetDefaultLanguageStream());
+
+            var builtinLang = GetBuiltinLanguageStream(lang);
+            if (builtinLang != null) language.deserialize(builtinLang);
+
             language.deserialize(@"language\" + lang + "_Color.dat");
             language.deserialize(@"language\" + lang + ".dat");
 
@@ -162,6 +166,18 @@ namespace Nebula.Language
         public static Stream GetDefaultColorStream()
         {
             return Assembly.GetExecutingAssembly().GetManifestResourceStream("Nebula.Resources.Color.dat");
+        }
+
+        public static Stream? GetBuiltinLanguageStream(string lang)
+        {
+            try
+            {
+                return Assembly.GetExecutingAssembly().GetManifestResourceStream("Nebula.Resources.Languages." + lang + ".dat");
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public bool deserialize(string path)

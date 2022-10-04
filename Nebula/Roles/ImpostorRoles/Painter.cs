@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using Nebula.Objects;
+using Nebula.Utilities;
+using UnityEngine;
 
 namespace Nebula.Roles.ImpostorRoles
 {
@@ -11,24 +13,13 @@ namespace Nebula.Roles.ImpostorRoles
 
         private Module.CustomOption sampleCoolDownOption;
         private Module.CustomOption paintCoolDownOption;
+        public Module.CustomOption changeLookImmediatelyOption;
 
         private Game.PlayerData.PlayerOutfitData? paintOutfit;
+        private Game.PlayerData.PlayerOutfitData? myOutfit;
 
-        private Sprite sampleButtonSprite = null;
-        public Sprite getSampleButtonSprite()
-        {
-            if (sampleButtonSprite) return sampleButtonSprite;
-            sampleButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.SampleButton.png", 115f);
-            return sampleButtonSprite;
-        }
-
-        private Sprite paintButtonSprite = null;
-        public Sprite getPaintButtonSprite()
-        {
-            if (paintButtonSprite) return paintButtonSprite;
-            paintButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.PaintButton.png", 115f);
-            return paintButtonSprite;
-        }
+        private SpriteLoader sampleButtonSprite = new SpriteLoader("Nebula.Resources.SampleButton.png", 115f);
+        private SpriteLoader paintButtonSprite = new SpriteLoader("Nebula.Resources.MorphButton.png", 115f);
 
         public override void LoadOptionData()
         {
@@ -37,11 +28,38 @@ namespace Nebula.Roles.ImpostorRoles
 
             paintCoolDownOption = CreateOption(Color.white, "paintCoolDown", 10f, 2.5f, 30f, 2.5f);
             paintCoolDownOption.suffix = "second";
+
+            changeLookImmediatelyOption = CreateOption(Color.white, "changeLookImmediately", true);
+        }
+
+        byte paintMode = 0;
+
+        private void SetPaintMode(byte mode)
+        {
+            paintMode = (byte)(mode % 2);
+            if (paintMode == 0)
+            {
+                paintButton.Sprite = sampleButtonSprite.GetSprite();
+                paintButton.UpperText.text = "";
+                paintButton.SetLabel("button.label.sample");
+            }
+            else
+            {
+                paintButton.Sprite = paintButtonSprite.GetSprite();
+                paintButton.UpperText.text = paintOutfit.Name;
+                paintButton.SetLabel("button.label.paint");
+            }
+        }
+
+        private void ChangePaintMode()
+        {
+            SetPaintMode((byte)(paintMode + 1));
         }
 
         public override void ButtonInitialize(HudManager __instance)
         {
-            paintOutfit = null;
+            myOutfit = Game.GameData.data.myData.getGlobalData().GetOutfitData(50);
+            paintOutfit = myOutfit;
 
             if (paintButton != null)
             {
@@ -50,18 +68,16 @@ namespace Nebula.Roles.ImpostorRoles
             paintButton = new CustomButton(
                 () =>
                 {
-                    if (paintOutfit == null)
+                    if (paintMode == 0)
                     {
-                        morphButton.Timer = 3f;
-                        morphButton.isEffectActive = false;
+                        paintButton.Timer = 3f;
                         paintOutfit = Game.GameData.data.myData.currentTarget.GetModData().GetOutfitData(50);
-                        morphButton.Sprite = getPaintButtonSprite();
-                        morphButton.SetLabel("button.label.paint");
-                        morphOutfit = morphTarget.GetModData().GetOutfitData(50);
+                        SetPaintMode(1);
                     }
                     else
                     {
-                        RPCEventInvoker.Paint(Game.GameData.data.myData.currentTarget, new Game.PlayerData.PlayerOutfitData(10, paintOutfit));
+                        paintButton.Timer = paintCoolDownOption.getFloat();
+                        RPCEventInvoker.Paint(Game.GameData.data.myData.currentTarget, paintOutfit.Clone(10));
                     }
                 },
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
@@ -70,16 +86,15 @@ namespace Nebula.Roles.ImpostorRoles
                 {
                     paintButton.Timer = sampleCoolDownOption.getFloat();
                 },
-                getSampleButtonSprite(),
+                sampleButtonSprite.GetSprite(),
                 new Vector3(-1.8f, 0f, 0),
                 __instance,
                 KeyCode.F,
                 false,
                 "button.label.sample"
-            );
+            ).SetTimer(CustomOptionHolder.InitialModestAbilityCoolDownOption.getFloat());
             paintButton.MaxTimer = paintCoolDownOption.getFloat();
-            paintButton.Timer = sampleCoolDownOption.getFloat();
-
+            paintButton.SetAidAction(KeyCode.LeftShift, true, ChangePaintMode);
         }
 
         public override void MyPlayerControlUpdate()
@@ -91,9 +106,8 @@ namespace Nebula.Roles.ImpostorRoles
 
         public override void OnMeetingEnd()
         {
-            paintOutfit = null;
-            paintButton.Sprite = getSampleButtonSprite();
-            paintButton.SetLabel("button.label.sample");
+            paintOutfit = myOutfit;
+            SetPaintMode(0);
         }
 
         public override void CleanUp()

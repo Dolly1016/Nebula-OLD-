@@ -285,7 +285,7 @@ namespace Nebula
                     RPCEvents.RaiderThrow(reader.ReadByte(), new Vector2(reader.ReadSingle(), reader.ReadSingle()), reader.ReadSingle());
                     break;
                 case (byte)CustomRPC.Morph:
-                    RPCEvents.Morph(reader.ReadByte(), reader);
+                    RPCEvents.Morph(reader.ReadByte(), new Game.PlayerData.PlayerOutfitData(reader));
                     break;
                 case (byte)CustomRPC.MorphCancel:
                     RPCEvents.MorphCancel(reader.ReadByte());
@@ -804,19 +804,23 @@ namespace Nebula
                 //NecromancerやBuskerを確定させる
                 Game.GameData.data.EstimationAI.Determine(changeStatus ? (Roles.Role)Roles.Roles.Necromancer : (Roles.Role)Roles.Roles.Busker);
 
+                Vector3? pos = null;
                 foreach (DeadBody body in Helpers.AllDeadBodies())
                 {
                     if (body.ParentId != playerId) continue;
 
-                    Game.GameData.data.playersArray[playerId]?.Revive(changeStatus);
-                    PlayerControl player = Helpers.playerById(playerId);
-                    if(!reviveOnCurrentPosition)player.transform.position = body.transform.position;
-                    player.Revive(false);
-                    player.Data.IsDead = false;
-                    Game.GameData.data.deadPlayers.Remove(playerId);
-
+                    if (!reviveOnCurrentPosition) pos = body.transform.position;
                     UnityEngine.Object.Destroy(body.gameObject);
+
+                    break;
                 }
+
+                Game.GameData.data.playersArray[playerId]?.Revive(changeStatus);
+                PlayerControl player = Helpers.playerById(playerId);
+                if(pos!=null)player.transform.position = pos.Value;
+                player.Revive(false);
+                player.Data.IsDead = false;
+                Game.GameData.data.deadPlayers.Remove(playerId);
             }
             else
             {
@@ -1192,12 +1196,12 @@ namespace Nebula
             }
         }
 
-        public static void Morph(byte playerId,MessageReader reader)
+        public static void Morph(byte playerId,Game.PlayerData.PlayerOutfitData outfit)
         {
             //Morphingを確定させる
             Game.GameData.data.EstimationAI.Determine(Roles.Roles.Morphing);
 
-            Events.LocalEvent.Activate(new Roles.ImpostorRoles.Morphing.MorphEvent(playerId,targetId,reader));
+            Events.LocalEvent.Activate(new Roles.ImpostorRoles.Morphing.MorphEvent(playerId, outfit));
         }
 
         public static void MorphCancel(byte playerId)
@@ -1407,10 +1411,20 @@ namespace Nebula
 
         public static void Paint(PlayerControl player,Game.PlayerData.PlayerOutfitData outfit)
         {
-            Events.Schedule.RegisterPostMeetingAction(
-                () => {
-                    player.GetModData().AddOutfit(outfit);
-                }, 50);
+            if (player == PlayerControl.LocalPlayer) return;
+
+            if (Roles.Roles.Painter.changeLookImmediatelyOption.getBool())
+            {
+                player.GetModData().AddOutfit(outfit);
+            }
+            else
+            {
+                Events.Schedule.RegisterPostMeetingAction(
+                    () =>
+                    {
+                        player.GetModData().AddOutfit(outfit);
+                    }, 50);
+            }
         }
     }
 
@@ -2137,7 +2151,7 @@ namespace Nebula
             RPCEvents.KillGuard(player.PlayerId, 0, (byte)num);
         }
 
-        public static void UpdatePlayersIconInfo(Roles.Role role,List<byte> activePlayers,Dictionary<byte, float>? progress)
+        public static void UpdatePlayersIconInfo(Roles.Template.HasAlignedHologram role,List<byte> activePlayers,Dictionary<byte, float>? progress)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UpdatePlayersIconInfo, Hazel.SendOption.Reliable, -1);
             writer.Write(PlayerControl.LocalPlayer.PlayerId);
@@ -2147,7 +2161,7 @@ namespace Nebula
             foreach(var p in PlayerControl.AllPlayerControls)
             {
                 writer.Write(p.PlayerId);
-                if (p==PlayerControl.LocalPlayer || p.Data.IsDead || p.Data.Disconnected) writer.Write(byte.MaxValue);
+                if (p == PlayerControl.LocalPlayer || !role.GetIconState(p.PlayerId)) writer.Write(byte.MaxValue);
                 else if (activePlayers.Contains(p.PlayerId)) writer.Write((byte)100);
                 else if (progress != null && progress.ContainsKey(p.PlayerId)) writer.Write((byte)(progress[p.PlayerId] * 100f));
                 else writer.Write((byte)0);

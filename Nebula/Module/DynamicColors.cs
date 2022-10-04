@@ -18,7 +18,7 @@ namespace Nebula.Module
     {
         static public bool IsLightColor(Color color)
         {
-            return (color.r + color.g + color.b > 1.2);
+            return (color.r + color.g * 1.15f + color.b * 0.5f > 1.05f);
         }
 
         public class CustomColor
@@ -303,6 +303,15 @@ namespace Nebula.Module
             return LTargetSprite;
         }
 
+        static private Sprite[] BrightnessSprite = new Sprite[2];
+        static private Sprite GetBrightnessSprite(bool light)
+        {
+            int index = light ? 0 : 1;
+            if (!BrightnessSprite[index]) BrightnessSprite[index] = Helpers.loadSpriteFromResources($"Nebula.Resources.Color{ (light ? "Light":"Dark")  }.png", 100f);
+
+            return BrightnessSprite[index];
+        }
+
         static private GameObject PaletteObject = null;
         static private SpriteRenderer PaletteRenderer = null;
         static private PassiveButton PalettePassiveButton = null;
@@ -323,6 +332,9 @@ namespace Nebula.Module
 
         static private GameObject LTargetObject = null;
         static private SpriteRenderer LTargetRenderer = null;
+
+        static private GameObject BrightnessObject = null;
+        static private SpriteRenderer BrightnessRenderer = null;
 
         static private string ColorName;
 
@@ -510,6 +522,7 @@ namespace Nebula.Module
                 else { return; }
 
                 PlayerCustomizationMenu.Instance.PreviewArea.cosmetics.SetColor(15);
+                if(BrightnessRenderer) BrightnessRenderer.sprite = GetBrightnessSprite(IsLightColor(Palette.PlayerColors[15]));
             }
         }
 
@@ -650,6 +663,9 @@ namespace Nebula.Module
                     LTargetObject = new GameObject("LTarget");
                     LTargetRenderer = LTargetObject.AddComponent<SpriteRenderer>();
 
+                    BrightnessObject = new GameObject("Brightness");
+                    BrightnessRenderer = BrightnessObject.AddComponent<SpriteRenderer>();
+
                     ShadowVariations = new ColorButton[2];
                     for (int i = 0; i < ShadowVariations.Length; i++)
                     {
@@ -757,6 +773,11 @@ namespace Nebula.Module
                 LTargetObject.transform.SetParent(LPaletteObject.transform);
                 LTargetObject.layer = __instance.ColorChips[0].gameObject.layer;
                 LTargetRenderer.sprite = GetLTargetSprite();
+
+                BrightnessObject.transform.SetParent(__instance.ColorChips[0].transform.parent);
+                BrightnessObject.transform.localPosition = new Vector3(6.7f, -0.5f, -75f);
+                BrightnessObject.layer = __instance.ColorChips[0].gameObject.layer;
+                BrightnessRenderer.sprite = GetBrightnessSprite(false);
 
                 foreach (ColorButton button in ShadowVariations)
                 {

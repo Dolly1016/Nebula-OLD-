@@ -43,13 +43,16 @@ namespace Nebula.Roles.CrewmateRoles
             float a = FS_BodiesSensor.color.a;
             var center = PlayerControl.LocalPlayer.transform.position;
             bool flag = false;
-            foreach (var body in Helpers.AllDeadBodies())
+            if (!PlayerControl.LocalPlayer.Data.IsDead)
             {
-                float dis = body.transform.position.Distance(center);
-                if (dis > 2f && dis < maxNotificationDistanceOption.getFloat())
+                foreach (var body in Helpers.AllDeadBodies())
                 {
-                    flag = true;
-                    break;
+                    float dis = body.transform.position.Distance(center);
+                    if (dis > 2f && dis < maxNotificationDistanceOption.getFloat())
+                    {
+                        flag = true;
+                        break;
+                    }
                 }
             }
 
@@ -184,7 +187,7 @@ namespace Nebula.Roles.CrewmateRoles
                 false,
                 "button.label.revive",
                 ImageNames.VitalsButton
-            );
+            ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());
             reviveButton.MaxTimer = reviveCoolDownOption.getFloat();
         }
 

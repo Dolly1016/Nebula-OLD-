@@ -8,6 +8,7 @@ using Nebula.Utilities;
 using BepInEx.IL2CPP.Utils.Collections;
 
 using static GameData;
+using Hazel;
 
 namespace Nebula.Game
 {
@@ -640,6 +641,11 @@ namespace Nebula.Game
                 PetId = outfit.PetId;
             }
 
+            public PlayerOutfitData Clone(int priority)
+            {
+                return new PlayerOutfitData(priority,Name,ColorId,HatId,VisorId,SkinId,PetId);
+            }
+
             public PlayerOutfitData(int priority, string name, PlayerOutfitData outfit)
             {
                 Priority = priority;
@@ -664,7 +670,13 @@ namespace Nebula.Game
 
             public PlayerOutfitData(MessageReader reader)
             {
-                return new PlayerOutfitData(reader.ReadInt32(),reader.ReadString(),reader.ReadInt32(),reader.ReadString(),reader.ReadString(), reader.ReadString(), reader.ReadString());
+                Priority = reader.ReadInt32();
+                Name = reader.ReadString();
+                ColorId = reader.ReadInt32();
+                HatId = reader.ReadString();
+                VisorId = reader.ReadString();
+                SkinId = reader.ReadString();
+                PetId = reader.ReadString();
             }
         }
 
@@ -1068,7 +1080,7 @@ namespace Nebula.Game
 
             VentMap = new Dictionary<string, VentData>();
 
-            OriginalSpeed =PlayerControl.LocalPlayer.MyPhysics.Speed;
+            OriginalSpeed = 2.5f;
 
             GameRule = new GameRule();
             GameMode = Module.CustomGameModes.GetGameMode(CustomOptionHolder.gameMode.getSelection());
@@ -1188,6 +1200,14 @@ namespace Nebula.Game
             foreach(SystemTypes type in ShipStatus.Instance.FastRooms.Keys)
             {
                 Rooms.Add(type);
+            }
+        }
+
+        public void ModifyShipStatus()
+        {
+            if (CustomOptionHolder.mapOptions.getBool())
+            {
+                Map.MapEditor.ModifySabotage(PlayerControl.GameOptions.MapId);
             }
         }
 

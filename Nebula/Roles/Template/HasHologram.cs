@@ -17,6 +17,8 @@ namespace Nebula.Roles.Template
     {
         protected Dictionary<byte, PoolablePlayer> PlayerIcons;
 
+        public bool GetIconState(byte playerId) { return PlayerIcons[playerId].gameObject.activeSelf; }
+
         public override void Initialize(PlayerControl __instance)
         {
             int playerCounter = 0;
@@ -64,7 +66,13 @@ namespace Nebula.Roles.Template
         public override void CleanUp()
         {
             foreach (var icon in PlayerIcons.Values)
-                UnityEngine.GameObject.Destroy(icon.gameObject);
+            {
+                try
+                {
+                    UnityEngine.GameObject.Destroy(icon.gameObject);
+                }
+                catch { }
+            }
             
             PlayerIcons.Clear();
         }

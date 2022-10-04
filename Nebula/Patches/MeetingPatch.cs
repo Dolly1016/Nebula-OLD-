@@ -284,7 +284,7 @@ namespace Nebula.Patches
                     GameObject template = player.Buttons.transform.Find("CancelButton").gameObject;
                     GameObject targetBox = UnityEngine.Object.Instantiate(template, player.transform);
                     targetBox.name = "Color";
-                    targetBox.transform.localPosition = new Vector3(-0.55f, 0.03f, -1f);
+                    targetBox.transform.localPosition = new Vector3(1.2f, -0.18f, -1f);
                     SpriteRenderer renderer = targetBox.GetComponent<SpriteRenderer>();
                     renderer.sprite = isLightColor ? GetLightColorSprite() : GetDarkColorSprite();
                     UnityEngine.GameObject.Destroy(targetBox.GetComponent<PassiveButton>());

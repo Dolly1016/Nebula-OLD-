@@ -83,7 +83,7 @@ namespace Nebula.Roles.NeutralRoles
             {
                 blankButton.Destroy();
             }
-            if (canFireBlankShotsOption.getBool())
+            if (canFireBlankShotsOption.getBool() && Roles.Sniper.IsSpawnable())
             {
                 blankButton = new CustomButton(
                     () =>
@@ -100,7 +100,7 @@ namespace Nebula.Roles.NeutralRoles
                     KeyCode.Q,
                     false,
                     "button.label.blank"
-                );
+                ).SetTimer(CustomOptionHolder.InitialKillCoolDownOption.getFloat());
                 blankButton.MaxTimer = 5.0f;
             }
             else

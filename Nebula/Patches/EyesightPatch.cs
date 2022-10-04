@@ -68,9 +68,9 @@ namespace Nebula.Patches
 	{
 		public static void Prefix(PlayerControl __instance, [HarmonyArgument(0)] GameData.PlayerInfo meetingTarget)
 		{
-			EyesightPatch.ObserverMode = false;
 			EyesightPatch.ObserverTarget = 0;
 			HudManager.Instance.PlayerCam.SetTargetWithLight(PlayerControl.LocalPlayer);
+			Objects.PlayerList.Instance.Close();
 		}
 	}
 
@@ -148,6 +148,7 @@ namespace Nebula.Patches
 				{
 					__instance.PlayerCam.SetTargetWithLight(PlayerControl.LocalPlayer);
 					Objects.PlayerList.Instance.Close();
+					ObserverMode = false;
 				}
 				if(__instance.PlayerCam.Target != PlayerControl.LocalPlayer && __instance.PlayerCam.Target is PlayerControl && ((PlayerControl)__instance.PlayerCam.Target).Data.IsDead)
                 {

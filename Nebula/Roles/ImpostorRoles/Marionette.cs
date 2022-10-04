@@ -8,7 +8,7 @@ using Nebula.Patches;
 using Nebula.Objects;
 using HarmonyLib;
 using Hazel;
-
+using Nebula.Utilities;
 
 namespace Nebula.Roles.ImpostorRoles
 {
@@ -57,46 +57,20 @@ namespace Nebula.Roles.ImpostorRoles
             marionetteMode = mode;
             if (marionetteMode == 0)
             {
-                marionetteButton.Sprite = getSwapButtonSprite();
+                marionetteButton.Sprite = swapButtonSprite.GetSprite();
                 marionetteButton.SetLabel("button.label.swap");
             }
             else
             {
-                marionetteButton.Sprite = getDestroyButtonSprite();
+                marionetteButton.Sprite = destroyButtonSprite.GetSprite();
                 marionetteButton.SetLabel("button.label.destroy");
             }
         }
 
-        private Sprite decoyButtonSprite = null;
-        public Sprite getDecoyButtonSprite()
-        {
-            if (decoyButtonSprite) return decoyButtonSprite;
-            decoyButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.DecoyButton.png", 115f);
-            return decoyButtonSprite;
-        }
-
-        private Sprite swapButtonSprite = null;
-        public Sprite getSwapButtonSprite()
-        {
-            if (swapButtonSprite) return swapButtonSprite;
-            swapButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.DecoySwapButton.png", 115f);
-            return swapButtonSprite;
-        }
-        private Sprite destroyButtonSprite = null;
-        public Sprite getDestroyButtonSprite()
-        {
-            if (destroyButtonSprite) return destroyButtonSprite;
-            destroyButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.DecoyDestroyButton.png", 115f);
-            return destroyButtonSprite;
-        }
-
-        private Sprite monitorButtonSprite = null;
-        public Sprite getMonitorButtonSprite()
-        {
-            if (monitorButtonSprite) return monitorButtonSprite;
-            monitorButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.DecoyMonitorButton.png", 115f);
-            return monitorButtonSprite;
-        }
+        private SpriteLoader decoyButtonSprite = new SpriteLoader("Nebula.Resources.DecoyButton.png", 115f);
+        private SpriteLoader swapButtonSprite = new SpriteLoader("Nebula.Resources.DecoySwapButton.png", 115f);
+        private SpriteLoader destroyButtonSprite = new SpriteLoader("Nebula.Resources.DecoyDestroyButton.png", 115f);
+        private SpriteLoader monitorButtonSprite = new SpriteLoader("Nebula.Resources.DecoyMonitorButton.png", 115f);
 
         public override void LoadOptionData()
         {
@@ -135,13 +109,13 @@ namespace Nebula.Roles.ImpostorRoles
                 () => {
                     placeButton.Timer = 10f;
                 },
-                getDecoyButtonSprite(),
+                decoyButtonSprite.GetSprite(),
                 new Vector3(-1.8f, 0f, 0),
                 __instance,
                 KeyCode.F,
                 false,
                 "button.label.decoy"
-            );
+            ).SetTimer(CustomOptionHolder.InitialModestAbilityCoolDownOption.getFloat());
             placeButton.MaxTimer = 10f;
 
             marionetteMode = 0;
@@ -171,15 +145,15 @@ namespace Nebula.Roles.ImpostorRoles
                     marionetteButton.Timer = 10f;
                     SetMarionetteMode(0);
                 },
-                getDecoyButtonSprite(),
+                decoyButtonSprite.GetSprite(),
                 new Vector3(-1.8f, 0f, 0),
                 __instance,
                 KeyCode.F,
                 false,
                 "button.label.decoy"
             );
-            marionetteButton.MaxTimer = 10f;
-            marionetteButton.SetKeyGuide(KeyCode.LeftShift, new Vector2(0.48f, 0.13f), true);
+            marionetteButton.MaxTimer = swapCoolDownOption.getFloat();
+            marionetteButton.SetAidAction(KeyCode.LeftShift, true, ChangeMarionetteMode);
 
             if (cameraButton != null)
             {
@@ -196,7 +170,7 @@ namespace Nebula.Roles.ImpostorRoles
                 () => {
                     marionetteButton.Timer = marionetteButton.MaxTimer;
                 },
-                getMonitorButtonSprite(),
+                monitorButtonSprite.GetSprite(),
                 new Vector3(-2.7f, 0f, 0),
                 __instance,
                 KeyCode.G,
@@ -214,15 +188,16 @@ namespace Nebula.Roles.ImpostorRoles
                 decoy = null;
                 placeButton.Timer = placeButton.MaxTimer;
             }
-            if (Input.GetKeyDown(KeyCode.LeftShift))
-            {
-                ChangeMarionetteMode();
-            }
         
         }
 
         public override void CleanUp()
         {
+            if (placeButton != null)
+            {
+                placeButton.Destroy();
+                placeButton = null;
+            }
             if (marionetteButton != null)
             {
                 marionetteButton.Destroy();

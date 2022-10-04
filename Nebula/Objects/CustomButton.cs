@@ -44,6 +44,7 @@ namespace Nebula.Objects
         public Vector3 PositionOffset;
         public float MaxTimer = float.MaxValue;
         public float Timer = 0f;
+        private Action? AidAction = null;
         private Action? OnSuspended=null;
         private Action OnClick;
         private Action OnMeetingEnds;
@@ -58,6 +59,7 @@ namespace Nebula.Objects
         private HudManager hudManager;
         private bool mirror;
         private KeyCode? hotkey;
+        private KeyCode? aidHotkey=null;
         private string buttonText;
         private ImageNames textType;
         //ボタンの有効化フラグと、一時的な隠しフラグ
@@ -198,9 +200,16 @@ namespace Nebula.Objects
             }
         }
 
+        public void SetAidAction(KeyCode key,bool requireChangeOption,Action aidAction)
+        {
+            SetKeyGuide(key, new Vector2(0.48f, 0.13f), requireChangeOption);
+            AidAction = aidAction;
+            aidHotkey = key;
+        }
+
         private void SetHotKeyGuide()
         {
-            SetKeyGuide(hotkey, new Vector2(0.48f, 0.48f),false);
+            SetKeyGuide(hotkey, new Vector2(0.48f, 0.48f), false);
         }
 
         public void SetSuspendAction(Action OnSuspended)
@@ -435,6 +444,11 @@ namespace Nebula.Objects
                 // Trigger OnClickEvent if the hotkey is being pressed down
                 if ((hotkey.HasValue && Input.GetKeyDown(hotkey.Value)) ||
                     (FireOnClicked && MouseClicked())) onClickEvent();
+
+                if(AidAction!=null &&  aidHotkey.HasValue && Input.GetKeyDown(aidHotkey.Value))
+                {
+                    AidAction();
+                }
             }
         }
     }

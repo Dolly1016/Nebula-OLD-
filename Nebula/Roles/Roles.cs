@@ -78,6 +78,7 @@ namespace Nebula.Roles
         public static ComplexRoles.SecondaryGuesser SecondaryGuesser = new ComplexRoles.SecondaryGuesser();
         public static NeutralRoles.SecondarySidekick SecondarySidekick = new NeutralRoles.SecondarySidekick();
         public static CrewmateRoles.SecondaryMadmate SecondaryMadmate = new CrewmateRoles.SecondaryMadmate();
+        public static ExtraRoles.DiamondPossessor DiamondPossessor = new ExtraRoles.DiamondPossessor();
         public static ExtraRoles.Drunk Drunk = new ExtraRoles.Drunk();
         public static ExtraRoles.Lover Lover = new ExtraRoles.Lover();
         public static ExtraRoles.Trilemma Trilemma = new ExtraRoles.Trilemma();
@@ -105,6 +106,7 @@ namespace Nebula.Roles
         public static List<ExtraRole> AllExtraRoles = new List<ExtraRole>()
         {
             SecondaryGuesser,SecondarySidekick,SecondaryMadmate,
+            DiamondPossessor,
             Drunk,Lover,Trilemma,
             MetaRole,AvengerTarget,
             PerkHolder

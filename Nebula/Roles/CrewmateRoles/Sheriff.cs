@@ -22,6 +22,7 @@ namespace Nebula.Roles.CrewmateRoles
         private Module.CustomOption canKillNecromancerOption;
         private Module.CustomOption canKillSheriffOption;
         private Module.CustomOption canKillOpportunistOption;
+        private Module.CustomOption canKillChainShifterOption;
         private Module.CustomOption numberOfShotsOption;
 
         int shots;
@@ -43,10 +44,11 @@ namespace Nebula.Roles.CrewmateRoles
 
             //個別に設定したい非クルー陣営
             if (p.role == Roles.Opportunist && canKillOpportunistOption.getBool()) return true;
+            if (p.role == Roles.ChainShifter && canKillChainShifterOption.getBool()) return true;
 
             //非クルーおよび個別に設定するクルー陣営
             if (p.role.category != RoleCategory.Crewmate) return true;
-            if (p.role == Roles.Madmate && canKillMadmateOption.getBool()) return true;
+            if (canKillMadmateOption.getBool() && (p.role == Roles.Madmate || p.HasExtraRole(Roles.SecondaryMadmate))) return true;
             if (p.role == Roles.Spy && canKillSpyOption.getBool()) return true;
             if (p.role == Roles.Necromancer && canKillNecromancerOption.getBool()) return true;
             if (p.role == Roles.Sheriff && canKillSheriffOption.getBool()) return true;
@@ -83,7 +85,7 @@ namespace Nebula.Roles.CrewmateRoles
                 new Vector3(0f, 1f, 0),
                 __instance,
                 KeyCode.Q
-            );
+            ).SetTimer(CustomOptionHolder.InitialKillCoolDownOption.getFloat());
             killButton.MaxTimer = killCooldownOption.getFloat();
             killButton.UpperText.text = shots + "/" + (int)numberOfShotsOption.getFloat();
         }
@@ -115,6 +117,8 @@ namespace Nebula.Roles.CrewmateRoles
             canKillSheriffOption = CreateOption(Color.white, "canKillSheriff", false);
 
             canKillOpportunistOption = CreateOption(Color.white, "canKillOpportunist", false);
+
+            canKillChainShifterOption = CreateOption(Color.white, "canKillChainShifter", true);
 
             numberOfShotsOption = CreateOption(Color.white,"numberOfShots",3,1,15,1);
         }

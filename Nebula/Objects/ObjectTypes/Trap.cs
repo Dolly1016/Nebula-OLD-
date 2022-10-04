@@ -5,15 +5,7 @@ using UnityEngine;
 
 namespace Nebula.Objects.ObjectTypes
 {
-    public class Trap : DelayedObject
-    {
-        public Trap(byte id,string objectName, string spriteAddress) : base(id,objectName, spriteAddress)
-        {
-            canSeeInShadow = true;
-        }
-    }
-
-    public class VisibleTrap : Trap
+    public class VisibleTrap : DelayedObject
     {
         public VisibleTrap(byte id,string objectName, string spriteAddress) : base(id,objectName, spriteAddress)
         {
@@ -22,6 +14,7 @@ namespace Nebula.Objects.ObjectTypes
         public override void Initialize(CustomObject obj)
         {
             base.Initialize(obj);
+            canSeeInShadow = true;
             Events.Schedule.RegisterPreMeetingAction(() =>
             {
                 //Trapperを考慮に入れる
@@ -30,13 +23,16 @@ namespace Nebula.Objects.ObjectTypes
         }
     }
 
-    public class InvisibleTrap : Trap
+    public class InvisibleTrap : DelayedObjectPredicate
     {
-        public InvisibleTrap(byte id,string objectName, string spriteAddress) : base(id,objectName, spriteAddress)
+        public InvisibleTrap(byte id,string objectName, string spriteAddress) : base(id,objectName, spriteAddress,(obj)=> {
+            if (obj.OwnerId == PlayerControl.LocalPlayer.PlayerId) return true;
+            var r = Game.GameData.data.myData.getGlobalData().role;
+            return r == Roles.Roles.NiceTrapper || r == Roles.Roles.EvilTrapper;
+        })
         {
+            canSeeInShadow = true;
         }
-
-        protected override bool canSeeOnlyMe { get { return true; } }
 
     }
 

@@ -169,8 +169,8 @@ namespace Nebula.Roles.CrewmateRoles
                 KeyCode.F,
                 false,
                 "button.label.seal"
-            );
-            sealButton.Timer = sealButton.MaxTimer = sealCoolDownOption.getFloat();
+            ).SetTimer(CustomOptionHolder.InitialModestAbilityCoolDownOption.getFloat());
+            sealButton.MaxTimer = sealCoolDownOption.getFloat();
 
 
             if (repairButton != null)

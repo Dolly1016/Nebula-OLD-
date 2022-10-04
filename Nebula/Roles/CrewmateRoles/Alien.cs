@@ -121,7 +121,7 @@ namespace Nebula.Roles.CrewmateRoles
                 () => { emiButton.Timer = emiButton.MaxTimer; },
                 false,
                 "button.label.emi"
-            );
+            ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());
             emiButton.MaxTimer = emiCoolDownOption.getFloat();
             emiButton.EffectDuration = emiDurationOption.getFloat();
         }

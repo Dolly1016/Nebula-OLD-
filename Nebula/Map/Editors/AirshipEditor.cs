@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using HarmonyLib;
 
 namespace Nebula.Map.Editors
 {
@@ -95,13 +96,60 @@ namespace Nebula.Map.Editors
 
         public override void MapCustomize()
         {
-            if (CustomOptionHolder.mapOptions.getBool() && CustomOptionHolder.invalidateSecondaryAdmin.getBool())
+            if (CustomOptionHolder.mapOptions.getBool())
             {
-                var obj = ShipStatus.Instance.FastRooms[SystemTypes.Records].gameObject;
-                //第二のアドミンを無効化
-                GameObject.Destroy(obj.transform.FindChild("records_admin_map").gameObject);
+                if (CustomOptionHolder.invalidatePrimaryAdmin.getSelection() >0)
+                {
+                    var obj = ShipStatus.Instance.FastRooms[SystemTypes.Cockpit].gameObject;
+                    //第一のアドミンを無効化
+                    GameObject.Destroy(obj.transform.FindChild("cockpit_mapfloating").gameObject);
+                    GameObject.Destroy(obj.transform.FindChild("panel_cockpit_map").GetComponent<BoxCollider2D>());
+                }
+                if (CustomOptionHolder.invalidateSecondaryAdmin.getBool())
+                {
+                    var obj = ShipStatus.Instance.FastRooms[SystemTypes.Records].gameObject;
+                    //第二のアドミンを無効化
+                    GameObject.Destroy(obj.transform.FindChild("records_admin_map").gameObject);
+                }
+
+                if (CustomOptionHolder.useClassicAdmin.getBool())
+                {
+                    PolygonCollider2D collider;
+                    List<Vector2> pointsList;
+
+
+                    //Security
+                    collider = ShipStatus.Instance.FastRooms[SystemTypes.Security].gameObject.GetComponent<PolygonCollider2D>();
+                    pointsList = new List<Vector2>(collider.points);
+                    pointsList.RemoveAt(5);
+                    collider.points = pointsList.ToArray();
+                    
+
+                    //キッチン・セキュ間通路
+                    ShipStatus.Instance.MapPrefab.countOverlay.transform.FindChild("Hall of Portraits").localPosition = new Vector3(100, 0, 0);
+                    //ロミジュリ
+                    ShipStatus.Instance.MapPrefab.countOverlay.transform.FindChild("Ventilation").localPosition = new Vector3(100, 0, 0);
+
+                }
             }
 
+
+        }
+    }
+
+    //これだけ定数なのでパッチで対応
+    [HarmonyPatch(typeof(HeliSabotageSystem), nameof(HeliSabotageSystem.RepairDamage))]
+    class HeliSabotageSystemPatch
+    {
+        static void Postfix(HeliSabotageSystem __instance, [HarmonyArgument(1)] byte amount)
+        {
+            if (!CustomOptionHolder.SabotageOption.getBool()) return;
+
+            HeliSabotageSystem.Tags tags = (HeliSabotageSystem.Tags)(amount & 240);
+            if (tags == HeliSabotageSystem.Tags.DamageBit)
+            {
+                __instance.Countdown = CustomOptionHolder.AvertCrashTimeLimitOption.getFloat();
+            }
         }
     }
 }

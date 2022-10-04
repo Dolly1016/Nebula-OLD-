@@ -78,7 +78,7 @@ namespace Nebula.Roles.ImpostorRoles
                 __instance,
                 KeyCode.F,false,
                 "button.label.erase"
-            );
+            ).SetTimer(CustomOptionHolder.InitialForcefulAbilityCoolDownOption.getFloat());
             eraserButton.MaxTimer = eraseCoolDownOption.getFloat();
         }
 

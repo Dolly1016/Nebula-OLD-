@@ -31,7 +31,5 @@ namespace Nebula.Objects.ObjectTypes
         }
 
         public override bool RequireMonoBehaviour => true;
-
-        
     }
 }

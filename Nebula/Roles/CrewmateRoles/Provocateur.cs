@@ -80,7 +80,7 @@ namespace Nebula.Roles.CrewmateRoles
                     embroilButton.Timer = embroilButton.MaxTimer;
                 },false,
                 "button.label.embroil"
-            );
+            ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());
             embroilButton.MaxTimer = embroilCoolDownOption.getFloat();
         }
 
