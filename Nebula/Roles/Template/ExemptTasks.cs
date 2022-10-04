@@ -25,7 +25,7 @@ namespace Nebula.Roles.Template
         protected bool UseExemptTasksOption { get; set; } = true;
 
 
-        public override void OnSetTasks(Il2CppSystem.Collections.Generic.List<GameData.TaskInfo> tasks) {
+        public override void OnSetTasks(List<GameData.TaskInfo> tasks) {
             int exempt = UseExemptTasksOption ? (int)exemptTasksOption.getFloat() : CustomExemptTasks;
             int cutTasks = tasks.Count < exempt ? tasks.Count : exempt;
             RPCEventInvoker.ExemptTasks(cutTasks, cutTasks, tasks);

@@ -97,7 +97,7 @@ namespace Nebula.Roles.CrewmateRoles
         }
 
         //カットするタスクの数を計上したうえで初期化
-        public override void OnSetTasks(Il2CppSystem.Collections.Generic.List<GameData.TaskInfo> tasks)
+        public override void OnSetTasks(List<GameData.TaskInfo> tasks)
         {
             int impostors = 0;
             foreach (var player in PlayerControl.AllPlayerControls.GetFastEnumerator())
@@ -186,7 +186,7 @@ namespace Nebula.Roles.CrewmateRoles
         }
 
 
-        public override void EditDisplayRoleName(ref string displayName)
+        public override void EditDisplayRoleNameForcely(byte playerId, ref string displayName)
         {
             displayName = Helpers.cs(Palette.ImpostorRed, Language.Language.GetString("role.madmate.secondaryPrefix")) + displayName;
         }

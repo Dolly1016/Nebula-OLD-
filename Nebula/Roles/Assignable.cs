@@ -175,7 +175,7 @@ namespace Nebula.Roles
         public virtual void IntroInitialize(PlayerControl __instance) { }
 
         [RoleLocalMethod]
-        public virtual void OnSetTasks(Il2CppSystem.Collections.Generic.List<GameData.TaskInfo> tasks){ }
+        public virtual void OnSetTasks(List<GameData.TaskInfo> tasks){ }
 
         /*--------------------------------------------------------------------------------------*/
 
@@ -382,7 +382,13 @@ namespace Nebula.Roles
         /// 役職の表示名を編集します。
         /// </summary>
         [RoleGlobalMethod]
-        public virtual void EditDisplayRoleName(ref string roleName)
+        public virtual void EditDisplayRoleName(byte playerId, ref string roleName) => EditDisplayNameForcely(playerId,ref roleName);
+
+        /// <summary>
+        /// 役職の表示名を編集します。
+        /// </summary>
+        [RoleGlobalMethod]
+        public virtual void EditDisplayRoleNameForcely(byte playerId, ref string roleName)
         {
         }
 

@@ -1,0 +1,5 @@
+C:\Users\kawam\source\repos\Dolly1016\Nebula\Nebula\obj\Debug\netstandard2.1\NebulaPlugin.csproj.AssemblyReference.cache
+C:\Users\kawam\source\repos\Dolly1016\Nebula\Nebula\obj\Debug\netstandard2.1\NebulaPlugin.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\kawam\source\repos\Dolly1016\Nebula\Nebula\obj\Debug\netstandard2.1\NebulaPlugin.AssemblyInfoInputs.cache
+C:\Users\kawam\source\repos\Dolly1016\Nebula\Nebula\obj\Debug\netstandard2.1\NebulaPlugin.AssemblyInfo.cs
+C:\Users\kawam\source\repos\Dolly1016\Nebula\Nebula\obj\Debug\netstandard2.1\NebulaPlugin.csproj.CoreCompileInputs.cache

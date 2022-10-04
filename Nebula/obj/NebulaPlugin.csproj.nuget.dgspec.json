@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\kawam\\Source\\Repos\\Dolly1016\\Nebula\\Nebula\\NebulaPlugin.csproj": {}
+    "C:\\Users\\kawam\\source\\repos\\Dolly1016\\Nebula\\Nebula\\NebulaPlugin.csproj": {}
   },
   "projects": {
-    "C:\\Users\\kawam\\Source\\Repos\\Dolly1016\\Nebula\\Nebula\\NebulaPlugin.csproj": {
+    "C:\\Users\\kawam\\source\\repos\\Dolly1016\\Nebula\\Nebula\\NebulaPlugin.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\kawam\\Source\\Repos\\Dolly1016\\Nebula\\Nebula\\NebulaPlugin.csproj",
+        "projectUniqueName": "C:\\Users\\kawam\\source\\repos\\Dolly1016\\Nebula\\Nebula\\NebulaPlugin.csproj",
         "projectName": "Nebula",
-        "projectPath": "C:\\Users\\kawam\\Source\\Repos\\Dolly1016\\Nebula\\Nebula\\NebulaPlugin.csproj",
+        "projectPath": "C:\\Users\\kawam\\source\\repos\\Dolly1016\\Nebula\\Nebula\\NebulaPlugin.csproj",
         "packagesPath": "C:\\Users\\kawam\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\kawam\\Source\\Repos\\Dolly1016\\Nebula\\Nebula\\obj\\",
+        "outputPath": "C:\\Users\\kawam\\source\\repos\\Dolly1016\\Nebula\\Nebula\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

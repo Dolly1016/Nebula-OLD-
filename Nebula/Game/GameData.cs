@@ -94,6 +94,7 @@ namespace Nebula.Game
         public bool CanSeeEveryoneInfo { get; set; }
         public float VentDurationTimer { get; set; }
         public float VentCoolDownTimer { get; set; }
+        public List<TaskInfo> InitialTasks { get; set; }
 
         public PlayerData getGlobalData()
         {
@@ -781,11 +782,13 @@ namespace Nebula.Game
             Helpers.RoleAction(this, (r) =>
              {
                  r.EditDisplayNameForcely(this.id, ref shortRole);
-                 r.EditDisplayRoleName(ref shortRole);
-
                  r.EditDisplayNameForcely(this.id, ref role);
-                 r.EditDisplayRoleName(ref role);
              });
+            Helpers.RoleAction(this, (r) =>
+            {
+                r.EditDisplayRoleNameForcely(this.id, ref shortRole);
+                r.EditDisplayRoleNameForcely(this.id, ref role);
+            });
             //同じものは重ねて登録しない
             if (roleHistory.Count > 0 && roleHistory[roleHistory.Count - 1].Item1 == role) return;
             roleHistory.Add(new Tuple<string,string>(role,shortRole));

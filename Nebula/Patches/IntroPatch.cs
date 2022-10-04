@@ -149,7 +149,7 @@ namespace Nebula.Patches
                 Roles.Role role = Game.GameData.data.AllPlayers[PlayerControl.LocalPlayer.PlayerId].role;
 
                 string roleNames = Language.Language.GetString("role." + role.LocalizeName + ".name");
-                Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId, (role) => { role.EditDisplayRoleName(ref roleNames); });
+                Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId, (role) => { role.EditDisplayRoleName(PlayerControl.LocalPlayer.PlayerId,ref roleNames); });
 
                 __instance.RoleText.text = roleNames;
                 __instance.RoleText.color = role.Color;

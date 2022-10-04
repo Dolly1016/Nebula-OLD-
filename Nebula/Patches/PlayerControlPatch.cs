@@ -25,13 +25,23 @@ namespace Nebula.Patches
                 return false;
             }
 
-            var tasks = new Il2CppSystem.Collections.Generic.List<GameData.TaskInfo>(taskTypeIds.Length);
 
-            for (int i = 0; i < taskTypeIds.Length; i++)
+            var initialTasks = new List<GameData.TaskInfo>();
+            
+            for (int i = 0; i < taskTypeIds.Length; i++) initialTasks.Add(new GameData.TaskInfo(taskTypeIds[i], (uint)i));
+
+            Game.GameData.data.myData.InitialTasks = new List<GameData.TaskInfo>(initialTasks);
+
+            Helpers.RoleAction(Game.GameData.data.myData.getGlobalData(),(r) =>
             {
-                tasks.Add(new GameData.TaskInfo(taskTypeIds[i], (uint)i));
+                r.OnSetTasks(initialTasks);
+            });
+            
+            var tasks = new Il2CppSystem.Collections.Generic.List<GameData.TaskInfo>(initialTasks.Count);
+            foreach (var t in initialTasks)
+            {
+                tasks.Add(t);
             }
-            Game.GameData.data.myData.getGlobalData().role.OnSetTasks(tasks);
 
             playerById.Tasks = tasks;
             playerById.Object.SetTasks(playerById.Tasks);
@@ -285,7 +295,7 @@ namespace Nebula.Patches
 
                         if (Game.GameData.data.myData.CanSeeEveryoneInfo || p.GetModData().RoleInfo == "") {
                             roleNames = Helpers.cs(p.GetModData().role.Color, Language.Language.GetString("role." + p.GetModData().role.LocalizeName + ".name"));
-                            Helpers.RoleAction(p.PlayerId, (role) => { role.EditDisplayRoleName(ref roleNames); });}
+                            Helpers.RoleAction(p.PlayerId, (role) => { role.EditDisplayRoleName(p.PlayerId,ref roleNames); });}
                         else
                             //カモフラージュ中は表示しない
                             roleNames = p.GetModData().currentName.Length == 0 ? "" : p.GetModData().RoleInfo;

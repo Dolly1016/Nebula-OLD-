@@ -1763,7 +1763,7 @@ namespace Nebula
             RPCEvents.MultipleVote(player.PlayerId, count);
         }
 
-        public static void ExemptTasks(int cutTasks, int cutQuota,Il2CppSystem.Collections.Generic.List<GameData.TaskInfo> tasks)
+        public static void ExemptTasks(int cutTasks, int cutQuota,List<GameData.TaskInfo> tasks)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ExemptTasks, Hazel.SendOption.Reliable, -1);
             writer.Write(PlayerControl.LocalPlayer.PlayerId);
@@ -1777,63 +1777,6 @@ namespace Nebula
                 if (tasks.Count == 0) break;
                 tasks.RemoveAt(NebulaPlugin.rnd.Next(tasks.Count));
             }
-        }
-
-        public static void ExemptTasks(int cutTasks, int cutQuota)
-        {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ExemptTasks, Hazel.SendOption.Reliable, -1);
-            writer.Write(PlayerControl.LocalPlayer.PlayerId);
-            writer.Write(cutTasks);
-            writer.Write(cutQuota);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
-            RPCEvents.ExemptTasks(PlayerControl.LocalPlayer.PlayerId, cutTasks, cutQuota);
-
-            int allTasks = Game.GameData.data.myData.getGlobalData().Tasks.DisplayTasks;
-            int commonTasks = PlayerControl.GameOptions.NumCommonTasks;
-            int longTasks = PlayerControl.GameOptions.NumLongTasks;
-            int shortTasks = PlayerControl.GameOptions.NumShortTasks;
-            int surplus = commonTasks + longTasks + shortTasks - allTasks;
-
-            int phase = 0;
-            while (surplus > 0)
-            {
-                switch (phase)
-                {
-                    case 0:
-                        if (shortTasks > 0) { shortTasks--; surplus--; }
-                        break;
-                    case 1:
-                        if (longTasks > 0) { longTasks--; surplus--; }
-                        break;
-                    case 2:
-                        if (commonTasks > 0) { commonTasks--; surplus--; }
-                        break;
-                }
-                phase=(phase+1)%3;
-            }
-
-            var tasks = new Il2CppSystem.Collections.Generic.List<byte>();
-
-            for (int i = 0; i < commonTasks; i++)
-                tasks.Add((byte)ShipStatus.Instance.CommonTasks.FirstOrDefault((t) => t.TaskType == PlayerControl.LocalPlayer.myTasks[i].TaskType).Index);
-
-            int num=0;
-            var usedTypes = new Il2CppSystem.Collections.Generic.HashSet<TaskTypes>();
-            Il2CppSystem.Collections.Generic.List<NormalPlayerTask> unused;
-            
-            unused = new Il2CppSystem.Collections.Generic.List<NormalPlayerTask>();
-            foreach (var t in ShipStatus.Instance.LongTasks)
-                unused.Add(t);
-            Extensions.Shuffle<NormalPlayerTask>(unused.Cast<Il2CppSystem.Collections.Generic.IList<NormalPlayerTask>>(), 0);
-            ShipStatus.Instance.AddTasksFromList(ref num, longTasks, tasks, usedTypes, unused);
-
-            unused = new Il2CppSystem.Collections.Generic.List<NormalPlayerTask>();
-            foreach (var t in ShipStatus.Instance.NormalTasks)
-                unused.Add(t);
-            Extensions.Shuffle<NormalPlayerTask>(unused.Cast<Il2CppSystem.Collections.Generic.IList<NormalPlayerTask>>(), 0);
-            ShipStatus.Instance.AddTasksFromList(ref num, shortTasks, tasks, usedTypes, unused);
-
-            GameData.Instance.SetTasks(PlayerControl.LocalPlayer.PlayerId, tasks.ToArray().ToArray());
         }
 
         public static void RefreshTasks(byte playerId, int newTasks, int addQuota, float longTaskChance)

@@ -182,7 +182,7 @@ namespace Nebula.Patches
                 Helpers.RoleAction(player.id, (role) =>
                 {
                     role.EditDisplayNameForcely(player.id, ref roleName);
-                    role.EditDisplayRoleName(ref roleName);
+                    role.EditDisplayRoleNameForcely(player.id,ref roleName);
                     hasFakeTask |= !role.HasCrewmateTask(player.id);
                     hasExecutableFakeTask |= role.HasExecutableFakeTask(player.id);
                 });
