@@ -29,6 +29,9 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.15 | 2022.9.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.15,2022.8.24/Nebula_v1.15.zip)|
+| 1.14.1 | 2022.8.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.14.1,2022.8.24/Nebula_v1.14.1.zip)|
+| 1.14 | 2022.8.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.14,2022.8.24/Nebula_v1.14.zip)|
 | 1.13.3 | 2022.8.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.13.3,2022.8.24/Nebula_v1.13.3.zip)|
 | 1.13.2 | 2022.8.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.13.2,2022.8.24/Nebula_v1.13.2.zip)|
 | 1.13.1.2 | 2022.8.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.13.1.2,2022.8.24/Nebula_v1.13.1.2.zip)|
@@ -219,6 +222,45 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+ 
+ **Version 1.15**
+ - Painterを追加
+ - ミニマップを追加(Vキーで切り替え)
+ - Sheriffに新オプション「Can Kill Chain Shifter」を追加
+ - 着せ替え画面で色の明暗が分かるように
+ - 初期クールダウンに関する設定を追加
+ - 歯車設定内にタイムアウトまでの時間猶予を伸ばせるオプション「Timeout Extension」を追加
+ - Sniperが出現しえないとき、Jesterが空砲を持たないように
+ - ゲーム終了時の役職開示画面がより正確な情報を表示するように
+ - 幽霊視点で姿が変わったプレイヤーの元の名前が表示されるように
+ - 会議直前にプレイヤーが復活する場合、不整合が生じる可能性がある問題を修正
+ - 観戦者モード解除時に千里眼モードも同時に解除するよう仕様変更
+ 
+ **Version 1.14.1**
+ - 新オプションカテゴリ「Sabotage Option」を追加
+ - 使用できるAdminを指定できるオプション「Invalidate Primary Admin」を追加
+ - アドミンの表示範囲を旧式のものに戻すオプション「Use Classic Admin」を追加
+ - 色の明暗表示をリワーク
+ - Trapperの不可視のトラップがTrapperに限り全て見えるように
+ - Marionetteのデコイ設置ボタンが正しく消えない問題を修正
+ - 会議中にAvengerが死亡してもグレーのハートマークが消えない問題を修正
+ 
+ **Version 1.14**
+ - Marionette, Guardian を追加
+ - 死亡後、EmpiricやArsonistの進行状況や生存者視点を見れるように
+ - 追放画面中にタイマーが進まないよう変更
+ - 死亡後に利用可能なアクションが画面上部に表示されるように
+ - カモフラージュ中にMorphingが変身できるように仕様変更
+ - デフォルトで日本語の言語パックを追加
+ - ローカルハットのハッシュ値を出力できるように
+ - 歯車設定に「Processor Restriction」「Prioritize Among Us」を追加
+ - 千里眼モードで会議に入るとタスクを進められなくなる問題を修正
+ - Sidekickの設定が意図しないタイミングで表示される問題を修正
+ - Airshipで、ホストが湧き位置選択画面を終了しないとゲームが終了しない問題を修正
+ - Empiricの感染が会議終了後に進んでしまう問題を修正
+ - Buskerが会議直前に復活した場合、会議中Buskerが死んでいるように見えてしまうことがある問題を修正
+ - AlienやJesterが会議中にサボタージュマップを開けてしまう問題を修正
+ - Evil/Nice Trapperの設置ボタンが意図しないタイミングで表示されていた問題を修正
  
  **Version 1.13.3**
  - Chain Shifterに新オプション「Secondary Guesser Shift」を追加
@@ -1019,15 +1061,16 @@ Sniperの弾の当たり判定やEmpiric,Alienなどの効果範囲を調べる�
 | [Damned](#damned) | [Busker](#busker) | [Chain Shifter](#chain-shifter) | [Trilemma](#trilemma) |
 | [Disturber](#disturber) | [Comet](#comet) | [Jackal](#jackal) ||
 | [Eraser](#eraser) | [Doctor](#doctor) | [Jester](#jester) ||
-| [Evil Ace](#evil-ace) | [Mayor](#mayor) | [Opportunist](#opportunist) ||
-| [Evil Guesser](#guesser) | [Navvy](#navvy) | [Sidekick](#sidekick) ||
-| [Evil Trapper](#trapper) | [Necromancer](#necromancer) | [Vulture](#vulture) ||
-| [Jailer](#jailer) | [Nice Guesser](#guesser) |||
+| [Evil Ace](#evil-ace) | [Guardian](#guardian) | [Opportunist](#opportunist) ||
+| [Evil Guesser](#guesser) | [Mayor](#mayor) | [Sidekick](#sidekick) ||
+| [Evil Trapper](#trapper) | [Navvy](#navvy) | [Vulture](#vulture) ||
+| [Jailer](#jailer) | [Necromancer](#necromancer) |||
+| [Marionette](#marionette) | [Nice Guesser](#guesser) |||
 | [Morphing](#morphing) | [Nice Trapper](#trapper) |||
-| [Raider](#raider) | [Oracle](#oracle) |||
-| [Reaper](#reaper) | [Provocateur](#provocateur) |||
-| [Sniper](#sniper) | [Psychic](#psychic) |||
-|| [Seer](#seer) |||
+| [Painter](#painter) | [Oracle](#oracle) |||
+| [Raider](#raider) | [Provocateur](#provocateur) |||
+| [Reaper](#reaper) | [Psychic](#psychic) |||
+| [Sniper](#sniper) | [Seer](#seer) |||
 || [Sheriff](#sheriff) |||
 || [Spy](#spy) |||
 || [Madmate](#madmate) |||
@@ -1238,6 +1281,24 @@ p5p5next : Damned
 
 -----------------------
 
+## Marionette
+ Marionetteは自身と位置や視点を入れ替えられるデコイを設置できます。
+ 
+ 
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| F | (デコイ未設置時)デコイ設置, (デコイ設置時)デコイ破壊/位置交換
+| G | 視点交換
+
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+| Decoy Duration | デコイの設置クールダウン
+| Swap Cool Down | 位置入れ替えクールダウン
+
+-----------------------
+
 ## Morphing
  Morphingは、サンプルを採取したプレイヤーに化けることができます。
  
@@ -1252,6 +1313,23 @@ p5p5next : Damned
 |----------|:-------------:|
 | Morph Cool Down | モーフィングのクールダウン
 | Morph Duration | モーフィングの効果時間
+
+-----------------------
+
+## Painter
+ Painterは、他プレイヤーを自身かサンプルを採取したプレイヤーの見た目に変えることができます。
+ 
+ 
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| F | サンプルの採取/ペイント
+
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+| Paint Cool Down | ペイントのクールダウン
+| Change Look Immediately | 即座に見た目が変わるかどうか(オフの場合会議を挟むと姿が変わる)
 
 -----------------------
 
@@ -1416,7 +1494,7 @@ p5p5next : Damned
 -----------------------
 
 ## Doctor
- Doctorはバイタルで、プレイヤーの死因を知ることができ、遠隔でバイタルをみることができます。\
+ Doctorはバイタルで、プレイヤーの死因を知ることができ、遠隔でバイタルをみることができます。
  
   ### 操作方法
 | 操作キー | アクション |
@@ -1429,6 +1507,25 @@ p5p5next : Damned
 | Mobile Gadget Charges | バイタルガジェットの初期充電量
 | Max Mobile Gadget Charges | バイタルガジェットの最大充電量
 | Charges Per Tasks | タスクあたりのバイタルガジェット充電量
+
+-----------------------
+
+## Guardian
+ Guardianは周囲のプレイヤーの存在をマップ上に表示するアンテナを設置できるほか、プレイヤーを一人守ることができます。
+ 
+  ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+| F | アンテナ設置
+| G | ガード付与
+
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+| Max Antennas | アンテナの最大設置可能数
+| Place Cool Down | アンテナの設置クールダウン
+| Antenna Effective Range | アンテナの効果範囲
+| Show Guard Flash | ガードしたプレイヤーが切られた際にフラッシュを再生するかどうか
 
 -----------------------
 
