@@ -4,6 +4,34 @@ namespace Nebula.Roles
 {
     static public class Roles
     {
+        public class SideCommonRoles
+        {
+            public Side side;
+            public Role templateRole;
+
+            public AllSideRoles.Secret? Secret;
+
+            public SideCommonRoles(Side side,Role templateRole)
+            {
+                if(side == Side.Crewmate || side == Side.Impostor) Secret = new AllSideRoles.Secret(templateRole);
+
+                SideRoles.Add(side,this);
+            }
+
+            public class SideCommonRolesLoader
+            {
+                public SideCommonRolesLoader()
+                {
+                    new SideCommonRoles(Side.Crewmate, Roles.Crewmate);
+                    new SideCommonRoles(Side.Impostor, Roles.Impostor);
+                }
+            }
+
+        }
+
+        public static Dictionary<Side, SideCommonRoles> SideRoles = new Dictionary<Side, SideCommonRoles>();
+
+        public static List<ExtraAssignable> AllExtraAssignable = new List<ExtraAssignable>();
 
         public static CrewmateRoles.Crewmate Crewmate = new CrewmateRoles.Crewmate();
         public static CrewmateRoles.CrewmateWithoutTasks CrewmateWithoutTasks = new CrewmateRoles.CrewmateWithoutTasks();
@@ -86,7 +114,6 @@ namespace Nebula.Roles
         public static MetaRoles.MetaRole MetaRole = new MetaRoles.MetaRole();
         public static RitualRoles.PerkHolder PerkHolder = new RitualRoles.PerkHolder();
 
-
         //全てのロールはこの中に含まれている必要があります
         public static List<Role> AllRoles = new List<Role>()
         {
@@ -111,6 +138,8 @@ namespace Nebula.Roles
             MetaRole,AvengerTarget,
             PerkHolder
         };
+
+        private static SideCommonRoles.SideCommonRolesLoader loader = new SideCommonRoles.SideCommonRolesLoader();
 
         public static void ResetWinTrigger()
         {

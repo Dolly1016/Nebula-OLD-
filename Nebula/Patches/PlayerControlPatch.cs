@@ -27,27 +27,17 @@ namespace Nebula.Patches
 
 
             var initialTasks = new List<GameData.TaskInfo>();
-            
+            List<GameData.TaskInfo>? actualTasks = null;
+
             for (int i = 0; i < taskTypeIds.Length; i++) initialTasks.Add(new GameData.TaskInfo(taskTypeIds[i], (uint)i));
 
             Game.GameData.data.myData.InitialTasks = new List<GameData.TaskInfo>(initialTasks);
 
-            Helpers.RoleAction(Game.GameData.data.myData.getGlobalData(),(r) =>
-            {
-                r.OnSetTasks(initialTasks);
-            });
+            Helpers.RoleAction(Game.GameData.data.myData.getGlobalData(), (r) => r.OnSetTasks(ref initialTasks, ref actualTasks));
+
+            if (actualTasks == null) actualTasks = initialTasks;
+            playerById.SetLocalTask(actualTasks);
             
-            var tasks = new Il2CppSystem.Collections.Generic.List<GameData.TaskInfo>(initialTasks.Count);
-            foreach (var t in initialTasks)
-            {
-                tasks.Add(t);
-            }
-
-            playerById.Tasks = tasks;
-            playerById.Object.SetTasks(playerById.Tasks);
-
-            __instance.SetDirtyBit(1U << (int)playerById.PlayerId);
-
             return false;
         }
     }
@@ -295,7 +285,8 @@ namespace Nebula.Patches
 
                         if (Game.GameData.data.myData.CanSeeEveryoneInfo || p.GetModData().RoleInfo == "") {
                             roleNames = Helpers.cs(p.GetModData().role.Color, Language.Language.GetString("role." + p.GetModData().role.LocalizeName + ".name"));
-                            Helpers.RoleAction(p.PlayerId, (role) => { role.EditDisplayRoleName(p.PlayerId,ref roleNames); });}
+                            Helpers.RoleAction(p.PlayerId, (role) => { role.EditDisplayRoleName(p.PlayerId, ref roleNames, false); });
+                        }
                         else
                             //カモフラージュ中は表示しない
                             roleNames = p.GetModData().currentName.Length == 0 ? "" : p.GetModData().RoleInfo;

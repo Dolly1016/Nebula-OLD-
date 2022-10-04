@@ -175,7 +175,7 @@ namespace Nebula.Roles
         public virtual void IntroInitialize(PlayerControl __instance) { }
 
         [RoleLocalMethod]
-        public virtual void OnSetTasks(List<GameData.TaskInfo> tasks){ }
+        public virtual void OnSetTasks(ref List<GameData.TaskInfo> initialTasks, ref List<GameData.TaskInfo>? actualTasks) { }
 
         /*--------------------------------------------------------------------------------------*/
 
@@ -382,7 +382,9 @@ namespace Nebula.Roles
         /// 役職の表示名を編集します。
         /// </summary>
         [RoleGlobalMethod]
-        public virtual void EditDisplayRoleName(byte playerId, ref string roleName) => EditDisplayNameForcely(playerId,ref roleName);
+        public virtual void EditDisplayRoleName(byte playerId, ref string roleName,bool isIntro)
+        {
+        }
 
         /// <summary>
         /// 役職の表示名を編集します。

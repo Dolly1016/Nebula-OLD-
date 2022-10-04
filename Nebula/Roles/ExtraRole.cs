@@ -7,12 +7,14 @@ using UnityEngine;
 
 namespace Nebula.Roles
 {
-    public class ExtraRole : Assignable
+    public class ExtraRole : Assignable , ExtraAssignable
     {
         public byte id { get; private set; }
 
         //使用済みロールID
         static private byte maxId = 0;
+
+        public virtual void Assignment(Patches.AssignMap assignMap) { }
 
         public byte assignmentPriority { get; protected set; }
 
@@ -39,6 +41,8 @@ namespace Nebula.Roles
             maxId++;
 
             this.assignmentPriority = assignmentPriority;
+
+            Roles.AllExtraAssignable.Add(this);
         }
 
         public static ExtraRole GetRoleById(byte id)
@@ -63,12 +67,6 @@ namespace Nebula.Roles
         }
 
         /// <summary>
-        /// ExtraRoleを割り振ります。割り振りアルゴリズムは各ロールに委ねられています。
-        /// </summary>
-        /// <param name="gameData"></param>
-        public virtual void Assignment(Patches.AssignMap assignMap) { }
-
-        /// <summary>
         /// ロールを設定します。
         /// </summary>
         /// <param name="player"></param>
@@ -84,7 +82,7 @@ namespace Nebula.Roles
         /// <param name="desctiption"></param>
         /// <returns></returns>
         [RoleLocalMethod]
-        public virtual void EditDescriptionString(ref string desctiption)
+        public virtual void EditDescriptionString(ref string description)
         {
         }
 

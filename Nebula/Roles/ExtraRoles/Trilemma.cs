@@ -117,14 +117,14 @@ namespace Nebula.Roles.ExtraRoles
                     Lover.iconColor[Game.GameData.data.AllPlayers[playerId].GetExtraRoleData(this) - 1], "♠");
         }
 
-        public override void EditDescriptionString(ref string desctiption)
+        public override void EditDescriptionString(ref string description)
         {
             string partner = "";
             ActionForMyLover((player) => {
                 partner = player.name;
             });
             partner = Helpers.cs(Color, partner);
-            desctiption += "\n" + Language.Language.GetString("role.lover.description").Replace("%NAME%", partner);
+            description += "\n" + Language.Language.GetString("role.lover.description").Replace("%NAME%", partner);
         }
 
         public override bool CheckAdditionalWin(PlayerControl player, EndCondition condition)

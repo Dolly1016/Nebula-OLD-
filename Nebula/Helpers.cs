@@ -703,6 +703,61 @@ namespace Nebula
             PlayerControl.LocalPlayer.myLight.transform.SetParent(target.transform,false);
             if (target != PlayerControl.LocalPlayer) PlayerControl.LocalPlayer.NetTransform.Halt();
         }
+
+        public static void SetLocalTask(this GameData.PlayerInfo player, List<GameData.TaskInfo> taskList)
+        {
+            var tasks = new Il2CppSystem.Collections.Generic.List<GameData.TaskInfo>(taskList.Count);
+            foreach (var t in taskList) tasks.Add(t);
+            
+
+            player.Tasks = tasks;
+            player.Object.SetTasks(player.Tasks);
+
+            GameData.Instance.SetDirtyBit(1U << (int)player.PlayerId);
+        }
+
+        public static List<GameData.TaskInfo> GetRandomTaskList(int newTasks,double longTaskChance)
+        {
+            int shortTasks = 0, longTasks = 0;
+            int sum = 0;
+            for (int i = 0; i < newTasks; i++)
+            {
+                if (NebulaPlugin.rnd.NextDouble() < longTaskChance)
+                    longTasks++;
+                else
+                    shortTasks++;
+            }
+
+            var tasks = new Il2CppSystem.Collections.Generic.List<byte>();
+
+            int num = 0;
+            var usedTypes = new Il2CppSystem.Collections.Generic.HashSet<TaskTypes>();
+            Il2CppSystem.Collections.Generic.List<NormalPlayerTask> unused;
+
+            unused = new Il2CppSystem.Collections.Generic.List<NormalPlayerTask>();
+            foreach (var t in ShipStatus.Instance.LongTasks)
+                unused.Add(t);
+            Extensions.Shuffle<NormalPlayerTask>(unused.Cast<Il2CppSystem.Collections.Generic.IList<NormalPlayerTask>>(), 0);
+            ShipStatus.Instance.AddTasksFromList(ref num, longTasks, tasks, usedTypes, unused);
+
+            unused = new Il2CppSystem.Collections.Generic.List<NormalPlayerTask>();
+            foreach (var t in ShipStatus.Instance.NormalTasks)
+            {
+                if (t.TaskType == TaskTypes.PickUpTowels) continue;
+                unused.Add(t);
+            }
+            Extensions.Shuffle<NormalPlayerTask>(unused.Cast<Il2CppSystem.Collections.Generic.IList<NormalPlayerTask>>(), 0);
+            ShipStatus.Instance.AddTasksFromList(ref num, shortTasks, tasks, usedTypes, unused);
+
+            var result = new List<GameData.TaskInfo>();
+            uint n = 0;
+            foreach (var t in tasks)
+            {
+                result.Add(new GameData.TaskInfo(t, n));
+                n++;
+            }
+            return result;
+        }
     }
 }
 

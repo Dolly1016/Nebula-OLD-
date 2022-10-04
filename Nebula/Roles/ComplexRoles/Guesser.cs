@@ -298,7 +298,7 @@ namespace Nebula.Roles.ComplexRoles
                 if (chance <= NebulaPlugin.rnd.Next(10)) continue;
 
                 playerId = players[NebulaPlugin.rnd.Next(players.Count)];
-                assignMap.Assign(playerId, id, 0);
+                assignMap.AssignExtraRole(playerId, id, 0);
                 players.Remove(playerId);
             }
         }
@@ -350,9 +350,9 @@ namespace Nebula.Roles.ComplexRoles
             GuesserSystem.MeetingUpdate(__instance, meetingInfo);
         }
 
-        public override void EditDescriptionString(ref string desctiption)
+        public override void EditDescriptionString(ref string description)
         {
-            desctiption += "\n" + Language.Language.GetString("role.secondaryGuesser.description");
+            description += "\n" + Language.Language.GetString("role.secondaryGuesser.description");
         }
 
         public override void EditDisplayName(byte playerId, ref string displayName, bool hideFlag)

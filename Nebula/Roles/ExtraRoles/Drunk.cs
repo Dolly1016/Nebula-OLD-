@@ -47,7 +47,7 @@ namespace Nebula.Roles.ExtraRoles
             {
                 if (CheckPlayerCondition(Game.GameData.data.playersArray[playerArray[i]], conditionIndex))
                 {
-                    assignMap.Assign(playerArray[i], this.id, 0);
+                    assignMap.AssignExtraRole(playerArray[i], this.id, 0);
                     playerArray.RemoveAt(i);
                     return true;
                 }

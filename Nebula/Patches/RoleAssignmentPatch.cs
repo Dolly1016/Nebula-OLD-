@@ -1,12 +1,10 @@
 ﻿using HarmonyLib;
-using Hazel;
 using Nebula.Roles;
+using Nebula.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
-using Nebula.Utilities;
-
+using System.Linq;
 using static Nebula.NebulaPlugin;
 
 namespace Nebula.Patches
@@ -22,13 +20,19 @@ namespace Nebula.Patches
             ExtraRoleList = new List<Tuple<byte, Tuple<byte, ulong>>>();
         }
 
-        public void Assign(byte playerId,byte roleId)
+        public void AssignRole(byte playerId,byte roleId)
         {
             RoleMap[playerId] = roleId;
-            RPCEvents.SetRole(playerId, Roles.Role.GetRoleById(roleId));
+            RPCEvents.SetRole(playerId, Roles.Role.GetRoleById(roleId),0);
         }
 
-        public void Assign(byte playerId,byte extraRoleId,ulong initializeValue)
+        public void AssignRole(byte playerId, byte roleId,int initializeId)
+        {
+            RoleMap[playerId] = roleId;
+            RPCEvents.SetRole(playerId, Roles.Role.GetRoleById(roleId), initializeId);
+        }
+
+        public void AssignExtraRole(byte playerId,byte extraRoleId,ulong initializeValue)
         {
             ExtraRoleList.Add(new Tuple<byte, Tuple<byte, ulong>>(playerId,new Tuple<byte, ulong>(extraRoleId,initializeValue)));
             RPCEvents.SetExtraRole(playerId,Roles.ExtraRole.GetRoleById(extraRoleId),initializeValue);
@@ -430,7 +434,7 @@ namespace Nebula.Patches
                 foreach (var player in PlayerControl.AllPlayerControls.GetFastEnumerator())
                 {
                     if (player.name != entry.Key) continue;
-                    assignMap.Assign(player.PlayerId, entry.Value.id);
+                    assignMap.AssignRole(player.PlayerId, entry.Value.id);
 
                     crewmates.RemoveAll((p)=>p.PlayerId==player.PlayerId);
                     impostors.RemoveAll((p) => p.PlayerId == player.PlayerId);
@@ -452,14 +456,14 @@ namespace Nebula.Patches
                 setRoleToRandomPlayer(assignMap, property.DefaultImpostorRole, impostors, true);
             }
 
-            /* ExtraRoleの割り当て */
+            /* ExtraAssignableの割り当て */
             byte currentPriority = Byte.MinValue;
             byte nextPriority = Byte.MaxValue;
             do
             {
                 nextPriority = Byte.MaxValue;
 
-                foreach (ExtraRole role in Roles.Roles.AllExtraRoles)
+                foreach (ExtraAssignable role in Roles.Roles.AllExtraAssignable)
                 {
                     //無効なロールは入れない
                     if ((int)(CustomOptionHolder.GetCustomGameMode() & role.ValidGamemode) == 0) continue;
@@ -494,7 +498,7 @@ namespace Nebula.Patches
                 playerList.RemoveAt(index);
             }
 
-            assignMap.Assign(playerId, role.id);
+            assignMap.AssignRole(playerId, role.id);
             
             return playerId;
         }

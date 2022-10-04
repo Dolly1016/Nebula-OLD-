@@ -684,7 +684,7 @@ namespace Nebula.Game
         public string name { get; }
 
         public Role role { get; set; }
-        public HashSet<ExtraRole> extraRole { get; }
+        public List<ExtraRole> extraRole { get; }
 
         //自身のロールがもつデータ
         private Dictionary<int, int> roleData { get; set; }
@@ -733,7 +733,7 @@ namespace Nebula.Game
             this.id = player.PlayerId;
             this.name = name;
             this.role = role;
-            this.extraRole = new HashSet<ExtraRole>();
+            this.extraRole = new List<ExtraRole>();
             this.roleData = new Dictionary<int, int>();
             this.extraRoleData = new Dictionary<byte, ulong>();
             this.IsAlive = true;
@@ -825,7 +825,6 @@ namespace Nebula.Game
             {
                 roleData.Add(id, newValue);
             }
-
         }
 
         public void AddRoleData(int id, int addValue)
@@ -1151,8 +1150,15 @@ namespace Nebula.Game
             return GetRoleDataId(data);
         }
 
-        public void RegisterPlayer(byte playerId,Role role)
+        public void RegisterPlayer(byte playerId,Role role,int initializeRoleId)
         {
+            if (AllPlayers.ContainsKey(playerId))
+            {
+                AllPlayers[playerId].role = role;
+                AllPlayers[playerId].SetRoleData(role.id, initializeRoleId);
+                return;
+            }
+
             string name = "Unknown";
             PlayerOutfit outfit=null;
             
@@ -1166,6 +1172,8 @@ namespace Nebula.Game
             }
 
             var data = new PlayerData(Helpers.playerById(playerId), name, outfit, role);
+            data.SetRoleData(role.id, initializeRoleId);
+
             AllPlayers.Add(playerId, data);
             while(playersArray.Count <= playerId)
             {

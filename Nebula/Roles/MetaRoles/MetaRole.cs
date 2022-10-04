@@ -146,7 +146,7 @@ namespace Nebula.Roles.MetaRoles
 
             foreach (var player in Game.GameData.data.AllPlayers.Keys)
             {
-                assignMap.Assign(player, this.id, 0);
+                assignMap.AssignExtraRole(player, this.id, 0);
             }
         }
 

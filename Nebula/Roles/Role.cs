@@ -48,11 +48,11 @@ namespace Nebula.Roles
         /// <summary>
         /// ゲーム開始時に表示する陣営群
         /// </summary>
-        private HashSet<Side> introDisplaySides { get; set; }
+        public HashSet<Side> introDisplaySides { get; private set; }
         /// <summary>
         /// 自身が同じチームとして表示される陣営
         /// </summary>
-        private HashSet<Side> introInfluenceSides { get; }
+        public HashSet<Side> introInfluenceSides { get; private set; }
 
         /// <summary>
         /// 関連性のあるロール

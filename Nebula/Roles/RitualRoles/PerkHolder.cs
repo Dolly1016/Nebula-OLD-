@@ -12,7 +12,7 @@ namespace Nebula.Roles.RitualRoles
         {
             foreach(var p in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
-                assignMap.Assign(p.PlayerId, this.id, 0);
+                assignMap.AssignExtraRole(p.PlayerId, this.id, 0);
             }
         }
 

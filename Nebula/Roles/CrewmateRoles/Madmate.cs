@@ -97,7 +97,7 @@ namespace Nebula.Roles.CrewmateRoles
         }
 
         //カットするタスクの数を計上したうえで初期化
-        public override void OnSetTasks(List<GameData.TaskInfo> tasks)
+        public override void OnSetTasks(ref List<GameData.TaskInfo> initialTasks, ref List<GameData.TaskInfo> actualTasks)
         {
             int impostors = 0;
             foreach (var player in PlayerControl.AllPlayerControls.GetFastEnumerator())
@@ -112,7 +112,7 @@ namespace Nebula.Roles.CrewmateRoles
             CustomExemptTasks = taskNum - requireTasks;
             if (CustomExemptTasks < 0) CustomExemptTasks = 0;
 
-            base.OnSetTasks(tasks);
+            base.OnSetTasks(ref initialTasks,ref actualTasks);
 
         }
 
@@ -159,7 +159,7 @@ namespace Nebula.Roles.CrewmateRoles
                 if (chance <= NebulaPlugin.rnd.Next(10)) continue;
 
                 playerId = players[NebulaPlugin.rnd.Next(players.Count)];
-                assignMap.Assign(playerId, id, 0);
+                assignMap.AssignExtraRole(playerId, id, 0);
                 players.Remove(playerId);
             }
         }
@@ -185,6 +185,8 @@ namespace Nebula.Roles.CrewmateRoles
             _sub_Assignment(assignMap, crewmates, (int)Roles.Madmate.RoleCountOption.getFloat());
         }
 
+        public override void EditDisplayRoleName(byte playerId, ref string roleName, bool isIntro)
+        => EditDisplayRoleNameForcely(playerId,ref roleName);
 
         public override void EditDisplayRoleNameForcely(byte playerId, ref string displayName)
         {

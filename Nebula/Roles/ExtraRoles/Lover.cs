@@ -179,8 +179,8 @@ namespace Nebula.Roles.ExtraRoles
                     //割り当てられない場合終了
                     if (crewmateUsed >= crewmateIndex.Length) break;
 
-                    assignMap.Assign(crewmates[crewmateIndex[crewmateUsed]].PlayerId, this.id, (ulong)(i + 1));
-                    assignMap.Assign(impostors[impostorIndex[impostorUsed]].PlayerId, this.id, (ulong)(i + 1));
+                    assignMap.AssignExtraRole(crewmates[crewmateIndex[crewmateUsed]].PlayerId, this.id, (ulong)(i + 1));
+                    assignMap.AssignExtraRole(impostors[impostorIndex[impostorUsed]].PlayerId, this.id, (ulong)(i + 1));
 
                     crewmateUsed++;
                     impostorUsed++;
@@ -194,7 +194,7 @@ namespace Nebula.Roles.ExtraRoles
 
                     for (int p = 0; p < 2; p++)
                     {
-                        assignMap.Assign(crewmates[crewmateIndex[crewmateUsed]].PlayerId, this.id, (ulong)(i + 1));
+                        assignMap.AssignExtraRole(crewmates[crewmateIndex[crewmateUsed]].PlayerId, this.id, (ulong)(i + 1));
                         crewmateUsed++;
                     }
                 }
@@ -416,7 +416,7 @@ namespace Nebula.Roles.ExtraRoles
             return false;
         }
 
-        public Lover() : base("Lover", "lover", iconColor[0],0)
+        public Lover() : base("Lover", "lover", iconColor[0],48)
         {
             FixedRoleCount = true;
         }
