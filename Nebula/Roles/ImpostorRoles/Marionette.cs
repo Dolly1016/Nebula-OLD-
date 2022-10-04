@@ -115,7 +115,7 @@ namespace Nebula.Roles.ImpostorRoles
                 KeyCode.F,
                 false,
                 "button.label.decoy"
-            );
+            ).SetTimer(CustomOptionHolder.InitialModestAbilityCoolDownOption.getFloat());
             placeButton.MaxTimer = 10f;
 
             marionetteMode = 0;

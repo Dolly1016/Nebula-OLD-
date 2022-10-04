@@ -2208,7 +2208,7 @@ namespace Nebula
             RPCEvents.KillGuard(player.PlayerId, 0, (byte)num);
         }
 
-        public static void UpdatePlayersIconInfo(Roles.Role role,List<byte> activePlayers,Dictionary<byte, float>? progress)
+        public static void UpdatePlayersIconInfo(Roles.Template.HasAlignedHologram role,List<byte> activePlayers,Dictionary<byte, float>? progress)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UpdatePlayersIconInfo, Hazel.SendOption.Reliable, -1);
             writer.Write(PlayerControl.LocalPlayer.PlayerId);
@@ -2218,7 +2218,7 @@ namespace Nebula
             foreach(var p in PlayerControl.AllPlayerControls)
             {
                 writer.Write(p.PlayerId);
-                if (p==PlayerControl.LocalPlayer || p.Data.IsDead || p.Data.Disconnected) writer.Write(byte.MaxValue);
+                if (p == PlayerControl.LocalPlayer || !role.GetIconState(p.PlayerId)) writer.Write(byte.MaxValue);
                 else if (activePlayers.Contains(p.PlayerId)) writer.Write((byte)100);
                 else if (progress != null && progress.ContainsKey(p.PlayerId)) writer.Write((byte)(progress[p.PlayerId] * 100f));
                 else writer.Write((byte)0);

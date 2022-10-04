@@ -115,7 +115,7 @@ namespace Nebula.Roles.ImpostorRoles
                 () => { morphButton.Timer = morphButton.MaxTimer; },
                 false,
                 "button.label.sample"
-            );
+            ).SetTimer(CustomOptionHolder.InitialModestAbilityCoolDownOption.getFloat());
             morphButton.MaxTimer = morphCoolDownOption.getFloat();
             morphButton.EffectDuration = morphDurationOption.getFloat();
             morphButton.SetSuspendAction(()=> {

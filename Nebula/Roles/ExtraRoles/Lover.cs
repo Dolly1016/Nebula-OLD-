@@ -388,7 +388,7 @@ namespace Nebula.Roles.ExtraRoles
                 KeyCode.Z,
                 true,
                 "button.label.involve"
-            );
+            ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());
             involveButton.MaxTimer = 0;
 
             trilemmaTarget = null;

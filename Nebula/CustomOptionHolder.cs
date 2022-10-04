@@ -152,6 +152,7 @@ namespace Nebula
         public static CustomOption advanceRoleOptions;
 
         public static CustomOption exclusiveAssignmentParent;
+        public static CustomOption exclusiveAssignmentMorphingAndPainter;
         public static CustomOption exclusiveAssignmentRaiderAndSniper;
         public static CustomOption exclusiveAssignmentArsonistAndEmpiric;
         public static CustomOption exclusiveAssignmentAlienAndNavvy;
@@ -160,12 +161,21 @@ namespace Nebula
         public static List<Tuple<CustomOption,List<CustomOption>>> exclusiveAssignmentList;
         public static List<Roles.Role> exclusiveAssignmentRoles;
 
+        public static CustomOption CoolDownOption;
+        public static CustomOption InitialKillCoolDownOption;
+        public static CustomOption InitialAbilityCoolDownOption;
+        public static CustomOption InitialForcefulAbilityCoolDownOption;
+        public static CustomOption InitialModestAbilityCoolDownOption;
+
         public static CustomOption escapeHunterOption;
+
 
         public static void AddExclusiveAssignment(ref List<ExclusiveAssignment> exclusiveAssignments)
         {
             if (!exclusiveAssignmentParent.getBool()) return;
 
+            if (exclusiveAssignmentMorphingAndPainter.getBool())
+                exclusiveAssignments.Add(new ExclusiveAssignment(Roles.Roles.Morphing, Roles.Roles.Painter));
             if (exclusiveAssignmentRaiderAndSniper.getBool())
                 exclusiveAssignments.Add(new ExclusiveAssignment(Roles.Roles.Raider,Roles.Roles.Sniper));
             if (exclusiveAssignmentArsonistAndEmpiric.getBool())
@@ -295,12 +305,23 @@ namespace Nebula
             Roles.Role.LoadAllOptionData();
             Roles.ExtraRole.LoadAllOptionData();
 
-            exclusiveAssignmentParent = CustomOption.Create(10200, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.exclusiveAssignment", false, null, true, false, "", CustomOptionTab.AdvancedSettings).SetGameMode(CustomGameMode.Standard | CustomGameMode.FreePlay);
-            exclusiveAssignmentRaiderAndSniper= CustomOption.Create(10201, Color.white, "option.exclusiveAssignment.RaiderAndSniper", true, exclusiveAssignmentParent);
-            exclusiveAssignmentArsonistAndEmpiric = CustomOption.Create(10202, Color.white, "option.exclusiveAssignment.ArsonistAndEmpiric", true, exclusiveAssignmentParent);
-            exclusiveAssignmentAlienAndNavvy = CustomOption.Create(10203, Color.white, "option.exclusiveAssignment.AlienAndNavvy", true, exclusiveAssignmentParent);
-            exclusiveAssignmentBaitAndProvocateur = CustomOption.Create(10204, Color.white, "option.exclusiveAssignment.BaitAndProvocateur", true, exclusiveAssignmentParent);
-            exclusiveAssignmentPsychicAndSeer = CustomOption.Create(10204, Color.white, "option.exclusiveAssignment.PsychicAndSeer", false, exclusiveAssignmentParent);
+            CoolDownOption = CustomOption.Create(11010, Color.white, "option.coolDownOption", new string[] { "option.empty" }, "option.empty", null, true, false, "", CustomOptionTab.AdvancedSettings);
+            InitialKillCoolDownOption = CustomOption.Create(11011, Color.white, "option.initialKillCoolDown", 10f, 5f, 30f, 2.5f, CoolDownOption);
+            InitialKillCoolDownOption.suffix = "second";
+            InitialAbilityCoolDownOption = CustomOption.Create(11012, Color.white, "option.initialAbilityCoolDown", 15f, 5f, 30f, 2.5f, CoolDownOption);
+            InitialAbilityCoolDownOption.suffix = "second";
+            InitialForcefulAbilityCoolDownOption = CustomOption.Create(11013, Color.white, "option.initialForcefulAbilityCoolDown", 20f, 5f, 30f, 2.5f, CoolDownOption);
+            InitialForcefulAbilityCoolDownOption.suffix = "second";
+            InitialModestAbilityCoolDownOption = CustomOption.Create(11014, Color.white, "option.initialModestAbilityCoolDown", 10f, 5f, 30f, 2.5f, CoolDownOption);
+            InitialModestAbilityCoolDownOption.suffix = "second";
+
+            exclusiveAssignmentParent = CustomOption.Create(11100, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.exclusiveAssignment", false, null, true, false, "", CustomOptionTab.AdvancedSettings).SetGameMode(CustomGameMode.Standard | CustomGameMode.FreePlay);
+            exclusiveAssignmentMorphingAndPainter = CustomOption.Create(11101, Color.white, "option.exclusiveAssignment.MorphingAndPainter", true, exclusiveAssignmentParent);
+            exclusiveAssignmentRaiderAndSniper = CustomOption.Create(11102, Color.white, "option.exclusiveAssignment.RaiderAndSniper", true, exclusiveAssignmentParent);
+            exclusiveAssignmentArsonistAndEmpiric = CustomOption.Create(11103, Color.white, "option.exclusiveAssignment.ArsonistAndEmpiric", true, exclusiveAssignmentParent);
+            exclusiveAssignmentAlienAndNavvy = CustomOption.Create(11104, Color.white, "option.exclusiveAssignment.AlienAndNavvy", true, exclusiveAssignmentParent);
+            exclusiveAssignmentBaitAndProvocateur = CustomOption.Create(11105, Color.white, "option.exclusiveAssignment.BaitAndProvocateur", true, exclusiveAssignmentParent);
+            exclusiveAssignmentPsychicAndSeer = CustomOption.Create(11106, Color.white, "option.exclusiveAssignment.PsychicAndSeer", false, exclusiveAssignmentParent);
             exclusiveAssignmentRoles = new List<Roles.Role>();
             foreach(Roles.Role role in Roles.Roles.AllRoles)
             {
@@ -324,7 +345,7 @@ namespace Nebula
                 for (int r = 0; r < 3; r++)
                 {
                     exclusiveAssignmentList[exclusiveAssignmentList.Count - 1].Item2.Add(
-                        CustomOption.Create(10210 + i * 5 + 1 + r, Color.white, "option.exclusiveAssignmentRole" + (r + 1), roleList, "option.exclusiveAssignmentRole.none", exclusiveAssignmentList[exclusiveAssignmentList.Count - 1].Item1, false)
+                        CustomOption.Create(11110 + i * 5 + 1 + r, Color.white, "option.exclusiveAssignmentRole" + (r + 1), roleList, "option.exclusiveAssignmentRole.none", exclusiveAssignmentList[exclusiveAssignmentList.Count - 1].Item1, false)
                         .SetIdentifier("option.exclusiveAssignment"+(i+1)+".Role" + (r + 1))
                         );
                 }

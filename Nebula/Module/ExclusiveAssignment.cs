@@ -18,24 +18,19 @@ namespace Nebula.Module
                 exclusiveRoles.Add(role);
             }
         }
-        public void ExclusiveAssign(Patches.AssignRoles roles)
+
+        public bool Exclusive(Patches.AssignRoles roles, Roles.Role role)
         {
-            if (exclusiveRoles.Count == 0) return;
+            if (exclusiveRoles.Count == 0) return false;
 
-            List<int> validRoleList = new List<int>();
-            for (int i = 0; i < exclusiveRoles.Count; i++) {
-                if (roles.FuzzyContains(exclusiveRoles[i])) validRoleList.Add(i);
-            }
+            if (!exclusiveRoles.Contains(role)) return false;
 
-            if (validRoleList.Count == 0) return;
-
-            Roles.Role validRole= exclusiveRoles[validRoleList[NebulaPlugin.rnd.Next(validRoleList.Count)]];
-
-            foreach (Roles.Role role in exclusiveRoles)
+            foreach (var ex in exclusiveRoles)
             {
-                if(role!=validRole)
-                    roles.FuzzyRemoveRole(role);
+                if (ex == role) continue;
+                roles.FuzzyRemoveRole(ex);
             }
+            return true;
         }
     }
 }

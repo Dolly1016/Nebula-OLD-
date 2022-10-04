@@ -86,7 +86,7 @@ namespace Nebula.Roles.CrewmateRoles
                },
                 false,
                 "button.label.blaze"
-            );
+            ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());
             boostButton.MaxTimer = boostCooldownOption.getFloat();
         }
     

@@ -86,7 +86,7 @@ namespace Nebula.Roles.NeutralRoles
                     new Vector3(0f, 1f, 0),
                     __instance,
                     KeyCode.Q
-                );
+                ).SetTimer(CustomOptionHolder.InitialKillCoolDownOption.getFloat());
                 killButton.MaxTimer = SidekickKillCoolDownOption.getFloat();
             }
         }

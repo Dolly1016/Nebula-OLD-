@@ -1077,7 +1077,7 @@ namespace Nebula.Game
 
             VentMap = new Dictionary<string, VentData>();
 
-            OriginalSpeed =PlayerControl.LocalPlayer.MyPhysics.Speed;
+            OriginalSpeed = 2.5f;
 
             GameRule = new GameRule();
             GameMode = Module.CustomGameModes.GetGameMode(CustomOptionHolder.gameMode.getSelection());

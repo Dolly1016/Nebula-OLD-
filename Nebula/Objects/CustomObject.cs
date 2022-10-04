@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnhollowerRuntimeLib;
+using UnhollowerBaseLib.Attributes;
 
 namespace Nebula.Objects
 {
@@ -20,6 +21,63 @@ namespace Nebula.Objects
                 HudManager.Instance.PlayerCam.SetTargetWithLight(PlayerControl.LocalPlayer);
             }
         }
+    }
+
+    [Il2CppImplementsAttribute(typeof(IUsable))]
+    public class UsableCustomObjectBehaviour : MonoBehaviour
+    {
+        static UsableCustomObjectBehaviour()
+        {
+            ClassInjector.RegisterTypeInIl2Cpp<UsableCustomObjectBehaviour>();
+        }
+
+        public float UsableDistance { get => 0.8f; }
+        public float PercentCool { get => 0f; }
+
+        public ImageNames UseIcon { get => ImageNames.UseButton; }
+
+        public void SetOutline(bool on, bool mainTarget)
+        {
+            if (this.CustomObject.Renderer)
+            {
+                CustomObject.Renderer.material.SetFloat("_Outline", (float)(on ? 1 : 0));
+                CustomObject.Renderer.material.SetColor("_OutlineColor", Color.white);
+                CustomObject.Renderer.material.SetColor("_AddColor", mainTarget ? Color.white : Color.clear);
+            }
+        }
+
+
+        public float CanUse(GameData.PlayerInfo pc, out bool canUse, out bool couldUse)
+        {
+            float num = float.MaxValue;
+            PlayerControl @object = pc.Object;
+            Vector2 truePosition = @object.GetTruePosition();
+            Vector3 position = base.transform.position;
+            couldUse = (CustomObject.ObjectType.CanUse(CustomObject, PlayerControl.LocalPlayer) && @object.CanMove);
+            canUse = couldUse;
+            if (canUse)
+            {
+                num = Vector2.Distance(truePosition, base.transform.position);
+                canUse &= (num <= this.UsableDistance);
+                canUse &= !PhysicsHelpers.AnythingBetween(truePosition, position, Constants.ShadowMask, false);
+            }
+            return num;
+        }
+
+
+        public void Use()
+        {
+            bool flag;
+            bool flag2;
+            this.CanUse(PlayerControl.LocalPlayer.Data, out flag, out flag2);
+            if (!flag)
+            {
+                return;
+            }
+            CustomObject.ObjectType.Use(CustomObject);
+        }
+
+        public CustomObject CustomObject;
     }
 
     public class CustomObject
@@ -62,6 +120,7 @@ namespace Nebula.Objects
             public static ObjectTypes.ElecPoleGuide ElecPoleGuide = new ObjectTypes.ElecPoleGuide();
             public static ObjectTypes.Decoy Decoy = new ObjectTypes.Decoy();
             public static ObjectTypes.DelayedObject Antenna = new ObjectTypes.DelayedObject(9, "Antenna", "Nebula.Resources.Antenna.png");
+            public static ObjectTypes.Diamond Diamond = new ObjectTypes.Diamond();
 
             public byte Id { get; }
             public string ObjectName { get; }
@@ -91,6 +150,11 @@ namespace Nebula.Objects
             public virtual void Update(CustomObject obj,int command) { }
             public virtual void Initialize(CustomObject obj) { }
 
+            public virtual bool IsUsable { get => false; }
+            public virtual Color UsableColor { get => Color.white; }
+            public virtual bool CanUse(CustomObject obj, PlayerControl player) { return true; }
+            public virtual void Use(CustomObject obj) { }
+
             public Type(byte id,string objectName)
             {
                 Id = id;
@@ -116,6 +180,7 @@ namespace Nebula.Objects
         static public implicit operator bool(CustomObject obj) { return obj.GameObject == null || obj.GameObject; }
 
         public CustomObjectBehaviour? Behaviour { get; private set; }
+        public UsableCustomObjectBehaviour? UsableBehaviour { get; private set; }
 
         static public void RegisterUpdater(Action<PlayerControl> action)
         {
@@ -151,9 +216,24 @@ namespace Nebula.Objects
             }
             GameObject.transform.position = pos;
             Renderer = GameObject.AddComponent<SpriteRenderer>();
+            Renderer.material = new Material(ShipStatus.Instance.AllConsoles[0].Image.material);
 
             if (type.RequireMonoBehaviour) Behaviour = GameObject.AddComponent<CustomObjectBehaviour>();
             else Behaviour = null;
+            if (type.IsUsable)
+            {
+                var usableObj = new GameObject("UsableObject");
+                usableObj.transform.SetParent(GameObject.transform);
+                usableObj.transform.localPosition = new Vector3(0f,0f,0f);
+                usableObj.transform.localScale = new Vector3(1f,1f,1f);
+                usableObj.layer = LayerExpansion.GetShortObjectsLayer();
+                UsableBehaviour = usableObj.AddComponent<UsableCustomObjectBehaviour>();
+                var circle = usableObj.AddComponent<CircleCollider2D>();
+                circle.radius = UsableBehaviour.UsableDistance;
+                circle.isTrigger = true;
+                UsableBehaviour.CustomObject = this;
+            }
+            else UsableBehaviour = null;
 
             Data = new int[0];
 
@@ -184,7 +264,6 @@ namespace Nebula.Objects
             {
                 if (obj.ObjectType.CanSeeInShadow(obj)) obj.GameObject.layer = LayerExpansion.GetObjectsLayer();
                 else obj.GameObject.layer = LayerExpansion.GetDefaultLayer();
-
 
                 obj.ObjectType.Update(obj);
             }

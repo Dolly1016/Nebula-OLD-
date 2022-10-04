@@ -29,7 +29,7 @@ namespace Nebula.Roles.ImpostorRoles
             paintCoolDownOption = CreateOption(Color.white, "paintCoolDown", 10f, 2.5f, 30f, 2.5f);
             paintCoolDownOption.suffix = "second";
 
-            changeLookImmediatelyOption = CreateOption(Color.white, "changeLookImmediately", false);
+            changeLookImmediatelyOption = CreateOption(Color.white, "changeLookImmediately", true);
         }
 
         byte paintMode = 0;
@@ -92,9 +92,8 @@ namespace Nebula.Roles.ImpostorRoles
                 KeyCode.F,
                 false,
                 "button.label.sample"
-            );
+            ).SetTimer(CustomOptionHolder.InitialModestAbilityCoolDownOption.getFloat());
             paintButton.MaxTimer = paintCoolDownOption.getFloat();
-            paintButton.Timer = sampleCoolDownOption.getFloat();
             paintButton.SetAidAction(KeyCode.LeftShift, true, ChangePaintMode);
         }
 

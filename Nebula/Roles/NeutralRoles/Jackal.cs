@@ -99,7 +99,7 @@ namespace Nebula.Roles.NeutralRoles
                 new Vector3(0f, 1f, 0),
                 __instance,
                 KeyCode.Q
-            ).SetTimer(10f);
+            ).SetTimer(CustomOptionHolder.InitialKillCoolDownOption.getFloat());
             killButton.MaxTimer = KillCoolDownOption.getFloat();
             killButton.SetButtonCoolDownOption(true);
 

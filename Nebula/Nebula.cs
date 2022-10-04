@@ -68,17 +68,17 @@ namespace Nebula
         public const string AmongUsVersion = "2022.8.24";
         public const string PluginGuid = "jp.dreamingpig.amongus.nebula";
         public const string PluginName = "TheNebula";
-        public const string PluginVersion = "1.14.1";
+        public const string PluginVersion = "1.15";
         public const bool IsSnapshot = true;
 
-        public static string PluginVisualVersion = IsSnapshot ? "22.09.22a" : PluginVersion;
+        public static string PluginVisualVersion = IsSnapshot ? "22.10.04b" : PluginVersion;
         public static string PluginStage = IsSnapshot?"Snapshot":"";
 
-        public const string PluginVersionForFetch = "1.14.1";
-        public byte[] PluginVersionData = new byte[] { 1, 14, 1, 0 };
+        public const string PluginVersionForFetch = "1.15";
+        public byte[] PluginVersionData = new byte[] { 1, 15, 0, 0 };
 
         public static NebulaPlugin Instance;
-
+        
         public Harmony Harmony = new Harmony(PluginGuid);
 
         public static Sprite ModStamp;
@@ -237,17 +237,15 @@ namespace Nebula
                 var i = playerControl.PlayerId = (byte)GameData.Instance.GetAvailableId();
 
                 bots.Add(playerControl);
-                GameData.Instance.AddPlayer(playerControl);
                 AmongUsClient.Instance.Spawn(playerControl, -2, InnerNet.SpawnFlags.None);
+                GameData.Instance.AddPlayer(playerControl);
 
-                playerControl.transform.position = PlayerControl.LocalPlayer.transform.position;
-                playerControl.GetComponent<DummyBehaviour>().enabled = true;
+                //playerControl.transform.position = PlayerControl.LocalPlayer.transform.position;
+                //playerControl.GetComponent<DummyBehaviour>().enabled = true;
                 playerControl.SetName(Patches.RandomNamePatch.GetRandomName());
                 playerControl.SetColor((byte)random.Next(Palette.PlayerColors.Length));
 
                 GameData.Instance.RpcSetTasks(playerControl.PlayerId, new byte[0]);
-
-                playerControl.StartCoroutine(playerControl.CoPlayerAppear().WrapToIl2Cpp());
             }
 
             // Spawn dummys

@@ -63,7 +63,7 @@ namespace Nebula.Roles.ImpostorRoles
                 () => { camouflageButton.Timer = camouflageButton.MaxTimer; },
                 false,
                 "button.label.camouflage"
-            );
+            ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());
             camouflageButton.MaxTimer = camouflageCoolDownOption.getFloat();
             camouflageButton.EffectDuration = camouflageDurationOption.getFloat();
         }

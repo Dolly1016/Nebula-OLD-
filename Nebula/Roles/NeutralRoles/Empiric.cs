@@ -138,7 +138,7 @@ namespace Nebula.Roles.NeutralRoles
                 KeyCode.F,
                 false,
                 "button.label.infect"
-            );
+            ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());
 
             infectButtonString = GameObject.Instantiate(infectButton.actionButton.cooldownTimerText, infectButton.actionButton.cooldownTimerText.transform.parent);
             infectButtonString.text = "";

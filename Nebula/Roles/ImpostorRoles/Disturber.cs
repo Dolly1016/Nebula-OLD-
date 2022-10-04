@@ -131,8 +131,8 @@ namespace Nebula.Roles.ImpostorRoles
                 () => { },
                 false,
                 "button.label.place"
-            );
-            elecButton.MaxTimer = elecButton.Timer = 10f;
+            ).SetTimer(CustomOptionHolder.InitialModestAbilityCoolDownOption.getFloat());
+            elecButton.MaxTimer = 10f;
             elecButton.HasEffect = false;
         }
 

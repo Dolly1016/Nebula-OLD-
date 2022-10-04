@@ -190,6 +190,7 @@ namespace Nebula.Roles.ComplexRoles
                         foreach (PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
                         {
                             if (player.Data.IsDead) continue;
+                            if (player.inVent) continue;
                             if (detectedPlayers.Contains(player.PlayerId)) continue;
 
                             if (player.transform.position.Distance(obj.GameObject.transform.position) < 1.125f / 2f)
@@ -341,7 +342,7 @@ namespace Nebula.Roles.ComplexRoles
                 () => { 
                     trapButton.Timer = trapButton.MaxTimer;
                 },false,"button.label.place"
-            );
+            ).SetTimer(CustomOptionHolder.InitialModestAbilityCoolDownOption.getFloat());
             trapButton.MaxTimer = Roles.F_Trapper.placeCoolDownOption.getFloat();
             trapButton.EffectDuration = Roles.F_Trapper.rootTimeOption.getFloat();
 

@@ -5,9 +5,9 @@ using UnityEngine;
 
 namespace Nebula.Roles.ExtraRoles
 {
-    public class JewelPossessor : ExtraRole
+    public class DiamondPossessor : ExtraRole
     {
-        static public Color RoleColor = new Color(255f / 255f, 148f / 255f, 252f / 255f);
+        static public Color RoleColor = new Color(145f / 255f, 159f / 255f, 232f / 255f);
 
         public override void Assignment(Patches.AssignMap assignMap)
         {
@@ -19,10 +19,19 @@ namespace Nebula.Roles.ExtraRoles
             base.GlobalInitialize(__instance);
         }
 
+        public override void EditDisplayName(byte playerId, ref string displayName, bool hideFlag)
+        {
+            bool showFlag = false;
+            if (playerId==PlayerControl.LocalPlayer.PlayerId || Game.GameData.data.myData.CanSeeEveryoneInfo) showFlag = true;
+            
+            if (showFlag) EditDisplayNameForcely(playerId, ref displayName);
+        }
+
+
         public override void EditDisplayNameForcely(byte playerId, ref string displayName)
         {
             displayName += Helpers.cs(
-                    RoleColor, "💎");
+                    RoleColor, "◇");
         }
 
         public override void LoadOptionData()
@@ -30,7 +39,7 @@ namespace Nebula.Roles.ExtraRoles
             
         }
 
-        public JewelPossessor() : base("JewelPossessor", "jewelPossessor", RoleColor, 0)
+        public DiamondPossessor() : base("DiamondPossessor", "diamondPossessor", RoleColor, 0)
         {
             IsHideRole = true;
         }

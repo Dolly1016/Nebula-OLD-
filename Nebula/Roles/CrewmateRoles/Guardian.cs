@@ -191,7 +191,8 @@ namespace Nebula.Roles.CrewmateRoles
                 KeyCode.F,
                 false, 
                 "button.label.place"
-            );
+            ).SetTimer(CustomOptionHolder.InitialModestAbilityCoolDownOption.getFloat());
+
             antennaButton.MaxTimer = placeCoolDownOption.getFloat();
 
             if (guardButton != null)
@@ -219,7 +220,7 @@ namespace Nebula.Roles.CrewmateRoles
                 KeyCode.G,
                 false,
                 "button.label.guard"
-            );
+            ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());
             guardButton.MaxTimer = 10f;
         }
 

@@ -37,6 +37,8 @@ namespace Nebula.Map.Editors
                 ShipStatus.Instance.Systems[SystemTypes.LifeSupp].Cast<LifeSuppSystemType>().LifeSuppDuration = CustomOptionHolder.SkeldO2TimeLimitOption.getFloat();
                 ShipStatus.Instance.Systems[SystemTypes.Reactor].Cast<ReactorSystemType>().ReactorDuration = CustomOptionHolder.SkeldReactorTimeLimitOption.getFloat();
             }
+
+           // RPCEventInvoker.ObjectInstantiate(Objects.CustomObject.Type.Diamond, new Vector3(3, 0, 0));
         }
     }
 }

@@ -187,7 +187,7 @@ namespace Nebula.Roles.CrewmateRoles
                 false,
                 "button.label.revive",
                 ImageNames.VitalsButton
-            );
+            ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());
             reviveButton.MaxTimer = reviveCoolDownOption.getFloat();
         }
 

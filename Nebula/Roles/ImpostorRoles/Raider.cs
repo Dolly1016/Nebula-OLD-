@@ -110,7 +110,7 @@ namespace Nebula.Roles.ImpostorRoles
                 KeyCode.Q,
                 false,
                  "button.label.throw"
-            ).SetTimer(10f);
+            ).SetTimer(CustomOptionHolder.InitialKillCoolDownOption.getFloat());
             killButton.MaxTimer = throwCoolDownOption.getFloat();
             killButton.FireOnClicked = true;
             killButton.SetButtonCoolDownOption(true);

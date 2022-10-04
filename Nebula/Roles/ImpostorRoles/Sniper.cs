@@ -166,7 +166,7 @@ namespace Nebula.Roles.ImpostorRoles
                 KeyCode.Q,
                 false,
                  "button.label.snipe"
-            ).SetTimer(10f);
+            ).SetTimer(CustomOptionHolder.InitialKillCoolDownOption.getFloat());
             killButton.MaxTimer = snipeCoolDownOption.getFloat();
             killButton.FireOnClicked = true;
             killButton.SetButtonCoolDownOption(true);

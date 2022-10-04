@@ -9,6 +9,7 @@ using UnityEngine;
 using Nebula.Utilities;
 using System.IO;
 using BepInEx.IL2CPP.Utils.Collections;
+using UnityEngine.SceneManagement;
 
 namespace Nebula.Patches
 {
@@ -225,16 +226,12 @@ namespace Nebula.Patches
     {
         public static EndCondition EndCondition;
         public static FinalPlayerData FinalData;
-        public static void Prefix(AmongUsClient __instance, [HarmonyArgument(0)] ref EndGameResult endGameResult)
-        {
-            FinalData = new FinalPlayerData();
-            EndCondition = EndCondition.GetEndCondition(endGameResult.GameOverReason);
-            if ((int)endGameResult.GameOverReason >= 10) endGameResult.GameOverReason = EndCondition.IsPeaceful ? GameOverReason.HumansByTask : GameOverReason.ImpostorByKill;
-        }
 
-        public static void Postfix(AmongUsClient __instance, [HarmonyArgument(0)] ref EndGameResult endGameResult)
+        private static System.Collections.IEnumerator GetEnumerator()
         {
-            EndCondition.EndAction.Invoke(FinalData);
+            yield return HudManager.Instance.CoFadeFullScreen(Color.clear, Color.black, 0.5f, false);
+            
+            FinalData = new FinalPlayerData();
             //勝利者を消去する
             TempData.winners.Clear();
 
@@ -263,13 +260,25 @@ namespace Nebula.Patches
                 });
             }
 
+            SceneManager.LoadScene("EndGame");
+            yield break;
+        }
+
+        public static void Prefix(AmongUsClient __instance, [HarmonyArgument(0)] ref EndGameResult endGameResult)
+        {
+            EndCondition = EndCondition.GetEndCondition(endGameResult.GameOverReason);
+            if ((int)endGameResult.GameOverReason >= 10) endGameResult.GameOverReason = EndCondition.IsPeaceful ? GameOverReason.HumansByTask : GameOverReason.ImpostorByKill;
+        }
+
+        public static void Postfix(AmongUsClient __instance, [HarmonyArgument(0)] ref EndGameResult endGameResult)
+        {
+            EndCondition.EndAction.Invoke(FinalData);
+
             //変更したオプションを元に戻す
             PlayerControl.GameOptions.VotingTime = Game.GameData.data.GameRule.vanillaVotingTime;
 
-            // Reset Settings
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ResetVaribles, Hazel.SendOption.Reliable, -1);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
-            RPCEvents.ResetVaribles();
+            __instance.StopAllCoroutines();
+            __instance.StartCoroutine(GetEnumerator().WrapToIl2Cpp());
         }
     }
 
@@ -590,7 +599,8 @@ namespace Nebula.Patches
                 roleDetailText.ToString()
             });
 
-            
+            //ゲーム終了後の初期化
+            RPCEvents.ResetVaribles();
         }
     }
 

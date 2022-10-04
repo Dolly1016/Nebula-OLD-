@@ -123,7 +123,7 @@ namespace Nebula.Roles.CrewmateRoles
                 },
                 false,
                 "button.label.oracle"
-            );
+            ).SetTimer(CustomOptionHolder.InitialModestAbilityCoolDownOption.getFloat());
             oracleButton.MaxTimer = OracleCooldownOption.getFloat();
         }
 

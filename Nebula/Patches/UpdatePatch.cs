@@ -122,7 +122,9 @@ namespace Nebula.Patches
                 Helpers.RoleAction(player, (role) => { role.EditDisplayName(player.PlayerId, ref name, hideFlag); });
                 Helpers.RoleAction(PlayerControl.LocalPlayer, (role) => { role.EditOthersDisplayName(player.PlayerId, ref name, hideFlag); });
 
-                player.cosmetics.nameText.text = playerData.currentName+" " +name;
+                player.cosmetics.nameText.text = playerData.currentName;
+                if (Game.GameData.data.myData.CanSeeEveryoneInfo && playerData.currentName != playerData.name) player.cosmetics.nameText.text += Helpers.cs(new Color(0.65f, 0.65f, 0.65f), $" ({playerData.name})");
+                player.cosmetics.nameText.text += " " + name;
                 if (player == PlayerControl.LocalPlayer)
                 {
                     //自分自身ならロールの色にする
@@ -144,7 +146,7 @@ namespace Nebula.Patches
                 bool showNameFlag = !CannotSeeNameTag(player);
 
                 
-                /*
+                
                 //自分自身以外の名前は適宜隠す
                 if (!PlayerControl.LocalPlayer.Data.IsDead && player != PlayerControl.LocalPlayer && showNameFlag)
                 {
@@ -165,7 +167,7 @@ namespace Nebula.Patches
                     showNameFlag &= !result;
                     
                 }
-                */
+                
                 
 
                 player.cosmetics.nameText.enabled = showNameFlag;

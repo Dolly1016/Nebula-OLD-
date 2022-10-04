@@ -67,8 +67,8 @@ namespace Nebula.Roles.NeutralRoles
                 KeyCode.F,
                 false,
                 "button.label.chainShift"
-            );
-            shiftButton.MaxTimer = shiftButton.Timer = 10.0f;
+            ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());
+            shiftButton.MaxTimer = 10.0f;
         }
 
         public override void OnMeetingStart()

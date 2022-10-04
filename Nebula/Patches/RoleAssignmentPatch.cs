@@ -52,7 +52,7 @@ namespace Nebula.Patches
             public Role role { get; }
             public int expected { get; }
 
-            public RoleAllocation(Role role,int expected)
+            public RoleAllocation(Role role, int expected)
             {
                 this.role = role;
                 this.expected = expected;
@@ -61,12 +61,14 @@ namespace Nebula.Patches
 
         public class CategoryData
         {
+            public AssignRoles assignRoles { get; }
             protected int roles { get; }
             protected List<Role> firstRoles { get; }
             protected List<RoleAllocation> secondaryRoles { get; }
 
-            public CategoryData(int min,int max,RoleCategory category)
+            public CategoryData(AssignRoles assignRoles, int min, int max, RoleCategory category)
             {
+                this.assignRoles = assignRoles;
                 this.roles = (min < max) ? NebulaPlugin.rnd.Next(min, max) : max;
                 this.firstRoles = new List<Role>();
                 this.secondaryRoles = new List<RoleAllocation>();
@@ -145,7 +147,7 @@ namespace Nebula.Patches
 
         public class MultiCategoryData : CategoryData
         {
-            public MultiCategoryData(int min, int max, RoleCategory category) : base(min, max, category)
+            public MultiCategoryData(AssignRoles assignRoles, int min, int max, RoleCategory category) : base(assignRoles, min, max, category)
             {
             }
         }
@@ -153,7 +155,7 @@ namespace Nebula.Patches
         public class SingleCategoryData : CategoryData
         {
 
-            public SingleCategoryData(int min, int max, RoleCategory category):base(min, max, category)
+            public SingleCategoryData(AssignRoles assignRoles, int min, int max, RoleCategory category) : base(assignRoles, min, max, category)
             {
             }
 
@@ -164,22 +166,24 @@ namespace Nebula.Patches
                 int rand;
 
                 //割り当てられるだけ100%ロールを割り当てる
-                while ((left > 0) && (firstRoles.Count > 0)&&(players.Count>0))
+                while ((left > 0) && (firstRoles.Count > 0) && (players.Count > 0))
                 {
                     rand = NebulaPlugin.rnd.Next(firstRoles.Count);
-                    RoleAssignmentPatch.setRoleToRandomPlayer(assignMap, firstRoles[rand], players, true);
+                    Role role = firstRoles[rand];
+                    RoleAssignmentPatch.setRoleToRandomPlayer(assignMap, role, players, true);
                     firstRoles.RemoveAt(rand);
+                    assignRoles.exclusiveAssignments.RemoveAll((ex) => ex.Exclusive(assignRoles, role));
                     left--;
                 }
 
                 //確率で付与されるロールを割り当てる
                 int sum;
-                while ((left > 0) && (secondaryRoles.Count > 0)&& (players.Count>0))
+                while ((left > 0) && (secondaryRoles.Count > 0) && (players.Count > 0))
                 {
                     sum = 0;
-                    foreach(RoleAllocation allocation in secondaryRoles)
+                    foreach (RoleAllocation allocation in secondaryRoles)
                     {
-                        sum+=allocation.expected;
+                        sum += allocation.expected;
                     }
 
                     if (sum == 0)
@@ -189,13 +193,15 @@ namespace Nebula.Patches
 
                     rand = NebulaPlugin.rnd.Next(sum);
 
-                    
-                    for (int i=0; i< secondaryRoles.Count;i++)
+
+                    for (int i = 0; i < secondaryRoles.Count; i++)
                     {
                         if (secondaryRoles[i].expected > rand)
                         {
-                            RoleAssignmentPatch.setRoleToRandomPlayer(assignMap, secondaryRoles[i].role, players, true);
+                            Role role = secondaryRoles[i].role;
+                            RoleAssignmentPatch.setRoleToRandomPlayer(assignMap, role, players, true);
                             secondaryRoles.RemoveAt(i);
+                            assignRoles.exclusiveAssignments.RemoveAll((ex)=>ex.Exclusive(assignRoles,role));
                             left--;
                             sum = 0;
                             break;
@@ -210,6 +216,7 @@ namespace Nebula.Patches
         public SingleCategoryData crewmateData { get; }
         public SingleCategoryData impostorData { get; }
         public MultiCategoryData multiData { get; }
+        public List<Module.ExclusiveAssignment> exclusiveAssignments;
 
         public AssignRoles(int crewmates, int impostors)
         {
@@ -218,15 +225,15 @@ namespace Nebula.Patches
 
             min = (int)CustomOptionHolder.crewmateRolesCountMin.getFloat();
             max = (int)CustomOptionHolder.crewmateRolesCountMax.getFloat();
-            crewmateData = new SingleCategoryData(min,max,RoleCategory.Crewmate);
+            crewmateData = new SingleCategoryData(this,min,max,RoleCategory.Crewmate);
 
             min = (int)CustomOptionHolder.impostorRolesCountMin.getFloat();
             max = (int)CustomOptionHolder.impostorRolesCountMax.getFloat();
-            impostorData = new SingleCategoryData(min, max, RoleCategory.Impostor);
+            impostorData = new SingleCategoryData(this, min, max, RoleCategory.Impostor);
 
             min = (int)CustomOptionHolder.neutralRolesCountMin.getFloat();
             max = (int)CustomOptionHolder.neutralRolesCountMax.getFloat();
-            neutralData = new SingleCategoryData(min, max, RoleCategory.Neutral);
+            neutralData = new SingleCategoryData(this, min, max, RoleCategory.Neutral);
 
             //ComplexRoleの割り当て
             RoleAllocation[] allocations;
@@ -256,14 +263,8 @@ namespace Nebula.Patches
             }
 
             //排他的割り当て
-            List<Module.ExclusiveAssignment> exclusiveAssignmentList = new List<Module.ExclusiveAssignment>();
-            CustomOptionHolder.AddExclusiveAssignment(ref exclusiveAssignmentList);
-            
-            foreach(var assignment in exclusiveAssignmentList)
-            {
-                assignment.ExclusiveAssign(this);
-            }
-
+            exclusiveAssignments = new List<Module.ExclusiveAssignment>();
+            CustomOptionHolder.AddExclusiveAssignment(ref exclusiveAssignments);
         }
 
         public bool Contains(Role role)
@@ -494,7 +495,7 @@ namespace Nebula.Patches
             }
 
             assignMap.Assign(playerId, role.id);
-
+            
             return playerId;
         }
     }

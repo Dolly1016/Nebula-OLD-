@@ -123,6 +123,7 @@
 "option.blackOutStrength" : "Black Out Strength"
 
 "option.exclusiveAssignment" : "Exclusive Assignment"
+"option.exclusiveAssignment.MorphingAndPainter" : "Morphing or Painter"
 "option.exclusiveAssignment.RaiderAndSniper" : "Raider or Sniper"
 "option.exclusiveAssignment.ArsonistAndEmpiric" : "Arsonist or Empiric"
 "option.exclusiveAssignment.AlienAndNavvy" : "Alien or Navvy"
@@ -137,6 +138,12 @@
 "option.exclusiveAssignmentRole2" : "Exclusive Role 2"
 "option.exclusiveAssignmentRole3" : "Exclusive Role 3"
 "option.exclusiveAssignmentRole.none" : "<color=#606060ff>None</color>"
+
+"option.coolDownOption" : "Cool Down Option"
+"option.initialKillCoolDown" : "Initial Kill Cool Down"
+"option.initialAbilityCoolDown" : "Initial Ability Cool Down"
+"option.initialForcefulAbilityCoolDown" : "Initial Forceful Ability Cool Down"
+"option.initialModestAbilityCoolDown" : "Initial Modest Ability Cool Down"
 
 "option.limitOptions" : "Limit Option"
 "option.timeLimitOption" : "Time Limit (Min)"
@@ -398,6 +405,7 @@
 "role.sheriff.canKillNecromancer" : "Can Kill Necromancer"
 "role.sheriff.canKillSheriff" : "Can Kill Sheriff"
 "role.sheriff.canKillOpportunist" : "Can Kill Opportunist"
+"role.sheriff.canKillChainShifter" : "Can Kill Chain Shifter"
 "role.sheriff.numberOfShots" : "Number Of Shots"
 
 "role.seer.name" : "Seer"
@@ -511,13 +519,6 @@
 "role.jailer.description" : "Be Under the Control"
 "role.jailer.ignoreCommSabotage" : "Ignore Comms. Sabotage"
 
-"role.painter.name" : "Painter"
-"role.painter.short" : "P"
-"role.painter.description" : ""
-"role.painter.info" : "You can change other players' view.\n\n - F : Sample / Paint view"
-"role.painter.sampleCoolDown" : "Sample Cool Down"
-"role.painter.paintCoolDown" : "Paint Cool Down"
-"role.painter.changeLookImmediately" : "Change Look Immediately"
 
 "role.marionette.name" : "Marionette"
 "role.marionette.short" : "Mr"
@@ -532,6 +533,14 @@
 "role.morphing.info" : "You can morph other player by getting the sample.\n\n - F : Sample or morph"
 "role.morphing.morphCoolDown" : "Morph Cool Down"
 "role.morphing.morphDuration" : "Morph Duration"
+
+"role.painter.name" : "Painter"
+"role.painter.short" : "P"
+"role.painter.description" : ""
+"role.painter.info" : "You can change other players' view.\n\n - F : Sample / Paint view"
+"role.painter.sampleCoolDown" : "Sample Cool Down"
+"role.painter.paintCoolDown" : "Paint Cool Down"
+"role.painter.changeLookImmediately" : "Change Look Immediately"
 
 "role.raider.name" : "Raider"
 "role.raider.short" : "Ra"

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using BepInEx.IL2CPP.Utils.Collections;
 using HarmonyLib;
 using UnityEngine;
 
@@ -76,9 +77,31 @@ namespace Nebula.Patches
         [HarmonyPatch(typeof(HudManager), nameof(HudManager.CoShowIntro))]
         class HideReportButtonAtIntroPatch
         {
-            public static void Postfix(HudManager __instance)
+            private static System.Collections.IEnumerator GetEnumerator(HudManager __instance)
+            {
+                while (!ShipStatus.Instance)
+                {
+                    yield return null;
+                }
+                __instance.IsIntroDisplayed = true;
+                DestroyableSingleton<HudManager>.Instance.FullScreen.transform.localPosition = new Vector3(0f, 0f, -250f);
+                yield return DestroyableSingleton<HudManager>.Instance.ShowEmblem(true);
+                IntroCutscene introCutscene = UnityEngine.Object.Instantiate<IntroCutscene>(__instance.IntroPrefab, __instance.transform);
+                yield return introCutscene.CoBegin();
+                PlayerControl.LocalPlayer.SetKillTimer(CustomOptionHolder.InitialKillCoolDownOption.getFloat());
+                (ShipStatus.Instance.Systems[SystemTypes.Sabotage].Cast<SabotageSystemType>()).ForceSabTime(10f);
+                yield return ShipStatus.Instance.PrespawnStep();
+                PlayerControl.LocalPlayer.AdjustLighting();
+                yield return __instance.CoFadeFullScreen(Color.black, Color.clear, 0.2f, false);
+                DestroyableSingleton<HudManager>.Instance.FullScreen.transform.localPosition = new Vector3(0f, 0f, -500f);
+                __instance.IsIntroDisplayed = false;
+                yield break;
+            }
+
+            public static void Postfix(HudManager __instance,ref Il2CppSystem.Collections.IEnumerator __result)
             {
                 HideReportButtonPatch.Postfix(__instance,true);
+                __result = GetEnumerator(__instance).WrapToIl2Cpp();
             }
         }
     }
