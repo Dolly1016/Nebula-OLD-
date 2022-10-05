@@ -45,10 +45,11 @@ namespace Nebula.Roles.CrewmateRoles
             }
         }
 
+        public override bool HasExecutableFakeTask(byte playerId) => false;
+
         public CrewmateWithoutTasks() : base(true)
         {
             HideInExclusiveAssignmentOption = true;
-            FakeTaskIsExecutable = false;
         }
     }
 }

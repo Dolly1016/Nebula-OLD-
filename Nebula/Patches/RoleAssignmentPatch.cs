@@ -37,6 +37,12 @@ namespace Nebula.Patches
             ExtraRoleList.Add(new Tuple<byte, Tuple<byte, ulong>>(playerId,new Tuple<byte, ulong>(extraRoleId,initializeValue)));
             RPCEvents.SetExtraRole(playerId,Roles.ExtraRole.GetRoleById(extraRoleId),initializeValue);
         }
+
+        public void UnassignExtraRole(byte playerId, byte extraRoleId)
+        {
+            ExtraRoleList.RemoveAll((t) => t.Item1 == playerId && t.Item2.Item1 == extraRoleId);
+            RPCEvents.ImmediatelyUnsetExtraRole(Roles.ExtraRole.GetRoleById(extraRoleId), playerId);
+        }
     }
 
     [HarmonyPatch(typeof(RoleOptionsData), nameof(RoleOptionsData.GetNumPerGame))]

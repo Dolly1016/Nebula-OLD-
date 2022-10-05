@@ -124,6 +124,11 @@ namespace Nebula.Roles.CrewmateRoles
             RelatedRoles.Add(Roles.EvilAce);
         }
 
+        public override bool HasExecutableFakeTask(byte playerId)
+        {
+            return Game.GameData.data.GetPlayerData(playerId).HasExtraRole(Roles.SecondaryMadmate);
+        }
+
         public Agent()
             : base("Agent", "agent", RoleColor, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                  Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Crewmate.crewmateEndSet,
@@ -134,8 +139,6 @@ namespace Nebula.Roles.CrewmateRoles
             remainingVentsDataId = Game.GameData.RegisterRoleDataId("agent.remainVents");
 
             VentColor = Palette.CrewmateBlue;
-
-            FakeTaskIsExecutable = true;
         }
     }
 }

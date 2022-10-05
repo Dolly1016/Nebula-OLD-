@@ -77,13 +77,14 @@ namespace Nebula.Roles.NeutralRoles
             return false;
         }
 
+        public override bool HasExecutableFakeTask(byte playerId) => true;
+       
         public Opportunist()
             : base("Opportunist", "opportunist", RoleColor, RoleCategory.Neutral, Side.Opportunist, Side.Opportunist,
                  new HashSet<Side>() { Side.Opportunist }, new HashSet<Side>() { Side.Opportunist },
                  new HashSet<Patches.EndCondition>(),
                  true, VentPermission.CanUseLimittedVent, true, false, false)
         {
-            FakeTaskIsExecutable = true;
             VentColor = RoleColor;
         }
     }

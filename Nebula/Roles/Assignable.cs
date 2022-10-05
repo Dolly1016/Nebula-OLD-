@@ -378,6 +378,12 @@ namespace Nebula.Roles
             return false;
         }
 
+        public virtual bool HasInfiniteCrewTaskQuota(byte playerId)
+        {
+            return false;
+        }
+        
+
         /// <summary>
         /// 役職の表示名を編集します。
         /// </summary>

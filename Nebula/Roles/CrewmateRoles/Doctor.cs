@@ -193,12 +193,13 @@ namespace Nebula.Roles.CrewmateRoles
             vitalsMinigame = null;
         }
 
+        public override bool HasExecutableFakeTask(byte playerId) => true;
+
         public Doctor()
                 : base("Doctor", "doctor", RoleColor, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                  Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Crewmate.crewmateEndSet,
                  false, VentPermission.CanNotUse, false, false, false)
         {
-            FakeTaskIsExecutable = true;
         }
     }
 }

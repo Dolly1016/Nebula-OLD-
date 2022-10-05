@@ -16,6 +16,8 @@ namespace Nebula.Roles.ImpostorRoles
     {
         private CustomButton eraserButton;
 
+        private Module.CustomOption canEraseSecretRoleOption;
+        private Module.CustomOption eraseDurationOption;
         private Module.CustomOption eraseCoolDownOption;
         private Module.CustomOption eraseCoolDownAdditionOption;
 
@@ -36,11 +38,16 @@ namespace Nebula.Roles.ImpostorRoles
 
         public override void LoadOptionData()
         {
+            canEraseSecretRoleOption = CreateOption(Color.white, "canEraseSecretRole", false);
+
             eraseCoolDownOption = CreateOption(Color.white, "eraseCoolDown", 25f, 10f, 60f, 5f);
             eraseCoolDownOption.suffix = "second";
 
             eraseCoolDownAdditionOption = CreateOption(Color.white, "eraseCoolDownAddition", 15f, 5f, 30f, 5f);
             eraseCoolDownAdditionOption.suffix = "second";
+
+            eraseDurationOption = CreateOption(Color.white, "eraseDuration", 2f, 0.5f, 5f, 0.5f);
+            eraseDurationOption.suffix = "second";
         }
 
         public override void MyPlayerControlUpdate()
@@ -60,23 +67,38 @@ namespace Nebula.Roles.ImpostorRoles
             eraserButton = new CustomButton(
                 () =>
                 {
-                    RPCEventInvoker.ChangeRole(Game.GameData.data.myData.currentTarget,
-                        Game.GameData.data.myData.currentTarget.GetModData().role.HasFakeTask?
-                        Roles.CrewmateWithoutTasks:Roles.Crewmate);
-                    Game.GameData.data.myData.currentTarget = null;
-
-                    RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, eraseCountId, 1);
-                    eraserButton.Timer = eraserButton.MaxTimer + eraseCoolDownAdditionOption.getFloat()*PlayerControl.LocalPlayer.GetModData().GetRoleData(eraseCountId);
+                    
                 },
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
-                () => { return PlayerControl.LocalPlayer.CanMove && Game.GameData.data.myData.currentTarget!=null; },
+                () => {
+                    if (eraserButton.isEffectActive && Game.GameData.data.myData.currentTarget == null)
+                    {
+                        eraserButton.Timer = 0f;
+                        eraserButton.isEffectActive = false;
+                    }
+                    return PlayerControl.LocalPlayer.CanMove && Game.GameData.data.myData.currentTarget!=null; },
                 () => {
                     eraserButton.Timer = eraserButton.MaxTimer + eraseCoolDownAdditionOption.getFloat() * PlayerControl.LocalPlayer.GetModData().GetRoleData(eraseCountId); 
                 },
                 getButtonSprite(),
                 new Vector3(-1.8f, 0, 0),
                 __instance,
-                KeyCode.F,false,
+                KeyCode.F,true, eraseDurationOption.getFloat(),
+                ()=> {
+                    var target = Game.GameData.data.myData.currentTarget;
+                    var data = target.GetModData();
+                    if (canEraseSecretRoleOption.getBool() || !(data.role is AllSideRoles.Secret))
+                    {
+                        RPCEventInvoker.ChangeRole(target,
+                            !data.role.HasCrewmateTask(target.PlayerId) ?
+                            Roles.CrewmateWithoutTasks : Roles.Crewmate);
+                    }
+                    Game.GameData.data.myData.currentTarget = null;
+
+                    RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, eraseCountId, 1);
+                    eraserButton.Timer = eraserButton.MaxTimer + eraseCoolDownAdditionOption.getFloat() * PlayerControl.LocalPlayer.GetModData().GetRoleData(eraseCountId);
+                },
+                false,
                 "button.label.erase"
             ).SetTimer(CustomOptionHolder.InitialForcefulAbilityCoolDownOption.getFloat());
             eraserButton.MaxTimer = eraseCoolDownOption.getFloat();

@@ -162,11 +162,11 @@ namespace Nebula.Roles.CrewmateRoles
             List<Role> result = new List<Role>();
             Role role = null;
 
-            result.Add(target.GetModData().role);
+            result.Add(target.GetModData().role.GetActualRole());
 
-            float relatedRoleChance =0.8f*
-                (float)Game.GameData.data.myData.getGlobalData().Tasks.Completed/
-                (float)Game.GameData.data.myData.getGlobalData().Tasks.Quota;
+            float relatedRoleChance = 0.8f *
+                (float)(Game.GameData.data.myData.getGlobalData().Tasks?.Completed ?? 0f) /
+                (float)(Game.GameData.data.myData.getGlobalData().Tasks?.Quota ?? 1f);
 
             for(int i = 1; i < (int)CandidatesOption.getFloat(); i++)
             {
@@ -222,7 +222,7 @@ namespace Nebula.Roles.CrewmateRoles
         private Role DivineRelatedRole(PlayerControl target,List<Role> excludeRoles, RoleCategory? category)
         {
             var candidate = new List<Role>();
-            foreach(var role in target.GetModData().role.RelatedRoles)
+            foreach(var role in target.GetModData().role.GetActualRole().RelatedRoles)
             {
                 if (category != null && role.oracleCategory == category) continue;
                 if (excludeRoles.Contains(role)) continue;

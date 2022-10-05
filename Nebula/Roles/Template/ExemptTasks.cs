@@ -28,7 +28,12 @@ namespace Nebula.Roles.Template
         public override void OnSetTasks(ref List<GameData.TaskInfo> initialTasks, ref List<GameData.TaskInfo>? actualTasks) {
             int exempt = UseExemptTasksOption ? (int)exemptTasksOption.getFloat() : CustomExemptTasks;
             int cutTasks = initialTasks.Count < exempt ? initialTasks.Count : exempt;
-            RPCEventInvoker.ExemptTasks(cutTasks, cutTasks, initialTasks);
+
+            for (int i = 0; i < cutTasks; i++)
+            {
+                if (initialTasks.Count == 0) break;
+                initialTasks.RemoveAt(NebulaPlugin.rnd.Next(initialTasks.Count));
+            }
         }
 
         public override void LoadOptionData()

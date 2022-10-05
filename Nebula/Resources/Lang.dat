@@ -163,6 +163,12 @@
 "option.meistersO2Filter" : "Meister's O2 Filter"
 "option.meistersFuelEngines" : "Meister's Fuel Engines"
 
+"option.secretRole" : "Secret Role"
+"option.secretCrewmate" : "Secret Roles (Crewmate)"
+"option.secretImpostor" : "Secret Roles (Impostor)"
+"option.requireTasksForArousal" : "Require Tasks For Arousal"
+"option.requireNumOfKillingForArousal" : "Require Num Of Killing For Arousal"
+
 "option.advanceRoleOptions" : "Advance Role Options"
 
 "option.roleCount" : "Max Players"
@@ -171,6 +177,7 @@
 "option.canBeGuesser" : "Can Be Guesser"
 "option.canBeDrunk" : "Can Be Drunk"
 "option.canBeMadmate" : "Can Be Madmate"
+"option.canBeSecret" : "Can Be Secret"
 
 "option.suffix.cross" : "x"
 "option.suffix.second" : "s"
@@ -492,6 +499,8 @@
 "role.eraser.short" : "E"
 "role.eraser.description" : "Kill the Crewmates and Erase Their Roles"
 "role.eraser.info" : "You can remove other player's role.\n\n - F : Erase the role"
+"role.eraser.canEraseSecretRole" : "Can Erase Secret Role"
+"role.eraser.eraseDuration" : "Erase Duration"
 "role.eraser.eraseCoolDown" : "Erase Cool Down"
 "role.eraser.eraseCoolDownAddition" : "Erase Cool Down Addition"
 
@@ -660,8 +669,12 @@
 
 "role.crewmate.secret.name" : "???"
 "role.impostor.secret.name" : "???"
+"role.crewmate.secret.short" : "?"
+"role.impostor.secret.short" : "?"
 "role.crewmate.secret.description" : "Do Task For Arousal"
 "role.impostor.secret.description" : "Kill For Arousal"
+"role.crewmate.secret.info" : "Your role will be revealed as you complete tasks."
+"role.crewmate.secret.info" : "Your role will be revealed as you kill players."
 
 "role.drunk.name" : "Drunk"
 "role.drunk.info" : "Your control is reversed."

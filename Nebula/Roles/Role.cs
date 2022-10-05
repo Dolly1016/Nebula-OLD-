@@ -95,10 +95,9 @@ namespace Nebula.Roles
         /// </summary>
         public float LightRadiusMax { get; set; }
         public bool UseImpostorLightRadius { get; set; }
-        //Modで管理するFakeTaskを所持しているかどうか(Impostorは対象外)
-        public bool HasFakeTask { get; }
-        //FakeTaskは実行可能かどうか
-        public bool FakeTaskIsExecutable { get; protected set; }
+        //Modで管理するFakeTaskを所持しているかどうか
+        protected bool hasFakeTask { get; }
+        public bool HasFakeTask(byte playerId) => hasFakeTask;
         public bool DeceiveImpostorInNameDisplay { get; set; }
         public virtual bool IsGuessableRole { get; protected set; }
 
@@ -136,13 +135,26 @@ namespace Nebula.Roles
             }
         }
 
+        public virtual bool CanBeSecret
+        {
+            get
+            {
+                if (category == RoleCategory.Impostor || category == RoleCategory.Crewmate)
+                {
+                    return (CustomOptionHolder.advanceRoleOptions.getBool() && CanBeSecretOption != null) ?
+                        CanBeSecretOption.getBool() : DefaultCanBeSecret;
+                }
+                return false;
+            }
+        }
+
         public virtual bool IsSecondaryGenerator { get { return false; } }
 
         public bool DefaultCanBeLovers { get; set; } = true;
         public bool DefaultCanBeGuesser { get; set; } = true;
         public bool DefaultCanBeDrunk { get; set; } = true;
         public bool DefaultCanBeMadmate { get; set; } = false;
-
+        public bool DefaultCanBeSecret { get; set; } = true;
 
         public virtual List<Role> GetImplicateRoles() { return new List<Role>(); }
         public virtual List<ExtraRole> GetImplicateExtraRoles() { return new List<ExtraRole>(); }
@@ -184,14 +196,19 @@ namespace Nebula.Roles
         [RoleLocalMethod]
         public virtual void OnRoleRelationSetting() { }
 
+        /// <summary>
+        /// 実質的なロールを取得します。
+        /// </summary>
+        /// <returns></returns>
+        public virtual Role GetActualRole() => this;
         public override bool HasCrewmateTask(byte playerId)
         {
-            return side != Side.Impostor && !HasFakeTask;
+            return side != Side.Impostor && !HasFakeTask(playerId);
         }
 
         public override bool HasExecutableFakeTask(byte playerId)
         {
-            return FakeTaskIsExecutable;
+            return false;
         }
 
         public override void EditCoolDown(CoolDownType type, float count)
@@ -213,6 +230,8 @@ namespace Nebula.Roles
         protected Module.CustomOption? CanBeGuesserOption=null;
         protected Module.CustomOption? CanBeDrunkOption=null;
         protected Module.CustomOption? CanBeMadmateOption = null;
+        protected Module.CustomOption? CanBeSecretOption = null;
+
         sealed public override void SetupRoleOptionData()
         {
             Module.CustomOptionTab tab = Module.CustomOptionTab.None;
@@ -241,13 +260,13 @@ namespace Nebula.Roles
 
             if (ExceptBasicOption) return;
 
-            CanBeLoversOption = CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeLovers", DefaultCanBeLovers, true).HiddenOnDisplay(true).SetIdentifier("role." + LocalizeName + ".canBeLovers"); ;
+            CanBeLoversOption = CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeLovers", DefaultCanBeLovers, true).HiddenOnDisplay(true).SetIdentifier("role." + LocalizeName + ".canBeLovers");
             CanBeLoversOption.AddPrerequisite(CustomOptionHolder.advanceRoleOptions);
             CanBeLoversOption.AddCustomPrerequisite(() => { return Roles.Lover.IsSpawnable(); });
             if(category==RoleCategory.Impostor)
                 CanBeLoversOption.AddCustomPrerequisite(() => { return Roles.Lover.chanceThatOneLoverIsImpostorOption.getSelection() > 0; });
 
-            CanBeGuesserOption = CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeGuesser", DefaultCanBeGuesser, true).HiddenOnDisplay(true).SetIdentifier("role." + LocalizeName + ".canBeGuesser"); ; ;
+            CanBeGuesserOption = CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeGuesser", DefaultCanBeGuesser, true).HiddenOnDisplay(true).SetIdentifier("role." + LocalizeName + ".canBeGuesser");
             CanBeGuesserOption.AddPrerequisite(CustomOptionHolder.advanceRoleOptions);
             CanBeGuesserOption.AddCustomPrerequisite(() => { return Roles.SecondaryGuesser.IsSpawnable(); });
             CanBeGuesserOption.AddCustomPrerequisite(() => { return
@@ -256,13 +275,23 @@ namespace Nebula.Roles
                 (side != Side.Crewmate && side != Side.Impostor && Roles.F_Guesser.neutralRoleCountOption.getFloat() > 0);
                 });
 
-            CanBeDrunkOption = CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeDrunk", DefaultCanBeDrunk, true).HiddenOnDisplay(true).SetIdentifier("role." + LocalizeName + ".canBeDrunk"); ; ;
+            CanBeDrunkOption = CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeDrunk", DefaultCanBeDrunk, true).HiddenOnDisplay(true).SetIdentifier("role." + LocalizeName + ".canBeDrunk");
             CanBeDrunkOption.AddPrerequisite(CustomOptionHolder.advanceRoleOptions);
             CanBeDrunkOption.AddCustomPrerequisite(() => { return Roles.Drunk.IsSpawnable(); });
 
-            CanBeMadmateOption = CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeMadmate", DefaultCanBeMadmate, true).HiddenOnDisplay(true).SetIdentifier("role." + LocalizeName + ".canBeMadmate"); ; ;
+            CanBeMadmateOption = CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeMadmate", DefaultCanBeMadmate, true).HiddenOnDisplay(true).SetIdentifier("role." + LocalizeName + ".canBeMadmate");
             CanBeMadmateOption.AddPrerequisite(CustomOptionHolder.advanceRoleOptions);
             CanBeMadmateOption.AddCustomPrerequisite(() => { return Roles.SecondaryMadmate.IsSpawnable() && category==RoleCategory.Crewmate; });
+
+            if(category== RoleCategory.Impostor || category == RoleCategory.Crewmate)
+            {
+                CanBeSecretOption = CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeSecret", DefaultCanBeSecret, true).HiddenOnDisplay(true).SetIdentifier("role." + LocalizeName + ".canBeSecret");
+                CanBeSecretOption.AddPrerequisite(CustomOptionHolder.advanceRoleOptions);
+                if (category == RoleCategory.Crewmate)
+                    CanBeSecretOption.AddCustomPrerequisite(() => { return CustomOptionHolder.NumOfSecretCrewmateOption.getSelection() >= 1; });
+                else
+                    CanBeSecretOption.AddCustomPrerequisite(() => { return CustomOptionHolder.NumOfSecretImpostorOption.getSelection() >= 1; });
+            }
 
             RoleChanceOption.Decorator = new Module.CustomOptionDecorator((original, option) =>
             {
@@ -342,7 +371,7 @@ namespace Nebula.Roles
 
             this.UseImpostorLightRadius = useImpostorLightRadius;
 
-            this.HasFakeTask = hasFakeTask;
+            this.hasFakeTask = hasFakeTask;
 
             this.LightRadiusMin = 1.0f;
             this.LightRadiusMax = 1.0f;

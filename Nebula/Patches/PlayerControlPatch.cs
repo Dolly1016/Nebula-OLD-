@@ -31,12 +31,24 @@ namespace Nebula.Patches
 
             for (int i = 0; i < taskTypeIds.Length; i++) initialTasks.Add(new GameData.TaskInfo(taskTypeIds[i], (uint)i));
 
-            Game.GameData.data.myData.InitialTasks = new List<GameData.TaskInfo>(initialTasks);
+            Game.GameData.data.myData.InitialTasks = initialTasks;
 
             Helpers.RoleAction(Game.GameData.data.myData.getGlobalData(), (r) => r.OnSetTasks(ref initialTasks, ref actualTasks));
 
             if (actualTasks == null) actualTasks = initialTasks;
             playerById.SetLocalTask(actualTasks);
+
+            //フェイクタスクでなければタスクを持つ
+            bool hasCrewmateTask = true;
+            bool fakeTaskIsExecutable = false;
+            bool isInfiniteTask = false;
+            Helpers.RoleAction(Game.GameData.data.myData.getGlobalData(), (r) =>
+            {
+                hasCrewmateTask &= r.HasCrewmateTask(PlayerControl.LocalPlayer.PlayerId);
+                fakeTaskIsExecutable |= r.HasExecutableFakeTask(PlayerControl.LocalPlayer.PlayerId);
+                isInfiniteTask |= r.HasInfiniteCrewTaskQuota(PlayerControl.LocalPlayer.PlayerId);
+            });
+            if (fakeTaskIsExecutable || hasCrewmateTask) RPCEventInvoker.SetTasks(PlayerControl.LocalPlayer.PlayerId, actualTasks.Count, hasCrewmateTask, isInfiniteTask);
             
             return false;
         }

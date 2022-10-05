@@ -48,9 +48,9 @@
 
     <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
         <Message Text="Second occurrence" />
-        <Copy SourceFiles="bin\Release\netstandard2.1\Nebula.dll" DestinationFolder="$(AmongUsRelease)\" />
-        <Copy SourceFiles="bin\Release\netstandard2.1\Nebula.dll" DestinationFolder="$(AmongUsRelease)\Nebula\BepInEx\plugins\" />
-        <Copy SourceFiles="bin\Release\netstandard2.1\Nebula.dll" DestinationFolder="$(AmongUsPlugins)\" />
+		<Copy SourceFiles="bin\Release\netstandard2.1\Nebula.dll" DestinationFolder="$(AmongUsPlugins)\" />
+		<Copy SourceFiles="bin\Release\netstandard2.1\Nebula.dll" DestinationFolder="$(AmongUsRelease)\" />
+		<Copy SourceFiles="bin\Release\netstandard2.1\Nebula.dll" DestinationFolder="$(AmongUsRelease)\Nebula\BepInEx\plugins\" />
     </Target>
 
 </Project>

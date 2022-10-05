@@ -33,9 +33,9 @@ namespace Nebula
         public static Tuple<int, int> taskInfo(GameData.PlayerInfo playerInfo)
         {
             var p = playerInfo.GetModData();
-            if(p!=null)return Tuple.Create(p.Tasks.Completed, p.Tasks.Quota);
-           
-            return Tuple.Create(0, 12);
+            if (p != null && p.Tasks != null) return Tuple.Create(p.Tasks.Completed, p.Tasks.Quota);
+
+            return Tuple.Create(0, 0);
         }
 
         [HarmonyPatch(typeof(GameData), nameof(GameData.RecomputeTaskCounts))]
@@ -57,14 +57,14 @@ namespace Nebula
 
                     if (!Helpers.HasModData(playerInfo.PlayerId)) continue;
 
-                    if (playerInfo.GetModData().Tasks.Quota == 0) continue;
+                    if ((playerInfo.GetModData().Tasks?.Quota ?? 0) == 0) continue;
 
                     bool hasFakeTask = false;
                     Helpers.RoleAction(playerInfo.PlayerId, (role) => { hasFakeTask |= !role.HasCrewmateTask(playerInfo.PlayerId); });
                     if (hasFakeTask) continue;
 
                     var (playerCompleted, playerTotal) = taskInfo(playerInfo);
-                    __instance.TotalTasks += playerTotal;
+                    __instance.TotalTasks += playerInfo.GetModData().Tasks.IsInfiniteCrewmateTasks ? 9999 : playerTotal;
                     __instance.CompletedTasks += playerCompleted;
                 }
                 return false;

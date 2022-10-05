@@ -167,6 +167,12 @@ namespace Nebula
         public static CustomOption InitialForcefulAbilityCoolDownOption;
         public static CustomOption InitialModestAbilityCoolDownOption;
 
+        public static CustomOption SecretRoleOption;
+        public static CustomOption NumOfSecretCrewmateOption;
+        public static CustomOption NumOfSecretImpostorOption;
+        public static CustomOption RequiredTasksForArousal;
+        public static CustomOption RequiredNumOfKillingForArousal;
+
         public static CustomOption escapeHunterOption;
 
 
@@ -291,7 +297,13 @@ namespace Nebula
             BlackOutStrengthOption = CustomOption.Create(10178, Color.white, "option.blackOutStrength", 1f, 0.125f, 2f, 0.125f, SabotageOption).SetGameMode(CustomGameMode.All);
             BlackOutStrengthOption.suffix = "cross";
 
-            advanceRoleOptions = CustomOption.Create(10190, Color.white, "option.advanceRoleOptions", false, null, true, false, "", CustomOptionTab.Settings | CustomOptionTab.CrewmateRoles | CustomOptionTab.ImpostorRoles | CustomOptionTab.NeutralRoles | CustomOptionTab.Modifiers).SetGameMode(CustomGameMode.Standard);
+            SecretRoleOption = CustomOption.Create(10180, Color.white, "option.secretRole", false, null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.Standard);
+            NumOfSecretCrewmateOption = CustomOption.Create(10181, Color.white, "option.secretCrewmate", 2f, 0f, 15f, 1f, SecretRoleOption);
+            NumOfSecretImpostorOption = CustomOption.Create(10182, Color.white, "option.secretImpostor", 2f, 0f, 5f, 1f, SecretRoleOption);
+            RequiredTasksForArousal = CustomOption.Create(10183, Color.white, "option.requiredTasksForArousal", 3f, 1f, 6f, 1f, SecretRoleOption).AddPrerequisite(NumOfSecretCrewmateOption);
+            RequiredNumOfKillingForArousal = CustomOption.Create(10184, Color.white, "option.requiredNumOfKillingForArousal", 2f, 1f, 5f, 1f, SecretRoleOption).AddPrerequisite(NumOfSecretImpostorOption);
+
+            advanceRoleOptions = CustomOption.Create(10990, Color.white, "option.advanceRoleOptions", false, null, true, false, "", CustomOptionTab.Settings | CustomOptionTab.CrewmateRoles | CustomOptionTab.ImpostorRoles | CustomOptionTab.NeutralRoles | CustomOptionTab.Modifiers).SetGameMode(CustomGameMode.Standard);
         
             List<string> hunters = new List<string>();
             foreach(Roles.Role role in Roles.Roles.AllRoles)
@@ -299,7 +311,7 @@ namespace Nebula
                 if (role.ValidGamemode == CustomGameMode.Minigame && role.winReasons.Contains(Patches.EndCondition.MinigameHunterWin))
                     hunters.Add("role."+role.LocalizeName+".name");
             }
-            escapeHunterOption = CustomOption.Create(10191, Color.white, "option.escapeHunter", hunters.ToArray(), hunters[0], null, true, false, "", CustomOptionTab.EscapeRoles).SetGameMode(CustomGameMode.Minigame);
+            escapeHunterOption = CustomOption.Create(10991, Color.white, "option.escapeHunter", hunters.ToArray(), hunters[0], null, true, false, "", CustomOptionTab.EscapeRoles).SetGameMode(CustomGameMode.Minigame);
 
             //ロールのオプションを読み込む
             Roles.Role.LoadAllOptionData();

@@ -4,7 +4,7 @@ using Nebula.Utilities;
 
 namespace Nebula.Roles.CrewmateRoles
 {
-    public class Madmate : Template.ExemptTasks
+    public class Madmate : Role
     {
         public override RoleCategory oracleCategory { get { return RoleCategory.Impostor; } }
         
@@ -105,15 +105,16 @@ namespace Nebula.Roles.CrewmateRoles
             if (impostors > NumOfMaxImpostorsCanKnowOption.getFloat()) impostors = (int)NumOfMaxImpostorsCanKnowOption.getFloat();
 
             int requireTasks = 0;
-            for(int i = 0; i < impostors; i++)
+            for (int i = 0; i < impostors; i++)
                 if (requireTasks < NumOfTasksRequiredToKnowImpostorsOption[i].getFloat()) requireTasks = (int)NumOfTasksRequiredToKnowImpostorsOption[i].getFloat();
 
-            int taskNum=PlayerControl.GameOptions.NumCommonTasks + PlayerControl.GameOptions.NumLongTasks + PlayerControl.GameOptions.NumShortTasks;
-            CustomExemptTasks = taskNum - requireTasks;
-            if (CustomExemptTasks < 0) CustomExemptTasks = 0;
+            int taskNum = PlayerControl.GameOptions.NumCommonTasks + PlayerControl.GameOptions.NumLongTasks + PlayerControl.GameOptions.NumShortTasks;
 
-            base.OnSetTasks(ref initialTasks,ref actualTasks);
-
+            while (initialTasks.Count > taskNum && taskNum > 0)
+            {
+                if (initialTasks.Count == 0) break;
+                initialTasks.RemoveAt(NebulaPlugin.rnd.Next(initialTasks.Count));
+            }
         }
 
         public override void GlobalIntroInitialize(PlayerControl __instance)
@@ -127,13 +128,13 @@ namespace Nebula.Roles.CrewmateRoles
 
         public override bool IsUnsuitable { get { return SecondoryRoleOption.getBool(); } }
 
+        public override bool HasExecutableFakeTask(byte playerId) => true;
+
         public Madmate()
                 : base("Madmate", "madmate", Palette.ImpostorRed, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                      Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, ImpostorRoles.Impostor.impostorEndSet,
                      true, VentPermission.CanUseUnlimittedVent, true, false, false)
         {
-            FakeTaskIsExecutable = true;
-            UseExemptTasksOption = false;
         }
     }
 

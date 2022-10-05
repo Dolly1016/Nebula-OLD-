@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using Nebula.Utilities;
+using UnityEngine;
 
 namespace Nebula.Patches
 {
@@ -80,6 +81,15 @@ namespace Nebula.Patches
             public static void Postfix(AirshipExileController __instance)
             {
                 WrapUpPostfix(__instance.exiled);
+            }
+        }
+
+        [HarmonyPatch(typeof(PbExileController), nameof(PbExileController.PlayerSpin))]
+        class ExilePolusHatFixPatch
+        {
+            public static void Prefix(PbExileController __instance)
+            {
+                __instance.Player.cosmetics.hat.transform.localPosition = new Vector3(-0.2f, 0.6f, 1.1f);
             }
         }
 

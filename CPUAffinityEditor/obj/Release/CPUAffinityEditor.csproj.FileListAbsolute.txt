@@ -1,0 +1,7 @@
+C:\Users\kawam\source\repos\Dolly1016\Nebula\CPUAffinityEditor\bin\Release\CPUAffinityEditor.exe.config
+C:\Users\kawam\source\repos\Dolly1016\Nebula\CPUAffinityEditor\bin\Release\CPUAffinityEditor.exe
+C:\Users\kawam\source\repos\Dolly1016\Nebula\CPUAffinityEditor\bin\Release\CPUAffinityEditor.pdb
+C:\Users\kawam\source\repos\Dolly1016\Nebula\CPUAffinityEditor\obj\Release\CPUAffinityEditor.csproj.AssemblyReference.cache
+C:\Users\kawam\source\repos\Dolly1016\Nebula\CPUAffinityEditor\obj\Release\CPUAffinityEditor.csproj.CoreCompileInputs.cache
+C:\Users\kawam\source\repos\Dolly1016\Nebula\CPUAffinityEditor\obj\Release\CPUAffinityEditor.exe
+C:\Users\kawam\source\repos\Dolly1016\Nebula\CPUAffinityEditor\obj\Release\CPUAffinityEditor.pdb

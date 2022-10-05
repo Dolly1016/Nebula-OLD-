@@ -371,6 +371,17 @@ namespace Nebula.Game
         public int Completed { get; set; }
         //クルーメイトのタスク勝利に反映させるかどうか
         public bool IsInfluencedCrewmatesTasks;
+        //クルーメイト側の無限のタスクとして換算するかどうか
+        public bool IsInfiniteCrewmateTasks;
+
+        public TaskData(int DisplayTasks,int AllTasks,int Quota,bool IsCrewmateTask,bool IsInfiniteQuota)
+        {
+            this.DisplayTasks = DisplayTasks;
+            this.AllTasks = AllTasks;
+            this.Quota = Quota;
+            this.IsInfluencedCrewmatesTasks = IsCrewmateTask;
+            this.IsInfiniteCrewmateTasks = IsInfiniteQuota;
+        }
 
         public TaskData(bool hasFakeTask,bool fakeTaskIsExecutable){
             int tasks;
@@ -388,6 +399,8 @@ namespace Nebula.Game
             AllTasks = Quota;
             DisplayTasks = Quota;
             Completed = 0;
+
+            IsInfiniteCrewmateTasks = false;
         }
     }
 
@@ -705,7 +718,7 @@ namespace Nebula.Game
 
         public float MouseAngle { get; set; }
 
-        public TaskData Tasks { get; }
+        public TaskData? Tasks { get; set; }
 
         public PlayerStatus Status { get; set; }
 
@@ -746,7 +759,8 @@ namespace Nebula.Game
             this.dragPlayerId = Byte.MaxValue;
             this.Speed = new SpeedFactorManager(player.PlayerId) ;
             this.Attribute = new PlayerAttributeFactorManager(player.PlayerId);
-            this.Tasks = new TaskData(role.side == Roles.Side.Impostor || role.HasFakeTask, role.FakeTaskIsExecutable);
+            this.Tasks = null;
+            //this.Tasks = new TaskData(role.side == Roles.Side.Impostor || role.HasFakeTask, role.FakeTaskIsExecutable);
             this.MouseAngle = 0f;
             this.Status = PlayerStatus.Alive;
             this.RoleInfo = "";

@@ -205,10 +205,10 @@ namespace Nebula.Patches
                 }
                 roleName = shortHistory + roleName;
                 roleDetail = history + roleDetail;
-            
 
-                var finalPlayer= new FinalPlayer(player.id,name,
-                    roleName, roleDetail, hasFakeTask,hasExecutableFakeTask, player.Status, player.Tasks.Quota, player.Tasks.Completed);
+
+                var finalPlayer = new FinalPlayer(player.id, name,
+                    roleName, roleDetail, hasFakeTask, hasExecutableFakeTask, player.Status, player.Tasks?.Quota ?? 0, player.Tasks?.Completed ?? 0);
                 if (Game.GameData.data.deadPlayers.ContainsKey(player.id))
                 {
                     byte murder=Game.GameData.data.deadPlayers[player.id].MurderId;

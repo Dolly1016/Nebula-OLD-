@@ -29,7 +29,7 @@ namespace Nebula.Patches
                 hasFakeTask |= !role.HasCrewmateTask(pc.PlayerId);
                 fakeTaskIsExecutable |= role.HasExecutableFakeTask(pc.PlayerId);
             });
-            if (pc.GetModData().Tasks.Quota == 0) hasFakeTask = true;
+            if ((pc.GetModData().Tasks?.Quota ?? 0) == 0) hasFakeTask = true;
             if ((!hasFakeTask) || fakeTaskIsExecutable) return true;
             __result = float.MaxValue;
             
