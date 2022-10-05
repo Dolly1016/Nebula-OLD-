@@ -24,7 +24,7 @@ namespace Nebula.Roles.MinigameRoles.Hunters
                 winReasons,hasFakeTask,canUseVents,canMoveInVents,
                 ignoreBlackout,useImpostorLightRadius)
         {
-            ExceptBasicOption = true;
+            Allocation = AllocationType.None;
         }
     }
 }

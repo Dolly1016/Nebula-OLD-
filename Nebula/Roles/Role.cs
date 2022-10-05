@@ -235,7 +235,8 @@ namespace Nebula.Roles
         sealed public override void SetupRoleOptionData()
         {
             Module.CustomOptionTab tab = Module.CustomOptionTab.None;
-            if (this == Roles.F_Crewmate) tab = Module.CustomOptionTab.CrewmateRoles;
+            if (this == Roles.VOID) tab = Module.CustomOptionTab.AdvancedSettings;
+            else if (this == Roles.F_Crewmate) tab = Module.CustomOptionTab.CrewmateRoles;
             else if (this == Roles.Avenger) tab = Module.CustomOptionTab.Modifiers;
             else if (this.side == Side.GamePlayer) tab = Module.CustomOptionTab.EscapeRoles;
             else
@@ -258,7 +259,7 @@ namespace Nebula.Roles
             }
             SetupRoleOptionData(tab);
 
-            if (ExceptBasicOption) return;
+            if (Allocation == AllocationType.None) return;
 
             CanBeLoversOption = CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeLovers", DefaultCanBeLovers, true).HiddenOnDisplay(true).SetIdentifier("role." + LocalizeName + ".canBeLovers");
             CanBeLoversOption.AddPrerequisite(CustomOptionHolder.advanceRoleOptions);
@@ -283,7 +284,7 @@ namespace Nebula.Roles
             CanBeMadmateOption.AddPrerequisite(CustomOptionHolder.advanceRoleOptions);
             CanBeMadmateOption.AddCustomPrerequisite(() => { return Roles.SecondaryMadmate.IsSpawnable() && category==RoleCategory.Crewmate; });
 
-            if(category== RoleCategory.Impostor || category == RoleCategory.Crewmate)
+            if(category== RoleCategory.Impostor || category == RoleCategory.Crewmate || category == RoleCategory.Complex)
             {
                 CanBeSecretOption = CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeSecret", DefaultCanBeSecret, true).HiddenOnDisplay(true).SetIdentifier("role." + LocalizeName + ".canBeSecret");
                 CanBeSecretOption.AddPrerequisite(CustomOptionHolder.advanceRoleOptions);

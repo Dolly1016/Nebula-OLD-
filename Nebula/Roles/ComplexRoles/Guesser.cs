@@ -69,6 +69,7 @@ namespace Nebula.Roles.ComplexRoles
             CanBeDrunkOption?.AddInvPrerequisite(secondoryRoleOption);
             CanBeLoversOption?.AddInvPrerequisite(secondoryRoleOption);
             CanBeMadmateOption?.AddInvPrerequisite(secondoryRoleOption);
+            CanBeSecretOption?.AddInvPrerequisite(secondoryRoleOption);
         }
 
         public override void SpawnableTest(ref Dictionary<Role, int> DefinitiveRoles, ref HashSet<Role> SpawnableRoles)
@@ -160,11 +161,12 @@ namespace Nebula.Roles.ComplexRoles
                         if (!(__instance.state == MeetingHud.VoteStates.Voted || __instance.state == MeetingHud.VoteStates.NotVoted) || focusedTarget == null) return;
                         if (target.Data.IsDead) return;
                         var focusedTargetData = focusedTarget.GetModData();
+                        var actualRole = focusedTargetData.role.GetActualRole();
                         PlayerControl dyingTarget = 
                         (
-                        focusedTargetData.role == role ||
-                        focusedTargetData.role.GetImplicateRoles().Contains(role)||
-                        focusedTargetData.role.GetImplicateExtraRoles().Any((role)=>focusedTargetData.HasExtraRole(role))
+                        actualRole == role ||
+                        actualRole.GetImplicateRoles().Contains(role)||
+                        actualRole.GetImplicateExtraRoles().Any((role)=>focusedTargetData.HasExtraRole(role))
                         ) 
                         ? focusedTarget : PlayerControl.LocalPlayer;
 

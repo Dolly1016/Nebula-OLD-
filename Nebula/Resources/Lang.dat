@@ -165,9 +165,11 @@
 
 "option.secretRole" : "Secret Role"
 "option.secretCrewmate" : "Secret Roles (Crewmate)"
+"option.chanceOfSecretCrewmate" : "SpawnChance (Crewmate)"
 "option.secretImpostor" : "Secret Roles (Impostor)"
-"option.requireTasksForArousal" : "Require Tasks For Arousal"
-"option.requireNumOfKillingForArousal" : "Require Num Of Killing For Arousal"
+"option.chanceOfSecretImpostor" : "SpawnChance (Impostor)"
+"option.requiredTasksForArousal" : "Require Tasks For Arousal"
+"option.requiredNumOfKillingForArousal" : "Require Num Of Killing For Arousal"
 
 "option.advanceRoleOptions" : "Advance Role Options"
 
@@ -186,6 +188,11 @@
 "ritual.mission.formularize" : "Formularize"
 "ritual.rooms.bothEngines" : "Upper&Lower Engine"
 "ritual.rooms.bothDecontaminations" : "Decontamination"
+
+"role.void.name" : "VOID"
+"role.void.short" : "V"
+"role.void.description" : "Very Optimized and Intelligent Dominator"
+"role.void.info" : ""
 
 "role.crewmate.name" : "Crewmate"
 "role.crewmate.short" : "C"

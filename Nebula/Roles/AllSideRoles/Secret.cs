@@ -30,12 +30,14 @@ namespace Nebula.Roles.AllSideRoles
             if (category == RoleCategory.Crewmate)
             {
                 int num = (int)CustomOptionHolder.RequiredTasksForArousal.getFloat();
-                actualTasks = Helpers.GetRandomTaskList(num, 0.0);
+                actualTasks = new List<GameData.TaskInfo>();
 
                 for (int i = 0; i < num; i++)
                 {
                     if (initialTasks.Count == 0) break;
-                    initialTasks.RemoveAt(NebulaPlugin.rnd.Next(initialTasks.Count));
+                    int index = NebulaPlugin.rnd.Next(initialTasks.Count);
+                    actualTasks.Add(initialTasks[index]);
+                    initialTasks.RemoveAt(index);
                 }
 
                 GetActualRole().OnSetTasks(ref initialTasks,ref actualTasks);
@@ -64,11 +66,23 @@ namespace Nebula.Roles.AllSideRoles
             List<PlayerControl> players = PlayerControl.AllPlayerControls.ToArray().ToList().OrderBy(x => Guid.NewGuid()).ToList();
             players.RemoveAll(x => x.GetModData().role.category != category || !x.GetModData().role.CanBeSecret);
             int max = 0;
-            if (category == RoleCategory.Crewmate) max = CustomOptionHolder.NumOfSecretCrewmateOption.getSelection();
-            if (category == RoleCategory.Impostor) max = CustomOptionHolder.NumOfSecretImpostorOption.getSelection();
+            float chance = 1;
+
+            if (category == RoleCategory.Crewmate)
+            {
+                max = CustomOptionHolder.NumOfSecretCrewmateOption.getSelection();
+                chance = (float)CustomOptionHolder.ChanceOfSecretCrewmateOption.getSelection();
+            }
+            if (category == RoleCategory.Impostor)
+            {
+                max = CustomOptionHolder.NumOfSecretImpostorOption.getSelection();
+                chance = (float)CustomOptionHolder.ChanceOfSecretImpostorOption.getSelection();
+            }
+
             for (int i = 0; i < max; i++)
             {
                 if (players.Count == 0) break;
+                if (NebulaPlugin.rnd.NextDouble() * 10.0 > chance && chance < 10.0) continue;
 
                 int rnd = NebulaPlugin.rnd.Next(players.Count);
                 _sub_Assignment(assignMap, players[rnd]);
@@ -93,7 +107,7 @@ namespace Nebula.Roles.AllSideRoles
             //役職を元に戻す
             ParseActualRole(out Role role, out bool hasGuesser);
             List<Tuple<Tuple<ExtraRole, ulong>, bool>> exRoles = new List<Tuple<Tuple<ExtraRole, ulong>, bool>>();
-            if (hasGuesser) exRoles.Add(new Tuple<Tuple<ExtraRole, ulong>, bool>(new Tuple<ExtraRole, ulong>(Roles.SecondaryGuesser, 0), true));
+            if (hasGuesser) exRoles.Add(new Tuple<Tuple<ExtraRole, ulong>, bool>(new Tuple<ExtraRole, ulong>(Roles.SecondaryGuesser, (ulong)Roles.F_Guesser.guesserShots.getFloat()), true));
 
             RPCEventInvoker.ImmediatelyChangeRole(PlayerControl.LocalPlayer, role, exRoles.ToArray());
         }
@@ -153,9 +167,10 @@ namespace Nebula.Roles.AllSideRoles
 
         public Secret(Role templateRole)
             : base(templateRole,"Secret", "secret", templateRole.Color,
-                 true, VentPermission.CanNotUse, false, false, false)
+                 true, templateRole.VentPermission, templateRole.CanMoveInVents, templateRole.IgnoreBlackout, templateRole.UseImpostorLightRadius)
         {
             IsHideRole = true;
+            IsGuessableRole = false;
 
             Roles.AllExtraAssignable.Add(this);
         }

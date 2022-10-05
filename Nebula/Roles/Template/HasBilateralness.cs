@@ -180,6 +180,14 @@ namespace Nebula.Roles.Template
             }
         }
 
+        public override bool CanBeSecret
+        {
+            get
+            {
+                return FRole.CanBeSecret;
+            }
+        }
+
         public override bool IsSpawnable()
         {
             if (FRole.RoleChanceOption.getSelection() == 0) return false;

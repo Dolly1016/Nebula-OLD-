@@ -170,6 +170,8 @@ namespace Nebula
         public static CustomOption SecretRoleOption;
         public static CustomOption NumOfSecretCrewmateOption;
         public static CustomOption NumOfSecretImpostorOption;
+        public static CustomOption ChanceOfSecretCrewmateOption;
+        public static CustomOption ChanceOfSecretImpostorOption;
         public static CustomOption RequiredTasksForArousal;
         public static CustomOption RequiredNumOfKillingForArousal;
 
@@ -299,9 +301,11 @@ namespace Nebula
 
             SecretRoleOption = CustomOption.Create(10180, Color.white, "option.secretRole", false, null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.Standard);
             NumOfSecretCrewmateOption = CustomOption.Create(10181, Color.white, "option.secretCrewmate", 2f, 0f, 15f, 1f, SecretRoleOption);
-            NumOfSecretImpostorOption = CustomOption.Create(10182, Color.white, "option.secretImpostor", 2f, 0f, 5f, 1f, SecretRoleOption);
-            RequiredTasksForArousal = CustomOption.Create(10183, Color.white, "option.requiredTasksForArousal", 3f, 1f, 6f, 1f, SecretRoleOption).AddPrerequisite(NumOfSecretCrewmateOption);
-            RequiredNumOfKillingForArousal = CustomOption.Create(10184, Color.white, "option.requiredNumOfKillingForArousal", 2f, 1f, 5f, 1f, SecretRoleOption).AddPrerequisite(NumOfSecretImpostorOption);
+            ChanceOfSecretCrewmateOption = Module.CustomOption.Create(10182, Color.white, "option.chanceOfSecretCrewmate", CustomOptionHolder.rates, CustomOptionHolder.rates[0], SecretRoleOption);
+            NumOfSecretImpostorOption = CustomOption.Create(10183, Color.white, "option.secretImpostor", 2f, 0f, 5f, 1f, SecretRoleOption);
+            ChanceOfSecretImpostorOption = Module.CustomOption.Create(10184, Color.white, "option.chanceOfSecretImpostor", CustomOptionHolder.rates, CustomOptionHolder.rates[0], SecretRoleOption);
+            RequiredTasksForArousal = CustomOption.Create(10185, Color.white, "option.requiredTasksForArousal", 3f, 1f, 6f, 1f, SecretRoleOption).AddPrerequisite(NumOfSecretCrewmateOption);
+            RequiredNumOfKillingForArousal = CustomOption.Create(10186, Color.white, "option.requiredNumOfKillingForArousal", 2f, 1f, 5f, 1f, SecretRoleOption).AddPrerequisite(NumOfSecretImpostorOption);
 
             advanceRoleOptions = CustomOption.Create(10990, Color.white, "option.advanceRoleOptions", false, null, true, false, "", CustomOptionTab.Settings | CustomOptionTab.CrewmateRoles | CustomOptionTab.ImpostorRoles | CustomOptionTab.NeutralRoles | CustomOptionTab.Modifiers).SetGameMode(CustomGameMode.Standard);
         

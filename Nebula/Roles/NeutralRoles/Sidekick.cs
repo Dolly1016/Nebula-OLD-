@@ -134,7 +134,7 @@ namespace Nebula.Roles.NeutralRoles
         {
             killButton = null;
 
-            ExceptBasicOption = true;
+            Allocation = AllocationType.None;
             CreateOptionFollowingRelatedRole = true;
         }
     }

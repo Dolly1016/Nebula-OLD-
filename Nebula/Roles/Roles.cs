@@ -33,6 +33,8 @@ namespace Nebula.Roles
 
         public static List<ExtraAssignable> AllExtraAssignable = new List<ExtraAssignable>();
 
+        public static MetaRoles.VOID VOID = new MetaRoles.VOID();
+
         public static CrewmateRoles.Crewmate Crewmate = new CrewmateRoles.Crewmate();
         public static CrewmateRoles.CrewmateWithoutTasks CrewmateWithoutTasks = new CrewmateRoles.CrewmateWithoutTasks();
         public static CrewmateRoles.Agent Agent = new CrewmateRoles.Agent();
@@ -117,6 +119,7 @@ namespace Nebula.Roles
         //全てのロールはこの中に含まれている必要があります
         public static List<Role> AllRoles = new List<Role>()
         {
+            VOID,
             Impostor,BountyHunter,Camouflager,Cleaner,Damned,Disturber,Eraser,EvilAce,EvilGuesser,EvilTrapper,Jailer,Marionette,Morphing,Painter,Raider,Reaper,Sniper,
             F_Guesser,F_Trapper,
             Arsonist,Avenger,ChainShifter,Empiric,Jackal,Jester,Opportunist,Sidekick,Vulture,

@@ -214,7 +214,7 @@ namespace Nebula
                             new Tuple<Roles.ExtraRole, ulong>(Roles.ExtraRole.GetRoleById(reader.ReadByte()),reader.ReadUInt64()),reader.ReadBoolean()
                             ));
                     }
-                    RPCEvents.ImmediatelyChangeRole(reader.ReadByte(), reader.ReadByte(), exRoleTuples.ToArray());
+                    RPCEvents.ImmediatelyChangeRole(playerId, roleId, exRoleTuples.ToArray());
                     break;
                 case (byte)CustomRPC.SwapRole:
                     RPCEvents.SwapRole(reader.ReadByte(), reader.ReadByte());

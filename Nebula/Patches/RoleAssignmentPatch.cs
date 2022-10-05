@@ -94,7 +94,7 @@ namespace Nebula.Patches
                         continue;
                     }
 
-                    if (role.IsHideRole || role.ExceptBasicOption)
+                    if (role.IsHideRole || role.Allocation==Assignable.AllocationType.None)
                     {
                         continue;
                     }
@@ -104,7 +104,15 @@ namespace Nebula.Patches
                     //ロールの湧き数
                     int roleCount = role.FixedRoleCount ? role.GetCustomRoleCount() : (int)role.RoleCountOption.getFloat();
 
-                    if (role.RoleChanceOption.getSelection() < 10)
+                    if(role.RoleChanceOption.getSelection()==10 || (role.Allocation==Assignable.AllocationType.Switch && role.RoleChanceOption.getBool()))
+                    {
+                        //100%ロール
+                        for (int i = 0; i < roleCount; i++)
+                        {
+                            firstRoles.Add(role);
+                        }
+                    }
+                    else if (role.RoleChanceOption.getSelection() < 10)
                     {
                         if ((int)role.RoleChanceOption.getSelection() > 0)
                         {
@@ -113,14 +121,6 @@ namespace Nebula.Patches
                             {
                                 secondaryRoles.Add(new RoleAllocation(role, (int)role.RoleChanceOption.getSelection()));
                             }
-                        }
-                    }
-                    else
-                    {
-                        //100%ロール
-                        for (int i = 0; i < roleCount; i++)
-                        {
-                            firstRoles.Add(role);
                         }
                     }
                 }

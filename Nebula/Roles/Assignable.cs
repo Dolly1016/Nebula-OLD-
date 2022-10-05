@@ -35,10 +35,18 @@ namespace Nebula.Roles
         /// 配役人数を標準設定に準じさせたくない場合はtrueにしてください。
         /// </summary>
         public bool FixedRoleCount { get; protected set; }
+
+        public enum AllocationType
+        {
+            Standard,
+            Switch,
+            None
+        }
+
         /// <summary>
-        /// 割り当て確率を設定しない場合はtrueにしてください。
+        /// 割り当てを設定しない場合はNoneにしてください。
         /// </summary>
-        public bool ExceptBasicOption { get; protected set; }
+        public AllocationType Allocation { get; protected set; }
 
         public virtual bool IsUnsuitable { get { return false; } }
 
@@ -59,21 +67,23 @@ namespace Nebula.Roles
 
         protected void SetupRoleOptionData(Module.CustomOptionTab tab)
         {
-            if (ExceptBasicOption)
+            if (Allocation==AllocationType.None)
             {
                 TopOption = Module.CustomOption.Create(OptionAvailableId, Color, "role." + LocalizeName + ".name", new string[] { "option.empty" }, "option.empty", null, true, false, "", tab);
-            }
-            else
+            }else if (Allocation == AllocationType.Switch)
             {
-                RoleChanceOption = Module.CustomOption.Create(OptionAvailableId, Color, "role." + LocalizeName + ".name", CustomOptionHolder.rates, CustomOptionHolder.rates[0], null, true,false,"",tab);
-                TopOption = RoleChanceOption;
+                RoleChanceOption = TopOption = Module.CustomOption.Create(OptionAvailableId, Color, "role." + LocalizeName + ".name", new string[] { "option.switch.off", "option.switch.on" }, "option.switch.off", null, true, false, "", tab);
+            }
+            else if(Allocation == AllocationType.Standard)
+            {
+                RoleChanceOption = TopOption = Module.CustomOption.Create(OptionAvailableId, Color, "role." + LocalizeName + ".name", CustomOptionHolder.rates, CustomOptionHolder.rates[0], null, true,false,"",tab);
             }
             TopOption.GameMode = ValidGamemode | Module.CustomGameMode.FreePlay;
 
             OptionId = OptionAvailableId + 1;
             OptionAvailableId += OptionCapacity;
 
-            if (!FixedRoleCount && !ExceptBasicOption)
+            if (!FixedRoleCount && Allocation!=AllocationType.None)
             {
                 RoleCountOption = Module.CustomOption.Create(OptionId, Color.white, "option.roleCount", 0f, 0f, 15f, 1f, TopOption, false).SetIdentifier("role." + LocalizeName + ".roleCount");
                 RoleCountOption.GameMode = ValidGamemode|Module.CustomGameMode.FreePlay;
@@ -590,7 +600,7 @@ namespace Nebula.Roles
             this.OptionId = -1;
 
             this.IsHideRole = false;
-            this.ExceptBasicOption = false;
+            this.Allocation = AllocationType.Standard;
             this.CreateOptionFollowingRelatedRole = false;
             this.CreateOptionFlag = false;
 

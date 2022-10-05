@@ -141,7 +141,7 @@ namespace Nebula.Roles.ExtraRoles
 
         public Trilemma() : base("Trilemma", "trilemma", Lover.iconColor[0], 0)
         {
-            ExceptBasicOption = true;
+            Allocation = AllocationType.None;
             IsHideRole = true;
         }
     }

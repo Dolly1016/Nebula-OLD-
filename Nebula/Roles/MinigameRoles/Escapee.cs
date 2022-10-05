@@ -30,7 +30,7 @@ namespace Nebula.Roles.MinigameRoles.Escapees
                 winReasons, hasFakeTask, canUseVents, canMoveInVents,
                 ignoreBlackout, useImpostorLightRadius)
         {
-            ExceptBasicOption = true;
+            Allocation = AllocationType.None;
         }
     }
 }
