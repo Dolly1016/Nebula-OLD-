@@ -781,6 +781,7 @@
 "side.investigator.name" : "Investigator"
 "side.gamePlayer.name" : "Game Player"
 "side.killer.name" : "Killer"
+"side.void.name" : "VOID"
 
 "roles.category.default" : "Default"
 "roles.category.crewmate" : "Crewmate"

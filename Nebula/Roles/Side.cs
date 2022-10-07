@@ -258,13 +258,18 @@ namespace Nebula.Roles
             return null;
         });
 
+        public static Side VOID = new Side("VOID", "void", IntroDisplayOption.SHOW_ONLY_ME, MetaRoles.VOID.RoleColor, (PlayerStatistics statistics, ShipStatus status) =>
+        {
+            return null;
+        });
+
         public static List<Side> AllSides = new List<Side>()
         {
             Crewmate, Impostor,
             Jackal, Jester, Vulture, Empiric, Arsonist, Avenger,ChainShifter,
             Investigator,
             GamePlayer,
-            Extra,
+            Extra,VOID,
             RitualCrewmate,Killer
         };
 

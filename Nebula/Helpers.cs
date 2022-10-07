@@ -84,6 +84,16 @@ namespace Nebula
             return null;
         }
 
+        public static Sprite? getSpriteFromAssets(string name)
+        {
+            foreach (var sprite in UnityEngine.Object.FindObjectsOfTypeIncludingAssets(Sprite.Il2CppType))
+            {
+                if (sprite.name != name) continue;
+
+                return sprite.Cast<Sprite>();
+            }
+            return null;
+        }
         public static Texture2D loadTextureFromResources(string path)
         {
             try
