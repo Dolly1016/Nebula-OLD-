@@ -226,11 +226,11 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
  
  **Version 1.15.1**
  - Secret Roleを追加
- - Eraserに新オプション「Erase Duration」を追加しました。
- - 排他的役職割り当ての仕様を変更しました。
- - LoversのAgentがタスクをでタスクをできてしまう問題を修正しました。
- - Sheriffの「Can Kill Chain Shifter」が正常に機能していない問題を修正しました。
- - Polusの追放画面で帽子がマグマの上に残って見える問題を修正しました。
+ - Eraserに新オプション「Erase Duration」を追加
+ - 排他的役職割り当ての仕様を変更
+ - LoversのAgentがタスクをでタスクをできてしまう問題を修正
+ - Sheriffの「Can Kill Chain Shifter」が正常に機能していない問題を修正
+ - Polusの追放画面で帽子がマグマの上に残って見える問題を修正
   
  **Version 1.15**
  - Painterを追加
