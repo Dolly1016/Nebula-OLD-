@@ -29,6 +29,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.15.1.1 | 2022.9.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.15.1.1,2022.8.24/Nebula_v1.15.1.1.zip)|
 | 1.15.1 | 2022.9.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.15.1,2022.8.24/Nebula_v1.15.1.zip)|
 | 1.15 | 2022.9.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.15,2022.8.24/Nebula_v1.15.zip)|
 | 1.14.1 | 2022.8.24s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.14.1,2022.8.24/Nebula_v1.14.1.zip)|
@@ -223,6 +224,11 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+ **Version 1.15.1.1**
+ - ゲームが開始できない問題を修正
+ - Secret Roleが追加役職Madmateを隠匿するように
+ - 暫定的にVOIDを追加
+ - Free Playでの役職選択画面をリワーク
  
  **Version 1.15.1**
  - Secret Roleを追加
