@@ -36,8 +36,8 @@ namespace Nebula
             return vector;
         }
 
-        [HarmonyPatch(typeof(MapBehaviour), nameof(MapBehaviour.Close))]
-        static class MapBehaviourClosePatch
+        [HarmonyPatch(typeof(MapBehaviour), nameof(MapBehaviour.GenericShow))]
+        static class MapBehaviourGenericShowPatch
         {
             static void Postfix(MapBehaviour __instance)
             {

@@ -11,18 +11,19 @@ namespace Nebula.Roles.AllSideRoles
         public override Role GetActualRole()
         {
             Role role;
-            ParseActualRole(out role,out bool hasGuesser);
+            ParseActualRole(out role,out bool hasGuesser, out bool hasMadmate);
             return role;
         }
 
-        public void ParseActualRole(out Role role,out bool hasGuesser)
+        public void ParseActualRole(out Role role,out bool hasGuesser,out bool hasMadmate)
         {
             int roleData = Game.GameData.data.myData.getGlobalData().GetRoleData(this.id);
             int roleId = roleData & 0xFF;
             int exRoleId = roleData >> 8;
 
             role = Role.GetRoleById((byte)roleId);
-            hasGuesser = (exRoleId & 1) != 0;
+            hasGuesser = (exRoleId & 0b01) != 0;
+            hasMadmate = (exRoleId & 0b10) != 0;
         }
 
         public override void OnSetTasks(ref List<GameData.TaskInfo> initialTasks, ref List<GameData.TaskInfo>? actualTasks)
@@ -54,6 +55,11 @@ namespace Nebula.Roles.AllSideRoles
             {
                 roleId |= 1 << 8;
                 assignMap.UnassignExtraRole(player.PlayerId, Roles.SecondaryGuesser.id);
+            }
+            if (data.HasExtraRole(Roles.SecondaryMadmate))
+            {
+                roleId |= 1 << 9;
+                assignMap.UnassignExtraRole(player.PlayerId, Roles.SecondaryMadmate.id);
             }
 
             assignMap.AssignRole(player.PlayerId, this.id, roleId);
@@ -105,9 +111,10 @@ namespace Nebula.Roles.AllSideRoles
         private void RevealRole()
         {
             //役職を元に戻す
-            ParseActualRole(out Role role, out bool hasGuesser);
+            ParseActualRole(out Role role, out bool hasGuesser,out bool hasMadmate);
             List<Tuple<Tuple<ExtraRole, ulong>, bool>> exRoles = new List<Tuple<Tuple<ExtraRole, ulong>, bool>>();
             if (hasGuesser) exRoles.Add(new Tuple<Tuple<ExtraRole, ulong>, bool>(new Tuple<ExtraRole, ulong>(Roles.SecondaryGuesser, (ulong)Roles.F_Guesser.guesserShots.getFloat()), true));
+            if (hasMadmate) exRoles.Add(new Tuple<Tuple<ExtraRole, ulong>, bool>(new Tuple<ExtraRole, ulong>(Roles.SecondaryMadmate, (ulong)0), true));
 
             RPCEventInvoker.ImmediatelyChangeRole(PlayerControl.LocalPlayer, role, exRoles.ToArray());
         }

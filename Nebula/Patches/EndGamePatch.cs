@@ -67,7 +67,6 @@ namespace Nebula.Patches
             JesterWin,JackalWin,ArsonistWin,EmpiricWin,VultureWin,
             LoversWin,TrilemmaWin,AvengerWin,
             NoGame,NobodyWin,NobodySkeldWin,NobodyMiraWin,NobodyPolusWin,NobodyAirshipWin,
-            InvestigatorRightGuess,InvestigatorWrongGuess,HostDisconnected,
             MinigamePlayersWin,MinigameEscapeesWin,MinigameHunterWin,
             RitualCrewmateWin,KillerWin
         };

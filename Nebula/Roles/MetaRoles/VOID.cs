@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using Nebula.Module;
+using System.Linq;
 
 namespace Nebula.Roles.MetaRoles
 {
@@ -27,7 +29,7 @@ namespace Nebula.Roles.MetaRoles
         public override void Initialize(PlayerControl __instance)
         {
             Game.GameData.data.myData.CanSeeEveryoneInfo = true;
-            dialogOrder.Clear();
+            FastDestroyableSingleton<HudManager>.Instance.ShadowQuad.gameObject.SetActive(false);
         }
 
 
@@ -36,107 +38,242 @@ namespace Nebula.Roles.MetaRoles
 
         }
 
-        //今出現しているダイアログ
-        public List<DialogueBox> dialogOrder;
-        //アクティブなダイアログ
-        public DialogueBox? activeDialogue { get => dialogOrder.Count == 0 ? null : dialogOrder[dialogOrder.Count - 1]; }
-
+        
         private SpriteLoader voidButtonSprite = new SpriteLoader("Nebula.Resources.VOIDButton.png", 115f);
         private CustomButton voidButton;
 
-        private Sprite? buttonSprite = null;
-        private Sprite? getButtonBackSprite()
-        {
-            if (buttonSprite == null) buttonSprite = Helpers.getSpriteFromAssets("buttonClick");
-            return buttonSprite;
-        }
-        public class DialogueDesigner
-        {
-            private DialogueBox dialogue;
-            private SpriteRenderer background;
-            private Vector2 size;
-            private Vector2 origin;
-            private Vector2 center;
-
-            public DialogueDesigner(DialogueBox dialog,SpriteRenderer background,Vector2 size,float titleHeight)
-            {
-                dialogue = dialog;
-                this.background = background;
-                this.size = size;
-                origin = new Vector2(-size.x / 2f, size.y / 2f);
-                origin -= new Vector2(0f, titleHeight);
-                center = new Vector2(0.0f, 0.0f); 
-            }
-
-            public PassiveButton AddButton(float width,string name,string display)
-            {
-                GameObject obj = new GameObject(name);
-                obj.layer = Nebula.LayerExpansion.GetUILayer();
-                obj.transform.SetParent(dialogue.transform);
-                obj.transform.localScale=new Vector3(1f,1f,1f);
-                var renderer = obj.AddComponent<SpriteRenderer>();
-                var collider = obj.AddComponent<BoxCollider2D>();
-                var text = GameObject.Instantiate(dialogue.target);
-                text.transform.SetParent(obj.transform);
-                text.transform.localScale = new Vector3(1f,1f,1f);
-
-                renderer.sprite = Roles.VOID.getButtonBackSprite();
-                renderer.drawMode = SpriteDrawMode.Tiled;
-                renderer.size=new Vector2(width,0.4f);
-
-                text.transform.localScale = new Vector3(1f,1f,1f);
-                text.alignment = TMPro.TextAlignmentOptions.Center;
-                text.rectTransform.sizeDelta = new Vector2(width,0f);
-                text.rectTransform.pivot=new Vector2(0.5f,0.5f);
-                text.text = display;
-                text.fontSize = text.fontSizeMax = text.fontSizeMax = 3.5f;
-
-                collider.size = new Vector2(width, 0.4f);
-
-                obj.transform.localPosition = new Vector3(0f, origin.y - 0.26f , -10f);
-                origin -= new Vector2(0, 0.52f);
-
-                return obj.AddComponent<PassiveButton>();
-            }
-        }
-        public DialogueDesigner OpenDialog(Vector2 size,string title)
-        {
-            DialogueBox dialogue = GameObject.Instantiate(HudManager.Instance.Dialogue);
-            dialogue.name = "VOID Dialogue" + dialogOrder.Count;
-            dialogue.transform.SetParent(activeDialogue?.transform ?? HudManager.Instance.transform);
-            SpriteRenderer renderer = dialogue.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>();
-            SpriteRenderer closeButton = dialogue.gameObject.transform.GetChild(1).GetComponent<SpriteRenderer>();
-            GameObject fullScreen = renderer.transform.GetChild(0).gameObject;
-            fullScreen.GetComponent<PassiveButton>().OnClick = new UnityEngine.UI.Button.ButtonClickedEvent();
-            fullScreen.GetComponent<SpriteRenderer>().color = new Color(0f,0f,0f,0.35f);
-            renderer.gameObject.AddComponent<BoxCollider2D>().size = size;
-            renderer.color = new Color(1f, 1f, 1f, 0.8f);
-            renderer.size = size;
-
-            closeButton.transform.localPosition = new Vector3(-size.x/2f -0.3f, size.y/2f - 0.3f, -10f);
-            dialogue.transform.localScale = new Vector3(1, 1, 1);
-            dialogue.transform.localPosition = new Vector3(0f, 0f, -50f);
-            dialogOrder.Add(dialogue);
-
-            dialogue.target.rectTransform.sizeDelta = size * 1.66f - new Vector2(0.7f,0.7f);
-            dialogue.Show(title);
-
-            return new DialogueDesigner(dialogue, renderer, size,dialogue.target.GetPreferredHeight());
-        }
+       
 
         public override void MyUpdate()
         {
-            for(int i = 0; i < dialogOrder.Count; i++)
+            if (MetaDialog.dialogOrder.Count == 0 && Input.GetKeyDown(KeyCode.F)) voidButton.onClickEvent();
+        }
+
+        private void MetaChangeRole(PlayerControl p)
+        {
+            Module.MetaDialog.MetaDialogDesigner? dialog = null;
+            dialog = Module.MetaDialog.OpenRolesDialog((r) => r.category != RoleCategory.Complex, 0, 60, (r) =>
             {
-                dialogOrder[i].BackButton.gameObject.SetActive(i == dialogOrder.Count - 1);
+                RPCEventInvoker.ImmediatelyChangeRole(p, r);
+                dialog?.dialog.Close();
+            });
+        }
 
-                if (dialogOrder[i].gameObject.activeSelf) continue;
+        private void MetaKillPlayer(PlayerControl p)
+        {
+            RPCEventInvoker.UncheckedMurderPlayer(PlayerControl.LocalPlayer.PlayerId, p.PlayerId, Game.PlayerData.PlayerStatus.Dead.Id, false);
+        }
 
-                GameObject.Destroy(dialogOrder[i].gameObject);
-                dialogOrder.RemoveRange(i, dialogOrder.Count - i);
+        private void MetaExilePlayer(PlayerControl p)
+        {
+            RPCEventInvoker.UncheckedExilePlayer(p.PlayerId, Game.PlayerData.PlayerStatus.Dead.Id);
+        }
 
-                break;
-            }
+        private void MetaRevivePlayer(PlayerControl p)
+        {
+            RPCEventInvoker.RevivePlayer(p, true);
+        }
+
+        private void AddModifySpeedTopic(MetaDialog.MetaDialogDesigner designer,PlayerControl? p)
+        {
+            float speed = 1f;
+            float duration = 10f;
+            MetaDialogString SpeedText = new MetaDialogString(1.2f, "1x", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold);
+            MetaDialogButton SpeedDownButton = new MetaDialogButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () => { if (speed > -2f) speed -= 0.125f; SpeedText.text.text = speed.ToString() + "x"; });
+            MetaDialogButton SpeedUpButton = new MetaDialogButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () => { if (speed < 3f) speed += 0.125f; SpeedText.text.text = speed.ToString() + "x"; });
+
+            MetaDialogButton UnlimitedSpeedButton = new MetaDialogButton(0.8f, 0.5f, "Apply", TMPro.FontStyles.Bold, () => { 
+                if(p!=null)RPCEventInvoker.EmitSpeedFactor(p, new Game.SpeedFactor(0, 99999f, speed, true)); else
+                {
+                    foreach(var player in PlayerControl.AllPlayerControls) RPCEventInvoker.EmitSpeedFactor(player, new Game.SpeedFactor(0, 99999f, speed, true));
+                }
+            });
+
+            MetaDialogString DurationText = new MetaDialogString(0.8f, "10s", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold);
+            MetaDialogButton DurationDownButton = new MetaDialogButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () => { if (duration > 2.5f) duration -= 2.5f; DurationText.text.text = duration.ToString() + "s"; });
+            MetaDialogButton DurationUpButton = new MetaDialogButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () => { if (duration < 60f) duration += 2.5f; DurationText.text.text = duration.ToString() + "s"; });
+
+            MetaDialogButton LimitedSpeedButton = new MetaDialogButton(0.8f, 0.5f, "Apply", TMPro.FontStyles.Bold, () => {
+                if (p != null) RPCEventInvoker.EmitSpeedFactor(p, new Game.SpeedFactor(0, duration, speed, true));
+                else
+                {
+                    foreach (var player in PlayerControl.AllPlayerControls) RPCEventInvoker.EmitSpeedFactor(player, new Game.SpeedFactor(0, duration, speed, true));
+                }
+            });
+
+            designer.AddTopic(
+                new MetaDialogString(1.2f, "Speed:", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold), SpeedDownButton, SpeedText, SpeedUpButton, UnlimitedSpeedButton,
+                new MetaDialogString(0.6f, "with", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold), DurationDownButton, DurationText, DurationUpButton, LimitedSpeedButton);
+
+            UnlimitedSpeedButton.button.OnMouseOver.AddListener((UnityEngine.Events.UnityAction)(() =>
+            {
+                SpeedText.text.color = Color.yellow;
+            }));
+            UnlimitedSpeedButton.button.OnMouseOut.AddListener((UnityEngine.Events.UnityAction)(() =>
+            {
+                SpeedText.text.color = Color.white;
+            }));
+
+            LimitedSpeedButton.button.OnMouseOver.AddListener((UnityEngine.Events.UnityAction)(() =>
+            {
+                SpeedText.text.color = Color.yellow;
+                DurationText.text.color = Color.yellow;
+            }));
+            LimitedSpeedButton.button.OnMouseOut.AddListener((UnityEngine.Events.UnityAction)(() =>
+            {
+                SpeedText.text.color = Color.white;
+                DurationText.text.color = Color.white;
+            }));
+        }
+        
+        private void OpenPlayerDialog(PlayerControl p)
+        {
+            var designer = MetaDialog.OpenPlayerDialog(new Vector2(8f, 5f), p);
+
+            MetaDialogButton roleButton = new MetaDialogButton(1f, 0.4f, "Role", TMPro.FontStyles.Bold, () => MetaChangeRole(p));
+            MetaDialogButton killButton = new MetaDialogButton(1f, 0.4f, "Kill", TMPro.FontStyles.Bold, () => MetaKillPlayer(p));
+            MetaDialogButton exileButton = new MetaDialogButton(1f, 0.4f, "Exile", TMPro.FontStyles.Bold, () => MetaExilePlayer(p));
+            MetaDialogButton reviveButton = new MetaDialogButton(1f, 0.4f, "Revive", TMPro.FontStyles.Bold, () => MetaRevivePlayer(p));
+
+            designer.AddTopic(roleButton, killButton, exileButton, reviveButton);
+
+            AddModifySpeedTopic(designer,p);
+
+            designer.AddTopic(
+                new MetaDialogString(1f, "Paint:", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
+                new MetaDialogButton(1.5f, 0.4f, "Paint", TMPro.FontStyles.Bold, () => {
+                    MetaDialog.MetaDialogDesigner? designer = null;
+                    designer = MetaDialog.OpenPlayersDialog("Select Source Player", (p, b) => { }, (selected) =>
+                    {
+                        RPCEventInvoker.Paint(p, selected.GetModData().GetOutfitData(50));
+                        designer.dialog.Close();
+                    });
+                }),
+                new MetaDialogButton(2f, 0.4f, "Random Paint", TMPro.FontStyles.Bold, () => {
+                    List<PlayerControl> candidiates = new List<PlayerControl>();
+                    foreach(var player in PlayerControl.AllPlayerControls)
+                    {
+                        if (player.PlayerId == p.PlayerId) continue;
+                        if (player.Data.IsDead) continue;
+                        if (player.PlayerId == PlayerControl.LocalPlayer.PlayerId) continue;
+                        candidiates.Add(player);
+                    }
+                    PlayerControl selected = candidiates[NebulaPlugin.rnd.Next(candidiates.Count)];
+                    RPCEventInvoker.Paint(p, selected.GetModData().GetOutfitData(50));
+                }),
+                new MetaDialogButton(1.5f, 0.4f, "Reset", TMPro.FontStyles.Bold, () => {
+                    RPCEventInvoker.Paint(p, p.GetModData().GetOutfitData(0));
+                })
+                );
+        }
+
+        private void OpenPlayersDialog()
+        {
+            MetaDialog.OpenPlayersDialog("Players", 0.7f, 0f, (p, button) => {
+                button.transform.GetChild(0).localPosition += new Vector3(0, 0.16f, 0f);
+
+                PassiveButton b;
+                TMPro.TextMeshPro text;
+
+                b = MetaDialog.MetaDialogDesigner.AddSubButton(button, new Vector2(0.28f, 0.28f), "kill", "K");
+                text = b.transform.GetChild(0).GetComponent<TMPro.TextMeshPro>();
+                text.fontStyle = TMPro.FontStyles.Bold;
+                text.color = Palette.ImpostorRed;
+                b.transform.localPosition += new Vector3(0.4f, -0.14f);
+                b.OnClick.AddListener(((UnityEngine.Events.UnityAction)(() => MetaKillPlayer(p))));
+
+                b = MetaDialog.MetaDialogDesigner.AddSubButton(button, new Vector2(0.28f, 0.28f), "exile", "E");
+                text = b.transform.GetChild(0).GetComponent<TMPro.TextMeshPro>();
+                text.fontStyle = TMPro.FontStyles.Bold;
+                text.color = Palette.White;
+                b.transform.localPosition += new Vector3(0.7f, -0.14f);
+                b.OnClick.AddListener(((UnityEngine.Events.UnityAction)(() => MetaExilePlayer(p))));
+
+                b = MetaDialog.MetaDialogDesigner.AddSubButton(button, new Vector2(0.28f, 0.28f), "revive", "R");
+                text = b.transform.GetChild(0).GetComponent<TMPro.TextMeshPro>();
+                text.fontStyle = TMPro.FontStyles.Bold;
+                text.color = Palette.CrewmateBlue;
+                b.transform.localPosition += new Vector3(1.0f, -0.14f);
+                b.OnClick.AddListener(((UnityEngine.Events.UnityAction)(() => MetaRevivePlayer(p))));
+
+
+
+            }, (p) => OpenPlayerDialog(p));
+        }
+
+        private void OpenGeneralDialog()
+        {
+            var dialog = MetaDialog.OpenDialog(new Vector2(8f, 5f), "General");
+
+            AddModifySpeedTopic(dialog, null);
+
+            dialog.AddTopic(
+                new MetaDialogString(1f, "Paint:", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
+                new MetaDialogButton(2f, 0.4f, "Random Paint", TMPro.FontStyles.Bold, () =>
+                {
+                    List<PlayerControl> players = new List<PlayerControl>();
+                    foreach (var p in PlayerControl.AllPlayerControls)
+                    {
+                        if (p.PlayerId == PlayerControl.LocalPlayer.PlayerId) continue;
+                        if (p.Data.IsDead) continue;
+                        players.Add(p);
+                    }
+                    List<Game.PlayerData.PlayerOutfitData> allOutfits = new List<Game.PlayerData.PlayerOutfitData>();
+                    foreach (var p in players) allOutfits.Add(p.GetModData().GetOutfitData(50));
+                    var randomOutfits = allOutfits.ToArray().OrderBy(i => Guid.NewGuid()).ToArray();
+
+                    for (int i = 0; i < players.Count; i++)
+                    {
+                        RPCEventInvoker.Paint(players[i], randomOutfits[i]);
+                    }
+                }),
+                new MetaDialogButton(1.5f, 0.4f, "Reset", TMPro.FontStyles.Bold, () =>
+                {
+                    foreach (var p in PlayerControl.AllPlayerControls)RPCEventInvoker.Paint(p, p.GetModData().GetOutfitData(0));
+                }));
+            dialog.AddTopic(new MetaDialogButton(2.6f, 0.4f, "Emergency Meeting", TMPro.FontStyles.Bold, () => {
+                PlayerControl.LocalPlayer.CmdReportDeadBody(null);
+                dialog.dialog.Close();
+            }));
+            dialog.AddTopic(new MetaDialogButton(2f, 0.4f, Helpers.cs(Palette.ImpostorRed, "End Game"), TMPro.FontStyles.Bold, () =>
+                 {
+                     var designer = MetaDialog.OpenDialog(new Vector2(8.5f,5f),"End Reasons");
+
+                     List<MetaDialogButton> ends = new List<MetaDialogButton>();
+
+                     foreach (var er in Patches.EndCondition.AllEnds)
+                     {
+
+                         var end = er;
+                         ends.Add(new MetaDialogButton(1.9f, 0.4f,
+                             Helpers.cs(end.Color, Language.Language.GetString("game.endText." + end.Identifier)),
+                             TMPro.FontStyles.Bold,
+                             () =>
+                             {
+                                 ShipStatus.Instance.enabled = false;
+                                 ShipStatus.RpcEndGame(end.Id, false);
+                                 dialog.dialog.Close();
+                             }));
+                         if (ends.Count >= 4)
+                         {
+                             designer.AddTopic(ends.ToArray());
+                             foreach (var e in ends)
+                             {
+                                 e.text.fontSizeMin = 0.5f;
+                                 e.text.overflowMode = TMPro.TextOverflowModes.Ellipsis;
+                             }
+                             ends.Clear();
+                         }
+                     }
+
+                     designer.AddTopic(ends.ToArray());
+                     foreach (var e in ends)
+                     {
+                         e.text.fontSizeMin = 0.5f;
+                         e.text.overflowMode = TMPro.TextOverflowModes.Ellipsis;
+                     }
+                     ends.Clear();
+                 }));
         }
 
         public override void ButtonInitialize(HudManager __instance)
@@ -148,13 +285,12 @@ namespace Nebula.Roles.MetaRoles
             voidButton = new CustomButton(
                 () =>
                 {
-                    var d = OpenDialog(new Vector2(8.5f, 5.1f), "Dialogue 0");
-                    d.AddButton(1f, "button1", "ボタン1");
-                    d.AddButton(1f, "button2", "ボタン2");
-                    OpenDialog(new Vector2(5.0f, 2.0f), "Dialogue 1").AddButton(2f, "button", "前面のボタン");
+                    var dialog = MetaDialog.OpenDialog(new Vector2(2f, 1.8f), "VOID");
+                    dialog.AddButton(1.6f, "General", "General").OnClick.AddListener((UnityEngine.Events.UnityAction)(()=> OpenGeneralDialog()));
+                    dialog.AddButton(1.6f, "Players", "Players").OnClick.AddListener((UnityEngine.Events.UnityAction)(() => OpenPlayersDialog()));
                 },
                 () => true,
-                () => dialogOrder.Count == 0,
+                () => MetaDialog.dialogOrder.Count == 0,
                 () => { },
                 voidButtonSprite.GetSprite(),
                 new Vector3(-1.8f, 0, 0),
@@ -172,6 +308,8 @@ namespace Nebula.Roles.MetaRoles
                 voidButton.Destroy();
                 voidButton = null;
             }
+
+            MetaDialog.Initialize();
         }
 
         public VOID()
@@ -189,8 +327,6 @@ namespace Nebula.Roles.MetaRoles
             FixedRoleCount = true;
 
             IsGuessableRole = false;
-
-            dialogOrder = new List<DialogueBox>();
         }
     }
 }

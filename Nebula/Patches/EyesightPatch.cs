@@ -164,7 +164,8 @@ namespace Nebula.Patches
 					|| ExileController.Instance
 					|| Minigame.Instance
 					|| (MapBehaviour.Instance && MapBehaviour.Instance.IsOpen)
-					|| (Game.GameData.data == null || !Game.GameData.data.myData.CanSeeEveryoneInfo))
+					|| (Game.GameData.data == null || !Game.GameData.data.myData.CanSeeEveryoneInfo)
+					|| Module.MetaDialog.dialogOrder.Count!=0)
 			{
 				ObserverMode = false;
 			}

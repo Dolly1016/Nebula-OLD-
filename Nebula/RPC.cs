@@ -341,6 +341,7 @@ namespace Nebula
         public static void ResetVaribles()
         {
             Game.GameData.Initialize();
+            MetaDialog.Initialize();
             Events.GlobalEvent.Initialize();
             Events.LocalEvent.Initialize();
             Events.Schedule.Initialize();
@@ -1009,11 +1010,13 @@ namespace Nebula
 
         public static void CompleteTask(byte playerId)
         {
+            if (Game.GameData.data.playersArray[playerId].Tasks == null) return;
             Game.GameData.data.playersArray[playerId].Tasks.Completed++;
         }
 
         public static void ExemptAllTask(byte playerId)
         {
+            if (Game.GameData.data.playersArray[playerId].Tasks == null) return;
             Game.GameData.data.playersArray[playerId].Tasks.Quota = 0;
         }
 

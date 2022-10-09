@@ -52,7 +52,7 @@ namespace Nebula.Roles.MinigameRoles.Hunters
             }
         }
 
-        static private CustomButton ventButton, auraButton;
+        static private CustomButton ventButton;
         private float lightRadius=1f;
 
         private Sprite ventAppearButtonSprite = null, ventHideButtonSprite = null, auraButtonSprite = null;

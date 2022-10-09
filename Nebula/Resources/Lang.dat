@@ -121,6 +121,7 @@
 "option.seismicStabilizersTimeLimit" : "Time Limit (Seismic Stabilizers)"
 "option.avertCrashTimeLimit" : "Time Limit (Avert Crash Course)"
 "option.blackOutStrength" : "Black Out Strength"
+"option.canUseDoorDespiteSabotage" : "Can Use Door Despite Sabotage (Airship)"
 
 "option.exclusiveAssignment" : "Exclusive Assignment"
 "option.exclusiveAssignment.MorphingAndPainter" : "Morphing or Painter"
@@ -287,6 +288,7 @@
 "role.guardian.maxAntennas" : "Max Antennas"
 "role.guardian.placeCoolDown" : "Place Cool Down"
 "role.guardian.antennaEffectiveRange" : "Antenna Effective Range"
+"role.guardian.canIdentifyDeadBody" : "Can Identify Dead Body"
 "role.guardian.showGuardFlash" : "Show Guard Flash"
 
 "role.mayor.name" : "Mayor"

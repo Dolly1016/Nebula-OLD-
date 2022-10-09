@@ -393,6 +393,7 @@ namespace Nebula.Patches
                 }
 
 
+                Module.MetaDialog.Update();
                 Events.GlobalEvent.Update();
                 Events.LocalEvent.Update();
 

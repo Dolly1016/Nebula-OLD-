@@ -93,12 +93,7 @@ namespace Nebula.Roles.NeutralRoles
         }
 
 
-        /* 矢印 */
-        Dictionary<byte, Arrow> Arrows;
-
         public byte deadBodyId;
-
-        public int eatLeftId;
 
         /* 画像 */
         private Sprite buttonSprite = null;

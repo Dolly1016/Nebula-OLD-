@@ -20,6 +20,7 @@ namespace Nebula.Roles.CrewmateRoles
         private CustomOption placeCoolDownOption;
         private CustomOption antennaEffectiveRangeOption;
         private CustomOption showGuardFlashOption;
+        private CustomOption canIdentifyDeadBodyOption;
 
         public int remainAntennasId { get; private set; }
 
@@ -39,6 +40,7 @@ namespace Nebula.Roles.CrewmateRoles
             placeCoolDownOption.suffix = "second";
             antennaEffectiveRangeOption = CreateOption(Color.white, "antennaEffectiveRange", 5f, 1.25f, 20f, 1.25f);
             antennaEffectiveRangeOption.suffix = "cross";
+            canIdentifyDeadBodyOption = CreateOption(Color.white, "canIdentifyDeadBody", false); ;
             showGuardFlashOption = CreateOption(Color.white, "showGuardFlash", false);
         }
 
@@ -91,7 +93,12 @@ namespace Nebula.Roles.CrewmateRoles
                     showFlag = true;
                     break;
                 }
-                if (showFlag) indicatorsPool.Get().transform.localPosition = MapBehaviourExpansion.ConvertMapLocalPosition(p.transform.position, p.PlayerId);
+                if (showFlag)
+                {
+                    var icon = indicatorsPool.Get();
+                    icon.transform.localPosition = MapBehaviourExpansion.ConvertMapLocalPosition(p.transform.position, p.PlayerId);
+                    PlayerMaterial.SetColors(Module.DynamicColors.IsLightColor(Palette.PlayerColors[p.GetModData().CurrentOutfit.ColorId]) ? Color.white : Palette.DisabledGrey, icon);
+                }
             }
 
             //死体も表示
@@ -110,7 +117,15 @@ namespace Nebula.Roles.CrewmateRoles
                     showFlag = true;
                     break;
                 }
-                if (showFlag) indicatorsPool.Get().transform.localPosition = MapBehaviourExpansion.ConvertMapLocalPosition(p.transform.position, p.ParentId);
+                if (showFlag)
+                {
+                    var icon = indicatorsPool.Get();
+                    icon.transform.localPosition = MapBehaviourExpansion.ConvertMapLocalPosition(p.transform.position, p.ParentId);
+                    if (canIdentifyDeadBodyOption.getBool())
+                        PlayerMaterial.SetColors(Color.red, icon);
+                    else
+                        PlayerMaterial.SetColors(Module.DynamicColors.IsLightColor(Palette.PlayerColors[p.GetModData().GetOutfitData(0).ColorId]) ? Color.white : Palette.DisabledGrey, icon);
+                }
             }
         }
 

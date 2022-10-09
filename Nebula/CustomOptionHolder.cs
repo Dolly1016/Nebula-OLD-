@@ -145,6 +145,7 @@ namespace Nebula
         public static CustomOption SeismicStabilizersTimeLimitOption;
         public static CustomOption AvertCrashTimeLimitOption;
         public static CustomOption BlackOutStrengthOption;
+        public static CustomOption CanUseDoorDespiteSabotageOption;
 
         public static CustomOption SoloFreePlayOption;
         public static CustomOption CountOfDummiesOption;
@@ -298,6 +299,7 @@ namespace Nebula
             AvertCrashTimeLimitOption.suffix = "second";
             BlackOutStrengthOption = CustomOption.Create(10178, Color.white, "option.blackOutStrength", 1f, 0.125f, 2f, 0.125f, SabotageOption).SetGameMode(CustomGameMode.All);
             BlackOutStrengthOption.suffix = "cross";
+            CanUseDoorDespiteSabotageOption = CustomOption.Create(10179, Color.white, "option.canUseDoorDespiteSabotage",false, SabotageOption).SetGameMode(CustomGameMode.All);
 
             SecretRoleOption = CustomOption.Create(10180, Color.white, "option.secretRole", false, null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.Standard);
             NumOfSecretCrewmateOption = CustomOption.Create(10181, Color.white, "option.secretCrewmate", 2f, 0f, 15f, 1f, SecretRoleOption);

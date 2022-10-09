@@ -68,14 +68,14 @@ namespace Nebula
         public const string AmongUsVersion = "2022.8.24";
         public const string PluginGuid = "jp.dreamingpig.amongus.nebula";
         public const string PluginName = "TheNebula";
-        public const string PluginVersion = "1.15";
+        public const string PluginVersion = "1.15.1.1";
         public const bool IsSnapshot = true;
 
-        public static string PluginVisualVersion = IsSnapshot ? "22.10.05f" : PluginVersion;
+        public static string PluginVisualVersion = IsSnapshot ? "22.10.09c" : PluginVersion;
         public static string PluginStage = IsSnapshot?"Snapshot":"";
 
-        public const string PluginVersionForFetch = "1.15";
-        public byte[] PluginVersionData = new byte[] { 1, 15, 0, 0 };
+        public const string PluginVersionForFetch = "1.15.1.1";
+        public byte[] PluginVersionData = new byte[] { 1, 15, 1, 1 };
 
         public static NebulaPlugin Instance;
         
