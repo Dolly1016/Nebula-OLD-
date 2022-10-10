@@ -371,7 +371,7 @@ namespace Nebula.Module
                         valTxt.text.text = converter(val);
                     }),
                     new MetaDialogMargin(0.4f),
-                    new MetaDialogButton(0.8f, 0.4f, "Apply", TMPro.FontStyles.Bold, () =>
+                    new MetaDialogButton(0.8f, 0.5f, "Apply", TMPro.FontStyles.Bold, () =>
                     {
                         applyFunc(val);
                     })

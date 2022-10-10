@@ -56,7 +56,7 @@ namespace Nebula.Roles.MetaRoles
             {
                 RPCEventInvoker.ImmediatelyChangeRole(p, r);
                 MetaDialog.EraseDialog(2);
-                OpenPlayerDialog(p);
+                OpenPlayerDialog(p,0);
             });
         }
 
@@ -69,7 +69,7 @@ namespace Nebula.Roles.MetaRoles
             {
                 RPCEventInvoker.ImmediatelyUnsetExtraRole(p,r);
                 MetaDialog.EraseDialog(2);
-                OpenPlayerDialog(p);
+                OpenPlayerDialog(p,0);
                 MetaEditModify(p);
             });
             dialog.AddTopic(new MetaDialogString(2f, "Unactivated", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold));
@@ -77,7 +77,7 @@ namespace Nebula.Roles.MetaRoles
             {
                 RPCEventInvoker.SetExtraRole(p, r, 0);
                 MetaDialog.EraseDialog(2);
-                OpenPlayerDialog(p);
+                OpenPlayerDialog(p,0);
                 MetaEditModify(p);
             });
         }
@@ -165,7 +165,7 @@ namespace Nebula.Roles.MetaRoles
                 designer.AddNumericDataTopic(display, (int)data.GetExtraRoleData(role.id), replace, min, max, (v) => RPCEventInvoker.UpdateExtraRoleData(player.PlayerId, role.id, (ulong)v));
         }
 
-        private void OpenPlayerDialog(PlayerControl p)
+        private void OpenPlayerDialog(PlayerControl p, int page)
         {
             var designer = MetaDialog.OpenPlayerDialog(new Vector2(8f, 5f), p);
 
@@ -175,13 +175,14 @@ namespace Nebula.Roles.MetaRoles
             MetaDialogButton exileButton = new MetaDialogButton(1f, 0.4f, "Exile", TMPro.FontStyles.Bold, () => MetaExilePlayer(p));
             MetaDialogButton reviveButton = new MetaDialogButton(1f, 0.4f, "Revive", TMPro.FontStyles.Bold, () => MetaRevivePlayer(p));
 
-            designer.AddTopic(roleButton, modifyButton,killButton, exileButton, reviveButton);
+            designer.AddTopic(roleButton, modifyButton, killButton, exileButton, reviveButton);
 
-            AddModifySpeedTopic(designer,p);
+            AddModifySpeedTopic(designer, p);
 
             designer.AddTopic(
                 new MetaDialogString(1f, "Paint:", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
-                new MetaDialogButton(1.5f, 0.4f, "Paint", TMPro.FontStyles.Bold, () => {
+                new MetaDialogButton(1.5f, 0.4f, "Paint", TMPro.FontStyles.Bold, () =>
+                {
                     MetaDialog.MetaDialogDesigner? designer = null;
                     designer = MetaDialog.OpenPlayersDialog("Select Source Player", (p, b) => { }, (selected) =>
                     {
@@ -189,9 +190,10 @@ namespace Nebula.Roles.MetaRoles
                         designer.dialog.Close();
                     });
                 }),
-                new MetaDialogButton(2f, 0.4f, "Random Paint", TMPro.FontStyles.Bold, () => {
+                new MetaDialogButton(2f, 0.4f, "Random Paint", TMPro.FontStyles.Bold, () =>
+                {
                     List<PlayerControl> candidiates = new List<PlayerControl>();
-                    foreach(var player in PlayerControl.AllPlayerControls)
+                    foreach (var player in PlayerControl.AllPlayerControls)
                     {
                         if (player.PlayerId == p.PlayerId) continue;
                         if (player.Data.IsDead) continue;
@@ -201,27 +203,62 @@ namespace Nebula.Roles.MetaRoles
                     PlayerControl selected = candidiates[NebulaPlugin.rnd.Next(candidiates.Count)];
                     RPCEventInvoker.Paint(p, selected.GetModData().GetOutfitData(50));
                 }),
-                new MetaDialogButton(1.5f, 0.4f, "Reset", TMPro.FontStyles.Bold, () => {
+                new MetaDialogButton(1.5f, 0.4f, "Reset", TMPro.FontStyles.Bold, () =>
+                {
                     RPCEventInvoker.Paint(p, p.GetModData().GetOutfitData(0));
                 })
                 );
 
+
+            var designers = designer.SplitVertically(new float[] { 0.2f, 1f, 0.2f });
+
             var data = p.GetModData();
+
+            int skip = page * 5;
+            int num = 0;
+            bool hasNext = false;
 
             foreach (var info in data.role.RelatedRoleDataInfo)
             {
-                AddRoleDataTopic(designer, p, data, info.id, info.display, info.min, info.max, info.suffix, info.replaceArray);
-                designer.CustomUse(-0.2f);
+                if (skip > 0) skip--;
+                else if (num < 5)
+                {
+                    AddRoleDataTopic(designer, p, data, info.id, info.display, info.min, info.max, info.suffix, info.replaceArray);
+                    designer.CustomUse(-0.1f);
+                    num++;
+                }
+                else hasNext = true;
             }
             Helpers.RoleAction(data, (r) =>
             {
                 foreach (var info in r.RelatedExtraRoleDataInfo)
                 {
-                    AddExtraRoleDataTopic(designer, p, data, info.role, info.display, info.min, info.max, info.suffix, info.replaceArray);
-                    designer.CustomUse(-0.2f);
+                    if (skip > 0) skip--;
+                    else if (num < 5)
+                    {
+                        AddExtraRoleDataTopic(designer, p, data, info.role, info.display, info.min, info.max, info.suffix, info.replaceArray);
+                        designer.CustomUse(-0.1f);
+                        num++;
+                    }else hasNext = true;
                 }
             });
-            
+
+            designers[0].CustomUse(0.62f * 2f - 0.2f);
+            designers[2].CustomUse(0.62f * 2f - 0.2f);
+            if (page != 0) designers[0].AddButton(new Vector2(0.9f, 0.9f), "Prev", "<<").OnClick.AddListener(
+                    (UnityEngine.Events.UnityAction)(() =>
+                    {
+                        MetaDialog.EraseDialog(1);
+                        OpenPlayerDialog(p, page - 1);
+                    })
+                );
+            if (hasNext) designers[0].AddButton(new Vector2(0.9f, 0.9f), "Next", ">>").OnClick.AddListener(
+                      (UnityEngine.Events.UnityAction)(() =>
+                      {
+                          MetaDialog.EraseDialog(1);
+                          OpenPlayerDialog(p, page + 1);
+                      })
+                  );
         }
 
         private void OpenPlayersDialog()
@@ -231,7 +268,7 @@ namespace Nebula.Roles.MetaRoles
                 button.transform.GetChild(0).localPosition += new Vector3(0, 0.16f, 0f);
 
                 TMPro.TextMeshPro text;
-                text = MetaDialog.MetaDialogDesigner.AddSubText(button, 2f, 2f, "");
+                text = MetaDialog.MetaDialogDesigner.AddSubText(button, 1.9f, 2f, "");
                 text.transform.localPosition += new Vector3(-0.32f, -0.15f);
                 text.fontStyle = TMPro.FontStyles.Bold;
                 texts.Add(new Tuple<Game.PlayerData, TMPro.TextMeshPro>(p.GetModData(), text));
@@ -261,7 +298,7 @@ namespace Nebula.Roles.MetaRoles
 
 
 
-            }, (p) => OpenPlayerDialog(p));
+            }, (p) => OpenPlayerDialog(p,0));
             designer.dialog.updateFunc = (dialog) =>
             {
                 foreach (var tuple in texts)
