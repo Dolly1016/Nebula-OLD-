@@ -23,13 +23,13 @@ namespace Nebula.Patches
         public void AssignRole(byte playerId,byte roleId)
         {
             RoleMap[playerId] = roleId;
-            RPCEvents.SetRole(playerId, Roles.Role.GetRoleById(roleId),0);
+            RPCEvents.SetRole(playerId, Roles.Role.GetRoleById(roleId),-1,-1);
         }
 
-        public void AssignRole(byte playerId, byte roleId,int initializeId)
+        public void AssignRole(byte playerId, byte roleId,int roleDataId,int roleData)
         {
             RoleMap[playerId] = roleId;
-            RPCEvents.SetRole(playerId, Roles.Role.GetRoleById(roleId), initializeId);
+            RPCEvents.SetRole(playerId, Roles.Role.GetRoleById(roleId), roleDataId, roleData);
         }
 
         public void AssignExtraRole(byte playerId,byte extraRoleId,ulong initializeValue)

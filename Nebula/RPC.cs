@@ -146,7 +146,7 @@ namespace Nebula
                     int num = reader.ReadInt32();
                     for (int i = 0; i < num; i++)
                     {
-                        RPCEvents.SetRole(reader.ReadByte(), Roles.Role.GetRoleById(reader.ReadByte()), reader.ReadInt32());
+                        RPCEvents.SetRole(reader.ReadByte(), Roles.Role.GetRoleById(reader.ReadByte()), reader.ReadInt32(), reader.ReadInt32());
                     }
                     num = reader.ReadInt32();
                     for (int i = 0; i < num; i++)
@@ -403,7 +403,7 @@ namespace Nebula
             Helpers.playerById(playerId).GetModData().MouseAngle = mouseAngle;
         }
 
-        public static void SetRole(byte playerId,Roles.Role role,int initializeRoleId)
+        public static void SetRole(byte playerId,Roles.Role role,int roleDataId ,int roleData)
         {
             if (role.category == Roles.RoleCategory.Impostor)
             {
@@ -414,7 +414,7 @@ namespace Nebula
                 DestroyableSingleton<RoleManager>.Instance.SetRole(Helpers.playerById(playerId), RoleTypes.Crewmate);
             }
             role.ReflectRoleEyesight(Helpers.playerById(playerId).Data.Role);
-            Game.GameData.data.RegisterPlayer(playerId, role, initializeRoleId);
+            Game.GameData.data.RegisterPlayer(playerId, role, roleDataId, roleData);
         }
 
         /// <summary>
@@ -1505,7 +1505,10 @@ namespace Nebula
             {
                 writer.Write(entry.Key);
                 writer.Write(entry.Value);
-                writer.Write(Game.GameData.data.GetPlayerData(entry.Key).GetRoleData(entry.Value));
+                var data = Game.GameData.data.GetPlayerData(entry.Key);
+                int initId = data.GetInitializeRoleData();
+                writer.Write(initId);
+                writer.Write(initId != -1 ? data.GetRoleData(initId) : 0);
             }
             writer.Write(assignMap.ExtraRoleList.Count);
             foreach (var tuple in assignMap.ExtraRoleList)

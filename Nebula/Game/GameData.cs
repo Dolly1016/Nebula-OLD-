@@ -846,6 +846,16 @@ namespace Nebula.Game
             SetRoleData(id, GetRoleData(id) + addValue);
         }
 
+        //初期化時に使用されたデータIDを返します。
+        public int GetInitializeRoleData()
+        {
+            if (roleData.Keys.Count == 0)
+            {
+                return roleData.Keys.First((v) => true);
+            }
+            return -1;
+        }
+
         public ulong GetExtraRoleData(byte id)
         {
             if (extraRoleData.ContainsKey(id))
@@ -1164,12 +1174,13 @@ namespace Nebula.Game
             return GetRoleDataId(data);
         }
 
-        public void RegisterPlayer(byte playerId,Role role,int initializeRoleId)
+        public void RegisterPlayer(byte playerId,Role role,int roleDataId,int roleData)
         {
             if (AllPlayers.ContainsKey(playerId))
             {
                 AllPlayers[playerId].role = role;
-                AllPlayers[playerId].SetRoleData(role.id, initializeRoleId);
+                AllPlayers[playerId].CleanRoleDataInGame();
+                if (roleDataId>=0)AllPlayers[playerId].SetRoleData(roleDataId, roleData);
                 return;
             }
 
@@ -1186,7 +1197,7 @@ namespace Nebula.Game
             }
 
             var data = new PlayerData(Helpers.playerById(playerId), name, outfit, role);
-            data.SetRoleData(role.id, initializeRoleId);
+            if (roleDataId >= 0) data.SetRoleData(roleDataId, roleData);
 
             AllPlayers.Add(playerId, data);
             while(playersArray.Count <= playerId)

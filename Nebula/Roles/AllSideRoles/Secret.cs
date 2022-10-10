@@ -8,6 +8,7 @@ namespace Nebula.Roles.AllSideRoles
 {
     public class Secret: AllSideRole, ExtraAssignable
     {
+        private int secretId;
         public override Role GetActualRole()
         {
             Role role;
@@ -56,7 +57,7 @@ namespace Nebula.Roles.AllSideRoles
                 assignMap.UnassignExtraRole(player.PlayerId, Roles.SecondaryGuesser.id);
             }
 
-            assignMap.AssignRole(player.PlayerId, this.id, roleId);
+            assignMap.AssignRole(player.PlayerId, this.id, secretId,roleId);
         }
 
         public void Assignment(Patches.AssignMap assignMap)
@@ -173,6 +174,8 @@ namespace Nebula.Roles.AllSideRoles
             IsGuessableRole = false;
 
             Roles.AllExtraAssignable.Add(this);
+
+            secretId = Game.GameData.RegisterRoleDataId("secret.role");
         }
     }
 }
