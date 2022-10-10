@@ -48,7 +48,7 @@ namespace Nebula.Roles.ImpostorRoles
             eraseCoolDownAdditionOption = CreateOption(Color.white, "eraseCoolDownAddition", 15f, 5f, 30f, 5f);
             eraseCoolDownAdditionOption.suffix = "second";
 
-            eraseDurationOption = CreateOption(Color.white, "eraseDuration", 2f, 0.5f, 5f, 0.5f);
+            eraseDurationOption = CreateOption(Color.white, "eraseDuration", 2f, 0f, 5f, 0.5f);
             eraseDurationOption.suffix = "second";
         }
 

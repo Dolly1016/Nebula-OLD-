@@ -975,12 +975,31 @@ namespace Nebula
             }
         }
 
+        private static IEnumerator GetTasknEnumerator(byte playerId, int allTasks, bool isCrewmateTask, bool isInfiniteQuota)
+        {
+            while (true)
+            {
+                var p = Game.GameData.data.GetPlayerData(playerId);
+                if (p != null)
+                {
+                    p.Tasks = new Game.TaskData(allTasks, allTasks, allTasks, isCrewmateTask, isInfiniteQuota);
+                    break;
+                }
+                yield return null;
+            }
+        }
+
         public static void SetTasks(byte playerId, int allTasks, bool isCrewmateTask, bool isInfiniteQuota)
         {
-            var p = Game.GameData.data.playersArray[playerId];
-            if (p == null) return;
-
-            p.Tasks = new Game.TaskData(allTasks, allTasks, allTasks, isCrewmateTask, isInfiniteQuota);
+            var p = Game.GameData.data.GetPlayerData(playerId);
+            if (p == null)
+            {
+                HudManager.Instance.StartCoroutine(GetTasknEnumerator(playerId,allTasks,isCrewmateTask,isInfiniteQuota).WrapToIl2Cpp());
+            }
+            else
+            {
+                p.Tasks = new Game.TaskData(allTasks, allTasks, allTasks, isCrewmateTask, isInfiniteQuota);
+            }
         }
 
         public static void ChangeTasks(byte playerId,int allTasks,int allQuota)

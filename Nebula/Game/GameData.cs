@@ -849,7 +849,7 @@ namespace Nebula.Game
         //初期化時に使用されたデータIDを返します。
         public int GetInitializeRoleData()
         {
-            if (roleData.Keys.Count == 0)
+            if (roleData.Keys.Count != 0)
             {
                 return roleData.Keys.First((v) => true);
             }

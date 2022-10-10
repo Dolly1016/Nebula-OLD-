@@ -18,7 +18,7 @@ namespace Nebula.Roles.AllSideRoles
 
         public void ParseActualRole(out Role role,out bool hasGuesser,out bool hasMadmate)
         {
-            int roleData = Game.GameData.data.myData.getGlobalData().GetRoleData(this.id);
+            int roleData = Game.GameData.data.myData.getGlobalData().GetRoleData(secretId);
             int roleId = roleData & 0xFF;
             int exRoleId = roleData >> 8;
 
@@ -37,7 +37,14 @@ namespace Nebula.Roles.AllSideRoles
                 for (int i = 0; i < num; i++)
                 {
                     if (initialTasks.Count == 0) break;
-                    int index = NebulaPlugin.rnd.Next(initialTasks.Count);
+                    
+                    int min = PlayerControl.GameOptions.NumCommonTasks;
+                    if (initialTasks.Count <= min)
+                    {
+                        min = 0;
+                    }
+                    
+                    int index = min + NebulaPlugin.rnd.Next(initialTasks.Count - min);
                     actualTasks.Add(initialTasks[index]);
                     initialTasks.RemoveAt(index);
                 }
@@ -159,7 +166,7 @@ namespace Nebula.Roles.AllSideRoles
 
         public override void EditDisplayRoleNameForcely(byte playerId, ref string roleName)
         {
-            int roleData = Game.GameData.data.GetPlayerData(playerId).GetRoleData(this.id);
+            int roleData = Game.GameData.data.GetPlayerData(playerId).GetRoleData(secretId);
             int roleId = roleData & 0xFF;
             int exRoleId = roleData >> 8;
 

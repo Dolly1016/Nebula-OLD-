@@ -210,7 +210,7 @@ namespace Nebula.Roles.MetaRoles
                 );
 
 
-            var designers = designer.SplitVertically(new float[] { 0.2f, 0.9f, 0.2f });
+            var designers = designer.SplitVertically(new float[] { 0.2f, 0.8f, 0.2f });
 
             var data = p.GetModData();
 
@@ -243,8 +243,8 @@ namespace Nebula.Roles.MetaRoles
                 }
             });
 
-            designers[0].CustomUse(0.62f * 2f - 0.26f);
-            designers[2].CustomUse(0.62f * 2f - 0.26f);
+            designers[0].CustomUse(0.62f * 2.2f - 0.51f);
+            designers[2].CustomUse(0.62f * 2.2f - 0.51f);
             if (page != 0) designers[0].AddButton(new Vector2(0.9f, 0.9f), "Prev", "<<").OnClick.AddListener(
                     (UnityEngine.Events.UnityAction)(() =>
                     {

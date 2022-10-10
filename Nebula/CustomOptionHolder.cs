@@ -277,7 +277,7 @@ namespace Nebula
             TasksOption = CustomOption.Create(10160, Color.white, "option.tasksOption", false, null, true, false, "", CustomOptionTab.Settings).SetGameMode(~CustomGameMode.Ritual);
             additionalWirings = CustomOption.Create(10161, Color.white, "option.additionalWirings", false, TasksOption).SetGameMode(CustomGameMode.All);
             RandomizedWiringOption = CustomOption.Create(10162, Color.white, "option.randomizedWiring", false, TasksOption).SetGameMode(CustomGameMode.All);
-            StepsOfWiringOption = CustomOption.Create(10163, Color.white, "option.stepsOfWiring", 3f, 3f, 10f, 1f, TasksOption).SetGameMode(CustomGameMode.All);
+            StepsOfWiringOption = CustomOption.Create(10163, Color.white, "option.stepsOfWiring", 3f, 1f, 10f, 1f, TasksOption).SetGameMode(CustomGameMode.All);
             MeistersManifoldsOption = CustomOption.Create(10164, Color.white, "option.meistersManifolds", false, TasksOption).SetGameMode(CustomGameMode.All);
             MeistersFilterOption = CustomOption.Create(10165, Color.white, "option.meistersO2Filter", false, TasksOption).SetGameMode(CustomGameMode.All);
             MeistersFuelEnginesOption = CustomOption.Create(10166, Color.white, "option.meistersFuelEngines", false, TasksOption).SetGameMode(CustomGameMode.All);

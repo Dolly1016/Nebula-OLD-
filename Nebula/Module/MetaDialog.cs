@@ -465,7 +465,7 @@ namespace Nebula.Module
                 {
                     result[i] = new MetaDialogDesigner(dialog, background, new Vector2(size.x * ratios[i] / sum, size.y - used),
                         origin + new Vector2(x, -used));
-                    x += ratios[i] / sum;
+                    x += size.x * ratios[i] / sum;
                 }
 
                 return result;
@@ -483,7 +483,7 @@ namespace Nebula.Module
                 {
                     result[i] = new MetaDialogDesigner(dialog, background, new Vector2(0, (size.y - used) * ratios[i] / y),
                         origin + new Vector2(0, -used - y));
-                    y += ratios[i] / sum;
+                    y += size.y * ratios[i] / sum;
                 }
                 return result;
             }
