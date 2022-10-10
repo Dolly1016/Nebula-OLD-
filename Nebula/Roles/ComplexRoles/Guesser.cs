@@ -97,6 +97,8 @@ namespace Nebula.Roles.ComplexRoles
         private static GameObject guesserUI;
         static void guesserOnClick(int buttonTarget, MeetingHud __instance)
         {
+            if (__instance.CurrentState == MeetingHud.VoteStates.Discussion) return;
+
             PlayerControl target = Helpers.playerById((byte)__instance.playerStates[buttonTarget].TargetPlayerId);
             if (target == null || target.Data.IsDead) return;
 
@@ -157,6 +159,13 @@ namespace Nebula.Roles.ComplexRoles
                     }
                     else
                     {
+                        if (PlayerControl.LocalPlayer.Data.IsDead)
+                        {
+                            __instance.playerStates.ToList().ForEach(x => x.gameObject.SetActive(true));
+                            UnityEngine.Object.Destroy(container.gameObject);
+                            return;
+                        }
+
                         PlayerControl focusedTarget = Helpers.playerById((byte)__instance.playerStates[buttonTarget].TargetPlayerId);
                         if (!(__instance.state == MeetingHud.VoteStates.Voted || __instance.state == MeetingHud.VoteStates.NotVoted) || focusedTarget == null) return;
                         if (target.Data.IsDead) return;

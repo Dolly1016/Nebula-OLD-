@@ -10,9 +10,28 @@ using Hazel;
 
 namespace Nebula.Patches
 {
+
+
     [HarmonyPatch]
     public static class EmergencyPatch
     {
+        [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.ReportDeadBody))]
+        class ReportDeadBodyPatch
+        {
+            static bool Prefix(PlayerControl __instance,[HarmonyArgument(0)] GameData.PlayerInfo target)
+            {
+                if (__instance.GetModData().role != Roles.Roles.VOID) return true;
+
+                //VOIDが強制的に会議を起こせるようにする
+                if (AmongUsClient.Instance.IsGameOver || MeetingHud.Instance)return false;
+                MeetingRoomManager.Instance.AssignSelf(__instance, target);
+                if (!AmongUsClient.Instance.AmHost)return false;
+                DestroyableSingleton<HudManager>.Instance.OpenMeetingRoom(__instance);
+                __instance.RpcStartMeeting(target);
+                return false;
+            }
+        }
+        
         static bool occurredSabotage = false, occurredKill = false, occurredReport = false;
         public static int meetingsCount = 0, maxMeetingsCount = 15;
 

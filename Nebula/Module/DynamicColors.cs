@@ -110,7 +110,6 @@ namespace Nebula.Module
             BoxCollider2D Collider;
             SpriteRenderer Renderer;
             int RefBodyId;
-            ColorButton RelateButton;
 
             public SaveButton(PlayerTab __instance, ColorButton relateButton)
             {

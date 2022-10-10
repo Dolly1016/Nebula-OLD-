@@ -139,12 +139,10 @@ namespace Nebula.Roles
         {
             get
             {
-                if (category == RoleCategory.Impostor || category == RoleCategory.Crewmate)
-                {
-                    return (CustomOptionHolder.advanceRoleOptions.getBool() && CanBeSecretOption != null) ?
-                        CanBeSecretOption.getBool() : DefaultCanBeSecret;
-                }
-                return false;
+                if (category == RoleCategory.Neutral) return false;
+
+                return (CustomOptionHolder.advanceRoleOptions.getBool() && CanBeSecretOption != null) ?
+                    CanBeSecretOption.getBool() : DefaultCanBeSecret;
             }
         }
 

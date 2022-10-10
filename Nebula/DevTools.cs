@@ -18,12 +18,6 @@ namespace Nebula
         private static FileStream CreateEmptyWav(string filepath)
         {
             var fileStream = new FileStream(filepath, FileMode.Create);
-            byte emptyByte = new byte();
-
-            for (int i = 0; i < 44; i++) //preparing the header
-            {
-                fileStream.WriteByte(emptyByte);
-            }
 
             return fileStream;
         }
@@ -66,7 +60,7 @@ namespace Nebula
 
 		public static void SaveAllSound(string directory)
         {
-            foreach (var audio in UnityEngine.Object.FindObjectsOfType<AudioClip>())
+            foreach (var audio in UnityEngine.Object.FindObjectsOfTypeIncludingAssets(AudioClip.Il2CppType))
             {
                 var filepath = directory + "/" + audio.name + ".wav";
 
@@ -75,11 +69,11 @@ namespace Nebula
 
                 using (var fileStream = CreateEmptyWav(filepath))
                 {
+					var clip = audio.Cast<AudioClip>();
 
-                    ConvertAndWrite(fileStream, audio);
-
-                    WriteHeader(fileStream, audio);
-                }
+					WriteHeader(fileStream, clip);
+					ConvertAndWrite(fileStream, clip);
+				}
 
             }
         }
@@ -87,28 +81,22 @@ namespace Nebula
 		private static void ConvertAndWrite(FileStream fileStream, AudioClip clip)
 		{
 
-			var samples = new float[clip.samples];
+			var samples = new float[clip.samples * clip.channels];
+			
+			clip.LoadAudioData();
 
 			clip.GetData(samples, 0);
-
-			Int16[] intData = new Int16[samples.Length];
-			//converting in 2 float[] steps to Int16[], //then Int16[] to Byte[]
-
-			Byte[] bytesData = new Byte[samples.Length * 2];
-			//bytesData array is twice the size of
-			//dataSource array because a float converted in Int16 is 2 bytes.
 
 			int rescaleFactor = 32767; //to convert float to Int16
 
 			for (int i = 0; i < samples.Length; i++)
 			{
-				intData[i] = (short)(samples[i] * rescaleFactor);
-				Byte[] byteArr = new Byte[2];
-				byteArr = BitConverter.GetBytes(intData[i]);
-				byteArr.CopyTo(bytesData, i * 2);
+				short shortData = (short)(samples[i] * rescaleFactor);
+				Byte[] byteArr = BitConverter.GetBytes(shortData);
+				fileStream.Write(byteArr, 0, byteArr.Length);
 			}
 
-			fileStream.Write(bytesData, 0, bytesData.Length);
+			clip.UnloadAudioData();
 		}
 
 		private static void WriteHeader(FileStream fileStream, AudioClip clip)
@@ -123,7 +111,7 @@ namespace Nebula
 			Byte[] riff = System.Text.Encoding.UTF8.GetBytes("RIFF");
 			fileStream.Write(riff, 0, 4);
 
-			Byte[] chunkSize = BitConverter.GetBytes(fileStream.Length - 8);
+			Byte[] chunkSize = BitConverter.GetBytes((UInt32)(44 + clip.samples * clip.channels * 2));
 			fileStream.Write(chunkSize, 0, 4);
 
 			Byte[] wave = System.Text.Encoding.UTF8.GetBytes("WAVE");
@@ -135,7 +123,6 @@ namespace Nebula
 			Byte[] subChunk1 = BitConverter.GetBytes(16);
 			fileStream.Write(subChunk1, 0, 4);
 
-			UInt16 two = 2;
 			UInt16 one = 1;
 
 			Byte[] audioFormat = BitConverter.GetBytes(one);
@@ -162,8 +149,6 @@ namespace Nebula
 
 			Byte[] subChunk2 = BitConverter.GetBytes(samples * channels * 2);
 			fileStream.Write(subChunk2, 0, 4);
-
-			//		fileStream.Close();
 		}
 
 		public static string TestFunc()

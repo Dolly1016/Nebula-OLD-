@@ -37,13 +37,7 @@ namespace Nebula.Objects
                 
 
                 var poolable = GameObject.Instantiate(playerPrefab,obj.transform);
-                poolable.cosmetics.ResetCosmetics();
-                poolable.cosmetics.SetColor(p.Data.DefaultOutfit.ColorId);
-                poolable.cosmetics.SetBodyColor(p.Data.DefaultOutfit.ColorId);
-                if (p.Data.DefaultOutfit.SkinId != null) poolable.cosmetics.SetSkin(p.Data.DefaultOutfit.SkinId, p.Data.DefaultOutfit.ColorId);
-                if (p.Data.DefaultOutfit.HatId != null) poolable.cosmetics.SetHat(p.Data.DefaultOutfit.HatId, p.Data.DefaultOutfit.ColorId);
-                if (p.Data.DefaultOutfit.VisorId != null) poolable.cosmetics.SetVisor(p.Data.DefaultOutfit.VisorId, p.Data.DefaultOutfit.ColorId);
-                poolable.cosmetics.nameText.text = "";
+                poolable.SetPlayerDefaultOutfit(p);
                 poolable.cosmetics.SetMaskType(PlayerMaterial.MaskType.SimpleUI);
 
                 poolable.transform.localScale = new Vector3(0.25f, 0.25f, 1f);

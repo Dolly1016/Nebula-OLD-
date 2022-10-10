@@ -768,6 +768,26 @@ namespace Nebula
             }
             return result;
         }
+
+        public static AudioClip? FindSound(string sound)
+        {
+            foreach (var audio in UnityEngine.Object.FindObjectsOfTypeIncludingAssets(AudioClip.Il2CppType))
+            {
+                if (audio.name == sound) return audio.Cast<AudioClip>();
+            }
+            return null;
+        }
+        
+        public static void SetPlayerDefaultOutfit(this PoolablePlayer poolable,PlayerControl player)
+        {
+            poolable.cosmetics.ResetCosmetics();
+            poolable.cosmetics.SetColor(player.Data.DefaultOutfit.ColorId);
+            poolable.cosmetics.SetBodyColor(player.Data.DefaultOutfit.ColorId);
+            if (player.Data.DefaultOutfit.SkinId != null) poolable.cosmetics.SetSkin(player.Data.DefaultOutfit.SkinId, player.Data.DefaultOutfit.ColorId);
+            if (player.Data.DefaultOutfit.HatId != null) poolable.cosmetics.SetHat(player.Data.DefaultOutfit.HatId, player.Data.DefaultOutfit.ColorId);
+            if (player.Data.DefaultOutfit.VisorId != null) poolable.cosmetics.SetVisor(player.Data.DefaultOutfit.VisorId, player.Data.DefaultOutfit.ColorId);
+            poolable.cosmetics.nameText.text = "";
+        }
     }
 }
 

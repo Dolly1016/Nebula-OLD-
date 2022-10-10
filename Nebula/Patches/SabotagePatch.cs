@@ -8,6 +8,17 @@ using Nebula.Utilities;
 
 namespace Nebula.Patches
 {
+    //CanUseDoorDespiteSabotageOption
+    [HarmonyPatch(typeof(InfectedOverlay), nameof(InfectedOverlay.CanUseDoors),MethodType.Getter)]
+    class CanUseDoorPatch
+    {
+        static void Postfix(InfectedOverlay __instance,ref bool __result)
+        {
+            if (PlayerControl.GameOptions.MapId != 4) return;
+
+            __result |= CustomOptionHolder.CanUseDoorDespiteSabotageOption.getBool();
+        }
+    }
 
     [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.RpcRepairSystem))]
     class InvokeSabotagePatch
