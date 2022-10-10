@@ -11,6 +11,8 @@ namespace Nebula.Roles.ExtraRoles
         static public Color RoleColor = Palette.ImpostorRed;
         static public Color TargetColor = new Color(100f / 255f, 100f / 255f, 100f / 255f);
 
+        public override RelatedExtraRoleData[] RelatedExtraRoleDataInfo { get => new RelatedExtraRoleData[] { new RelatedExtraRoleData("Target Lovers Identifer", this, 0, 6) }; }
+
         /* 矢印 */
         private Arrow Arrow;
         private float noticeInterval = 0f;

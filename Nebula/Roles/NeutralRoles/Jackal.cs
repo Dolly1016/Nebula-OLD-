@@ -32,6 +32,14 @@ namespace Nebula.Roles.NeutralRoles
         public int jackalDataId { get; private set; }
         public int leftSidekickDataId { get; private set; }
         public int killingDataId { get; private set; }
+        public override RelatedRoleData[] RelatedRoleDataInfo
+        {
+            get => new RelatedRoleData[] {
+            new RelatedRoleData(killingDataId, "Jackal Kill", 0, 15),
+            new RelatedRoleData(jackalDataId, "Jackal Identifier", 0, 15),
+            new RelatedRoleData(leftSidekickDataId, "Can Create Sidekick", 0, 1,new string[]{ "False","True"})};
+        }
+
 
         public override void LoadOptionData()
         {

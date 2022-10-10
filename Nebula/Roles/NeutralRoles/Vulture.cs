@@ -36,6 +36,12 @@ namespace Nebula.Roles.NeutralRoles
         public bool WinTrigger { get; set; } = false;
         public byte Winner { get; set; } = Byte.MaxValue;
 
+        public override void OnUpdateRoleData(int dataId, int newData)
+        {
+            if (dataId != eatLeftId) return;
+            if (newData <= 0) RPCEventInvoker.WinTrigger(this);
+        }
+
         /* ボタン */
         static private CustomButton eatButton;
         public override void ButtonInitialize(HudManager __instance)
@@ -51,13 +57,8 @@ namespace Nebula.Roles.NeutralRoles
 
                     RPCEventInvoker.CleanDeadBody(targetId);
 
-                    Game.GameData.data.myData.getGlobalData().AddRoleData(eatLeftId, -1);
-                    int eatLeft = Game.GameData.data.myData.getGlobalData().GetRoleData(eatLeftId);
-                    RPCEventInvoker.UpdateRoleData(PlayerControl.LocalPlayer.PlayerId, eatLeftId, eatLeft);
-                    if (eatLeft<=0)
-                    {
-                        RPCEventInvoker.WinTrigger(this);
-                    }
+                    RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, eatLeftId, -1);
+                    
                     eatButton.Timer = eatButton.MaxTimer;
                 },
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
@@ -79,6 +80,7 @@ namespace Nebula.Roles.NeutralRoles
         public byte deadBodyId;
 
         public int eatLeftId;
+        public override RelatedRoleData[] RelatedRoleDataInfo { get => new RelatedRoleData[] { new RelatedRoleData(eatLeftId, "Eat Left", 0, 20) }; }
 
         /* 画像 */
         private Sprite eatButtonSprite = null;

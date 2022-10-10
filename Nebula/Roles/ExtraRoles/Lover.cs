@@ -12,6 +12,8 @@ namespace Nebula.Roles.ExtraRoles
 {
     public class Lover : ExtraRole
     {
+        public override RelatedExtraRoleData[] RelatedExtraRoleDataInfo { get => new RelatedExtraRoleData[] { new RelatedExtraRoleData("Lovers Identifer", this, 1, 5) }; }
+
         private Module.CustomOption maxPairsOption;
         public Module.CustomOption loversModeOption;
         public Module.CustomOption chanceThatOneLoverIsImpostorOption;
@@ -249,8 +251,15 @@ namespace Nebula.Roles.ExtraRoles
 
         public override void EditDisplayNameForcely(byte playerId, ref string displayName)
         {
-            displayName += Helpers.cs(
-                    iconColor[Game.GameData.data.AllPlayers[playerId].GetExtraRoleData(this) - 1], "♥");
+            try
+            {
+                displayName += Helpers.cs(
+                        iconColor[Game.GameData.data.AllPlayers[playerId].GetExtraRoleData(this) - 1], "♥");
+            }catch(Exception e)
+            {
+                displayName += Helpers.cs(
+                        iconColor[0], "♥");
+            }
         }
 
         public override void EditDescriptionString(ref string desctiption)

@@ -55,7 +55,30 @@ namespace Nebula.Roles.MetaRoles
             dialog = Module.MetaDialog.OpenRolesDialog((r) => r.category != RoleCategory.Complex, 0, 60, (r) =>
             {
                 RPCEventInvoker.ImmediatelyChangeRole(p, r);
-                dialog?.dialog.Close();
+                MetaDialog.EraseDialog(2);
+                OpenPlayerDialog(p);
+            });
+        }
+
+        private void MetaEditModify(PlayerControl p)
+        {
+            var data = p.GetModData();
+            var dialog = Module.MetaDialog.OpenDialog(new Vector2(9f,5f),"Modifies");
+            dialog.AddTopic(new MetaDialogString(2f,"Activated",TMPro.TextAlignmentOptions.Center,TMPro.FontStyles.Bold));
+            dialog.AddModifyTopic((r) => data.HasExtraRole(r), (r) =>
+            {
+                RPCEventInvoker.ImmediatelyUnsetExtraRole(p,r);
+                MetaDialog.EraseDialog(2);
+                OpenPlayerDialog(p);
+                MetaEditModify(p);
+            });
+            dialog.AddTopic(new MetaDialogString(2f, "Unactivated", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold));
+            dialog.AddModifyTopic((r) => !data.HasExtraRole(r), (r) =>
+            {
+                RPCEventInvoker.SetExtraRole(p, r, 0);
+                MetaDialog.EraseDialog(2);
+                OpenPlayerDialog(p);
+                MetaEditModify(p);
             });
         }
 
@@ -125,17 +148,34 @@ namespace Nebula.Roles.MetaRoles
                 DurationText.text.color = Color.white;
             }));
         }
-        
+
+        private void AddRoleDataTopic(MetaDialog.MetaDialogDesigner designer, PlayerControl player, Game.PlayerData data, int id, string display, int min, int max, string suffix, string[]? replace)
+        {
+            if(replace==null)
+                designer.AddNumericDataTopic(display, data.GetRoleData(id), suffix, min, max, (v) => RPCEventInvoker.UpdateRoleData(player.PlayerId, id, v));
+            else
+                designer.AddNumericDataTopic(display, data.GetRoleData(id), replace, min, max, (v) => RPCEventInvoker.UpdateRoleData(player.PlayerId, id, v));
+        }
+
+        private void AddExtraRoleDataTopic(MetaDialog.MetaDialogDesigner designer, PlayerControl player, Game.PlayerData data, ExtraRole role, string display, int min, int max, string suffix, string[]? replace)
+        {
+            if (replace == null)
+                designer.AddNumericDataTopic(display, (int)data.GetExtraRoleData(role.id), suffix, min, max, (v) => RPCEventInvoker.UpdateExtraRoleData(player.PlayerId, role.id, (ulong)v));
+            else
+                designer.AddNumericDataTopic(display, (int)data.GetExtraRoleData(role.id), replace, min, max, (v) => RPCEventInvoker.UpdateExtraRoleData(player.PlayerId, role.id, (ulong)v));
+        }
+
         private void OpenPlayerDialog(PlayerControl p)
         {
             var designer = MetaDialog.OpenPlayerDialog(new Vector2(8f, 5f), p);
 
             MetaDialogButton roleButton = new MetaDialogButton(1f, 0.4f, "Role", TMPro.FontStyles.Bold, () => MetaChangeRole(p));
+            MetaDialogButton modifyButton = new MetaDialogButton(1f, 0.4f, "Modify", TMPro.FontStyles.Bold, () => MetaEditModify(p));
             MetaDialogButton killButton = new MetaDialogButton(1f, 0.4f, "Kill", TMPro.FontStyles.Bold, () => MetaKillPlayer(p));
             MetaDialogButton exileButton = new MetaDialogButton(1f, 0.4f, "Exile", TMPro.FontStyles.Bold, () => MetaExilePlayer(p));
             MetaDialogButton reviveButton = new MetaDialogButton(1f, 0.4f, "Revive", TMPro.FontStyles.Bold, () => MetaRevivePlayer(p));
 
-            designer.AddTopic(roleButton, killButton, exileButton, reviveButton);
+            designer.AddTopic(roleButton, modifyButton,killButton, exileButton, reviveButton);
 
             AddModifySpeedTopic(designer,p);
 
@@ -165,15 +205,38 @@ namespace Nebula.Roles.MetaRoles
                     RPCEventInvoker.Paint(p, p.GetModData().GetOutfitData(0));
                 })
                 );
+
+            var data = p.GetModData();
+
+            foreach (var info in data.role.RelatedRoleDataInfo)
+            {
+                AddRoleDataTopic(designer, p, data, info.id, info.display, info.min, info.max, info.suffix, info.replaceArray);
+                designer.CustomUse(-0.2f);
+            }
+            Helpers.RoleAction(data, (r) =>
+            {
+                foreach (var info in r.RelatedExtraRoleDataInfo)
+                {
+                    AddExtraRoleDataTopic(designer, p, data, info.role, info.display, info.min, info.max, info.suffix, info.replaceArray);
+                    designer.CustomUse(-0.2f);
+                }
+            });
+            
         }
 
         private void OpenPlayersDialog()
         {
-            MetaDialog.OpenPlayersDialog("Players", 0.7f, 0f, (p, button) => {
+            var texts = new List<Tuple<Game.PlayerData, TMPro.TextMeshPro>>();
+            var designer = MetaDialog.OpenPlayersDialog("Players", 0.7f, 0f, (p, button) => {
                 button.transform.GetChild(0).localPosition += new Vector3(0, 0.16f, 0f);
 
-                PassiveButton b;
                 TMPro.TextMeshPro text;
+                text = MetaDialog.MetaDialogDesigner.AddSubText(button, 2f, 2f, "");
+                text.transform.localPosition += new Vector3(-0.32f, -0.15f);
+                text.fontStyle = TMPro.FontStyles.Bold;
+                texts.Add(new Tuple<Game.PlayerData, TMPro.TextMeshPro>(p.GetModData(), text));
+
+                PassiveButton b;
 
                 b = MetaDialog.MetaDialogDesigner.AddSubButton(button, new Vector2(0.28f, 0.28f), "kill", "K");
                 text = b.transform.GetChild(0).GetComponent<TMPro.TextMeshPro>();
@@ -199,6 +262,16 @@ namespace Nebula.Roles.MetaRoles
 
 
             }, (p) => OpenPlayerDialog(p));
+            designer.dialog.updateFunc = (dialog) =>
+            {
+                foreach (var tuple in texts)
+                {
+                    string roleNames = Helpers.cs(tuple.Item1.role.Color, Language.Language.GetString("role." + tuple.Item1.role.LocalizeName + ".name"));
+                    Helpers.RoleAction(tuple.Item1, (role) => { role.EditDisplayRoleNameForcely(tuple.Item1.id, ref roleNames); });
+                    Helpers.RoleAction(tuple.Item1, (role) => { role.EditDisplayNameForcely(tuple.Item1.id, ref roleNames); });
+                    tuple.Item2.text = roleNames;
+                }
+            };
         }
 
         private void OpenGeneralDialog()

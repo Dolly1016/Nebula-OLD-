@@ -10,6 +10,9 @@ namespace Nebula.Roles.ExtraRoles
 {
     public class Trilemma : ExtraRole
     {
+
+        public override RelatedExtraRoleData[] RelatedExtraRoleDataInfo{ get => new RelatedExtraRoleData[] { new RelatedExtraRoleData("Lovers Identifer", this, 1, 5) }; }
+
         public Game.PlayerData[] GetLoversData(Game.PlayerData player)
         {
             Game.PlayerData[] result = new Game.PlayerData[3];
@@ -113,8 +116,15 @@ namespace Nebula.Roles.ExtraRoles
 
         public override void EditDisplayNameForcely(byte playerId, ref string displayName)
         {
-            displayName += Helpers.cs(
-                    Lover.iconColor[Game.GameData.data.AllPlayers[playerId].GetExtraRoleData(this) - 1], "♠");
+            try
+            {
+                displayName += Helpers.cs(
+                        Lover.iconColor[Game.GameData.data.AllPlayers[playerId].GetExtraRoleData(this) - 1], "♠");
+            }catch(Exception e)
+            {
+                displayName += Helpers.cs(
+                        Lover.iconColor[0], "♠");
+            }
         }
 
         public override void EditDescriptionString(ref string description)

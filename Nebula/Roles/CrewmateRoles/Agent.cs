@@ -18,6 +18,8 @@ namespace Nebula.Roles.CrewmateRoles
 
         private TMPro.TMP_Text ventButtonString;
         public int remainingVentsDataId { get; private set; }
+        public override RelatedRoleData[] RelatedRoleDataInfo { get => new RelatedRoleData[] { new RelatedRoleData(remainingVentsDataId, "Use of Vent", 0, 20) }; }
+
 
         private Module.CustomOption maxVentsOption;
         private Module.CustomOption actOverOption;

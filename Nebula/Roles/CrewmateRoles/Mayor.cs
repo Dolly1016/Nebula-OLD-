@@ -13,6 +13,7 @@ namespace Nebula.Roles.CrewmateRoles
         static public Color RoleColor = new Color(3f / 255f, 79f / 255f, 66f / 255f);
 
         public int votesId { get; private set; }
+        public override RelatedRoleData[] RelatedRoleDataInfo { get => new RelatedRoleData[]{ new RelatedRoleData(votesId,"Vote Stock",0,20)}; }
 
         private Module.CustomOption voteAssignmentOption;
         private Module.CustomOption minVoteOption;

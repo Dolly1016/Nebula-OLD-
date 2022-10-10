@@ -117,6 +117,7 @@ namespace Nebula.Module
         {
             for (int i = 0; i < dialogOrder.Count; i++)
             {
+                if (dialogOrder[i].updateFunc != null) dialogOrder[i].updateFunc(dialogOrder[i]);
                 dialogOrder[i].dialog.BackButton.gameObject.SetActive(i == dialogOrder.Count - 1);
 
                 if (dialogOrder[i].dialog.gameObject.activeSelf) continue;
@@ -138,6 +139,20 @@ namespace Nebula.Module
                 }
             }
             dialogOrder.Clear();
+        }
+
+        /// <summary>
+        /// 最前面から指定の数だけダイアログを閉じます。
+        /// </summary>
+        /// <param name="num"></param>
+        static public void EraseDialog(int num)
+        {
+            for (int i = 0; i <num; i++)
+            {
+                dialogOrder[dialogOrder.Count-1-i].dialog.Hide();
+                GameObject.Destroy(dialogOrder[dialogOrder.Count - 1 - i].dialog.gameObject);
+            }
+            dialogOrder.RemoveRange(dialogOrder.Count - num, num);
         }
 
         static public void EraseDialog(MetaDialog dialog)
@@ -247,6 +262,21 @@ namespace Nebula.Module
                 return result;
             }
 
+            static public TMPro.TextMeshPro AddSubText(PassiveButton button, float width, float fontsize,string display)
+            {
+                TMPro.TextMeshPro text = GameObject.Instantiate(HudManager.Instance.Dialogue.target);
+                text.transform.SetParent(button.transform);
+                text.transform.localPosition = new Vector3(0, 0, -5f);
+                text.text = display;
+                text.alignment = TMPro.TextAlignmentOptions.Center;
+                text.rectTransform.sizeDelta = new Vector2(width, 0.4f);
+                text.rectTransform.pivot = new Vector2(0.5f, 0.5f);
+                text.text = display;
+                text.fontSize = text.fontSizeMax = text.fontSizeMax = fontsize;
+
+                return text;
+            }
+
             public PassiveButton AddButton(float width, string name, string display)
             {
                 return AddButton(new Vector2(width,0.4f),name,display);
@@ -320,6 +350,81 @@ namespace Nebula.Module
                 }
 
                 used += maxHeight;
+            }
+
+            public delegate string NumericToString(int n);
+            public void AddNumericDataTopic(string display, int currentValue, NumericToString converter, int min, int max, Action<int> applyFunc)
+            {
+                var valTxt = new MetaDialogString(0.8f, converter(currentValue), TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold);
+                int val = currentValue;
+                AddTopic(
+                    new MetaDialogString(2f, display + ":", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
+                    new MetaDialogButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Normal, () =>
+                    {
+                        val = Mathf.Clamp(--val, min, max);
+                        valTxt.text.text = converter(val);
+                    }),
+                    valTxt,
+                    new MetaDialogButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Normal, () =>
+                    {
+                        val = Mathf.Clamp(++val, min, max);
+                        valTxt.text.text = converter(val);
+                    }),
+                    new MetaDialogMargin(0.4f),
+                    new MetaDialogButton(0.8f, 0.4f, "Apply", TMPro.FontStyles.Bold, () =>
+                    {
+                        applyFunc(val);
+                    })
+                    );
+            }
+
+            public void AddNumericDataTopic(string display,int currentValue,string suffix,int min,int max,Action<int> applyFunc)
+            {
+                AddNumericDataTopic(display, currentValue, (n) => n.ToString() + suffix, min, max, applyFunc);
+            }
+
+            public void AddNumericDataTopic(string display, int currentValue, string[] replace, int min, int max, Action<int> applyFunc)
+            {
+                AddNumericDataTopic(display, currentValue, (n) => replace[n], min, max, applyFunc);
+            }
+
+            public void AddModifyTopic(Predicate<Roles.ExtraRole> predicate,Action<Roles.ExtraRole> onClicked)
+            {
+                List<MetaDialogContent> roles = new List<MetaDialogContent>();
+
+                foreach(var r in Roles.Roles.AllExtraRoles)
+                {
+                    if (!predicate(r)) continue;
+
+                    Roles.ExtraRole extraRole = r;
+                    roles.Add(new MetaDialogButton(1.65f, 0.36f,
+                        Helpers.cs(r.Color,Language.Language.GetString("role."+r.LocalizeName+".name")),
+                        TMPro.FontStyles.Bold,
+                        ()=> onClicked(extraRole)));
+
+                    if (roles.Count == 5)
+                    {
+                        AddTopic(roles.ToArray());
+                        foreach(var c in roles)
+                        {
+                            var text =((MetaDialogButton)c).text;
+                            text.fontSizeMin = 0.5f;
+                            text.overflowMode = TMPro.TextOverflowModes.Ellipsis;
+                        }
+                        roles.Clear();
+                    }
+                }
+
+                if (roles.Count > 0)
+                {
+                    AddTopic(roles.ToArray());
+                    foreach (var c in roles)
+                    {
+                        var text = ((MetaDialogButton)c).text;
+                        text.fontSizeMin = 0.5f;
+                        text.overflowMode = TMPro.TextOverflowModes.Ellipsis;
+                    }
+                }
             }
 
             public MetaDialogDesigner[] Split(int division)
@@ -520,10 +625,12 @@ namespace Nebula.Module
         }
 
         public DialogueBox dialog { get; }
+        public Action<MetaDialog>? updateFunc { get; set; }
 
         public MetaDialog(DialogueBox dialogueBox)
         {
             dialog = dialogueBox;
+            updateFunc = null;
         }
 
     }

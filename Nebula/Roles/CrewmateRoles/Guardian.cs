@@ -23,6 +23,8 @@ namespace Nebula.Roles.CrewmateRoles
         private CustomOption canIdentifyDeadBodyOption;
 
         public int remainAntennasId { get; private set; }
+        public override RelatedRoleData[] RelatedRoleDataInfo { get => new RelatedRoleData[] { new RelatedRoleData(remainAntennasId, "Antennas", 0, 20) }; }
+
 
         private PlayerControl? guardPlayer;
 

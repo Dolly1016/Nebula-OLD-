@@ -62,6 +62,41 @@ namespace Nebula.Roles
         protected bool canFixSabotage { get; set; }
         public virtual bool CanFixSabotage { get { return canFixSabotage; } }
 
+
+        public class RelatedExtraRoleData
+        {
+            public ExtraRole role { get; }
+            public string display { get; }
+            public int min { get; }
+            public int max { get; }
+            public string suffix { get; }
+            public string[]? replaceArray { get; }
+            public RelatedExtraRoleData(string display, ExtraRole role, int min, int max, string suffix = "")
+            {
+                this.role = role;
+                this.display = display;
+                this.min = min;
+                this.max = max;
+                this.suffix = suffix;
+                this.replaceArray = null;
+            }
+
+            public RelatedExtraRoleData(string display, ExtraRole role, int min, int max, string[] replaceArray)
+            {
+                this.role = role;
+                this.display = display;
+                this.min = min;
+                this.max = max;
+                this.suffix = "";
+                this.replaceArray = replaceArray;
+            }
+        }
+        /// <summary>
+        /// 関連のあるExtraRoleDataのIdを返します。
+        /// </summary>
+        public virtual RelatedExtraRoleData[] RelatedExtraRoleDataInfo { get => new RelatedExtraRoleData[0]; }
+
+
         /*--------------------------------------------------------------------------------------*/
         /*--------------------------------------------------------------------------------------*/
 

@@ -22,6 +22,8 @@ namespace Nebula.Roles.ImpostorRoles
         private Module.CustomOption eraseCoolDownAdditionOption;
 
         private int eraseCountId;
+        public override RelatedRoleData[] RelatedRoleDataInfo { get => new RelatedRoleData[] { new RelatedRoleData(eraseCountId, "Erased Roles", 0, 20) }; }
+
 
         private Sprite buttonSprite = null;
         public Sprite getButtonSprite()

@@ -19,6 +19,8 @@ namespace Nebula.Roles.NeutralRoles
         static private CustomButton killButton;
 
         public int avengerCheckerId;
+        public override RelatedRoleData[] RelatedRoleDataInfo { get => new RelatedRoleData[] { new RelatedRoleData(avengerCheckerId, "Will Win", 0, 1,new string[]{"False","True"}) }; }
+
 
         public Module.CustomOption canKnowExistenceOfAvengerOption;
         public Module.CustomOption murderCanKnowAvengerOption;

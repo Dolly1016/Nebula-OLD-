@@ -17,6 +17,13 @@ namespace Nebula.Roles.NeutralRoles
     
     public class Sidekick : Role
     {
+        public override RelatedRoleData[] RelatedRoleDataInfo
+        {
+            get => new RelatedRoleData[] {
+            new RelatedRoleData(Roles.Jackal.jackalDataId, "Jackal Identifier", 0, 15)
+            };
+        }
+
         static private CustomButton killButton;
 
         static public Module.CustomOption SidekickCanKillOption;
@@ -141,6 +148,8 @@ namespace Nebula.Roles.NeutralRoles
 
     public class SecondarySidekick : ExtraRole
     {
+        public override RelatedExtraRoleData[] RelatedExtraRoleDataInfo { get => new RelatedExtraRoleData[] { new RelatedExtraRoleData("Jackal Identifer", this, 0, 14) }; }
+
         public override void EditDisplayNameColor(byte playerId, ref Color displayColor)
         {
             if (PlayerControl.LocalPlayer.GetModData().role == Roles.Jackal)

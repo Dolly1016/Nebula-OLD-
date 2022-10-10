@@ -121,6 +121,9 @@ namespace Nebula.Roles.ComplexRoles
         private byte trapKind;
         private static List<byte> detectedPlayers=new List<byte>();
 
+        public override RelatedRoleData[] RelatedRoleDataInfo { get => new RelatedRoleData[] { new RelatedRoleData(Roles.F_Trapper.remainTrapsId, "Traps", 0, 20) }; }
+
+
         //インポスターはModで操作するFakeTaskは所持していない
         public Trapper(string name, string localizeName, bool isImpostor)
                 : base(name, localizeName,

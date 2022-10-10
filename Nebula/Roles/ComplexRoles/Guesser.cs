@@ -89,6 +89,8 @@ namespace Nebula.Roles.ComplexRoles
 
     static public class GuesserSystem
     {
+        public static Assignable.RelatedExtraRoleData[] RelatedExtraRoleDataInfo { get => new Assignable.RelatedExtraRoleData[] { new Assignable.RelatedExtraRoleData("Guesser Shot", Roles.SecondaryGuesser, 0, 20) }; }
+
         public static void GlobalInitialize(PlayerControl __instance)
         {
             __instance.GetModData().SetExtraRoleData(Roles.SecondaryGuesser.id, (ulong)Roles.F_Guesser.guesserShots.getFloat());
@@ -244,6 +246,7 @@ namespace Nebula.Roles.ComplexRoles
 
     public class Guesser : Template.BilateralnessRole
     {
+        public override RelatedExtraRoleData[] RelatedExtraRoleDataInfo => GuesserSystem.RelatedExtraRoleDataInfo;
         //インポスターはModで操作するFakeTaskは所持していない
         public Guesser(string name, string localizeName, bool isImpostor)
                 : base(name, localizeName,
@@ -289,7 +292,8 @@ namespace Nebula.Roles.ComplexRoles
 
     public class SecondaryGuesser : ExtraRole
     {
-        //インポスターはModで操作するFakeTaskは所持していない
+        public override RelatedExtraRoleData[] RelatedExtraRoleDataInfo => GuesserSystem.RelatedExtraRoleDataInfo;
+     
         public SecondaryGuesser()
                 : base("Guesser", "guesser" ,FGuesser.RoleColor,0)
         {

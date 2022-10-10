@@ -22,6 +22,8 @@ namespace Nebula.Roles.CrewmateRoles
         private bool hasBeenRepaired = false;
 
         public int remainingScrewsDataId { get; private set; }
+        public override RelatedRoleData[] RelatedRoleDataInfo { get => new RelatedRoleData[] { new RelatedRoleData(remainingScrewsDataId, "Sealing Tapes", 0, 20) }; }
+
 
         private Module.CustomOption maxScrewsOption;
         private Module.CustomOption sealCoolDownOption;

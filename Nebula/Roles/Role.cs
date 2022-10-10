@@ -59,6 +59,39 @@ namespace Nebula.Roles
         /// </summary>
         public HashSet<Role> RelatedRoles { get; set; }
 
+        public class RelatedRoleData
+        {
+            public int id { get; }
+            public string display { get; }
+            public int min { get; }
+            public int max { get; }
+            public string suffix { get; }
+            public string[]? replaceArray { get; }
+            public RelatedRoleData(int id,string display,int min,int max,string suffix="")
+            {
+                this.id = id;
+                this.display = display;
+                this.min = min;
+                this.max = max;
+                this.suffix = suffix;
+                this.replaceArray = null;
+            }
+
+            public RelatedRoleData(int id, string display, int min, int max, string[] replaceArray)
+            {
+                this.id = id;
+                this.display = display;
+                this.min = min;
+                this.max = max;
+                this.suffix = "";
+                this.replaceArray = replaceArray;
+            }
+        }
+        /// <summary>
+        /// 関連のあるRoleDataのIdを返します。
+        /// </summary>
+        public virtual RelatedRoleData[] RelatedRoleDataInfo { get => new RelatedRoleData[0]; }
+
         public HashSet<Patches.EndCondition> winReasons { get; }
         public virtual bool CheckWin(PlayerControl player, Patches.EndCondition winReason)
         {
