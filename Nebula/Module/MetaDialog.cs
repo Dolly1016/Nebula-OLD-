@@ -624,6 +624,18 @@ namespace Nebula.Module
             return designer;
         }
 
+        static public MetaDialogDesigner OpenHelpDialog()
+        {
+            if (AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started)
+            {
+
+            }
+            else
+            {
+
+            }
+        }
+
         public DialogueBox dialog { get; }
         public Action<MetaDialog>? updateFunc { get; set; }
 
