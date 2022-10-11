@@ -12,6 +12,11 @@ namespace Nebula.Map.Editors
 
         }
 
+        public override void AddVents()
+        {
+            CreateVent(SystemTypes.Specimens, "SpecimenVent", new UnityEngine.Vector2(-1f ,-1.35f));
+        }
+
         public override void MapCustomize()
         {
             if (CustomOptionHolder.mapOptions.getBool())

@@ -71,7 +71,7 @@ namespace Nebula
         public const string PluginVersion = "1.15.1.1";
         public const bool IsSnapshot = true;
 
-        public static string PluginVisualVersion = IsSnapshot ? "22.10.11a" : PluginVersion;
+        public static string PluginVisualVersion = IsSnapshot ? "22.10.11c" : PluginVersion;
         public static string PluginStage = IsSnapshot?"Snapshot":"";
 
         public const string PluginVersionForFetch = "1.15.1.1";

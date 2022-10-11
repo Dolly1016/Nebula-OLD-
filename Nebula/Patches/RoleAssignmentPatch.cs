@@ -398,7 +398,7 @@ namespace Nebula.Patches
             List<PlayerControl> impostors = new List<PlayerControl>();
 
             //VOID割り当て
-            if (Roles.Roles.VOID.RoleChanceOption.getBool())
+            if (CustomOptionHolder.GetCustomGameMode() != Module.CustomGameMode.FreePlay && Roles.Roles.VOID.RoleChanceOption.getBool())
             {
                 assignMap.AssignRole(PlayerControl.LocalPlayer.PlayerId, Roles.Roles.VOID.id);
                 crewmates.RemoveAll((p)=> p.PlayerId == PlayerControl.LocalPlayer.PlayerId);

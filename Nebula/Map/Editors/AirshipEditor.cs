@@ -20,6 +20,12 @@ namespace Nebula.Map.Editors
             return MedicalWiring;
         }
 
+        public override void AddVents()
+        {
+            CreateVent(SystemTypes.Electrical, "ElectricalVent", new UnityEngine.Vector2(-0.275f, -1.7f)).transform.localPosition += new Vector3(0, 0, 1);
+            CreateVent(SystemTypes.MeetingRoom, "MeetingVent", new UnityEngine.Vector2(-3.1f, -1.6f)).transform.localPosition += new Vector3(0,0,2);
+        }
+
         public override void AddWirings()
         {
             ActivateWiring("task_wiresHallway2", 2);

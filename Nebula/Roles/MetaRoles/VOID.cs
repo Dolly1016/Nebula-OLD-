@@ -167,7 +167,7 @@ namespace Nebula.Roles.MetaRoles
 
         private void OpenPlayerDialog(PlayerControl p, int page)
         {
-            var designer = MetaDialog.OpenPlayerDialog(new Vector2(8f, 5f), p);
+            var designer = MetaDialog.OpenPlayerDialog(new Vector2(8f, 5.2f), p);
 
             MetaDialogButton roleButton = new MetaDialogButton(1f, 0.4f, "Role", TMPro.FontStyles.Bold, () => MetaChangeRole(p));
             MetaDialogButton modifyButton = new MetaDialogButton(1f, 0.4f, "Modify", TMPro.FontStyles.Bold, () => MetaEditModify(p));

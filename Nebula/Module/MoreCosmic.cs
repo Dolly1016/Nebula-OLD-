@@ -1307,7 +1307,7 @@ namespace Nebula.Module
             try
             {
                 JToken jobj = JObject.Parse(json)[category];
-                if (!jobj.HasValues) return HttpStatusCode.ExpectationFailed;
+                if (!jobj.HasValues) return HttpStatusCode.OK;
 
                 List<Cosmic> cosList = new List<Cosmic>();
 
