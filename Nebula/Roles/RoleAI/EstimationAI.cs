@@ -101,6 +101,8 @@ namespace Nebula.Roles.RoleAI
             InitialEliminate(RoleCategory.Crewmate, ref DefinitiveRoles, ref SpawnableRoles);
             InitialEliminate(RoleCategory.Impostor,ref DefinitiveRoles,ref SpawnableRoles);
             InitialEliminate(RoleCategory.Neutral, ref DefinitiveRoles, ref SpawnableRoles);
+
+            Eliminate(Roles.VOID);
         }
 
         public float GetRoleProbability(Role role)

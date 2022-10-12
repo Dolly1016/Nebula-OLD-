@@ -122,7 +122,7 @@ namespace Nebula.Roles.ImpostorRoles
                     sniperButton.Timer = sniperButton.MaxTimer;
                     sniperButton.SetLabel("button.label.equip");
                 },
-                getSnipeButtonSprite(),
+                snipeButtonSprite.GetSprite(),
                 new Vector3(-1.8f, 0f, 0),
                 __instance,
                 KeyCode.F,
@@ -188,13 +188,12 @@ namespace Nebula.Roles.ImpostorRoles
         }
 
         /* 画像 */
-        private Sprite snipeButtonSprite = null;
-        public Sprite getSnipeButtonSprite()
+        private SpriteLoader snipeButtonSprite = new SpriteLoader("Nebula.Resources.SnipeButton.png", 115f);
+
+        public override HelpSprite[] helpSprite => new HelpSprite[]
         {
-            if (snipeButtonSprite) return snipeButtonSprite;
-            snipeButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.SnipeButton.png", 115f);
-            return snipeButtonSprite;
-        }
+            new HelpSprite(snipeButtonSprite,"role.sniper.help.equip",0.3f)
+        };
 
         private Sprite snipeArrowSprite = null;
         public Sprite getSnipeArrowSprite()

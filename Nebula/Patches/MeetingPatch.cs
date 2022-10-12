@@ -56,10 +56,18 @@ namespace Nebula.Patches
                 {
                     PlayerVoteArea playerVoteArea = __instance.playerStates[i];
 
-                    if (playerVoteArea.VotedFor == 252 || playerVoteArea.VotedFor == 255 | playerVoteArea.VotedFor == 254) continue;
-
                     PlayerControl player = Helpers.playerById((byte)playerVoteArea.TargetPlayerId);
                     if (player == null || player.Data == null || player.Data.IsDead || player.Data.Disconnected) continue;
+
+                    //無視する投票先
+                    if (playerVoteArea.VotedFor == 252 || playerVoteArea.VotedFor == 254 || playerVoteArea.VotedFor == 255)
+                    {
+                        //棄権を自投票扱い
+                        if (CustomOptionHolder.dealAbstentionAsSelfVote.getBool())
+                            playerVoteArea.VotedFor = playerVoteArea.TargetPlayerId;
+                        else
+                            continue;
+                    }
 
                     if (!dictionary.ContainsKey(playerVoteArea.VotedFor)) dictionary[playerVoteArea.VotedFor] = 0;
 
@@ -129,8 +137,19 @@ namespace Nebula.Patches
         [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Update))]
         class MeetingHudUpdatePatch
         {
+            static MeetingHud.VoteStates lastState;
+            static void Prefix(MeetingHud __instance)
+            {
+                lastState = __instance.state;
+            }
+
             static void Postfix(MeetingHud __instance)
             {
+                if(__instance.state==MeetingHud.VoteStates.NotVoted && __instance.state != lastState && lastState != MeetingHud.VoteStates.Voted)
+                {
+                    __instance.discussionTimer+= EmergencyPatch.GetPenaltyVotingTime();
+                }
+
                 if (meetingInfoText == null)
                 {
                     meetingInfoText = UnityEngine.Object.Instantiate(HudManager.Instance.TaskText, __instance.transform);
@@ -154,6 +173,9 @@ namespace Nebula.Patches
                 {
                     Ghost.InvestigatorMeetingUI.UpdateMeetingUI(__instance);
                 }
+
+                //Skipボタン
+                if (!CustomOptionHolder.canSkip.getBool() && __instance.SkipVoteButton.gameObject.activeSelf) __instance.SkipVoteButton.SetDisabled();
             }
         }
 
@@ -206,15 +228,16 @@ namespace Nebula.Patches
             }
         }
 
-
+        /*
         [HarmonyPatch(typeof(HudManager), nameof(HudManager.OpenMeetingRoom))]
         class OpenMeetingPatch
         {
             public static void Prefix(HudManager __instance)
             {
-                CustomOverlays.OnMeetingStart();
+                
             }
         }
+        */
 
         [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.StartMeeting))]
         class StartMeetingPatch
@@ -222,8 +245,6 @@ namespace Nebula.Patches
             public static void Prefix(PlayerControl __instance, [HarmonyArgument(0)] GameData.PlayerInfo meetingTarget)
             {
                 if (meetingTarget == null) EmergencyPatch.meetingsCount++;
-
-                CustomOverlays.OnMeetingStart();
 
                 //票の重み設定をリセット
                 VoteWeight.Clear();
@@ -289,10 +310,9 @@ namespace Nebula.Patches
                     renderer.sprite = isLightColor ? GetLightColorSprite() : GetDarkColorSprite();
                     UnityEngine.GameObject.Destroy(targetBox.GetComponent<PassiveButton>());
                 }
-
-                PlayerControl.GameOptions.VotingTime = EmergencyPatch.GetVotingTime(Game.GameData.data.GameRule.vanillaVotingTime);
             }
         }
+
 
         [HarmonyPatch(typeof(PlayerVoteArea), nameof(PlayerVoteArea.Select))]
         class SelectedPlayerVoteAreaPatch
@@ -330,6 +350,14 @@ namespace Nebula.Patches
         public static void SetVoteWeight(byte playerId,byte weight)
         {
             VoteWeight[playerId] = weight;
+        }
+
+        public static int GetVoteWeight(byte playerId)
+        {
+            if (VoteWeight.ContainsKey(playerId))
+                return VoteWeight[playerId];
+            else
+                return 1;
         }
 
         public static void Initialize()

@@ -19,6 +19,7 @@ namespace Nebula.Roles.NeutralRoles
         static private CustomButton killButton;
 
         public int avengerCheckerId;
+        public int loversId;
         public override RelatedRoleData[] RelatedRoleDataInfo { get => new RelatedRoleData[] { new RelatedRoleData(avengerCheckerId, "Will Win", 0, 1,new string[]{"False","True"}) }; }
 
 
@@ -73,7 +74,7 @@ namespace Nebula.Roles.NeutralRoles
             {
                 foreach(var data in Game.GameData.data.AllPlayers.Values)
                 {
-                    if (data.GetExtraRoleData(Roles.AvengerTarget) == myGData.GetExtraRoleData(Roles.Lover))
+                    if ((int)data.GetExtraRoleData(Roles.AvengerTarget) == myGData.GetRoleData(loversId))
                     {
                         if (data.IsAlive)
                         {
@@ -124,7 +125,10 @@ namespace Nebula.Roles.NeutralRoles
 
         public override void GlobalInitialize(PlayerControl __instance)
         {
-            __instance.GetModData().SetRoleData(avengerCheckerId, 0);
+            var data = __instance.GetModData();
+            data.SetRoleData(avengerCheckerId, 0);
+            data.SetRoleData(loversId, (int)data.GetExtraRoleData(Roles.Lover));
+            
         }
 
         public override void ButtonInitialize(HudManager __instance)
@@ -166,16 +170,6 @@ namespace Nebula.Roles.NeutralRoles
             }
         }
 
-        /*
-        public override void EditDisplayName(byte playerId, ref string displayName, bool hideFlag)
-        {
-            if (!murderCanKnowAvengerOption.getBool()) return;
-
-            if (Game.GameData.data.players[playerId].GetExtraRoleData(Roles.Lover)==Game.GameData.data.myData.getGlobalData().GetExtraRoleData(Roles.AvengerTarget)) 
-            { displayName += Helpers.cs(Roles.Avenger.Color, "♥"); return; }
-        }
-        */
-
         public override bool CheckWin(PlayerControl player, EndCondition winReason)
         {
             if (winReason != EndCondition.AvengerWin) return false;
@@ -200,6 +194,7 @@ namespace Nebula.Roles.NeutralRoles
                  true, VentPermission.CanUseLimittedVent, true, false, false)
         {
             avengerCheckerId = Game.GameData.RegisterRoleDataId("avenger.winChecker");
+            loversId = Game.GameData.RegisterRoleDataId("avenger.loversId");
 
             killButton = null;
 

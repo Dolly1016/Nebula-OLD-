@@ -273,9 +273,6 @@ namespace Nebula.Patches
         {
             EndCondition.EndAction.Invoke(FinalData);
 
-            //変更したオプションを元に戻す
-            PlayerControl.GameOptions.VotingTime = Game.GameData.data.GameRule.vanillaVotingTime;
-
             __instance.StopAllCoroutines();
             __instance.StartCoroutine(GetEnumerator().WrapToIl2Cpp());
         }

@@ -8,6 +8,8 @@ namespace Nebula
     {
         public static void RecheckPlayerState(this MeetingHud meetingHud)
         {
+            bool existsDeadPlayer = false;
+
             foreach (PlayerVoteArea pva in meetingHud.playerStates)
             {
                 bool isDead=!Game.GameData.data.GetPlayerData(pva.TargetPlayerId).IsAlive;
@@ -18,16 +20,24 @@ namespace Nebula
                 pva.SetDead(pva.DidReport, isDead);
                 pva.Overlay.gameObject.SetActive(isDead);
 
+                existsDeadPlayer |= isDead;
+            }
 
-                if (isDead)
+            if (existsDeadPlayer)
+            {
+                foreach (PlayerVoteArea voter in meetingHud.playerStates)
                 {
-                    foreach(PlayerVoteArea voter in meetingHud.playerStates)
-                    {
-                        if (voter.VotedFor != pva.TargetPlayerId) continue;
+                    voter.ThumbsDown.enabled = false;
+
+                    if (voter.DidVote) {
+                        if (Helpers.playerById(voter.TargetPlayerId).AmOwner)
+                        {
+                            Helpers.RoleAction(Game.GameData.data.myData.getGlobalData(),
+                                (r) => r.OnVoteCanceled(Patches.MeetingHudPatch.GetVoteWeight(voter.TargetPlayerId)));
+                            meetingHud.ClearVote();
+                        }
 
                         voter.UnsetVote();
-
-                        if (Helpers.playerById(voter.TargetPlayerId).AmOwner) meetingHud.ClearVote();
                     }
                 }
             }

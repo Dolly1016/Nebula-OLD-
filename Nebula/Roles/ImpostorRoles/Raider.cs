@@ -10,6 +10,7 @@ using HarmonyLib;
 using Hazel;
 using System.Collections;
 using BepInEx.IL2CPP.Utils.Collections;
+using Nebula.Utilities;
 
 namespace Nebula.Roles.ImpostorRoles
 {
@@ -75,7 +76,7 @@ namespace Nebula.Roles.ImpostorRoles
                     axeButton.Timer = axeButton.MaxTimer;
                     axeButton.SetLabel("button.label.equip");
                 },
-                getAxeButtonSprite(),
+                axeButtonSprite.GetSprite(),
                 new Vector3(-1.8f, 0f, 0),
                 __instance,
                 KeyCode.F,
@@ -131,21 +132,13 @@ namespace Nebula.Roles.ImpostorRoles
         }
 
         /* 画像 */
-        private Sprite axeGuideSprite = null;
-        public Sprite getAxeGuideSprite()
-        {
-            if (axeGuideSprite) return axeGuideSprite;
-            axeGuideSprite = Helpers.loadSpriteFromResources("Nebula.Resources.RaiderAxeGuide.png", 100f);
-            return axeGuideSprite;
-        }
+        private SpriteLoader axeGuideSprite = new SpriteLoader("Nebula.Resources.RaiderAxeGuide.png", 100f);
+        private SpriteLoader axeButtonSprite = new SpriteLoader("Nebula.Resources.AxeButton.png", 115f);
 
-        private Sprite axeButtonSprite = null;
-        public Sprite getAxeButtonSprite()
+        public override HelpSprite[] helpSprite => new HelpSprite[]
         {
-            if (axeButtonSprite) return axeButtonSprite;
-            axeButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.AxeButton.png", 115f);
-            return axeButtonSprite;
-        }
+            new HelpSprite(axeButtonSprite,"role.raider.help.equip",0.3f)
+        };
 
         private IEnumerator GetMessageUpdater()
         {
@@ -177,7 +170,7 @@ namespace Nebula.Roles.ImpostorRoles
                 obj.name = "RaiderGuide";
                 obj.transform.SetParent(PlayerControl.LocalPlayer.transform);
                 guide = obj.AddComponent<SpriteRenderer>();
-                guide.sprite = getAxeGuideSprite();
+                guide.sprite = axeGuideSprite.GetSprite();
             }
             else
             {

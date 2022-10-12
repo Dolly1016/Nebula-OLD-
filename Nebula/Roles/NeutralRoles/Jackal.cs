@@ -7,6 +7,7 @@ using UnityEngine;
 using HarmonyLib;
 using Hazel;
 using Nebula.Objects;
+using Nebula.Utilities;
 
 namespace Nebula.Roles.NeutralRoles
 {
@@ -21,13 +22,12 @@ namespace Nebula.Roles.NeutralRoles
         static public Module.CustomOption NumOfKillingToCreateSidekickOption;
         static public Module.CustomOption KillCoolDownOption;
 
-        private Sprite sidekickButtonSprite = null;
-        public Sprite getSidekickButtonSprite()
+        private SpriteLoader sidekickButtonSprite = new SpriteLoader("Nebula.Resources.SidekickButton.png", 115f);
+
+        public override HelpSprite[] helpSprite => new HelpSprite[]
         {
-            if (sidekickButtonSprite) return sidekickButtonSprite;
-            sidekickButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.SidekickButton.png", 115f);
-            return sidekickButtonSprite;
-        }
+            new HelpSprite(sidekickButtonSprite,"role.jackal.help.sidekick",0.3f)
+        };
 
         public int jackalDataId { get; private set; }
         public int leftSidekickDataId { get; private set; }
@@ -128,7 +128,7 @@ namespace Nebula.Roles.NeutralRoles
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead && Game.GameData.data.myData.getGlobalData().GetRoleData(leftSidekickDataId)>0; },
                 () => { return Game.GameData.data.myData.currentTarget && PlayerControl.LocalPlayer.CanMove && PlayerControl.LocalPlayer.GetModData().GetRoleData(killingDataId) >= NumOfKillingToCreateSidekickOption.getFloat(); },
                 () => { sidekickButton.Timer = sidekickButton.MaxTimer; },
-                getSidekickButtonSprite(),
+                sidekickButtonSprite.GetSprite(),
                 new Vector3(0f, 0, 0),
                 __instance,
                 KeyCode.F,

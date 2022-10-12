@@ -323,6 +323,8 @@ namespace Nebula.Patches
 
         public static void Postfix(HudManager __instance)
         {
+            Module.MetaDialog.Update();
+
             //アニメーションを無効化
             if (__instance.GameLoadAnimation.active)
             {
@@ -392,8 +394,6 @@ namespace Nebula.Patches
                     }
                 }
 
-
-                Module.MetaDialog.Update();
                 Events.GlobalEvent.Update();
                 Events.LocalEvent.Update();
 

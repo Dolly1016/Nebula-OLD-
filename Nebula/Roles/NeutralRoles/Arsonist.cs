@@ -9,6 +9,7 @@ using Nebula.Objects;
 using HarmonyLib;
 using Hazel;
 using Nebula.Game;
+using Nebula.Utilities;
 
 namespace Nebula.Roles.NeutralRoles
 {
@@ -28,6 +29,11 @@ namespace Nebula.Roles.NeutralRoles
 
         private float infoUpdateCounter = 0.0f;
 
+        public override HelpSprite[] helpSprite => new HelpSprite[] { 
+            new HelpSprite(douseSprite,"role.arsonist.help.douse",0.3f),
+            new HelpSprite(igniteSprite,"role.arsonist.help.ignite",0.3f)
+        };
+
         public override void LoadOptionData()
         { 
             douseDurationOption = CreateOption(Color.white, "douseDuration", 3f, 1f, 10f, 0.5f);
@@ -44,20 +50,8 @@ namespace Nebula.Roles.NeutralRoles
         }
 
 
-        Sprite douseSprite,igniteSprite;
-        public Sprite getDouseButtonSprite()
-        {
-            if (douseSprite) return douseSprite;
-            douseSprite = Helpers.loadSpriteFromResources("Nebula.Resources.DouseButton.png", 115f);
-            return douseSprite;
-        }
-
-        public Sprite getIgniteButtonSprite()
-        {
-            if (igniteSprite) return igniteSprite;
-            igniteSprite = Helpers.loadSpriteFromResources("Nebula.Resources.IgniteButton.png", 115f);
-            return igniteSprite;
-        }
+        SpriteLoader douseSprite=new SpriteLoader("Nebula.Resources.DouseButton.png", 115f);
+        SpriteLoader igniteSprite = new SpriteLoader("Nebula.Resources.IgniteButton.png", 115f);
 
         static private bool canIgnite = false;
 
@@ -110,7 +104,7 @@ namespace Nebula.Roles.NeutralRoles
             if (!cannotIgnite)
             {
                 //点火可能
-                arsonistButton.Sprite = getIgniteButtonSprite();
+                arsonistButton.Sprite = igniteSprite.GetSprite();
                 arsonistButton.SetLabel("button.label.ignite");
                 canIgnite = true;
                 arsonistButton.Timer = 0f;
@@ -151,7 +145,7 @@ namespace Nebula.Roles.NeutralRoles
                     arsonistButton.isEffectActive = false;
                     arsonistButton.actionButton.cooldownTimerText.color = Palette.EnabledColor;
                 },
-                getDouseButtonSprite(),
+                douseSprite.GetSprite(),
                 new Vector3(-1.8f, 0, 0),
                 __instance,
                 KeyCode.F,

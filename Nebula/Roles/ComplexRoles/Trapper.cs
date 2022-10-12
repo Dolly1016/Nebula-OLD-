@@ -23,37 +23,10 @@ namespace Nebula.Roles.ComplexRoles
 
         public int remainTrapsId { get; private set; }
 
-        private static Sprite accelButtonSprite;
-        public static Sprite getAccelButtonSprite()
-        {
-            if (accelButtonSprite) return accelButtonSprite;
-            accelButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.AccelTrapButton.png", 115f);
-            return accelButtonSprite;
-        }
-
-        private static Sprite decelButtonSprite;
-        public static Sprite getDecelButtonSprite()
-        {
-            if (decelButtonSprite) return decelButtonSprite;
-            decelButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.DecelTrapButton.png", 115f);
-            return decelButtonSprite;
-        }
-
-        private static Sprite killButtonSprite;
-        public static Sprite getKillButtonSprite()
-        {
-            if (killButtonSprite) return killButtonSprite;
-            killButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.KillTrapButton.png", 115f);
-            return killButtonSprite;
-        }
-
-        private static Sprite commButtonSprite;
-        public static Sprite getCommButtonSprite()
-        {
-            if (commButtonSprite) return commButtonSprite;
-            commButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.CommTrapButton.png", 115f);
-            return commButtonSprite;
-        }
+        public static SpriteLoader accelButtonSprite = new SpriteLoader("Nebula.Resources.AccelTrapButton.png",115f);
+        public static SpriteLoader decelButtonSprite = new SpriteLoader("Nebula.Resources.DecelTrapButton.png", 115f);
+        public static SpriteLoader killButtonSprite = new SpriteLoader("Nebula.Resources.KillTrapButton.png", 115f);
+        public static SpriteLoader commButtonSprite = new SpriteLoader("Nebula.Resources.CommTrapButton.png", 115f);
 
         public override void LoadOptionData()
         {
@@ -139,6 +112,14 @@ namespace Nebula.Roles.ComplexRoles
             IsHideRole = true;
             trapButton = null;
         }
+
+        public override Assignable AssignableOnHelp => Roles.F_Trapper;
+
+        public override HelpSprite[] helpSprite => new HelpSprite[] {
+            new HelpSprite(FTrapper.accelButtonSprite,"role.trapper.help.accel",0.3f),
+            new HelpSprite(FTrapper.decelButtonSprite,"role.trapper.help.decel",0.3f),
+            (side==Side.Impostor) ? new HelpSprite(FTrapper.killButtonSprite,"role.trapper.help.kill",0.3f) : new HelpSprite(FTrapper.commButtonSprite,"role.trapper.help.comm",0.3f)
+        };
 
         public override void GlobalInitialize(PlayerControl __instance)
         {
@@ -232,19 +213,19 @@ namespace Nebula.Roles.ComplexRoles
             switch (trapKind)
             {
                 case 0:
-                    trapButton.Sprite = FTrapper.getAccelButtonSprite();
+                    trapButton.Sprite = FTrapper.accelButtonSprite.GetSprite();
                     break;
                 case 1:
-                    trapButton.Sprite = FTrapper.getDecelButtonSprite();
+                    trapButton.Sprite = FTrapper.decelButtonSprite.GetSprite();
                     break;
                 case 2:
                     if (side == Side.Impostor)
                     {
-                        trapButton.Sprite = FTrapper.getKillButtonSprite();
+                        trapButton.Sprite = FTrapper.killButtonSprite.GetSprite();
                     }
                     else
                     {
-                        trapButton.Sprite = FTrapper.getCommButtonSprite();
+                        trapButton.Sprite = FTrapper.commButtonSprite.GetSprite();
                     }
                     break;
             }
@@ -336,7 +317,7 @@ namespace Nebula.Roles.ComplexRoles
                     return false;
                 },
                 () => { trapButton.Timer = trapButton.MaxTimer; },
-                FTrapper.getAccelButtonSprite(),
+                FTrapper.accelButtonSprite.GetSprite(),
                 new Vector3(-1.8f, 0, 0),
                 __instance,
                 KeyCode.F,

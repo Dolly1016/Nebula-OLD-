@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using HarmonyLib;
+using Nebula.Utilities;
 
 namespace Nebula.Roles
 {
@@ -96,6 +97,30 @@ namespace Nebula.Roles
         /// </summary>
         public virtual RelatedExtraRoleData[] RelatedExtraRoleDataInfo { get => new RelatedExtraRoleData[0]; }
 
+        /// <summary>
+        /// ヘルプ画面で表示するかどうか設定します。
+        /// </summary>
+        public virtual bool ShowInHelpWindow { get => true; }
+
+        /// <summary>
+        /// ヘルプ画面で使用するロールを返します。
+        /// </summary>
+        public virtual Assignable AssignableOnHelp { get => this; }
+
+        public class HelpSprite
+        {
+            public SpriteLoader sprite;
+            public string localizedName;
+            public float ratio;
+
+            public HelpSprite(SpriteLoader sprite, string localizedName,float ratio)
+            {
+                this.sprite = sprite;
+                this.localizedName = localizedName;
+                this.ratio = ratio;
+            }
+        }
+        public virtual HelpSprite[] helpSprite { get => new HelpSprite[0]; }
 
         /*--------------------------------------------------------------------------------------*/
         /*--------------------------------------------------------------------------------------*/
@@ -314,6 +339,12 @@ namespace Nebula.Roles
         public virtual void SetKillCoolDown(ref float multiplier, ref float addition) { }
 
         /*--------------------------------------------------------------------------------------*/
+
+        /// <summary>
+        /// 投票がキャンセルされたときに呼び出されます。
+        /// </summary>
+        [RoleLocalMethod]
+        public virtual void OnVoteCanceled(int weight){}
 
         /// <summary>
         /// 会議で表示するボタンを設定します。

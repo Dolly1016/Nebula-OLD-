@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System.Collections;
 
 namespace Nebula.Module
 {
@@ -62,22 +63,83 @@ namespace Nebula.Module
         }
     }
 
+    public class MetaDialogMultiString : MetaDialogContent
+    {
+        protected float width { get; }
+        protected string rawText { get; }
+        protected TMPro.TextAlignmentOptions alignment { get; }
+        protected TMPro.FontStyles style { get; }
+        public TMPro.TextMeshPro? text { get; protected set; }
+        public float fontSize { get; protected set; }
+        public override Vector2 GetSize() => new Vector2(width + 0.06f, 0.1f + 0.72f * fontSize / 6f * (float)(1 + rawText.Count((c) => c == '\n')));
+
+        public MetaDialogMultiString(float width, float size,string text, TMPro.TextAlignmentOptions alignment, TMPro.FontStyles style)
+        {
+            this.width = width;
+            this.fontSize = size;
+            this.rawText = text;
+            this.alignment = alignment;
+            this.style = style;
+        }
+
+        public override void Generate(GameObject obj)
+        {
+            this.text = GameObject.Instantiate(HudManager.Instance.Dialogue.target);
+            text.transform.SetParent(obj.transform);
+            text.transform.localScale = new Vector3(1f, 1f, 1f);
+            text.transform.localPosition = new Vector3(0f, 0f, -1f);
+
+            text.alignment = alignment;
+            text.fontStyle = style;
+            text.rectTransform.sizeDelta = GetSize() - new Vector2(0.206f, 0.1f);
+            text.rectTransform.pivot = new Vector2(0.5f, 0.5f);
+            text.text = rawText;
+            text.fontSize = text.fontSizeMax = text.fontSizeMax = fontSize;
+        }
+    }
+
+    public class MetaDialogSprite : MetaDialogContent
+    {
+        protected Utilities.SpriteLoader sprite;
+        protected float margin;
+        protected float scale;
+        public override Vector2 GetSize() => (Vector2)sprite.GetSprite().bounds.size * scale + new Vector2(margin, margin);
+        public SpriteRenderer renderer;
+
+        public MetaDialogSprite(Utilities.SpriteLoader sprite, float margin,float scale)
+        {
+            this.sprite = sprite;
+            this.margin = margin;
+            this.scale = scale;
+        }
+
+        public override void Generate(GameObject obj)
+        {
+            this.renderer = obj.AddComponent<SpriteRenderer>();
+            renderer.sprite = sprite.GetSprite();
+            renderer.transform.localScale = new Vector3(scale,scale,1f);
+        }
+    }
+
+
     public class MetaDialogButton : MetaDialogString
     {
+        private Color? color { get; }
         private float height { get; }
         private Action onClick { get; }
         public override Vector2 GetSize() => new Vector2(width + 0.1f, height + 0.12f);
         public PassiveButton? button { get; private set; }
-        public MetaDialogButton(float width, float height,string text, TMPro.FontStyles style,Action onClick):
+        public MetaDialogButton(float width, float height,string text, TMPro.FontStyles style,Action onClick,Color? color=null):
             base(width,text,TMPro.TextAlignmentOptions.Center,style)
         {
+            this.color = color;
             this.height = height;
             this.onClick = onClick;
         }
 
         public override void Generate(GameObject obj)
         {
-            button = MetaDialog.MetaDialogDesigner.SetUpButton(obj, new Vector2(width, height), rawText);
+            button = MetaDialog.MetaDialogDesigner.SetUpButton(obj, new Vector2(width, height), rawText,color);
             button.OnClick.AddListener((UnityEngine.Events.UnityAction)onClick);
             var text = button.transform.GetChild(0).GetComponent<TMPro.TextMeshPro>();
             text.alignment = TMPro.TextAlignmentOptions.Center;
@@ -141,6 +203,11 @@ namespace Nebula.Module
             dialogOrder.Clear();
         }
 
+        static public void EraseDialogAll()
+        {
+            Initialize();
+        }
+
         /// <summary>
         /// 最前面から指定の数だけダイアログを閉じます。
         /// </summary>
@@ -179,7 +246,7 @@ namespace Nebula.Module
         {
             public MetaDialog dialog { get; private set; }
             private SpriteRenderer background;
-            private Vector2 size;
+            public Vector2 size { get; private set; }
             private Vector2 origin;
             private float used;
             private Vector2 center;
@@ -208,8 +275,10 @@ namespace Nebula.Module
                 center = new Vector2(origin.x + size.x * 0.5f, origin.y - size.y * 0.5f);
             }
 
-            static public PassiveButton SetUpButton(GameObject obj, Vector2 size,string display)
+            static public PassiveButton SetUpButton(GameObject obj, Vector2 size,string display,Color? color=null)
             {
+                Color normalColor = (color == null) ? Color.white : color.Value;
+
                 obj.layer = Nebula.LayerExpansion.GetUILayer();
                 obj.transform.localScale = new Vector3(1f, 1f, 1f);
                 var renderer = obj.AddComponent<SpriteRenderer>();
@@ -222,6 +291,7 @@ namespace Nebula.Module
                 renderer.sprite = MetaDialog.getButtonBackSprite();
                 renderer.drawMode = SpriteDrawMode.Tiled;
                 renderer.size = size;
+                renderer.color = normalColor;
 
                 text.alignment = TMPro.TextAlignmentOptions.Center;
                 text.rectTransform.sizeDelta = new Vector2(size.x - 0.15f, 0.2f);
@@ -242,7 +312,7 @@ namespace Nebula.Module
                 }));
                 button.OnMouseOut.AddListener((UnityEngine.Events.UnityAction)(() =>
                 {
-                    renderer.color = Palette.White;
+                    renderer.color = normalColor;
                 }));
                 button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
                 {
@@ -341,9 +411,10 @@ namespace Nebula.Module
                 {
                     var vec = c.GetSize();
                     GameObject obj = new GameObject("Content");
+                    obj.layer = LayerExpansion.GetUILayer();
                     obj.transform.SetParent(dialog.dialog.transform);
 
-                    obj.transform.localPosition = new Vector3(w + vec.x * 0.5f, CurrentOrigin.y - maxHeight * 0.5f, -10f);
+                    obj.transform.localPosition = new Vector3(center.x + w + vec.x * 0.5f, CurrentOrigin.y - maxHeight * 0.5f, -10f);
                     w += vec.x;
 
                     c.Generate(obj);
@@ -388,44 +459,120 @@ namespace Nebula.Module
                 AddNumericDataTopic(display, currentValue, (n) => replace[n], min, max, applyFunc);
             }
 
-            public void AddModifyTopic(Predicate<Roles.ExtraRole> predicate,Action<Roles.ExtraRole> onClicked)
+            public void AddPageTopic(int currentPage,bool hasPrev,bool hasNext,Action<int> changePageFunc)
             {
-                List<MetaDialogContent> roles = new List<MetaDialogContent>();
+                Module.MetaDialogContent prev;
+                if (hasPrev)prev = new Module.MetaDialogButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () => changePageFunc(-1));
+                else prev = new Module.MetaDialogMargin(0.5f);
+                
+                Module.MetaDialogContent next;
+                if (hasNext) next = new Module.MetaDialogButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () => changePageFunc(1));
+                else next = new Module.MetaDialogMargin(0.5f);
 
-                foreach(var r in Roles.Roles.AllExtraRoles)
+                AddTopic(prev, new Module.MetaDialogString(0.5f, (currentPage + 1).ToString(), TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold), next);
+            }
+
+            public void AddPageListTopic(int currentPage, int pages, Action<int> changePageFunc)
+            {
+                Module.MetaDialogContent[] contents=new MetaDialogContent[pages];
+
+                for (int i = 0; i < pages; i++)
                 {
-                    if (!predicate(r)) continue;
+                    int index = i;
+                    contents[i] = new MetaDialogButton(0.3f, 0.3f, i.ToString(), TMPro.FontStyles.Normal, () => { changePageFunc(index); }, (i == currentPage) ? new Color(0.5f, 0.5f, 0.5f) : Color.white);
+                }
+                AddTopic(contents.ToArray());
+            }
 
-                    Roles.ExtraRole extraRole = r;
-                    roles.Add(new MetaDialogButton(1.65f, 0.36f,
-                        Helpers.cs(r.Color,Language.Language.GetString("role."+r.LocalizeName+".name")),
-                        TMPro.FontStyles.Bold,
-                        ()=> onClicked(extraRole)));
+            public void AddEnumerableTopic(int contentsPerRow, int rowsPerPage, int page, IEnumerator<MetaDialogContent> enumerator,Action<MetaDialogContent> onGenerated,Action<int>? changePageFunc=null)
+            {
+                List<MetaDialogContent> contents = new List<MetaDialogContent>();
 
-                    if (roles.Count == 5)
-                    {
-                        AddTopic(roles.ToArray());
-                        foreach(var c in roles)
-                        {
-                            var text =((MetaDialogButton)c).text;
-                            text.fontSizeMin = 0.5f;
-                            text.overflowMode = TMPro.TextOverflowModes.Ellipsis;
-                        }
-                        roles.Clear();
-                    }
+                void generate()
+                {
+                    AddTopic(contents.ToArray());
+                    foreach (var c in contents) onGenerated(c);
+                    contents.Clear();
                 }
 
-                if (roles.Count > 0)
+                int left = rowsPerPage * contentsPerRow;
+                int skip = page * rowsPerPage * contentsPerRow;
+
+                bool hasPrev = skip > 0;
+                bool hasNext = false;
+
+                while (enumerator.MoveNext())
                 {
-                    AddTopic(roles.ToArray());
-                    foreach (var c in roles)
+                    if (skip > 0)
                     {
-                        var text = ((MetaDialogButton)c).text;
-                        text.fontSizeMin = 0.5f;
-                        text.overflowMode = TMPro.TextOverflowModes.Ellipsis;
+                        skip--;
+                        continue;
                     }
+
+                    if (left <= 0)
+                    {
+                        hasNext = true;
+                        break;
+                    }
+
+                    contents.Add(enumerator.Current);
+                    if (contents.Count == 5) generate();
+
+                    left--;
+                }
+
+                if (contents.Count > 0) generate();
+
+                if (changePageFunc != null)
+                {
+                    AddPageTopic(page, hasPrev, hasNext, changePageFunc);
                 }
             }
+
+            public void AddModifyTopic(Predicate<Roles.ExtraRole> predicate,Action<Roles.ExtraRole> onClicked, int contentsPerRow=5, int maxRows = 100, int page = 0,Action<int>? changePageFunc=null)
+            {
+                IEnumerator<MetaDialogContent> enumerator()
+                {
+                    foreach (var r in Roles.Roles.AllExtraRoles)
+                    {
+                        if (!predicate(r)) continue;
+                        Roles.ExtraRole extraRole = r;
+                        yield return new MetaDialogButton(1.65f, 0.36f,
+                        Helpers.cs(r.Color, Language.Language.GetString("role." + r.LocalizeName + ".name")),
+                        TMPro.FontStyles.Bold,
+                        () => onClicked(extraRole));
+                    }
+                }
+
+                AddEnumerableTopic(contentsPerRow, maxRows, page, enumerator(),(c)=> {
+                    var text = ((MetaDialogButton)c).text;
+                    text.fontSizeMin = 0.5f;
+                    text.overflowMode = TMPro.TextOverflowModes.Ellipsis;
+                },changePageFunc);
+            }
+
+            public void AddRolesTopic(Predicate<Roles.Role> predicate, Action<Roles.Role> onClicked, int contentsPerRow = 5,int maxRows=100,int page=0, Action<int>? changePageFunc = null)
+            {
+                IEnumerator<MetaDialogContent> enumerator()
+                {
+                    foreach (var r in Roles.Roles.AllRoles)
+                    {
+                        if (!predicate(r)) continue;
+                        Roles.Role role = r;
+                        yield return new MetaDialogButton(1.65f, 0.36f,
+                        Helpers.cs(r.Color, Language.Language.GetString("role." + r.LocalizeName + ".name")),
+                        TMPro.FontStyles.Bold,
+                        () => onClicked(role));
+                    }
+                }
+
+                AddEnumerableTopic(contentsPerRow, maxRows, page, enumerator(), (c) => {
+                    var text = ((MetaDialogButton)c).text;
+                    text.fontSizeMin = 0.5f;
+                    text.overflowMode = TMPro.TextOverflowModes.Ellipsis;
+                },changePageFunc);
+            }
+
 
             public MetaDialogDesigner[] Split(int division)
             {
@@ -512,7 +659,7 @@ namespace Nebula.Module
             dialogue.target.rectTransform.sizeDelta = size * 1.66f - new Vector2(0.7f, 0.7f);
             dialogue.Show(title);
 
-            return new MetaDialogDesigner(metaDialog, renderer, size, dialogue.target.GetPreferredHeight() + 0.1f);
+            return new MetaDialogDesigner(metaDialog, renderer, size, title.Length > 0 ? dialogue.target.GetPreferredHeight() + 0.1f : 0.2f);
         }
 
         static public MetaDialogDesigner OpenPlayerDialog(Vector2 size,PlayerControl player)
@@ -568,34 +715,11 @@ namespace Nebula.Module
 
             designer.CustomUse(designers[0].Used);
 
-            Module.MetaDialogContent prev;
-            if (page > 0)
+            designer.AddPageTopic(page, page > 0, hasNext, (p) =>
             {
-                prev = new Module.MetaDialogButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () =>
-                {
-                    designer.dialog.Close();
-                    OpenRolesDialog(roleCondition,page - 1, rolesPerPage,onClick);
-                });
-            }
-            else
-            {
-                prev = new Module.MetaDialogMargin(0.5f);
-            }
-
-            Module.MetaDialogContent next;
-            if (hasNext)
-            {
-                next = new Module.MetaDialogButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () => {
-                    designer.dialog.Close();
-                    OpenRolesDialog(roleCondition,page + 1, rolesPerPage, onClick);
-                });
-            }
-            else
-            {
-                next = new Module.MetaDialogMargin(0.5f);
-            }
-
-            designer.AddTopic(prev, new Module.MetaDialogString(0.5f, (page + 1).ToString(), TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold), next);
+                designer.dialog.Close();
+                OpenRolesDialog(roleCondition, page + p, rolesPerPage, onClick);
+            });
 
             return designer;
         }
@@ -624,16 +748,145 @@ namespace Nebula.Module
             return designer;
         }
 
-        static public MetaDialogDesigner OpenHelpDialog()
+        static private void AddRoleInfo(MetaDialogDesigner designer,Roles.Assignable assignable) 
         {
+            var designers = designer.SplitVertically(new float[] { 0.01f, 0.55f, 0.45f, 0.01f });
+            designers[1].AddTopic(new MetaDialogString(designers[1].size.x, Helpers.cs(assignable.Color, Language.Language.GetString("role." + assignable.LocalizeName + ".name")), TMPro.TextAlignmentOptions.TopLeft, TMPro.FontStyles.Bold));
+            designers[1].AddTopic(new MetaDialogMultiString(designers[1].size.x, 1.2f, Language.Language.GetString("role." + assignable.LocalizeName + ".info"), TMPro.TextAlignmentOptions.TopLeft, TMPro.FontStyles.Normal));
+            foreach(var hs in assignable.helpSprite)
+                designers[1].AddTopic(new MetaDialogSprite(hs.sprite,0.1f,hs.ratio),new MetaDialogMultiString(designers[1].size.x-0.8f,1.2f,Language.Language.GetString(hs.localizedName),TMPro.TextAlignmentOptions.Left,TMPro.FontStyles.Normal));
+            
+            if(assignable.AssignableOnHelp.TopOption != null) designers[2].AddTopic(new MetaDialogMultiString(designers[2].size.x, 1.4f, Module.GameOptionStringGenerator.optionsToString(assignable.AssignableOnHelp.TopOption), TMPro.TextAlignmentOptions.TopLeft, TMPro.FontStyles.Normal));
+        }
+
+        static public MetaDialogDesigner OpenAssignableHelpDialog(Roles.Assignable assignable)
+        {
+            var designer = MetaDialog.OpenDialog(new Vector2(8f, 4f),"");
+            AddRoleInfo(designer,assignable);
+            return designer;
+        }
+
+        static public MetaDialogDesigner OpenHelpDialog(int tab,int arg,List<string>? options=null)
+        {
+            var designer = MetaDialog.OpenDialog(new Vector2(9f, 5.5f),"");
+
+            var rolesTab = new MetaDialogButton(1.2f, 0.4f,"Roles",TMPro.FontStyles.Bold,()=> {
+                if (tab != 1)
+                {
+                    EraseDialog(designer.dialog);
+                    OpenHelpDialog(1,0,options);
+                }
+            });
+
+            var modifiesTab = new MetaDialogButton(1.2f, 0.4f, "Modifies", TMPro.FontStyles.Bold, () => {
+                if (tab != 2)
+                {
+                    EraseDialog(designer.dialog);
+                    OpenHelpDialog(2, 0, options);
+                }
+            });
+
+            var optionsTab = new MetaDialogButton(1.2f, 0.4f, "Options", TMPro.FontStyles.Bold, () => {
+                if (tab != 3)
+                {
+                    EraseDialog(designer.dialog);
+                    OpenHelpDialog(3, 0, options);
+                }
+            });
+
             if (AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started)
             {
+                var myTab = new MetaDialogButton(1.2f, 0.4f, "My Role", TMPro.FontStyles.Bold, () => {
+                    if (tab != 0)
+                    {
+                        EraseDialog(designer.dialog);
+                        OpenHelpDialog(0, 0, options);
+                    }
+                });
 
+                designer.AddTopic(myTab,rolesTab,modifiesTab,optionsTab);
             }
             else
             {
-
+                if (tab == 0) tab = 1;
+                designer.AddTopic(rolesTab, modifiesTab, optionsTab);
             }
+
+            //見出し
+            designer.AddTopic(new MetaDialogString(4f,new string[] { "My Roles","Roles","Modifies","All Options"}[tab],TMPro.TextAlignmentOptions.Center,TMPro.FontStyles.Bold));
+
+            switch (tab)
+            {
+                case 0:
+                    Roles.Assignable? assignable = null;
+
+                    IEnumerator<MetaDialogContent> myRoleEnumerator()
+                    {
+                        if (Game.GameData.data == null) yield break;
+                        var data = Game.GameData.data.myData.getGlobalData();
+                        if (data == null) yield break;
+
+                        if (arg == 0) assignable = data.role;
+                        yield return new MetaDialogButton(1.3f, 0.36f,
+                       Helpers.cs(data.role.Color, Language.Language.GetString("role." + data.role.LocalizeName + ".name")),
+                       TMPro.FontStyles.Bold,
+                       () => { MetaDialog.EraseDialog(1); OpenHelpDialog(0, 0, options); });
+                        
+
+                        int index = 1;
+                        foreach (var r in data.extraRole)
+                        {
+                            var extraRole = r;
+                            int currentIndex = index;
+                            if (arg == index) assignable = extraRole;
+                            yield return new MetaDialogButton(1.3f, 0.36f,
+                      Helpers.cs(extraRole.Color, Language.Language.GetString("role." + extraRole.LocalizeName + ".name")),
+                      TMPro.FontStyles.Bold,
+                      () => { MetaDialog.EraseDialog(1); OpenHelpDialog(0, currentIndex, options); });
+
+                            index++;
+                        }
+                    }
+
+                    designer.AddEnumerableTopic(6,1,0, myRoleEnumerator(), (c) => {
+                        var text = ((MetaDialogButton)c).text;
+                        text.fontSizeMin = 0.5f;
+                        text.overflowMode = TMPro.TextOverflowModes.Ellipsis;
+                    });
+
+                    if(assignable!=null)AddRoleInfo(designer,assignable);
+
+                    break;
+                case 1:
+                    designer.AddRolesTopic((r) => r.category != Roles.RoleCategory.Complex, (r) => OpenAssignableHelpDialog(r), 5, 6, arg, (p) => {
+                        MetaDialog.EraseDialog(1);
+                        OpenHelpDialog(tab, arg + p, options);
+                    });
+                    break;
+                case 2:
+                    designer.AddModifyTopic((r) => true, (r) => OpenAssignableHelpDialog(r), 5, 6, arg,(p)=> {
+                        MetaDialog.EraseDialog(1);
+                        OpenHelpDialog(tab, arg + p, options);
+                        });
+                    break;
+                case 3:
+                    if (options == null) options = GameOptionStringGenerator.GenerateString(20);
+
+                    var designers = designer.SplitVertically(new float[] { 0.05f, 0.5f, 0.5f, 0.05f });
+
+                    for (int i = 0; i < 2; i++) if (options.Count > i + arg * 2) designers[1+i].AddTopic(new MetaDialogMultiString(designers[i+1].size.x,1f,options[i+arg*2],TMPro.TextAlignmentOptions.TopLeft,TMPro.FontStyles.Normal));
+
+                    designer.CustomUse(3.7f);
+                    designer.AddPageListTopic(arg,(options.Count+1)/2,(p)=> {
+                        MetaDialog.EraseDialog(1);
+                        OpenHelpDialog(tab, p, options);
+                    });
+
+
+                    break;
+            }
+
+            return designer;
         }
 
         public DialogueBox dialog { get; }

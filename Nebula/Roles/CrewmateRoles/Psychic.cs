@@ -7,6 +7,7 @@ using UnityEngine;
 using HarmonyLib;
 using Hazel;
 using Nebula.Objects;
+using Nebula.Utilities;
 
 namespace Nebula.Roles.CrewmateRoles
 {
@@ -23,13 +24,7 @@ namespace Nebula.Roles.CrewmateRoles
 
         private Sprite mapIconSprite = null;
 
-        private Sprite buttonSprite = null;
-        public Sprite getButtonSprite()
-        {
-            if (buttonSprite) return buttonSprite;
-            buttonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.SearchButton.png", 115f);
-            return buttonSprite;
-        }
+        private SpriteLoader buttonSprite =new SpriteLoader("Nebula.Resources.SearchButton.png", 115f);
 
         public Sprite getMapIconSprite()
         {
@@ -37,6 +32,11 @@ namespace Nebula.Roles.CrewmateRoles
             mapIconSprite = Helpers.loadSpriteFromResources("Nebula.Resources.PsychicMapIcon.png", 100f);
             return mapIconSprite;
         }
+
+        public override HelpSprite[] helpSprite => new HelpSprite[]
+        {
+            new HelpSprite(buttonSprite,"role.psychic.help.search",0.3f)
+        };
 
         public override void Initialize(PlayerControl __instance)
         {
@@ -54,7 +54,7 @@ namespace Nebula.Roles.CrewmateRoles
                 searchButton.Destroy();
             }
             searchButton = RoleSystem.TrackSystem.DeadBodySearch_ButtonInitialize(__instance, Arrows,
-                getButtonSprite(), searchDurationOption.getFloat(), searchCoolDownOption.getFloat()).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat()); ;
+                buttonSprite.GetSprite(), searchDurationOption.getFloat(), searchCoolDownOption.getFloat()).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat()); ;
             searchButton.SetLabel("button.label.search");
         }
 

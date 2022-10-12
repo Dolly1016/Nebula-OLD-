@@ -33,7 +33,7 @@ namespace Nebula.Patches
         {
             public static void Postfix(ExileController __instance)
             {
-                CustomOverlays.OnMeetingEnd();
+                
             }
         }
 

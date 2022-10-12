@@ -13,6 +13,8 @@ namespace Nebula.Roles.CrewmateRoles
 
         }
 
+        public override bool ShowInHelpWindow => false;
+
         public override bool CanBeLovers
         {
             get

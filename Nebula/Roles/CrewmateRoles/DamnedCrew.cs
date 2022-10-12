@@ -13,6 +13,8 @@ namespace Nebula.Roles.CrewmateRoles
         bool changeTrigger;
         public override RelatedRoleData[] RelatedRoleDataInfo { get => new RelatedRoleData[] { new RelatedRoleData(guardLeftId, "Damned Guard", 0, 20) }; }
 
+        public override bool ShowInHelpWindow => false;
+
         public override bool IsGuessableRole { get => false; }
         public override void GlobalInitialize(PlayerControl __instance)
         {

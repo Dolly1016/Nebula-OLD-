@@ -1088,7 +1088,8 @@ namespace Nebula.Module
             }
             return string.Join("\n", options);
         }
-        public static List<string> GenerateString()
+
+        public static List<string> GenerateString(int maxLines=28)
         {
             List<string> pages = new List<string>();
             pages.Add(PlayerControl.GameOptions.ToHudString(PlayerControl.AllPlayerControls.Count));
@@ -1169,7 +1170,6 @@ namespace Nebula.Module
                 }
             }
 
-            int maxLines = 28;
             int lineCount = 0;
             string page = "";
             foreach (var e in entries)

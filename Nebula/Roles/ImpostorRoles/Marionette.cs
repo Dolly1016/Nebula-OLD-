@@ -72,6 +72,13 @@ namespace Nebula.Roles.ImpostorRoles
         private SpriteLoader destroyButtonSprite = new SpriteLoader("Nebula.Resources.DecoyDestroyButton.png", 115f);
         private SpriteLoader monitorButtonSprite = new SpriteLoader("Nebula.Resources.DecoyMonitorButton.png", 115f);
 
+        public override HelpSprite[] helpSprite => new HelpSprite[]
+        {
+            new HelpSprite(decoyButtonSprite,"role.marionette.help.decoy",0.3f),
+            new HelpSprite(swapButtonSprite,"role.marionette.help.swap",0.3f),
+            new HelpSprite(monitorButtonSprite,"role.marionette.help.monitor",0.3f),
+            new HelpSprite(destroyButtonSprite,"role.marionette.help.destroy",0.3f)
+        };
         public override void LoadOptionData()
         {
             decoyDurationOption = CreateOption(Color.white, "decoyDuration", 45f, 15f, 300f, 5f);

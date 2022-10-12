@@ -9,6 +9,7 @@ using Nebula.Objects;
 using HarmonyLib;
 using Hazel;
 using Nebula.Game;
+using Nebula.Utilities;
 
 namespace Nebula.Roles.NeutralRoles
 {
@@ -58,13 +59,12 @@ namespace Nebula.Roles.NeutralRoles
             ventDurationOption.suffix = "second";
         }
 
-        Sprite infectSprite;
-        public Sprite getInfectButtonSprite()
+        SpriteLoader infectSprite= new SpriteLoader("Nebula.Resources.InfectButton.png", 115f);
+
+        public override HelpSprite[] helpSprite => new HelpSprite[]
         {
-            if (infectSprite) return infectSprite;
-            infectSprite = Helpers.loadSpriteFromResources("Nebula.Resources.InfectButton.png", 115f);
-            return infectSprite;
-        }
+            new HelpSprite(infectSprite,"role.empiric.help.infect",0.3f)
+        };
 
         public override void GlobalIntroInitialize(PlayerControl __instance)
         {
@@ -132,7 +132,7 @@ namespace Nebula.Roles.NeutralRoles
                     infectButtonString.text = $"{leftInfect}/{(int)maxInfectMyselfOption.getFloat()}";
                     return Game.GameData.data.myData.currentTarget!=null && PlayerControl.LocalPlayer.CanMove; },
                 () => { },
-                getInfectButtonSprite(),
+                infectSprite.GetSprite(),
                 new Vector3(-1.8f, -0.06f, 0),
                 __instance,
                 KeyCode.F,

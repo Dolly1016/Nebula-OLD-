@@ -8,6 +8,7 @@ using Nebula.Patches;
 using Nebula.Objects;
 using HarmonyLib;
 using Hazel;
+using Nebula.Utilities;
 
 namespace Nebula.Roles.ImpostorRoles
 {
@@ -43,7 +44,7 @@ namespace Nebula.Roles.ImpostorRoles
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
                 () => { return deadBodyId != Byte.MaxValue && PlayerControl.LocalPlayer.CanMove; },
                 () => { cleanButton.Timer = cleanButton.MaxTimer; },
-                getCleanButtonSprite(),
+                cleanButtonSprite.GetSprite(),
                 new Vector3(-1.8f, 0f, 0),
                 __instance,
                 KeyCode.F,
@@ -63,13 +64,13 @@ namespace Nebula.Roles.ImpostorRoles
 
 
         /* 画像 */
-        private Sprite cleanButtonSprite = null;
-        public Sprite getCleanButtonSprite()
+        private SpriteLoader cleanButtonSprite = new SpriteLoader("Nebula.Resources.CleanButton.png", 115f);
+
+        public override HelpSprite[] helpSprite => new HelpSprite[]
         {
-            if (cleanButtonSprite) return cleanButtonSprite;
-            cleanButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.CleanButton.png", 115f);
-            return cleanButtonSprite;
-        }
+            new HelpSprite(cleanButtonSprite,"role.cleaner.help.clean",0.3f)
+        };
+
         public override void MyPlayerControlUpdate()
         {
             if (PlayerControl.LocalPlayer.Data.IsDead) return;

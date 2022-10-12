@@ -7,6 +7,7 @@ using UnityEngine;
 using HarmonyLib;
 using Hazel;
 using Nebula.Objects;
+using Nebula.Utilities;
 
 namespace Nebula.Roles.CrewmateRoles
 {
@@ -23,13 +24,12 @@ namespace Nebula.Roles.CrewmateRoles
 
         private float lightLevel = 1f;
 
-        private Sprite buttonSprite = null;
-        public Sprite getButtonSprite()
+        private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.BoostButton.png", 115f);
+
+        public override HelpSprite[] helpSprite => new HelpSprite[]
         {
-            if (buttonSprite) return buttonSprite;
-            buttonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.BoostButton.png", 115f);
-            return buttonSprite;
-        }
+            new HelpSprite(buttonSprite,"role.comet.help.blaze",0.3f)
+        };
 
         public override void MyUpdate()
         {
@@ -74,7 +74,7 @@ namespace Nebula.Roles.CrewmateRoles
                     boostButton.actionButton.cooldownTimerText.color = Palette.EnabledColor;
                     RPCEventInvoker.UpdatePlayerVisibility(PlayerControl.LocalPlayer.PlayerId, true);
                 },
-                getButtonSprite(),
+                buttonSprite.GetSprite(),
                 new Vector3(-1.8f, 0f, 0),
                 __instance,
                 KeyCode.F,

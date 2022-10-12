@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Nebula.Patches;
 using Nebula.Objects;
+using Nebula.Utilities;
 
 namespace Nebula.Roles.ImpostorRoles
 {
@@ -32,13 +33,12 @@ namespace Nebula.Roles.ImpostorRoles
             return elecAnimSubTexture;
         }
 
-        private Sprite placeButtonSprite = null;
-        public Sprite getPlaceButtonSprite()
+        private SpriteLoader placeButtonSprite = new SpriteLoader("Nebula.Resources.ElecPolePlaceButton.png", 115f);
+
+        public override HelpSprite[] helpSprite => new HelpSprite[]
         {
-            if (placeButtonSprite) return placeButtonSprite;
-            placeButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.ElecPolePlaceButton.png", 115f);
-            return placeButtonSprite;
-        }
+            new HelpSprite(placeButtonSprite,"role.disturber.help.disturb",0.3f)
+        };
 
 
         private Module.CustomOption disturbCoolDownOption;
@@ -122,7 +122,7 @@ namespace Nebula.Roles.ImpostorRoles
                 () => {
                     elecButton.Timer = elecButton.MaxTimer;
                 },
-                getPlaceButtonSprite(),
+                placeButtonSprite.GetSprite(),
                 new Vector3(-1.8f, 0f, 0),
                 __instance,
                 KeyCode.F,

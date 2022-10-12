@@ -35,14 +35,16 @@ namespace Nebula.Patches
         static bool occurredSabotage = false, occurredKill = false, occurredReport = false;
         public static int meetingsCount = 0, maxMeetingsCount = 15;
 
-        static public int GetVotingTime(int defaultTime)
+        static public float GetPenaltyVotingTime()
         {
-            int time = defaultTime-(int)(Game.GameData.data.deadPlayers.Count * Game.GameData.data.GameRule.deathPenaltyForDiscussionTime);
-            if (time > 10)
+            float penalty= (Game.GameData.data.deadPlayers.Count * Game.GameData.data.GameRule.deathPenaltyForDiscussionTime);
+            int total = PlayerControl.GameOptions.VotingTime - (int)(Game.GameData.data.deadPlayers.Count * Game.GameData.data.GameRule.deathPenaltyForDiscussionTime);
+
+            if (total > 10)
             {
-                return time;
+                return penalty;
             }
-            return 10;
+            return (float)(PlayerControl.GameOptions.VotingTime - 10);
         }
 
         static public void Initialize()
@@ -52,9 +54,6 @@ namespace Nebula.Patches
             occurredReport = false;
             meetingsCount = 0;
             maxMeetingsCount = Game.GameData.data.GameRule.maxMeetingsCount;
-
-            //短縮させた会議時間を元に戻す
-            PlayerControl.GameOptions.VotingTime = Game.GameData.data.GameRule.vanillaVotingTime;
         }
 
 

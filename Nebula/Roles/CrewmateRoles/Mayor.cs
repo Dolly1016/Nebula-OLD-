@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Hazel;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Nebula.Roles.CrewmateRoles
 {
@@ -39,6 +33,10 @@ namespace Nebula.Roles.CrewmateRoles
         public override void OnVote(byte playerId, byte targetId)
         {
             RPCEventInvoker.RequireUniqueRPC(playerId,targetId);
+        }
+
+        public override void OnVoteCanceled(int weight) {
+            RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, votesId, weight);
         }
 
         public override void UniqueAction(byte actionId)
@@ -121,12 +119,11 @@ namespace Nebula.Roles.CrewmateRoles
 
         public override void MeetingUpdate(MeetingHud __instance, TMPro.TextMeshPro meetingInfo)
         {
+            
             int count= Game.GameData.data.myData.getGlobalData().GetRoleData(votesId);
 
-            meetingInfo.text = Language.Language.GetString("role.mayor.voteStockLeft") + ": " + count;
-            meetingInfo.gameObject.SetActive(true);
-
-            countText.text = numOfVote.ToString();
+            countText.text = numOfVote.ToString() + "/" + count;
+            
         }
 
         public override void LoadOptionData()

@@ -8,7 +8,7 @@ using HarmonyLib;
 using Hazel;
 using Nebula.Objects;
 using Nebula.Patches;
-
+using Nebula.Utilities;
 
 namespace Nebula.Roles.NeutralRoles
 {
@@ -61,7 +61,7 @@ namespace Nebula.Roles.NeutralRoles
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
                 () => { return shiftPlayer == null && Game.GameData.data.myData.currentTarget != null && PlayerControl.LocalPlayer.CanMove; },
                 () => { shiftButton.Timer = shiftButton.MaxTimer; },
-                getButtonSprite(),
+                buttonSprite.GetSprite(),
                 new Vector3(-1.8f, 0, 0),
                 __instance,
                 KeyCode.F,
@@ -96,13 +96,12 @@ namespace Nebula.Roles.NeutralRoles
         public byte deadBodyId;
 
         /* 画像 */
-        private Sprite buttonSprite = null;
-        public Sprite getButtonSprite()
+        private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.ChainShiftButton.png", 115f);
+
+        public override HelpSprite[] helpSprite => new HelpSprite[]
         {
-            if (buttonSprite) return buttonSprite;
-            buttonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.ChainShiftButton.png", 115f);
-            return buttonSprite;
-        }
+            new HelpSprite(buttonSprite,"role.chainShifter.help.shift",0.3f)
+        };
 
         public override void Initialize(PlayerControl __instance)
         {

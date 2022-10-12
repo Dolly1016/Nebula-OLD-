@@ -13,8 +13,6 @@ namespace Nebula.Roles.MetaRoles
     {
         static public Color RoleColor = new Color(173f / 255f, 173f / 255f, 198f / 255f);
 
-        private Module.CustomOption killerCanKnowBaitKillByFlash;
-
         public override void OnSetTasks(ref List<GameData.TaskInfo> initialTasks, ref List<GameData.TaskInfo>? actualTasks)
         {
             initialTasks.Clear();
@@ -343,7 +341,7 @@ namespace Nebula.Roles.MetaRoles
                 }));
             dialog.AddTopic(new MetaDialogButton(2.6f, 0.4f, "Emergency Meeting", TMPro.FontStyles.Bold, () => {
                 PlayerControl.LocalPlayer.CmdReportDeadBody(null);
-                dialog.dialog.Close();
+                MetaDialog.EraseDialogAll();
             }));
             dialog.AddTopic(new MetaDialogButton(2f, 0.4f, Helpers.cs(Palette.ImpostorRed, "End Game"), TMPro.FontStyles.Bold, () =>
                  {
@@ -395,9 +393,19 @@ namespace Nebula.Roles.MetaRoles
             voidButton = new CustomButton(
                 () =>
                 {
-                    var dialog = MetaDialog.OpenDialog(new Vector2(2f, 1.8f), "VOID");
+                    float height = 1.8f;
+                    if (MeetingHud.Instance) height += 0.52f;
+                    var dialog = MetaDialog.OpenDialog(new Vector2(2f, height), "VOID");
                     dialog.AddButton(1.6f, "General", "General").OnClick.AddListener((UnityEngine.Events.UnityAction)(()=> OpenGeneralDialog()));
                     dialog.AddButton(1.6f, "Players", "Players").OnClick.AddListener((UnityEngine.Events.UnityAction)(() => OpenPlayersDialog()));
+                    if (MeetingHud.Instance)
+                    {
+                        dialog.AddButton(1.6f, "SkipMeeting", Helpers.cs(Palette.ImpostorRed, "Skip Meeting")).OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
+                        {
+                            MeetingHud.Instance.RpcVotingComplete(new UnhollowerBaseLib.Il2CppStructArray<MeetingHud.VoterState>(0), null, true);
+                            MetaDialog.EraseDialog(dialog.dialog);
+                        }));
+                    }
                 },
                 () => true,
                 () => MetaDialog.dialogOrder.Count == 0,

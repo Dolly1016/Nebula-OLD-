@@ -37,13 +37,12 @@ namespace Nebula.Roles.CrewmateRoles
             madmateKillCoolDownOption.suffix = "second";
         }
 
-        private Sprite buttonSprite = null;
-        public Sprite getButtonSprite()
+        private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.AgentButton.png",115f);
+
+        public override HelpSprite[] helpSprite => new HelpSprite[]
         {
-            if (buttonSprite) return buttonSprite;
-            buttonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.AgentButton.png", 115f);
-            return buttonSprite;
-        }
+            new HelpSprite(buttonSprite,"role.agent.help.agent",0.3f)
+        };
 
         public override void GlobalInitialize(PlayerControl __instance)
         {
@@ -70,7 +69,7 @@ namespace Nebula.Roles.CrewmateRoles
 
                 },
                 () => { agentButton.Timer = 0; },
-                getButtonSprite(),
+                buttonSprite.GetSprite(),
                 new Vector3(-1.8f, 0, 0),
                 __instance,
                 KeyCode.F,

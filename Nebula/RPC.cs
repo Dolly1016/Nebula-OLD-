@@ -351,7 +351,6 @@ namespace Nebula
             Patches.EmergencyPatch.Initialize();
             Objects.Ghost.Initialize();
             Objects.SoundPlayer.Initialize();
-            Patches.CustomOverlays.Reset();
         }
             
         public static void SetMyColor(byte playerId, Color color, byte shadowType)
@@ -746,7 +745,7 @@ namespace Nebula
             }
             role.ReflectRoleEyesight(player.Data.Role);
 
-            data.CleanRoleDataInGame(roleData);
+            data.CleanRoleDataInGame(null);
            
             data.role.GlobalInitialize(player);
 
@@ -757,6 +756,8 @@ namespace Nebula
                 Objects.CustomButton.ButtonActivate();
                 Game.GameData.data.myData.VentCoolDownTimer = data.role.VentCoolDownMaxTimer;
             }
+
+            if(roleData!=null) data.CleanRoleDataInGame(roleData);
 
             //役職遍歴を追加する
             data.AddRoleHistory();

@@ -8,7 +8,7 @@ using Nebula.Patches;
 using Nebula.Objects;
 using HarmonyLib;
 using Hazel;
-
+using Nebula.Utilities;
 
 namespace Nebula.Roles.ImpostorRoles
 {
@@ -25,13 +25,12 @@ namespace Nebula.Roles.ImpostorRoles
         public override RelatedRoleData[] RelatedRoleDataInfo { get => new RelatedRoleData[] { new RelatedRoleData(eraseCountId, "Erased Roles", 0, 20) }; }
 
 
-        private Sprite buttonSprite = null;
-        public Sprite getButtonSprite()
+        private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.EraseButton.png", 115f);
+
+        public override HelpSprite[] helpSprite => new HelpSprite[]
         {
-            if (buttonSprite) return buttonSprite;
-            buttonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.EraseButton.png", 115f);
-            return buttonSprite;
-        }
+            new HelpSprite(buttonSprite,"role.eraser.help.erase",0.3f)
+        };
 
         public override void OnRoleRelationSetting()
         {
@@ -82,7 +81,7 @@ namespace Nebula.Roles.ImpostorRoles
                 () => {
                     eraserButton.Timer = eraserButton.MaxTimer + eraseCoolDownAdditionOption.getFloat() * PlayerControl.LocalPlayer.GetModData().GetRoleData(eraseCountId); 
                 },
-                getButtonSprite(),
+                buttonSprite.GetSprite(),
                 new Vector3(-1.8f, 0, 0),
                 __instance,
                 KeyCode.F,true, eraseDurationOption.getFloat(),

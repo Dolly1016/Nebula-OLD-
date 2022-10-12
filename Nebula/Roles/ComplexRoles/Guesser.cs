@@ -18,6 +18,10 @@ namespace Nebula.Roles.ComplexRoles
 
         static public Color RoleColor = new Color(255f / 255f, 255f / 255f, 0f / 255f);
 
+        public override HelpSprite[] helpSprite => new HelpSprite[] {
+            new HelpSprite(FGuesser.targetSprite,"role.guesser.help.guess",0.7f)
+        };
+
         public override Patches.AssignRoles.RoleAllocation[] GetComplexAllocations()
         {
             if (!secondoryRoleOption.getBool())
@@ -29,13 +33,7 @@ namespace Nebula.Roles.ComplexRoles
 
         public int remainShotsId { get; private set; }
 
-        private static Sprite targetSprite;
-        public static Sprite getTargetSprite()
-        {
-            if (targetSprite) return targetSprite;
-            targetSprite = Helpers.loadSpriteFromResources("Nebula.Resources.TargetIcon.png", 150f);
-            return targetSprite;
-        }
+        public static SpriteLoader targetSprite=new SpriteLoader("Nebula.Resources.TargetIcon.png",150f);
 
         public override bool IsSecondaryGenerator { get { return secondoryRoleOption.getBool(); } }
 
@@ -226,7 +224,7 @@ namespace Nebula.Roles.ComplexRoles
                     targetBox.name = "ShootButton";
                     targetBox.transform.localPosition = new Vector3(-0.95f, 0.03f, -1f);
                     SpriteRenderer renderer = targetBox.GetComponent<SpriteRenderer>();
-                    renderer.sprite = ComplexRoles.FGuesser.getTargetSprite();
+                    renderer.sprite = ComplexRoles.FGuesser.targetSprite.GetSprite();
                     PassiveButton button = targetBox.GetComponent<PassiveButton>();
                     button.OnClick.RemoveAllListeners();
                     int copiedIndex = i;
@@ -262,6 +260,9 @@ namespace Nebula.Roles.ComplexRoles
             IsGuessableRole = false;
             IsHideRole = true;
         }
+
+        public override Assignable AssignableOnHelp => Roles.F_Guesser;
+        public override HelpSprite[] helpSprite => Roles.F_Guesser.helpSprite;
 
         public override void GlobalInitialize(PlayerControl __instance)
         {
@@ -299,6 +300,9 @@ namespace Nebula.Roles.ComplexRoles
         {
             IsHideRole = true;
         }
+
+        public override Assignable AssignableOnHelp => Roles.F_Guesser;
+        public override HelpSprite[] helpSprite => Roles.F_Guesser.helpSprite;
 
         private void _sub_Assignment(Patches.AssignMap assignMap,List<byte> players,int count)
         {

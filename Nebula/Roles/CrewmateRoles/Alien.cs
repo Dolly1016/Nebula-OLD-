@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Hazel;
 using UnityEngine;
 using Nebula.Objects;
+using Nebula.Utilities;
 
 namespace Nebula.Roles.CrewmateRoles
 {
@@ -41,14 +42,12 @@ namespace Nebula.Roles.CrewmateRoles
 
         static public Color RoleColor = new Color(187f / 255f, 109f / 255f, 178f / 255f);
 
-        private Sprite buttonSprite = null;
-        public Sprite getButtonSprite()
-        {
-            if (buttonSprite) return buttonSprite;
-            buttonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.EMIButton.png", 115f);
-            return buttonSprite;
-        }
+        private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.EMIButton.png", 115f);
 
+        public override HelpSprite[] helpSprite => new HelpSprite[]
+        {
+            new HelpSprite(buttonSprite,"role.alien.help.emi",0.3f)
+        };
 
         public override void GlobalUpdate(byte playerId)
         {
@@ -112,7 +111,7 @@ namespace Nebula.Roles.CrewmateRoles
                     emiButton.isEffectActive = false;
                     emiButton.actionButton.cooldownTimerText.color = Palette.EnabledColor;
                 },
-                getButtonSprite(),
+                buttonSprite.GetSprite(),
                 new Vector3(-1.8f, 0, 0),
                 __instance,
                 KeyCode.F,

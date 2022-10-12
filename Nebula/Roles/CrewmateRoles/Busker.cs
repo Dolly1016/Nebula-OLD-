@@ -20,23 +20,16 @@ namespace Nebula.Roles.CrewmateRoles
         private Module.CustomOption buskCoolDownOption;
         private Module.CustomOption buskDurationOption;
 
-        private Sprite pseudocideButtonSprite = null;
-        private Sprite reviveButtonSprite = null;
+        private SpriteLoader pseudocideButtonSprite = new SpriteLoader("Nebula.Resources.BuskPseudocideButton.png",115f);
+        private SpriteLoader reviveButtonSprite = new SpriteLoader("Nebula.Resources.BuskReviveButton.png",115f);
+
+        public override HelpSprite[] helpSprite => new HelpSprite[]
+        {
+            new HelpSprite(pseudocideButtonSprite,"role.busker.help.pseudocide",0.3f),
+            new HelpSprite(reviveButtonSprite,"role.busker.help.revive",0.3f)
+        };
 
         private bool pseudocideFlag = false;
-        public Sprite getPseudocideButtonSprite()
-        {
-            if (pseudocideButtonSprite) return pseudocideButtonSprite;
-            pseudocideButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.BuskPseudocideButton.png", 115f);
-            return pseudocideButtonSprite;
-        }
-
-        public Sprite getRiviveButtonSprite()
-        {
-            if (reviveButtonSprite) return reviveButtonSprite;
-            reviveButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.BuskReviveButton.png", 115f);
-            return reviveButtonSprite;
-        }
 
         private void dieBusker()
         {
@@ -97,7 +90,7 @@ namespace Nebula.Roles.CrewmateRoles
                     FastDestroyableSingleton<HudManager>.Instance.ShadowQuad.gameObject.SetActive(true);
                     pseudocideFlag = true;
 
-                    buskButton.Sprite = getRiviveButtonSprite();
+                    buskButton.Sprite = reviveButtonSprite.GetSprite();
                     buskButton.SetLabel("button.label.busker.revive");
                 },
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead || checkPseudocide(); },
@@ -106,7 +99,7 @@ namespace Nebula.Roles.CrewmateRoles
                 {
                     buskButton.Timer = buskButton.MaxTimer;
                 },
-                getPseudocideButtonSprite(),
+                pseudocideButtonSprite.GetSprite(),
                 new Vector3(-1.8f, 0f, 0),
                 __instance,
                 KeyCode.F,
@@ -128,7 +121,7 @@ namespace Nebula.Roles.CrewmateRoles
                 buskButton.isEffectActive = false;
                 buskButton.actionButton.cooldownTimerText.color = Palette.EnabledColor;
 
-                buskButton.Sprite = getPseudocideButtonSprite();
+                buskButton.Sprite = pseudocideButtonSprite.GetSprite();
                 buskButton.SetLabel("button.label.busker.pseudocide");
                 pseudocideFlag = false;
             });

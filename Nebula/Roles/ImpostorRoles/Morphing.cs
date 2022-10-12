@@ -8,6 +8,7 @@ using Nebula.Patches;
 using Nebula.Objects;
 using HarmonyLib;
 using Hazel;
+using Nebula.Utilities;
 
 namespace Nebula.Roles.ImpostorRoles
 {
@@ -46,22 +47,14 @@ namespace Nebula.Roles.ImpostorRoles
         private Game.PlayerData.PlayerOutfitData morphOutfit;
         private Objects.Arrow? arrow;
 
-        private Sprite sampleButtonSprite = null;
-        public Sprite getSampleButtonSprite()
-        {
-            if (sampleButtonSprite) return sampleButtonSprite;
-            sampleButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.SampleButton.png", 115f);
-            return sampleButtonSprite;
-        }
+        private SpriteLoader sampleButtonSprite = new SpriteLoader("Nebula.Resources.SampleButton.png", 115f);
+        private SpriteLoader morphButtonSprite = new SpriteLoader("Nebula.Resources.MorphButton.png", 115f);
 
-        private Sprite morphButtonSprite = null;
-        public Sprite getMorphButtonSprite()
+        public override HelpSprite[] helpSprite => new HelpSprite[]
         {
-            if (morphButtonSprite) return morphButtonSprite;
-            morphButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.MorphButton.png", 115f);
-            return morphButtonSprite;
-        }
-
+            new HelpSprite(sampleButtonSprite,"role.morphing.help.sample",0.3f),
+            new HelpSprite(morphButtonSprite,"role.morphing.help.morph",0.3f)
+        };
 
         public override void LoadOptionData()
         {
@@ -89,7 +82,7 @@ namespace Nebula.Roles.ImpostorRoles
                         morphButton.isEffectActive = false;
                         morphTarget = Game.GameData.data.myData.currentTarget;
                         Game.GameData.data.myData.currentTarget = null;
-                        morphButton.Sprite = getMorphButtonSprite();
+                        morphButton.Sprite = morphButtonSprite.GetSprite();
                         morphButton.SetLabel("button.label.morph");
                         morphOutfit = morphTarget.GetModData().GetOutfitData(50).Clone(80);
                     }
@@ -106,7 +99,7 @@ namespace Nebula.Roles.ImpostorRoles
                     morphButton.actionButton.cooldownTimerText.color = Palette.EnabledColor;
                     RPCEventInvoker.MorphCancel();
                 },
-                getSampleButtonSprite(),
+                sampleButtonSprite.GetSprite(),
                 new Vector3(-1.8f, 0f, 0),
                 __instance,
                 KeyCode.F,
@@ -138,7 +131,7 @@ namespace Nebula.Roles.ImpostorRoles
         public override void OnMeetingEnd()
         {
             morphTarget = null;
-            morphButton.Sprite = getSampleButtonSprite();
+            morphButton.Sprite = sampleButtonSprite.GetSprite();
             morphButton.SetLabel("button.label.sample");
         }
 

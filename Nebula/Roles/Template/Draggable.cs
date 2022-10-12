@@ -9,6 +9,7 @@ using Nebula.Objects;
 using HarmonyLib;
 using Hazel;
 using Nebula.Game;
+using Nebula.Utilities;
 
 namespace Nebula.Roles.Template
 {
@@ -46,7 +47,7 @@ namespace Nebula.Roles.Template
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
                 () => { return PlayerControl.LocalPlayer.CanMove && (Game.GameData.data.myData.getGlobalData().dragPlayerId != Byte.MaxValue|| deadBodyId!=Byte.MaxValue); },
                 () => { },
-                getButtonSprite(),
+                DaDSprite.GetSprite(),
                 new Vector3(-1.8f, 0f, 0),
                 __instance,
                 KeyCode.F,
@@ -70,14 +71,8 @@ namespace Nebula.Roles.Template
 
         /* 画像 */
 
-        private Sprite ButtonSprite = null;
-        public Sprite getButtonSprite()
-        {
-            if (ButtonSprite) return ButtonSprite;
-            ButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.DragAndDropButton.png", 115f);
-            return ButtonSprite;
-        }
-
+        protected SpriteLoader DaDSprite = new SpriteLoader("Nebula.Resources.DragAndDropButton.png", 115f);
+        
         /* 各種変数 */
         public byte deadBodyId;
 

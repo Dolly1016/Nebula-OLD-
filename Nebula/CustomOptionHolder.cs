@@ -24,7 +24,7 @@ namespace Nebula
         {
             vanillaVotingTime = PlayerControl.GameOptions.VotingTime;
 
-            if (CustomOptionHolder.emergencyOptions.getBool())
+            if (CustomOptionHolder.meetingOptions.getBool())
             {
                 deathPenaltyForDiscussionTime = CustomOptionHolder.deathPenaltyForDiscussionTime.getFloat();
                 canUseEmergencyWithoutDeath = CustomOptionHolder.canUseEmergencyWithoutDeath.getBool();
@@ -112,13 +112,15 @@ namespace Nebula
         public static CustomOption RitualSearchableDistanceOption;
         
 
-        public static CustomOption emergencyOptions;
+        public static CustomOption meetingOptions;
         public static CustomOption maxNumberOfMeetings;
         public static CustomOption deathPenaltyForDiscussionTime;
         public static CustomOption canUseEmergencyWithoutDeath;
         public static CustomOption canUseEmergencyWithoutSabotage;
         public static CustomOption canUseEmergencyWithoutReport;
         public static CustomOption severeEmergencyLock;
+        public static CustomOption canSkip;
+        public static CustomOption dealAbstentionAsSelfVote;
 
         public static CustomOption limiterOptions;
         public static CustomOption timeLimitOption;
@@ -236,14 +238,16 @@ namespace Nebula
             RitualSearchCoolDownOption = CustomOption.Create(10025, Color.white, "option.searchCoolDown", 10f, 2.5f, 30f, 2.5f, RitualOption, false, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.Ritual);
             RitualSearchableDistanceOption = CustomOption.Create(10026, Color.white, "option.searchableDistance", 2.5f, 1.25f, 10f, 1.25f, RitualOption, false, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.Ritual);
 
-            emergencyOptions = CustomOption.Create(10100, Color.white, "option.emergencyOptions", false, null, true, false, "", CustomOptionTab.Settings).SetGameMode(~(CustomGameMode.Minigame | CustomGameMode.Ritual));
-            maxNumberOfMeetings = CustomOption.Create(10101, Color.white, "option.maxNumberOfMeetings", 10, 0, 15, 1, emergencyOptions).SetGameMode(~CustomGameMode.Minigame);
-            deathPenaltyForDiscussionTime = CustomOption.Create(10102, Color.white, "option.deathPenaltyForDiscussionTime", 5f, 0f, 30f, 1f, emergencyOptions).SetGameMode(~CustomGameMode.Minigame);
+            meetingOptions = CustomOption.Create(10100, Color.white, "option.meetingOptions", false, null, true, false, "", CustomOptionTab.Settings).SetGameMode(~(CustomGameMode.Minigame | CustomGameMode.Ritual));
+            maxNumberOfMeetings = CustomOption.Create(10101, Color.white, "option.maxNumberOfMeetings", 10, 0, 15, 1, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
+            deathPenaltyForDiscussionTime = CustomOption.Create(10102, Color.white, "option.deathPenaltyForDiscussionTime", 5f, 0f, 30f, 1f, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
             deathPenaltyForDiscussionTime.suffix = "second";
-            canUseEmergencyWithoutDeath = CustomOption.Create(10103, Color.white, "option.canUseEmergencyWithoutDeath", false, emergencyOptions).SetGameMode(~CustomGameMode.Minigame);
-            canUseEmergencyWithoutSabotage = CustomOption.Create(10104, Color.white, "option.canUseEmergencyWithoutSabotage", false, emergencyOptions).SetGameMode(~CustomGameMode.Minigame);
-            canUseEmergencyWithoutReport = CustomOption.Create(10105, Color.white, "option.canUseEmergencyWithoutReport", false, emergencyOptions).SetGameMode(~CustomGameMode.Minigame);
-            severeEmergencyLock = CustomOption.Create(10109, Color.white, "option.severeEmergencyLock", false, emergencyOptions).SetGameMode(~CustomGameMode.Minigame);
+            canUseEmergencyWithoutDeath = CustomOption.Create(10103, Color.white, "option.canUseEmergencyWithoutDeath", false, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
+            canUseEmergencyWithoutSabotage = CustomOption.Create(10104, Color.white, "option.canUseEmergencyWithoutSabotage", false, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
+            canUseEmergencyWithoutReport = CustomOption.Create(10105, Color.white, "option.canUseEmergencyWithoutReport", false, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
+            severeEmergencyLock = CustomOption.Create(10109, Color.white, "option.severeEmergencyLock", false, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
+            canSkip = CustomOption.Create(10110, Color.white, "option.canSkip", true, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
+            dealAbstentionAsSelfVote = CustomOption.Create(10111, Color.white, "option.dealAbstentionAsSelfVote", false, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
 
             mapOptions = CustomOption.Create(10120, Color.white, "option.mapOptions", false, null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.All);
             dynamicMap = CustomOption.Create(10121, Color.white, "option.playRandomMaps", false, mapOptions).SetGameMode(CustomGameMode.All);

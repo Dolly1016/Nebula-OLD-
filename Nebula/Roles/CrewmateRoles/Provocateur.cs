@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Hazel;
 using UnityEngine;
 using Nebula.Objects;
+using Nebula.Utilities;
 
 namespace Nebula.Roles.CrewmateRoles
 {
@@ -20,14 +21,11 @@ namespace Nebula.Roles.CrewmateRoles
         private Module.CustomOption embroilCoolDownAdditionOption;
         private Module.CustomOption embroilDurationOption;
 
-        private Sprite buttonSprite = null;
-
-        public Sprite getButtonSprite()
+        private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.EmbroilButton.png", 115f);
+        public override HelpSprite[] helpSprite => new HelpSprite[]
         {
-            if (buttonSprite) return buttonSprite;
-            buttonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.EmbroilButton.png", 115f);
-            return buttonSprite;
-        }
+            new HelpSprite(buttonSprite,"role.provocateur.help.embroil",0.3f)
+        };
 
         public override void OnMurdered(byte murderId)
         {
@@ -68,7 +66,7 @@ namespace Nebula.Roles.CrewmateRoles
                     embroilButton.Timer = embroilButton.MaxTimer;
                     embroilButton.isEffectActive = false;
                 },
-                getButtonSprite(),
+                buttonSprite.GetSprite(),
                 new Vector3(-1.8f, 0, 0),
                 __instance,
                 KeyCode.F,

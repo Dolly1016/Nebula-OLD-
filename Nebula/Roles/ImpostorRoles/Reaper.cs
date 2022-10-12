@@ -14,6 +14,11 @@ namespace Nebula.Roles.ImpostorRoles
 {
     public class Reaper : Template.Draggable
     {
+        public override HelpSprite[] helpSprite => new HelpSprite[]
+        {
+            new HelpSprite(DaDSprite,"role.reaper.help.dragAndDrop",0.3f)
+        };
+
         private Module.CustomOption ventCoolDownOption;
         private Module.CustomOption ventDurationOption;
         private void ConnectVent(bool connect)

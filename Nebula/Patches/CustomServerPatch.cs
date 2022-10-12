@@ -16,8 +16,8 @@ namespace Nebula.Patches
         private static ConfigEntry<string> SaveIp;
         private static ConfigEntry<ushort> SavePort;
 
-        private static TextBoxTMP ipField;
-        private static TextBoxTMP portField;
+        private static TextBoxTMP? ipField=null;
+        private static TextBoxTMP? portField=null;
 
         public static IRegionInfo[] defaultRegions;
         public static void UpdateRegions()

@@ -7,6 +7,7 @@ using UnityEngine;
 using HarmonyLib;
 using Hazel;
 using Nebula.Objects;
+using Nebula.Utilities;
 
 namespace Nebula.Roles.CrewmateRoles
 {
@@ -30,21 +31,14 @@ namespace Nebula.Roles.CrewmateRoles
         private Module.CustomOption ventCoolDownOption;
         private Module.CustomOption ventDurationOption;
 
-        private Sprite sealButtonSprite=null;
-        public Sprite getSealButtonSprite()
-        {
-            if (sealButtonSprite) return sealButtonSprite;
-            sealButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.CloseVentButton.png", 115f);
-            return sealButtonSprite;
-        }
+        private SpriteLoader sealButtonSprite=new SpriteLoader("Nebula.Resouces.CloseVentButton.png",115f);
+        private SpriteLoader repairButtonSprite = new SpriteLoader("Nebula.Resouces.RepairButton.png", 115f);
 
-        private Sprite repairButtonSprite = null;
-        public Sprite getRepairButtonSprite()
+        public override HelpSprite[] helpSprite => new HelpSprite[]
         {
-            if (repairButtonSprite) return repairButtonSprite;
-            repairButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.RepairButton.png", 115f);
-            return repairButtonSprite;
-        }
+            new HelpSprite(sealButtonSprite,"role.navvy.help.seal",0.3f),
+            new HelpSprite(repairButtonSprite,"role.navvy.help.repair",0.3f)
+        };
 
         private Sprite ventSealedSprite=null;
         public Sprite getVentSealedSprite()
@@ -165,7 +159,7 @@ namespace Nebula.Roles.CrewmateRoles
                     
                 },
                 () => { sealButton.Timer = sealButton.MaxTimer; },
-                getSealButtonSprite(),
+                sealButtonSprite.GetSprite(),
                 new Vector3(-1.8f, 0f, 0),
                 __instance,
                 KeyCode.F,
@@ -190,7 +184,7 @@ namespace Nebula.Roles.CrewmateRoles
 
                 },
                 () => { repairButton.Timer = 0; },
-                getRepairButtonSprite(),
+                repairButtonSprite.GetSprite(),
                 new Vector3(0f, 1f, 0),
                 __instance,
                 KeyCode.F,

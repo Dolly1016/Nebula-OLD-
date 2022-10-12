@@ -103,7 +103,7 @@ namespace Nebula.Roles.ExtraRoles
             {
                 if (player.Data.IsDead) continue;
                 if (player.GetModData().role != Roles.Avenger) continue;
-                if (player.GetModData().GetExtraRoleData(Roles.Lover) != data.GetExtraRoleData(this)) continue;
+                if (player.GetModData().GetRoleData(Roles.Avenger.loversId) != (int)data.GetExtraRoleData(this)) continue;
 
                 avenger = player;
                 break;

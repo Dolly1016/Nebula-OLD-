@@ -20,7 +20,11 @@ namespace Nebula.Roles.ImpostorRoles
 
         private SpriteLoader sampleButtonSprite = new SpriteLoader("Nebula.Resources.SampleButton.png", 115f);
         private SpriteLoader paintButtonSprite = new SpriteLoader("Nebula.Resources.MorphButton.png", 115f);
-
+        public override HelpSprite[] helpSprite => new HelpSprite[]
+        {
+            new HelpSprite(sampleButtonSprite,"role.painter.help.sample",0.3f),
+            new HelpSprite(paintButtonSprite,"role.painter.help.paint",0.3f)
+        };
         public override void LoadOptionData()
         {
             sampleCoolDownOption = CreateOption(Color.white, "sampleCoolDown", 10f, 2.5f, 30f, 2.5f);

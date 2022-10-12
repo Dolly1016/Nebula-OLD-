@@ -7,6 +7,7 @@ using UnityEngine;
 using HarmonyLib;
 using Hazel;
 using Nebula.Objects;
+using Nebula.Utilities;
 
 namespace Nebula.Roles.CrewmateRoles
 {
@@ -25,13 +26,11 @@ namespace Nebula.Roles.CrewmateRoles
 
         private Dictionary<byte, List<Role>> divineResult = new Dictionary<byte, List<Role>>();
 
-        private Sprite buttonSprite = null;
-        public Sprite getButtonSprite()
+        private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.OracleButton.png", 115f);
+        public override HelpSprite[] helpSprite => new HelpSprite[]
         {
-            if (buttonSprite) return buttonSprite;
-            buttonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.OracleButton.png", 115f);
-            return buttonSprite;
-        }
+            new HelpSprite(buttonSprite,"role.oracle.help.oracle", 0.3f)
+        };
 
         public override void MyPlayerControlUpdate()
         {
@@ -73,7 +72,7 @@ namespace Nebula.Roles.CrewmateRoles
                     }
                     return Game.GameData.data.myData.currentTarget && PlayerControl.LocalPlayer.CanMove; },
                 () => { oracleButton.Timer = oracleButton.MaxTimer; },
-                getButtonSprite(),
+                buttonSprite.GetSprite(),
                 new Vector3(-1.8f, 0f, 0),
                 __instance,
                 KeyCode.F,

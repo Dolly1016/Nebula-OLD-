@@ -304,13 +304,11 @@ namespace Nebula.Roles.ExtraRoles
 
         private CustomButton involveButton;
 
-        private Sprite buttonSprite = null;
-        public Sprite getButtonSprite()
+        private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.InvolveButton.png", 115f);
+        public override HelpSprite[] helpSprite => new HelpSprite[]
         {
-            if (buttonSprite) return buttonSprite;
-            buttonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.InvolveButton.png", 115f);
-            return buttonSprite;
-        }
+            new HelpSprite(buttonSprite,"role.lover.help.involve",0.3f)
+        };
 
         public override void MyPlayerControlUpdate()
         {
@@ -391,7 +389,7 @@ namespace Nebula.Roles.ExtraRoles
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
                 () => { return trilemmaTarget && PlayerControl.LocalPlayer.CanMove; },
                 () => { },
-                getButtonSprite(),
+                buttonSprite.GetSprite(),
                 new Vector3(0f, 1f, 0f),
                 __instance,
                 KeyCode.Z,

@@ -7,6 +7,7 @@ using UnityEngine;
 using HarmonyLib;
 using Hazel;
 using Nebula.Objects;
+using Nebula.Utilities;
 
 namespace Nebula.Roles.NeutralRoles
 {
@@ -64,7 +65,7 @@ namespace Nebula.Roles.NeutralRoles
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
                 () => { return deadBodyId != Byte.MaxValue && PlayerControl.LocalPlayer.CanMove; },
                 () => { eatButton.Timer = eatButton.MaxTimer; },
-                getEatButtonSprite(),
+                eatButtonSprite.GetSprite(),
                 new Vector3(-1.8f, 0, 0),
                 __instance,
                 KeyCode.F,
@@ -83,13 +84,13 @@ namespace Nebula.Roles.NeutralRoles
         public override RelatedRoleData[] RelatedRoleDataInfo { get => new RelatedRoleData[] { new RelatedRoleData(eatLeftId, "Eat Left", 0, 20) }; }
 
         /* 画像 */
-        private Sprite eatButtonSprite = null;
-        public Sprite getEatButtonSprite()
+        private SpriteLoader eatButtonSprite = new SpriteLoader("Nebula.Resources.EatButton.png", 115f);
+
+        public override HelpSprite[] helpSprite => new HelpSprite[]
         {
-            if (eatButtonSprite) return eatButtonSprite;
-            eatButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.EatButton.png", 115f);
-            return eatButtonSprite;
-        }
+            new HelpSprite(eatButtonSprite,"role.vulture.help.eat",0.3f)
+        };
+
         public override void MyPlayerControlUpdate()
         {
             if (PlayerControl.LocalPlayer.Data.IsDead) return;

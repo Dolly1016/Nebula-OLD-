@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Nebula.Objects;
+using Nebula.Utilities;
 
 namespace Nebula.Roles.NeutralRoles
 {
@@ -22,13 +23,12 @@ namespace Nebula.Roles.NeutralRoles
 
         private Objects.CustomButton blankButton;
 
-        private Sprite blankButtonSprite = null;
-        public Sprite getBlankButtonSprite()
+        private SpriteLoader blankButtonSprite = new SpriteLoader("Nebula.Resources.SnipeButton.png", 115f);
+        public override HelpSprite[] helpSprite => new HelpSprite[]
         {
-            if (blankButtonSprite) return blankButtonSprite;
-            blankButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.SnipeButton.png", 115f);
-            return blankButtonSprite;
-        }
+            new HelpSprite(DaDSprite,"role.jester.help.dragAndDrop",0.3f),
+            new HelpSprite(blankButtonSprite,"role.jester.help.blank",0.3f)
+        };
 
         public override bool OnExiledPost(byte[] voters,byte playerId)
         {
@@ -94,7 +94,7 @@ namespace Nebula.Roles.NeutralRoles
                     () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
                     () => { return PlayerControl.LocalPlayer.CanMove; },
                     () => { blankButton.Timer = blankButton.MaxTimer; },
-                    getBlankButtonSprite(),
+                    blankButtonSprite.GetSprite(),
                     new Vector3(0f, 1f, 0),
                     __instance,
                     KeyCode.Q,

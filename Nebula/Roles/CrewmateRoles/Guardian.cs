@@ -4,6 +4,7 @@ using System.Text;
 using UnityEngine;
 using Nebula.Objects;
 using Nebula.Module;
+using Nebula.Utilities;
 
 namespace Nebula.Roles.CrewmateRoles
 {
@@ -136,21 +137,14 @@ namespace Nebula.Roles.CrewmateRoles
             __instance.GetModData().SetRoleData(remainAntennasId, (int)maxAntennaOption.getFloat());
         }
 
-        private static Sprite placeButtonSprite;
-        public static Sprite getPlaceButtonSprite()
-        {
-            if (placeButtonSprite) return placeButtonSprite;
-            placeButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.AntennaButton.png", 115f);
-            return placeButtonSprite;
-        }
+        private static SpriteLoader placeButtonSprite = new SpriteLoader("Nebula.Resources.AntennaButton.png", 115f);
+        private static SpriteLoader guardButtonSprite = new SpriteLoader("Nebula.Resources.GuardButton.png", 115f);
 
-        private static Sprite guardButtonSprite;
-        public static Sprite getGuardButtonSprite()
+        public override HelpSprite[] helpSprite => new HelpSprite[]
         {
-            if (guardButtonSprite) return guardButtonSprite;
-            guardButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.GuardButton.png", 115f);
-            return guardButtonSprite;
-        }
+            new HelpSprite(placeButtonSprite,"role.guardian.help.antenna",0.3f),
+            new HelpSprite(guardButtonSprite,"role.guardian.help.guard",0.3f)
+        };
 
         public override void MyPlayerControlUpdate()
         {
@@ -202,7 +196,7 @@ namespace Nebula.Roles.CrewmateRoles
                     return remain > 0 && PlayerControl.LocalPlayer.CanMove;
                 },
                 () => { antennaButton.Timer = antennaButton.MaxTimer; },
-                getPlaceButtonSprite(),
+                placeButtonSprite.GetSprite(),
                 new Vector3(-1.8f, 0, 0),
                 __instance,
                 KeyCode.F,
@@ -231,7 +225,7 @@ namespace Nebula.Roles.CrewmateRoles
                     return guardPlayer==null && Game.GameData.data.myData.currentTarget!=null && PlayerControl.LocalPlayer.CanMove;
                 },
                 () => { guardButton.Timer = guardButton.MaxTimer; },
-                getGuardButtonSprite(),
+                guardButtonSprite.GetSprite(),
                 new Vector3(0, 1f, 0),
                 __instance,
                 KeyCode.G,

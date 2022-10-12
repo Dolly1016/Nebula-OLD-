@@ -8,7 +8,7 @@ using Nebula.Patches;
 using Nebula.Objects;
 using HarmonyLib;
 using Hazel;
-
+using Nebula.Utilities;
 
 namespace Nebula.Roles.ImpostorRoles
 {
@@ -19,13 +19,11 @@ namespace Nebula.Roles.ImpostorRoles
         private Module.CustomOption camouflageCoolDownOption;
         private Module.CustomOption camouflageDurationOption;
 
-        private Sprite buttonSprite = null;
-        public Sprite getButtonSprite()
+        private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.CamoButton.png", 115f);
+        public override HelpSprite[] helpSprite => new HelpSprite[]
         {
-            if (buttonSprite) return buttonSprite;
-            buttonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.CamoButton.png", 115f);
-            return buttonSprite;
-        }
+            new HelpSprite(buttonSprite,"role.camouflager.help.camo",0.3f)
+        };
 
         public override void LoadOptionData()
         {
@@ -54,7 +52,7 @@ namespace Nebula.Roles.ImpostorRoles
                     camouflageButton.isEffectActive = false;
                     camouflageButton.actionButton.cooldownTimerText.color = Palette.EnabledColor;
                 },
-                getButtonSprite(),
+                buttonSprite.GetSprite(),
                 new Vector3(-1.8f, 0, 0),
                 __instance,
                 KeyCode.F,
