@@ -24,6 +24,7 @@
 "config.option.processorRestriction.singleCore" : "1コア"
 "config.option.prioritizeAmongUs" : "Among Usを優先する"
 "config.option.prioritizeAmongUs.confirm" : "この設定はよりよいパフォーマンスと引き換えに\nシステムの動作が不安定になる恐れがあります。\nそれでも変更しますか?"
+"config.option.timeoutExtension" : "タイムアウト猶予"
 "config.option.yes" : "はい"
 "config.option.no" : "いいえ"
 
@@ -86,13 +87,15 @@
 "option.soloFreePlayOption" : "ソロフリープレイオプション"
 "option.countOfDummies" : "ダミー人数"
 
-"option.emergencyOptions" : "緊急会議オプション"
+"option.meetingOptions" : "会議オプション"
 "option.maxNumberOfMeetings" : "緊急会議の最大回数"
 "option.deathPenaltyForDiscussionTime" : "投票時間のデスペナルティ"
 "option.canUseEmergencyWithoutDeath" : "誰かが死ぬまで緊急会議ロック"
 "option.canUseEmergencyWithoutSabotage" : "サボタージュが起きるまで緊急会議ロック"
 "option.canUseEmergencyWithoutReport" : "レポートが発生するまで緊急会議ロック"
 "option.severeEmergencyLock" : "AND条件による緊急会議ロック"
+"option.canSkip" : "スキップ投票"
+"option.dealAbstentionAsSelfVote" : "白票の自投票化"
 
 "option.mapOptions" : "マップオプション"
 "option.playRandomMaps" : "ランダムマップ"
@@ -120,8 +123,10 @@
 "option.seismicStabilizersTimeLimit" : "猶予時間 (ポーラス緊急)"
 "option.avertCrashTimeLimit" : "猶予時間 (エアシップ緊急)"
 "option.blackOutStrength" : "停電の強度"
+"option.canUseDoorDespiteSabotage" : "緊急サボ中の扉閉め (エアシップ)"
 
 "option.exclusiveAssignment" : "役職の排他的割り当て"
+"option.exclusiveAssignment.MorphingAndPainter" : "モーフィング or ペインター"
 "option.exclusiveAssignment.RaiderAndSniper" : "レイダー or スナイパー"
 "option.exclusiveAssignment.ArsonistAndEmpiric" : "アーソニスト or エンパイリック"
 "option.exclusiveAssignment.AlienAndNavvy" : "エイリアン or ナヴィ"
@@ -136,6 +141,12 @@
 "option.exclusiveAssignmentRole2" : "排他ロール 2"
 "option.exclusiveAssignmentRole3" : "排他ロール 3"
 "option.exclusiveAssignmentRole.none" : "<color=#606060ff>なし</color>"
+
+"option.coolDownOption" : "クールダウンオプション"
+"option.initialKillCoolDown" : "初期キルクール"
+"option.initialAbilityCoolDown" : "初期アビリティクールダウン"
+"option.initialForcefulAbilityCoolDown" : "初期強力アビリティクールダウン"
+"option.initialModestAbilityCoolDown" : "初期マイナーアビリティクールダウン"
 
 "option.limitOptions" : "制限時間オプション"
 "option.timeLimitOption" : "タイムリミット (分)"
@@ -155,6 +166,14 @@
 "option.meistersO2Filter" : "難化：O2フィルター"
 "option.meistersFuelEngines" : "難化：給油"
 
+"option.secretRole" : "シークレットロール"
+"option.secretCrewmate" : "最大人数 (クルーメイト)"
+"option.chanceOfSecretCrewmate" : "スポーン確率 (クルーメイト)"
+"option.secretImpostor" : "最大人数 (インポスター)"
+"option.chanceOfSecretImpostor" : "スポーン確率 (インポスター)"
+"option.requiredTasksForArousal" : "覚醒までの必要タスク数"
+"option.requiredNumOfKillingForArousal" : "覚醒までの必要キル数"
+
 "option.advanceRoleOptions" : "ロールの拡張設定"
 
 "option.roleCount" : "最大人数"
@@ -163,6 +182,7 @@
 "option.canBeGuesser" : "付与可能：ゲッサー"
 "option.canBeDrunk" : "付与可能：ドランク"
 "option.canBeMadmate" : "付与可能：マッドメイト"
+"option.canBeSecret" : "付与可能：シークレット"
 
 "option.suffix.cross" : "x"
 "option.suffix.second" : "s"
@@ -171,6 +191,11 @@
 "ritual.mission.formularize" : "Formularize"
 "ritual.rooms.bothEngines" : "Upper&Lower Engine"
 "ritual.rooms.bothDecontaminations" : "Decontamination"
+
+"role.void.name" : "VOID"
+"role.void.short" : "V"
+"role.void.description" : "Very Optimized and Intelligent Dominator"
+"role.void.info" : ""
 
 "role.crewmate.name" : "クルーメイト"
 "role.crewmate.short" : "ク"
