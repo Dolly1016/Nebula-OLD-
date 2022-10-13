@@ -121,6 +121,7 @@ namespace Nebula
         public static CustomOption severeEmergencyLock;
         public static CustomOption canSkip;
         public static CustomOption dealAbstentionAsSelfVote;
+        public static CustomOption hideVotedIcon;
 
         public static CustomOption limiterOptions;
         public static CustomOption timeLimitOption;
@@ -248,6 +249,7 @@ namespace Nebula
             severeEmergencyLock = CustomOption.Create(10109, Color.white, "option.severeEmergencyLock", false, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
             canSkip = CustomOption.Create(10110, Color.white, "option.canSkip", true, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
             dealAbstentionAsSelfVote = CustomOption.Create(10111, Color.white, "option.dealAbstentionAsSelfVote", false, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
+            hideVotedIcon = CustomOption.Create(10112, Color.white, "option.hideVotedIcon", false, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
 
             mapOptions = CustomOption.Create(10120, Color.white, "option.mapOptions", false, null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.All);
             dynamicMap = CustomOption.Create(10121, Color.white, "option.playRandomMaps", false, mapOptions).SetGameMode(CustomGameMode.All);

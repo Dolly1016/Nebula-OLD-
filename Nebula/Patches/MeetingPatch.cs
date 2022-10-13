@@ -33,16 +33,49 @@ namespace Nebula.Patches
             }
         }
 
+        [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.CastVote))]
+        class CastVotePatch
+        {
+
+            static bool Prefix(MeetingHud __instance, [HarmonyArgument(0)] byte srcPlayerId, [HarmonyArgument(1)] byte suspectPlayerId)
+            {
+                GameData.PlayerInfo playerById = GameData.Instance.GetPlayerById(srcPlayerId);
+                GameData.PlayerInfo playerById2 = GameData.Instance.GetPlayerById(suspectPlayerId);
+                __instance.logger.Debug(playerById.PlayerName + " has voted for " + ((playerById2 != null) ? playerById2.PlayerName : "No one"), null);
+                int num = __instance.playerStates.IndexOf((Il2CppSystem.Predicate<PlayerVoteArea>)((PlayerVoteArea pv) => pv.TargetPlayerId == srcPlayerId));
+                PlayerVoteArea playerVoteArea = __instance.playerStates[num];
+                if (!playerVoteArea.AmDead && !playerVoteArea.DidVote)
+                {
+                    if (PlayerControl.LocalPlayer.PlayerId == srcPlayerId || AmongUsClient.Instance.GameMode != GameModes.LocalGame)
+                    {
+                        SoundManager.Instance.PlaySound(__instance.VoteLockinSound, false, 1f, null);
+                    }
+                    playerVoteArea.SetVote(suspectPlayerId);
+                    __instance.SetDirtyBit(1U);
+                    __instance.CheckForEndVoting();
+
+                    if (!CustomOptionHolder.hideVotedIcon.getBool() || !CustomOptionHolder.meetingOptions.getBool())
+                    {
+                        PlayerControl.LocalPlayer.RpcSendChatNote(srcPlayerId, ChatNoteTypes.DidVote);
+                    }
+                }
+
+                return false;
+            }
+        }
+
         [HarmonyPatch(typeof(PlayerVoteArea), nameof(PlayerVoteArea.SetVote))]
         class PlayerVoteAreaSelectPatch
         {
          
             static void Prefix(PlayerVoteArea __instance, [HarmonyArgument(0)] byte suspectIdx)
             {
-                Helpers.RoleAction(__instance.TargetPlayerId, (role) =>
-                {
-                    role.OnVote(__instance.TargetPlayerId,suspectIdx);
-                });
+                if (__instance.TargetPlayerId == PlayerControl.LocalPlayer.PlayerId) {
+                    Helpers.RoleAction(__instance.TargetPlayerId, (role) =>
+                    {
+                        role.OnVote(suspectIdx);
+                    });
+                }
             }
         }
 
@@ -309,6 +342,11 @@ namespace Nebula.Patches
                     SpriteRenderer renderer = targetBox.GetComponent<SpriteRenderer>();
                     renderer.sprite = isLightColor ? GetLightColorSprite() : GetDarkColorSprite();
                     UnityEngine.GameObject.Destroy(targetBox.GetComponent<PassiveButton>());
+
+                    if(player.TargetPlayerId !=PlayerControl.LocalPlayer.PlayerId &&  CustomOptionHolder.hideVotedIcon.getBool()&& CustomOptionHolder.meetingOptions.getBool())
+                    {
+                        player.Flag.gameObject.SetActive(false);
+                    }
                 }
             }
         }

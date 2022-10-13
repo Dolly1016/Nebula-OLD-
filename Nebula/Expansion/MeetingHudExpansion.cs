@@ -20,23 +20,20 @@ namespace Nebula
                 pva.SetDead(pva.DidReport, isDead);
                 pva.Overlay.gameObject.SetActive(isDead);
 
-                existsDeadPlayer |= isDead;
-            }
-
-            if (existsDeadPlayer)
-            {
-                foreach (PlayerVoteArea voter in meetingHud.playerStates)
+                if (isDead)
                 {
-                    voter.ThumbsDown.enabled = false;
+                    foreach(PlayerVoteArea voter in meetingHud.playerStates)
+                    {
+                        if (voter.VotedFor != pva.TargetPlayerId) continue;
 
-                    if (voter.DidVote) {
-                        if (Helpers.playerById(voter.TargetPlayerId).AmOwner)
+                        PlayerControl p = Helpers.playerById(voter.TargetPlayerId);
+                        if (p.AmOwner)
                         {
-                            Helpers.RoleAction(Game.GameData.data.myData.getGlobalData(),
-                                (r) => r.OnVoteCanceled(Patches.MeetingHudPatch.GetVoteWeight(voter.TargetPlayerId)));
                             meetingHud.ClearVote();
+                            Helpers.RoleAction(p,(r)=>r.OnVoteCanceled(Patches.MeetingHudPatch.GetVoteWeight(voter.TargetPlayerId)));
                         }
 
+                        voter.ThumbsDown.enabled = false;
                         voter.UnsetVote();
                     }
                 }

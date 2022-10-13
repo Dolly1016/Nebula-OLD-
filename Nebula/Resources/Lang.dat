@@ -96,6 +96,7 @@
 "option.severeEmergencyLock" : "Severe Emergency Lock"
 "option.canSkip" : "Can Skip"
 "option.dealAbstentionAsSelfVote" : "Deal Abstention As Self Vote"
+"option.hideVotedIcon" : "Hide Voted Icon"
 
 "option.mapOptions" : "Map Option"
 "option.playRandomMaps" : "Play Random Maps"

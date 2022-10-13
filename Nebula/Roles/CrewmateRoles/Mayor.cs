@@ -27,21 +27,16 @@ namespace Nebula.Roles.CrewmateRoles
 
         public override void OnMeetingStart()
         {
-            PlayerControl.LocalPlayer.GetModData().AddRoleData(votesId, (int)voteAssignmentOption.getFloat());
+            RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, votesId, (int)voteAssignmentOption.getFloat());
         }
 
-        public override void OnVote(byte playerId, byte targetId)
+        public override void OnVote(byte targetId)
         {
-            RPCEventInvoker.RequireUniqueRPC(playerId,targetId);
+            RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, votesId, -numOfVote);
         }
 
         public override void OnVoteCanceled(int weight) {
             RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, votesId, weight);
-        }
-
-        public override void UniqueAction(byte actionId)
-        {
-            RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, votesId, -numOfVote);
         }
 
         public override void SetupMeetingButton(MeetingHud __instance)
@@ -70,6 +65,7 @@ namespace Nebula.Roles.CrewmateRoles
 
                     template = __instance.SkipVoteButton.Buttons.transform.Find("CancelButton").gameObject;
                     button = UnityEngine.Object.Instantiate(template, __instance.SkipVoteButton.transform);
+                    button.SetActive(true);
                     button.name = "MayorButton";
                     button.transform.position += new Vector3(1.5f, 0f);
                     renderer = button.GetComponent<SpriteRenderer>();
@@ -87,6 +83,7 @@ namespace Nebula.Roles.CrewmateRoles
 
                     template = __instance.SkipVoteButton.Buttons.transform.Find("CancelButton").gameObject;
                     button = UnityEngine.Object.Instantiate(template, __instance.SkipVoteButton.transform);
+                    button.SetActive(true);
                     button.name = "MayorButton";
                     button.transform.position += new Vector3(2.7f, 0f);
                     renderer = button.GetComponent<SpriteRenderer>();
@@ -105,6 +102,7 @@ namespace Nebula.Roles.CrewmateRoles
 
 
                     countText = UnityEngine.Object.Instantiate(__instance.TitleText, __instance.SkipVoteButton.transform);
+                    countText.gameObject.SetActive(true);
                     countText.alignment = TMPro.TextAlignmentOptions.Center;
                     countText.transform.position = __instance.SkipVoteButton.CancelButton.transform.position;
                     countText.transform.position += new Vector3(1.54f, 0f);

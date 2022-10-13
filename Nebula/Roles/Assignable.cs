@@ -367,8 +367,8 @@ namespace Nebula.Roles
         /// <summary>
         /// 投票した際に呼び出されます。
         /// </summary>
-        [RoleIndefiniteMethod]
-        public virtual void OnVote(byte playerId, byte targetId) { }
+        [RoleLocalMethod]
+        public virtual void OnVote(byte targetId) { }
 
         /// <summary>
         /// 会議が終了した際に呼び出されます。
