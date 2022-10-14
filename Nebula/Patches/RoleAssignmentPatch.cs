@@ -516,4 +516,13 @@ namespace Nebula.Patches
             return playerId;
         }
     }
+    [HarmonyPatch(typeof(RoleManager),nameof(RoleManager.TryAssignRoleOnDeath))]
+    class GhostRoleAssignmentPatch
+    {
+        static public void Postfix(RoleManager __instance, [HarmonyArgument(0)]PlayerControl player)
+        {
+
+        }
+        
+    }
 }

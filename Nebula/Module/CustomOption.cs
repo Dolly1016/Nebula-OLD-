@@ -34,10 +34,11 @@ namespace Nebula.Module
         CrewmateRoles       = 0x02,
         ImpostorRoles       = 0x04,
         NeutralRoles        = 0x08,
-        Modifiers           = 0x10,
-        EscapeRoles         = 0x20,
-        AdvancedSettings    = 0x40,
-        MaxValidTabs             = 7
+        GhostRoles          = 0x10,
+        Modifiers           = 0x20,
+        EscapeRoles         = 0x40,
+        AdvancedSettings    = 0x80,
+        MaxValidTabs             = 8
     }
 
     public static class CustomGameModes
@@ -831,12 +832,13 @@ namespace Nebula.Module
                 "Nebula.Resources.TabNebulaCrewmate.png" ,
                 "Nebula.Resources.TabNebulaImpostor.png",
                 "Nebula.Resources.TabNebulaNeutral.png",
+                "Nebula.Resources.TabNebulaGhost.png",
                 "Nebula.Resources.TabNebulaModifiers.png",
                 "Nebula.Resources.TabNebulaEscape.png",
                 "Nebula.Resources.TabNebulaAdvancedSettings.png", };
             string[] names =
             {
-                "Settings","CrewmateRoles","ImpostorRoles","NeutralRoles","Modifiers","EscapeRoles","AdvancedSettings"
+                "Settings","CrewmateRoles","ImpostorRoles","NeutralRoles","Ghostroles","Modifiers","EscapeRoles","AdvancedSettings"
             };
 
             for (int i = 0; i < (int)CustomOptionTab.MaxValidTabs; i++)
