@@ -529,6 +529,28 @@ namespace Nebula.Module
                 }
             }
 
+            public void AddGhostRoleTopic(Predicate<Roles.GhostRole> predicate, Action<Roles.GhostRole> onClicked, int contentsPerRow = 5, int maxRows = 100, int page = 0, Action<int>? changePageFunc = null)
+            {
+                IEnumerator<MetaDialogContent> enumerator()
+                {
+                    foreach (var r in Roles.Roles.AllGhostRoles)
+                    {
+                        if (!predicate(r)) continue;
+                        Roles.GhostRole ghostRole = r;
+                        yield return new MetaDialogButton(1.65f, 0.36f,
+                        Helpers.cs(r.Color, Language.Language.GetString("role." + r.LocalizeName + ".name")),
+                        TMPro.FontStyles.Bold,
+                        () => onClicked(ghostRole));
+                    }
+                }
+
+                AddEnumerableTopic(contentsPerRow, maxRows, page, enumerator(), (c) => {
+                    var text = ((MetaDialogButton)c).text;
+                    text.fontSizeMin = 0.5f;
+                    text.overflowMode = TMPro.TextOverflowModes.Ellipsis;
+                }, changePageFunc);
+            }
+
             public void AddModifyTopic(Predicate<Roles.ExtraRole> predicate,Action<Roles.ExtraRole> onClicked, int contentsPerRow=5, int maxRows = 100, int page = 0,Action<int>? changePageFunc=null)
             {
                 IEnumerator<MetaDialogContent> enumerator()
@@ -778,7 +800,7 @@ namespace Nebula.Module
                 }
             });
 
-            var modifiesTab = new MetaDialogButton(1.2f, 0.4f, "Modifies", TMPro.FontStyles.Bold, () => {
+            var ghostRolesTab = new MetaDialogButton(1.2f, 0.4f, "Ghost", TMPro.FontStyles.Bold, () => {
                 if (tab != 2)
                 {
                     EraseDialog(designer.dialog);
@@ -786,11 +808,19 @@ namespace Nebula.Module
                 }
             });
 
-            var optionsTab = new MetaDialogButton(1.2f, 0.4f, "Options", TMPro.FontStyles.Bold, () => {
+            var modifiesTab = new MetaDialogButton(1.2f, 0.4f, "Modifies", TMPro.FontStyles.Bold, () => {
                 if (tab != 3)
                 {
                     EraseDialog(designer.dialog);
                     OpenHelpDialog(3, 0, options);
+                }
+            });
+
+            var optionsTab = new MetaDialogButton(1.2f, 0.4f, "Options", TMPro.FontStyles.Bold, () => {
+                if (tab != 4)
+                {
+                    EraseDialog(designer.dialog);
+                    OpenHelpDialog(4, 0, options);
                 }
             });
 
@@ -804,16 +834,16 @@ namespace Nebula.Module
                     }
                 });
 
-                designer.AddTopic(myTab,rolesTab,modifiesTab,optionsTab);
+                designer.AddTopic(myTab,rolesTab, ghostRolesTab,modifiesTab, optionsTab);
             }
             else
             {
                 if (tab == 0) tab = 1;
-                designer.AddTopic(rolesTab, modifiesTab, optionsTab);
+                designer.AddTopic(rolesTab, ghostRolesTab,modifiesTab, optionsTab);
             }
 
             //見出し
-            designer.AddTopic(new MetaDialogString(4f,new string[] { "My Roles","Roles","Modifies","All Options"}[tab],TMPro.TextAlignmentOptions.Center,TMPro.FontStyles.Bold));
+            designer.AddTopic(new MetaDialogString(4f,new string[] { "My Roles","Roles","Ghost Roles","Modifies","All Options"}[tab],TMPro.TextAlignmentOptions.Center,TMPro.FontStyles.Bold));
 
             switch (tab)
             {
@@ -831,9 +861,17 @@ namespace Nebula.Module
                        Helpers.cs(data.role.Color, Language.Language.GetString("role." + data.role.LocalizeName + ".name")),
                        TMPro.FontStyles.Bold,
                        () => { MetaDialog.EraseDialog(1); OpenHelpDialog(0, 0, options); });
-                        
 
-                        int index = 1;
+                        if (arg == 1) assignable = (!data.IsAlive && data.ghostRole != null) ? (Roles.Assignable)data.ghostRole : data.role;
+                        if (!data.IsAlive && data.ghostRole != null)
+                        {
+                            yield return new MetaDialogButton(1.3f, 0.36f,
+                           Helpers.cs(data.ghostRole.Color, Language.Language.GetString("role." + data.ghostRole.LocalizeName + ".name")),
+                           TMPro.FontStyles.Bold,
+                           () => { MetaDialog.EraseDialog(1); OpenHelpDialog(0, 1, options); });
+                        }
+
+                        int index = 2;
                         foreach (var r in data.extraRole)
                         {
                             var extraRole = r;
@@ -864,12 +902,18 @@ namespace Nebula.Module
                     });
                     break;
                 case 2:
+                    designer.AddGhostRoleTopic((r) => true, (r) => OpenAssignableHelpDialog(r), 5, 6, arg, (p) => {
+                        MetaDialog.EraseDialog(1);
+                        OpenHelpDialog(tab, arg + p, options);
+                    });
+                    break;
+                case 3:
                     designer.AddModifyTopic((r) => true, (r) => OpenAssignableHelpDialog(r), 5, 6, arg,(p)=> {
                         MetaDialog.EraseDialog(1);
                         OpenHelpDialog(tab, arg + p, options);
                         });
                     break;
-                case 3:
+                case 4:
                     if (options == null) options = GameOptionStringGenerator.GenerateString(20);
 
                     var designers = designer.SplitVertically(new float[] { 0.05f, 0.5f, 0.5f, 0.05f });
@@ -881,8 +925,6 @@ namespace Nebula.Module
                         MetaDialog.EraseDialog(1);
                         OpenHelpDialog(tab, p, options);
                     });
-
-
                     break;
             }
 

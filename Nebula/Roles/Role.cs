@@ -179,6 +179,11 @@ namespace Nebula.Roles
             }
         }
 
+        public virtual bool CanHaveGhostRole
+        {
+            get => true;
+        }
+
         public virtual bool IsSecondaryGenerator { get { return false; } }
 
         public bool DefaultCanBeLovers { get; set; } = true;

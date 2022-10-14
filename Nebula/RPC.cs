@@ -31,6 +31,7 @@ namespace Nebula
         UnsetExtraRole,
         SwapExtraRole,
         ChangeExtraRole,
+        SetGhostRole,
         PlayStaticSound,
         PlayDynamicSound,
         UncheckedMurderPlayer,
@@ -166,6 +167,9 @@ namespace Nebula
                 case (byte)CustomRPC.ChangeExtraRole:
                     byte removeRole = reader.ReadByte();
                     RPCEvents.ChangeExtraRole(removeRole == byte.MaxValue ? null : Roles.ExtraRole.GetRoleById(removeRole), Roles.ExtraRole.GetRoleById(reader.ReadByte()), reader.ReadUInt64(), reader.ReadByte());
+                    break;
+                case (byte)CustomRPC.SetGhostRole:
+                    RPCEvents.SetGhostRole(reader.ReadByte(), Roles.GhostRole.GetRoleById(reader.ReadByte()));
                     break;
                 case (byte)CustomRPC.PlayStaticSound:
                     RPCEvents.PlayStaticSound((Module.AudioAsset)reader.ReadByte());
@@ -476,7 +480,7 @@ namespace Nebula
             if (playerId == PlayerControl.LocalPlayer.PlayerId)
             {
                 addRole.Initialize(player);
-                addRole.ButtonInitialize(Patches.HudManagerStartPatch.Manager);
+                addRole.ButtonInitialize(HudManager.Instance);
                 Objects.CustomButton.ButtonActivate();
             }
         }
@@ -509,6 +513,32 @@ namespace Nebula
             if (hasRole1) SetExtraRole(player2.PlayerId, role, extra1); else ImmediatelyUnsetExtraRole(role, player2.PlayerId);
             if (hasRole2) SetExtraRole(player1.PlayerId, role, extra2); else ImmediatelyUnsetExtraRole(role, player1.PlayerId);
 
+        }
+
+        public static void SetGhostRole(byte playerId,Roles.GhostRole ghostRole)
+        {
+            var data = Game.GameData.data.playersArray[playerId];
+            PlayerControl player = Helpers.playerById(playerId);
+
+            if (data.ghostRole != null)
+            {
+                var prevRole = data.ghostRole;
+
+                if (playerId == PlayerControl.LocalPlayer.PlayerId)
+                {
+                    prevRole.FinalizeInGame(player);
+                    prevRole.CleanUp();
+                }
+            }
+            data.ghostRole = ghostRole;
+
+            ghostRole.GlobalInitialize(player);
+            if (playerId == PlayerControl.LocalPlayer.PlayerId)
+            {
+                ghostRole.Initialize(player);
+                ghostRole.ButtonInitialize(HudManager.Instance);
+                Objects.CustomButton.ButtonActivate();
+            }
         }
 
         public static void PlayStaticSound(Module.AudioAsset id)
@@ -752,7 +782,7 @@ namespace Nebula
             if (isMe)
             {
                 data.role.Initialize(player);
-                data.role.ButtonInitialize(Patches.HudManagerStartPatch.Manager);
+                data.role.ButtonInitialize(HudManager.Instance);
                 Objects.CustomButton.ButtonActivate();
                 Game.GameData.data.myData.VentCoolDownTimer = data.role.VentCoolDownMaxTimer;
             }
@@ -1796,6 +1826,15 @@ namespace Nebula
             writer.Write(player.PlayerId);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.ChangeExtraRole(null,addRole, initializeValue, player.PlayerId);
+        }
+
+        public static void SetGhostRole(PlayerControl player,Roles.GhostRole ghostRole)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetGhostRole, Hazel.SendOption.Reliable, -1);
+            writer.Write(player.PlayerId);
+            writer.Write(ghostRole.id);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.SetGhostRole(player.PlayerId, ghostRole);
         }
 
         public static void RevivePlayer(PlayerControl player,bool reviveOnCurrentPosition=false, bool changeStatusToRevive=true,bool gushOnRevive=false)

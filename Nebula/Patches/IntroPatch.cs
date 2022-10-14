@@ -27,11 +27,8 @@ namespace Nebula.Patches
     [HarmonyPatch(typeof(HudManager), nameof(HudManager.Start))]
     static class HudManagerStartPatch
     {
-        static public HudManager Manager;
-
         public static void Postfix(HudManager __instance)
         {
-            Manager = __instance;
             foreach (Roles.Role role in Roles.Roles.AllRoles)
             {
                 role.CleanUp();
@@ -89,7 +86,7 @@ namespace Nebula.Patches
             {
                 role.Initialize(PlayerControl.LocalPlayer);
                 role.IntroInitialize(PlayerControl.LocalPlayer);
-                role.ButtonInitialize(HudManagerStartPatch.Manager);
+                role.ButtonInitialize(HudManager.Instance);
             });
             Objects.CustomButton.ButtonActivate();
 

@@ -38,7 +38,9 @@ namespace Nebula.Roles.CrewmateRoles
             RPCEventInvoker.UpdatePlayerVisibility(PlayerControl.LocalPlayer.PlayerId, true);
         }
 
-        public override bool CanBeLovers { get { return false; } }
+        public override bool CanBeLovers { get => false; }
+        public override bool CanHaveGhostRole { get => false; }
+ 
         private bool checkPseudocide()
         {
             if (!pseudocideFlag) return false;
