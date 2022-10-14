@@ -175,7 +175,11 @@ namespace Nebula.Patches
             {
                 //名前に表示を追加する
                 name = "";
-                roleName = Helpers.cs(player.role.Color, Language.Language.GetString("role." + player.role.LocalizeName + ".name"));
+                if(!player.IsAlive && player.ghostRole!=null)
+                    roleName = Helpers.cs(player.ghostRole.Color, Language.Language.GetString("role." + player.ghostRole.LocalizeName + ".name"));
+                else
+                    roleName = Helpers.cs(player.role.Color, Language.Language.GetString("role." + player.role.LocalizeName + ".name"));
+                
                 hasFakeTask = false;
                 hasExecutableFakeTask = false;
 

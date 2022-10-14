@@ -180,10 +180,11 @@ namespace Nebula.Patches
             target.cosmetics.currentBodySprite.BodySprite.material.SetColor("_OutlineColor", color);
         }
 
-        static public DeadBody SetMyDeadTarget()
+        static public DeadBody SetMyDeadTarget() => SetMyDeadTarget(GameOptionsData.KillDistances[Mathf.Clamp(PlayerControl.GameOptions.KillDistance, 0, 2)]);
+
+        static public DeadBody SetMyDeadTarget(float num)
         {
             DeadBody result = null;
-            float num = GameOptionsData.KillDistances[Mathf.Clamp(PlayerControl.GameOptions.KillDistance, 0, 2)];
             if (!ShipStatus.Instance) return result;
 
             Vector2 truePosition = PlayerControl.LocalPlayer.GetTruePosition();
@@ -257,8 +258,8 @@ namespace Nebula.Patches
             {
                 try
                 {
-
-                    if (p == PlayerControl.LocalPlayer || p.GetModData().RoleInfo != "" || Game.GameData.data.myData.CanSeeEveryoneInfo)
+                    var data = p.GetModData();
+                    if (p == PlayerControl.LocalPlayer || data.RoleInfo != "" || Game.GameData.data.myData.CanSeeEveryoneInfo)
                     {
                         Transform playerInfoTransform = p.cosmetics.nameText.transform.FindChild("Info");
                         TMPro.TextMeshPro playerInfo = playerInfoTransform != null ? playerInfoTransform.GetComponent<TMPro.TextMeshPro>() : null;
@@ -295,8 +296,12 @@ namespace Nebula.Patches
                         var (tasksCompleted, tasksTotal) = TasksHandler.taskInfo(p.Data);
                         string roleNames;
 
-                        if (Game.GameData.data.myData.CanSeeEveryoneInfo || p.GetModData().RoleInfo == "") {
-                            roleNames = Helpers.cs(p.GetModData().role.Color, Language.Language.GetString("role." + p.GetModData().role.LocalizeName + ".name"));
+                        if (Game.GameData.data.myData.CanSeeEveryoneInfo || data.RoleInfo == "") {
+                            if (p.Data.IsDead && data.ghostRole != null)
+                                roleNames = Helpers.cs(data.ghostRole.Color, Language.Language.GetString("role." + data.ghostRole.LocalizeName + ".name"));
+                            else
+                                roleNames = Helpers.cs(data.role.Color, Language.Language.GetString("role." + data.role.LocalizeName + ".name"));
+
                             Helpers.RoleAction(p.PlayerId, (role) => { role.EditDisplayRoleName(p.PlayerId, ref roleNames, false); });
                         }
                         else

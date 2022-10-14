@@ -22,6 +22,7 @@ namespace Nebula.Roles.MetaRoles
         public override void GlobalInitialize(PlayerControl __instance)
         {
             __instance.Die(DeathReason.Exile);
+            __instance.GetModData().Die(Game.PlayerData.PlayerStatus.Exiled);
         }
 
         public override void Initialize(PlayerControl __instance)
@@ -55,6 +56,18 @@ namespace Nebula.Roles.MetaRoles
                 RPCEventInvoker.ImmediatelyChangeRole(p, r);
                 MetaDialog.EraseDialog(2);
                 OpenPlayerDialog(p,0);
+            });
+        }
+
+        private void MetaChangeGhostRole(PlayerControl p)
+        {
+            var data = p.GetModData();
+            var dialog = Module.MetaDialog.OpenDialog(new Vector2(9f, 5f), "Ghost Role");
+            dialog.AddGhostRoleTopic((r) => true, (r) =>
+            {
+                RPCEventInvoker.SetGhostRole(p, r);
+                MetaDialog.EraseDialog(2);
+                OpenPlayerDialog(p, 0);
             });
         }
 
@@ -168,12 +181,13 @@ namespace Nebula.Roles.MetaRoles
             var designer = MetaDialog.OpenPlayerDialog(new Vector2(8f, 5.2f), p);
 
             MetaDialogButton roleButton = new MetaDialogButton(1f, 0.4f, "Role", TMPro.FontStyles.Bold, () => MetaChangeRole(p));
+            MetaDialogButton ghostButton = new MetaDialogButton(1f, 0.4f, "Ghost", TMPro.FontStyles.Bold, () => MetaChangeGhostRole(p));
             MetaDialogButton modifyButton = new MetaDialogButton(1f, 0.4f, "Modify", TMPro.FontStyles.Bold, () => MetaEditModify(p));
             MetaDialogButton killButton = new MetaDialogButton(1f, 0.4f, "Kill", TMPro.FontStyles.Bold, () => MetaKillPlayer(p));
             MetaDialogButton exileButton = new MetaDialogButton(1f, 0.4f, "Exile", TMPro.FontStyles.Bold, () => MetaExilePlayer(p));
             MetaDialogButton reviveButton = new MetaDialogButton(1f, 0.4f, "Revive", TMPro.FontStyles.Bold, () => MetaRevivePlayer(p));
 
-            designer.AddTopic(roleButton, modifyButton, killButton, exileButton, reviveButton);
+            designer.AddTopic(roleButton, ghostButton, modifyButton, killButton, exileButton, reviveButton);
 
             AddModifySpeedTopic(designer, p);
 

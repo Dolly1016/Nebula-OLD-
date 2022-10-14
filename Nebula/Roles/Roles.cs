@@ -87,8 +87,6 @@ namespace Nebula.Roles
         public static NeutralRoles.Opportunist Opportunist = new NeutralRoles.Opportunist();
         public static NeutralRoles.Vulture Vulture = new NeutralRoles.Vulture();
 
-        public static InvestigatorRoles.Investigator Investigator = new InvestigatorRoles.Investigator();
-
         public static MinigameRoles.Player Player = new MinigameRoles.Player();
 
         public static MinigameRoles.Escapees.Biela Biela = new MinigameRoles.Escapees.Biela();
@@ -116,6 +114,8 @@ namespace Nebula.Roles
         public static MetaRoles.MetaRole MetaRole = new MetaRoles.MetaRole();
         public static RitualRoles.PerkHolder PerkHolder = new RitualRoles.PerkHolder();
 
+        public static GhostRoles.Poltergeist Poltergeist = new GhostRoles.Poltergeist();
+
         //全てのロールはこの中に含まれている必要があります
         public static List<Role> AllRoles = new List<Role>()
         {
@@ -129,7 +129,6 @@ namespace Nebula.Roles
             Player,
             Halley,Biela,
             Polis,Hadar,
-            Investigator,
             RitualCrewmate,RitualKiller
         };
 
@@ -140,6 +139,11 @@ namespace Nebula.Roles
             Drunk,Lover,Trilemma,
             MetaRole,AvengerTarget,
             PerkHolder
+        };
+
+        public static List<GhostRole> AllGhostRoles = new List<GhostRole>()
+        {
+            Poltergeist
         };
 
         private static SideCommonRoles.SideCommonRolesLoader loader = new SideCommonRoles.SideCommonRolesLoader();

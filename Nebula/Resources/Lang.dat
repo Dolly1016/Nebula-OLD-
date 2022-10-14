@@ -727,7 +727,7 @@
 "role.crewmate.secret.description" : "Do Task For Arousal"
 "role.impostor.secret.description" : "Kill For Arousal"
 "role.crewmate.secret.info" : "Your role will be revealed as you complete tasks."
-"role.crewmate.secret.info" : "Your role will be revealed as you kill players."
+"role.impostor.secret.info" : "Your role will be revealed as you kill players."
 
 "role.drunk.name" : "Drunk"
 "role.drunk.info" : "Your control is reversed."
@@ -756,7 +756,7 @@
 
 "role.avenger.name" : "Avenger"
 "role.avenger.short" : "A"
-"role.avenger.info" : "Your lover is gone. Now is the time for revenge.\nKill your lover's murderer and survive.\n\nYou are always in my heart. I'll take you the big moment.\n\n - Q : Kill"
+"role.avenger.info" : "Your lover is gone. Now is the time for revenge.\nKill your lover's murderer and survive.\n\nYou are always in my heart. I'll take you the big moment."
 "role.avenger.killCoolDown" : "Kill Cool Down"
 "role.avenger.murderCanKnowAvenger" : "Murder Can Know Avenger"
 "role.avenger.canKnowExistenceOfAvenger" : "Can Know Existence Of Avenger"
@@ -815,6 +815,10 @@
 
 "role.metaRole.name" : "Free Play"
 "role.metaRole.info" : "You can measure the distance.\n\n - 1 : Set origin at the current position\n - 2 : Open roles menu\n - ESC : Close roles menu"
+
+"role.poltergeist.name" : "Poltergeist"
+"role.poltergeist.short" : "P"
+"role.poltergeist.info" : "You can move dead body linearly.\nThe closer you are to the dead body, the farther you throw it."
 
 "side.crewmate.name" : "Crewmate"
 "side.impostor.name" : "Impostor"
@@ -937,6 +941,7 @@
 "button.label.oracle" : "oracle"
 "button.label.paint" : "paint"
 "button.label.place" : "place"
+"button.label.poltergeist" : "poltergeist"
 "button.label.revive" : "revive"
 "button.label.repair" : "repair"
 "button.label.ritual.search" : "search"
@@ -949,3 +954,4 @@
 "button.label.throw" : "throw"
 "button.label.unequip" : "unequip"
 "button.label.vital" : "vitals"
+"button.label.void" : "void"

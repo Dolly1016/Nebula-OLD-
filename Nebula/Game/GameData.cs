@@ -697,6 +697,7 @@ namespace Nebula.Game
         public string name { get; }
 
         public Role role { get; set; }
+        public GhostRole? ghostRole { get; set; }
         public List<ExtraRole> extraRole { get; }
 
         //自身のロールがもつデータ
@@ -746,6 +747,7 @@ namespace Nebula.Game
             this.id = player.PlayerId;
             this.name = name;
             this.role = role;
+            this.ghostRole = null;
             this.extraRole = new List<ExtraRole>();
             this.roleData = new Dictionary<int, int>();
             this.extraRoleData = new Dictionary<byte, ulong>();
@@ -803,8 +805,19 @@ namespace Nebula.Game
 
         public void AddRoleHistory()
         {
-            string shortRole = Helpers.cs(this.role.Color, Language.Language.GetString("role." + this.role.LocalizeName + ".short"));
-            string role = Helpers.cs(this.role.Color, Language.Language.GetString("role." + this.role.LocalizeName + ".name"));
+            string shortRole; 
+            string role;
+
+            if (!IsAlive && ghostRole != null)
+            {
+                shortRole = Helpers.cs(this.ghostRole.Color, Language.Language.GetString("role." + this.ghostRole.LocalizeName + ".short"));
+                role = Helpers.cs(this.ghostRole.Color, Language.Language.GetString("role." + this.ghostRole.LocalizeName + ".name"));
+            }
+            else
+            {
+                shortRole = Helpers.cs(this.role.Color, Language.Language.GetString("role." + this.role.LocalizeName + ".short"));
+                role = Helpers.cs(this.role.Color, Language.Language.GetString("role." + this.role.LocalizeName + ".name"));
+            }
             Helpers.RoleAction(this, (r) =>
              {
                  r.EditDisplayNameForcely(this.id, ref shortRole);
@@ -950,6 +963,8 @@ namespace Nebula.Game
             
             Game.GameData.data.deadPlayers[id] = new DeadPlayerData(this, murderId);
             Status = status;
+
+            if (ghostRole != null) AddRoleHistory();
         }
 
         public void Die(PlayerStatus status)

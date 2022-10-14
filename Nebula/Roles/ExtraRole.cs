@@ -47,13 +47,7 @@ namespace Nebula.Roles
 
         public static ExtraRole GetRoleById(byte id)
         {
-            foreach (ExtraRole role in Roles.AllExtraRoles)
-            {
-                if (role.id == id)
-                {
-                    return role;
-                }
-            }
+            foreach (ExtraRole role in Roles.AllExtraRoles) if (role.id == id) return role;
             return null;
         }
 
