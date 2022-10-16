@@ -31,8 +31,8 @@ namespace Nebula.Roles.CrewmateRoles
         private Module.CustomOption ventCoolDownOption;
         private Module.CustomOption ventDurationOption;
 
-        private SpriteLoader sealButtonSprite=new SpriteLoader("Nebula.Resouces.CloseVentButton.png",115f);
-        private SpriteLoader repairButtonSprite = new SpriteLoader("Nebula.Resouces.RepairButton.png", 115f);
+        private SpriteLoader sealButtonSprite=new SpriteLoader("Nebula.Resources.CloseVentButton.png",115f);
+        private SpriteLoader repairButtonSprite = new SpriteLoader("Nebula.Resources.RepairButton.png", 115f);
 
         public override HelpSprite[] helpSprite => new HelpSprite[]
         {

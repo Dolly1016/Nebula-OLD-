@@ -818,7 +818,7 @@
 
 "role.poltergeist.name" : "ポルターガイスト"
 "role.poltergeist.short" : "ポ"
-"role.poltergeist.info" : "死体を投げることができます。\n投げる距離は、死体に近づけば近づくほど長くなります。"
+"role.poltergeist.info" : "死体を手元に引き寄せることができます。\n死体の位置を動かして、よりクルーが死体を発見しやすくなるように仕向けます。"
 
 "side.crewmate.name" : "クルーメイト"
 "side.impostor.name" : "インポスター"

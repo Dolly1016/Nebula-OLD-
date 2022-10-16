@@ -170,7 +170,7 @@ namespace Nebula.Roles.ComplexRoles
                         if (!(__instance.state == MeetingHud.VoteStates.Voted || __instance.state == MeetingHud.VoteStates.NotVoted) || focusedTarget == null) return;
                         if (target.Data.IsDead) return;
                         var focusedTargetData = focusedTarget.GetModData();
-                        var actualRole = focusedTargetData.role.GetActualRole();
+                        var actualRole = focusedTargetData.role.GetActualRole(focusedTargetData);
                         PlayerControl dyingTarget = 
                         (
                         actualRole == role ||

@@ -297,7 +297,7 @@ namespace Nebula.Patches
                         string roleNames;
 
                         if (Game.GameData.data.myData.CanSeeEveryoneInfo || data.RoleInfo == "") {
-                            if (p.Data.IsDead && data.ghostRole != null)
+                            if (p.Data.IsDead && data.role.CanHaveGhostRole && data.ghostRole != null)
                                 roleNames = Helpers.cs(data.ghostRole.Color, Language.Language.GetString("role." + data.ghostRole.LocalizeName + ".name"));
                             else
                                 roleNames = Helpers.cs(data.role.Color, Language.Language.GetString("role." + data.role.LocalizeName + ".name"));

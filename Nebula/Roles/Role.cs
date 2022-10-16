@@ -236,7 +236,7 @@ namespace Nebula.Roles
         /// 実質的なロールを取得します。
         /// </summary>
         /// <returns></returns>
-        public virtual Role GetActualRole() => this;
+        public virtual Role GetActualRole(Game.PlayerData player) => this;
         public override bool HasCrewmateTask(byte playerId)
         {
             return side != Side.Impostor && !HasFakeTask(playerId);

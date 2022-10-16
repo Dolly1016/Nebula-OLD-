@@ -808,7 +808,7 @@ namespace Nebula.Game
             string shortRole; 
             string role;
 
-            if (!IsAlive && ghostRole != null)
+            if (!IsAlive && this.role.CanHaveGhostRole && ghostRole != null)
             {
                 shortRole = Helpers.cs(this.ghostRole.Color, Language.Language.GetString("role." + this.ghostRole.LocalizeName + ".short"));
                 role = Helpers.cs(this.ghostRole.Color, Language.Language.GetString("role." + this.ghostRole.LocalizeName + ".name"));
@@ -964,7 +964,7 @@ namespace Nebula.Game
             Game.GameData.data.deadPlayers[id] = new DeadPlayerData(this, murderId);
             Status = status;
 
-            if (ghostRole != null) AddRoleHistory();
+            if (role.CanHaveGhostRole && ghostRole != null) AddRoleHistory();
         }
 
         public void Die(PlayerStatus status)

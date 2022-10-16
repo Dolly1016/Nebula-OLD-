@@ -675,6 +675,7 @@ namespace Nebula.Module
             closeButton.transform.localPosition = new Vector3(-size.x / 2f - 0.3f, size.y / 2f - 0.3f, -10f);
             dialogue.transform.localScale = new Vector3(1, 1, 1);
             dialogue.transform.localPosition = new Vector3(0f, 0f, -50f);
+            if (dialogue.transform.parent == HudManager.Instance.transform) dialogue.transform.localPosition += new Vector3(0, 0, -50f);
             var metaDialog = new MetaDialog(dialogue);
             dialogOrder.Add(metaDialog);
 
@@ -862,8 +863,8 @@ namespace Nebula.Module
                        TMPro.FontStyles.Bold,
                        () => { MetaDialog.EraseDialog(1); OpenHelpDialog(0, 0, options); });
 
-                        if (arg == 1) assignable = (!data.IsAlive && data.ghostRole != null) ? (Roles.Assignable)data.ghostRole : data.role;
-                        if (!data.IsAlive && data.ghostRole != null)
+                        if (arg == 1) assignable = (!data.IsAlive && data.role.CanHaveGhostRole && data.ghostRole != null) ? (Roles.Assignable)data.ghostRole : data.role;
+                        if (!data.IsAlive && data.role.CanHaveGhostRole && data.ghostRole != null)
                         {
                             yield return new MetaDialogButton(1.3f, 0.36f,
                            Helpers.cs(data.ghostRole.Color, Language.Language.GetString("role." + data.ghostRole.LocalizeName + ".name")),

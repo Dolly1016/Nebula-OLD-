@@ -13,6 +13,8 @@ namespace Nebula.Roles.MetaRoles
     {
         static public Color RoleColor = new Color(173f / 255f, 173f / 255f, 198f / 255f);
 
+        public override bool CanHaveGhostRole { get => false; }
+
         public override void OnSetTasks(ref List<GameData.TaskInfo> initialTasks, ref List<GameData.TaskInfo>? actualTasks)
         {
             initialTasks.Clear();
@@ -41,7 +43,10 @@ namespace Nebula.Roles.MetaRoles
         private SpriteLoader voidButtonSprite = new SpriteLoader("Nebula.Resources.VOIDButton.png", 115f);
         private CustomButton voidButton;
 
-       
+        public override HelpSprite[] helpSprite => new HelpSprite[]
+         {
+            new HelpSprite(voidButtonSprite,"role.void.help.void",0.3f)
+         };
 
         public override void MyUpdate()
         {
@@ -315,7 +320,12 @@ namespace Nebula.Roles.MetaRoles
             {
                 foreach (var tuple in texts)
                 {
-                    string roleNames = Helpers.cs(tuple.Item1.role.Color, Language.Language.GetString("role." + tuple.Item1.role.LocalizeName + ".name"));
+                    string roleNames;
+
+                    if(!tuple.Item1.IsAlive && tuple.Item1.role.CanHaveGhostRole && tuple.Item1.ghostRole!=null)
+                        roleNames = Helpers.cs(tuple.Item1.ghostRole.Color, Language.Language.GetString("role." + tuple.Item1.ghostRole.LocalizeName + ".name"));
+                    else
+                        roleNames = Helpers.cs(tuple.Item1.role.Color, Language.Language.GetString("role." + tuple.Item1.role.LocalizeName + ".name"));
                     Helpers.RoleAction(tuple.Item1, (role) => { role.EditDisplayRoleNameForcely(tuple.Item1.id, ref roleNames); });
                     Helpers.RoleAction(tuple.Item1, (role) => { role.EditDisplayNameForcely(tuple.Item1.id, ref roleNames); });
                     tuple.Item2.text = roleNames;

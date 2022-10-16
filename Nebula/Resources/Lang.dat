@@ -197,6 +197,7 @@
 "role.void.short" : "V"
 "role.void.description" : "Very Optimized and Intelligent Dominator"
 "role.void.info" : ""
+"role.void.help.void" : "Open VOID dialog. You can also open this dialog in a meeting."
 
 "role.crewmate.name" : "Crewmate"
 "role.crewmate.short" : "C"
@@ -818,7 +819,9 @@
 
 "role.poltergeist.name" : "Poltergeist"
 "role.poltergeist.short" : "P"
-"role.poltergeist.info" : "You can move dead body linearly.\nThe closer you are to the dead body, the farther you throw it."
+"role.poltergeist.info" : "You can reel dead body."
+"role.poltergeist.help.poltergeist" : "Reel dead body."
+"role.poltergeist.poltergeistCoolDown" : "Poltergeist Cool Down"
 
 "side.crewmate.name" : "Crewmate"
 "side.impostor.name" : "Impostor"

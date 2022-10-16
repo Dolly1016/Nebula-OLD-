@@ -327,6 +327,7 @@ namespace Nebula
 
             //ロールのオプションを読み込む
             Roles.Role.LoadAllOptionData();
+            Roles.GhostRole.LoadAllOptionData();
             Roles.ExtraRole.LoadAllOptionData();
 
             CoolDownOption = CustomOption.Create(11010, Color.white, "option.coolDownOption", new string[] { "option.empty" }, "option.empty", null, true, false, "", CustomOptionTab.AdvancedSettings);

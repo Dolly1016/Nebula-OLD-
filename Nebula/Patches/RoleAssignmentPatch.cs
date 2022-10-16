@@ -336,6 +336,8 @@ namespace Nebula.Patches
     {
         public static void Postfix()
         {
+            GhostRoleAssignmentPatch.Initialize();
+
             AssignMap assignMap = new AssignMap();
 
             if (!DestroyableSingleton<TutorialManager>.InstanceExists)
@@ -519,9 +521,61 @@ namespace Nebula.Patches
     [HarmonyPatch(typeof(RoleManager),nameof(RoleManager.TryAssignRoleOnDeath))]
     class GhostRoleAssignmentPatch
     {
+        static Dictionary<GhostRole, int> assigned = new Dictionary<GhostRole, int>();
+
+        static public void Initialize()
+        {
+            assigned.Clear();
+        }
+
         static public void Postfix(RoleManager __instance, [HarmonyArgument(0)]PlayerControl player)
         {
+            var data = player.GetModData();
 
+            if (!data.role.CanHaveGhostRole) return;
+
+            List<Tuple<int, GhostRole?>> candidate = new List<Tuple<int, GhostRole?>>();
+
+            int sum = 0;
+
+            foreach(var ghostRole in Roles.Roles.AllGhostRoles)
+            {
+                if (!ghostRole.IsAssignableTo(data)) continue;
+
+                int maxCount = ghostRole.RoleCountOption.getSelection();
+                if (maxCount == 0) continue;
+
+                int probability = ghostRole.RoleChanceOption.getSelection();
+                if (probability == 0) continue;
+
+                if (assigned.ContainsKey(ghostRole) && assigned[ghostRole] >= maxCount) continue;
+
+                if (probability < 10)
+                {
+                    candidate.Add(new Tuple<int, GhostRole?>(10 - probability, null));
+                }
+                candidate.Add(new Tuple<int, GhostRole?>(probability, ghostRole));
+
+                sum += 10;
+            }
+
+            int rand = NebulaPlugin.rnd.Next(sum);
+
+            foreach(var c in candidate)
+            {
+                rand -= c.Item1;
+                if (rand < 0)
+                {
+                    if (c.Item2 == null) break;
+
+                    RPCEventInvoker.SetGhostRole(player,c.Item2);
+
+                    if (!assigned.ContainsKey(c.Item2)) assigned[c.Item2] = 1;
+                    else assigned[c.Item2]++;
+
+                    break;
+                }
+            }
         }
         
     }

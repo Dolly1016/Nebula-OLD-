@@ -86,7 +86,8 @@ namespace Nebula
         RitualSharePerks,
         RitualUpdate,
         DecoySwap,
-        Paint
+        Paint,
+        Poltergeist
     }
 
     //RPCを受け取ったときのイベント
@@ -336,6 +337,9 @@ namespace Nebula
                 case (byte)CustomRPC.Paint:
                     RPCEvents.Paint(Helpers.playerById(reader.ReadByte()), new Game.PlayerData.PlayerOutfitData(reader));
                     break;
+                case (byte)CustomRPC.Poltergeist:
+                    RPCEvents.Poltergeist(reader.ReadByte(),new Vector2(reader.ReadSingle(), reader.ReadSingle()));
+                    break;
             }
         }
     }
@@ -515,7 +519,7 @@ namespace Nebula
 
         }
 
-        public static void SetGhostRole(byte playerId,Roles.GhostRole ghostRole)
+        public static void SetGhostRole(byte playerId,Roles.GhostRole? ghostRole)
         {
             var data = Game.GameData.data.playersArray[playerId];
             PlayerControl player = Helpers.playerById(playerId);
@@ -532,13 +536,19 @@ namespace Nebula
             }
             data.ghostRole = ghostRole;
 
-            ghostRole.GlobalInitialize(player);
-            if (playerId == PlayerControl.LocalPlayer.PlayerId)
+            if (ghostRole != null)
             {
-                ghostRole.Initialize(player);
-                ghostRole.ButtonInitialize(HudManager.Instance);
-                Objects.CustomButton.ButtonActivate();
+                ghostRole.GlobalInitialize(player);
+                if (playerId == PlayerControl.LocalPlayer.PlayerId)
+                {
+                    ghostRole.Initialize(player);
+                    ghostRole.ButtonInitialize(HudManager.Instance);
+                    Objects.CustomButton.ButtonActivate();
+                }
+
+               
             }
+            if (!data.IsAlive && data.role.CanHaveGhostRole) data.AddRoleHistory();
         }
 
         public static void PlayStaticSound(Module.AudioAsset id)
@@ -1521,6 +1531,11 @@ namespace Nebula
                     }, 50);
             }
         }
+
+        static public void Poltergeist(byte deadBodyId,Vector2 vector)
+        {
+            Events.LocalEvent.Activate(new Roles.GhostRoles.Poltergeist.PoltergeistEvent(deadBodyId,vector));
+        }
     }
 
     public class RPCEventInvoker
@@ -1828,11 +1843,11 @@ namespace Nebula
             RPCEvents.ChangeExtraRole(null,addRole, initializeValue, player.PlayerId);
         }
 
-        public static void SetGhostRole(PlayerControl player,Roles.GhostRole ghostRole)
+        public static void SetGhostRole(PlayerControl player,Roles.GhostRole? ghostRole)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetGhostRole, Hazel.SendOption.Reliable, -1);
             writer.Write(player.PlayerId);
-            writer.Write(ghostRole.id);
+            writer.Write(ghostRole!=null ? ghostRole.id : byte.MaxValue);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.SetGhostRole(player.PlayerId, ghostRole);
         }
@@ -2308,6 +2323,16 @@ namespace Nebula
             outfit.Serialize(writer);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.Paint(player,outfit);
+        }
+
+        public static void Poltergeist(byte deadBodyId,Vector2 vector)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Poltergeist, Hazel.SendOption.Reliable, -1);
+            writer.Write(deadBodyId);
+            writer.Write(vector.x);
+            writer.Write(vector.y);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.Poltergeist(deadBodyId, vector);
         }
     }
 }

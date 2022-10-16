@@ -46,7 +46,7 @@ namespace Nebula.Roles.CrewmateRoles
 
         public override List<Role> GetImplicateRoles()
         {
-            return new List<Role>() { Roles.DamnedCrew };
+            return new List<Role>() { Roles.DamnedCrew, Roles.CrewmateWithoutTasks };
         }
 
         public Crewmate(bool hasFakeTask=false)

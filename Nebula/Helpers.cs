@@ -541,7 +541,7 @@ namespace Nebula
                 data = Game.GameData.data.AllPlayers[playerId];
 
                 action.Invoke(data.role);
-                if (data.ghostRole != null) action.Invoke(data.ghostRole);
+                if (data.role.CanHaveGhostRole && data.ghostRole != null) action.Invoke(data.ghostRole);
 
                 if (data.extraRole.Count > 0)
                 {

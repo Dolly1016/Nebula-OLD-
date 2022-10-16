@@ -29,9 +29,9 @@ namespace Nebula.Roles.ImpostorRoles
                 PlayerControl p = Helpers.playerById(playerId);
                 var data = p.GetModData();
                 //赤文字は何もしない
-                if (data.role.category == RoleCategory.Impostor || data.role == Roles.Spy) return;
+                if (data.role.category == RoleCategory.Impostor || data.role.GetActualRole(data) == Roles.Spy) return;
                 if((!canKnowRolesOnlyMyMurdersOption.getBool()) || Game.GameData.data.deadPlayers[p.PlayerId].MurderId==PlayerControl.LocalPlayer.PlayerId)
-                data.RoleInfo= Helpers.cs(data.role.Color, Language.Language.GetString("role." + data.role.LocalizeName + ".name"));
+                data.RoleInfo= Helpers.cs(data.role.GetActualRole(data).Color, Language.Language.GetString("role." + data.role.GetActualRole(data).LocalizeName + ".name"));
             }
             catch { }
         }

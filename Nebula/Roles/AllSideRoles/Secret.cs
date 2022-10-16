@@ -9,16 +9,16 @@ namespace Nebula.Roles.AllSideRoles
     public class Secret: AllSideRole, ExtraAssignable
     {
         private int secretId;
-        public override Role GetActualRole()
+        public override Role GetActualRole(Game.PlayerData player)
         {
             Role role;
-            ParseActualRole(out role,out bool hasGuesser, out bool hasMadmate);
+            ParseActualRole(player,out role,out bool hasGuesser, out bool hasMadmate);
             return role;
         }
 
-        public void ParseActualRole(out Role role,out bool hasGuesser,out bool hasMadmate)
+        public void ParseActualRole(Game.PlayerData player,out Role role,out bool hasGuesser,out bool hasMadmate)
         {
-            int roleData = Game.GameData.data.myData.getGlobalData().GetRoleData(secretId);
+            int roleData = player.GetRoleData(secretId);
             int roleId = roleData & 0xFF;
             int exRoleId = roleData >> 8;
 
@@ -49,7 +49,7 @@ namespace Nebula.Roles.AllSideRoles
                     initialTasks.RemoveAt(index);
                 }
 
-                GetActualRole().OnSetTasks(ref initialTasks,ref actualTasks);
+                GetActualRole(Game.GameData.data.myData.getGlobalData()).OnSetTasks(ref initialTasks,ref actualTasks);
             }
         }
 
@@ -119,7 +119,7 @@ namespace Nebula.Roles.AllSideRoles
         private void RevealRole()
         {
             //役職を元に戻す
-            ParseActualRole(out Role role, out bool hasGuesser,out bool hasMadmate);
+            ParseActualRole(PlayerControl.LocalPlayer.GetModData(),out Role role, out bool hasGuesser,out bool hasMadmate);
             List<Tuple<Tuple<ExtraRole, ulong>, bool>> exRoles = new List<Tuple<Tuple<ExtraRole, ulong>, bool>>();
             if (hasGuesser) exRoles.Add(new Tuple<Tuple<ExtraRole, ulong>, bool>(new Tuple<ExtraRole, ulong>(Roles.SecondaryGuesser, (ulong)Roles.F_Guesser.guesserShots.getFloat()), true));
             if (hasMadmate) exRoles.Add(new Tuple<Tuple<ExtraRole, ulong>, bool>(new Tuple<ExtraRole, ulong>(Roles.SecondaryMadmate, (ulong)0), true));

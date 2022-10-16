@@ -128,7 +128,7 @@ namespace Nebula.Patches
                 if (player == PlayerControl.LocalPlayer)
                 {
                     //自分自身ならロールの色にする
-                    if(!playerData.IsAlive && playerData.ghostRole != null)
+                    if(!playerData.IsAlive && playerData.role.CanHaveGhostRole && playerData.ghostRole != null)
                         player.cosmetics.nameText.color = playerData.ghostRole.Color;
                     else
                         player.cosmetics.nameText.color = playerData.role.Color;
@@ -195,7 +195,7 @@ namespace Nebula.Patches
                     if (player.TargetPlayerId == PlayerControl.LocalPlayer.PlayerId)
                     {
                         //自分自身ならロールの色にする
-                        player.NameText.color = (!playerData.IsAlive && playerData.ghostRole!=null) ? playerData.ghostRole.Color : playerData.role.Color;
+                        player.NameText.color = (!playerData.IsAlive && playerData.role.CanHaveGhostRole && playerData.ghostRole!=null) ? playerData.ghostRole.Color : playerData.role.Color;
                     }
                     else
                     {
