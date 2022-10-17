@@ -16,6 +16,10 @@ namespace Nebula.Objects
         Dictionary<byte, Tuple<GameObject,PoolablePlayer>> allPlayers;
         Coroutine? lastCoroutine=null;
 
+        //拡大・縮小時も操作できるようボタンを適切な位置に動かす
+        PassiveButton[] changeTargetButtons;
+        SpriteRenderer[] changeTargetRenderer;
+
         public PlayerList(PoolablePlayer playerPrefab)
         {
             listParent = new GameObject("PlayerList");

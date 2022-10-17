@@ -60,6 +60,7 @@ namespace Nebula.Objects
         private bool mirror;
         private KeyCode? hotkey;
         private KeyCode? aidHotkey=null;
+        private bool canInvokeAidActionWithMouseRightButton = true;
         private string buttonText;
         private ImageNames textType;
         //ボタンの有効化フラグと、一時的な隠しフラグ
@@ -445,7 +446,7 @@ namespace Nebula.Objects
                 if ((hotkey.HasValue && Input.GetKeyDown(hotkey.Value)) ||
                     (FireOnClicked && MouseClicked())) onClickEvent();
 
-                if(AidAction!=null &&  aidHotkey.HasValue && Input.GetKeyDown(aidHotkey.Value))
+                if(AidAction!=null &&  aidHotkey.HasValue && (Input.GetKeyDown(aidHotkey.Value) || (canInvokeAidActionWithMouseRightButton&&Input.GetKeyDown(KeyCode.Mouse1))))
                 {
                     AidAction();
                 }

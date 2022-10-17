@@ -27,16 +27,26 @@ namespace Nebula.Patches
     [HarmonyPatch(typeof(HudManager), nameof(HudManager.Start))]
     static class HudManagerStartPatch
     {
+        private static void CleanUp(IEnumerable<Roles.Assignable> roles)
+        {
+            foreach (var role in roles)
+            {
+                try
+                {
+                    role.CleanUp();
+                }
+                catch
+                {
+                    NebulaPlugin.Instance.Logger.Print("An error has occurred in " + role.Name);
+                }
+            }
+        }
+
         public static void Postfix(HudManager __instance)
         {
-            foreach (Roles.Role role in Roles.Roles.AllRoles)
-            {
-                role.CleanUp();
-            }
-            foreach (Roles.ExtraRole role in Roles.Roles.AllExtraRoles)
-            {
-                role.CleanUp();
-            }
+            CleanUp(Roles.Roles.AllRoles);
+            CleanUp(Roles.Roles.AllExtraRoles);
+            CleanUp(Roles.Roles.AllGhostRoles);
         }
     }
 

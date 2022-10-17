@@ -50,7 +50,11 @@ namespace Nebula.Patches
 	{
 		public static void Postfix(HudManager __instance)
 		{
-			BeginHubHelper.Postfix(__instance);
+			try
+			{
+				BeginHubHelper.Postfix(__instance);
+            }
+            catch { }
 		}
 	}
 
@@ -83,25 +87,6 @@ namespace Nebula.Patches
 		static public bool ObserverMode = false;
 		static public int ObserverTarget = 0;
 
-		private static IEnumerator GetEnumerator(HudManager __instance)
-        {
-			while (true)
-			{
-				if (ObserverMode) break;
-				if (Camera.main.orthographicSize == 3f)
-				{
-					Transform transform = __instance.transform.Find("Buttons");
-					if (transform)
-					{
-						transform.gameObject.SetActive(!ObserverMode);
-					}
-					break;
-				}
-				yield return null;
-			}
-			yield break;
-        }
-
 		private static void ChangeObserverTarget(bool increamentFlag)
         {
 			int lastTarget = ObserverTarget;
@@ -131,7 +116,7 @@ namespace Nebula.Patches
 
 			if (Game.GameData.data != null && Game.GameData.data.myData.CanSeeEveryoneInfo)
 			{
-				if (Input.GetKeyDown(KeyCode.M)) ObserverMode = !ObserverMode;
+				if (Input.GetKeyDown(KeyCode.M) || Input.GetKeyDown(KeyCode.Mouse2)) ObserverMode = !ObserverMode;
 				if (Input.GetKeyDown(KeyCode.Comma))
 				{
 					ChangeObserverTarget(false);
@@ -144,7 +129,7 @@ namespace Nebula.Patches
 					Objects.PlayerList.Instance.Show();
 					Objects.PlayerList.Instance.SelectPlayer(PlayerControl.AllPlayerControls[ObserverTarget].PlayerId);
 				}
-				if (Input.GetKeyDown(KeyCode.Escape))
+				if (Input.GetKeyDown(KeyCode.Escape) && Module.MetaDialog.dialogOrder.Count==0)
 				{
 					__instance.PlayerCam.SetTargetWithLight(PlayerControl.LocalPlayer);
 					Objects.PlayerList.Instance.Close();
@@ -164,16 +149,10 @@ namespace Nebula.Patches
 					|| ExileController.Instance
 					|| Minigame.Instance
 					|| (MapBehaviour.Instance && MapBehaviour.Instance.IsOpen)
-					|| (Game.GameData.data == null || !Game.GameData.data.myData.CanSeeEveryoneInfo)
-					|| Module.MetaDialog.dialogOrder.Count!=0)
+					|| (Game.GameData.data == null || !Game.GameData.data.myData.CanSeeEveryoneInfo))
 			{
 				ObserverMode = false;
 			}
-
-            if (ObserverMode != lastObserverMode)
-            {
-				__instance.StartCoroutine(GetEnumerator(__instance).WrapToIl2Cpp());
-            }
 
 
 			if (ObserverMode)
@@ -204,15 +183,6 @@ namespace Nebula.Patches
 
 				transform = __instance.transform.Find("TaskDisplay");
 				if (transform) transform.gameObject.SetActive(!ObserverMode && ShipStatus.Instance);
-
-				if (ObserverMode)
-				{
-					transform = __instance.transform.Find("Buttons");
-					if (transform)
-					{
-						transform.gameObject.SetActive(!ObserverMode);
-					}
-				}
 			}
 		}
 	}
