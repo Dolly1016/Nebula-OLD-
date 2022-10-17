@@ -11,12 +11,68 @@ namespace Nebula.Patches.VanillaRework
 	[HarmonyPatch]
 	class PassiveButtonManagerPatch
 	{
-		static public Vector2 ConvertToPosition(Vector2 mainCameraPosition, Camera camera)
+		static public Vector2 ConvertToPosition(Vector2 mainCameraPosition, Camera camera,bool correctOrigin)
 		{
 			if (camera == Camera.main) return mainCameraPosition;
-			return ((mainCameraPosition  / Camera.main.orthographicSize) - (Vector2)Camera.main.transform.position) * camera.orthographicSize;
+			if (correctOrigin) mainCameraPosition -= (Vector2)Camera.main.transform.position;
+			Vector2 result = (mainCameraPosition / Camera.main.orthographicSize * camera.orthographicSize);
+			if (correctOrigin) result += (Vector2)Camera.main.transform.position;
+			return result;
 		}
 
+		static public float ConvertToScalar(float scalar, Camera camera)
+		{
+			if (camera == Camera.main) return scalar;
+			return scalar * Camera.main.orthographicSize / camera.orthographicSize;
+		}
+
+		static public DragState CheckDrag(Controller controller,Collider2D coll,Camera camera)
+        {
+			if (!coll)
+			{
+				return DragState.NoTouch;
+			}
+			if (controller.touchId > -1 && (!controller.amTouching || !controller.amTouching.isActiveAndEnabled))
+			{
+				controller.touchId = -1;
+				controller.amTouching = null;
+			}
+			if (controller.touchId <= -1)
+			{
+				int i = 0;
+				foreach (var touchState in controller.Touches)
+				{
+					if (touchState.TouchStart && coll.OverlapPoint(ConvertToPosition(touchState.Position,camera,true)))
+					{
+						controller.amTouching = coll;
+						controller.touchId = i;
+						touchState.dragState = DragState.TouchStart;
+						return DragState.TouchStart;
+					}
+					i++;
+				}
+				return DragState.NoTouch;
+			}
+			if (coll != controller.amTouching)
+			{
+				return DragState.NoTouch;
+			}
+			Controller.TouchState touchState2 = controller.Touches[controller.touchId];
+			if (!touchState2.IsDown)
+			{
+				controller.amTouching = null;
+				controller.touchId = -1;
+				touchState2.dragState = DragState.Released;
+				return DragState.Released;
+			}
+			if (ConvertToScalar(Vector2.Distance(touchState2.ScreenDownAt, touchState2.ScreenPosition),camera) > 10f || touchState2.dragState == DragState.Dragging)
+			{
+				touchState2.dragState = DragState.Dragging;
+				return DragState.Dragging;
+			}
+			touchState2.dragState = DragState.Holding;
+			return DragState.Holding;
+		}
 
 		[HarmonyPatch(typeof(PassiveButtonManager), nameof(PassiveButtonManager.Update))]
 		class UpdatePatch
@@ -78,7 +134,7 @@ namespace Nebula.Patches.VanillaRework
 						if (passiveUiElement.ClickMask)
 						{
 							Controller.TouchState touch = __instance.controller.GetTouch(0);
-							Vector2 position = ConvertToPosition(touch.Position, camera);
+							Vector2 position = ConvertToPosition(touch.Position, camera, true);
 							if (touch.IsDown && !passiveUiElement.ClickMask.OverlapPoint(position))
 							{
 								continue;
@@ -91,7 +147,7 @@ namespace Nebula.Patches.VanillaRework
 							{
 								HandleMouseOver(__instance,passiveUiElement, col, camera);
 
-								switch (__instance.controller.CheckDrag(col))
+								switch (CheckDrag(__instance.controller,col,camera))
 								{
 									case DragState.TouchStart:
 										if (passiveUiElement.HandleDown)
@@ -108,7 +164,7 @@ namespace Nebula.Patches.VanillaRework
 									case DragState.Dragging:
 										if (passiveUiElement.HandleDrag)
 										{
-											Vector2 dragDelta = ConvertToPosition(__instance.controller.DragPosition - __instance.controller.DragStartPosition,camera);
+											Vector2 dragDelta = ConvertToPosition(__instance.controller.DragPosition - __instance.controller.DragStartPosition,camera,false);
 											passiveUiElement.ReceiveClickDrag(dragDelta);
 											__instance.controller.ResetDragPosition();
 										}
@@ -164,7 +220,7 @@ namespace Nebula.Patches.VanillaRework
 
 						foreach (var c in top.Colliders)
 						{
-							if (c.OverlapPoint(ConvertToPosition(point, camera))) return true;
+							if (c.OverlapPoint(ConvertToPosition(point, camera, true))) return true;
 						}
 					}
 				}
@@ -229,7 +285,7 @@ namespace Nebula.Patches.VanillaRework
 						{
 							foreach (var c in __instance.currentOver.Colliders)
 							{
-								if (c.OverlapPoint(ConvertToPosition(pt.Position, camera)))
+								if (c.OverlapPoint(ConvertToPosition(pt.Position, camera, true)))
 								{
 									flag = true;
 									break;
@@ -257,7 +313,7 @@ namespace Nebula.Patches.VanillaRework
 
 				if (button.ClickMask)
 				{
-					Vector2 position = ConvertToPosition(__instance.controller.GetTouch(0).Position, camera);
+					Vector2 position = ConvertToPosition(__instance.controller.GetTouch(0).Position, camera, true);
 					if (!button.ClickMask.OverlapPoint(position))
 					{
 						return;
@@ -270,7 +326,7 @@ namespace Nebula.Patches.VanillaRework
 				bool flag = false;
 				foreach (var touch in __instance.controller.Touches)
 				{
-					if (touch.active && col.OverlapPoint(ConvertToPosition(touch.Position,camera)))
+					if (touch.active && col.OverlapPoint(ConvertToPosition(touch.Position,camera, true)))
 					{
 						flag = true;
 						break;

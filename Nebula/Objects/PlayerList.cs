@@ -16,9 +16,7 @@ namespace Nebula.Objects
         Dictionary<byte, Tuple<GameObject,PoolablePlayer>> allPlayers;
         Coroutine? lastCoroutine=null;
 
-        //拡大・縮小時も操作できるようボタンを適切な位置に動かす
         PassiveButton[] changeTargetButtons;
-        SpriteRenderer[] changeTargetRenderer;
 
         public PlayerList(PoolablePlayer playerPrefab)
         {
@@ -50,6 +48,24 @@ namespace Nebula.Objects
                 allPlayers.Add(p.PlayerId, new Tuple<GameObject, PoolablePlayer>(obj,poolable));
             }
 
+            changeTargetButtons = new PassiveButton[2];
+            for(int i = 0; i < 2; i++)
+            {
+                GameObject obj = new GameObject("Button");
+                obj.transform.SetParent(listParent.transform);
+                obj.layer = LayerExpansion.GetUILayer();
+                var button = obj.AddComponent<PassiveButton>();
+                var renderer = obj.AddComponent<SpriteRenderer>();
+                var collider = obj.AddComponent<BoxCollider2D>();
+                button.OnClick = new UnityEngine.UI.Button.ButtonClickedEvent();
+                button.OnMouseOut = new UnityEngine.Events.UnityEvent(); ;
+                button.OnMouseOver = new UnityEngine.Events.UnityEvent();
+                renderer.sprite = Helpers.loadSpriteFromResources("Nebula.Resources.MeetingButtonLeft.png", 100f);
+                collider.size = new Vector2(0.8f,0.8f);
+                int index = i;
+                button.OnClick.AddListener((UnityEngine.Events.UnityAction)(()=>Patches.EyesightPatch.ChangeObserverTarget(index == 1)));
+                changeTargetButtons[i] = button;
+            }
             SetParentPosition(-3.5f);
 
             listParent.SetActive(false);
@@ -135,6 +151,10 @@ namespace Nebula.Objects
                     tuple.Item1.transform.localPosition -= new Vector3(x * 0.5f, 0, 0);
                 }
             }
+
+            for (int i = 0; i < 2; i++)
+                changeTargetButtons[i].transform.localPosition = new Vector3((float)(i * 2 - 1) * (x * 0.5f + 0.4f), 0f, -10f);
+            
         }
 
         public void SelectPlayer(byte id)

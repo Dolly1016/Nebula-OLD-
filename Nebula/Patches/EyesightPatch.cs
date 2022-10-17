@@ -87,7 +87,7 @@ namespace Nebula.Patches
 		static public bool ObserverMode = false;
 		static public int ObserverTarget = 0;
 
-		private static void ChangeObserverTarget(bool increamentFlag)
+		public static void ChangeObserverTarget(bool increamentFlag)
         {
 			int lastTarget = ObserverTarget;
             while (true)
@@ -108,7 +108,9 @@ namespace Nebula.Patches
 
 				break;
 			}
-        }
+
+			Objects.PlayerList.Instance.SelectPlayer(PlayerControl.AllPlayerControls[ObserverTarget].PlayerId);
+		}
 
 		public static void Postfix(HudManager __instance)
 		{
@@ -121,13 +123,11 @@ namespace Nebula.Patches
 				{
 					ChangeObserverTarget(false);
 					Objects.PlayerList.Instance.Show();
-					Objects.PlayerList.Instance.SelectPlayer(PlayerControl.AllPlayerControls[ObserverTarget].PlayerId);
 				}
 				if (Input.GetKeyDown(KeyCode.Period))
 				{
 					ChangeObserverTarget(true);
 					Objects.PlayerList.Instance.Show();
-					Objects.PlayerList.Instance.SelectPlayer(PlayerControl.AllPlayerControls[ObserverTarget].PlayerId);
 				}
 				if (Input.GetKeyDown(KeyCode.Escape) && Module.MetaDialog.dialogOrder.Count==0)
 				{
@@ -149,7 +149,8 @@ namespace Nebula.Patches
 					|| ExileController.Instance
 					|| Minigame.Instance
 					|| (MapBehaviour.Instance && MapBehaviour.Instance.IsOpen)
-					|| (Game.GameData.data == null || !Game.GameData.data.myData.CanSeeEveryoneInfo))
+					|| (Game.GameData.data == null || !Game.GameData.data.myData.CanSeeEveryoneInfo)
+					|| Module.MetaDialog.dialogOrder.Count>0)
 			{
 				ObserverMode = false;
 			}

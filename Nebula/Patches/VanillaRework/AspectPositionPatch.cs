@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using HarmonyLib;
 using UnityEngine;
+using System.Linq;
 
 namespace Nebula.Patches
 {
@@ -13,8 +14,8 @@ namespace Nebula.Patches
         //parentCamを 必ずしもMain Cameraではなく、自身を描画するカメラに設定するよう変更
         static public void Prefix(AspectPosition __instance)
         {
-            if (__instance.gameObject.layer == LayerExpansion.GetUILayer() && HudManager.Instance)
-                __instance.parentCam = HudManager.Instance.UICamera;
+            if (__instance.gameObject.layer == LayerExpansion.GetUILayer())
+                __instance.parentCam = Camera.allCameras.FirstOrDefault((c) => c.name == "UI Camera") ?? Camera.main;
             else
                 __instance.parentCam = Camera.main;
         }
