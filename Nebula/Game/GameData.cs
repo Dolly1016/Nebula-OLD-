@@ -1108,6 +1108,7 @@ namespace Nebula.Game
 
         public GameData()
         {
+
             AllPlayers = new Dictionary<byte, PlayerData>();
             playersArray = new List<PlayerData>();
 

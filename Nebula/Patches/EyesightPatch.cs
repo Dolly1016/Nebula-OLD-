@@ -114,11 +114,26 @@ namespace Nebula.Patches
 
 		public static void Postfix(HudManager __instance)
 		{
-			bool lastObserverMode = ObserverMode;
-
 			if (Game.GameData.data != null && Game.GameData.data.myData.CanSeeEveryoneInfo)
 			{
-				if (Input.GetKeyDown(KeyCode.M) || Input.GetKeyDown(KeyCode.Mouse2)) ObserverMode = !ObserverMode;
+				if (Input.GetKeyDown(KeyCode.Mouse2))
+				{
+					if (!Objects.PlayerList.Instance.IsOpen)
+					{
+						Objects.PlayerList.Instance.Show();
+					}
+
+                    if (ObserverMode)
+						__instance.PlayerCam.SetTargetWithLight(PlayerControl.LocalPlayer);
+                    
+					Objects.PlayerList.Instance.SelectPlayer(PlayerControl.LocalPlayer.PlayerId);
+					
+
+					ObserverMode = !ObserverMode;
+
+				}
+
+				if (Input.GetKeyDown(KeyCode.M)) ObserverMode = !ObserverMode;
 				if (Input.GetKeyDown(KeyCode.Comma))
 				{
 					ChangeObserverTarget(false);

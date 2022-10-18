@@ -11,7 +11,7 @@ namespace Nebula.Objects
     {
         public static PlayerList Instance;
 
-        bool isOpen;
+        public bool IsOpen { get; private set; }
         GameObject listParent;
         Dictionary<byte, Tuple<GameObject,PoolablePlayer>> allPlayers;
         Coroutine? lastCoroutine=null;
@@ -23,7 +23,7 @@ namespace Nebula.Objects
             listParent = new GameObject("PlayerList");
             listParent.transform.SetParent(HudManager.Instance.gameObject.transform);
             listParent.SetActive(true);
-            isOpen = false;
+            IsOpen = false;
 
             allPlayers = new Dictionary<byte, Tuple<GameObject, PoolablePlayer>>();
 
@@ -60,10 +60,14 @@ namespace Nebula.Objects
                 button.OnClick = new UnityEngine.UI.Button.ButtonClickedEvent();
                 button.OnMouseOut = new UnityEngine.Events.UnityEvent(); ;
                 button.OnMouseOver = new UnityEngine.Events.UnityEvent();
-                renderer.sprite = Helpers.loadSpriteFromResources("Nebula.Resources.MeetingButtonLeft.png", 100f);
-                collider.size = new Vector2(0.8f,0.8f);
+                renderer.sprite = Helpers.loadSpriteFromResources($"Nebula.Resources.ArrowButton{(i == 0 ? "Left" : "Right")}.png", 100f);
+                collider.size = new Vector2(0.5f,0.5f);
                 int index = i;
-                button.OnClick.AddListener((UnityEngine.Events.UnityAction)(()=>Patches.EyesightPatch.ChangeObserverTarget(index == 1)));
+                button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
+                {
+                    Patches.EyesightPatch.ObserverMode = true;
+                    Patches.EyesightPatch.ChangeObserverTarget(index == 1);
+                }));
                 changeTargetButtons[i] = button;
             }
             SetParentPosition(-3.5f);
@@ -87,7 +91,7 @@ namespace Nebula.Objects
 
         private IEnumerator CoShow()
         {
-            if (isOpen) yield break;
+            if (IsOpen) yield break;
 
             listParent.SetActive(true);
 
@@ -107,7 +111,7 @@ namespace Nebula.Objects
 
         private IEnumerator CoClose()
         {
-            if (isOpen) yield break;
+            if (IsOpen) yield break;
 
             while (true)
             {
