@@ -118,7 +118,7 @@ namespace Nebula.Module
                 //更新する
                 AnnounceVersion.Value = Version;
 
-                string lang = Language.Language.GetLanguage(SaveManager.LastLanguage);
+                string lang = Language.Language.GetLanguage((uint)AmongUs.Data.DataManager.Settings.Language.CurrentLanguage);
                 if (jObj[lang]!=null)
                     Announcement = jObj[lang].ToString();
                 else if (jObj["English"] != null)

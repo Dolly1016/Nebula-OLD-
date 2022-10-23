@@ -97,7 +97,7 @@ namespace Nebula.Language
         }
         public static void Load()
         {
-            string lang = GetLanguage(SaveManager.LastLanguage);
+            string lang = GetLanguage((uint)AmongUs.Data.DataManager.Settings.Language.CurrentLanguage);
             
 
             language = new Language();

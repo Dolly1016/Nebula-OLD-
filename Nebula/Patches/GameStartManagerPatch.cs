@@ -124,7 +124,7 @@ namespace Nebula.Patches
                         Helpers.shareGameVersion();
 
                         PlayerControl.LocalPlayer.SetColor(PlayerControl.LocalPlayer.PlayerId);
-                        SaveManager.BodyColor = PlayerControl.LocalPlayer.PlayerId;
+                        AmongUs.Data.DataManager.Player.Customization.Color = PlayerControl.LocalPlayer.PlayerId;
                         RPCEventInvoker.SetMyColor();
                     }
 

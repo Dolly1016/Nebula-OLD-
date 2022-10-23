@@ -64,18 +64,16 @@ namespace Nebula.Patches
             }
         }
 
-        [HarmonyPatch(typeof(PlayerVoteArea), nameof(PlayerVoteArea.SetVote))]
+        [HarmonyPatch(typeof(PlayerVoteArea), nameof(PlayerVoteArea.VoteForMe))]
         class PlayerVoteAreaSelectPatch
         {
-         
-            static void Prefix(PlayerVoteArea __instance, [HarmonyArgument(0)] byte suspectIdx)
+
+            static void Prefix(PlayerVoteArea __instance)
             {
-                if (__instance.TargetPlayerId == PlayerControl.LocalPlayer.PlayerId) {
-                    Helpers.RoleAction(__instance.TargetPlayerId, (role) =>
-                    {
-                        role.OnVote(suspectIdx);
-                    });
-                }
+                Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId, (role) =>
+                {
+                    role.OnVote(__instance.TargetPlayerId);
+                });
             }
         }
 

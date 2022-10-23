@@ -560,7 +560,6 @@ namespace Nebula.Module
             }
         }
 
-
         [HarmonyPatch(typeof(HatManager), nameof(HatManager.GetHatById))]
         private static class HatManagerPatch
         {
@@ -574,10 +573,16 @@ namespace Nebula.Module
 
                 try
                 {
-                    while (CosmicLoader.hatdetails.Count > 0)
+                    if (CosmicLoader.hatdetails.Count > 0)
                     {
-                        __instance.allHats.Add(CreateHatData(CosmicLoader.hatdetails[0], true));
-                        CosmicLoader.hatdetails.RemoveAt(0);
+                        var lastArray = __instance.allHats;
+                        int newCosmics = CosmicLoader.hatdetails.Count;
+                        __instance.allHats = new UnhollowerBaseLib.Il2CppReferenceArray<HatData>(lastArray.Count + newCosmics);
+
+                        int lastCount = lastArray.Count;
+                        for (int i = 0; i < lastCount; i++) __instance.allHats[i] = lastArray[i];
+                        for (int i = 0; i < newCosmics; i++) __instance.allHats[i + lastCount] = CreateHatData(CosmicLoader.hatdetails[i], true);
+                        CosmicLoader.hatdetails.RemoveRange(0, newCosmics);
                     }
                 }
                 catch (System.Exception e)
@@ -607,10 +612,16 @@ namespace Nebula.Module
 
                 try
                 {
-                    while (CosmicLoader.namePlatedetails.Count > 0)
+                    if (CosmicLoader.namePlatedetails.Count > 0)
                     {
-                        __instance.allNamePlates.Add(CreateNamePlateData(CosmicLoader.namePlatedetails[0], true));
-                        CosmicLoader.namePlatedetails.RemoveAt(0);
+                        var lastArray = __instance.allNamePlates;
+                        int newCosmics = CosmicLoader.namePlatedetails.Count;
+                        __instance.allNamePlates = new UnhollowerBaseLib.Il2CppReferenceArray<NamePlateData>(lastArray.Count + newCosmics);
+
+                        int lastCount = lastArray.Count;
+                        for (int i = 0; i < lastCount; i++) __instance.allNamePlates[i] = lastArray[i];
+                        for (int i = 0; i < newCosmics; i++) __instance.allNamePlates[i + lastCount] = CreateNamePlateData(CosmicLoader.namePlatedetails[i], true);
+                        CosmicLoader.namePlatedetails.RemoveRange(0, newCosmics);
                     }
                 }
                 catch (System.Exception e)
@@ -639,16 +650,20 @@ namespace Nebula.Module
 
                 try
                 {
-                    while (CosmicLoader.visordetails.Count > 0)
+                    if (CosmicLoader.visordetails.Count > 0)
                     {
-                        __instance.allVisors.Add(CreateVisorData(CosmicLoader.visordetails[0], true));
-                        CosmicLoader.visordetails.RemoveAt(0);
+                        var lastArray = __instance.allVisors;
+                        int newCosmics = CosmicLoader.visordetails.Count;
+                        __instance.allVisors = new UnhollowerBaseLib.Il2CppReferenceArray<VisorData>(lastArray.Count + newCosmics);
+
+                        int lastCount = lastArray.Count;
+                        for (int i = 0; i < lastCount; i++) __instance.allVisors[i] = lastArray[i];
+                        for (int i = 0; i < newCosmics; i++) __instance.allVisors[i + lastCount] = CreateVisorData(CosmicLoader.visordetails[i], true);
+                        CosmicLoader.visordetails.RemoveRange(0, newCosmics);
                     }
                 }
                 catch (System.Exception e)
                 {
-                    if (!LOADED)
-                        System.Console.WriteLine("Unable to add Custom Hats\n" + e);
                 }
                 LOADED = true;
             }
@@ -817,13 +832,13 @@ namespace Nebula.Module
                     float ypos = offset - (i / __instance.NumPerRow) * __instance.YOffset;
                     ColorChip colorChip = UnityEngine.Object.Instantiate<ColorChip>(__instance.ColorTabPrefab, __instance.scroller.Inner);
 
-                    int color = __instance.HasLocalPlayer() ? PlayerControl.LocalPlayer.Data.DefaultOutfit.ColorId : SaveManager.BodyColor;
+                    int color = __instance.HasLocalPlayer() ? PlayerControl.LocalPlayer.Data.DefaultOutfit.ColorId : AmongUs.Data.DataManager.Player.Customization.Color;
 
                     colorChip.transform.localPosition = new Vector3(xpos, ypos, inventoryZ);
                     if (ActiveInputManager.currentControlType == ActiveInputManager.InputType.Keyboard)
                     {
                         colorChip.Button.OnMouseOver.AddListener((UnityEngine.Events.UnityAction)(() => { __instance.SelectHat(hat); colorChip.SelectionHighlight.maskInteraction = SpriteMaskInteraction.VisibleInsideMask; }));
-                        colorChip.Button.OnMouseOut.AddListener((UnityEngine.Events.UnityAction)(() => __instance.SelectHat(FastDestroyableSingleton<HatManager>.Instance.GetHatById(SaveManager.LastHat))));
+                        colorChip.Button.OnMouseOut.AddListener((UnityEngine.Events.UnityAction)(() => __instance.SelectHat(FastDestroyableSingleton<HatManager>.Instance.GetHatById(AmongUs.Data.DataManager.Player.Customization.Hat))));
                         colorChip.Button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => __instance.ClickEquip()));
                     }
                     else
@@ -949,7 +964,7 @@ namespace Nebula.Module
                     if (ActiveInputManager.currentControlType == ActiveInputManager.InputType.Keyboard)
                     {
                         colorChip.Button.OnMouseOver.AddListener((UnityEngine.Events.UnityAction)(() => __instance.SelectNameplate(nameplate)));
-                        colorChip.Button.OnMouseOut.AddListener((UnityEngine.Events.UnityAction)(() => __instance.SelectNameplate(FastDestroyableSingleton<HatManager>.Instance.GetNamePlateById(SaveManager.LastNamePlate))));
+                        colorChip.Button.OnMouseOut.AddListener((UnityEngine.Events.UnityAction)(() => __instance.SelectNameplate(FastDestroyableSingleton<HatManager>.Instance.GetNamePlateById(AmongUs.Data.DataManager.Player.Customization.NamePlate))));
                         colorChip.Button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => __instance.ClickEquip()));
                     }
                     else
@@ -1068,7 +1083,7 @@ namespace Nebula.Module
                     if (ActiveInputManager.currentControlType == ActiveInputManager.InputType.Keyboard)
                     {
                         colorChip.Button.OnMouseOver.AddListener((UnityEngine.Events.UnityAction)(() => __instance.SelectVisor(visor)));
-                        colorChip.Button.OnMouseOut.AddListener((UnityEngine.Events.UnityAction)(() => __instance.SelectVisor(FastDestroyableSingleton<HatManager>.Instance.GetVisorById(SaveManager.LastVisor))));
+                        colorChip.Button.OnMouseOut.AddListener((UnityEngine.Events.UnityAction)(() => __instance.SelectVisor(FastDestroyableSingleton<HatManager>.Instance.GetVisorById(AmongUs.Data.DataManager.Player.Customization.Visor))));
                         colorChip.Button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => __instance.ClickEquip()));
                     }
                     else

@@ -65,13 +65,13 @@ namespace Nebula
     {
         public static Module.Random rnd = new Module.Random();
 
-        public const string AmongUsVersion = "2022.8.24";
+        public const string AmongUsVersion = "2022.10.25";
         public const string PluginGuid = "jp.dreamingpig.amongus.nebula";
         public const string PluginName = "TheNebula";
         public const string PluginVersion = "1.15.1.1";
         public const bool IsSnapshot = true;
 
-        public static string PluginVisualVersion = IsSnapshot ? "22.10.18a" : PluginVersion;
+        public static string PluginVisualVersion = IsSnapshot ? "22.10.23b" : PluginVersion;
         public static string PluginStage = IsSnapshot?"Snapshot":"";
 
         public const string PluginVersionForFetch = "1.15.1.1";

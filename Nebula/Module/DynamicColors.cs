@@ -196,7 +196,7 @@ namespace Nebula.Module
                 PassiveButton.OnClick.AddListener(onClick);
                 PassiveButton.OnClick.AddListener((System.Action)(() =>
                 {
-                    PlayerCustomizationMenu.Instance.PreviewArea.cosmetics.SetColor(SaveManager.BodyColor);
+                    PlayerCustomizationMenu.Instance.PreviewArea.cosmetics.SetColor(AmongUs.Data.DataManager.Player.Customization.Color);
                     PlayerCustomizationMenu.Instance.SetItemName(GetColorName());
                 }));
                 PassiveButton.enabled = true;
@@ -417,9 +417,9 @@ namespace Nebula.Module
                 Palette.ShadowColors[20 + i] = SaveColor[i].ShadowColor;
             }
 
-            if (SaveManager.BodyColor >= Palette.PlayerColors.Count) SaveManager.BodyColor = 0;
-            Palette.PlayerColors[SaveManager.BodyColor] = MyColor.Color;
-            Palette.ShadowColors[SaveManager.BodyColor] = MyColor.ShadowColor;
+            if (AmongUs.Data.DataManager.Player.Customization.Color >= Palette.PlayerColors.Count) AmongUs.Data.DataManager.Player.Customization.Color = 0;
+            Palette.PlayerColors[AmongUs.Data.DataManager.Player.Customization.Color] = MyColor.Color;
+            Palette.ShadowColors[AmongUs.Data.DataManager.Player.Customization.Color] = MyColor.ShadowColor;
 
             for (int i = 0; i < 2; i++)
             {
@@ -501,7 +501,7 @@ namespace Nebula.Module
                 }
                 else
                 {
-                    SaveAndSetColor(color, l, h, d, shadowType, SaveManager.BodyColor);
+                    SaveAndSetColor(color, l, h, d, shadowType, AmongUs.Data.DataManager.Player.Customization.Color);
                 }
             }
             else
@@ -717,7 +717,7 @@ namespace Nebula.Module
                 PalettePassiveButton.OnMouseOut = __instance.ColorChips[0].Button.OnMouseOut;
                 PalettePassiveButton.OnMouseOut.AddListener((UnityEngine.Events.UnityAction)(() =>
                 {
-                    PlayerCustomizationMenu.Instance.PreviewArea.cosmetics.SetColor(SaveManager.BodyColor);
+                    PlayerCustomizationMenu.Instance.PreviewArea.cosmetics.SetColor(AmongUs.Data.DataManager.Player.Customization.Color);
                     PlayerCustomizationMenu.Instance.SetItemName(GetColorName());
                 }));
                 PalettePassiveButton.OnClick.RemoveAllListeners();
