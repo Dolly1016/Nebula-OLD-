@@ -29,6 +29,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 1.16 | 2022.10.25s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.16,2022.10.25/Nebula_v1.16.zip)|
 | 1.15.1.1 | 2022.9.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.15.1.1,2022.8.24/Nebula_v1.15.1.1.zip)|
 | 1.15.1 | 2022.9.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.15.1,2022.8.24/Nebula_v1.15.1.zip)|
 | 1.15 | 2022.9.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.15,2022.8.24/Nebula_v1.15.zip)|
@@ -224,6 +225,28 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+ **Version 1.16**
+ - 幽霊役職 Poltergeistを追加
+ - ゲームマスター用役職 VOIDを追加
+ - ゲーム設定画面のタブにGhost Rolesを追加
+ - AirshipとPolusにAdditional Ventを追加
+ - Guardianでアンテナに映ったプレイヤーの明暗が分かるように
+ - Airshipの緊急サボタージュ中にドア閉めができるようになるオプションを追加
+ - 会議中にプレイヤーが死亡したときに、全プレイヤーの投票をその投票先に関わらずリセットするよう変更
+ - 投票前フェーズでGuesserが能力を使えないように変更
+ - EraserのErase Durationを0秒から選択できるように
+ - Fix Wiringタスクのフェイズ数を1回から選択できるように
+ - 「Emergency Option」を「Meeting Option」にリネーム
+ - 「Meeting Option」に新オプション「Can Skip」「Deal Abstention As Self Vote」を追加
+ - Secretのタスクが、コモンタスク以外を優先して選択されるように
+ - ヘルプ画面をリワーク
+ - ゲームの主要な操作がマウスで完結できるよう変更
+ - Guardianに死体のアイコンを赤く表示するオプションを追加
+ - Guardian, Marionetteのマップ上のアイコンが、ゲーム開始から初めてマップを開いた時に限り見えない問題を修正
+ - Chain ShifterでAvengerが入れ替わったとき、標的が自分自身になってしまう問題を修正
+ - 会議中にプレイヤーが死亡したときに、投じられたMayorの票が返ってこない問題を修正
+ - ゲーム終了後にVoting Timeの設定が変わってしまうことがある問題を修正
+  
  **Version 1.15.1.1**
  - ゲームが開始できない問題を修正
  - Secret Roleが追加役職Madmateを隠匿するように
@@ -1068,27 +1091,28 @@ Sniperの弾の当たり判定やEmpiric,Alienなどの効果範囲を調べる�
 # ロール一覧
 
 ## Standard
-| Impostors | Crewmates | Neutral | Secondary |
-| ---------- | ---------- | ---------- | ---------- |
-| [Bounty Hunter](#bounty-hunter) | [Agent](#agent) | [Arsonist](#arsonist) | [Drunk](#drunk) |
-| [Camouflager](#camouflager) | [Alien](#alien) | [Avenger](#avenger) | [Guesser](#guesser) |
-| [Cleaner](#cleaner) | [Bait](#bait) | [Empiric](#empiric) | [Lover](#lover) |
-| [Damned](#damned) | [Busker](#busker) | [Chain Shifter](#chain-shifter) | [Trilemma](#trilemma) |
-| [Disturber](#disturber) | [Comet](#comet) | [Jackal](#jackal) ||
-| [Eraser](#eraser) | [Doctor](#doctor) | [Jester](#jester) ||
-| [Evil Ace](#evil-ace) | [Guardian](#guardian) | [Opportunist](#opportunist) ||
-| [Evil Guesser](#guesser) | [Mayor](#mayor) | [Sidekick](#sidekick) ||
-| [Evil Trapper](#trapper) | [Navvy](#navvy) | [Vulture](#vulture) ||
-| [Jailer](#jailer) | [Necromancer](#necromancer) |||
-| [Marionette](#marionette) | [Nice Guesser](#guesser) |||
-| [Morphing](#morphing) | [Nice Trapper](#trapper) |||
-| [Painter](#painter) | [Oracle](#oracle) |||
-| [Raider](#raider) | [Provocateur](#provocateur) |||
-| [Reaper](#reaper) | [Psychic](#psychic) |||
-| [Sniper](#sniper) | [Seer](#seer) |||
-|| [Sheriff](#sheriff) |||
-|| [Spy](#spy) |||
-|| [Madmate](#madmate) |||
+| Impostors | Crewmates | Neutral | Secondary | Ghost |
+| ---------- | ---------- | ---------- | ---------- | ---------- |
+| [??? (Secret)](#secret) | [??? (Secret)](#secret) | [Arsonist](#arsonist) | [Drunk](#drunk) | [Poltergeist](#poltergeist) |
+| [Bounty Hunter](#bounty-hunter) | [Agent](#agent) | [Avenger](#avenger) | [Guesser](#guesser) ||
+| [Camouflager](#camouflager) | [Alien](#alien) | [Empiric](#empiric) | [Lover](#lover) ||
+| [Cleaner](#cleaner) | [Bait](#bait) | [Chain Shifter](#chain-shifter) | [Trilemma](#trilemma) ||
+| [Damned](#damned) | [Busker](#busker) | [Jackal](#jackal) |||
+| [Disturber](#disturber) | [Comet](#comet) | [Jester](#jester) |||
+| [Eraser](#eraser) | [Doctor](#doctor) | [Opportunist](#opportunist) |||
+| [Evil Ace](#evil-ace) | [Guardian](#guardian) | [Sidekick](#sidekick) |||
+| [Evil Guesser](#guesser) | [Mayor](#mayor) | [Vulture](#vulture) |||
+| [Evil Trapper](#trapper) | [Navvy](#navvy) ||||
+| [Jailer](#jailer) | [Necromancer](#necromancer) ||||
+| [Marionette](#marionette) | [Nice Guesser](#guesser) ||||
+| [Morphing](#morphing) | [Nice Trapper](#trapper) ||||
+| [Painter](#painter) | [Oracle](#oracle) ||||
+| [Raider](#raider) | [Provocateur](#provocateur) ||||
+| [Reaper](#reaper) | [Psychic](#psychic) ||||
+| [Sniper](#sniper) | [Seer](#seer) ||||
+|| [Sheriff](#sheriff) ||||
+|| [Spy](#spy) ||||
+|| [Madmate](#madmate) ||||
 
 ## Escape
 | Players | Escapees | Hunters |
@@ -1115,6 +1139,14 @@ Sniperの弾の当たり判定やEmpiric,Alienなどの効果範囲を調べる�
 龍 : Reaper, Provocateur, Booster, Alien\
 Alps : Guesser(Secondary), Drunk\
 p5p5next : Damned
+
+-----------------------
+
+## Secret
+ 真の役職が秘匿された状態です。\
+ 素クルーや素インポと同様な能力を持っています。\
+ クルー陣営の場合、タスクをこなすことで真の役職を知ることができます。\
+ インポスター陣営の場合、キルをすることで真の役職を知ることができます。
 
 -----------------------
 
@@ -1894,6 +1926,16 @@ p5p5next : Damned
 ## Trilemma
  TrilemmaはLoverが第三者を巻き込んだ三位一体のチームです。\
  三人だけが生き残ることで勝利します。
+ 
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+
+-----------------------
+
+## Poltergeist
+ Poltergeistは死体を動かすことができる幽霊です。\
+ 能力を使うことで自分の方向へ死体を引っ張ります。プレイヤーが死体を発見しやすくなるように仕向けることを目指します。
  
  ### オプション
 | オプション名 | 設定内容 |
