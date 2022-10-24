@@ -225,6 +225,7 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+  
  **Version 1.16**
  - 幽霊役職 Poltergeistを追加
  - ゲームマスター用役職 VOIDを追加
