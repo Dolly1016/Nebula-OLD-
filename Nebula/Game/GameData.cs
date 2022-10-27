@@ -90,7 +90,7 @@ namespace Nebula.Game
 
     public class MyPlayerData
     {
-        public PlayerControl currentTarget { get; set; }
+        public PlayerControl? currentTarget { get; set; }
         private PlayerData globalData { get; set; }
         public bool CanSeeEveryoneInfo { get; set; }
         public float VentDurationTimer { get; set; }
@@ -604,7 +604,8 @@ namespace Nebula.Game
             public static PlayerStatus Arrested = new PlayerStatus("arrested");
             public static PlayerStatus Punished = new PlayerStatus("punished");
             public static PlayerStatus Misfire = new PlayerStatus("misfire");
-            
+            public static PlayerStatus Slapped = new PlayerStatus("slapped");
+
 
             public string Status { get; private set; }
             public byte Id;

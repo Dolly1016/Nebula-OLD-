@@ -130,13 +130,13 @@ namespace Nebula.Patches
                     onlyWhiteNames, targetPlayersInVents, untargetablePlayers, targetingPlayer);
         }
 
-        static public PlayerControl? SetMyTarget(System.Predicate<GameData.PlayerInfo> untargetablePlayers, PlayerControl targetingPlayer = null)
+        static public PlayerControl? SetMyTarget(System.Predicate<GameData.PlayerInfo> targetablePlayers, PlayerControl targetingPlayer = null)
         {
             return SetMyTarget(GameOptionsData.KillDistances[Mathf.Clamp(PlayerControl.GameOptions.KillDistance, 0, 2)],
-                untargetablePlayers);
+                targetablePlayers);
         }
 
-        static public PlayerControl? SetMyTarget(float range, System.Predicate<GameData.PlayerInfo> untargetablePlayers, PlayerControl? targetingPlayer = null)
+        static public PlayerControl? SetMyTarget(float range, System.Predicate<GameData.PlayerInfo> targetablePlayers, PlayerControl? targetingPlayer = null)
         {
             PlayerControl result = null;
             float num = range;
@@ -160,7 +160,7 @@ namespace Nebula.Patches
                 if (!playerInfo.Disconnected && !playerInfo.IsDead)
                 {
                     PlayerControl @object = playerInfo.Object;
-                    if (@object && untargetablePlayers.Invoke(playerInfo))
+                    if (@object && targetablePlayers.Invoke(playerInfo))
                     {
                         if (CheckTargetable(@object.GetTruePosition(), truePosition, ref num))
                         {
@@ -172,7 +172,7 @@ namespace Nebula.Patches
             return result;
         }
 
-        static public void SetPlayerOutline(PlayerControl target, Color color)
+        static public void SetPlayerOutline(PlayerControl? target, Color color)
         {
             if (target == null || target.cosmetics.currentBodySprite.BodySprite == null) return;
 
@@ -180,11 +180,11 @@ namespace Nebula.Patches
             target.cosmetics.currentBodySprite.BodySprite.material.SetColor("_OutlineColor", color);
         }
 
-        static public DeadBody SetMyDeadTarget() => SetMyDeadTarget(GameOptionsData.KillDistances[Mathf.Clamp(PlayerControl.GameOptions.KillDistance, 0, 2)]);
+        static public DeadBody? SetMyDeadTarget() => SetMyDeadTarget(GameOptionsData.KillDistances[Mathf.Clamp(PlayerControl.GameOptions.KillDistance, 0, 2)]);
 
-        static public DeadBody SetMyDeadTarget(float num)
+        static public DeadBody? SetMyDeadTarget(float num)
         {
-            DeadBody result = null;
+            DeadBody? result = null;
             if (!ShipStatus.Instance) return result;
 
             Vector2 truePosition = PlayerControl.LocalPlayer.GetTruePosition();

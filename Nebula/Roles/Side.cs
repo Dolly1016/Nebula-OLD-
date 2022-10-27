@@ -160,6 +160,21 @@ namespace Nebula.Roles
             return null;
         });
 
+        public static Side SantaClaus = new Side("SantaClaus", "santaClaus", IntroDisplayOption.STANDARD, NeutralRoles.SantaClaus.RoleColor, (PlayerStatistics statistics, ShipStatus status) =>
+        {
+            if (statistics.TotalAlive == 0) return null;
+
+            foreach (var player in Game.GameData.data.AllPlayers.Values)
+            {
+                if (!player.IsAlive) continue;
+
+                if (player.role.side != Side.SantaClaus && !player.HasExtraRole(Roles.TeamSanta)) return null;
+
+            }
+
+            return EndCondition.SantaWin;
+        });
+
         public static Side GamePlayer = new Side("GamePlayer", "gamePlayer", IntroDisplayOption.SHOW_ONLY_ME, Palette.CrewmateBlue, (PlayerStatistics statistics, ShipStatus status) =>
         {
             if (Game.GameData.data.GameMode == Module.CustomGameMode.Minigame)
@@ -266,7 +281,7 @@ namespace Nebula.Roles
         public static List<Side> AllSides = new List<Side>()
         {
             Crewmate, Impostor,
-            Jackal, Jester, Vulture, Empiric, Arsonist, Avenger,ChainShifter,
+            Jackal, Jester, Vulture, Empiric, Arsonist, Avenger,ChainShifter,SantaClaus,
             Investigator,
             GamePlayer,
             Extra,VOID,

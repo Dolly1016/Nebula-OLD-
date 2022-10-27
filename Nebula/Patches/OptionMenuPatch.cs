@@ -341,7 +341,7 @@ namespace Nebula.Patches
             nebulaTab.transform.localScale = new Vector3(1f, 1f, 1f);
             nebulaTab.SetActive(false);
 
-            GameObject applyButtonTemplate = tabs[1].Content.transform.FindChild("ApplyButton").gameObject;
+            GameObject applyButtonTemplate = tabs[1].Content.transform.GetChild(0).FindChild("ApplyButton").gameObject;
             GameObject toggleButtonTemplate = tabs[0].Content.transform.FindChild("MiscGroup").FindChild("StreamerModeButton").gameObject;
 
             //Snapshot

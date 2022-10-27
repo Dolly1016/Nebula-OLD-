@@ -416,6 +416,23 @@ namespace Nebula
 
             return MurderAttemptResult.PerformKill;
         }
+
+        public static MurderAttemptResult checkMurderAttemptAndAction(PlayerControl killer,PlayerControl target,Action successAction,Action failedAction, bool isMeetingStart = false)
+        {
+            MurderAttemptResult murder = checkMuderAttempt(killer, target, isMeetingStart);
+            switch (murder)
+            {
+                case MurderAttemptResult.PerformKill:
+                    successAction();
+                    break;
+                case MurderAttemptResult.SuppressKill:
+                    failedAction();
+                    break;
+            }
+
+            return murder;
+        }
+
         public static MurderAttemptResult checkMuderAttemptAndKill(PlayerControl killer, PlayerControl target,Game.PlayerData.PlayerStatus status, bool isMeetingStart = false, bool showAnimation = true)
         {
             MurderAttemptResult murder = checkMuderAttempt(killer, target, isMeetingStart);

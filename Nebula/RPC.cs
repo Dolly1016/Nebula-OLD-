@@ -87,7 +87,8 @@ namespace Nebula
         RitualUpdate,
         DecoySwap,
         Paint,
-        Poltergeist
+        Poltergeist,
+        InstantiateDeadBody
     }
 
     //RPCを受け取ったときのイベント
@@ -191,7 +192,7 @@ namespace Nebula
                     RPCEvents.Guard(reader.ReadByte(), reader.ReadByte());
                     break;
                 case (byte)CustomRPC.CloseUpKill:
-                    RPCEvents.CloseUpKill(reader.ReadByte(), reader.ReadByte(), reader.ReadByte());
+                    RPCEvents.CloseUpKill(reader.ReadByte(), reader.ReadByte(), reader.ReadByte(),reader.ReadBoolean());
                     break;
                 case (byte)CustomRPC.UpdateRoleData:
                     RPCEvents.UpdateRoleData(reader.ReadByte(), reader.ReadInt32(), reader.ReadInt32());
@@ -339,6 +340,9 @@ namespace Nebula
                     break;
                 case (byte)CustomRPC.Poltergeist:
                     RPCEvents.Poltergeist(reader.ReadByte(),new Vector2(reader.ReadSingle(), reader.ReadSingle()));
+                    break;
+                case (byte)CustomRPC.InstantiateDeadBody:
+                    RPCEvents.InstantiateDeadBody(reader.ReadByte(), new Vector3(reader.ReadSingle(), reader.ReadSingle()));
                     break;
             }
         }
@@ -703,11 +707,11 @@ namespace Nebula
              });
         }
 
-        public static void CloseUpKill(byte killerId,byte targetId,byte statusId)
+        public static void CloseUpKill(byte killerId,byte targetId,byte statusId,bool playSoundForEveryone)
         {
             UncheckedExilePlayer(targetId, statusId, killerId);
 
-            if (Constants.ShouldPlaySfx()) SoundManager.Instance.PlaySound(Helpers.playerById(targetId).KillSfx, false, 0.8f);
+            if (Constants.ShouldPlaySfx() && (playSoundForEveryone || targetId==PlayerControl.LocalPlayer.PlayerId)) SoundManager.Instance.PlaySound(Helpers.playerById(targetId).KillSfx, false, 0.8f);
 
             if (PlayerControl.LocalPlayer.PlayerId == targetId)
                 FastDestroyableSingleton<HudManager>.Instance.KillOverlay.ShowKillAnimation(Helpers.playerById(killerId).Data, PlayerControl.LocalPlayer.Data);
@@ -1246,7 +1250,7 @@ namespace Nebula
             {
                 if (pc.GetModData().DeathGuage >= 1f)
                 {
-                    RPCEventInvoker.CloseUpKill(PlayerControl.LocalPlayer, pc, Game.PlayerData.PlayerStatus.Dead);
+                    RPCEventInvoker.CloseUpKill(PlayerControl.LocalPlayer, pc, Game.PlayerData.PlayerStatus.Dead,true);
                 }
             }
         }
@@ -1536,6 +1540,20 @@ namespace Nebula
         {
             Events.LocalEvent.Activate(new Roles.GhostRoles.Poltergeist.PoltergeistEvent(deadBodyId,vector));
         }
+
+        static public void InstantiateDeadBody(byte targetId,Vector3 position)
+        {
+            var p = Helpers.playerById(targetId);
+            DeadBody deadBody = GameObject.Instantiate<DeadBody>(p.KillAnimations[0].bodyPrefab);
+            deadBody.enabled = false;
+            deadBody.ParentId = targetId;
+            p.SetPlayerMaterialColors(deadBody.bodyRenderer);
+            p.SetPlayerMaterialColors(deadBody.bloodSplatter);
+
+            position.z = position.y / 1000f;
+            deadBody.transform.position = position;
+            deadBody.enabled = true;
+        }
     }
 
     public class RPCEventInvoker
@@ -1732,14 +1750,15 @@ namespace Nebula
             RPCEvents.UpdateExtraRoleData(playerId, roleId, newData);
         }
 
-        public static void CloseUpKill(PlayerControl murder, PlayerControl target,Game.PlayerData.PlayerStatus status)
+        public static void CloseUpKill(PlayerControl murder, PlayerControl target,Game.PlayerData.PlayerStatus status,bool playSoundForEveryone=true)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.CloseUpKill, Hazel.SendOption.Reliable, -1);
             writer.Write(murder.PlayerId);
             writer.Write(target.PlayerId);
             writer.Write(status.Id);
+            writer.Write(playSoundForEveryone);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
-            RPCEvents.CloseUpKill(murder.PlayerId,target.PlayerId, status.Id);
+            RPCEvents.CloseUpKill(murder.PlayerId,target.PlayerId, status.Id, playSoundForEveryone);
         }
 
         public static void AddAndUpdateRoleData(byte playerId, int dataId, int addData)
@@ -2333,6 +2352,16 @@ namespace Nebula
             writer.Write(vector.y);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.Poltergeist(deadBodyId, vector);
+        }
+
+        public static void InstantiateDeadBody(byte targetId,Vector3 position)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.InstantiateDeadBody, Hazel.SendOption.Reliable, -1);
+            writer.Write(targetId);
+            writer.Write(position.x);
+            writer.Write(position.y);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.InstantiateDeadBody(targetId, position);
         }
     }
 }

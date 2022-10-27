@@ -24,8 +24,8 @@ namespace Nebula.Roles
         public Color Color { get; private set; }
 
         public Module.CustomOption TopOption { get; private set; }
-        public Module.CustomOption RoleChanceOption { get; private set; }
-        public Module.CustomOption RoleCountOption { get; private set; }
+        public Module.CustomOption? RoleChanceOption { get; private set; } = null;
+        public Module.CustomOption? RoleCountOption { get; private set; } = null;
 
         /// <summary>
         /// FixedRoleCountが有効な場合この関数が呼び出されます。
