@@ -92,6 +92,11 @@ namespace Nebula.Roles
         /// </summary>
         public virtual RelatedRoleData[] RelatedRoleDataInfo { get => new RelatedRoleData[0]; }
 
+        /// <summary>
+        /// 追加で割り当てるRoleを返します。
+        /// </summary>
+        public virtual Role[] AssignedRoles { get => new Role[] { this }; }
+
         public HashSet<Patches.EndCondition> winReasons { get; }
         public virtual bool CheckWin(PlayerControl player, Patches.EndCondition winReason)
         {
@@ -374,7 +379,7 @@ namespace Nebula.Roles
             if (RoleChanceOption == null) return;
 
             if (RoleChanceOption.getSelection() == 10f)
-                DefinitiveRoles.Add(this, (int)RoleCountOption.getFloat());
+                DefinitiveRoles.Add(this, (int)(RoleCountOption?.getFloat()??GetCustomRoleCount()));
             else
                 SpawnableRoles.Add(this);
         }

@@ -32,6 +32,7 @@ namespace Nebula.Patches
         public static EndCondition AvengerWin = new EndCondition(21, Roles.NeutralRoles.Avenger.RoleColor, "avenger", 0, Module.CustomGameMode.Standard);
         public static EndCondition LoversWin = new EndCondition(24, Roles.ExtraRoles.Lover.iconColor[0], "lovers", 0, Module.CustomGameMode.Standard);
         public static EndCondition TrilemmaWin = new EndCondition(25, new Color(209f / 255f, 63f / 255f, 138f / 255f), "trilemma",0, Module.CustomGameMode.Standard);
+        public static EndCondition SantaWin = new EndCondition(26, Roles.NeutralRoles.SantaClaus.RoleColor, "santa", 4, Module.CustomGameMode.Standard);
 
         public static EndCondition InvestigatorRightGuess = new EndCondition(32, Palette.CrewmateBlue, "rightGuess", 0, Module.CustomGameMode.Investigators,true);
         public static EndCondition InvestigatorWrongGuess = new EndCondition(33, Palette.ImpostorRed, "wrongGuess", 0, Module.CustomGameMode.Investigators);
@@ -64,7 +65,7 @@ namespace Nebula.Patches
         public static HashSet<EndCondition> AllEnds = new HashSet<EndCondition>() {
             CrewmateWinByVote ,CrewmateWinByTask,CrewmateWinDisconnect,
             ImpostorWinByKill,ImpostorWinBySabotage,ImpostorWinByVote,ImpostorWinDisconnect,
-            JesterWin,JackalWin,ArsonistWin,EmpiricWin,VultureWin,
+            JesterWin,JackalWin,ArsonistWin,EmpiricWin,VultureWin,SantaWin,
             LoversWin,TrilemmaWin,AvengerWin,
             NoGame,NobodyWin,NobodySkeldWin,NobodyMiraWin,NobodyPolusWin,NobodyAirshipWin,
             MinigamePlayersWin,MinigameEscapeesWin,MinigameHunterWin,

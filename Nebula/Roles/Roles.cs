@@ -85,6 +85,8 @@ namespace Nebula.Roles
         public static NeutralRoles.Sidekick Sidekick = new NeutralRoles.Sidekick();
         public static NeutralRoles.Jester Jester = new NeutralRoles.Jester();
         public static NeutralRoles.Opportunist Opportunist = new NeutralRoles.Opportunist();
+        public static NeutralRoles.SantaClaus SantaClaus = new NeutralRoles.SantaClaus();
+        public static NeutralRoles.BlackSanta BlackSanta = new NeutralRoles.BlackSanta();
         public static NeutralRoles.Vulture Vulture = new NeutralRoles.Vulture();
 
         public static MinigameRoles.Player Player = new MinigameRoles.Player();
@@ -112,6 +114,7 @@ namespace Nebula.Roles
         public static ExtraRoles.Lover Lover = new ExtraRoles.Lover();
         public static ExtraRoles.Trilemma Trilemma = new ExtraRoles.Trilemma();
         public static ExtraRoles.AvengerTarget AvengerTarget = new ExtraRoles.AvengerTarget();
+        public static ExtraRoles.TeamSanta TeamSanta = new ExtraRoles.TeamSanta();
         public static MetaRoles.MetaRole MetaRole = new MetaRoles.MetaRole();
         public static RitualRoles.PerkHolder PerkHolder = new RitualRoles.PerkHolder();
 
@@ -123,7 +126,7 @@ namespace Nebula.Roles
             VOID,
             Impostor,BountyHunter,Camouflager,Cleaner,Damned,Disturber,Eraser,EvilAce,EvilGuesser,EvilTrapper,Jailer,Marionette,Morphing,Painter,Raider,Reaper,Sniper,
             F_Guesser,F_Trapper,
-            Arsonist,Avenger,ChainShifter,Empiric,Jackal,Jester,Opportunist,Sidekick,Vulture,
+            SantaClaus,BlackSanta,Arsonist,Avenger,ChainShifter,Empiric,Jackal,Jester,Opportunist,Sidekick,Vulture,
             F_Crewmate,
             Crewmate,CrewmateWithoutTasks,Agent,Alien,Bait,Busker,Comet,DamnedCrew,Doctor,Guardian,Mayor,Navvy,Necromancer,NiceGuesser,NiceTrapper,Oracle,Provocateur,Psychic,Seer,Sheriff,Spy,
             Madmate,
@@ -136,8 +139,13 @@ namespace Nebula.Roles
         public static List<ExtraRole> AllExtraRoles = new List<ExtraRole>()
         {
             SecondaryGuesser,SecondarySidekick,SecondaryMadmate,
+<<<<<<< HEAD
             DiamondPossessor,
             Bloody,Drunk,Lover,Trilemma,
+=======
+            DiamondPossessor,TeamSanta,
+            Drunk,Lover,Trilemma,
+>>>>>>> e3b163c876dec8489dde0356c2e9094a971ce82f
             MetaRole,AvengerTarget,
             PerkHolder
         };

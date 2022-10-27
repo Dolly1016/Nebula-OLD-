@@ -169,22 +169,50 @@ namespace Nebula.Patches
             {
             }
 
-            public void Assign(AssignMap assignMap, List<PlayerControl> players)
+            private int GetMaxAssignable(List<PlayerControl> players, List<PlayerControl>? extraPlayers)
+            {
+                if (players.Count == 0) return 0;
+
+                if (extraPlayers == null) return players.Count;
+
+                return extraPlayers.Count + 1;
+            }
+
+            public void Assign(AssignMap assignMap, List<PlayerControl> players, List<PlayerControl>? extraPlayers)
             {
                 int left = roles;
 
                 int rand;
 
+                //割り当てられえないロールを削除する
+                int maxAssignable = GetMaxAssignable(players,extraPlayers);
+                firstRoles.RemoveAll((r)=>r.AssignedRoles.Length>maxAssignable);
+
+                bool isMainRole;
+
                 //割り当てられるだけ100%ロールを割り当てる
                 while ((left > 0) && (firstRoles.Count > 0) && (players.Count > 0))
                 {
                     rand = NebulaPlugin.rnd.Next(firstRoles.Count);
-                    Role role = firstRoles[rand];
-                    RoleAssignmentPatch.setRoleToRandomPlayer(assignMap, role, players, true);
+                    Role[] roles = firstRoles[rand].AssignedRoles;
                     firstRoles.RemoveAt(rand);
-                    assignRoles.exclusiveAssignments.RemoveAll((ex) => ex.Exclusive(assignRoles, role));
+                    isMainRole = true;
+                    foreach (var role in roles)
+                    {
+                        RoleAssignmentPatch.setRoleToRandomPlayer(assignMap, role, isMainRole||(extraPlayers==null)? players : extraPlayers, true);
+                        assignRoles.exclusiveAssignments.RemoveAll((ex) => ex.Exclusive(assignRoles, role));
+                        isMainRole = false;
+                    }
                     left--;
+
+                    //割り当てられえないロールを削除する
+                    maxAssignable = GetMaxAssignable(players, extraPlayers);
+                    firstRoles.RemoveAll((r) => r.AssignedRoles.Length > maxAssignable);
                 }
+
+                //割り当てられ得ないロールを削除する
+                maxAssignable = GetMaxAssignable(players, extraPlayers);
+                secondaryRoles.RemoveAll((r) => r.role.AssignedRoles.Length > maxAssignable);
 
                 //確率で付与されるロールを割り当てる
                 int sum;
@@ -208,10 +236,21 @@ namespace Nebula.Patches
                     {
                         if (secondaryRoles[i].expected > rand)
                         {
-                            Role role = secondaryRoles[i].role;
-                            RoleAssignmentPatch.setRoleToRandomPlayer(assignMap, role, players, true);
+                            Role[] roles = secondaryRoles[i].role.AssignedRoles;
                             secondaryRoles.RemoveAt(i);
-                            assignRoles.exclusiveAssignments.RemoveAll((ex)=>ex.Exclusive(assignRoles,role));
+
+                            isMainRole = true;
+                            foreach (var role in roles)
+                            {
+                                RoleAssignmentPatch.setRoleToRandomPlayer(assignMap, role, isMainRole || (extraPlayers == null) ? players : extraPlayers, true);
+                                assignRoles.exclusiveAssignments.RemoveAll((ex) => ex.Exclusive(assignRoles, role));
+                                isMainRole = false;
+                            }
+
+                            //割り当てられ得ないロールを削除する
+                            maxAssignable = GetMaxAssignable(players, extraPlayers);
+                            secondaryRoles.RemoveAll((r) => r.role.AssignedRoles.Length > maxAssignable);
+
                             left--;
                             sum = 0;
                             break;
@@ -457,9 +496,9 @@ namespace Nebula.Patches
                 }
             }
 
-            roleData.neutralData.Assign(assignMap, crewmates);
-            roleData.crewmateData.Assign(assignMap, crewmates);
-            roleData.impostorData.Assign(assignMap, impostors);
+            roleData.impostorData.Assign(assignMap, impostors, crewmates);
+            roleData.neutralData.Assign(assignMap, crewmates, null);
+            roleData.crewmateData.Assign(assignMap, crewmates, null);
 
             //余ったプレイヤーは標準ロールを割り当てる
             while (crewmates.Count > 0)
