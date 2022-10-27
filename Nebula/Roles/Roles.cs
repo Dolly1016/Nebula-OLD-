@@ -140,7 +140,7 @@ namespace Nebula.Roles
         {
             SecondaryGuesser,SecondarySidekick,SecondaryMadmate,
             DiamondPossessor,TeamSanta,
-            Drunk,Lover,Trilemma,
+            Bloody,Drunk,Lover,Trilemma,
             MetaRole,AvengerTarget,
             PerkHolder
         };

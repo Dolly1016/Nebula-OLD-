@@ -7,6 +7,34 @@ namespace Nebula.Roles.ExtraRoles
 {
     public class Bloody : ExtraRole
     {
+        public class BloodyEvent : Events.LocalEvent
+        {
+            int num;
+
+            public BloodyEvent(float duration) : base(duration)
+            {
+                num = 0;
+            }
+
+            private void GenerateFootprint()
+            {
+                if (PlayerControl.LocalPlayer.MyPhysics.Velocity.magnitude > 0)
+                {
+                    //歩いているように血の足跡
+                }
+                else
+                {
+                    //動いてない場合、中央に血の足跡
+                }
+                num++;
+            }
+
+            public override void LocalUpdate()
+            {
+                
+            }
+        }
+
         static public Color RoleColor = new Color(180f / 255f, 0f / 255f, 0f / 255f);
 
         public override void Assignment(Patches.AssignMap assignMap)
