@@ -139,13 +139,8 @@ namespace Nebula.Roles
         public static List<ExtraRole> AllExtraRoles = new List<ExtraRole>()
         {
             SecondaryGuesser,SecondarySidekick,SecondaryMadmate,
-<<<<<<< HEAD
-            DiamondPossessor,
-            Bloody,Drunk,Lover,Trilemma,
-=======
             DiamondPossessor,TeamSanta,
             Drunk,Lover,Trilemma,
->>>>>>> e3b163c876dec8489dde0356c2e9094a971ce82f
             MetaRole,AvengerTarget,
             PerkHolder
         };
