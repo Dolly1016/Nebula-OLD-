@@ -82,7 +82,7 @@ namespace Nebula.Objects
 
     public class CustomObject
     {
-        public const ulong MAX_PLAYER_OBJECTS = 2^32;
+        public const int MAX_PLAYER_OBJECTS = 0xFFFFFF;
         public enum ObjectOrder
         {
             IsBack,
@@ -121,6 +121,7 @@ namespace Nebula.Objects
             public static ObjectTypes.Decoy Decoy = new ObjectTypes.Decoy();
             public static ObjectTypes.DelayedObject Antenna = new ObjectTypes.DelayedObject(9, "Antenna", "Nebula.Resources.Antenna.png");
             public static ObjectTypes.Diamond Diamond = new ObjectTypes.Diamond();
+            public static ObjectTypes.Footprint Footprint = new ObjectTypes.Footprint();
 
             public byte Id { get; }
             public string ObjectName { get; }

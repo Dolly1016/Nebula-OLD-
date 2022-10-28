@@ -428,6 +428,9 @@ namespace Nebula.Module
             HatData hat = ScriptableObject.CreateInstance<HatData>();
             hat.hatViewData.viewData = ScriptableObject.CreateInstance<HatViewData>();
 
+            hat.DontUnload();
+            hat.hatViewData.viewData.DontUnload();
+
             HatViewData viewData = hat.hatViewData.viewData;
             try
             {
@@ -484,6 +487,10 @@ namespace Nebula.Module
         {
             NamePlateData np = ScriptableObject.CreateInstance<NamePlateData>();
             np.viewData.viewData = ScriptableObject.CreateInstance<NamePlateViewData>();
+            
+            np.DontUnload();
+            np.viewData.viewData.DontUnload();
+
             try
             {
                 foreach (var content in ch.Contents()) content.LoadImage("MoreCosmic/namePlates", fromDisk);
@@ -522,6 +529,9 @@ namespace Nebula.Module
 
             VisorData vd = ScriptableObject.CreateInstance<VisorData>();
             vd.viewData.viewData = ScriptableObject.CreateInstance<VisorViewData>();
+
+            vd.DontUnload();
+            vd.viewData.viewData.DontUnload();
 
             try
             {

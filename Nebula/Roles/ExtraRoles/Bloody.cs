@@ -10,6 +10,7 @@ namespace Nebula.Roles.ExtraRoles
         public class BloodyEvent : Events.LocalEvent
         {
             int num;
+            float timer;
 
             public BloodyEvent(float duration) : base(duration)
             {
@@ -18,20 +19,34 @@ namespace Nebula.Roles.ExtraRoles
 
             private void GenerateFootprint()
             {
+                if (PlayerControl.LocalPlayer.Data.IsDead) return;
+
                 if (PlayerControl.LocalPlayer.MyPhysics.Velocity.magnitude > 0)
                 {
                     //歩いているように血の足跡
+
+                    var vec = PlayerControl.LocalPlayer.MyPhysics.Velocity.normalized * 0.08f;
+
+                    if (num % 2 == 0) vec *= -1f;
+
+                    RPCEventInvoker.ObjectInstantiate(Objects.CustomObject.Type.Footprint, PlayerControl.LocalPlayer.transform.position + new Vector3(-vec.y, vec.x - 0.22f));
                 }
                 else
                 {
                     //動いてない場合、中央に血の足跡
+                    RPCEventInvoker.ObjectInstantiate(Objects.CustomObject.Type.Footprint, PlayerControl.LocalPlayer.transform.position + new Vector3(0, -0.22f));
                 }
                 num++;
             }
 
             public override void LocalUpdate()
             {
-                
+                timer += Time.deltaTime;
+                if (timer > 0.2f)
+                {
+                    GenerateFootprint();
+                    timer = 0f;
+                }
             }
         }
 
@@ -65,6 +80,14 @@ namespace Nebula.Roles.ExtraRoles
         public override void LoadOptionData()
         {
 
+        }
+
+        public override void OnDied(byte playerId)
+        {
+            if (MeetingHud.Instance) return;
+            if (Game.GameData.data.deadPlayers[playerId].MurderId != PlayerControl.LocalPlayer.PlayerId) return;
+
+            Events.LocalEvent.Activate(new BloodyEvent(10f));
         }
 
         public Bloody() : base("Bloody", "bloody", RoleColor, 0)
