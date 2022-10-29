@@ -58,11 +58,11 @@ namespace Nebula.Roles.MetaRoles
             }
             if (Input.GetKeyDown(KeyCode.Keypad2) || Input.GetKeyDown(KeyCode.Alpha2))
             {
-                Module.MetaDialog.MetaDialogDesigner? dialog = null;
+                Module.MetaDialog.MSDesigner? dialog = null;
                 dialog = Module.MetaDialog.OpenRolesDialog((r) => r.category != RoleCategory.Complex, 0, 60, (r) =>
                 {
                     RPCEventInvoker.ImmediatelyChangeRole(PlayerControl.LocalPlayer, r);
-                    dialog?.dialog.Close();
+                    dialog?.screen.Close();
                 });
             }
             if (Input.GetKeyDown(KeyCode.Keypad3) || Input.GetKeyDown(KeyCode.Alpha3))

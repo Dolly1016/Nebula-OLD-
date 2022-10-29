@@ -52,9 +52,14 @@ namespace Nebula.Roles.ExtraRoles
 
         static public Color RoleColor = new Color(180f / 255f, 0f / 255f, 0f / 255f);
 
+        private Module.CustomOption maxCountCrewmateOption;
+        private Module.CustomOption maxCountImpostorOption;
+        private Module.CustomOption maxCountNeutralOption;
+        private Module.CustomOption bloodyDurationOption;
+
         public override void Assignment(Patches.AssignMap assignMap)
         {
-
+            
         }
 
         public override void GlobalInitialize(PlayerControl __instance)
