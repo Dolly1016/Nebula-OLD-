@@ -65,7 +65,6 @@ namespace Nebula.Module
     public class CustomOption
     {
         public static List<CustomOption> options = new List<CustomOption>();
-        public static int preset = 0;
         static public CustomOptionTab CurrentTab = Module.CustomOptionTab.Settings;
 
         public int id;
@@ -191,10 +190,9 @@ namespace Nebula.Module
             }
 
             selection = 0;
-            if (id > 0)
-            {
-                bind();
-            }
+            
+            bind();
+            
             options.Add(this);
 
             this.prerequisiteOptions = new List<CustomOption>();
@@ -207,7 +205,7 @@ namespace Nebula.Module
 
         private void bind()
         {
-            entry = NebulaPlugin.Instance.Config.Bind($"Preset{preset}", identifierName, defaultSelection);
+            entry = NebulaPlugin.Instance.Config.Bind($"Preset0", identifierName, defaultSelection);
             selection = Mathf.Clamp(entry.Value, 0, selections.Length - 1);
         }
 
@@ -243,25 +241,6 @@ namespace Nebula.Module
             }
         }
 
-        // Static behaviour
-
-        public static void switchPreset(int newPreset)
-        {
-            CustomOption.preset = newPreset;
-            foreach (CustomOption option in CustomOption.options)
-            {
-                if (option.id <= 1) continue;
-
-                option.entry = NebulaPlugin.Instance.Config.Bind($"Preset{preset}", option.id.ToString(), option.defaultSelection);
-                option.selection = Mathf.Clamp(option.entry.Value, 0, option.selections.Length - 1);
-                if (option.optionBehaviour != null && option.optionBehaviour is StringOption stringOption)
-                {
-                    stringOption.oldValue = stringOption.Value = option.selection;
-                    stringOption.ValueText.text = option.getString();
-                }
-            }
-        }
-
         public static void ShareOptionSelections()
         {
             GameOptionsDataPatch.dirtyFlag = true;
@@ -290,7 +269,7 @@ namespace Nebula.Module
                     {
                         firstFlag = false;
 
-                        messageWriter.WritePacked((uint)0);
+                        messageWriter.WritePacked((uint)uint.MaxValue);
                         messageWriter.WritePacked((uint)PlayerControl.GameOptions.NumImpostors);
                         written++;
                     }
@@ -401,6 +380,11 @@ namespace Nebula.Module
 
         // Option changes
 
+        public virtual void addSelection(int addSelection)
+        {
+            updateSelection(selection + addSelection);
+        }
+
         public virtual void updateSelection(int newSelection)
         {
             if (newSelection < 0)
@@ -420,8 +404,7 @@ namespace Nebula.Module
 
                 if (AmongUsClient.Instance?.AmHost == true && PlayerControl.LocalPlayer)
                 {
-                    if (id == 1) switchPreset(selection); // Switch presets
-                    else if (entry != null) entry.Value = selection; // Save selection to config
+                    if (entry != null) entry.Value = selection; // Save selection to config
 
                     ShareOptionSelections();// Share all selections
                 }
@@ -571,9 +554,9 @@ namespace Nebula.Module
 
             var roleTab = GameObject.Find("RoleTab");
 
-            var nebulaTab = UnityEngine.Object.Instantiate(roleTab, roleTab.transform.parent);
-            nebulaTab.gameObject.name = tabName;
-            nebulaTab.transform.FindChild("Hat Button").FindChild("Icon").GetComponent<SpriteRenderer>().sprite = Helpers.loadSpriteFromResources(tabIconPath, 100f);
+            var customTab = UnityEngine.Object.Instantiate(roleTab, roleTab.transform.parent);
+            customTab.gameObject.name = tabName;
+            customTab.transform.FindChild("Hat Button").FindChild("Icon").GetComponent<SpriteRenderer>().sprite = Helpers.loadSpriteFromResources(tabIconPath, 100f);
 
 
             foreach (OptionBehaviour option in customMenu.GetComponentsInChildren<OptionBehaviour>())
@@ -588,10 +571,55 @@ namespace Nebula.Module
             return true;
         }
 
+        private static void OpenConfigScreen(GameObject setting)
+        {
+            var designer = MetaScreen.OpenScreen(setting, new Vector2(9f, 4.5f), new Vector2(0f, -0.8f));
+            var designers = designer.SplitVertically(new float[] { 0.15f, 0.85f });
+
+            designers[0].AddTopic(new MSString(1.5f, CustomOptionHolder.gameMode.getName(),TMPro.TextAlignmentOptions.Center,TMPro.FontStyles.Bold));
+            designers[0].CustomUse(-0.08f);
+            designers[0].AddTopic(new MSButton(1.5f,0.4f,CustomOptionHolder.gameMode.getString(),TMPro.FontStyles.Bold,()=> {
+                CustomOptionHolder.gameMode.addSelection(1);
+                designer.screen.Close();
+
+                //今のタブが存在しないゲームモードに変わる場合
+                if (((Game.GameModeProperty.GetProperty(CustomOptionHolder.GetCustomGameMode()).Tabs) & CustomOption.CurrentTab) == 0) CustomOption.CurrentTab = (CustomOptionTab)1;
+                
+                OpenConfigScreen(setting);
+            }));
+            designers[0].CustomUse(0.2f);
+
+            string[] names =
+            {
+                "Settings","CrewmateRoles","ImpostorRoles","NeutralRoles","GhostRoles","Modifiers","EscapeRoles","AdvancedSettings"
+            };
+
+            for (int i = 0; i < (int)CustomOptionTab.MaxValidTabs; i++)
+            {
+
+                if ((((int)Game.GameModeProperty.GetProperty(CustomOptionHolder.GetCustomGameMode()).Tabs) & (1<<i)) != 0)
+                {
+                    int index = i;
+                    designers[0].AddTopic(new MSButton(2f,0.37f,names[i],TMPro.FontStyles.Bold,()=> {
+                        CustomOption.CurrentTab = (Module.CustomOptionTab)(1 << index);
+                    }));
+                    designers[0].CustomUse(-0.1f);
+                }
+            }
+        }
+
         private static bool FixNebulaTab(GameOptionsMenu __instance)
         {
             return FixTab(nebulaSettings,__instance, "Nebula.Resources.TabIcon.png","NebulaTab","NebulaSettings", "The Nebula Settings",(menu,temp,list,setting)=>
             {
+                nebulaSettings = setting;
+                nebulaSettings.transform.localPosition = new Vector3(0,0,0);
+                nebulaSettings.GetComponent<AspectPosition>().enabled = false;
+                setting.transform.DestroyChildren();
+
+                OpenConfigScreen(setting);
+                
+                /*
                 nebulaSettings = setting;
 
                 for (int i = 0; i < CustomOption.options.Count; i++)
@@ -626,6 +654,7 @@ namespace Nebula.Module
                     }
                     option.optionBehaviour.gameObject.SetActive(true);
                 }
+                */
             });
         }
     
@@ -819,7 +848,8 @@ namespace Nebula.Module
 
             var impostorsOption = __instance.Children.FirstOrDefault(x => x.name == "NumImpostors").TryCast<NumberOption>();
             if (impostorsOption != null) impostorsOption.ValidRange = new FloatRange(0f, 5f);
-
+            
+            /*
             //左Tab
             GameObject tabParent = new GameObject("LeftTabs");
             tabParent.transform.SetParent(__instance.transform.parent.parent.parent);
@@ -861,6 +891,8 @@ namespace Nebula.Module
                 if(((int)CustomOption.CurrentTab&(1<<i))!=0) leftHighlights[i].enabled = true;
             }
             FastDestroyableSingleton<HudManager>.Instance.StartCoroutine(GetEnumrator(tabParent, leftTabs).WrapToIl2Cpp());
+            */
+
         }
     }
 
@@ -1100,7 +1132,6 @@ namespace Nebula.Module
             List<string> entries = new List<string>();
 
             // First add the presets and the role counts
-            entries.Add(optionToString(CustomOptionHolder.presetSelection));
 
             string optionName;
             int min;

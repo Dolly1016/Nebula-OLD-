@@ -749,6 +749,9 @@
 "role.crewmate.secret.info" : "Your role will be revealed as you complete tasks."
 "role.impostor.secret.info" : "Your role will be revealed as you kill players."
 
+"role.bloody.name" : "Bloody"
+"role.bloody.info" : ""
+
 "role.drunk.name" : "Drunk"
 "role.drunk.info" : "Your control is reversed."
 "role.drunk.chanceCategory1" : "Assignment Category"

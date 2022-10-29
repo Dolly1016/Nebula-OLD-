@@ -77,8 +77,6 @@ namespace Nebula
 
         public static CustomOption gameMode;
 
-        public static CustomOption presetSelection;
-
         public static CustomOption crewmateRolesCountMin;
         public static CustomOption crewmateRolesCountMax;
         public static CustomOption neutralRolesCountMin;
@@ -218,8 +216,7 @@ namespace Nebula
 
         public static void Load()
         {
-            presetSelection = CustomOption.Create(1, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.preset", presets, presets[0], null, true, false, "", CustomOptionTab.Settings).HiddenOnDisplay(true).SetGameMode(CustomGameMode.All).Protect();
-            gameMode = CustomOption.Create(2, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.gameMode", gamemodes, gamemodes[0], null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.All);
+            gameMode = CustomOption.Create(2, Color.white, "option.gameMode", gamemodes, gamemodes[0], null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.All);
 
             crewmateRolesCountMin = CustomOption.Create(10001, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.minimumCrewmateRoles", 0f, 0f, 15f, 1f, null, true, false, "", CustomOptionTab.Settings | CustomOptionTab.CrewmateRoles).HiddenOnDisplay(true);
             crewmateRolesCountMax = CustomOption.Create(10002, new Color(204f / 255f, 204f / 255f, 0, 1f), "option.maximumCrewmateRoles", 0f, 0f, 15f, 1f, null, false, false, "", CustomOptionTab.Settings | CustomOptionTab.CrewmateRoles).HiddenOnDisplay(true);

@@ -959,7 +959,7 @@ namespace Nebula
                     uint optionId = reader.ReadPackedUInt32();
                     uint selection = reader.ReadPackedUInt32();
 
-                    if (optionId == 0)
+                    if (optionId == uint.MaxValue)
                     {
                         PlayerControl.GameOptions.NumImpostors = (int)selection;
                     }
