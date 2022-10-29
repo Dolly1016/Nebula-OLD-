@@ -617,7 +617,7 @@ namespace Nebula.Module
                         var lastArray = __instance.allNamePlates;
                         int newCosmics = CosmicLoader.namePlatedetails.Count;
                         __instance.allNamePlates = new UnhollowerBaseLib.Il2CppReferenceArray<NamePlateData>(lastArray.Count + newCosmics);
-
+                        
                         int lastCount = lastArray.Count;
                         for (int i = 0; i < lastCount; i++) __instance.allNamePlates[i] = lastArray[i];
                         for (int i = 0; i < newCosmics; i++) __instance.allNamePlates[i + lastCount] = CreateNamePlateData(CosmicLoader.namePlatedetails[i], true);

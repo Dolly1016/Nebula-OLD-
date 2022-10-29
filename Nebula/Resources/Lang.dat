@@ -844,6 +844,7 @@
 "role.poltergeist.info" : "You can reel dead body."
 "role.poltergeist.help.poltergeist" : "Reel dead body."
 "role.poltergeist.poltergeistCoolDown" : "Poltergeist Cool Down"
+"role.poltergeist.hasCrewmateTask" : "Has Crewmate Task"
 
 "side.crewmate.name" : "Crewmate"
 "side.impostor.name" : "Impostor"

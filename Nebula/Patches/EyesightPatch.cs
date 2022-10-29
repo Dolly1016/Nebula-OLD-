@@ -155,7 +155,7 @@ namespace Nebula.Patches
 					ChangeObserverTarget(true);
 				}
 
-				Objects.PlayerList.Instance.ListUpPlayers((b)=>!Helpers.playerById(b).Data.IsDead);
+				Objects.PlayerList.Instance.ListUpPlayers((b) => !Helpers.playerById(b)?.Data.IsDead ?? false);
 			}
 
 			if (AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Started

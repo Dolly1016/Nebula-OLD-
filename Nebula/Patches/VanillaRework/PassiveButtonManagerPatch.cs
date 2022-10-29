@@ -80,7 +80,11 @@ namespace Nebula.Patches.VanillaRework
 			//Cameraに応じて座標を変換する
 			static public bool Prefix(PassiveButtonManager __instance)
 			{
-				if (Camera.main.orthographicSize == 3f) return true;
+				try
+				{
+					if (Camera.main.orthographicSize == 3f) return true;
+                }
+                catch { return true; }
 
 				if (!Application.isFocused)
 				{

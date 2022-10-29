@@ -259,7 +259,9 @@ namespace Nebula.Game
 
         public void Reflect()
         {
-            PlayerControl player=Helpers.playerById(PlayerId);
+            PlayerControl? player=Helpers.playerById(PlayerId);
+            if (player == null) return;
+
             player.MyPhysics.Speed = Game.GameData.data.OriginalSpeed;
             foreach(SpeedFactor speed in Factors)
             {

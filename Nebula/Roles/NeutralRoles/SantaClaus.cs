@@ -55,7 +55,6 @@ namespace Nebula.Roles.NeutralRoles
         public override void OnSetTasks(ref List<GameData.TaskInfo> initialTasks, ref List<GameData.TaskInfo>? actualTasks)
         {
             actualTasks = Helpers.GetRandomTaskList((int)tasksPerPresentOption.getFloat(), 0.4);
-            RPCEventInvoker.UpdateRoleData(PlayerControl.LocalPlayer.PlayerId,leftTaskSetDataId, (int)maxPresentsOption.getFloat());
         }
 
         public override void OnTaskComplete()
@@ -77,6 +76,7 @@ namespace Nebula.Roles.NeutralRoles
         public override void ButtonInitialize(HudManager __instance)
         {
             RPCEventInvoker.UpdateRoleData(PlayerControl.LocalPlayer.PlayerId, leftPresentDataId, 0);
+            RPCEventInvoker.UpdateRoleData(PlayerControl.LocalPlayer.PlayerId, leftTaskSetDataId, (int)maxPresentsOption.getFloat());
 
             if (santaButton != null)
             {
@@ -315,7 +315,7 @@ namespace Nebula.Roles.NeutralRoles
            : base("BlackSanta", "blackSanta", RoleColor, RoleCategory.Neutral, Side.SantaClaus, Side.SantaClaus,
                  new HashSet<Side>() { Side.SantaClaus }, new HashSet<Side>() { Side.SantaClaus },
                  new HashSet<Patches.EndCondition>() { EndCondition.SantaWin },
-                 true, VentPermission.CanUseUnlimittedVent, true, false, false)
+                 true, VentPermission.CanUseUnlimittedVent, true, false, true)
         {
             IsHideRole = true;
         }
