@@ -53,6 +53,7 @@
 "preset.dialog.loadFailed" : "Failed to load preset..."
 
 "option.display.pressTabForMore" : "Press Tab For More"
+"option.display.percentage.andSoForth" : "<color=#606060ff>-</color>"
 "option.display.percentage.0" : "0%"
 "option.display.percentage.10" : "10%"
 "option.display.percentage.20" : "20%"
@@ -179,6 +180,7 @@
 "option.advanceRoleOptions" : "Advance Role Options"
 
 "option.roleChance" : "Spawn Chance"
+"option.roleChanceSecondary" : "Spawn Chance(Secondary)"
 "option.roleCount" : "Max Players"
 
 "option.canBeLovers" : "Can Be Lovers"

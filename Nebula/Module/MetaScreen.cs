@@ -52,10 +52,6 @@ namespace Nebula.Module
         public MSString(float width, string text, float fontSize,float fontSizeMin,TMPro.TextAlignmentOptions alignment, TMPro.FontStyles style)
             :this(width,text,alignment,style)
         {
-            this.width = width;
-            this.rawText = text;
-            this.alignment = alignment;
-            this.style = style;
             this.fontSize = fontSize;
             this.fontSizeMin = fontSizeMin;
         }

@@ -25,6 +25,7 @@ namespace Nebula.Roles
 
         public Module.CustomOption TopOption { get; private set; }
         public Module.CustomOption? RoleChanceOption { get; private set; } = null;
+        public Module.CustomOption? RoleChanceSecondaryOption { get; private set; } = null;
         public Module.CustomOption? RoleCountOption { get; private set; } = null;
 
         /// <summary>
@@ -50,13 +51,6 @@ namespace Nebula.Roles
         public AllocationType Allocation { get; protected set; }
 
         public virtual bool IsUnsuitable { get { return false; } }
-
-        private int OptionId { get; set; }
-
-        private int OptionCapacity { get; set; }
-
-        //オプションで使用するID
-        static private int OptionAvailableId = 10;
 
         public Module.CustomGameMode ValidGamemode { get; set; }
 
@@ -127,23 +121,110 @@ namespace Nebula.Roles
 
         protected void SetupRoleOptionData(Module.CustomOptionTab tab)
         {
-            OptionId = OptionAvailableId;
-            OptionAvailableId += OptionCapacity;
-
             if (Allocation==AllocationType.None)
             {
-                TopOption = Module.CustomOption.Create(OptionId, Color, "role." + LocalizeName + ".name", new string[] { "option.empty" }, "option.empty", null, true, false, "", tab);
-                OptionId++;
+                TopOption = Module.CustomOption.Create(Color, "role." + LocalizeName + ".name", new string[] { "option.empty" }, "option.empty", null, true, false, "", tab);
             }else 
             {
-                RoleChanceOption = TopOption = Module.CustomOption.Create(OptionId, Color, "role." + LocalizeName + ".name", new string[] { "option.empty", "option.empty" }, "option.empty", null, true, false, "", tab);
-                OptionId++;
+                RoleChanceOption = TopOption = Module.CustomOption.Create(Color, "role." + LocalizeName + ".name", new string[] { "option.empty", "option.empty" }, "option.empty", null, true, false, "", tab);
+            }
 
-                if (Allocation == AllocationType.Standard)
-                {
-                    RoleChanceOption = Module.CustomOption.Create(OptionId, Color.white, "option.roleChance", CustomOptionHolder.ratesWithoutZero, CustomOptionHolder.ratesWithoutZero[0], TopOption, false, false, "").SetIdentifier("role." + LocalizeName + ".roleChance");
-                    RoleChanceOption.GameMode = ValidGamemode | Module.CustomGameMode.FreePlay;
-                    OptionId++;
+            if (!FixedRoleCount && Allocation != AllocationType.None)
+            {
+                RoleCountOption = Module.CustomOption.Create(Color.white, "option.roleCount", 1f, 1f, 15f, 1f, TopOption, false).SetIdentifier("role." + LocalizeName + ".roleCount");
+                RoleCountOption.GameMode = ValidGamemode | Module.CustomGameMode.FreePlay;
+            }
+
+            if (Allocation == AllocationType.Standard)
+            {
+                RoleChanceOption = Module.CustomOption.Create(Color.white, "option.roleChance", CustomOptionHolder.ratesWithoutZero, CustomOptionHolder.ratesWithoutZero[0], TopOption, false, false, "").SetIdentifier("role." + LocalizeName + ".roleChance");
+                RoleChanceOption.GameMode = ValidGamemode | Module.CustomGameMode.FreePlay;
+                TopOption.SetYellowCondition(RoleChanceOption);
+
+                if (RoleCountOption != null) {
+                    RoleChanceSecondaryOption = Module.CustomOption.Create(Color.white, "option.roleChanceSecondary", CustomOptionHolder.ratesSecondary, CustomOptionHolder.ratesSecondary[0], TopOption, false, false, "").SetIdentifier("role." + LocalizeName + ".roleChanceSecondary");
+                    RoleChanceSecondaryOption.AddPrerequisite(RoleCountOption);
+                    RoleChanceSecondaryOption.AddPrerequisite(RoleChanceSecondaryOption);
+
+                    RoleChanceOption.isHiddenOnMetaScreen = true;
+                    RoleChanceSecondaryOption.isHiddenOnMetaScreen = true;
+                    RoleCountOption.isHiddenOnMetaScreen = true;
+
+                    TopOption.preOptionScreenBuilder = (refresher) =>
+                    {
+                        if (RoleCountOption.getSelection() >= 1)
+                        {
+                            return new Module.MetaScreenContent[][]{
+                                new Module.MetaScreenContent[]{
+                                    new Module.MSMargin(0.8f),
+                                    new Module.MSString(1.2f,RoleCountOption.getName(),1.4f,0.8f,TMPro.TextAlignmentOptions.MidlineRight,TMPro.FontStyles.Bold),
+                                    new Module.MSString(0.1f,":",TMPro.TextAlignmentOptions.MidlineRight,TMPro.FontStyles.Bold),
+                                    new Module.MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () => {
+                                        RoleCountOption.addSelection(-1);
+                                        refresher();
+                                    }),
+                                    new Module.MSString(0.5f, RoleCountOption.getString(), 2f, 0.6f, TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
+                                    new Module.MSButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () => {
+                                        RoleCountOption.addSelection(1);
+                                        refresher();
+                                    }),
+                                    new Module.MSString(1.2f,RoleChanceOption.getName(),1.4f,0.8f,TMPro.TextAlignmentOptions.MidlineRight,TMPro.FontStyles.Bold),
+                                    new Module.MSString(0.1f,":",TMPro.TextAlignmentOptions.MidlineRight,TMPro.FontStyles.Bold),
+                                    new Module.MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () => {
+                                        RoleChanceOption.addSelection(-1);
+                                        refresher();
+                                    }),
+                                    new Module.MSString(0.6f, RoleChanceOption.getString(), 2f, 0.6f, TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
+                                    new Module.MSButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () => {
+                                        RoleChanceOption.addSelection(1);
+                                        refresher();
+                                    }),
+                                    new Module.MSString(0.2f,"(",TMPro.TextAlignmentOptions.MidlineRight,TMPro.FontStyles.Bold),
+                                    new Module.MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () => {
+                                        RoleChanceSecondaryOption.addSelection(-1);
+                                        refresher();
+                                    }),
+                                    new Module.MSString(0.6f, RoleChanceSecondaryOption.getString(), 2f, 0.6f, TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
+                                    new Module.MSButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () => {
+                                        RoleChanceSecondaryOption.addSelection(1);
+                                        refresher();
+                                    }),
+                                    new Module.MSString(0.2f,")",TMPro.TextAlignmentOptions.MidlineRight,TMPro.FontStyles.Bold)
+                                }                            
+                            };
+                        }
+                        else
+                        {
+                            return new Module.MetaScreenContent[][]{
+                                new Module.MetaScreenContent[]{
+                                    new Module.MSMargin(0.8f),
+                                    new Module.MSString(1.2f,RoleCountOption.getName(),1.4f,0.8f,TMPro.TextAlignmentOptions.MidlineRight,TMPro.FontStyles.Bold),
+                                    new Module.MSString(0.1f,":",TMPro.TextAlignmentOptions.MidlineRight,TMPro.FontStyles.Bold),
+                                    new Module.MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () => {
+                                        RoleCountOption.addSelection(-1);
+                                        refresher();
+                                    }),
+                                    new Module.MSString(0.5f, RoleCountOption.getString(), 2f, 0.6f, TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
+                                    new Module.MSButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () => {
+                                        RoleCountOption.addSelection(1);
+                                        refresher();
+                                    }),
+                                    new Module.MSString(1.2f,RoleChanceOption.getName(),1.4f,0.8f,TMPro.TextAlignmentOptions.MidlineRight,TMPro.FontStyles.Bold),
+                                    new Module.MSString(0.1f,":",TMPro.TextAlignmentOptions.MidlineRight,TMPro.FontStyles.Bold),
+                                    new Module.MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () => {
+                                        RoleChanceOption.addSelection(-1);
+                                        refresher();
+                                    }),
+                                    new Module.MSString(0.6f, RoleChanceOption.getString(), 2f, 0.6f, TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
+                                    new Module.MSButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () => {
+                                        RoleChanceOption.addSelection(1);
+                                        refresher();
+                                    }),
+                                    new Module.MSMargin(0.26f+0.66f+0.5f+0.5f+0.26f)
+                                }
+                            };
+                        }
+                    };
                 }
             }
 
@@ -151,13 +232,6 @@ namespace Nebula.Roles
 
             TopOption.GameMode = ValidGamemode | Module.CustomGameMode.FreePlay;
 
-
-            if (!FixedRoleCount && Allocation!=AllocationType.None)
-            {
-                RoleCountOption = Module.CustomOption.Create(OptionId, Color.white, "option.roleCount", 1f, 1f, 15f, 1f, TopOption, false).SetIdentifier("role." + LocalizeName + ".roleCount");
-                RoleCountOption.GameMode = ValidGamemode|Module.CustomGameMode.FreePlay;
-                OptionId++;
-            }
         }
 
         public virtual void SetupRoleOptionData()
@@ -176,14 +250,9 @@ namespace Nebula.Roles
 
         private Module.CustomOption CreateOption(Color color, string name, object[] selections, System.Object defaultValue,bool isGeneral=false)
         {
-            if (OptionAvailableId == -1)
-            {
-                return null;
-            }
-            Module.CustomOption option = new Module.CustomOption(OptionId, color, (isGeneral ? "" : "role." + this.LocalizeName + ".") + name, selections, defaultValue, TopOption, false, false, "",Module.CustomOptionTab.None);
+            Module.CustomOption option = new Module.CustomOption(color, (isGeneral ? "" : "role." + this.LocalizeName + ".") + name, selections, defaultValue, TopOption, false, false, "",Module.CustomOptionTab.None);
             option.GameMode = ValidGamemode | Module.CustomGameMode.FreePlay;
 
-            OptionId++;
             return option;
         }
 
@@ -670,8 +739,6 @@ namespace Nebula.Roles
             this.LocalizeName = localizeName;
             this.Color = color;
 
-            //未設定
-            this.OptionId = -1;
 
             this.IsHideRole = false;
             this.Allocation = AllocationType.Standard;
@@ -681,7 +748,6 @@ namespace Nebula.Roles
 
             this.ValidGamemode = Module.CustomGameMode.Standard;
 
-            this.OptionCapacity = 20;
 
             this.canFixSabotage = true;
         }
