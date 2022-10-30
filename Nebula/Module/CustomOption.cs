@@ -798,7 +798,13 @@ namespace Nebula.Module
 
             string[] names =
             {
-                "Settings","CrewmateRoles","ImpostorRoles","NeutralRoles","GhostRoles","Modifiers","EscapeRoles","AdvancedSettings"
+                "settings","crewmateRoles","impostorRoles","neutralRoles","ghostRoles","modifiers","escapeRoles","advancedSettings"
+            };
+            Color[] colors =
+            {
+                Color.white,Palette.CrewmateBlue,Palette.ImpostorRed,new Color(255f/255f,170f/255f,0f),
+                new Color(166f/255f,178f/255f,185f/255f),new Color(255f/255f,255f/255f,220f/255f),Color.yellow,
+                new Color(128f/255f,194f/255f,255f/255f)
             };
 
             for (int i = 0; i < (int)CustomOptionTab.MaxValidTabs; i++)
@@ -807,7 +813,7 @@ namespace Nebula.Module
                 if ((((int)Game.GameModeProperty.GetProperty(CustomOptionHolder.GetCustomGameMode()).Tabs) & (1<<i)) != 0)
                 {
                     int index = i;
-                    designer.AddTopic(new MSButton(2f,0.37f,names[i],TMPro.FontStyles.Bold,()=> {
+                    designer.AddTopic(new MSButton(2f,0.37f,Helpers.cs(colors[i],Language.Language.GetString("option.tab."+names[i])),TMPro.FontStyles.Bold,()=> {
                         CustomOption.CurrentTab = (Module.CustomOptionTab)(1 << index);
                         OpenConfigScreen(setting);
                         designer.screen.Close();
