@@ -82,6 +82,8 @@ namespace Nebula.Patches
                 this.roles = (min < max) ? NebulaPlugin.rnd.Next(min, max) : max;
                 this.firstRoles = new List<Role>();
                 this.secondaryRoles = new List<RoleAllocation>();
+                //この先のプログラムで使用
+                List<Tuple<int, int>> chanceList = new List<Tuple<int, int>>();
 
                 foreach (Role role in Roles.Roles.AllRoles)
                 {
@@ -101,26 +103,37 @@ namespace Nebula.Patches
 
                     if (role.IsUnsuitable) continue;
 
-                    //ロールの湧き数
-                    int roleCount = role.FixedRoleCount ? role.GetCustomRoleCount() : (int)role.RoleCountOption.getFloat();
-
                     if(role.TopOption.getBool())
                     {
-                        if (role.RoleChanceOption.getSelection() == 9 || (role.Allocation == Assignable.AllocationType.Switch))
+                        //ロールの湧き数
+                        int roleCount = role.FixedRoleCount ? role.GetCustomRoleCount() : (int)role.RoleCountOption.getFloat();
+
+                        if (roleCount == 0) continue;
+
+                        chanceList.Clear();
+
+                        if (role.Allocation == Assignable.AllocationType.Switch)
                         {
-                            //100%ロール
-                            for (int i = 0; i < roleCount; i++)
-                            {
-                                firstRoles.Add(role);
-                            }
+                            chanceList.Add(new Tuple<int, int>(roleCount, 10));
                         }
                         else
                         {
-                            //ランダムロール
-                            for (int i = 0; i < roleCount; i++)
+                            if (role.RoleChanceSecondaryOption != null)
                             {
-                                secondaryRoles.Add(new RoleAllocation(role, (int)role.RoleChanceOption.getSelection() + 1));
+                                chanceList.Add(new Tuple<int, int>(1, role.RoleChanceOption.getSelection() + 1));
+                                chanceList.Add(new Tuple<int, int>(roleCount-1, role.RoleChanceSecondaryOption.getSelection()));
                             }
+                            else
+                            {
+                                chanceList.Add(new Tuple<int, int>(roleCount, role.RoleChanceOption.getSelection() + 1));
+                            }
+                        }
+                         
+                        foreach(var tuple in chanceList)
+                        {
+                            for (int i = 0; i < tuple.Item1; i++)
+                                if (tuple.Item2 == 10) firstRoles.Add(role);
+                                else secondaryRoles.Add(new RoleAllocation(role, tuple.Item2));
                         }
                     }
                     
