@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnhollowerRuntimeLib;
 using UnhollowerBaseLib.Attributes;
+using HarmonyLib;
 
 namespace Nebula.Objects
 {

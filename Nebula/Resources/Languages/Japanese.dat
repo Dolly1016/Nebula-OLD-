@@ -710,6 +710,25 @@
 "role.opportunist.canWinWithVulture" : "ヴァルチャーとの追加勝利"
 "role.opportunist.canWinWithAvenger" : "アヴェンジャーとの追加勝利"
 
+"role.teamSanta.name" : "サンタクロース"
+
+"role.santaClaus.name" : "サンタクロース"
+"role.santaClaus.short" : "サ"
+"role.santaClaus.description" : "最高のクリスマスを！"
+"role.santaClaus.info" : "プレゼントをプレイヤーに渡して、サンタ陣営に取り込むことができます。\n生存者全員がサンタ陣営になれば勝利します。"
+"role.santaClaus.help.santa" : "タスクをすることで"
+"role.santaClaus.santaClausIsGuessable" : "Santa Claus Is Guessable"
+"role.santaClaus.tasksPerPresent" : "Tasks Per Present"
+"role.santaClaus.maxPresents" : "Max Presents"
+"role.santaClaus.killCoolDown" : "Kill Cool Down"
+
+"role.blackSanta.name" : "ブラックサンタ"
+"role.blackSanta.short" : "ブ"
+"role.blackSanta.description" : "悪い子はここかな？"
+"role.blackSanta.info" : "キルができるほか、死体を隠してしまうことができます。"
+"role.blackSanta.help.capture" : "You can capture dead body."
+"role.blackSanta.help.release" : "You can place dead body that you own."
+
 "role.vulture.name" : "ヴァルチャー"
 "role.vulture.short" : "ヴ"
 "role.vulture.description" : "食い漁れ"

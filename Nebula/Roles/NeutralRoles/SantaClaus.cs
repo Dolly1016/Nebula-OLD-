@@ -71,12 +71,16 @@ namespace Nebula.Roles.NeutralRoles
             }
         }
 
+        public override void Initialize(PlayerControl __instance)
+        {
+            RPCEventInvoker.UpdateRoleData(PlayerControl.LocalPlayer.PlayerId, leftPresentDataId, 0);
+            RPCEventInvoker.UpdateRoleData(PlayerControl.LocalPlayer.PlayerId, leftTaskSetDataId, (int)maxPresentsOption.getFloat() - 1);
+        }
+
         /* ボタン */
         private CustomButton? santaButton = null;
         public override void ButtonInitialize(HudManager __instance)
         {
-            RPCEventInvoker.UpdateRoleData(PlayerControl.LocalPlayer.PlayerId, leftPresentDataId, 0);
-            RPCEventInvoker.UpdateRoleData(PlayerControl.LocalPlayer.PlayerId, leftTaskSetDataId, (int)maxPresentsOption.getFloat());
 
             if (santaButton != null)
             {

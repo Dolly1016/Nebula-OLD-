@@ -127,25 +127,34 @@ namespace Nebula.Roles
 
         protected void SetupRoleOptionData(Module.CustomOptionTab tab)
         {
+            OptionId = OptionAvailableId;
+            OptionAvailableId += OptionCapacity;
+
             if (Allocation==AllocationType.None)
             {
-                TopOption = Module.CustomOption.Create(OptionAvailableId, Color, "role." + LocalizeName + ".name", new string[] { "option.empty" }, "option.empty", null, true, false, "", tab);
-            }else if (Allocation == AllocationType.Switch)
+                TopOption = Module.CustomOption.Create(OptionId, Color, "role." + LocalizeName + ".name", new string[] { "option.empty" }, "option.empty", null, true, false, "", tab);
+                OptionId++;
+            }else 
             {
-                RoleChanceOption = TopOption = Module.CustomOption.Create(OptionAvailableId, Color, "role." + LocalizeName + ".name", new string[] { "option.switch.off", "option.switch.on" }, "option.switch.off", null, true, false, "", tab);
+                RoleChanceOption = TopOption = Module.CustomOption.Create(OptionId, Color, "role." + LocalizeName + ".name", new string[] { "option.empty", "option.empty" }, "option.empty", null, true, false, "", tab);
+                OptionId++;
+
+                if (Allocation == AllocationType.Standard)
+                {
+                    RoleChanceOption = Module.CustomOption.Create(OptionId, Color.white, "option.roleChance", CustomOptionHolder.ratesWithoutZero, CustomOptionHolder.ratesWithoutZero[0], TopOption, false, false, "").SetIdentifier("role." + LocalizeName + ".roleChance");
+                    RoleChanceOption.GameMode = ValidGamemode | Module.CustomGameMode.FreePlay;
+                    OptionId++;
+                }
             }
-            else if(Allocation == AllocationType.Standard)
-            {
-                RoleChanceOption = TopOption = Module.CustomOption.Create(OptionAvailableId, Color, "role." + LocalizeName + ".name", CustomOptionHolder.rates, CustomOptionHolder.rates[0], null, true,false,"",tab);
-            }
+
+            Module.CustomOption.RegisterTopOption(TopOption);
+
             TopOption.GameMode = ValidGamemode | Module.CustomGameMode.FreePlay;
 
-            OptionId = OptionAvailableId + 1;
-            OptionAvailableId += OptionCapacity;
 
             if (!FixedRoleCount && Allocation!=AllocationType.None)
             {
-                RoleCountOption = Module.CustomOption.Create(OptionId, Color.white, "option.roleCount", 0f, 0f, 15f, 1f, TopOption, false).SetIdentifier("role." + LocalizeName + ".roleCount");
+                RoleCountOption = Module.CustomOption.Create(OptionId, Color.white, "option.roleCount", 1f, 1f, 15f, 1f, TopOption, false).SetIdentifier("role." + LocalizeName + ".roleCount");
                 RoleCountOption.GameMode = ValidGamemode|Module.CustomGameMode.FreePlay;
                 OptionId++;
             }
@@ -616,8 +625,7 @@ namespace Nebula.Roles
         {
             try
             {
-                if (RoleChanceOption.getSelection() == 0) return false;
-                if (!FixedRoleCount && RoleCountOption.getFloat() == 0f) return false;
+                if (TopOption.getSelection() == 0) return false;
             }
             catch (Exception e) { return false; }
 

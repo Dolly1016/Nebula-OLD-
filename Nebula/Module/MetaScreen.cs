@@ -38,6 +38,8 @@ namespace Nebula.Module
         protected TMPro.FontStyles style { get; }
         public TMPro.TextMeshPro? text { get; protected set; }
         public override Vector2 GetSize() => new Vector2(width + 0.06f, 0.5f);
+        protected float fontSize = 3f;
+        protected float fontSizeMin = 2f;
 
         public MSString(float width, string text, TMPro.TextAlignmentOptions alignment, TMPro.FontStyles style)
         {
@@ -45,6 +47,17 @@ namespace Nebula.Module
             this.rawText = text;
             this.alignment = alignment;
             this.style = style;
+        }
+
+        public MSString(float width, string text, float fontSize,float fontSizeMin,TMPro.TextAlignmentOptions alignment, TMPro.FontStyles style)
+            :this(width,text,alignment,style)
+        {
+            this.width = width;
+            this.rawText = text;
+            this.alignment = alignment;
+            this.style = style;
+            this.fontSize = fontSize;
+            this.fontSizeMin = fontSizeMin;
         }
 
         public override void Generate(GameObject obj)
@@ -59,7 +72,43 @@ namespace Nebula.Module
             text.rectTransform.sizeDelta = new Vector2(width - 0.2f, 0.36f);
             text.rectTransform.pivot = new Vector2(0.5f, 0.5f);
             text.text = rawText;
-            text.fontSize = text.fontSizeMax = text.fontSizeMax = 3f;
+            text.fontSize = text.fontSizeMax = fontSize;
+            text.fontSizeMin = fontSizeMin;
+        }
+    }
+
+    public class MSTextArea : MetaScreenContent
+    {
+        protected Vector2 size;
+        protected string rawText { get; }
+        protected TMPro.TextAlignmentOptions alignment { get; }
+        protected TMPro.FontStyles style { get; }
+        public TMPro.TextMeshPro? text { get; protected set; }
+        public float fontSize { get; protected set; }
+        public override Vector2 GetSize() => new Vector2(size.x + 0.06f, size.y + 0.1f);
+
+        public MSTextArea(Vector2 size,string text,float fontSize, TMPro.TextAlignmentOptions alignment, TMPro.FontStyles style)
+        {
+            this.size = size;
+            this.rawText = text;
+            this.fontSize = fontSize;
+            this.alignment = alignment;
+            this.style = style;
+        }
+
+        public override void Generate(GameObject obj)
+        {
+            this.text = GameObject.Instantiate(HudManager.Instance.Dialogue.target);
+            text.transform.SetParent(obj.transform);
+            text.transform.localScale = new Vector3(1f, 1f, 1f);
+            text.transform.localPosition = new Vector3(0f, 0f, -1f);
+
+            text.alignment = alignment;
+            text.fontStyle = style;
+            text.rectTransform.sizeDelta = size - new Vector2(0.2f, 0f);
+            text.rectTransform.pivot = new Vector2(0.5f, 0.5f);
+            text.text = rawText;
+            text.fontSize = text.fontSizeMax = text.fontSizeMax = fontSize;
         }
     }
 
@@ -124,7 +173,7 @@ namespace Nebula.Module
 
     public class MSButton : MSString
     {
-        private Color? color { get; }
+        public Color? color { get; }
         private float height { get; }
         private Action onClick { get; }
         public override Vector2 GetSize() => new Vector2(width + 0.1f, height + 0.12f);
@@ -603,7 +652,7 @@ namespace Nebula.Module
             screen.transform.SetParent(parent.transform);
 
             screen.transform.localScale = new Vector3(1, 1, 1);
-            screen.transform.localPosition = new Vector3(0f, 0f, -50f);
+            screen.transform.localPosition = new Vector3(center.x, center.y, -50f);
             var metaScreen = new MetaScreen(screen);
 
             return new MSDesigner(metaScreen, size, 0.2f);

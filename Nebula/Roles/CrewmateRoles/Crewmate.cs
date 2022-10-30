@@ -34,6 +34,14 @@ namespace Nebula.Roles.CrewmateRoles
             }
         }
 
+        public override bool CanBeBloody
+        {
+            get
+            {
+                return Roles.F_Crewmate.CanBeBloody;
+            }
+        }
+
         public override bool CanBeMadmate
         {
             get

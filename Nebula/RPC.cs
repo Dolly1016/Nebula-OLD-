@@ -965,7 +965,7 @@ namespace Nebula
                     }
                     else
                     {
-                        CustomOption option = CustomOption.options.FirstOrDefault(opt => opt.id == (int)optionId);
+                        CustomOption option = CustomOption.AllOptions.FirstOrDefault(opt => opt.id == (int)optionId);
                         option.updateSelection((int)selection);
                     }
                 }

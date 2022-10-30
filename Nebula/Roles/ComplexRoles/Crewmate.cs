@@ -30,7 +30,7 @@ namespace Nebula.Roles.ComplexRoles
 
             int damneds= Helpers.CalcProbabilityCount(ChanceOfDamned(), result.Length);
 
-            int chance = RoleChanceOption.getSelection();
+            int chance = RoleChanceOption.getSelection() + 1;
             for(int i = 0; i < result.Length; i++)
             {
                 result[i] = new Patches.AssignRoles.RoleAllocation(i < damneds ? Roles.DamnedCrew : Roles.Crewmate, chance);

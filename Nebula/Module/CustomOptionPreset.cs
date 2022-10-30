@@ -36,7 +36,7 @@ namespace Nebula.Module
         {
             var data = new CustomOptionPreset();
 
-            foreach(var option in CustomOption.options)
+            foreach(var option in CustomOption.AllOptions)
             {
                 if (option.isProtected) continue;
 
@@ -142,7 +142,7 @@ namespace Nebula.Module
             if (notInitialize)
             {
                 //デフォルトに戻す
-                foreach (var option in CustomOption.options)
+                foreach (var option in CustomOption.AllOptions)
                 {
                     if (option.isProtected) continue;
 

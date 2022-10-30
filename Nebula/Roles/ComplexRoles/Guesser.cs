@@ -65,6 +65,7 @@ namespace Nebula.Roles.ComplexRoles
 
             CanBeGuesserOption?.AddInvPrerequisite(secondoryRoleOption);
             CanBeDrunkOption?.AddInvPrerequisite(secondoryRoleOption);
+            CanBeBloodyOption?.AddInvPrerequisite(secondoryRoleOption);
             CanBeLoversOption?.AddInvPrerequisite(secondoryRoleOption);
             CanBeMadmateOption?.AddInvPrerequisite(secondoryRoleOption);
             CanBeSecretOption?.AddInvPrerequisite(secondoryRoleOption);
@@ -306,7 +307,7 @@ namespace Nebula.Roles.ComplexRoles
 
         private void _sub_Assignment(Patches.AssignMap assignMap,List<byte> players,int count)
         {
-            int chance = Roles.F_Guesser.RoleChanceOption.getSelection();
+            int chance = Roles.F_Guesser.RoleChanceOption.getSelection()+1;
 
             byte playerId;
             for(int i = 0; i < count; i++)
@@ -391,7 +392,7 @@ namespace Nebula.Roles.ComplexRoles
         public override bool IsSpawnable()
         {
             if (!Roles.F_Guesser.secondoryRoleOption.getBool()) return false;
-            if (Roles.F_Guesser.RoleChanceOption.getSelection() == 0) return false;
+            if (!Roles.F_Guesser.TopOption.getBool()) return false;
 
             return true;
         }

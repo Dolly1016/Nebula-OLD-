@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Nebula.Roles.ExtraRoles
 {
-    public class Bloody : ExtraRole
+    public class Bloody : Template.StandardExtraRole
     {
         public class BloodyEvent : Events.LocalEvent
         {
@@ -52,9 +52,6 @@ namespace Nebula.Roles.ExtraRoles
 
         static public Color RoleColor = new Color(180f / 255f, 0f / 255f, 0f / 255f);
 
-        private Module.CustomOption maxCountCrewmateOption;
-        private Module.CustomOption maxCountImpostorOption;
-        private Module.CustomOption maxCountNeutralOption;
         private Module.CustomOption bloodyDurationOption;
 
         public override void Assignment(Patches.AssignMap assignMap)
@@ -84,7 +81,9 @@ namespace Nebula.Roles.ExtraRoles
 
         public override void LoadOptionData()
         {
+            base.LoadOptionData();
 
+            bloodyDurationOption = CreateOption(Color.white, "bloodyDuration", 4f, 1f, 10f, 1f);
         }
 
         public override void OnDied(byte playerId)
@@ -92,7 +91,7 @@ namespace Nebula.Roles.ExtraRoles
             if (MeetingHud.Instance) return;
             if (Game.GameData.data.deadPlayers[playerId].MurderId != PlayerControl.LocalPlayer.PlayerId) return;
 
-            Events.LocalEvent.Activate(new BloodyEvent(10f));
+            Events.LocalEvent.Activate(new BloodyEvent(bloodyDurationOption.getFloat()));
         }
 
         public Bloody() : base("Bloody", "bloody", RoleColor, 0)

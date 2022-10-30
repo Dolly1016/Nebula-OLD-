@@ -163,6 +163,16 @@ namespace Nebula.Roles
                 return (CustomOptionHolder.advanceRoleOptions.getBool() && CanBeDrunkOption != null) ?
                     CanBeDrunkOption.getBool() : DefaultCanBeDrunk;
             } }
+
+        public virtual bool CanBeBloody
+        {
+            get
+            {
+                return (CustomOptionHolder.advanceRoleOptions.getBool() && CanBeBloodyOption != null) ?
+                    CanBeBloodyOption.getBool() : DefaultCanBeBloody;
+            }
+        }
+
         public virtual bool CanBeMadmate
         {
             get
@@ -194,6 +204,7 @@ namespace Nebula.Roles
         public bool DefaultCanBeLovers { get; set; } = true;
         public bool DefaultCanBeGuesser { get; set; } = true;
         public bool DefaultCanBeDrunk { get; set; } = true;
+        public bool DefaultCanBeBloody { get; set; } = true;
         public bool DefaultCanBeMadmate { get; set; } = false;
         public bool DefaultCanBeSecret { get; set; } = true;
 
@@ -270,6 +281,7 @@ namespace Nebula.Roles
         protected Module.CustomOption? CanBeLoversOption=null;
         protected Module.CustomOption? CanBeGuesserOption=null;
         protected Module.CustomOption? CanBeDrunkOption=null;
+        protected Module.CustomOption? CanBeBloodyOption = null;
         protected Module.CustomOption? CanBeMadmateOption = null;
         protected Module.CustomOption? CanBeSecretOption = null;
 
@@ -321,6 +333,10 @@ namespace Nebula.Roles
             CanBeDrunkOption.AddPrerequisite(CustomOptionHolder.advanceRoleOptions);
             CanBeDrunkOption.AddCustomPrerequisite(() => { return Roles.Drunk.IsSpawnable(); });
 
+            CanBeBloodyOption = CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeBloody", DefaultCanBeBloody, true).HiddenOnDisplay(true).SetIdentifier("role." + LocalizeName + ".canBeBloody");
+            CanBeBloodyOption.AddPrerequisite(CustomOptionHolder.advanceRoleOptions);
+            CanBeBloodyOption.AddCustomPrerequisite(() => { return Roles.Bloody.IsSpawnable(); });
+
             CanBeMadmateOption = CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeMadmate", DefaultCanBeMadmate, true).HiddenOnDisplay(true).SetIdentifier("role." + LocalizeName + ".canBeMadmate");
             CanBeMadmateOption.AddPrerequisite(CustomOptionHolder.advanceRoleOptions);
             CanBeMadmateOption.AddCustomPrerequisite(() => { return Roles.SecondaryMadmate.IsSpawnable() && category==RoleCategory.Crewmate; });
@@ -335,7 +351,7 @@ namespace Nebula.Roles
                     CanBeSecretOption.AddCustomPrerequisite(() => { return CustomOptionHolder.NumOfSecretImpostorOption.getSelection() >= 1; });
             }
 
-            RoleChanceOption.Decorator = new Module.CustomOptionDecorator((original, option) =>
+            TopOption.Decorator = new Module.CustomOptionDecorator((original, option) =>
             {
                 //追加役職化した場合は何もしない
                 if (IsSecondaryGenerator) return original;
@@ -355,6 +371,7 @@ namespace Nebula.Roles
                 (side != Side.Crewmate && side != Side.Impostor && Roles.F_Guesser.neutralRoleCountOption.getFloat() > 0)))
                     suffix += Helpers.cs(Roles.SecondaryGuesser.Color, "⊕");
                 if (Roles.Drunk.IsSpawnable() && CanBeDrunk) suffix += Helpers.cs(Roles.Drunk.Color, "〻");
+                if (Roles.Bloody.IsSpawnable() && CanBeBloody) suffix += Helpers.cs(Roles.Bloody.Color, "†");
                 if (Roles.SecondaryMadmate.IsSpawnable() && CanBeMadmate) suffix += Helpers.cs(Roles.Madmate.Color, "*");
 
                 return suffix == "" ? original : (original + " " + suffix);
@@ -378,7 +395,7 @@ namespace Nebula.Roles
 
             if (RoleChanceOption == null) return;
 
-            if (RoleChanceOption.getSelection() == 10f)
+            if (RoleChanceOption.getSelection() == 9)
                 DefinitiveRoles.Add(this, (int)(RoleCountOption?.getFloat()??GetCustomRoleCount()));
             else
                 SpawnableRoles.Add(this);
@@ -440,6 +457,8 @@ namespace Nebula.Roles
             DefaultCanBeLovers = true;
             DefaultCanBeGuesser = true;
             DefaultCanBeDrunk = true;
+            DefaultCanBeBloody = true;
+            DefaultCanBeMadmate = true;
         }
 
         public static Role GetRoleById(byte id)

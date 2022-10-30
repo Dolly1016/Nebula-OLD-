@@ -156,7 +156,7 @@ namespace Nebula.Roles.ExtraRoles
             int maxPairs = maxPairsOption.getSelection();
             if (maxPairs * 2 > Game.GameData.data.AllPlayers.Count) maxPairs = Game.GameData.data.AllPlayers.Count / 2;
 
-            int pairs = Helpers.CalcProbabilityCount(RoleChanceOption.getSelection(), maxPairs);
+            int pairs = Helpers.CalcProbabilityCount(RoleChanceOption.getSelection()+1, maxPairs);
 
             List<PlayerControl> crewmates = PlayerControl.AllPlayerControls.ToArray().ToList().OrderBy(x => Guid.NewGuid()).ToList();
             List<PlayerControl> impostors = PlayerControl.AllPlayerControls.ToArray().ToList().OrderBy(x => Guid.NewGuid()).ToList();

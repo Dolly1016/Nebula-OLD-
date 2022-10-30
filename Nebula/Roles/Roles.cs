@@ -124,10 +124,10 @@ namespace Nebula.Roles
         public static List<Role> AllRoles = new List<Role>()
         {
             VOID,
-            Impostor,BountyHunter,Camouflager,Cleaner,Damned,Disturber,Eraser,EvilAce,EvilGuesser,EvilTrapper,Jailer,Marionette,Morphing,Painter,Raider,Reaper,Sniper,
-            F_Guesser,F_Trapper,
+            Impostor,BountyHunter,Camouflager,Cleaner,Damned,Disturber,Eraser,EvilAce,EvilGuesser,EvilTrapper,Jailer,Marionette,Morphing,Painter,Raider,Reaper,Sniper,            
             SantaClaus,BlackSanta,Arsonist,Avenger,ChainShifter,Empiric,Jackal,Jester,Opportunist,Sidekick,Vulture,
             F_Crewmate,
+            F_Guesser,F_Trapper,
             Crewmate,CrewmateWithoutTasks,Agent,Alien,Bait,Busker,Comet,DamnedCrew,Doctor,Guardian,Mayor,Navvy,Necromancer,NiceGuesser,NiceTrapper,Oracle,Provocateur,Psychic,Seer,Sheriff,Spy,
             Madmate,
             Player,

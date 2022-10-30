@@ -69,12 +69,11 @@ namespace Nebula.Roles.Template
 
         public override void SpawnableTest(ref Dictionary<Role, int> DefinitiveRoles, ref HashSet<Role> SpawnableRoles)
         {
-            if (RoleChanceOption.getSelection() == 0) return;
-            if (RoleCountOption.getFloat() == 0f) return;
+            if (!TopOption.getBool()) return;
 
             if (definitiveAssignmentOption.getBool())
             {
-                if (RoleChanceOption.getSelection() == 10f)
+                if (RoleChanceOption.getSelection() == 9)
                 {
                     int countF = 0, countS = 0;
                     foreach (var role in GetComplexAllocations())
@@ -98,14 +97,14 @@ namespace Nebula.Roles.Template
                 float chance = chanceToSpawnAsSecondarySide.getSelection();
                 if (chance != 10f)
                 {
-                    if (RoleChanceOption.getSelection() == 10f)
+                    if (RoleChanceOption.getSelection() == 9)
                         DefinitiveRoles[FirstRole] = 0;
                     else
                         SpawnableRoles.Add(FirstRole);
                 }
                 if (chance != 0f)
                 {
-                    if (RoleChanceOption.getSelection() == 10f)
+                    if (RoleChanceOption.getSelection() == 9)
                         DefinitiveRoles[SecondaryRole] = 0;
                     else
                         SpawnableRoles.Add(SecondaryRole);
@@ -172,6 +171,14 @@ namespace Nebula.Roles.Template
             }
         }
 
+        public override bool CanBeBloody
+        {
+            get
+            {
+                return FRole.CanBeBloody;
+            }
+        }
+
         public override bool CanBeMadmate
         {
             get
@@ -190,8 +197,7 @@ namespace Nebula.Roles.Template
 
         public override bool IsSpawnable()
         {
-            if (FRole.RoleChanceOption.getSelection() == 0) return false;
-            if (FRole.RoleCountOption.getFloat() == 0f) return false;
+            if (!FRole.TopOption.getBool()) return false;
 
             if (FRole.definitiveAssignmentOption.getBool())
             {

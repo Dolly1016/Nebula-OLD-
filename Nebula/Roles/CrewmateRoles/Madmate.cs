@@ -52,6 +52,7 @@ namespace Nebula.Roles.CrewmateRoles
 
             CanBeGuesserOption?.AddInvPrerequisite(SecondoryRoleOption);
             CanBeDrunkOption?.AddInvPrerequisite(SecondoryRoleOption);
+            CanBeBloodyOption?.AddInvPrerequisite(SecondoryRoleOption);
             CanBeLoversOption?.AddInvPrerequisite(SecondoryRoleOption);
             CanBeMadmateOption?.AddInvPrerequisite(SecondoryRoleOption);
         }
@@ -149,7 +150,7 @@ namespace Nebula.Roles.CrewmateRoles
 
         private void _sub_Assignment(Patches.AssignMap assignMap, List<byte> players, int count)
         {
-            int chance = Roles.Madmate.RoleChanceOption.getSelection();
+            int chance = Roles.Madmate.RoleChanceOption.getSelection() + 1;
 
             byte playerId;
             for (int i = 0; i < count; i++)
@@ -200,7 +201,7 @@ namespace Nebula.Roles.CrewmateRoles
         public override bool IsSpawnable()
         {
             if (!Roles.Madmate.SecondoryRoleOption.getBool()) return false;
-            if (Roles.Madmate.RoleChanceOption.getSelection() == 0) return false;
+            if (!Roles.Madmate.RoleChanceOption.getBool()) return false;
 
             return true;
         }

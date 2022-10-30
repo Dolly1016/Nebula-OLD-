@@ -12,6 +12,7 @@ using BepInEx.Configuration;
 using Nebula.Language;
 using BepInEx.IL2CPP.Utils.Collections;
 using Nebula.Utilities;
+using UnhollowerRuntimeLib;
 
 namespace Nebula.Module
 {
@@ -64,7 +65,9 @@ namespace Nebula.Module
 
     public class CustomOption
     {
-        public static List<CustomOption> options = new List<CustomOption>();
+        public static List<CustomOption> AllOptions = new List<CustomOption>();
+        public static List<CustomOption> TopOptions = new List<CustomOption>();
+
         static public CustomOptionTab CurrentTab = Module.CustomOptionTab.Settings;
 
         public int id;
@@ -134,28 +137,30 @@ namespace Nebula.Module
         public bool IsHiddenDisplayInternal(CustomGameMode gameMode)
         {
             return isHidden || (0 == (int)(gameMode & GameMode))
-                || prerequisiteOptions.Count > 0 && prerequisiteOptions.Any((option) => { return !option.enabled || option.IsHiddenOnDisplay(gameMode); })
-                || prerequisiteOptionsInv.Count > 0 && prerequisiteOptionsInv.Any((option) => { return option.enabled || option.IsHiddenOnDisplay(gameMode); })
+                || prerequisiteOptions.Count > 0 && prerequisiteOptions.Any((option) => { return !option.getBool(); })
+                || prerequisiteOptionsInv.Count > 0 && prerequisiteOptionsInv.Any((option) => { return option.getBool(); })
                 || prerequisiteOptionsCustom.Count > 0 && prerequisiteOptionsCustom.Any((func) => { return !func.Invoke(); });
         }
 
         public bool IsHiddenInternal(CustomGameMode gameMode)
         {
             return (tab != CustomOptionTab.None && ((tab & CurrentTab) == 0)) || isHidden || (0 == (int)(gameMode & GameMode))
-                || prerequisiteOptions.Count > 0 && prerequisiteOptions.Any((option) => { return !option.enabled || option.IsHidden(gameMode); })
-                || prerequisiteOptionsInv.Count > 0 && prerequisiteOptionsInv.Any((option) => { return option.enabled || option.IsHidden(gameMode); })
+                || prerequisiteOptions.Count > 0 && prerequisiteOptions.Any((option) => { return !option.getBool(); })
+                || prerequisiteOptionsInv.Count > 0 && prerequisiteOptionsInv.Any((option) => { return option.getBool(); })
                 || prerequisiteOptionsCustom.Count > 0 && prerequisiteOptionsCustom.Any((func) => { return !func.Invoke(); });
         }
 
         public bool IsHidden(CustomGameMode gameMode)
         {
-            return IsHiddenInternal(gameMode) || (parent != null && (parent.IsHidden(gameMode) || !parent.enabled));
+            return IsHiddenInternal(gameMode) || (parent != null && (parent.IsHidden(gameMode)));
         }
 
         public bool IsHiddenOnDisplay(CustomGameMode gameMode)
         {
             return isHiddenOnDisplay || IsHiddenDisplayInternal(gameMode) || (parent != null && parent.IsHiddenOnDisplay(gameMode));
         }
+
+        public static void RegisterTopOption(CustomOption option) { TopOptions.Add(option); }
 
         // Option creation
         public CustomOption()
@@ -193,7 +198,7 @@ namespace Nebula.Module
             
             bind();
             
-            options.Add(this);
+            AllOptions.Add(this);
 
             this.prerequisiteOptions = new List<CustomOption>();
             this.prerequisiteOptionsInv = new List<CustomOption>();
@@ -229,7 +234,7 @@ namespace Nebula.Module
 
         public static void loadOption(string optionName, int selection)
         {
-            foreach (CustomOption option in CustomOption.options)
+            foreach (CustomOption option in CustomOption.AllOptions)
             {
                 if (option.identifierName != optionName) continue;
 
@@ -247,13 +252,13 @@ namespace Nebula.Module
 
             if (PlayerControl.AllPlayerControls.Count <= 1 || AmongUsClient.Instance?.AmHost == false && PlayerControl.LocalPlayer == null) return;
 
-            uint count = (uint)CustomOption.options.Count;
+            uint count = (uint)CustomOption.AllOptions.Count;
             MessageWriter? messageWriter = null;
             bool startFlag = true;
             bool firstFlag = true;
             int written = 0;
 
-            var itr=CustomOption.options.GetEnumerator();
+            var itr=CustomOption.AllOptions.GetEnumerator();
             
             while (itr.MoveNext())
             {
@@ -476,7 +481,7 @@ namespace Nebula.Module
             this.isHidden = true;
             this.children = new List<CustomOption>();
             this.selections = new string[] { "" };
-            options.Add(this);
+            AllOptions.Add(this);
         }
 
         public override int getSelection()
@@ -530,6 +535,15 @@ namespace Nebula.Module
 
     delegate void OptionInitializer(GameOptionsMenu menu,StringOption stringTemplate, List<OptionBehaviour> options,GameObject settings);
 
+    public class CustomOptionBehaviour : MonoBehaviour
+    {
+        static CustomOptionBehaviour()
+        {
+            ClassInjector.RegisterTypeInIl2Cpp<CustomOptionBehaviour>();
+        }
+
+    }
+
     [HarmonyPatch(typeof(GameOptionsMenu), nameof(GameOptionsMenu.Start))]
     class GameOptionsMenuStartPatch
     {
@@ -571,14 +585,207 @@ namespace Nebula.Module
             return true;
         }
 
+        public static void OpenConfigSubOptionScreen(GameObject leftTabScreen,CustomOption topOption,int skip)
+        {
+            var designer = MetaScreen.OpenScreen(leftTabScreen, new Vector2(7.4f, 6f), new Vector2(4.7f, 0f));
+            var gamemode = CustomOption.CurrentGameMode;
+
+            designer.AddTopic(new MSButton(0.6f, 0.4f, "<<", TMPro.FontStyles.Bold, () =>
+            {
+                designer.screen.Close();
+                OpenConfigTopOptionScreen(leftTabScreen);
+            }), new MSMargin(0.2f),
+            new MSString(6f, topOption.getName(), 3f, 3f, TMPro.TextAlignmentOptions.MidlineLeft, TMPro.FontStyles.Bold));
+
+            int leftSkip = skip;
+            bool canIncrease = false;
+
+            designer.AddTopic(new MSString(0.4f, skip > 0 ? "∧" : "", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold));
+            
+            bool AddOption(CustomOption option)
+            {
+                if (option.IsHidden(gamemode)) return true;
+                if (leftSkip > 0)
+                {
+                    leftSkip--;
+                    return true;
+                }
+                if (designer.Used > 4f)
+                {
+                    canIncrease = true;
+                    return false;
+                }
+
+                designer.AddTopic(
+                new MSString(3f, option.getName(), 2f, 0.8f, TMPro.TextAlignmentOptions.MidlineRight, TMPro.FontStyles.Bold),
+                new MSString(0.2f, ":", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
+                new MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () =>
+                {
+                    option.addSelection(-1);
+                    designer.screen.Close();
+                    OpenConfigSubOptionScreen(leftTabScreen, topOption, skip);
+                }),
+                new MSString(1.5f, option.getString(), 2f, 0.6f, TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
+                new MSButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () =>
+                {
+                    option.addSelection(1);
+                    designer.screen.Close();
+                    OpenConfigSubOptionScreen(leftTabScreen, topOption, skip);
+                }),
+                new MSMargin(1f)
+                );
+
+                if(option.getBool()) foreach (var child in option.children) if (!AddOption(child)) return false;
+                return true;
+            }
+
+            foreach(var option in topOption.children)
+            {
+                if (!AddOption(option)) break;
+            }
+
+            designer.AddTopic(new MSString(0.4f, canIncrease ? "∨" : "", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold));
+
+            skip -= leftSkip;
+
+            IEnumerator GetEnumerator()
+            {
+                float t = 0;
+                while (t < 0.05f)
+                {
+                    t += Time.deltaTime;
+                    yield return null;
+                }
+
+                while (true)
+                {
+                    var d = (int)Input.mouseScrollDelta.y;
+
+                    if (d > 0)
+                    {
+                        if (skip > 0)
+                        {
+                            designer.screen.Close();
+                            GameOptionsMenuStartPatch.OpenConfigSubOptionScreen(designer.screen.screen.transform.parent.gameObject, topOption, skip - 1);
+                        }
+                    }
+                    else if(d<0)
+                    {
+                        if (canIncrease)
+                        {
+                            designer.screen.Close();
+                            GameOptionsMenuStartPatch.OpenConfigSubOptionScreen(designer.screen.screen.transform.parent.gameObject, topOption, skip + 1);
+                        }
+                    }
+
+                    yield return null;
+                }
+            }
+
+            designer.screen.screen.AddComponent<CustomOptionBehaviour>().StartCoroutine(GetEnumerator().WrapToIl2Cpp());
+        }
+
+        private static void OpenConfigTopOptionScreen(GameObject leftTabScreen)
+        {
+            var designer = MetaScreen.OpenScreen(leftTabScreen, new Vector2(5.4f, 6f), new Vector2(3.7f, 0f));
+            var monitor = MetaScreen.OpenScreen(designer.screen.screen, new Vector2(3.2f, 6f), new Vector2(4.12f, 0f));
+            var textArea = new MSTextArea(new Vector2(3.2f, 6f), "", 1.2f, TMPro.TextAlignmentOptions.TopLeft, TMPro.FontStyles.Normal);
+            monitor.AddTopic(textArea);
+
+            var gamemode = CustomOptionHolder.GetCustomGameMode();
+            List<MSButton> buttons = new List<MSButton>();
+            List<CustomOption> options = new List<CustomOption>();
+
+            void SetUpButtons()
+            {
+                int index = 0;
+
+                foreach (var b in buttons)
+                {
+                    var option = options[index];
+                    index++;
+
+                    b.button.OnMouseOver.AddListener((UnityEngine.Events.UnityAction)(() =>
+                    {
+                        if (option == CustomOptionHolder.roleCountOption)
+                        {
+                            var builder = new StringBuilder();
+                            GameOptionStringGenerator.GenerateRoleCountString(builder);
+                            textArea.text.text = builder.ToString();
+                        }
+                        else
+                        {
+                            textArea.text.text = GameOptionStringGenerator.optionsToString(option);
+                        }
+                    }));
+
+
+                    if (b.color.Value.b != 1f)
+                    {
+                        b.text.fontSize = b.text.fontSizeMax = 1.4f;
+                        b.text.fontSizeMin = 0.7f;
+                        continue;
+                    }
+
+
+                    b.text.fontSize = b.text.fontSizeMax = 1.2f;
+                    b.text.fontSizeMin = 0.7f;
+                    if (option.children.Count > 0)
+                    {
+                        b.text.rectTransform.sizeDelta -= new Vector2(0.4f, 0f);
+                        b.text.transform.localPosition -= new Vector3(0.2f, 0f, 0f);
+                        var subButton = MetaScreen.MSDesigner.AddSubButton(b.button, new Vector2(0.32f, 0.32f), "button", ">");
+                        subButton.transform.localPosition += new Vector3(0.55f, 0f);
+                        subButton.transform.GetChild(0).gameObject.GetComponent<TMPro.TextMeshPro>().fontStyle = TMPro.FontStyles.Bold;
+                        subButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(()=> {
+                            designer.screen.Close();
+                            OpenConfigSubOptionScreen(leftTabScreen, option,0);
+                        }));
+                    }
+
+                }
+
+                buttons.Clear();
+                options.Clear();
+            }
+
+            foreach (var option in CustomOption.TopOptions)
+            {
+                if (option.IsHidden(gamemode)) continue;
+
+                var myOption = option;
+                buttons.Add(new MSButton(1.6f, 0.45f, option.getName(), TMPro.FontStyles.Bold, () =>
+                {
+                    if (myOption.selections.Length > 1)
+                    {
+                        myOption.addSelection(1);
+                        designer.screen.Close();
+                        OpenConfigTopOptionScreen(leftTabScreen);
+                    }
+                }, (myOption.selections.Length == 2 && myOption.getSelection() == 0) ? Palette.DisabledGrey : Color.white));
+                options.Add(option);
+
+                if (buttons.Count == 3)
+                {
+                    designer.AddTopic(buttons.ToArray());
+                    designer.CustomUse(-0.05f);
+                    SetUpButtons();
+                }
+            }
+            if (buttons.Count > 0)
+            {
+                designer.AddTopic(buttons.ToArray());
+                SetUpButtons();
+            }
+        }
+
         private static void OpenConfigScreen(GameObject setting)
         {
-            var designer = MetaScreen.OpenScreen(setting, new Vector2(9f, 4.5f), new Vector2(0f, -0.8f));
-            var designers = designer.SplitVertically(new float[] { 0.15f, 0.85f });
+            var designer = MetaScreen.OpenScreen(setting, new Vector2(1.5f, 6f), new Vector2(-4.15f, -0.8f));
 
-            designers[0].AddTopic(new MSString(1.5f, CustomOptionHolder.gameMode.getName(),TMPro.TextAlignmentOptions.Center,TMPro.FontStyles.Bold));
-            designers[0].CustomUse(-0.08f);
-            designers[0].AddTopic(new MSButton(1.5f,0.4f,CustomOptionHolder.gameMode.getString(),TMPro.FontStyles.Bold,()=> {
+            designer.AddTopic(new MSString(1.5f, CustomOptionHolder.gameMode.getName(),TMPro.TextAlignmentOptions.Center,TMPro.FontStyles.Bold));
+            designer.CustomUse(-0.08f);
+            designer.AddTopic(new MSButton(1.5f,0.4f,CustomOptionHolder.gameMode.getString(),TMPro.FontStyles.Bold,()=> {
                 CustomOptionHolder.gameMode.addSelection(1);
                 designer.screen.Close();
 
@@ -587,7 +794,7 @@ namespace Nebula.Module
                 
                 OpenConfigScreen(setting);
             }));
-            designers[0].CustomUse(0.2f);
+            designer.CustomUse(0.2f);
 
             string[] names =
             {
@@ -600,12 +807,16 @@ namespace Nebula.Module
                 if ((((int)Game.GameModeProperty.GetProperty(CustomOptionHolder.GetCustomGameMode()).Tabs) & (1<<i)) != 0)
                 {
                     int index = i;
-                    designers[0].AddTopic(new MSButton(2f,0.37f,names[i],TMPro.FontStyles.Bold,()=> {
+                    designer.AddTopic(new MSButton(2f,0.37f,names[i],TMPro.FontStyles.Bold,()=> {
                         CustomOption.CurrentTab = (Module.CustomOptionTab)(1 << index);
+                        OpenConfigScreen(setting);
+                        designer.screen.Close();
                     }));
-                    designers[0].CustomUse(-0.1f);
+                    designer.CustomUse(-0.08f);
                 }
             }
+
+            OpenConfigTopOptionScreen(designer.screen.screen);
         }
 
         private static bool FixNebulaTab(GameOptionsMenu __instance)
@@ -924,7 +1135,7 @@ namespace Nebula.Module
             var setting = __instance.transform.parent.parent.parent;
             if (GameOptionsMenuStartPatch.nebulaSettings && setting == GameOptionsMenuStartPatch.nebulaSettings.transform)
             {
-                CustomOption option = CustomOption.options.FirstOrDefault(opt => opt.optionBehaviour == __instance);
+                CustomOption option = CustomOption.AllOptions.FirstOrDefault(opt => opt.optionBehaviour == __instance);
                 if (option == null) return true;
 
                 __instance.OnValueChanged = new Action<OptionBehaviour>((o) => { });
@@ -948,7 +1159,7 @@ namespace Nebula.Module
     {
         public static bool Prefix(StringOption __instance)
         {
-            CustomOption option = CustomOption.options.FirstOrDefault(opt => opt.optionBehaviour == __instance);
+            CustomOption option = CustomOption.AllOptions.FirstOrDefault(opt => opt.optionBehaviour == __instance);
             if (option == null) return true;
             option.updateSelection(option.selection + 1);
             return false;
@@ -960,7 +1171,7 @@ namespace Nebula.Module
     {
         public static bool Prefix(StringOption __instance)
         {
-            CustomOption option = CustomOption.options.FirstOrDefault(opt => opt.optionBehaviour == __instance);
+            CustomOption option = CustomOption.AllOptions.FirstOrDefault(opt => opt.optionBehaviour == __instance);
             if (option == null) return true;
             option.updateSelection(option.selection - 1);
             return false;
@@ -997,7 +1208,7 @@ namespace Nebula.Module
                 float numItems = __instance.Children.Length;
 
 
-                foreach (CustomOption option in CustomOption.options)
+                foreach (CustomOption option in CustomOption.AllOptions)
                 {
                     if (option?.optionBehaviour != null && option.optionBehaviour.gameObject != null)
                     {
@@ -1112,7 +1323,7 @@ namespace Nebula.Module
 
             List<string> options = new List<string>();
             if (!option.IsHiddenOnDisplay(CustomOption.CurrentGameMode) && !skipFirst) options.Add(optionToString(option));
-            if (option.enabled)
+            if (option.getBool())
             {
                 foreach (CustomOption op in option.children)
                 {
@@ -1123,16 +1334,8 @@ namespace Nebula.Module
             return string.Join("\n", options);
         }
 
-        public static List<string> GenerateString(int maxLines=28)
+        public static void GenerateRoleCountString(StringBuilder entry)
         {
-            List<string> pages = new List<string>();
-            pages.Add(PlayerControl.GameOptions.ToHudString(PlayerControl.AllPlayerControls.Count));
-
-            StringBuilder entry = new StringBuilder();
-            List<string> entries = new List<string>();
-
-            // First add the presets and the role counts
-
             string optionName;
             int min;
             int max;
@@ -1148,7 +1351,7 @@ namespace Nebula.Module
                 entry.AppendLine($"{optionName}: {optionValue}");
             }
 
-            if ((int)(CustomOptionHolder.neutralRolesCountMin.GameMode&CustomOption.CurrentGameMode) != 0)
+            if ((int)(CustomOptionHolder.neutralRolesCountMin.GameMode & CustomOption.CurrentGameMode) != 0)
             {
                 optionName = CustomOptionHolder.cs(new Color(204f / 255f, 204f / 255f, 0, 1f), tl("option.neutralRoles"));
                 min = CustomOptionHolder.neutralRolesCountMin.getSelection();
@@ -1167,6 +1370,17 @@ namespace Nebula.Module
                 optionValue = (min == max) ? $"{max}" : $"{min} - {max}";
                 entry.AppendLine($"{optionName}: {optionValue}");
             }
+        }
+
+        public static List<string> GenerateString(int maxLines=28)
+        {
+            List<string> pages = new List<string>();
+            pages.Add(PlayerControl.GameOptions.ToHudString(PlayerControl.AllPlayerControls.Count));
+
+            StringBuilder entry = new StringBuilder();
+            List<string> entries = new List<string>();
+
+            GenerateRoleCountString(entry);
 
             entries.Add(entry.ToString().Trim('\r', '\n'));
 
@@ -1182,7 +1396,7 @@ namespace Nebula.Module
                 }
             }
 
-            foreach (CustomOption option in CustomOption.options)
+            foreach (CustomOption option in CustomOption.AllOptions)
             {
                 if (option.isHiddenOnDisplay)
                 {

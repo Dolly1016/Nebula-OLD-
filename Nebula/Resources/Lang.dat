@@ -74,6 +74,7 @@
 
 "option.preset" : "Preset"
 "option.gameMode" : "Game Mode"
+"option.roleCount" : "Roles Assignment"
 "option.crewmateRoles" : "Crewmate Roles"
 "option.minimumCrewmateRoles" : "Minimum Crewmate Roles"
 "option.maximumCrewmateRoles" : "Maximum Crewmate Roles"
@@ -177,11 +178,13 @@
 
 "option.advanceRoleOptions" : "Advance Role Options"
 
+"option.roleChance" : "Spawn Chance"
 "option.roleCount" : "Max Players"
 
 "option.canBeLovers" : "Can Be Lovers"
 "option.canBeGuesser" : "Can Be Guesser"
 "option.canBeDrunk" : "Can Be Drunk"
+"option.canBeBloody" : "Can Be Bloody"
 "option.canBeMadmate" : "Can Be Madmate"
 "option.canBeSecret" : "Can Be Secret"
 
@@ -749,17 +752,19 @@
 "role.crewmate.secret.info" : "Your role will be revealed as you complete tasks."
 "role.impostor.secret.info" : "Your role will be revealed as you kill players."
 
+"role.extra.chanceCategory1" : "Assignment Category"
+"role.extra.chanceCategory2" : "Assignment Category 2"
+"role.extra.chanceCategory3" : "Assignment Category 3"
+"role.extra.chanceCategory4" : "Assignment Category 4"
+"role.extra.chanceCategory5" : "Assignment Category 5"
+"role.extra.chanceRate" : "Assignment Chance"
+
 "role.bloody.name" : "Bloody"
-"role.bloody.info" : ""
+"role.bloody.info" : "Your murder bathe in blood."
+"role.bloody.bloodyDuration" : "Bloody Duration"
 
 "role.drunk.name" : "Drunk"
 "role.drunk.info" : "Your control is reversed."
-"role.drunk.chanceCategory1" : "Assignment Category"
-"role.drunk.chanceCategory2" : "Assignment Category 2"
-"role.drunk.chanceCategory3" : "Assignment Category 3"
-"role.drunk.chanceCategory4" : "Assignment Category 4"
-"role.drunk.chanceCategory5" : "Assignment Category 5"
-"role.drunk.chanceRate" : "Assignment Chance"
 
 "role.lover.name" : "Lover"
 "role.lover.description" : "You're in <color=#fc04bdff>Love</color> with %NAME%"

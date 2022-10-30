@@ -104,25 +104,26 @@ namespace Nebula.Patches
                     //ロールの湧き数
                     int roleCount = role.FixedRoleCount ? role.GetCustomRoleCount() : (int)role.RoleCountOption.getFloat();
 
-                    if(role.RoleChanceOption.getSelection()==10 || (role.Allocation==Assignable.AllocationType.Switch && role.RoleChanceOption.getBool()))
+                    if(role.TopOption.getBool())
                     {
-                        //100%ロール
-                        for (int i = 0; i < roleCount; i++)
+                        if (role.RoleChanceOption.getSelection() == 9 || (role.Allocation == Assignable.AllocationType.Switch))
                         {
-                            firstRoles.Add(role);
+                            //100%ロール
+                            for (int i = 0; i < roleCount; i++)
+                            {
+                                firstRoles.Add(role);
+                            }
                         }
-                    }
-                    else if (role.RoleChanceOption.getSelection() < 10)
-                    {
-                        if ((int)role.RoleChanceOption.getSelection() > 0)
+                        else
                         {
                             //ランダムロール
                             for (int i = 0; i < roleCount; i++)
                             {
-                                secondaryRoles.Add(new RoleAllocation(role, (int)role.RoleChanceOption.getSelection()));
+                                secondaryRoles.Add(new RoleAllocation(role, (int)role.RoleChanceOption.getSelection() + 1));
                             }
                         }
                     }
+                    
                 }
             }
 
@@ -439,7 +440,7 @@ namespace Nebula.Patches
             List<PlayerControl> impostors = new List<PlayerControl>();
 
             //VOID割り当て
-            if (CustomOptionHolder.GetCustomGameMode() != Module.CustomGameMode.FreePlay && Roles.Roles.VOID.RoleChanceOption.getBool())
+            if (CustomOptionHolder.GetCustomGameMode() != Module.CustomGameMode.FreePlay && Roles.Roles.VOID.TopOption.getBool())
             {
                 assignMap.AssignRole(PlayerControl.LocalPlayer.PlayerId, Roles.Roles.VOID.id);
                 crewmates.RemoveAll((p)=> p.PlayerId == PlayerControl.LocalPlayer.PlayerId);
@@ -581,7 +582,7 @@ namespace Nebula.Patches
             {
                 if (!ghostRole.IsAssignableTo(data)) continue;
 
-                int maxCount = ghostRole.RoleCountOption.getSelection();
+                int maxCount = (int)ghostRole.RoleCountOption.getFloat();
                 if (maxCount == 0) continue;
 
                 int probability = ghostRole.RoleChanceOption.getSelection();
