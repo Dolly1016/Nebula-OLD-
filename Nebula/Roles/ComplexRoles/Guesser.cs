@@ -40,6 +40,18 @@ namespace Nebula.Roles.ComplexRoles
         public override void LoadOptionData()
         {
             TopOption.tab = Module.CustomOptionTab.CrewmateRoles | Module.CustomOptionTab.ImpostorRoles | Module.CustomOptionTab.Modifiers;
+            TopOption.SetYellowCondition((tab) =>
+            {
+                if (!secondoryRoleOption.getBool())
+                    return tab != Module.CustomOptionTab.Modifiers && RoleChanceOption.selection == RoleChanceOption.selections.Length - 1;
+                else
+                    return tab == Module.CustomOptionTab.Modifiers && (crewmateRoleCountOption.getSelection() > 0 || impostorRoleCountOption.getSelection() > 0|| neutralRoleCountOption.getSelection() > 0);
+            });
+            var preBuilder = TopOption.preOptionScreenBuilder;
+            TopOption.preOptionScreenBuilder = (refresher) => {
+                if (secondoryRoleOption.getBool()) return new Module.MetaScreenContent[0][];
+                else return preBuilder(refresher);
+            };
 
             secondoryRoleOption = CreateOption(Color.white, "isSecondaryRole", false);
 

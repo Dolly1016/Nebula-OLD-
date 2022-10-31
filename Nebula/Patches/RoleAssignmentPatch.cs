@@ -536,6 +536,8 @@ namespace Nebula.Patches
                     //無効なロールは入れない
                     if ((int)(CustomOptionHolder.GetCustomGameMode() & role.ValidGamemode) == 0) continue;
 
+                    if (role is Assignable && ((Assignable)role).TopOption != null && !((Assignable)role).TopOption.getBool()) continue;
+
                     if (role.assignmentPriority == currentPriority)
                     {
                         //ロールを割り当てる

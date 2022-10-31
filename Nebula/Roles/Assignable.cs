@@ -139,12 +139,13 @@ namespace Nebula.Roles
             {
                 RoleChanceOption = Module.CustomOption.Create(Color.white, "option.roleChance", CustomOptionHolder.ratesWithoutZero, CustomOptionHolder.ratesWithoutZero[0], TopOption, false, false, "").SetIdentifier("role." + LocalizeName + ".roleChance");
                 RoleChanceOption.GameMode = ValidGamemode | Module.CustomGameMode.FreePlay;
-                TopOption.SetYellowCondition(RoleChanceOption);
+                TopOption.SetYellowCondition((tab) => RoleChanceOption.selection == RoleChanceOption.selections.Length - 1);
 
                 if (RoleCountOption != null) {
                     RoleChanceSecondaryOption = Module.CustomOption.Create(Color.white, "option.roleChanceSecondary", CustomOptionHolder.ratesSecondary, CustomOptionHolder.ratesSecondary[0], TopOption, false, false, "").SetIdentifier("role." + LocalizeName + ".roleChanceSecondary");
                     RoleChanceSecondaryOption.AddPrerequisite(RoleCountOption);
                     RoleChanceSecondaryOption.AddPrerequisite(RoleChanceSecondaryOption);
+                    RoleChanceSecondaryOption.GameMode = ValidGamemode | Module.CustomGameMode.FreePlay;
 
                     RoleChanceOption.isHiddenOnMetaScreen = true;
                     RoleChanceSecondaryOption.isHiddenOnMetaScreen = true;

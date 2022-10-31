@@ -41,9 +41,21 @@ namespace Nebula.Roles.ComplexRoles
 
         public override void LoadOptionData()
         {
+            TopOption.showDetailForcely = true;
+            var preBuilder = TopOption.preOptionScreenBuilder;
+            TopOption.preOptionScreenBuilder = (refresher) => {
+                if (!TopOption.getBool()) return new Module.MetaScreenContent[0][];
+                else return preBuilder(refresher);
+            };
+
+            CanBeBloodyOption.AddPrerequisite(TopOption);
+            CanBeDrunkOption.AddPrerequisite(TopOption);
+            CanBeGuesserOption.AddPrerequisite(TopOption);
+            CanBeLoversOption.AddPrerequisite(TopOption);
+
             isGuessableOption = CreateOption(Color.white, "isGuessable", true);
-            chanceOfDamnedOption = CreateOption(Color.white, "chanceOfDamned", CustomOptionHolder.rates);
-            maxCountOfDamnedOption = CreateOption(Color.white, "maxCountOfDamned", 1f, 0f, 15f, 1f);
+            chanceOfDamnedOption = CreateOption(Color.white, "chanceOfDamned", CustomOptionHolder.rates).AddPrerequisite(TopOption);
+            maxCountOfDamnedOption = CreateOption(Color.white, "maxCountOfDamned", 1f, 0f, 15f, 1f).AddPrerequisite(TopOption).AddPrerequisite(chanceOfDamnedOption);
         }
 
         public FCrewmate()

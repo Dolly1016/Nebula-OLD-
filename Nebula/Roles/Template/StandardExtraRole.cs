@@ -57,7 +57,7 @@ namespace Nebula.Roles.Template
 
             int leftPlayers = (int)RoleCountOption.getFloat();
 
-            float probability = ((float)RoleChanceOption.getSelection() + 1f) / 10;
+            float probability = ((float)RoleChanceOption.getSelection() + 1f) / 10f;
 
             while (leftPlayers > 0)
             {
@@ -72,6 +72,11 @@ namespace Nebula.Roles.Template
                             //割り当てられたらループをぬける
                             if (CheckAndAssign(assignMap, playerArray, condition.Item1.getSelection())) break;
                         }
+                    }
+
+                    if (RoleChanceSecondaryOption.getSelection() != 0)
+                    {
+                        probability= (float)RoleChanceOption.getSelection() / 10f;
                     }
                 }
                 leftPlayers--;

@@ -53,11 +53,7 @@ namespace Nebula.Roles.ExtraRoles
         static public Color RoleColor = new Color(180f / 255f, 0f / 255f, 0f / 255f);
 
         private Module.CustomOption bloodyDurationOption;
-
-        public override void Assignment(Patches.AssignMap assignMap)
-        {
-            
-        }
+        protected override bool IsAssignableTo(Role role) => role.CanBeBloody;
 
         public override void GlobalInitialize(PlayerControl __instance)
         {
@@ -84,6 +80,7 @@ namespace Nebula.Roles.ExtraRoles
             base.LoadOptionData();
 
             bloodyDurationOption = CreateOption(Color.white, "bloodyDuration", 4f, 1f, 10f, 1f);
+            bloodyDurationOption.suffix = "second";
         }
 
         public override void OnDied(byte playerId)
@@ -91,7 +88,11 @@ namespace Nebula.Roles.ExtraRoles
             if (MeetingHud.Instance) return;
             if (Game.GameData.data.deadPlayers[playerId].MurderId != PlayerControl.LocalPlayer.PlayerId) return;
 
+            //自殺の場合は何もしない(Busker対策)
+            if (playerId == PlayerControl.LocalPlayer.PlayerId) return;
+
             Events.LocalEvent.Activate(new BloodyEvent(bloodyDurationOption.getFloat()));
+            Helpers.PlayQuickFlash(Palette.ImpostorRed);
         }
 
         public Bloody() : base("Bloody", "bloody", RoleColor, 0)

@@ -73,6 +73,15 @@
 "option.switch.on" : "<color=#ffffd6ff>On</color>"
 "option.switch.off" : "<color=#606060ff>Off</color>"
 
+"option.tab.settings" : "Settings"
+"option.tab.crewmateRoles" : "Crewmate <color=#ffffffff>Roles</color>"
+"option.tab.impostorRoles" : "Impostor <color=#ffffffff>Roles</color>"
+"option.tab.neutralRoles" : "Neutral <color=#ffffffff>Roles</color>"
+"option.tab.ghostRoles" : "Ghost <color=#ffffffff>Roles</color>"
+"option.tab.modifiers" : "Modifiers"
+"option.tab.escapeRoles" : "Escape <color=#ffffffff>Roles</color>"
+"option.tab.advancedSettings" : "Advanced <color=#ffffffff>Settings</color>"
+
 "option.preset" : "Preset"
 "option.gameMode" : "Game Mode"
 "option.roleCount" : "Roles Assignment"
