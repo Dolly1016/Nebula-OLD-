@@ -29,6 +29,10 @@ namespace Nebula.Roles.CrewmateRoles
             base.LoadOptionData();
 
             TopOption.tab = Module.CustomOptionTab.CrewmateRoles | Module.CustomOptionTab.Modifiers;
+            TopOption.SetYellowCondition((tab) =>
+            {
+                return (tab == Module.CustomOptionTab.Modifiers) == SecondoryRoleOption.getBool() && RoleChanceOption.selection == RoleChanceOption.selections.Length - 1;
+            });
 
             SecondoryRoleOption = CreateOption(Color.white, "isSecondaryRole", false);
 

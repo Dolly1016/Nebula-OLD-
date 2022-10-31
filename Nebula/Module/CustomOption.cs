@@ -82,7 +82,7 @@ namespace Nebula.Module
         public ConfigEntry<int> entry;
         public int selection;
         public CustomOption parent;
-        public CustomOption? yellowCondition;
+        public Predicate<CustomOptionTab>? yellowCondition;
         public List<CustomOption> children;
         public bool isHeader;
         public bool isHidden;
@@ -90,6 +90,7 @@ namespace Nebula.Module
         public bool isHiddenOnMetaScreen;
         public CustomGameMode GameMode;
         public CustomOptionTab tab;
+        public bool showDetailForcely;
 
         public bool isProtected;
 
@@ -192,6 +193,7 @@ namespace Nebula.Module
             this.isHeader = isHeader;
             this.isHidden = isHidden;
             this.tab = tab;
+            this.showDetailForcely = false;
 
             this.prefix = null;
             this.suffix = null;
@@ -334,7 +336,7 @@ namespace Nebula.Module
         /// オプションを黄色くする条件となるオプションを設定します。
         /// </summary>
         /// <param name="yellowCondition"></param>
-        public void SetYellowCondition(CustomOption? yellowCondition)
+        public void SetYellowCondition(Predicate<CustomOptionTab>? yellowCondition)
         {
             this.yellowCondition = yellowCondition;
         }
@@ -758,7 +760,7 @@ namespace Nebula.Module
                     }));
 
 
-                    if (option.selections.Length == 2 && option.getSelection() == 0)
+                    if (!option.showDetailForcely && option.selections.Length == 2 && option.getSelection() == 0)
                     {
                         b.text.fontSize = b.text.fontSizeMax = 1.4f;
                         b.text.fontSizeMin = 0.7f;
@@ -806,7 +808,7 @@ namespace Nebula.Module
                         designer.screen.Close();
                         OpenConfigTopOptionScreen(leftTabScreen);
                     }
-                }, (myOption.selections.Length == 2 && myOption.getSelection() == 0) ? Palette.DisabledGrey : ((myOption.yellowCondition != null && myOption.yellowCondition.getSelection() == myOption.yellowCondition.selections.Length - 1) ? Color.yellow : Color.white)));
+                }, (myOption.selections.Length == 2 && myOption.getSelection() == 0) ? Palette.DisabledGrey : ((myOption.yellowCondition != null && myOption.yellowCondition(CustomOption.CurrentTab) ? Color.yellow : Color.white))));
                 options.Add(option);
 
                 if (buttons.Count == 3)
@@ -857,11 +859,15 @@ namespace Nebula.Module
                 if ((((int)Game.GameModeProperty.GetProperty(CustomOptionHolder.GetCustomGameMode()).Tabs) & (1<<i)) != 0)
                 {
                     int index = i;
-                    designer.AddTopic(new MSButton(2f,0.37f,Helpers.cs(colors[i],Language.Language.GetString("option.tab."+names[i])),TMPro.FontStyles.Bold,()=> {
+                    MSButton button = new MSButton(2f, 0.37f, Helpers.cs(colors[i], Language.Language.GetString("option.tab." + names[i])), TMPro.FontStyles.Bold, () =>
+                    {
                         CustomOption.CurrentTab = (Module.CustomOptionTab)(1 << index);
                         OpenConfigScreen(setting);
                         designer.screen.Close();
-                    }));
+                    }, colors[i].Blend(Color.white, 0.65f));
+                    designer.AddTopic(button);
+                    button.text.fontSize = button.text.fontSizeMax = 1.6f;
+                    button.text.fontSizeMin = 0.8f;
                     designer.CustomUse(-0.08f);
                 }
             }

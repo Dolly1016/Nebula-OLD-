@@ -806,6 +806,17 @@ namespace Nebula
             if (player.Data.DefaultOutfit.VisorId != null) poolable.cosmetics.SetVisor(player.Data.DefaultOutfit.VisorId, player.Data.DefaultOutfit.ColorId);
             poolable.cosmetics.nameText.text = "";
         }
+
+
+        public static Color Blend(this Color myColor,Color color,float rate)
+        {
+            float myRate = 1 - rate;
+            return new Color(
+                myColor.r * myRate + color.r * rate,
+                myColor.g * myRate + color.g * rate,
+                myColor.b * myRate + color.b * rate,
+                myColor.a * myRate + color.a * rate);
+        }
     }
 }
 

@@ -53,11 +53,7 @@ namespace Nebula.Roles.ExtraRoles
         static public Color RoleColor = new Color(180f / 255f, 0f / 255f, 0f / 255f);
 
         private Module.CustomOption bloodyDurationOption;
-
-        public override void Assignment(Patches.AssignMap assignMap)
-        {
-            
-        }
+        protected override bool IsAssignableTo(Role role) => role.CanBeBloody;
 
         public override void GlobalInitialize(PlayerControl __instance)
         {
@@ -84,6 +80,7 @@ namespace Nebula.Roles.ExtraRoles
             base.LoadOptionData();
 
             bloodyDurationOption = CreateOption(Color.white, "bloodyDuration", 4f, 1f, 10f, 1f);
+            bloodyDurationOption.suffix = "second";
         }
 
         public override void OnDied(byte playerId)

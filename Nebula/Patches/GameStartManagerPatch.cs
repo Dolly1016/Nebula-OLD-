@@ -97,19 +97,23 @@ namespace Nebula.Patches
 
             public static void Prefix(GameStartManager __instance)
             {
-                if (!GameData.Instance) return;
-
-                GameData.Instance.HandleDisconnect();
-                
-                foreach (PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
+                try
                 {
-                    if (player != null && player.PlayerId != player.Data.DefaultOutfit.ColorId)
+                    if (!GameData.Instance) return;
+
+                    GameData.Instance.HandleDisconnect();
+
+                    foreach (PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
                     {
-                        player.SetColor(player.PlayerId);
+                        if (player != null && player.PlayerId != player.Data.DefaultOutfit.ColorId)
+                        {
+                            player.SetColor(player.PlayerId);
+                        }
                     }
+                    if (!AmongUsClient.Instance.AmHost) return; // Not host or no instance
+                    update = GameData.Instance.PlayerCount != __instance.LastPlayerCount;
                 }
-                if (!AmongUsClient.Instance.AmHost) return; // Not host or no instance
-                update = GameData.Instance.PlayerCount != __instance.LastPlayerCount;
+                catch { }
             }
 
             public static void Postfix(GameStartManager __instance)
@@ -127,6 +131,8 @@ namespace Nebula.Patches
                         AmongUs.Data.DataManager.Player.Customization.Color = PlayerControl.LocalPlayer.PlayerId;
                         RPCEventInvoker.SetMyColor();
                     }
+
+                    if (!AmongUsClient.Instance) return;
 
                     // Host update with version handshake infos
                     if (AmongUsClient.Instance.AmHost)

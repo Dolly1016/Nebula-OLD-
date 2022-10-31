@@ -46,6 +46,8 @@ namespace Nebula
                 __instance.TotalTasks = 0;
                 __instance.CompletedTasks = 0;
 
+                if (Game.GameData.data == null) return false;
+
                 if (!Game.GameModeProperty.GetProperty(Game.GameData.data.GameMode).CountTasks) return false;
 
                 for (int i = 0; i < __instance.AllPlayers.Count; i++)
