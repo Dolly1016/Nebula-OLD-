@@ -33,6 +33,7 @@ namespace Nebula.Roles.NeutralRoles
         public Module.CustomOption killCoolDownOption;
         private Module.CustomOption tasksPerPresentOption;
         private Module.CustomOption maxPresentsOption;
+        private Module.CustomOption occupyDoubleRoleCountOption;
 
         public int leftPresentDataId;
         public int leftTaskSetDataId;
@@ -48,8 +49,10 @@ namespace Nebula.Roles.NeutralRoles
             maxPresentsOption = CreateOption(Color.white, "maxPresents", 2f, 0f, 5f, 1f);
             killCoolDownOption = CreateOption(Color.white, "killCoolDown", 25f, 10f, 60f, 2.5f);
             killCoolDownOption.suffix = "second";
+            occupyDoubleRoleCountOption = CreateOption(Color.white, "occupyDoubleRoleCount", false);
         }
 
+        public override int AssignmentCost => occupyDoubleRoleCountOption.getBool() ? 2 : 1;
         public override bool IsGuessableRole { get => isGuessableOption.getBool(); protected set => base.IsGuessableRole = value; }
 
         public override void OnSetTasks(ref List<GameData.TaskInfo> initialTasks, ref List<GameData.TaskInfo>? actualTasks)

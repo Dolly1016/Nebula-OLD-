@@ -727,6 +727,7 @@
 "role.santaClaus.tasksPerPresent" : "Tasks Per Present"
 "role.santaClaus.maxPresents" : "Max Presents"
 "role.santaClaus.killCoolDown" : "Kill Cool Down"
+"role.santaClaus.occupyDoubleRoleCount" : "Occupy Double Role Count"
 
 "role.blackSanta.name" : "Black Santa"
 "role.blackSanta.short" : "BS"
