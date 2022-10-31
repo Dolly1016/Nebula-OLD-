@@ -88,7 +88,11 @@ namespace Nebula.Roles.ExtraRoles
             if (MeetingHud.Instance) return;
             if (Game.GameData.data.deadPlayers[playerId].MurderId != PlayerControl.LocalPlayer.PlayerId) return;
 
+            //自殺の場合は何もしない(Busker対策)
+            if (playerId == PlayerControl.LocalPlayer.PlayerId) return;
+
             Events.LocalEvent.Activate(new BloodyEvent(bloodyDurationOption.getFloat()));
+            Helpers.PlayQuickFlash(Palette.ImpostorRed);
         }
 
         public Bloody() : base("Bloody", "bloody", RoleColor, 0)

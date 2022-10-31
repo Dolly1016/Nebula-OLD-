@@ -457,7 +457,7 @@ namespace Nebula.Roles.MetaRoles
         public VOID()
             : base("VOID", "void", RoleColor, RoleCategory.Neutral, Side.VOID, Side.VOID,
                  new HashSet<Side>(), new HashSet<Side>(), new HashSet<Patches.EndCondition>(),
-                 true, VentPermission.CanNotUse, false, false, false)
+                 true, VentPermission.CanNotUse, false, true,true)
         {
             DefaultCanBeLovers = false;
             DefaultCanBeDrunk = false;

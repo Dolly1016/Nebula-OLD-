@@ -145,6 +145,7 @@ namespace Nebula.Roles
                     RoleChanceSecondaryOption = Module.CustomOption.Create(Color.white, "option.roleChanceSecondary", CustomOptionHolder.ratesSecondary, CustomOptionHolder.ratesSecondary[0], TopOption, false, false, "").SetIdentifier("role." + LocalizeName + ".roleChanceSecondary");
                     RoleChanceSecondaryOption.AddPrerequisite(RoleCountOption);
                     RoleChanceSecondaryOption.AddPrerequisite(RoleChanceSecondaryOption);
+                    RoleChanceSecondaryOption.GameMode = ValidGamemode | Module.CustomGameMode.FreePlay;
 
                     RoleChanceOption.isHiddenOnMetaScreen = true;
                     RoleChanceSecondaryOption.isHiddenOnMetaScreen = true;
