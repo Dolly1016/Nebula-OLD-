@@ -200,33 +200,33 @@ namespace Nebula.Patches
 
                 //割り当てられえないロールを削除する
                 int maxAssignable = GetMaxAssignable(players,extraPlayers);
-                firstRoles.RemoveAll((r)=>r.AssignedRoles.Length>maxAssignable);
+                firstRoles.RemoveAll((r)=>r.AssignedRoles.Length>maxAssignable || r.AssignmentCost>players.Count || r.AssignmentCost>left);
 
-                bool isMainRole;
+                int isMainRole;
 
                 //割り当てられるだけ100%ロールを割り当てる
                 while ((left > 0) && (firstRoles.Count > 0) && (players.Count > 0))
                 {
                     rand = NebulaPlugin.rnd.Next(firstRoles.Count);
                     Role[] roles = firstRoles[rand].AssignedRoles;
+                    isMainRole = firstRoles[rand].AssignmentCost;
+                    left-=isMainRole;
                     firstRoles.RemoveAt(rand);
-                    isMainRole = true;
                     foreach (var role in roles)
                     {
-                        RoleAssignmentPatch.setRoleToRandomPlayer(assignMap, role, isMainRole||(extraPlayers==null)? players : extraPlayers, true);
+                        RoleAssignmentPatch.setRoleToRandomPlayer(assignMap, role, isMainRole > 0 ||(extraPlayers==null)? players : extraPlayers, true);
                         assignRoles.exclusiveAssignments.RemoveAll((ex) => ex.Exclusive(assignRoles, role));
-                        isMainRole = false;
+                        isMainRole--;
                     }
-                    left--;
 
                     //割り当てられえないロールを削除する
                     maxAssignable = GetMaxAssignable(players, extraPlayers);
-                    firstRoles.RemoveAll((r) => r.AssignedRoles.Length > maxAssignable);
+                    firstRoles.RemoveAll((r) => r.AssignedRoles.Length > maxAssignable || r.AssignmentCost > players.Count || r.AssignmentCost > left);
                 }
 
                 //割り当てられ得ないロールを削除する
                 maxAssignable = GetMaxAssignable(players, extraPlayers);
-                secondaryRoles.RemoveAll((r) => r.role.AssignedRoles.Length > maxAssignable);
+                secondaryRoles.RemoveAll((r) => r.role.AssignedRoles.Length > maxAssignable || r.role.AssignmentCost > players.Count || r.role.AssignmentCost > left);
 
                 //確率で付与されるロールを割り当てる
                 int sum;
@@ -251,21 +251,21 @@ namespace Nebula.Patches
                         if (secondaryRoles[i].expected > rand)
                         {
                             Role[] roles = secondaryRoles[i].role.AssignedRoles;
+                            isMainRole = secondaryRoles[i].role.AssignmentCost;
+                            left -= isMainRole;
                             secondaryRoles.RemoveAt(i);
 
-                            isMainRole = true;
                             foreach (var role in roles)
                             {
-                                RoleAssignmentPatch.setRoleToRandomPlayer(assignMap, role, isMainRole || (extraPlayers == null) ? players : extraPlayers, true);
+                                RoleAssignmentPatch.setRoleToRandomPlayer(assignMap, role, isMainRole > 0 || (extraPlayers == null) ? players : extraPlayers, true);
                                 assignRoles.exclusiveAssignments.RemoveAll((ex) => ex.Exclusive(assignRoles, role));
-                                isMainRole = false;
+                                isMainRole--;
                             }
 
                             //割り当てられ得ないロールを削除する
                             maxAssignable = GetMaxAssignable(players, extraPlayers);
-                            secondaryRoles.RemoveAll((r) => r.role.AssignedRoles.Length > maxAssignable);
+                            secondaryRoles.RemoveAll((r) => r.role.AssignedRoles.Length > maxAssignable || r.role.AssignmentCost > players.Count || r.role.AssignmentCost > left);
 
-                            left--;
                             sum = 0;
                             break;
                         }

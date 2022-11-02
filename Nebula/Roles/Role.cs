@@ -97,6 +97,11 @@ namespace Nebula.Roles
         /// </summary>
         public virtual Role[] AssignedRoles { get => new Role[] { this }; }
 
+        /// <summary>
+        /// 割り当て時に消費するコストを返します。
+        /// </summary>
+        public virtual int AssignmentCost { get => 1; }
+
         public HashSet<Patches.EndCondition> winReasons { get; }
         public virtual bool CheckWin(PlayerControl player, Patches.EndCondition winReason)
         {

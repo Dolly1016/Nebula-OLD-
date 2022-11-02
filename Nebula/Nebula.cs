@@ -71,7 +71,7 @@ namespace Nebula
         public const string PluginVersion = "1.16";
         public const bool IsSnapshot = true;
 
-        public static string PluginVisualVersion = IsSnapshot ? "22.10.31a" : PluginVersion;
+        public static string PluginVisualVersion = IsSnapshot ? "22.10.31b" : PluginVersion;
         public static string PluginStage = IsSnapshot?"Snapshot":"";
 
         public const string PluginVersionForFetch = "1.16.1";
@@ -112,6 +112,9 @@ namespace Nebula
             
             //アセットバンドルを読み込む
             Module.AssetLoader.Load();
+
+            //キー入力情報を読み込む
+            Module.NebulaInputManager.Load();
 
             //サーバー情報を読み込む
             Patches.RegionMenuOpenPatch.Initialize();
