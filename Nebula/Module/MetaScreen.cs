@@ -211,7 +211,7 @@ namespace Nebula.Module
             return audioHover;
         }
 
-        static protected AudioClip? getSelectClip()
+        static public AudioClip? getSelectClip()
         {
             if (audioSelect == null) audioSelect = Helpers.FindSound("UI_Select");
             return audioSelect;

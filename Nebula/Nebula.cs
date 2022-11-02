@@ -113,6 +113,9 @@ namespace Nebula
             //アセットバンドルを読み込む
             Module.AssetLoader.Load();
 
+            //キー入力情報を読み込む
+            Module.NebulaInputManager.Load();
+
             //サーバー情報を読み込む
             Patches.RegionMenuOpenPatch.Initialize();
 
