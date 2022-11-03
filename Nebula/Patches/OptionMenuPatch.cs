@@ -490,10 +490,39 @@ namespace Nebula.Patches
             //キー割り当てボタン
             if (!ShipStatus.Instance)
             {
+                GameObject TextObject;
+
                 List<ToggleButtonBehaviour> allKeyBindingButtons=new List<ToggleButtonBehaviour>();
                 int selectedKeyBinding = -1;
 
-                foreach(var input in Module.NebulaInputManager.allInputs)
+                var defaultButton = GameObject.Instantiate(applyButtonTemplate, null);
+                defaultButton.transform.SetParent(keyBindingTab.transform);
+                defaultButton.transform.localScale = new Vector3(1f, 1f, 1f);
+                defaultButton.transform.localPosition = new Vector3(0f, -2.5f, 0f);
+                defaultButton.name = "RestoreDefaultsButton";
+                defaultButton.transform.GetChild(0).GetComponent<SpriteRenderer>().size = new Vector2(2.25f, 0.4f);
+                TextObject = defaultButton.transform.FindChild("Text_TMP").gameObject;
+                TextObject.GetComponent<TMPro.TextMeshPro>().text = Language.Language.GetString("config.option.keyBinding.restoreDefaults");
+                TextObject.GetComponent<TMPro.TextMeshPro>().rectTransform.sizeDelta *= 2;
+                TextObject.GetComponent<TextTranslatorTMP>().enabled = false;
+                passiveButton = defaultButton.GetComponent<PassiveButton>();
+                passiveButton.OnClick = new UnityEngine.UI.Button.ButtonClickedEvent();
+                passiveButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
+                {
+                    selectedKeyBinding = -1;
+
+                    SoundManager.Instance.PlaySound(Module.MetaScreen.getSelectClip(), false, 0.8f);
+
+                    for (int i = 0; i < Module.NebulaInputManager.allInputs.Count; i++)
+                    {
+                        var input = Module.NebulaInputManager.allInputs[i];
+                        input.resetToDefault();
+                        allKeyBindingButtons[i].UpdateCustomText(Color.white, Language.Language.GetString("config.option.keyBinding." + input.identifier) + ": " + Module.NebulaInputManager.allKeyCodes[input.keyCode].displayKey);
+                    }
+                }
+                ));
+
+                foreach (var input in Module.NebulaInputManager.allInputs)
                 {
                     int index = allKeyBindingButtons.Count;
 
@@ -556,7 +585,7 @@ namespace Nebula.Patches
                 keyBindingButton.transform.localPosition = new Vector3(0f, -1.5f, 0f);
                 keyBindingButton.name = "KeyBindingButton";
                 keyBindingButton.transform.GetChild(0).GetComponent<SpriteRenderer>().size = new Vector2(2.25f, 0.4f);
-                var TextObject = keyBindingButton.transform.FindChild("Text_TMP").gameObject;
+                TextObject = keyBindingButton.transform.FindChild("Text_TMP").gameObject;
                 TextObject.GetComponent<TMPro.TextMeshPro>().text = Language.Language.GetString("config.option.keyBinding");
                 TextObject.GetComponent<TMPro.TextMeshPro>().rectTransform.sizeDelta *= 2;
                 TextObject.GetComponent<TextTranslatorTMP>().enabled = false;

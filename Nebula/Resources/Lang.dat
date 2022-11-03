@@ -28,6 +28,7 @@
 "config.option.yes" : "Yes"
 "config.option.no" : "No"
 "config.option.keyBinding" : "Key Bindings"
+"config.option.keyBinding.restoreDefaults" : "Restore Defaults"
 "config.option.keyBinding.ability" : "Use Ability"
 "config.option.keyBinding.secondaryAbility" : "Use Secondary Ability"
 "config.option.keyBinding.changeAbility" : "Change Ability"
