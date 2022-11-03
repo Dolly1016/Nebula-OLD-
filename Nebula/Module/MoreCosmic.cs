@@ -278,6 +278,7 @@ namespace Nebula.Module
         public CustomVBool Adaptive { get; set; }
         public CustomVBool Behind { get; set; }
         public CustomVBool HideHands { get; set; }
+        public CustomVBool IsSkinny { get; set; }
         public CustomVSecPerFrame SecPerFrame { get; set; }
 
         public override bool HasAnimation() {
@@ -303,6 +304,7 @@ namespace Nebula.Module
             yield return Adaptive;
             yield return Behind;
             yield return HideHands;
+            yield return IsSkinny;
             yield return SecPerFrame;
             yield break;
         }
@@ -323,6 +325,7 @@ namespace Nebula.Module
             Adaptive = new CustomVBool("Adaptive");
             Behind = new CustomVBool("Behind");
             HideHands = new CustomVBool("HideHands");
+            IsSkinny = new CustomVBool("IsSkinny");
             SecPerFrame = new CustomVSecPerFrame("FPS");
         }
     }
@@ -348,6 +351,7 @@ namespace Nebula.Module
         public CustomVHatImage I_Main { get; set; }
         public CustomVHatImage I_Flip { get; set; }
         public CustomVBool Adaptive { get; set; }
+        public CustomVBool BehindHat { get; set; }
         public CustomVSecPerFrame SecPerFrame { get; set; }
 
         public override bool HasAnimation() { return I_Main.Length > 1 || I_Flip.Length > 1; }
@@ -357,6 +361,7 @@ namespace Nebula.Module
             yield return I_Main;
             yield return I_Flip;
             yield return Adaptive;
+            yield return BehindHat;
             yield return SecPerFrame;
             yield break;
         }
@@ -366,6 +371,7 @@ namespace Nebula.Module
             I_Main = new CustomVHatImage("Main");
             I_Flip = new CustomVHatImage("Flip");
             Adaptive = new CustomVBool("Adaptive");
+            BehindHat = new CustomVBool("BehindHat");
             SecPerFrame = new CustomVSecPerFrame("FPS");
         }
     }
@@ -546,6 +552,7 @@ namespace Nebula.Module
                 vd.ChipOffset = new Vector2(0f, 0.2f);
                 vd.Free = true;
                 vd.NotInStore = true;
+                vd.viewData.viewData.BehindHats = ch.BehindHat.Value;
 
                 if (ch.Adaptive.Value && hatShader != null)
                     vd.viewData.viewData.AltShader = hatShader;
@@ -587,12 +594,14 @@ namespace Nebula.Module
                     {
                         var lastArray = __instance.allHats;
                         int newCosmics = CosmicLoader.hatdetails.Count;
-                        __instance.allHats = new UnhollowerBaseLib.Il2CppReferenceArray<HatData>(lastArray.Count + newCosmics);
+                        var newArray = new UnhollowerBaseLib.Il2CppReferenceArray<HatData>(lastArray.Count + newCosmics);
 
                         int lastCount = lastArray.Count;
-                        for (int i = 0; i < lastCount; i++) __instance.allHats[i] = lastArray[i];
-                        for (int i = 0; i < newCosmics; i++) __instance.allHats[i + lastCount] = CreateHatData(CosmicLoader.hatdetails[i], true);
+                        for (int i = 0; i < lastCount; i++) newArray[i] = lastArray[i];
+                        for (int i = 0; i < newCosmics; i++) newArray[i + lastCount] = CreateHatData(CosmicLoader.hatdetails[i], true);
                         CosmicLoader.hatdetails.RemoveRange(0, newCosmics);
+
+                        __instance.allHats = newArray;
                     }
                 }
                 catch (System.Exception e)
@@ -626,12 +635,14 @@ namespace Nebula.Module
                     {
                         var lastArray = __instance.allNamePlates;
                         int newCosmics = CosmicLoader.namePlatedetails.Count;
-                        __instance.allNamePlates = new UnhollowerBaseLib.Il2CppReferenceArray<NamePlateData>(lastArray.Count + newCosmics);
+                        var newArray= new UnhollowerBaseLib.Il2CppReferenceArray<NamePlateData>(lastArray.Count + newCosmics);
                         
                         int lastCount = lastArray.Count;
-                        for (int i = 0; i < lastCount; i++) __instance.allNamePlates[i] = lastArray[i];
-                        for (int i = 0; i < newCosmics; i++) __instance.allNamePlates[i + lastCount] = CreateNamePlateData(CosmicLoader.namePlatedetails[i], true);
+                        for (int i = 0; i < lastCount; i++) newArray[i] = lastArray[i];
+                        for (int i = 0; i < newCosmics; i++) newArray[i + lastCount] = CreateNamePlateData(CosmicLoader.namePlatedetails[i], true);
                         CosmicLoader.namePlatedetails.RemoveRange(0, newCosmics);
+
+                        __instance.allNamePlates = newArray;
                     }
                 }
                 catch (System.Exception e)
@@ -664,12 +675,14 @@ namespace Nebula.Module
                     {
                         var lastArray = __instance.allVisors;
                         int newCosmics = CosmicLoader.visordetails.Count;
-                        __instance.allVisors = new UnhollowerBaseLib.Il2CppReferenceArray<VisorData>(lastArray.Count + newCosmics);
+                        var newArray = new UnhollowerBaseLib.Il2CppReferenceArray<VisorData>(lastArray.Count + newCosmics);
 
                         int lastCount = lastArray.Count;
-                        for (int i = 0; i < lastCount; i++) __instance.allVisors[i] = lastArray[i];
-                        for (int i = 0; i < newCosmics; i++) __instance.allVisors[i + lastCount] = CreateVisorData(CosmicLoader.visordetails[i], true);
+                        for (int i = 0; i < lastCount; i++) newArray[i] = lastArray[i];
+                        for (int i = 0; i < newCosmics; i++) newArray[i + lastCount] = CreateVisorData(CosmicLoader.visordetails[i], true);
                         CosmicLoader.visordetails.RemoveRange(0, newCosmics);
+
+                        __instance.allVisors = newArray;
                     }
                 }
                 catch (System.Exception e)
@@ -1475,6 +1488,29 @@ namespace Nebula.Module
                 __instance.myPlayer.cosmetics.SetHatColor(Game.GameData.data.GetPlayerData(__instance.myPlayer.PlayerId).CurrentOutfit.ColorId);
             }
             catch { }
+        }
+    }
+
+    [HarmonyPatch(typeof(HatParent), nameof(HatParent.PopulateFromHatViewData))]
+    public static class PopulateFromHatViewDataPatch
+    {
+        public static void Postfix(HatParent __instance)
+        {
+            var extend = __instance.Hat.getHatData();
+            if (extend != null && extend.IsSkinny.Value)
+            {
+                if (__instance.BackLayer.transform.localPosition.z < 0f)
+                    __instance.FrontLayer.transform.localPosition = new Vector3(0, 0, __instance.BackLayer.transform.localPosition.z - 0.00225f);
+                else
+                    __instance.FrontLayer.transform.localPosition = new Vector3(0, 0, __instance.BackLayer.transform.localPosition.z * -1.25f);
+            }
+            else
+            {
+                if (__instance.BackLayer.transform.localPosition.z < 0f)
+                    __instance.FrontLayer.transform.localPosition = new Vector3(0, 0, __instance.BackLayer.transform.localPosition.z - 0.003f);
+                else
+                    __instance.FrontLayer.transform.localPosition = new Vector3(0, 0, __instance.BackLayer.transform.localPosition.z * -2f);
+            }
         }
     }
 
