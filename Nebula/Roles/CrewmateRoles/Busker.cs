@@ -104,7 +104,7 @@ namespace Nebula.Roles.CrewmateRoles
                 pseudocideButtonSprite.GetSprite(),
                 new Vector3(-1.8f, 0f, 0),
                 __instance,
-                KeyCode.F,
+                Module.NebulaInputManager.abilityInput.keyCode,
                 true,
                buskDurationOption.getFloat(),
                () => { dieBusker(); },

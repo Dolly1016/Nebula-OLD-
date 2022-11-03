@@ -539,6 +539,10 @@ namespace Nebula.Patches
                                 selectedKeyBinding = -1;
                                 break;
                             }
+                        }else if(!keyBindingTab.gameObject.active && selectedKeyBinding != -1)
+                        {
+                            allKeyBindingButtons[selectedKeyBinding].UpdateCustomText(Color.white, null);
+                            selectedKeyBinding = -1;
                         }
                         yield return null;
                     }

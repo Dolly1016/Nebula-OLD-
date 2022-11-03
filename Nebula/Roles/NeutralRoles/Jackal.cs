@@ -106,7 +106,7 @@ namespace Nebula.Roles.NeutralRoles
                 __instance.KillButton.graphic.sprite,
                 new Vector3(0f, 1f, 0),
                 __instance,
-                KeyCode.Q
+                Module.NebulaInputManager.modKillInput.keyCode
             ).SetTimer(CustomOptionHolder.InitialKillCoolDownOption.getFloat());
             killButton.MaxTimer = KillCoolDownOption.getFloat();
             killButton.SetButtonCoolDownOption(true);
@@ -131,7 +131,7 @@ namespace Nebula.Roles.NeutralRoles
                 sidekickButtonSprite.GetSprite(),
                 new Vector3(0f, 0, 0),
                 __instance,
-                KeyCode.F,
+                Module.NebulaInputManager.abilityInput.keyCode,
                 true,
                 "button.label.sidekick"
             );

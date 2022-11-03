@@ -50,7 +50,7 @@ namespace Nebula.Roles.MetaRoles
 
         public override void MyUpdate()
         {
-            if (MetaDialog.dialogOrder.Count == 0 && Input.GetKeyDown(KeyCode.F)) voidButton.onClickEvent();
+            if (MetaDialog.dialogOrder.Count == 0 && Input.GetKeyDown(Module.NebulaInputManager.abilityInput.keyCode)) voidButton.onClickEvent();
         }
 
         private void MetaChangeRole(PlayerControl p)
@@ -437,7 +437,7 @@ namespace Nebula.Roles.MetaRoles
                 voidButtonSprite.GetSprite(),
                 new Vector3(-1.8f, 0, 0),
                 __instance,
-                KeyCode.F,
+                Module.NebulaInputManager.abilityInput.keyCode,
                 false,
                 "button.label.void"
             ).SetTimer(0f);

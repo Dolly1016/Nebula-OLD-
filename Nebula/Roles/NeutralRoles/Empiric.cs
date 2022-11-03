@@ -135,7 +135,7 @@ namespace Nebula.Roles.NeutralRoles
                 infectSprite.GetSprite(),
                 new Vector3(-1.8f, -0.06f, 0),
                 __instance,
-                KeyCode.F,
+                Module.NebulaInputManager.abilityInput.keyCode,
                 false,
                 "button.label.infect"
             ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());

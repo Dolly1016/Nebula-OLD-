@@ -23,7 +23,7 @@ namespace Nebula.Roles.RoleSystem
                 buttonSprite,
                 new Vector3(-1.8f, 0, 0),
                 __instance,
-                KeyCode.F,
+                Module.NebulaInputManager.abilityInput.keyCode,
                 true,
                 duration,
                 () => {

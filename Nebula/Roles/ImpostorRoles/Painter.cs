@@ -93,12 +93,12 @@ namespace Nebula.Roles.ImpostorRoles
                 sampleButtonSprite.GetSprite(),
                 new Vector3(-1.8f, 0f, 0),
                 __instance,
-                KeyCode.F,
+                Module.NebulaInputManager.abilityInput.keyCode,
                 false,
                 "button.label.sample"
             ).SetTimer(CustomOptionHolder.InitialModestAbilityCoolDownOption.getFloat());
             paintButton.MaxTimer = paintCoolDownOption.getFloat();
-            paintButton.SetAidAction(KeyCode.LeftShift, true, ChangePaintMode);
+            paintButton.SetAidAction(Module.NebulaInputManager.changeAbilityInput.keyCode, true, ChangePaintMode);
         }
 
         public override void MyPlayerControlUpdate()

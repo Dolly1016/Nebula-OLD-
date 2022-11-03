@@ -392,7 +392,7 @@ namespace Nebula.Roles.ExtraRoles
                 buttonSprite.GetSprite(),
                 new Vector3(0f, 1f, 0f),
                 __instance,
-                KeyCode.Z,
+                Module.NebulaInputManager.modifierAbilityInput.keyCode,
                 true,
                 "button.label.involve"
             ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());

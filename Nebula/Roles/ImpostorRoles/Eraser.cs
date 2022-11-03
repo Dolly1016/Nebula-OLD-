@@ -84,7 +84,7 @@ namespace Nebula.Roles.ImpostorRoles
                 buttonSprite.GetSprite(),
                 new Vector3(-1.8f, 0, 0),
                 __instance,
-                KeyCode.F,true, eraseDurationOption.getFloat(),
+                Module.NebulaInputManager.abilityInput.keyCode, true, eraseDurationOption.getFloat(),
                 ()=> {
                     var target = Game.GameData.data.myData.currentTarget;
                     var data = target.GetModData();

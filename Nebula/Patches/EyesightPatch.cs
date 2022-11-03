@@ -116,7 +116,7 @@ namespace Nebula.Patches
 		{
 			if (Game.GameData.data != null && Game.GameData.data.myData.CanSeeEveryoneInfo)
 			{
-				if (Input.GetKeyDown(KeyCode.Mouse2))
+				if (Input.GetKeyDown(Module.NebulaInputManager.observerShortcutInput.keyCode))
 				{
 					if (!Objects.PlayerList.Instance.IsOpen)
 					{
@@ -133,13 +133,13 @@ namespace Nebula.Patches
 
 				}
 
-				if (Input.GetKeyDown(KeyCode.M)) ObserverMode = !ObserverMode;
-				if (Input.GetKeyDown(KeyCode.Comma))
+				if (Input.GetKeyDown(Module.NebulaInputManager.observerInput.keyCode)) ObserverMode = !ObserverMode;
+				if (Input.GetKeyDown(Module.NebulaInputManager.changeEyesightLeftInput.keyCode))
 				{
 					ChangeObserverTarget(false);
 					Objects.PlayerList.Instance.Show();
 				}
-				if (Input.GetKeyDown(KeyCode.Period))
+				if (Input.GetKeyDown(Module.NebulaInputManager.changeEyesightRightInput.keyCode))
 				{
 					ChangeObserverTarget(true);
 					Objects.PlayerList.Instance.Show();

@@ -75,7 +75,7 @@ namespace Nebula.Roles.CrewmateRoles
                 buttonSprite.GetSprite(),
                 new Vector3(-1.8f, 0f, 0),
                 __instance,
-                KeyCode.F,
+                Module.NebulaInputManager.abilityInput.keyCode,
                 true,
                 OracleDurationOption.getFloat(),
                 ()=> {
@@ -219,13 +219,13 @@ namespace Nebula.Roles.CrewmateRoles
             return list[NebulaPlugin.rnd.Next(list.Count)];
         }
 
-        private Role DivineRelatedRole(PlayerControl target,List<Role> excludeRoles, RoleCategory? category)
+        private Role? DivineRelatedRole(PlayerControl target,List<Role> excludeRoles, RoleCategory? category)
         {
             var candidate = new List<Role>();
             var data = target.GetModData();
             foreach (var role in data.role.GetActualRole(data).RelatedRoles)
             {
-                if (category != null && role.oracleCategory == category) continue;
+                if (category != null && role.oracleCategory != category) continue;
                 if (excludeRoles.Contains(role)) continue;
                 if (Game.GameData.data.EstimationAI.GetRoleProbability(role) < 0f) continue;
 

@@ -70,7 +70,10 @@ namespace Nebula.Patches
                 RPCEventInvoker.SynchronizeTimer();
             }
 
-            new Module.Information.TextInformation(Language.Language.GetString("game.message.observerGuide"));
+            new Module.Information.TextInformation(Language.Language.GetString("game.message.observerGuide")
+                .Replace("%OBSERVER%", Module.NebulaInputManager.allKeyCodes[Module.NebulaInputManager.observerInput.keyCode].displayKey)
+                .Replace("%LEFT%", Module.NebulaInputManager.allKeyCodes[Module.NebulaInputManager.changeEyesightLeftInput.keyCode].displayKey)
+                .Replace("%RIGHT%", Module.NebulaInputManager.allKeyCodes[Module.NebulaInputManager.changeEyesightRightInput.keyCode].displayKey));
 
             new Objects.PlayerList(PlayerPrefab);
 

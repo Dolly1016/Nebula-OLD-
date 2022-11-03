@@ -97,7 +97,7 @@ namespace Nebula.Roles.NeutralRoles
                     blankButtonSprite.GetSprite(),
                     new Vector3(0f, 1f, 0),
                     __instance,
-                    KeyCode.Q,
+                    Module.NebulaInputManager.modKillInput.keyCode,
                     false,
                     "button.label.blank"
                 ).SetTimer(CustomOptionHolder.InitialKillCoolDownOption.getFloat());

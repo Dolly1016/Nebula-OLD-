@@ -71,7 +71,7 @@ namespace Nebula
         public const string PluginVersion = "1.16";
         public const bool IsSnapshot = true;
 
-        public static string PluginVisualVersion = IsSnapshot ? "22.10.31b" : PluginVersion;
+        public static string PluginVisualVersion = IsSnapshot ? "22.11.03b" : PluginVersion;
         public static string PluginStage = IsSnapshot?"Snapshot":"";
 
         public const string PluginVersionForFetch = "1.16.1";
@@ -132,8 +132,6 @@ namespace Nebula
             //ゲームモードデータを読み込む
             Game.GameModeProperty.Load();
 
-            //ボタンのキーガイド情報を読み込む
-            Objects.CustomButton.Load();
 
             //オプションを読み込む
             CustomOptionHolder.Load();
@@ -223,7 +221,7 @@ namespace Nebula
             if (AmongUsClient.Instance.AmHost && AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started)
             {
                 //ゲーム強制終了
-                if (Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.F5))
+                if (Input.GetKey(Module.NebulaInputManager.metaControlInput.keyCode) && Input.GetKey(Module.NebulaInputManager.noGameInput.keyCode))
                 {
                     Game.GameData.data.IsCanceled = true;
                 }

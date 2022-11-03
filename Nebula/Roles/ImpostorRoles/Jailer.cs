@@ -42,7 +42,7 @@ namespace Nebula.Roles.ImpostorRoles
                 __instance.UseButton.fastUseSettings[ImageNames.AdminMapButton].Image,
                 new Vector3(-1.8f, 0f, 0),
                 __instance,
-                KeyCode.F,
+                Module.NebulaInputManager.abilityInput.keyCode,
                 false,
                 "button.label.admin"
             );

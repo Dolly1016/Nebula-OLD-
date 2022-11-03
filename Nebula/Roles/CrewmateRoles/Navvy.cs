@@ -162,7 +162,7 @@ namespace Nebula.Roles.CrewmateRoles
                 sealButtonSprite.GetSprite(),
                 new Vector3(-1.8f, 0f, 0),
                 __instance,
-                KeyCode.F,
+                Module.NebulaInputManager.abilityInput.keyCode,
                 false,
                 "button.label.seal"
             ).SetTimer(CustomOptionHolder.InitialModestAbilityCoolDownOption.getFloat());
@@ -187,7 +187,7 @@ namespace Nebula.Roles.CrewmateRoles
                 repairButtonSprite.GetSprite(),
                 new Vector3(0f, 1f, 0),
                 __instance,
-                KeyCode.F,
+                Module.NebulaInputManager.abilityInput.keyCode,
                 false,
                 "button.label.repair"
             );

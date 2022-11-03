@@ -102,7 +102,7 @@ namespace Nebula.Roles.ImpostorRoles
                 sampleButtonSprite.GetSprite(),
                 new Vector3(-1.8f, 0f, 0),
                 __instance,
-                KeyCode.F,
+                Module.NebulaInputManager.abilityInput.keyCode,
                 true,
                 morphDurationOption.getFloat(),
                 () => { morphButton.Timer = morphButton.MaxTimer; },

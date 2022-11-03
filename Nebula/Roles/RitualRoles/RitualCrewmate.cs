@@ -142,7 +142,7 @@ namespace Nebula.Roles.RitualRoles
                 getButtonSprite(),
                 new Vector3(-0.9f, 0, 0),
                 __instance,
-                KeyCode.F,
+                Module.NebulaInputManager.abilityInput.keyCode,
                 false,
                 "button.label.ritual.search"
             );

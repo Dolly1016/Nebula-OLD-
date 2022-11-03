@@ -64,7 +64,7 @@ namespace Nebula.Roles.NeutralRoles
                 buttonSprite.GetSprite(),
                 new Vector3(-1.8f, 0, 0),
                 __instance,
-                KeyCode.F,
+                Module.NebulaInputManager.abilityInput.keyCode,
                 false,
                 "button.label.chainShift"
             ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());

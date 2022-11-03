@@ -167,7 +167,7 @@ namespace Nebula.Roles.CrewmateRoles
                 reviveButtonSprite.GetSprite(),
                 new Vector3(0f, 1f, 0),
                 __instance,
-                KeyCode.G,
+                Module.NebulaInputManager.secondaryAbilityInput.keyCode,
                 true,
                 reviveDurationOption.getFloat(),
                 () =>

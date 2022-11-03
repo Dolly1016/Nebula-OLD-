@@ -199,7 +199,7 @@ namespace Nebula.Roles.CrewmateRoles
                 placeButtonSprite.GetSprite(),
                 new Vector3(-1.8f, 0, 0),
                 __instance,
-                KeyCode.F,
+                Module.NebulaInputManager.abilityInput.keyCode,
                 false, 
                 "button.label.place"
             ).SetTimer(CustomOptionHolder.InitialModestAbilityCoolDownOption.getFloat());
@@ -228,7 +228,7 @@ namespace Nebula.Roles.CrewmateRoles
                 guardButtonSprite.GetSprite(),
                 new Vector3(0, 1f, 0),
                 __instance,
-                KeyCode.G,
+                Module.NebulaInputManager.secondaryAbilityInput.keyCode,
                 false,
                 "button.label.guard"
             ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());

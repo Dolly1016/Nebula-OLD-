@@ -31,7 +31,7 @@ namespace Nebula.Module
             public KeyInputTexture texture { get; private set; }
             public int textureNum { get; private set; }
             public string displayKey { get; private set; }
-
+            private Sprite? sprite = null;
             public KeyCodeData(KeyCode keyCode, string displayKey,KeyInputTexture texture,int num)
             {
                 this.keyCode = keyCode;
@@ -40,6 +40,13 @@ namespace Nebula.Module
                 this.textureNum = num;
 
                 allKeyCodes.Add(keyCode,this);
+            }
+
+            public Sprite GetSprite()
+            {
+                if (sprite == null || !sprite) sprite = Helpers.loadSpriteFromResources(texture.GetTexture(), 100f, new Rect(0f, -19f * (float)textureNum, 18f, -19f));
+
+                return sprite;
             }
         }
         public class NebulaInput
@@ -80,6 +87,7 @@ namespace Nebula.Module
         public static NebulaInput changeAbilityInput;
         public static NebulaInput modifierAbilityInput;
         public static NebulaInput modKillInput;
+        public static NebulaInput helpInput;
         public static NebulaInput observerInput;
         public static NebulaInput changeEyesightLeftInput;
         public static NebulaInput changeEyesightRightInput;
@@ -110,7 +118,7 @@ namespace Nebula.Module
             new KeyCodeData(KeyCode.LeftAlt, "LAlt", kit, 5);
             kit = new KeyInputTexture("Nebula.Resources.KeyBindCharacters4.png");
             for (int i = 0; i < 6; i++)
-                new KeyCodeData(KeyCode.Mouse1 + i, "Mouse " + (i==0?"Right":i==1?"Middle":(i+1).ToString()), kit, i + (int)KeyCode.Mouse1);
+                new KeyCodeData(KeyCode.Mouse1 + i, "Mouse " + (i == 0 ? "Right" : i == 1 ? "Middle" : (i + 1).ToString()), kit, i);
 
 
             abilityInput = new NebulaInput("ability", KeyCode.F);
@@ -118,6 +126,7 @@ namespace Nebula.Module
             changeAbilityInput = new NebulaInput("changeAbility", KeyCode.LeftShift);
             modifierAbilityInput = new NebulaInput("modifierAbility", KeyCode.Z);
             modKillInput = new NebulaInput("kill", KeyCode.Q);
+            helpInput = new NebulaInput("help", KeyCode.H);
             observerInput = new NebulaInput("observer", KeyCode.M);
             changeEyesightLeftInput = new NebulaInput("changeEyesightLeft", KeyCode.Comma);
             changeEyesightRightInput = new NebulaInput("changeEyesightRight", KeyCode.Period);

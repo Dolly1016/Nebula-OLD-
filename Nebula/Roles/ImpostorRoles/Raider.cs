@@ -79,7 +79,7 @@ namespace Nebula.Roles.ImpostorRoles
                 axeButtonSprite.GetSprite(),
                 new Vector3(-1.8f, 0f, 0),
                 __instance,
-                KeyCode.F,
+                Module.NebulaInputManager.abilityInput.keyCode,
                 false,
                 "button.label.equip"
             );
@@ -108,7 +108,7 @@ namespace Nebula.Roles.ImpostorRoles
                 __instance.KillButton.graphic.sprite,
                 new Vector3(0f, 1f, 0),
                 __instance,
-                KeyCode.Q,
+                Module.NebulaInputManager.modKillInput.keyCode,
                 false,
                  "button.label.throw"
             ).SetTimer(CustomOptionHolder.InitialKillCoolDownOption.getFloat());

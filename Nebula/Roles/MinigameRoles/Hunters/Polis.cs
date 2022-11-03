@@ -61,7 +61,7 @@ namespace Nebula.Roles.MinigameRoles.Hunters
                 GetButtonSprite(),
                 new Vector3(0f, 1f, 0),
                 __instance,
-                KeyCode.Q,
+                Module.NebulaInputManager.modKillInput.keyCode,
                 false,
                 "button.label.arrest"
             );

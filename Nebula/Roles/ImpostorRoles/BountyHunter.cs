@@ -72,7 +72,7 @@ namespace Nebula.Roles.ImpostorRoles
                 __instance.KillButton.graphic.sprite,
                 new Vector3(0f, 1f, 0),
                 __instance,
-                KeyCode.Q
+                Module.NebulaInputManager.modKillInput.keyCode
             ).SetTimer(CustomOptionHolder.InitialKillCoolDownOption.getFloat());
             killButton.MaxTimer = PlayerControl.GameOptions.KillCooldown;
             killButton.SetButtonCoolDownOption(true);

@@ -119,7 +119,7 @@ namespace Nebula.Roles.ImpostorRoles
                 decoyButtonSprite.GetSprite(),
                 new Vector3(-1.8f, 0f, 0),
                 __instance,
-                KeyCode.F,
+                Module.NebulaInputManager.abilityInput.keyCode,
                 false,
                 "button.label.decoy"
             ).SetTimer(CustomOptionHolder.InitialModestAbilityCoolDownOption.getFloat());
@@ -155,12 +155,12 @@ namespace Nebula.Roles.ImpostorRoles
                 decoyButtonSprite.GetSprite(),
                 new Vector3(-1.8f, 0f, 0),
                 __instance,
-                KeyCode.F,
+                Module.NebulaInputManager.abilityInput.keyCode,
                 false,
                 "button.label.decoy"
             );
             marionetteButton.MaxTimer = swapCoolDownOption.getFloat();
-            marionetteButton.SetAidAction(KeyCode.LeftShift, true, ChangeMarionetteMode);
+            marionetteButton.SetAidAction(Module.NebulaInputManager.changeAbilityInput.keyCode, true, ChangeMarionetteMode);
 
             if (cameraButton != null)
             {
@@ -180,7 +180,7 @@ namespace Nebula.Roles.ImpostorRoles
                 monitorButtonSprite.GetSprite(),
                 new Vector3(-2.7f, 0f, 0),
                 __instance,
-                KeyCode.G,
+                Module.NebulaInputManager.secondaryAbilityInput.keyCode,
                 false,
                 "button.label.monitor"
             );

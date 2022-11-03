@@ -320,7 +320,7 @@ namespace Nebula.Roles.ComplexRoles
                 FTrapper.accelButtonSprite.GetSprite(),
                 new Vector3(-1.8f, 0, 0),
                 __instance,
-                KeyCode.F,
+                Module.NebulaInputManager.abilityInput.keyCode,
                 true,
                 Roles.F_Trapper.rootTimeOption.getFloat(),
                 () => { 
@@ -336,7 +336,7 @@ namespace Nebula.Roles.ComplexRoles
             trapButtonString.transform.localScale = Vector3.one * 0.5f;
             trapButtonString.transform.localPosition += new Vector3(-0.05f, 0.7f, 0);
 
-            trapButton.SetAidAction(KeyCode.LeftShift,true, ChangeTrapType);
+            trapButton.SetAidAction(Module.NebulaInputManager.changeAbilityInput.keyCode, true, ChangeTrapType);
 
             trapKind = 0;
 

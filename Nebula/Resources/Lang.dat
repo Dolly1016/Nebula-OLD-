@@ -33,6 +33,7 @@
 "config.option.keyBinding.changeAbility" : "Change Ability"
 "config.option.keyBinding.modifierAbility" : "Use Modifier Ability"
 "config.option.keyBinding.kill" : "Kill (Mod)"
+"config.option.keyBinding.help" : "Help"
 "config.option.keyBinding.observer" : "Toggle Observer Mode"
 "config.option.keyBinding.changeEyesightLeft" : "Change Eyesight(Left)"
 "config.option.keyBinding.changeEyesightRight" : "Change Eyesight(Right)"
@@ -904,7 +905,7 @@
 "game.message.countDown" : "Starting in %COUNT%s"
 "game.message.start" : "Game Start!"
 
-"game.message.observerGuide" : "[M]:Overlooking  [<][>]:Change Eyesight [Esc]:Come Back to My Eyesight"
+"game.message.observerGuide" : "[%OBSERVER%]:Overlooking  [%LEFT%][%RIGHT%]:Change Eyesight [Esc]:Come Back to My Eyesight"
 
 "game.spawnLocation.Dropship" : "Dropship"
 "game.spawnLocation.Electrical" : "Electrical"

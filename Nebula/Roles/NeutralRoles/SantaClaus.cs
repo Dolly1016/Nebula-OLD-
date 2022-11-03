@@ -105,7 +105,7 @@ namespace Nebula.Roles.NeutralRoles
                 buttonSprite.GetSprite(),
                 new Vector3(-1.8f, 0, 0),
                 __instance,
-                KeyCode.F,
+                Module.NebulaInputManager.abilityInput.keyCode,
                 false,
                 "button.label.present"
             ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());
@@ -233,7 +233,7 @@ namespace Nebula.Roles.NeutralRoles
                 buttonSprite.GetSprite(),
                 new Vector3(-1.8f, 0f, 0),
                 __instance,
-                KeyCode.F,
+                Module.NebulaInputManager.abilityInput.keyCode,
                 false,
                 "button.label.capture"
             ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());
@@ -273,7 +273,7 @@ namespace Nebula.Roles.NeutralRoles
                 __instance.KillButton.graphic.sprite,
                 new Vector3(0f, 1f, 0),
                 __instance,
-                KeyCode.Q
+                Module.NebulaInputManager.modKillInput.keyCode
             ).SetTimer(CustomOptionHolder.InitialKillCoolDownOption.getFloat());
             killButton.MaxTimer = Roles.SantaClaus.killCoolDownOption.getFloat();
         }

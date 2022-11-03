@@ -72,9 +72,6 @@ namespace Nebula.Objects
         public bool IsValid { get { return activeFlag; } }
         public bool IsShown { get { return activeFlag && !hideFlag; } }
 
-        private static Texture2D textureKeyBindChara;
-        private static Dictionary<KeyCode, Sprite> spriteKeyBindChara = new Dictionary<KeyCode, Sprite>();
-        private static Dictionary<KeyCode, float> keyBindReyout = new Dictionary<KeyCode, float>();
         private static Sprite spriteKeyBindBackGround;
         private static Sprite spriteKeyBindOption;
 
@@ -84,38 +81,6 @@ namespace Nebula.Objects
                 upperText = actionButton.CreateButtonUpperText();
                 return upperText;
             } }
-
-        static public void Load()
-        {
-            keyBindReyout[KeyCode.Q] = 0f;
-            keyBindReyout[KeyCode.F] = 1f;
-            keyBindReyout[KeyCode.G] = 2f;
-            keyBindReyout[KeyCode.H] = 3f;
-            keyBindReyout[KeyCode.J] = 4f;
-            keyBindReyout[KeyCode.Z] = 5f;
-            keyBindReyout[KeyCode.X] = 6f;
-            keyBindReyout[KeyCode.C] = 7f;
-            keyBindReyout[KeyCode.V] = 8f;
-            keyBindReyout[KeyCode.LeftShift] = 9f;
-            keyBindReyout[KeyCode.RightShift] = 10f;
-        }
-
-        public Sprite? GetKeyBindCharacterSprite(KeyCode? key)
-        {
-            if (key == null) return null;
-            if (!keyBindReyout.ContainsKey(key.Value)) return null;
-
-            if (!textureKeyBindChara) textureKeyBindChara = Helpers.loadTextureFromResources("Nebula.Resources.KeyBindCharacters.png");
-
-            Sprite sprite;
-            if (spriteKeyBindChara.TryGetValue(key.Value, out sprite))
-            {
-                if (sprite) return sprite;
-            }
-            sprite = Helpers.loadSpriteFromResources(textureKeyBindChara, 100f, new Rect(0f, -19f* keyBindReyout[key.Value], 18f, -19f));
-            spriteKeyBindChara[key.Value] = sprite;
-            return sprite;
-        }
 
         public Sprite GetKeyBindBackgroundSprite()
         {
@@ -170,7 +135,8 @@ namespace Nebula.Objects
 
         public void SetKeyGuide(KeyCode? key, Vector2 pos,bool requireChangeOption)
         {
-            Sprite? numSprite = GetKeyBindCharacterSprite(key);
+            Sprite? numSprite = null;
+            if(key.HasValue && Module.NebulaInputManager.allKeyCodes.ContainsKey(key.Value)) numSprite = Module.NebulaInputManager.allKeyCodes[key.Value].GetSprite();
             if (numSprite == null) return;
 
             GameObject obj = new GameObject();
