@@ -788,7 +788,7 @@
 "role.avenger.ventCoolDown" : "ベントクールダウン"
 "role.avenger.ventDuration" : "ベント潜伏時間"
 
-"role.avengerTarget.name" : "[警告] あなたはアヴェンジャーに狙われている"
+"role.avengerTarget.name" : "[警告] アヴェンジャーに狙われている"
 "role.avengerTarget.info" : "あなたは誰かの想い人を殺した。\n心せよ。遺された者は、虎視眈々と逆襲の時を狙っていることだろう。"
 
 "role.investigator.name" : "インヴェスティゲーター"
