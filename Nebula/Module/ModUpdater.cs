@@ -180,6 +180,11 @@ namespace Nebula.Module
             if (action != null) passiveButton.OnClick.AddListener(action);
             passiveButton.OnMouseOut.AddListener((UnityEngine.Events.UnityAction)(() => renderer.color = tmpText.color));
 
+            AspectPosition aspectPosition = button.GetComponent<AspectPosition>();
+            if (mirror)aspectPosition.Alignment = AspectPosition.EdgeAlignments.RightBottom;
+            aspectPosition.DistanceFromEdge = new Vector3(0.6f, 0.35f + 0.6f * buttons, -5f);
+            
+
             return button;
         }
 

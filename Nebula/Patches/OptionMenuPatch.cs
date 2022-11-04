@@ -344,7 +344,7 @@ namespace Nebula.Patches
                 GameObject.Destroy(result);
             }
             ));
-
+           
             result.SetActive(true);
             return result;
         }
@@ -443,7 +443,7 @@ namespace Nebula.Patches
                     ShowConfirmDialogue(nebulaTab.transform, applyButtonTemplate, Language.Language.GetString("config.option.prioritizeAmongUs.confirm"), () =>
                     {
                         NebulaOption.configPrioritizeAmongUs.Value = true;
-                        prioritizeAmongUs.UpdateToggleText(true,Language.Language.GetString("config.option.prioritizeAmongUs"));
+                        prioritizeAmongUs.UpdateToggleText(true, Language.Language.GetString("config.option.prioritizeAmongUs"));
                         NebulaOption.ReflectProcessorPriority();
                     });
                 }
@@ -488,116 +488,122 @@ namespace Nebula.Patches
             }));
 
             //キー割り当てボタン
-            if (!ShipStatus.Instance)
+            GameObject TextObject;
+
+            List<ToggleButtonBehaviour> allKeyBindingButtons = new List<ToggleButtonBehaviour>();
+            int selectedKeyBinding = -1;
+
+            var defaultButton = GameObject.Instantiate(applyButtonTemplate, null);
+            defaultButton.transform.SetParent(keyBindingTab.transform);
+            defaultButton.transform.localScale = new Vector3(1f, 1f, 1f);
+            defaultButton.transform.localPosition = new Vector3(0f, -2.5f, 0f);
+            defaultButton.name = "RestoreDefaultsButton";
+            defaultButton.transform.GetChild(0).GetComponent<SpriteRenderer>().size = new Vector2(2.25f, 0.4f);
+            TextObject = defaultButton.transform.FindChild("Text_TMP").gameObject;
+            TextObject.GetComponent<TMPro.TextMeshPro>().text = Language.Language.GetString("config.option.keyBinding.restoreDefaults");
+            TextObject.GetComponent<TMPro.TextMeshPro>().rectTransform.sizeDelta *= 2;
+            TextObject.GetComponent<TextTranslatorTMP>().enabled = false;
+            passiveButton = defaultButton.GetComponent<PassiveButton>();
+            passiveButton.OnClick = new UnityEngine.UI.Button.ButtonClickedEvent();
+            passiveButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
             {
-                GameObject TextObject;
+                selectedKeyBinding = -1;
 
-                List<ToggleButtonBehaviour> allKeyBindingButtons=new List<ToggleButtonBehaviour>();
-                int selectedKeyBinding = -1;
+                SoundManager.Instance.PlaySound(Module.MetaScreen.getSelectClip(), false, 0.8f);
 
-                var defaultButton = GameObject.Instantiate(applyButtonTemplate, null);
-                defaultButton.transform.SetParent(keyBindingTab.transform);
-                defaultButton.transform.localScale = new Vector3(1f, 1f, 1f);
-                defaultButton.transform.localPosition = new Vector3(0f, -2.5f, 0f);
-                defaultButton.name = "RestoreDefaultsButton";
-                defaultButton.transform.GetChild(0).GetComponent<SpriteRenderer>().size = new Vector2(2.25f, 0.4f);
-                TextObject = defaultButton.transform.FindChild("Text_TMP").gameObject;
-                TextObject.GetComponent<TMPro.TextMeshPro>().text = Language.Language.GetString("config.option.keyBinding.restoreDefaults");
-                TextObject.GetComponent<TMPro.TextMeshPro>().rectTransform.sizeDelta *= 2;
-                TextObject.GetComponent<TextTranslatorTMP>().enabled = false;
-                passiveButton = defaultButton.GetComponent<PassiveButton>();
+                for (int i = 0; i < Module.NebulaInputManager.allInputs.Count; i++)
+                {
+                    var input = Module.NebulaInputManager.allInputs[i];
+                    input.resetToDefault();
+                    allKeyBindingButtons[i].UpdateCustomText(Color.white, Language.Language.GetString("config.option.keyBinding." + input.identifier) + ": " + Module.NebulaInputManager.allKeyCodes[input.keyCode].displayKey);
+                }
+            }
+            ));
+
+            foreach (var input in Module.NebulaInputManager.allInputs)
+            {
+                int index = allKeyBindingButtons.Count;
+
+                var inputButton = GameObject.Instantiate(toggleButtonTemplate, null);
+                inputButton.transform.SetParent(keyBindingTab.transform);
+                inputButton.transform.localScale = new Vector3(1f, 1f, 1f);
+                inputButton.transform.localPosition = new Vector3(1.3f * (float)((index % 2) * 2 - 1), 1.5f - 0.5f * (float)(index / 2), 0f);
+                inputButton.name = input.identifier;
+                var inputToggleButton = inputButton.GetComponent<ToggleButtonBehaviour>();
+                inputToggleButton.BaseText = 0;
+                inputToggleButton.Text.text = Language.Language.GetString("config.option.keyBinding." + input.identifier) + ": " + Module.NebulaInputManager.allKeyCodes[input.keyCode].displayKey;
+                passiveButton = inputButton.GetComponent<PassiveButton>();
                 passiveButton.OnClick = new UnityEngine.UI.Button.ButtonClickedEvent();
                 passiveButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
                 {
-                    selectedKeyBinding = -1;
-
-                    SoundManager.Instance.PlaySound(Module.MetaScreen.getSelectClip(), false, 0.8f);
-
-                    for (int i = 0; i < Module.NebulaInputManager.allInputs.Count; i++)
+                    if (selectedKeyBinding == index)
                     {
-                        var input = Module.NebulaInputManager.allInputs[i];
-                        input.resetToDefault();
-                        allKeyBindingButtons[i].UpdateCustomText(Color.white, Language.Language.GetString("config.option.keyBinding." + input.identifier) + ": " + Module.NebulaInputManager.allKeyCodes[input.keyCode].displayKey);
+                        selectedKeyBinding = -1;
+                        inputToggleButton.UpdateCustomText(Color.white, null);
                     }
-                }
-                ));
-
-                foreach (var input in Module.NebulaInputManager.allInputs)
-                {
-                    int index = allKeyBindingButtons.Count;
-
-                    var inputButton = GameObject.Instantiate(toggleButtonTemplate, null);
-                    inputButton.transform.SetParent(keyBindingTab.transform);
-                    inputButton.transform.localScale = new Vector3(1f, 1f, 1f);
-                    inputButton.transform.localPosition = new Vector3(1.3f*(float)((index%2)*2-1), 1.5f - 0.5f*(float)(index/2), 0f);
-                    inputButton.name = input.identifier;
-                    var inputToggleButton = inputButton.GetComponent<ToggleButtonBehaviour>();
-                    inputToggleButton.BaseText = 0;
-                    inputToggleButton.Text.text = Language.Language.GetString("config.option.keyBinding."+input.identifier)+": "+Module.NebulaInputManager.allKeyCodes[input.keyCode].displayKey;
-                    passiveButton = inputButton.GetComponent<PassiveButton>();
-                    passiveButton.OnClick = new UnityEngine.UI.Button.ButtonClickedEvent();
-                    passiveButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
+                    else
                     {
-                        if (selectedKeyBinding == index)
-                        {
-                            selectedKeyBinding = -1;
-                            inputToggleButton.UpdateCustomText(Color.white, null);
-                        }
-                        else
-                        {
-                            selectedKeyBinding = index;
-                            inputToggleButton.UpdateCustomText(Color.yellow, null);
-                        }
-                    }));
-
-                    allKeyBindingButtons.Add(inputToggleButton);
-                }
-
-                IEnumerator getEnumerator()
-                {
-                    while (true)
-                    {
-                        if (keyBindingTab.gameObject.active && Input.anyKeyDown && selectedKeyBinding!=-1)
-                        {
-                            foreach(var entry in Module.NebulaInputManager.allKeyCodes) {
-                                if (!Input.GetKeyDown(entry.Key)) continue;
-
-                                var input = Module.NebulaInputManager.allInputs[selectedKeyBinding];
-                                input.changeKeyCode(entry.Key);
-                                allKeyBindingButtons[selectedKeyBinding].UpdateCustomText(Color.white,Language.Language.GetString("config.option.keyBinding." + input.identifier) + ": " + Module.NebulaInputManager.allKeyCodes[input.keyCode].displayKey);
-                                selectedKeyBinding = -1;
-                                break;
-                            }
-                        }else if(!keyBindingTab.gameObject.active && selectedKeyBinding != -1)
-                        {
-                            allKeyBindingButtons[selectedKeyBinding].UpdateCustomText(Color.white, null);
-                            selectedKeyBinding = -1;
-                        }
-                        yield return null;
+                        selectedKeyBinding = index;
+                        inputToggleButton.UpdateCustomText(Color.yellow, null);
                     }
-                }
+                }));
 
+                allKeyBindingButtons.Add(inputToggleButton);
+            }
+
+            var keyBindingButton = GameObject.Instantiate(applyButtonTemplate, null);
+            keyBindingButton.transform.SetParent(nebulaTab.transform);
+            keyBindingButton.transform.localScale = new Vector3(1f, 1f, 1f);
+            keyBindingButton.transform.localPosition = new Vector3(0f, -1.5f, 0f);
+            keyBindingButton.name = "KeyBindingButton";
+            keyBindingButton.transform.GetChild(0).GetComponent<SpriteRenderer>().size = new Vector2(2.25f, 0.4f);
+            TextObject = keyBindingButton.transform.FindChild("Text_TMP").gameObject;
+            TextObject.GetComponent<TMPro.TextMeshPro>().text = Language.Language.GetString("config.option.keyBinding");
+            TextObject.GetComponent<TMPro.TextMeshPro>().rectTransform.sizeDelta *= 2;
+            TextObject.GetComponent<TextTranslatorTMP>().enabled = false;
+            passiveButton = keyBindingButton.GetComponent<PassiveButton>();
+            passiveButton.OnClick = new UnityEngine.UI.Button.ButtonClickedEvent();
+            passiveButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
+            {
+                SoundManager.Instance.PlaySound(Module.MetaScreen.getSelectClip(), false, 0.8f);
+                __instance.OpenTabGroup(tabs.Count - 1);
+            }
+            ));
+
+            IEnumerator getEnumerator()
+            {
+                while (true)
+                {
+                    if (HudManager.InstanceExists && !GameStartManager.InstanceExists)
+                        keyBindingButton.gameObject.SetActive(false);
+
+                    if (keyBindingTab.gameObject.active && Input.anyKeyDown && selectedKeyBinding != -1)
+                    {
+                        foreach (var entry in Module.NebulaInputManager.allKeyCodes)
+                        {
+                            if (!Input.GetKeyDown(entry.Key)) continue;
+
+                            var input = Module.NebulaInputManager.allInputs[selectedKeyBinding];
+                            input.changeKeyCode(entry.Key);
+                            allKeyBindingButtons[selectedKeyBinding].UpdateCustomText(Color.white, Language.Language.GetString("config.option.keyBinding." + input.identifier) + ": " + Module.NebulaInputManager.allKeyCodes[input.keyCode].displayKey);
+                            selectedKeyBinding = -1;
+                            break;
+                        }
+                    }
+                    else if (!keyBindingTab.gameObject.active && selectedKeyBinding != -1)
+                    {
+                        allKeyBindingButtons[selectedKeyBinding].UpdateCustomText(Color.white, null);
+                        selectedKeyBinding = -1;
+                    }
+                    yield return null;
+                }
+            }
+
+            if(HudManager.InstanceExists)
+                HudManager.Instance.StartCoroutine(getEnumerator().WrapToIl2Cpp());
+            else
                 __instance.StartCoroutine(getEnumerator().WrapToIl2Cpp());
 
-                var keyBindingButton = GameObject.Instantiate(applyButtonTemplate, null);
-                keyBindingButton.transform.SetParent(nebulaTab.transform);
-                keyBindingButton.transform.localScale = new Vector3(1f, 1f, 1f);
-                keyBindingButton.transform.localPosition = new Vector3(0f, -1.5f, 0f);
-                keyBindingButton.name = "KeyBindingButton";
-                keyBindingButton.transform.GetChild(0).GetComponent<SpriteRenderer>().size = new Vector2(2.25f, 0.4f);
-                TextObject = keyBindingButton.transform.FindChild("Text_TMP").gameObject;
-                TextObject.GetComponent<TMPro.TextMeshPro>().text = Language.Language.GetString("config.option.keyBinding");
-                TextObject.GetComponent<TMPro.TextMeshPro>().rectTransform.sizeDelta *= 2;
-                TextObject.GetComponent<TextTranslatorTMP>().enabled = false;
-                passiveButton = keyBindingButton.GetComponent<PassiveButton>();
-                passiveButton.OnClick = new UnityEngine.UI.Button.ButtonClickedEvent();
-                passiveButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
-                {
-                    SoundManager.Instance.PlaySound(Module.MetaScreen.getSelectClip(), false, 0.8f);
-                    __instance.OpenTabGroup(tabs.Count - 1);
-                }
-                ));
-            }
 
             //タブを追加する
 
