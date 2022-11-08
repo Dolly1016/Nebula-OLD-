@@ -92,125 +92,131 @@ namespace Nebula.Patches.VanillaRework
 				}
 				__instance.controller.Update();
 
-				List<PassiveUiElement> uiElements = new List<PassiveUiElement>(__instance.Buttons.Count);
-				foreach (var b in __instance.Buttons.GetFastEnumerator()) uiElements.Add(b);
-                
-
-				foreach (var b in uiElements)
+				try
 				{
-					if (b.transform.hasChanged)
-					{
-						b.CachedZ = b.transform.position.z;
-						b.transform.hasChanged = false;
-					}
-				}
+					List<PassiveUiElement> uiElements = new List<PassiveUiElement>(__instance.Buttons.Count);
+					foreach (var b in __instance.Buttons.GetFastEnumerator()) uiElements.Add(b);
 
-				for (int j = 1; j < uiElements.Count; j++)
-				{
-					if (PassiveButtonManager.DepthComparer.Instance.Compare(uiElements[j - 1], uiElements[j]) > 0)
+
+					foreach (var b in uiElements)
 					{
-						uiElements.Sort((x, y) =>
+						if (b.transform.hasChanged)
 						{
-							if (x == null)
-							{
-								return 1;
-							}
-							if (y == null)
-							{
-								return -1;
-							}
-							return x.CachedZ.CompareTo(y.CachedZ);
-						});
-						break;
-					}
-				}
-
-				HandleMouseOut(__instance);
-
-				uiElements.RemoveAll((e) => !e);
-
-				foreach (PassiveUiElement passiveUiElement in uiElements)
-				{
-					if (passiveUiElement.isActiveAndEnabled)
-					{
-						//表示に使用するカメラ
-						Camera camera = Camera.main;
-						if (passiveUiElement.gameObject.layer == LayerExpansion.GetUILayer()) camera = Camera.allCameras.FirstOrDefault((c) => c.name == "UI Camera") ?? camera;
-
-						if (passiveUiElement.ClickMask)
-						{
-							Controller.TouchState touch = __instance.controller.GetTouch(0);
-							Vector2 position = ConvertToPosition(touch.Position, camera, true);
-							if (touch.IsDown && !passiveUiElement.ClickMask.OverlapPoint(position))
-							{
-								continue;
-							}
+							b.CachedZ = b.transform.position.z;
+							b.transform.hasChanged = false;
 						}
+					}
 
-						foreach (var col in passiveUiElement.Colliders)
+					for (int j = 1; j < uiElements.Count; j++)
+					{
+						if (PassiveButtonManager.DepthComparer.Instance.Compare(uiElements[j - 1], uiElements[j]) > 0)
 						{
-							if (col && col.isActiveAndEnabled)
+							uiElements.Sort((x, y) =>
 							{
-								HandleMouseOver(__instance,passiveUiElement, col, camera);
-
-								switch (CheckDrag(__instance.controller,col,camera))
+								if (x == null)
 								{
-									case DragState.TouchStart:
-										if (passiveUiElement.HandleDown)
-										{
-											passiveUiElement.ReceiveClickDown();
-										}
-										break;
-									case DragState.Holding:
-										if (passiveUiElement.HandleRepeat)
-										{
-											passiveUiElement.ReceiveRepeatDown();
-										}
-										break;
-									case DragState.Dragging:
-										if (passiveUiElement.HandleDrag)
-										{
-											Vector2 dragDelta = ConvertToPosition(__instance.controller.DragPosition - __instance.controller.DragStartPosition,camera,false);
-											passiveUiElement.ReceiveClickDrag(dragDelta);
-											__instance.controller.ResetDragPosition();
-										}
-										else if (passiveUiElement.HandleRepeat)
-										{
-											passiveUiElement.ReceiveRepeatDown();
-										}
-										else
-										{
-											foreach (var b in __instance.Buttons.GetFastEnumerator())
-											{
-												if (b.HandleDrag && b.isActiveAndEnabled && b.transform.position.z > col.transform.position.z)
-												{
-													__instance.controller.ClearTouch();
-													break;
-												}
-											}
+									return 1;
+								}
+								if (y == null)
+								{
+									return -1;
+								}
+								return x.CachedZ.CompareTo(y.CachedZ);
+							});
+							break;
+						}
+					}
 
-										}
-										break;
-									case DragState.Released:
-										if (passiveUiElement.HandleUp)
-										{
-											passiveUiElement.ReceiveClickUp();
-										}
-										break;
+					HandleMouseOut(__instance);
+
+					uiElements.RemoveAll((e) => !e);
+
+					foreach (PassiveUiElement passiveUiElement in uiElements)
+					{
+						if (passiveUiElement.isActiveAndEnabled)
+						{
+							//表示に使用するカメラ
+							Camera camera = Camera.main;
+							if (passiveUiElement.gameObject.layer == LayerExpansion.GetUILayer()) camera = Camera.allCameras.FirstOrDefault((c) => c.name == "UI Camera") ?? camera;
+
+							if (passiveUiElement.ClickMask)
+							{
+								Controller.TouchState touch = __instance.controller.GetTouch(0);
+								Vector2 position = ConvertToPosition(touch.Position, camera, true);
+								if (touch.IsDown && !passiveUiElement.ClickMask.OverlapPoint(position))
+								{
+									continue;
+								}
+							}
+
+							foreach (var col in passiveUiElement.Colliders)
+							{
+								if (col && col.isActiveAndEnabled)
+								{
+									HandleMouseOver(__instance, passiveUiElement, col, camera);
+
+									switch (CheckDrag(__instance.controller, col, camera))
+									{
+										case DragState.TouchStart:
+											if (passiveUiElement.HandleDown)
+											{
+												passiveUiElement.ReceiveClickDown();
+											}
+											break;
+										case DragState.Holding:
+											if (passiveUiElement.HandleRepeat)
+											{
+												passiveUiElement.ReceiveRepeatDown();
+											}
+											break;
+										case DragState.Dragging:
+											if (passiveUiElement.HandleDrag)
+											{
+												Vector2 dragDelta = ConvertToPosition(__instance.controller.DragPosition - __instance.controller.DragStartPosition, camera, false);
+												passiveUiElement.ReceiveClickDrag(dragDelta);
+												__instance.controller.ResetDragPosition();
+											}
+											else if (passiveUiElement.HandleRepeat)
+											{
+												passiveUiElement.ReceiveRepeatDown();
+											}
+											else
+											{
+												foreach (var b in __instance.Buttons.GetFastEnumerator())
+												{
+													if (b.HandleDrag && b.isActiveAndEnabled && b.transform.position.z > col.transform.position.z)
+													{
+														__instance.controller.ClearTouch();
+														break;
+													}
+												}
+
+											}
+											break;
+										case DragState.Released:
+											if (passiveUiElement.HandleUp)
+											{
+												passiveUiElement.ReceiveClickUp();
+											}
+											break;
+									}
 								}
 							}
 						}
 					}
-				}
-				__instance.Buttons = new Il2CppSystem.Collections.Generic.List<PassiveUiElement>(uiElements.Count);
-				foreach (var e in uiElements) __instance.Buttons.Add(e);
+					__instance.Buttons = new Il2CppSystem.Collections.Generic.List<PassiveUiElement>(uiElements.Count);
+					foreach (var e in uiElements) __instance.Buttons.Add(e);
 
-				if (__instance.controller.AnyTouchDown)
-				{
-					Vector2 touch2 = __instance.GetTouch(true);
-					HandleFocus(__instance,touch2);
-				}
+					if (__instance.controller.AnyTouchDown)
+					{
+						Vector2 touch2 = __instance.GetTouch(true);
+						HandleFocus(__instance, touch2);
+					}
 
+				}catch (Exception exception)
+                {
+					NebulaPlugin.Instance.Logger.Print(exception.ToString());
+                }
 				return false;
 			}
 

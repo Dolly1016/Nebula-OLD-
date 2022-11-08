@@ -419,7 +419,7 @@
 "role.provocateur.embroilDuration" : "道連れ持続時間"
 
 "role.psychic.name" : "サイキック"
-"role.psychic.short" : "サイキック"
+"role.psychic.short" : "サ"
 "role.psychic.description" : "証言を集めろ"
 "role.psychic.info" : "プレイヤーの死亡地点に行くと、死体のメッセージを見ることができます。\nメッセージは会議を挟むと見れなくなります。\n死亡位置に近づくほど、メッセージは明瞭になります。"
 "role.psychic.help.search" : "死体を探索します。矢印は死体を指しており、死亡位置とは一致しないことがあります。"
@@ -864,7 +864,7 @@
 "game.message.countDown" : "ゲーム開始まであと %COUNT%秒"
 "game.message.start" : "ゲーム開始！"
 
-"game.message.observerGuide" : "[M]:視野拡大  [<][>]:視点変更 [Esc]:自身の視点に戻る"
+"game.message.observerGuide" : "[%OBSERVER%]:視野拡大  [%LEFT%][%RIGHT%]:視点変更 [Esc]:自身の視点に戻る"
 
 "game.spawnLocation.Dropship" : "ドロップシップ"
 "game.spawnLocation.Electrical" : "エレクトリカル"

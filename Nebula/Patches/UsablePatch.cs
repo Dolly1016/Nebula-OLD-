@@ -8,6 +8,7 @@ using Nebula.Utilities;
 
 namespace Nebula.Patches
 {
+
     [HarmonyPatch(typeof(KillButton), nameof(KillButton.DoClick))]
     class KillButtonDoClickPatch
     {

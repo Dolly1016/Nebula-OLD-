@@ -125,6 +125,53 @@ namespace Nebula.Patches
                     })));
                 }
             }
+
+            //ボタンのガイドを表示
+            var keyboardMap = Rewired.ReInput.mapping.GetKeyboardMapInstance(0, 0);
+            UnhollowerBaseLib.Il2CppReferenceArray<Rewired.ActionElementMap> actionArray;
+            Rewired.ActionElementMap actionMap;
+
+            //マップ
+            actionArray = keyboardMap.GetButtonMapsWithAction(4);
+            if (actionArray.Count > 0)
+            {
+                actionMap = actionArray[0];
+                Objects.CustomButton.SetKeyGuideOnSmallButton(HudManager.Instance.MapButton.gameObject,actionMap.keyCode);
+                Objects.CustomButton.SetKeyGuide(HudManager.Instance.SabotageButton.gameObject, actionMap.keyCode);
+            }
+
+            //使用
+            actionArray = keyboardMap.GetButtonMapsWithAction(6);
+            if (actionArray.Count > 0)
+            {
+                actionMap = actionArray[0];
+                Objects.CustomButton.SetKeyGuide(HudManager.Instance.UseButton.gameObject, actionMap.keyCode);
+            }
+
+            //レポート
+            actionArray = keyboardMap.GetButtonMapsWithAction(7);
+            if (actionArray.Count > 0)
+            {
+                actionMap = actionArray[0];
+                Objects.CustomButton.SetKeyGuide(HudManager.Instance.ReportButton.gameObject, actionMap.keyCode);
+            }
+
+            //キル
+            actionArray = keyboardMap.GetButtonMapsWithAction(8);
+            if (actionArray.Count > 0)
+            {
+                actionMap = actionArray[0];
+                Objects.CustomButton.SetKeyGuide(HudManager.Instance.KillButton.gameObject, actionMap.keyCode);
+            }
+
+            //ベント
+            actionArray = keyboardMap.GetButtonMapsWithAction(50);
+            if (actionArray.Count > 0)
+            {
+                actionMap = actionArray[0];
+                Objects.CustomButton.SetKeyGuide(HudManager.Instance.ImpostorVentButton.gameObject, actionMap.keyCode);
+            }
+
         }
     }
 

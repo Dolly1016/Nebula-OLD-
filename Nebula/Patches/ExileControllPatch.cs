@@ -7,27 +7,19 @@ using UnityEngine;
 
 namespace Nebula.Patches
 {
-    [HarmonyPatch(typeof(ExileController), nameof(ExileController.Begin))]
-    class ExileControllerBeginPatch
+    [HarmonyPatch]
+    class ExileControllerPatch
     {
-        public static void Prefix(ExileController __instance, [HarmonyArgument(0)] ref GameData.PlayerInfo exiled, [HarmonyArgument(1)] bool tie)
+        [HarmonyPatch(typeof(ExileController), nameof(ExileController.Begin))]
+        class ExileControllerBeginPatch
         {
-            if (exiled != null)
+            public static void Prefix(ExileController __instance, [HarmonyArgument(0)] ref GameData.PlayerInfo exiled, [HarmonyArgument(1)] bool tie)
             {
-                byte[] voters = MeetingHudPatch.GetVoters(exiled.PlayerId);
-                exiled.GetModData().role.OnExiledPre(voters, exiled.PlayerId);
-
-                if (exiled.PlayerId == PlayerControl.LocalPlayer.PlayerId)
-                {
-                    Helpers.RoleAction(exiled.PlayerId, (role) => { role.OnExiledPre(voters); });
-                }
+                OnExiled(exiled);
             }
         }
-    }
 
-    [HarmonyPatch]
-    class ExileControllerWrapUpPatch
-    {
+
         [HarmonyPatch(typeof(ExileController), nameof(ExileController.ReEnableGameplay))]
         class ExileControllerReEnableGameplayPatch
         {
@@ -43,17 +35,9 @@ namespace Nebula.Patches
         {
             public static bool Prefix(ExileController __instance)
             {
-                if (__instance.exiled != null)
-                {
-                    PlayerControl @object = __instance.exiled.Object;
-                    if (@object)
-                    {
-                        @object.Exiled();
-                    }
-                    __instance.exiled.IsDead = true;
-                }
+                WrapUpPrefix(__instance);
 
-                WrapUpPostfix(__instance.exiled);
+                WrapUpPostfix();
 
                 List<Il2CppSystem.Collections.IEnumerator> sequence = new List<Il2CppSystem.Collections.IEnumerator>();
 
@@ -78,9 +62,13 @@ namespace Nebula.Patches
         [HarmonyPatch(typeof(AirshipExileController), nameof(AirshipExileController.WrapUpAndSpawn))]
         class AirshipExileControllerPatch
         {
+            public static void Prefix(AirshipExileController __instance)
+            {
+                WrapUpPrefix(__instance);
+            }
             public static void Postfix(AirshipExileController __instance)
             {
-                WrapUpPostfix(__instance.exiled);
+                WrapUpPostfix();
             }
         }
 
@@ -93,8 +81,20 @@ namespace Nebula.Patches
             }
         }
 
-        static void WrapUpPostfix(GameData.PlayerInfo? exiled)
+
+        static void OnExiled(GameData.PlayerInfo? exiled)
         {
+            if (exiled != null)
+            {
+                byte[] voters = MeetingHudPatch.GetVoters(exiled.PlayerId);
+                exiled.GetModData().role.OnExiledPre(voters, exiled.PlayerId);
+
+                if (exiled.PlayerId == PlayerControl.LocalPlayer.PlayerId)
+                {
+                    Helpers.RoleAction(exiled.PlayerId, (role) => { role.OnExiledPre(voters); });
+                }
+            }
+
             Events.Schedule.OnPostMeeting();
 
             if (exiled != null)
@@ -104,6 +104,15 @@ namespace Nebula.Patches
                 if (exiled.GetModData().role.OnExiledPost(voters, exiled.PlayerId))
                 {
                     Game.GameData.data.playersArray[exiled.PlayerId].Die(Game.PlayerData.PlayerStatus.Exiled);
+
+
+                    PlayerControl @object = exiled.Object;
+                    if (@object)
+                    {
+                        @object.Exiled();
+                    }
+                    exiled.IsDead = true;
+
 
                     Helpers.RoleAction(exiled.PlayerId, (role) => { role.OnDied(exiled.PlayerId); });
                     Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId, (role) => { role.OnAnyoneDied(exiled.PlayerId); });
@@ -124,6 +133,16 @@ namespace Nebula.Patches
 
             Objects.CustomButton.OnMeetingEnd();
             Objects.CustomObject.OnMeetingEnd();
+        }
+
+        static void WrapUpPrefix(ExileController __instance)
+        {
+            __instance.exiled = null;
+        }
+
+        static void WrapUpPostfix()
+        {
+            
             Game.GameData.data.ColliderManager.OnMeetingEnd();
             Game.GameData.data.UtilityTimer.OnMeetingEnd();
             Game.GameData.data.myData.getGlobalData().role.OnMeetingEnd();

@@ -82,14 +82,14 @@ namespace Nebula.Objects
                 return upperText;
             } }
 
-        public Sprite GetKeyBindBackgroundSprite()
+        public static Sprite GetKeyBindBackgroundSprite()
         {
             if (spriteKeyBindBackGround) return spriteKeyBindBackGround;
             spriteKeyBindBackGround = Helpers.loadSpriteFromResources("Nebula.Resources.KeyBindBackground.png", 100f);
             return spriteKeyBindBackGround;
         }
 
-        public Sprite GetKeyBindOptionSprite()
+        public static Sprite GetKeyBindOptionSprite()
         {
             if (spriteKeyBindOption) return spriteKeyBindOption;
             spriteKeyBindOption = Helpers.loadSpriteFromResources("Nebula.Resources.KeyBindOption.png", 100f);
@@ -117,6 +117,7 @@ namespace Nebula.Objects
             Timer = 16.2f;
             buttons.Add(this);
             actionButton = UnityEngine.Object.Instantiate(hudManager.KillButton, hudManager.KillButton.transform.parent);
+            if (actionButton.transform.childCount == 4) GameObject.Destroy(actionButton.transform.GetChild(3).gameObject);
             PassiveButton button = actionButton.GetComponent<PassiveButton>();
 
             SetHotKeyGuide();
@@ -133,16 +134,16 @@ namespace Nebula.Objects
         public CustomButton(Action OnClick, Func<bool> HasButton, Func<bool> CouldUse, Action OnMeetingEnds, Sprite Sprite, Vector3 PositionOffset, HudManager hudManager, KeyCode? hotkey, bool mirror = false, string buttonText = "", ImageNames labelType = ImageNames.UseButton)
         : this(OnClick, HasButton, CouldUse, OnMeetingEnds, Sprite, PositionOffset, hudManager, hotkey, false, 0f, () => { }, mirror, buttonText,labelType) { }
 
-        public void SetKeyGuide(KeyCode? key, Vector2 pos,bool requireChangeOption)
+        static public GameObject? SetKeyGuide(GameObject button, KeyCode key,Vector2 pos)
         {
             Sprite? numSprite = null;
-            if(key.HasValue && Module.NebulaInputManager.allKeyCodes.ContainsKey(key.Value)) numSprite = Module.NebulaInputManager.allKeyCodes[key.Value].GetSprite();
-            if (numSprite == null) return;
+            if (Module.NebulaInputManager.allKeyCodes.ContainsKey(key)) numSprite = Module.NebulaInputManager.allKeyCodes[key].GetSprite();
+            if (numSprite == null) return null;
 
             GameObject obj = new GameObject();
             obj.name = "HotKeyGuide";
-            obj.transform.SetParent(actionButton.gameObject.transform);
-            obj.layer = actionButton.gameObject.layer;
+            obj.transform.SetParent(button.transform);
+            obj.layer = button.layer;
             SpriteRenderer renderer = obj.AddComponent<SpriteRenderer>();
             renderer.transform.localPosition = (Vector3)pos + new Vector3(0f, 0f, -1f);
             renderer.sprite = GetKeyBindBackgroundSprite();
@@ -150,18 +151,41 @@ namespace Nebula.Objects
             GameObject numObj = new GameObject();
             numObj.name = "HotKeyText";
             numObj.transform.SetParent(obj.transform);
-            numObj.layer = actionButton.gameObject.layer;
+            numObj.layer = button.layer;
             renderer = numObj.AddComponent<SpriteRenderer>();
-            renderer.transform.localPosition = new Vector3(0,0,-1f);
+            renderer.transform.localPosition = new Vector3(0, 0, -1f);
             renderer.sprite = numSprite;
+
+            return obj;
+        }
+
+        static public GameObject? SetKeyGuide(GameObject button, KeyCode key)
+        {
+            return SetKeyGuide(button, key, new Vector2(0.48f, 0.48f));
+        }
+
+        static public GameObject? SetKeyGuideOnSmallButton(GameObject button, KeyCode key)
+        {
+            return SetKeyGuide(button, key, new Vector2(0.28f, 0.28f));
+        }
+
+        public void SetKeyGuide(KeyCode? key, Vector2 pos,bool requireChangeOption)
+        {
+            if (!key.HasValue) return;
+
+            var guideObj = SetKeyGuide(actionButton.gameObject,key.Value,pos);
+
+            if (guideObj == null) return;
 
             if (requireChangeOption)
             {
-                numObj = new GameObject();
-                numObj.name = "HotKeyOption";
-                numObj.transform.SetParent(obj.transform);
-                numObj.layer = actionButton.gameObject.layer;
-                renderer = numObj.AddComponent<SpriteRenderer>();
+                SpriteRenderer renderer;
+
+                GameObject obj = new GameObject();
+                obj.name = "HotKeyOption";
+                obj.transform.SetParent(guideObj.transform);
+                obj.layer = actionButton.gameObject.layer;
+                renderer = obj.AddComponent<SpriteRenderer>();
                 renderer.transform.localPosition = new Vector3(0.12f, 0.07f, -2f);
                 renderer.sprite = GetKeyBindOptionSprite();
             }

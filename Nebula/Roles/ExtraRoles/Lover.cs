@@ -87,7 +87,7 @@ namespace Nebula.Roles.ExtraRoles
                 //自身であれば特に何もしない
                 if (player == PlayerControl.LocalPlayer) return;
 
-                action.Invoke(player);
+                action.Invoke(player); 
             });
         }
 

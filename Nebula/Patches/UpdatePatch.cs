@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Nebula.Patches
 {
-    
+
     [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
     public static class UpdatePatch
     {
@@ -16,11 +16,11 @@ namespace Nebula.Patches
         static private void UpdateFullScreen()
         {
             if (!PlayerControl.LocalPlayer) return;
-            if (PlayerControl.LocalPlayer.GetModData()==null) return;
+            if (PlayerControl.LocalPlayer.GetModData() == null) return;
 
             if (!FS_DeathGuage)
             {
-                FS_DeathGuage = GameObject.Instantiate(HudManager.Instance.FullScreen,HudManager.Instance.transform);
+                FS_DeathGuage = GameObject.Instantiate(HudManager.Instance.FullScreen, HudManager.Instance.transform);
                 FS_DeathGuage.color = Palette.ImpostorRed.AlphaMultiplied(0f);
                 FS_DeathGuage.enabled = true;
                 FS_DeathGuage.gameObject.SetActive(true);
@@ -28,8 +28,8 @@ namespace Nebula.Patches
 
             if (PlayerControl.LocalPlayer.Data.IsDead)
                 FS_DeathGuage.color = Palette.ClearWhite;
-            else if (FS_DeathGuage.color.a != PlayerControl.LocalPlayer.GetModData().DeathGuage*0.25f)
-                FS_DeathGuage.color = Palette.ImpostorRed.AlphaMultiplied(PlayerControl.LocalPlayer.GetModData().DeathGuage*0.25f);
+            else if (FS_DeathGuage.color.a != PlayerControl.LocalPlayer.GetModData().DeathGuage * 0.25f)
+                FS_DeathGuage.color = Palette.ImpostorRed.AlphaMultiplied(PlayerControl.LocalPlayer.GetModData().DeathGuage * 0.25f);
         }
 
         static private bool CannotSeeNameTag(PlayerControl player)
@@ -51,7 +51,7 @@ namespace Nebula.Patches
 
         static private Color rewriteImpostorColor(Game.PlayerData player, Color currentColor, Color impostorColor)
         {
-            if (player.role.category==Roles.RoleCategory.Impostor)
+            if (player.role.category == Roles.RoleCategory.Impostor)
             {
                 return impostorColor;
             }
@@ -73,7 +73,7 @@ namespace Nebula.Patches
             return currentColor;
         }
 
-        static private bool AnyShadowsBetween(Vector2 pos,Vector2 target)
+        static private bool AnyShadowsBetween(Vector2 pos, Vector2 target)
         {
             var vector = target - pos;
             return Helpers.AnyShadowsBetween(pos, vector.normalized, vector.magnitude);
@@ -112,7 +112,7 @@ namespace Nebula.Patches
                 {
                     player.MyPhysics.GlowAnimator.gameObject.SetActive(player.Visible && !ShipStatus.Instance);
                 }
-            
+
 
 
                 /* 名前を編集する */
@@ -128,7 +128,7 @@ namespace Nebula.Patches
                 if (player == PlayerControl.LocalPlayer)
                 {
                     //自分自身ならロールの色にする
-                    if(!playerData.IsAlive && playerData.role.CanHaveGhostRole && playerData.ghostRole != null)
+                    if (!playerData.IsAlive && playerData.role.CanHaveGhostRole && playerData.ghostRole != null)
                         player.cosmetics.nameText.color = playerData.ghostRole.Color;
                     else
                         player.cosmetics.nameText.color = playerData.role.Color;
@@ -145,33 +145,33 @@ namespace Nebula.Patches
                 Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId, (role) => { role.EditOthersDisplayNameColor(player.PlayerId, ref color); });
                 player.cosmetics.nameText.color = color;
 
-                
+
                 bool showNameFlag = !CannotSeeNameTag(player);
 
-                
-                
+
+
                 //自分自身以外の名前は適宜隠す
                 if (!PlayerControl.LocalPlayer.Data.IsDead && player != PlayerControl.LocalPlayer && showNameFlag)
                 {
                     var targetPos = player.transform.position;
-                    
+
                     var result = AnyShadowsBetween(PlayerControl.LocalPlayer.transform.position, targetPos);
                     if (result && (PlayerControl.LocalPlayer.transform.position - targetPos).magnitude < PlayerControl.LocalPlayer.myLight.LightRadius + 5f)
                     {
                         //ある程度近いプレイヤーはより精密に判定する
                         var norm = (targetPos - PlayerControl.LocalPlayer.transform.position).normalized * 0.22f;
-                        
-                        result &= AnyShadowsBetween(PlayerControl.LocalPlayer.transform.position, 
-                            (Vector2)targetPos + new Vector2(norm.y,norm.x));
+
+                        result &= AnyShadowsBetween(PlayerControl.LocalPlayer.transform.position,
+                            (Vector2)targetPos + new Vector2(norm.y, norm.x));
                         result &= AnyShadowsBetween(PlayerControl.LocalPlayer.transform.position,
                             (Vector2)targetPos + new Vector2(-norm.y, -norm.x));
 
                     }
                     showNameFlag &= !result;
-                    
+
                 }
-                
-                
+
+
 
                 player.cosmetics.nameText.enabled = showNameFlag;
             }
@@ -195,7 +195,7 @@ namespace Nebula.Patches
                     if (player.TargetPlayerId == PlayerControl.LocalPlayer.PlayerId)
                     {
                         //自分自身ならロールの色にする
-                        player.NameText.color = (!playerData.IsAlive && playerData.role.CanHaveGhostRole && playerData.ghostRole!=null) ? playerData.ghostRole.Color : playerData.role.Color;
+                        player.NameText.color = (!playerData.IsAlive && playerData.role.CanHaveGhostRole && playerData.ghostRole != null) ? playerData.ghostRole.Color : playerData.role.Color;
                     }
                     else
                     {
@@ -224,7 +224,7 @@ namespace Nebula.Patches
                     return player;
                 }
             }
-            return null; 
+            return null;
         }
 
         public static void UpdateDraggedPlayer()
@@ -243,20 +243,21 @@ namespace Nebula.Patches
                 }
                 data = Game.GameData.data.playersArray[player.PlayerId];
 
-                if (data.dragPlayerId==Byte.MaxValue)
+                if (data.dragPlayerId == Byte.MaxValue)
                 {
                     continue;
                 }
 
-                deadBody=GetDeadBody(data.dragPlayerId, deadBodies);
+                deadBody = GetDeadBody(data.dragPlayerId, deadBodies);
 
-                if ((deadBody == null)||(!data.IsAlive))
+                if ((deadBody == null) || (!data.IsAlive))
                 {
                     data.DropPlayer();
                 }
                 else
                 {
-                    if (player.inVent) {
+                    if (player.inVent)
+                    {
                         deadBody.Reported = true;
                         deadBody.bodyRenderer.enabled = false;
                     }
@@ -268,11 +269,11 @@ namespace Nebula.Patches
                 }
 
                 targetPosition = player.transform.position + new Vector3(-0.1f, -0.1f);
-                distance =player.transform.position.Distance(deadBody.transform.position);
+                distance = player.transform.position.Distance(deadBody.transform.position);
 
                 if (distance < 1.8f)
                 {
-                    deadBody.transform.position+=(targetPosition - deadBody.transform.position)*0.15f;
+                    deadBody.transform.position += (targetPosition - deadBody.transform.position) * 0.15f;
                 }
                 else
                 {
@@ -355,11 +356,6 @@ namespace Nebula.Patches
                 if (MapBehaviour.Instance && MapBehaviour.Instance.gameObject.active) MapUpdate();
 
                 Helpers.RoleAction(PlayerControl.LocalPlayer, (role) => { role.MyUpdate(); });
-                if (!PlayerControl.LocalPlayer.Data.Role.IsImpostor && PlayerControl.LocalPlayer.GetModData().role.VentPermission != Roles.VentPermission.CanNotUse)
-                {
-                    if (Input.GetKeyDown(KeyCode.V))
-                        HudManager.Instance.ImpostorVentButton.DoClick();
-                }
 
                 //死後経過時間を更新
                 foreach (Game.DeadPlayerData deadPlayer in Game.GameData.data.deadPlayers.Values)
@@ -406,16 +402,40 @@ namespace Nebula.Patches
 
                 Objects.Ghost.Update();
 
-                if (CustomOptionHolder.timeLimitOption.getBool())Game.GameData.data.TimerUpdate();
+                if (CustomOptionHolder.timeLimitOption.getBool()) Game.GameData.data.TimerUpdate();
 
                 Module.Information.UpperInformationManager.Update();
 
                 if (Game.GameData.data.Ghost != null) Game.GameData.data.Ghost.Update();
 
             }
-            catch(NullReferenceException excep) { UnityEngine.Debug.Log(excep.StackTrace); }
+            catch (NullReferenceException excep) { UnityEngine.Debug.Log(excep.StackTrace); }
 
         }
-        
+
+    }
+
+    [HarmonyPatch(typeof(KeyboardJoystick), nameof(KeyboardJoystick.HandleHud))]
+    public static class KeyboardJoystickUpdatePatch
+    {
+        public static void Postfix(KeyboardJoystick __instance)
+        {
+            if (!DestroyableSingleton<HudManager>.InstanceExists)return;
+
+            if (PlayerControl.LocalPlayer.Data != null && PlayerControl.LocalPlayer.Data.Role != null)
+            {
+                if (PlayerControl.LocalPlayer.Data.Role.IsImpostor && Input.GetKeyDown(Module.NebulaInputManager.modKillInput.keyCode))
+                {
+                    DestroyableSingleton<HudManager>.Instance.KillButton.DoClick();
+                }
+                if (Game.GameData.data != null && Helpers.HasModData(PlayerControl.LocalPlayer.PlayerId))
+                {
+                    if (!PlayerControl.LocalPlayer.Data.Role.IsImpostor && Game.GameData.data.myData.getGlobalData().role.VentPermission != Roles.VentPermission.CanNotUse && KeyboardJoystick.player.GetButtonDown(50))
+                    {
+                        DestroyableSingleton<HudManager>.Instance.ImpostorVentButton.DoClick();
+                    }
+                }
+            }
+        }
     }
 }
