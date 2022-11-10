@@ -22,12 +22,12 @@ namespace Nebula.Patches
                 t.Id = (uint)i;
                 ritualTasks.Add(t);
             }
-
+            
             //脱出テキストタスク
             t = new GameData.TaskInfo(Byte.MaxValue - 1, 0);
             t.Id = (uint)missions;
             ritualTasks.Add(t);
-
+            
             playerById.Tasks = ritualTasks;
             playerById.Object.SetTasks(playerById.Tasks);
 

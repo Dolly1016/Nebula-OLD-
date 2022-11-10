@@ -11,6 +11,8 @@ namespace Nebula.Module.Information
 
         public TextInformation(string text) : base("TextInfo")
         {
+            if (!HudManager.Instance.TaskText) return;
+
             height = 0.28f;
 
             this.text = GameObject.Instantiate(HudManager.Instance.TaskText, gameObject.transform);

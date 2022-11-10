@@ -47,10 +47,21 @@ namespace Nebula.Roles.CrewmateRoles
             get
             {
                 return Roles.F_Crewmate.CanBeMadmate;
+                
             }
         }
 
-        public override bool IsGuessableRole { get => Roles.F_Crewmate.isGuessableOption.getBool(); protected set => base.IsGuessableRole = value; }
+        public override bool IsGuessableRole { get {
+                if (Game.GameData.data != null && Game.GameData.data.myData.getGlobalData().role == Roles.Eraser)
+                {
+                    return Roles.Eraser.eraserCanGuessCrewmateOption.getBool();
+                }
+                else
+                {
+                    return Roles.F_Crewmate.isGuessableOption.getBool();
+                }
+            }
+        }
 
         public override List<Role> GetImplicateRoles()
         {

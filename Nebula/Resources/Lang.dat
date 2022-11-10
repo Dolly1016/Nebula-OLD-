@@ -567,6 +567,7 @@
 "role.eraser.eraseDuration" : "Erase Duration"
 "role.eraser.eraseCoolDown" : "Erase Cool Down"
 "role.eraser.eraseCoolDownAddition" : "Erase Cool Down Addition"
+"role.eraser.eraserCanGuessCrewmate" : "Eraser Can Guess Crewmate"
 
 "role.evilAce.name" : "Evil Ace"
 "role.evilAce.short" : "A"

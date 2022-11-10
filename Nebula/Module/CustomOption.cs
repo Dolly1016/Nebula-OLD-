@@ -934,6 +934,8 @@ namespace Nebula.Module
             stringOption.TitleText.rectTransform.sizeDelta = new Vector2(stringOption.TitleText.rectTransform.sizeDelta.x + 2.4f, stringOption.TitleText.rectTransform.sizeDelta.y);
             stringOption.TitleText.rectTransform.anchoredPosition = new Vector2(stringOption.TitleText.rectTransform.anchoredPosition.x + 1.2f, 0);
 
+            
+
             stringOption.Value = 0;
             stringOption.ValueText.text = "";
 
@@ -948,6 +950,11 @@ namespace Nebula.Module
             button.OnMouseOver = new UnityEngine.Events.UnityEvent();
             button.OnMouseOut = new UnityEngine.Events.UnityEvent();
             button.OnClick = new UnityEngine.UI.Button.ButtonClickedEvent();
+
+            foreach(var text in stringOption.gameObject.transform.GetComponentsInChildren<TMPro.TextMeshPro>())
+            {
+                text.enabled = true;
+            }
 
             return stringOption;
         }

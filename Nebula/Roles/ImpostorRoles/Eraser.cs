@@ -20,6 +20,7 @@ namespace Nebula.Roles.ImpostorRoles
         private Module.CustomOption eraseDurationOption;
         private Module.CustomOption eraseCoolDownOption;
         private Module.CustomOption eraseCoolDownAdditionOption;
+        public Module.CustomOption eraserCanGuessCrewmateOption;
 
         private int eraseCountId;
         public override RelatedRoleData[] RelatedRoleDataInfo { get => new RelatedRoleData[] { new RelatedRoleData(eraseCountId, "Erased Roles", 0, 20) }; }
@@ -49,6 +50,8 @@ namespace Nebula.Roles.ImpostorRoles
 
             eraseDurationOption = CreateOption(Color.white, "eraseDuration", 2f, 0f, 5f, 0.5f);
             eraseDurationOption.suffix = "second";
+
+            eraserCanGuessCrewmateOption = CreateOption(Color.white, "eraserCanGuessCrewmate", false);
         }
 
         public override void MyPlayerControlUpdate()

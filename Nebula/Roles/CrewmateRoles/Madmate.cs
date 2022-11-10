@@ -133,7 +133,7 @@ namespace Nebula.Roles.CrewmateRoles
 
         public override bool IsUnsuitable { get { return SecondoryRoleOption.getBool(); } }
 
-        public override bool HasExecutableFakeTask(byte playerId) => true;
+        public override bool HasExecutableFakeTask(byte playerId) => CanKnowImpostorsByTasksOption.getBool();
 
         public Madmate()
                 : base("Madmate", "madmate", Palette.ImpostorRed, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
