@@ -103,6 +103,15 @@ namespace Nebula.Map.Database
             SpawnCandidates.Add(new SpawnCandidate("Electrical", new Vector2(7.4f, -9.6f), "Nebula.Resources.Locations.Electrical.png", "AMB_Electricshock1"));
 
             SpawnOriginalPositionAtFirst = true;
+
+            RegisterObjectPosition("plasticContainer", new Vector2(21.0664f, -11.2992f), SystemTypes.Storage, 40f);
+            RegisterObjectPosition("switchboard", new Vector2(9.718f, -11.0947f), SystemTypes.Electrical, 50f);
+            RegisterObjectPosition("weaponsConsole", new Vector2(9.9291f, -22.391f), SystemTypes.Weapons, 45f);
+            RegisterObjectPosition("tree", new Vector2(1.654f, -16.012f), SystemTypes.LifeSupp, 35f, 0.8f);
+            RegisterObjectPosition("telescope", new Vector2(33.8684f, -5.4713f), SystemTypes.Laboratory, 40f);
+            RegisterObjectPosition("drill", new Vector2(27.421f, -6.9823f), SystemTypes.Laboratory, 35f);
+            RegisterObjectPosition("reactor", new Vector2(34.7578f, -18.8785f), SystemTypes.Specimens, 50f);
+            RegisterObjectPosition("decontamination", new Vector2(39.8686f, -9.8323f), SystemTypes.Decontamination, 50f);
         }
     }
 }

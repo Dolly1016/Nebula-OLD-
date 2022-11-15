@@ -8,14 +8,17 @@ using HarmonyLib;
 using Hazel;
 using Nebula.Objects;
 using Nebula.Patches;
+using System.Collections;
+using Nebula.Utilities;
+using BepInEx.IL2CPP.Utils.Collections;
 
 namespace Nebula.Roles.NeutralRoles
 {
-    public class Opportunist : Template.ExemptTasks
+    public class Opportunist : Role
     {
         static public Color RoleColor = new Color(106f / 255f, 252f / 255f, 45f / 255f);
 
-
+        private Module.CustomOption numOfTasksOption;
         private Module.CustomOption canUseVentsOption;
         private Module.CustomOption ventCoolDownOption;
         private Module.CustomOption ventDurationOption;
@@ -23,7 +26,25 @@ namespace Nebula.Roles.NeutralRoles
         private Module.CustomOption canWinWithEmpiricOption;
         private Module.CustomOption canWinWithJesterOption;
         private Module.CustomOption canWinWithVultureOption;
+        private Module.CustomOption canWinWithLoversOption;
         private Module.CustomOption canWinWithAvengerOption;
+
+        //オポチュタスク割り当て用
+        private List<int> stayingTaskOrder;
+        private int taskCount;
+
+        public override void OnSetTasks(ref List<GameData.TaskInfo> initialTasks, ref List<GameData.TaskInfo>? actualTasks)
+        {
+            stayingTaskOrder = new List<int>(Helpers.GetRandomArray(Map.MapData.GetCurrentMapData().Objects.Count));
+            taskCount = 0;
+
+            initialTasks.Clear();
+            int tasks = (int)numOfTasksOption.getFloat();
+            for (int i = 0; i < tasks; i++)
+            {
+                initialTasks.Add(new GameData.TaskInfo(byte.MaxValue - 2, 0));
+            }
+        }
 
         public override void GlobalIntroInitialize(PlayerControl __instance)
         {
@@ -34,6 +55,8 @@ namespace Nebula.Roles.NeutralRoles
         public override void LoadOptionData()
         {
             base.LoadOptionData();
+
+            numOfTasksOption = CreateOption(Color.white, "numOfTasks", 4f,1f,6f,1f);
 
             canUseVentsOption = CreateOption(Color.white, "canUseVents", true);
             ventCoolDownOption = CreateOption(Color.white, "ventCoolDown", 20f, 5f, 60f, 2.5f);
@@ -47,6 +70,7 @@ namespace Nebula.Roles.NeutralRoles
             canWinWithEmpiricOption = CreateOption(Color.white, "canWinWithEmpiric", true);
             canWinWithJesterOption = CreateOption(Color.white, "canWinWithJester", true);
             canWinWithVultureOption = CreateOption(Color.white, "canWinWithVulture", true);
+            canWinWithLoversOption = CreateOption(Color.white, "canWinWithLovers", true);
             canWinWithAvengerOption = CreateOption(Color.white, "canWinWithAvenger", true);
         }
 
@@ -63,6 +87,8 @@ namespace Nebula.Roles.NeutralRoles
             if (condition == EndCondition.JesterWin && !canWinWithJesterOption.getBool()) return false;
             if (condition == EndCondition.VultureWin && !canWinWithVultureOption.getBool()) return false;
             if (condition == EndCondition.AvengerWin && !canWinWithAvengerOption.getBool()) return false;
+            if (condition == EndCondition.LoversWin && !canWinWithLoversOption.getBool()) return false;
+            if (condition == EndCondition.TrilemmaWin && !canWinWithLoversOption.getBool()) return false;
             if (condition == EndCondition.NobodySkeldWin) return false;
             if (condition == EndCondition.NobodyMiraWin) return false;
             if (condition == EndCondition.NobodyPolusWin) return false;
@@ -86,6 +112,32 @@ namespace Nebula.Roles.NeutralRoles
                  true, VentPermission.CanUseLimittedVent, true, false, false)
         {
             VentColor = RoleColor;
+
+            stayingTaskOrder = new List<int>();
         }
+
+        public void InitializeOpportunistTask(Tasks.OpportunistTask task)
+        {
+            task.opportunistTaskType = Tasks.OpportunistTask.OpportunistTaskType.StayingNearObject;
+            Map.ObjectData objData;
+            if (stayingTaskOrder.Count > 0) {
+                objData = Map.MapData.GetCurrentMapData().Objects[stayingTaskOrder[0]];
+                stayingTaskOrder.RemoveAt(0);
+            }
+            else
+            {
+                objData = Map.MapData.GetCurrentMapData().Objects[0];
+            }
+            task.objPos = objData.Position;
+            task.objName = objData.Name;
+            task.StartAt = objData.Room;
+            task.maxTime = objData.MaxTime;
+            task.distance = objData.Distance;
+            task.name = "OpportunistTask" + taskCount;
+
+            taskCount++;
+        }
+
+        
     }
 }

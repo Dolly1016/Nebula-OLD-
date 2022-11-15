@@ -9,6 +9,24 @@ using UnhollowerBaseLib.Attributes;
 
 namespace Nebula.Map
 {
+    public class ObjectData
+    {
+        public string Name;
+        public Vector2 Position;
+        public SystemTypes Room;
+        public float MaxTime;
+        public float Distance;
+
+        public ObjectData(string name, Vector2 pos, SystemTypes room, float time,float distance)
+        {
+            Name = name;
+            Position = pos;
+            Room = room;
+            MaxTime = time;
+            Distance = distance;
+        }
+    }
+
     public class SabotageData
     {
         public SystemTypes Room { get; private set; }
@@ -133,6 +151,9 @@ namespace Nebula.Map
         //スポーン位置選択がもとから発生するかどうか
         public bool HasDefaultPrespawnMinigame;
 
+        //Opportunistのタスク対象となるオブジェクト
+        public List<ObjectData> Objects;
+
         //Ritualスポーン位置候補
         public List<RitualSpawnCandidate> RitualSpawnLocations;
         //Ritualミッション部屋候補(ビットフラグタグと候補)
@@ -152,6 +173,11 @@ namespace Nebula.Map
             {
                 RitualMissionPositions[room].Add(range);
             }
+        }
+
+        public void RegisterObjectPosition(string objectName,Vector2 pos,SystemTypes room,float maxTime,float distance=0.6f)
+        {
+            Objects.Add(new ObjectData(objectName, pos, room, maxTime,distance));
         }
         
 
@@ -282,6 +308,8 @@ namespace Nebula.Map
 
             MapScale = 1f;
             DoorHackingDuration = 10f;
+
+            Objects = new List<ObjectData>();
 
             RitualRooms = new List<SystemTypes[]>();
             RitualSpawnLocations = new List<RitualSpawnCandidate>();

@@ -124,6 +124,14 @@ namespace Nebula.Map.Database
             MapScale = 30f;
             HasDefaultPrespawnMinigame = true;
 
+            RegisterObjectPosition("ruby", new Vector2(-8.8515f, 9.0895f), SystemTypes.VaultRoom, 40f);
+            RegisterObjectPosition("crane", new Vector2(1.3844f,0.379f), SystemTypes.Engine, 40f, 1.2f);
+            RegisterObjectPosition("steering", new Vector2(-19.677f,-0.791f), SystemTypes.Cockpit, 30f, 1f);
+            RegisterObjectPosition("kitchen", new Vector2(-5.1793f, -8.5239f), SystemTypes.Kitchen, 35f);
+            RegisterObjectPosition("innermost", new Vector2(18.315f, -3.8655f), SystemTypes.Electrical, 30f,0.9f);
+            RegisterObjectPosition("lounge", new Vector2(29.0523f, -7.461f), SystemTypes.Medical, 30f, 1.4f);
+            RegisterObjectPosition("plasticContainer", new Vector2(39.039f, 1.4811f), SystemTypes.CargoBay, 35f);
+
             RitualRooms.Add(new SystemTypes[] { SystemTypes.Cockpit });
             RitualRooms.Add(new SystemTypes[] { SystemTypes.Cockpit,SystemTypes.Comms });
             RitualRooms.Add(new SystemTypes[] { SystemTypes.Armory, SystemTypes.Comms });

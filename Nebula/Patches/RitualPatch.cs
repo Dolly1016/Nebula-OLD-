@@ -56,6 +56,12 @@ namespace Nebula.Patches
                     __result = obj.AddComponent<Tasks.RitualEscapeTextTask>();
                     return false;
                 }
+                else if (idx == Byte.MaxValue - 2)
+                {
+                    var obj = new GameObject();
+                    __result = obj.AddComponent<Tasks.OpportunistTask>();
+                    return false;
+                }
                 return true;
             }
         }

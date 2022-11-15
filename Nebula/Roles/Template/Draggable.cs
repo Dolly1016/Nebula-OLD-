@@ -26,10 +26,37 @@ namespace Nebula.Roles.Template
             dragButton = new CustomButton(
                 () =>
                 {
+                    Vector2 pos=new Vector2();
                     byte target;
                     if (Game.GameData.data.myData.getGlobalData().dragPlayerId != Byte.MaxValue)
                     {
                         target = Byte.MaxValue;
+
+                        DeadBody? body = Helpers.AllDeadBodies().FirstOrDefault((d) => d.ParentId == Game.GameData.data.myData.getGlobalData().dragPlayerId);
+                        if (body != null)
+                        {
+                            Vector3 playerPos = PlayerControl.LocalPlayer.GetTruePosition();
+                            Vector3 deadBodyPos = body.TruePosition;
+                            Vector3 diff = (deadBodyPos - playerPos);
+                            float d = diff.magnitude;
+                            if (PhysicsHelpers.AnythingBetween(playerPos, deadBodyPos, Constants.ShipAndAllObjectsMask, false))
+                            {
+                                foreach (var ray in PhysicsHelpers.castHits)
+                                {
+                                    float temp = ((Vector3)ray.point - playerPos).magnitude;
+                                    if (d > temp) d = temp;
+                                }
+
+                                d -= 0.15f;
+                                if (d < 0f) d = 0f;
+
+                                pos = playerPos + diff.normalized * d;
+                            }
+                            else
+                            {
+                                pos = body.transform.position;
+                            }
+                        }
                         OnDropPlayer();
                     }
                     else
@@ -41,8 +68,10 @@ namespace Nebula.Roles.Template
                     MessageWriter dragAndDropWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.DragAndDropPlayer, Hazel.SendOption.Reliable, -1);
                     dragAndDropWriter.Write(PlayerControl.LocalPlayer.PlayerId);
                     dragAndDropWriter.Write(target);
+                    dragAndDropWriter.Write(pos.x);
+                    dragAndDropWriter.Write(pos.y);
                     AmongUsClient.Instance.FinishRpcImmediately(dragAndDropWriter);
-                    RPCEvents.DragAndDropPlayer(PlayerControl.LocalPlayer.PlayerId, target);
+                    RPCEvents.DragAndDropPlayer(PlayerControl.LocalPlayer.PlayerId, target,pos);
                 },
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
                 () => { return PlayerControl.LocalPlayer.CanMove && (Game.GameData.data.myData.getGlobalData().dragPlayerId != Byte.MaxValue|| deadBodyId!=Byte.MaxValue); },
@@ -93,7 +122,7 @@ namespace Nebula.Roles.Template
                     Patches.PlayerControlPatch.SetDeadBodyOutline(body, Color.yellow);   
                 }
                 else
-                {       
+                {
                     deadBodyId = byte.MaxValue;
                 }
             }

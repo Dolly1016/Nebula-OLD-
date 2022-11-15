@@ -63,6 +63,13 @@ namespace Nebula.Map.Database
 
             MapScale = 32f;
 
+            RegisterObjectPosition("weaponsConsole", new Vector2(9.0876f, 1.812f), SystemTypes.Weapons, 40f);
+            RegisterObjectPosition("steering", new Vector2(18.732f, -4.728f), SystemTypes.Nav, 25f,0.8f);
+            RegisterObjectPosition("receivingDevice", new Vector2(4.2024f, -17.1156f), SystemTypes.Comms, 50f, 1f);
+            RegisterObjectPosition("plasticContainer", new Vector2(-2.844f, -13.8924f), SystemTypes.Storage, 40f);
+            RegisterObjectPosition("switchboard", new Vector2(-9.792f, -10.2f), SystemTypes.Electrical, 60f);
+            RegisterObjectPosition("reactor", new Vector2(-21.792f, -5.5728f), SystemTypes.Reactor, 45f);
+
             RitualRooms.Add(new SystemTypes[] { SystemTypes.UpperEngine });
             RitualRooms.Add(new SystemTypes[] { SystemTypes.LowerEngine });
             RitualRooms.Add(new SystemTypes[] { SystemTypes.UpperEngine, SystemTypes.LowerEngine });

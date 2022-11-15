@@ -69,6 +69,31 @@ namespace Nebula.Tasks
             }
         }
 
+        [HarmonyPatch(typeof(NormalPlayerTask), nameof(NormalPlayerTask.FixedUpdate))]
+        class UpdatePatch
+        {
+            static public void Postfix(NormalPlayerTask __instance)
+            {
+                if (__instance.TaskType != TaskTypes.None) return;
+                NebulaPlayerTask t = __instance.GetComponent<NebulaPlayerTask>();
+                if (!t) return;
+                t.__Update();
+            }
+        }
+
+        [HarmonyPatch(typeof(NormalPlayerTask), nameof(NormalPlayerTask.UpdateArrow))]
+        class UpdateArrowPatch
+        {
+            static public bool Prefix(NormalPlayerTask __instance)
+            {
+                if (__instance.TaskType != TaskTypes.None) return true;
+                NebulaPlayerTask t = __instance.GetComponent<NebulaPlayerTask>();
+                if (!t) return true;
+                t.__UpdateArrow();
+                return false;
+            }
+        }
+
         [HarmonyPatch(typeof(NormalPlayerTask), nameof(NormalPlayerTask.ValidConsole))]
         class ValidConsolePatch
         {
@@ -90,7 +115,9 @@ namespace Nebula.Tasks
                 if (__instance.TaskType != TaskTypes.None) return true;
                 NebulaPlayerTask t = __instance.GetComponent<NebulaPlayerTask>();
                 if (!t) return true;
+                t.LocationDirty = false;
                 __result = null;
+                t.__GetLocations(ref __result);
                 return false;
             }
         }
@@ -115,7 +142,11 @@ namespace Nebula.Tasks
         public virtual void __NextStep(){ }
 
 
-        public virtual void __Initialize(){  }
+        public virtual void __Initialize(){ }
+
+        public virtual void __Update() { }
+
+        public virtual void __UpdateArrow() { }
 
         public virtual bool __ValidConsole(Console console){ return false; }
 
@@ -123,6 +154,8 @@ namespace Nebula.Tasks
         {
             return false;
         }
+
+        public virtual void __GetLocations(ref Il2CppSystem.Collections.Generic.List<Vector2> __result) { }
 
 
         public byte[] NebulaData;

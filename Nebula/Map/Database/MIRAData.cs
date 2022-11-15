@@ -70,6 +70,14 @@ namespace Nebula.Map.Database
             MapPositions.Add(new Vector2(20.7f, 22.2f));
             MapPositions.Add(new Vector2(18f, 25.3f));
 
+            RegisterObjectPosition("memorabilia", new Vector2(8.3714f, -0.8347f), SystemTypes.Hallway, 30f, 1f);
+            RegisterObjectPosition("receivingDevice", new Vector2(14.933f, 5.649f), SystemTypes.Comms, 50f);
+            RegisterObjectPosition("switchboard", new Vector2(14.802f, 21.384f), SystemTypes.Office, 50f);
+            RegisterObjectPosition("planters", new Vector2(20.486f, 22.78f), SystemTypes.Greenhouse, 30f);
+            RegisterObjectPosition("vendingMachine", new Vector2(27.49f, 5.665f), SystemTypes.Cafeteria, 40f);
+            RegisterObjectPosition("rendezvous", new Vector2(17.7506f, 11.4057f), SystemTypes.Hallway, 60f, 1.2f);
+            RegisterObjectPosition("lockers", new Vector2(9.6259f, 3.9384f), SystemTypes.LockerRoom, 40f, 1.4f);
+            RegisterObjectPosition("reactor", new Vector2(2.549f, 12.407f), SystemTypes.Reactor, 40f);
 
             MapScale = 36f;
         }
