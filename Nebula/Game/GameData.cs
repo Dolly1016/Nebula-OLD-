@@ -88,6 +88,76 @@ namespace Nebula.Game
         }
     }
 
+    public class VisionFactor
+    {
+        public float Duration;
+        public float VisionRate { get; private set; }
+
+
+        public VisionFactor(float duration, float rate)
+        {
+            Duration = duration;
+            VisionRate = rate;
+        }
+    }
+
+    public class VisionFactorManager
+    {
+        HashSet<VisionFactor> Factors;
+        float currentVision;
+
+        public VisionFactorManager()
+        {
+            Factors = new HashSet<VisionFactor>();
+            currentVision = 1f;
+        }
+
+        public void Register(VisionFactor vision)
+        {
+            Factors.Add(vision);
+        }
+
+        public void Update()
+        {
+            if (Factors.Count > 0)
+            {
+                Factors.RemoveWhere((vision) =>
+                {
+                    vision.Duration -= Time.deltaTime;
+                    return !(vision.Duration > 0);
+                });
+            }
+
+            //現在の目標の視界
+            float r = 1f;
+            bool quickFlag = false;
+
+            if (AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Started
+                    || !ShipStatus.Instance
+                    || MeetingHud.Instance
+                    || ExileController.Instance
+                    || Minigame.Instance
+                    || (MapBehaviour.Instance && MapBehaviour.Instance.IsOpen)
+                    || Module.MetaDialog.dialogOrder.Count > 0)
+            {
+                r = 1f;
+                quickFlag = true;
+            }
+            else
+            {
+                foreach (var vision in Factors) r *= vision.VisionRate;
+            }
+
+            //現在の視界を変化
+            currentVision += (r - currentVision) * (quickFlag ? 4.5f : 2.9f) * Time.deltaTime;
+            if (Mathf.Abs(r - currentVision) < 0.005f) currentVision = r;
+
+        }
+        public float GetVisionRate()
+        {
+            return currentVision;
+        }
+    }
     public class MyPlayerData
     {
         public PlayerControl? currentTarget { get; set; }
@@ -96,6 +166,8 @@ namespace Nebula.Game
         public float VentDurationTimer { get; set; }
         public float VentCoolDownTimer { get; set; }
         public List<TaskInfo> InitialTasks { get; set; }
+
+        public VisionFactorManager Vision { get; }
 
         public PlayerData getGlobalData()
         {
@@ -115,6 +187,7 @@ namespace Nebula.Game
             this.globalData = null;
             this.CanSeeEveryoneInfo = false;
             this.VentDurationTimer = this.VentCoolDownTimer = 10f;
+            this.Vision = new VisionFactorManager();
         }
     }
 

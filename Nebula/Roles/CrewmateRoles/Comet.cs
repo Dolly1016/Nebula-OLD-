@@ -21,6 +21,7 @@ namespace Nebula.Roles.CrewmateRoles
         private Module.CustomOption boostDurationOption;
         private Module.CustomOption boostSpeedOption;
         private Module.CustomOption boostLightOption;
+        private Module.CustomOption boostVisionOption;
 
         private float lightLevel = 1f;
 
@@ -64,6 +65,7 @@ namespace Nebula.Roles.CrewmateRoles
                     RPCEventInvoker.UpdatePlayerVisibility(PlayerControl.LocalPlayer.PlayerId, false);
                     RPCEventInvoker.EmitSpeedFactor(PlayerControl.LocalPlayer, new Game.SpeedFactor(0,boostDurationOption.getFloat(), boostSpeedOption.getFloat(), false));
                     RPCEventInvoker.EmitAttributeFactor(PlayerControl.LocalPlayer, new Game.PlayerAttributeFactor(Game.PlayerAttribute.Invisible, boostDurationOption.getFloat(), 0, false));
+                    Game.GameData.data.myData.Vision.Register(new Game.VisionFactor(boostDurationOption.getFloat(), 1.5f));
                 },
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
                 () => { return PlayerControl.LocalPlayer.CanMove; },
@@ -110,8 +112,11 @@ namespace Nebula.Roles.CrewmateRoles
             boostSpeedOption = CreateOption(Color.white, "boostSpeed", 2f, 1.25f, 3f, 0.25f);
             boostSpeedOption.suffix = "cross";
 
-            boostLightOption = CreateOption(Color.white, "boostVisionRate", 1.5f, 1f, 2f, 0.25f);
+            boostLightOption = CreateOption(Color.white, "boostVisionRate", 1.5f, 1f, 4f, 0.5f);
             boostLightOption.suffix = "cross";
+
+            boostVisionOption = CreateOption(Color.white, "boostVisionRate", 1.5f, 1f, 4f, 0.5f);
+            boostVisionOption.suffix = "cross";
         }
 
         public Comet()

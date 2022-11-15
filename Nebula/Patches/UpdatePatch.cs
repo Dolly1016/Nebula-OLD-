@@ -350,6 +350,9 @@ namespace Nebula.Patches
                     EmergencyPatch.SabotageUpdate();
                 }
 
+                //視界の更新
+                Game.GameData.data.myData.Vision.Update();
+
                 // ボタン類の更新 
                 CustomButton.HudUpdate();
 

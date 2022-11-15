@@ -189,7 +189,10 @@ namespace Nebula.Patches
 			else
 				ObserverModeRate = ObserverMode ? 2.0f : 1.0f;
 
-			Camera.main.orthographicSize = 3.0f * Distance * ObserverModeRate;
+			float r = 1f;
+			if (Game.GameData.data != null && Game.GameData.data.myData != null) r = Game.GameData.data.myData.Vision.GetVisionRate();
+
+			Camera.main.orthographicSize = 3.0f * Distance * ObserverModeRate * r;
 			__instance.UICamera.orthographicSize = 3.0f;
 			__instance.transform.localScale = Vector3.one;
 
