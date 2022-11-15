@@ -30,7 +30,7 @@ namespace Nebula.Roles.MetaRoles
         public override void Initialize(PlayerControl __instance)
         {
             Game.GameData.data.myData.CanSeeEveryoneInfo = true;
-            FastDestroyableSingleton<HudManager>.Instance.ShadowQuad.gameObject.SetActive(false);
+            HudManager.Instance.ShadowQuad.gameObject.SetActive(false);
         }
 
 

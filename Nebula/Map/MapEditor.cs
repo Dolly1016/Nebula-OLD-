@@ -54,6 +54,22 @@ namespace Nebula.Map
 
         public static void MapCustomize(int mapId)
         {
+            if(CustomOptionHolder.mapOptions.getBool() && CustomOptionHolder.quietVentsInTheShadow.getBool())
+            {
+                //ベントを見えなくする
+                foreach(var vent in ShipStatus.Instance.AllVents)
+                {
+                    GameObject shadowObj = new GameObject("ShadowVent");
+                    shadowObj.transform.SetParent(vent.transform);
+                    shadowObj.transform.localPosition = new Vector3(0f,0f,0f);
+                    shadowObj.transform.localScale = new Vector3(1f,1f,1f);
+                    shadowObj.AddComponent<SpriteRenderer>().sprite = vent.GetComponent<SpriteRenderer>().sprite;
+                    shadowObj.layer = LayerExpansion.GetShadowLayer();
+
+                    vent.gameObject.layer= LayerExpansion.GetDefaultLayer();
+                }                
+            }
+
             if (!MapEditors.ContainsKey(mapId)) return;
 
             MapEditors[mapId].MapCustomize();

@@ -21,7 +21,7 @@ namespace Nebula.Roles.CrewmateRoles
         private Module.CustomOption boostDurationOption;
         private Module.CustomOption boostSpeedOption;
         private Module.CustomOption boostLightOption;
-        private Module.CustomOption boostVisionOption;
+        private Module.CustomOption boostViewOption;
 
         private float lightLevel = 1f;
 
@@ -108,15 +108,15 @@ namespace Nebula.Roles.CrewmateRoles
 
             boostDurationOption = CreateOption(Color.white, "boostDuration", 10f, 5f, 30f, 5f);
             boostDurationOption.suffix = "second";
-
+            
             boostSpeedOption = CreateOption(Color.white, "boostSpeed", 2f, 1.25f, 3f, 0.25f);
             boostSpeedOption.suffix = "cross";
 
             boostLightOption = CreateOption(Color.white, "boostVisionRate", 1.5f, 1f, 4f, 0.5f);
             boostLightOption.suffix = "cross";
 
-            boostVisionOption = CreateOption(Color.white, "boostVisionRate", 1.5f, 1f, 4f, 0.5f);
-            boostVisionOption.suffix = "cross";
+            boostViewOption = CreateOption(Color.white, "boostViewRate", 1.5f, 1f, 4f, 0.5f);
+            boostViewOption.suffix = "cross";
         }
 
         public Comet()

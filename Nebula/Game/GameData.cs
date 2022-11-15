@@ -237,7 +237,7 @@ namespace Nebula.Game
                 if (candidate.Count > 0)
                     this.RespawnRoom = candidate[NebulaPlugin.rnd.Next(candidate.Count)];
                 else
-                    this.RespawnRoom = nearest.Value;
+                    this.RespawnRoom = nearest.HasValue ? nearest.Value : ShipStatus.Instance.FastRooms.keys.GetEnumerator().Current;
             }
             else
             {

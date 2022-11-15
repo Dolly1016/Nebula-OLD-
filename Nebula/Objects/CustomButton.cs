@@ -145,7 +145,7 @@ namespace Nebula.Objects
             obj.transform.SetParent(button.transform);
             obj.layer = button.layer;
             SpriteRenderer renderer = obj.AddComponent<SpriteRenderer>();
-            renderer.transform.localPosition = (Vector3)pos + new Vector3(0f, 0f, -1f);
+            renderer.transform.localPosition = (Vector3)pos + new Vector3(0f, 0f, -10f);
             renderer.sprite = GetKeyBindBackgroundSprite();
 
             GameObject numObj = new GameObject();

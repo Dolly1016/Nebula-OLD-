@@ -106,6 +106,8 @@ namespace Nebula
         public static CustomOption invalidateSecondaryAdmin;
         public static CustomOption useClassicAdmin;
         public static CustomOption allowParallelMedBayScans;
+        public static CustomOption quietVentsInTheShadow;
+        public static CustomOption oneWayMeetingRoomOption;
 
 
         public static CustomOption RitualOption;
@@ -275,6 +277,8 @@ namespace Nebula
             invalidateSecondaryAdmin = CustomOption.Create(Color.white, "option.invalidateSecondaryAdmin", true, mapOptions).SetGameMode(CustomGameMode.All);
             useClassicAdmin = CustomOption.Create(Color.white, "option.useClassicAdmin", false, mapOptions).SetGameMode(CustomGameMode.All);
             allowParallelMedBayScans = CustomOption.Create(Color.white, "option.allowParallelMedBayScans", false, mapOptions).SetGameMode(CustomGameMode.All);
+            quietVentsInTheShadow = CustomOption.Create(Color.white, "option.quietVentsInTheShadow", false, mapOptions).SetGameMode(CustomGameMode.All);
+            oneWayMeetingRoomOption = CustomOption.Create(Color.white, "option.oneWayMeetingRoom", false, mapOptions).SetGameMode(CustomGameMode.All);
 
             limiterOptions = CustomOption.Create(Color.white, "option.limitOptions", false, null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.All);
             CustomOption.RegisterTopOption(limiterOptions);
