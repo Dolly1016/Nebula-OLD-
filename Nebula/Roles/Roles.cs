@@ -48,6 +48,7 @@ namespace Nebula.Roles
         public static CrewmateRoles.Mayor Mayor = new CrewmateRoles.Mayor();
         public static CrewmateRoles.Necromancer Necromancer = new CrewmateRoles.Necromancer();
         public static ComplexRoles.Guesser NiceGuesser = new ComplexRoles.Guesser("NiceGuesser", "niceGuesser", false);
+        public static ComplexRoles.Tracker NiceTracker = new ComplexRoles.Tracker("NiceTracker", "niceTracker", false);
         public static ComplexRoles.Trapper NiceTrapper = new ComplexRoles.Trapper("NiceTrapper", "niceTrapper", false);
         public static CrewmateRoles.Oracle Oracle = new CrewmateRoles.Oracle();
         public static CrewmateRoles.Provocateur Provocateur = new CrewmateRoles.Provocateur();
@@ -68,6 +69,7 @@ namespace Nebula.Roles
         public static ImpostorRoles.Eraser Eraser = new ImpostorRoles.Eraser();
         public static ImpostorRoles.EvilAce EvilAce = new ImpostorRoles.EvilAce();
         public static ComplexRoles.Guesser EvilGuesser = new ComplexRoles.Guesser("EvilGuesser", "evilGuesser", true);
+        public static ComplexRoles.Tracker EvilTracker = new ComplexRoles.Tracker("EvilTracker", "evilTracker", true);
         public static ComplexRoles.Trapper EvilTrapper = new ComplexRoles.Trapper("EvilTrapper", "evilTrapper", true);
         public static ImpostorRoles.Jailer Jailer = new ImpostorRoles.Jailer();
         public static ImpostorRoles.Marionette Marionette = new ImpostorRoles.Marionette();
@@ -103,6 +105,7 @@ namespace Nebula.Roles
 
         public static ComplexRoles.FCrewmate F_Crewmate = new ComplexRoles.FCrewmate();
         public static ComplexRoles.FGuesser F_Guesser = new ComplexRoles.FGuesser();
+        public static ComplexRoles.FTracker F_Tracker = new ComplexRoles.FTracker();
         public static ComplexRoles.FTrapper F_Trapper = new ComplexRoles.FTrapper();
 
         public static ComplexRoles.SecondaryGuesser SecondaryGuesser = new ComplexRoles.SecondaryGuesser();
@@ -124,11 +127,11 @@ namespace Nebula.Roles
         public static List<Role> AllRoles = new List<Role>()
         {
             VOID,
-            Impostor,BountyHunter,Camouflager,Cleaner,Damned,Disturber,Eraser,EvilAce,EvilGuesser,EvilTrapper,Jailer,Marionette,Morphing,Painter,Raider,Reaper,Sniper,            
+            Impostor,BountyHunter,Camouflager,Cleaner,Damned,Disturber,Eraser,EvilAce,EvilGuesser,EvilTracker,EvilTrapper,Jailer,Marionette,Morphing,Painter,Raider,Reaper,Sniper,            
             SantaClaus,BlackSanta,Arsonist,Avenger,ChainShifter,Empiric,Jackal,Jester,Opportunist,Sidekick,Vulture,
             F_Crewmate,
-            F_Guesser,F_Trapper,
-            Crewmate,CrewmateWithoutTasks,Agent,Alien,Bait,Busker,Comet,DamnedCrew,Doctor,Guardian,Mayor,Navvy,Necromancer,NiceGuesser,NiceTrapper,Oracle,Provocateur,Psychic,Seer,Sheriff,Spy,
+            F_Guesser,F_Tracker,F_Trapper,
+            Crewmate,CrewmateWithoutTasks,Agent,Alien,Bait,Busker,Comet,DamnedCrew,Doctor,Guardian,Mayor,Navvy,Necromancer,NiceGuesser,NiceTracker,NiceTrapper,Oracle,Provocateur,Psychic,Seer,Sheriff,Spy,
             Madmate,
             Player,
             Halley,Biela,

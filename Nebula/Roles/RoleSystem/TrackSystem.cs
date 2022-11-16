@@ -89,10 +89,10 @@ namespace Nebula.Roles.RoleSystem
                 }
             }
         }
-
-        static public void PlayerTrack_MyControlUpdate(ref Objects.Arrow? arrow,PlayerControl? target)
+        
+        static public void PlayerTrack_MyControlUpdate(ref Objects.Arrow? arrow,PlayerControl? target,Color color)
         {
-            if (target == null)
+            if (target == null || target.Data.IsDead)
             {
                 if (arrow != null)
                 {
@@ -102,11 +102,57 @@ namespace Nebula.Roles.RoleSystem
                 return;
             }
 
-            if (arrow == null)
-            {
-                arrow = new Objects.Arrow(Color.red);
-            }
+            if (arrow == null) arrow = new Objects.Arrow(color);
+            
             arrow.Update(target.transform.position);
+        }
+
+        static public void PlayerTrack_MyControlUpdate(ref Objects.Arrow? arrow, Game.PlayerObject? target, Color color)
+        {
+            if (target==null || target.control == null)
+            {
+                if (arrow != null)
+                {
+                    GameObject.Destroy(arrow.arrow);
+                    arrow = null;
+                }
+                return;
+            }
+
+            if (target.control.Data.IsDead)
+            {
+                if (!target.deadBody)
+                {
+                    foreach(var d in Helpers.AllDeadBodies())
+                    {
+                        if (d.ParentId == target.control.PlayerId)
+                        {
+                            target.deadBody = d;
+                            break;
+                        }
+                    }
+                }
+
+                if (!target.deadBody)
+                {
+                    if (arrow != null)
+                    {
+                        GameObject.Destroy(arrow.arrow);
+                        arrow = null;
+                    }
+                    return;
+                }
+                
+                if (arrow == null) arrow = new Objects.Arrow(color);
+                
+                arrow.Update(target.control.transform.position);
+            }
+            else
+            {
+                if (arrow == null) arrow = new Objects.Arrow(color);
+                
+                arrow.Update(target.control.transform.position);
+            }
         }
     }
 }

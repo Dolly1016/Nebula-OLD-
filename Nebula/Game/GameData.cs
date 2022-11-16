@@ -12,6 +12,17 @@ using Hazel;
 
 namespace Nebula.Game
 {
+    public class PlayerObject
+    {
+        public PlayerControl? control { get; set; }
+        public DeadBody? deadBody { get; set; }
+
+        public PlayerObject(PlayerControl player)
+        {
+            control = player;
+            deadBody = null;
+        }
+    }
 
     public enum SynchronizeTag
     {

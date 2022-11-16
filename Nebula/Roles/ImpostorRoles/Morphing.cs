@@ -125,7 +125,7 @@ namespace Nebula.Roles.ImpostorRoles
             data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(1f);
             Patches.PlayerControlPatch.SetPlayerOutline(data.currentTarget, Color.yellow);
 
-            RoleSystem.TrackSystem.PlayerTrack_MyControlUpdate(ref arrow,morphTarget);
+            RoleSystem.TrackSystem.PlayerTrack_MyControlUpdate(ref arrow,morphTarget,Color.red);
         }
 
         public override void OnMeetingEnd()

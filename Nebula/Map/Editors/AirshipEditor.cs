@@ -150,6 +150,7 @@ namespace Nebula.Map.Editors
 
                 if (CustomOptionHolder.oneWayMeetingRoomOption.getBool())
                 {
+
                     Transform meetingRoom = ShipStatus.Instance.FastRooms[SystemTypes.MeetingRoom].transform;
                     Transform gapRoom = ShipStatus.Instance.FastRooms[SystemTypes.GapRoom].transform;
 
@@ -250,6 +251,12 @@ namespace Nebula.Map.Editors
 
                     originalLadderObj.transform.GetChild(0).gameObject.SetActive(false);
                     ladderObj.transform.GetChild(1).gameObject.SetActive(false);
+
+
+                    //MovingPlatformを無効化する
+                    airship.GapPlatform.LeftPosition += new Vector3(1000, 0, 0);
+                    airship.GapPlatform.RightPosition += new Vector3(1000, 0, 0);
+                    airship.GapPlatform.SetSide(true);
                 }
             }
 

@@ -139,7 +139,8 @@
 "option.invalidateSecondaryAdmin" : "Invalidate Secondary Admin"
 "option.useClassicAdmin" : "Use Classic Admin"
 "option.allowParallelMedBayScans" : "Allow Parallel MedBay Scans"
-"option.oneWayMeetingRoom" : "One Way Meeting Room"
+"option.quietVentsInTheShadow" : "Quiet Vents In The Shadow"
+"option.oneWayMeetingRoom" : "One Way Meeting Room (Airship)"
 
 "option.sabotageOption" : "Sabotage Option"
 "option.sabotageCoolDown" : "Sabotage Cool Down"
