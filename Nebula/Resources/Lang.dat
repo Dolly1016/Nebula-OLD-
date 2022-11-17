@@ -192,7 +192,7 @@
 "option.devicesOption.camera.north" : "North"
 "option.devicesOption.camera.west" : "West"
 "option.devicesOption.camera.south" : "South"
-"option.devicesOption.camera.northeast" : "Northwest"
+"option.devicesOption.camera.northeast" : "Northeast"
 "option.devicesOption.camera.southwest" : "Southwest"
 "option.devicesOption.camera.northwest" : "Northwest"
 "option.devicesOption.camera.engineRoom" : "Engine Room"
