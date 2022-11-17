@@ -144,10 +144,6 @@ namespace Nebula.Module
                 var hash = System.BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "").ToLowerInvariant();
                 var result = !Hash.Equals(hash);
 
-                //ダウンロードが必要と(誤)検出されている場合
-                if (NebulaPlugin.DebugMode.HasToken("OutputHash") && result)
-                    NebulaPlugin.Instance.Logger.Print("HASH: " + hash + " (" + directoryPath + Address + ")");
-
                 return result;
             }
         }
@@ -161,6 +157,19 @@ namespace Nebula.Module
                 using (var fileStream = File.Create($"{directoryPath}{Address}"))
                 {
                     responseStream.CopyTo(fileStream);
+                }
+
+                if (NebulaPlugin.DebugMode.HasToken("OutputHash"))
+                {
+                    MD5 md5 = MD5.Create();
+
+                    using (var stream = File.OpenRead($"{directoryPath}{Address}"))
+                    {
+                        var hash = System.BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "").ToLowerInvariant();
+                        var result = !Hash.Equals(hash);
+
+                        NebulaPlugin.Instance.Logger.Print("Downloaded Image's Hash: " + hash + " (" + directoryPath + Address + ")");
+                    }
                 }
             }
         }

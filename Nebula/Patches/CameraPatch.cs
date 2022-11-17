@@ -23,7 +23,7 @@ namespace Nebula.Patches
 
         static void UseCameraTime()
         {
-            if (CustomOptionHolder.DevicesOption.getBool() && CustomOptionHolder.CameraAndDoorLogLimitOption.getFloat() > 0f && !PlayerControl.LocalPlayer.Data.IsDead)
+            if (CustomOptionHolder.DevicesOption.getBool() && CustomOptionHolder.CameraAndDoorLogLimitOption.getBool() && !PlayerControl.LocalPlayer.Data.IsDead)
             {
                 RPCEventInvoker.UpdateCameraAndDoorLogRestrictTimer(cameraTimer);
             }
@@ -42,12 +42,12 @@ namespace Nebula.Patches
             {
                 if (TimeRemaining != null)
                 {
-                    UnityEngine.Object.Destroy(TimeRemaining);
+                    if (TimeRemaining) UnityEngine.Object.Destroy(TimeRemaining);
                     TimeRemaining = null;
                 }
                 foreach(var Text in OutOfTime)
                 {
-                    UnityEngine.Object.Destroy(Text);
+                    if(Text)UnityEngine.Object.Destroy(Text);
                 }
                 OutOfTime.Clear();
             }
@@ -58,6 +58,7 @@ namespace Nebula.Patches
                 public static void Prefix(SurveillanceMinigame __instance)
                 {
                     cameraTimer = 0f;
+                    ResetData();
                 }
             }
 
@@ -70,7 +71,7 @@ namespace Nebula.Patches
                     if (cameraTimer > 0.1f)
                         UseCameraTime();
 
-                    if (CustomOptionHolder.DevicesOption.getBool())
+                    if (CustomOptionHolder.DevicesOption.getBool() && CustomOptionHolder.CameraAndDoorLogLimitOption.getBool())
                     {
                         if (TimeRemaining == null)
                         {
@@ -98,13 +99,29 @@ namespace Nebula.Patches
 
                         if (Game.GameData.data.UtilityTimer.CameraTimer <= 0f)
                         {
-                            foreach (var text in OutOfTime)
-                                text.gameObject.SetActive(true);
                             TimeRemaining.gameObject.SetActive(false);
                             __instance.isStatic = true;
                             for (int i = 0; i < __instance.ViewPorts.Length; i++)
                             {
-                                __instance.ViewPorts[i].sharedMaterial = __instance.StaticMaterial;
+                                if (CustomOptionHolder.UnlimitedCameraSkeldOption.getSelection()-1 == i) {
+                                    if (!PlayerTask.PlayerHasTaskOfType<IHudOverrideTask>(PlayerControl.LocalPlayer))
+                                    {
+                                        __instance.ViewPorts[i].sharedMaterial = __instance.DefaultMaterial;
+                                        __instance.ViewPorts[i].material.SetTexture("_MainTex", __instance.textures[i]);
+                                        OutOfTime[i].gameObject.SetActive(false);
+                                    }
+                                    else
+                                    {
+                                        __instance.ViewPorts[i].sharedMaterial = __instance.StaticMaterial;
+                                        __instance.SabText[i].gameObject.SetActive(true);
+                                    }
+                                }
+                                else
+                                {
+                                    __instance.ViewPorts[i].sharedMaterial = __instance.StaticMaterial;
+                                    OutOfTime[i].gameObject.SetActive(true);
+                                    __instance.SabText[i].gameObject.SetActive(false);
+                                }
                             }
 
                             return false;
@@ -169,7 +186,7 @@ namespace Nebula.Patches
                     if (cameraTimer > 0.1f)
                         UseCameraTime();
 
-                    if (CustomOptionHolder.DevicesOption.getBool())
+                    if (CustomOptionHolder.DevicesOption.getBool() && CustomOptionHolder.CameraAndDoorLogLimitOption.getBool())
                     {
                         if (OutOfTime == null)
                         {
@@ -192,8 +209,32 @@ namespace Nebula.Patches
                             OutOfTime.gameObject.SetActive(true);
                             TimeRemaining.gameObject.SetActive(false);
 
-                            __instance.isStatic = true;
-                            __instance.ViewPort.sharedMaterial = __instance.StaticMaterial;
+                            if ((CustomOptionHolder.GetUnlimitedCameraOption()?.getSelection() ?? 1) - 1 == __instance.currentCamera)
+                            {
+                                OutOfTime.gameObject.SetActive(false);
+
+                                if (PlayerTask.PlayerHasTaskOfType<IHudOverrideTask>(PlayerControl.LocalPlayer))
+                                {
+                                    __instance.SabText.gameObject.SetActive(true);
+
+                                    __instance.isStatic = true;
+                                    __instance.ViewPort.sharedMaterial = __instance.StaticMaterial;
+                                }
+                                else
+                                {
+                                    __instance.SabText.gameObject.SetActive(false);
+                                    __instance.isStatic = false;
+                                    __instance.ViewPort.sharedMaterial = __instance.DefaultMaterial;
+                                    __instance.ViewPort.material.SetTexture("_MainTex", __instance.texture);
+                                }
+                            }
+                            else
+                            {
+                                __instance.SabText.gameObject.SetActive(false);
+
+                                __instance.isStatic = true;
+                                __instance.ViewPort.sharedMaterial = __instance.StaticMaterial;
+                            }
 
                             return false;
                         }
@@ -296,7 +337,7 @@ namespace Nebula.Patches
                     if (cameraTimer > 0.1f)
                         UseCameraTime();
 
-                    if (CustomOptionHolder.DevicesOption.getBool())
+                    if (CustomOptionHolder.DevicesOption.getBool() && CustomOptionHolder.CameraAndDoorLogLimitOption.getBool())
                     {
                         if (OutOfTime == null)
                         {

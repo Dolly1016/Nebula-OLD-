@@ -306,7 +306,6 @@ namespace Nebula.Patches
                 //スポーンミニゲームの同期設定を予めリセット
                 Game.GameData.data.SynchronizeData.Reset(Game.SynchronizeTag.PreSpawnMinigame);
 
-
                 Events.GlobalEvent.OnMeeting();
                 Events.LocalEvent.OnMeeting();
                 Events.Schedule.OnPreMeeting();

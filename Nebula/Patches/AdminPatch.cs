@@ -38,7 +38,7 @@ namespace Nebula.Patches
 
         static void UseAdminTime()
         {
-            if (CustomOptionHolder.DevicesOption.getBool() && CustomOptionHolder.AdminLimitOption.getFloat() > 0f && !PlayerControl.LocalPlayer.Data.IsDead)
+            if (CustomOptionHolder.DevicesOption.getBool() && CustomOptionHolder.AdminLimitOption.getBool() && !PlayerControl.LocalPlayer.Data.IsDead)
             {
                 RPCEventInvoker.UpdateAdminRestrictTimer(adminTimer);
             }
@@ -139,7 +139,7 @@ namespace Nebula.Patches
 
             static bool Prefix(MapCountOverlay __instance)
             {
-                if (CustomOptionHolder.DevicesOption.getBool())
+                if (CustomOptionHolder.DevicesOption.getBool() && CustomOptionHolder.AdminLimitOption.getBool())
                 {
                     if (isStandardAdmin)
                     {

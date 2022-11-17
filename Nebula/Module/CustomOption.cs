@@ -230,6 +230,16 @@ namespace Nebula.Module
             selection = Mathf.Clamp(entry.Value, 0, selections.Length - 1);
         }
 
+        public static CustomOption Create(Color color, string name, IEnumerator<object> selections, object defaultValue, CustomOption parent = null, bool isHeader = false, bool isHidden = false, string format = "", CustomOptionTab tab = CustomOptionTab.None)
+        {
+            List<object> objects = new List<object>();
+            while(selections.MoveNext())
+            {
+                objects.Add(selections.Current);
+            }
+            return new CustomOption(color, name, objects.ToArray(), defaultValue, parent, isHeader, isHidden, format, tab);
+        }
+
         public static CustomOption Create(Color color,string name, string[] selections,string defaultValue, CustomOption parent = null, bool isHeader = false, bool isHidden = false, string format = "",CustomOptionTab tab=CustomOptionTab.None)
         {
             return new CustomOption(color,name, selections, defaultValue, parent, isHeader, isHidden, format,tab);

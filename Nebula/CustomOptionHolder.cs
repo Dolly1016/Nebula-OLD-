@@ -135,9 +135,28 @@ namespace Nebula
         public static CustomOption timeLimitSecondOption;
 
         public static CustomOption DevicesOption;
+        public static CustomOption RestrictModeOption;
         public static CustomOption AdminLimitOption;
         public static CustomOption VitalsLimitOption;
         public static CustomOption CameraAndDoorLogLimitOption;
+        public static CustomOption UnlimitedCameraSkeldOption;
+        public static CustomOption UnlimitedCameraPolusOption;
+        public static CustomOption UnlimitedCameraAirshipOption;
+
+        public static CustomOption? GetUnlimitedCameraOption()
+        {
+            switch (PlayerControl.GameOptions.MapId)
+            {
+                case 0:
+                    return UnlimitedCameraSkeldOption;
+                case 2:
+                    return UnlimitedCameraPolusOption;
+                case 4:
+                    return UnlimitedCameraAirshipOption;
+                default:
+                    return null;
+            }
+        }
 
         public static CustomOption TasksOption;
         public static CustomOption RandomizedWiringOption;
@@ -145,6 +164,7 @@ namespace Nebula
         public static CustomOption MeistersManifoldsOption;
         public static CustomOption MeistersFilterOption;
         public static CustomOption MeistersFuelEnginesOption;
+        public static CustomOption DangerousDownloadSpotOption;
 
         public static CustomOption SabotageOption;
         public static CustomOption SabotageCoolDownOption;
@@ -223,6 +243,47 @@ namespace Nebula
             return CustomGameModes.GetGameMode(gameMode.getSelection());
         }
 
+        public static IEnumerator<object> GetStringMixedSelections(string topSelection,float min,float mid,float step1,float max,float step2)
+        {
+            yield return topSelection;
+            if (min > max)
+            {
+                float temp = max;
+                max = min;
+                min = max;
+            }
+            if (mid > max)
+            {
+                float temp = mid;
+                mid = max;
+                max = mid;
+            }
+            if (min > mid)
+            {
+                float temp = mid;
+                mid = min;
+                min = mid;
+            }
+
+            if (step1 < 0) step1 *= -1;
+            if (step2 < 0) step2 *= -1;
+
+            float t = min;
+            while (t < mid)
+            {
+                yield return t;
+                t += step1;
+            }
+            
+            t = mid;
+            while (t < max)
+            {
+                yield return t;
+                t += step2;
+            }
+            yield return max;
+        }
+
         public static void Load()
         {
             gameMode = CustomOption.Create(Color.white, "option.gameMode", gamemodes, gamemodes[0], null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.All);
@@ -287,14 +348,18 @@ namespace Nebula
             timeLimitOption.suffix = "minute";
             timeLimitSecondOption.suffix = "second";
 
-            DevicesOption = CustomOption.Create(Color.white, "option.devicesOption", new string[] { "option.switch.off", "option.devicesOption.perDiscussion", "option.devicesOption.perGame" }, "option.switch.off", null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.All);
+            DevicesOption = CustomOption.Create(Color.white, "option.devicesOption", false, null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.All);
             CustomOption.RegisterTopOption(DevicesOption);
-            AdminLimitOption = CustomOption.Create(Color.white, "option.devicesOption.Admin", 30f, 5f, 600f, 5f, DevicesOption).SetGameMode(CustomGameMode.All);
+            RestrictModeOption = CustomOption.Create(Color.white, "option.devicesOption.restrictModeOption", new string[] { "option.devicesOption.perDiscussion", "option.devicesOption.perGame" }, "option.devicesOption.perDiscussion", DevicesOption).SetGameMode(CustomGameMode.All);
+            AdminLimitOption = CustomOption.Create(Color.white, "option.devicesOption.admin", GetStringMixedSelections("option.display.infinity",1f,10f,1f,100f,5f), "option.display.infinity", DevicesOption).SetGameMode(CustomGameMode.All);
             AdminLimitOption.suffix = "second";
-            VitalsLimitOption = CustomOption.Create(Color.white, "option.devicesOption.Vitals", 30f, 5f, 600f, 5f, DevicesOption).SetGameMode(CustomGameMode.All);
+            VitalsLimitOption = CustomOption.Create(Color.white, "option.devicesOption.vitals", GetStringMixedSelections("option.display.infinity", 1f, 10f, 1f, 100f, 5f), "option.display.infinity", DevicesOption).SetGameMode(CustomGameMode.All);
             VitalsLimitOption.suffix = "second";
-            CameraAndDoorLogLimitOption = CustomOption.Create(Color.white, "option.devicesOption.CameraAndDoorLog", 30f, 5f, 600f, 5f, DevicesOption).SetGameMode(CustomGameMode.All);
+            CameraAndDoorLogLimitOption = CustomOption.Create(Color.white, "option.devicesOption.cameraAndDoorLog", GetStringMixedSelections("option.display.infinity", 1f, 10f, 1f, 100f, 5f), "option.display.infinity", DevicesOption).SetGameMode(CustomGameMode.All);
             CameraAndDoorLogLimitOption.suffix = "second";
+            UnlimitedCameraSkeldOption = CustomOption.Create(Color.white, "option.devicesOption.unlimitedCameraSkeld", new string[] { "option.display.none", "option.devicesOption.camera.central", "option.devicesOption.camera.east", "option.devicesOption.camera.north", "option.devicesOption.camera.west" }, "option.display.none", DevicesOption).SetGameMode(CustomGameMode.All).AddPrerequisite(CameraAndDoorLogLimitOption);
+            UnlimitedCameraPolusOption = CustomOption.Create(Color.white, "option.devicesOption.unlimitedCameraPolus", new string[] { "option.display.none", "option.devicesOption.camera.east", "option.devicesOption.camera.central", "option.devicesOption.camera.northeast", "option.devicesOption.camera.south", "option.devicesOption.camera.southwest", "option.devicesOption.camera.northwest" }, "option.display.none", DevicesOption).SetGameMode(CustomGameMode.All).AddPrerequisite(CameraAndDoorLogLimitOption);
+            UnlimitedCameraAirshipOption = CustomOption.Create(Color.white, "option.devicesOption.unlimitedCameraAirship", new string[] { "option.display.none", "option.devicesOption.camera.engineRoom", "option.devicesOption.camera.vault", "option.devicesOption.camera.records", "option.devicesOption.camera.security", "option.devicesOption.camera.cargoBay", "option.devicesOption.camera.meetingRoom" }, "option.display.none", DevicesOption).SetGameMode(CustomGameMode.All).AddPrerequisite(CameraAndDoorLogLimitOption);
 
             TasksOption = CustomOption.Create(Color.white, "option.tasksOption", false, null, true, false, "", CustomOptionTab.Settings).SetGameMode(~CustomGameMode.Ritual);
             CustomOption.RegisterTopOption(TasksOption);
@@ -304,6 +369,7 @@ namespace Nebula
             MeistersManifoldsOption = CustomOption.Create(Color.white, "option.meistersManifolds", false, TasksOption).SetGameMode(CustomGameMode.All);
             MeistersFilterOption = CustomOption.Create(Color.white, "option.meistersO2Filter", false, TasksOption).SetGameMode(CustomGameMode.All);
             MeistersFuelEnginesOption = CustomOption.Create(Color.white, "option.meistersFuelEngines", false, TasksOption).SetGameMode(CustomGameMode.All);
+            DangerousDownloadSpotOption = CustomOption.Create(Color.white, "option.dangerousDownloadSpot", false, TasksOption).SetGameMode(CustomGameMode.All);
 
             SabotageOption = CustomOption.Create(Color.white, "option.sabotageOption", false, null, true, false, "", CustomOptionTab.Settings).SetGameMode(~(CustomGameMode.Ritual | CustomGameMode.Minigame));
             CustomOption.RegisterTopOption(SabotageOption);

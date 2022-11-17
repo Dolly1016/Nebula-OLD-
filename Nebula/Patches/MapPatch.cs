@@ -114,4 +114,55 @@ namespace Nebula.Patches
 
         }
     }
+
+    [HarmonyPatch]
+    class MapTaskOverlayPatch
+    {
+        [HarmonyPatch(typeof(MapTaskOverlay), nameof(MapTaskOverlay.SetIconLocation))]
+        class SetIconLocationPatch
+        {
+            static bool Prefix(MapTaskOverlay __instance)
+            {
+                return !Game.GameData.data.myData.getGlobalData().role.BlocksShowTaskOverlay;
+            }
+
+        }
+
+        [HarmonyPatch(typeof(MapTaskOverlay), nameof(MapTaskOverlay.Show))]
+        class ShowPatch
+        {
+            
+            static void Postfix(MapTaskOverlay __instance)
+            {
+
+                void GenerateIcon(Vector2 pos, bool pulse)
+                {
+                    Vector3 localPosition = pos / ShipStatus.Instance.MapScale;
+                    localPosition.z = -1f;
+                    PooledMapIcon pooledMapIcon = __instance.icons.Get<PooledMapIcon>();
+                    pooledMapIcon.transform.localScale = new Vector3(pooledMapIcon.NormalSize, pooledMapIcon.NormalSize, pooledMapIcon.NormalSize);
+
+                    pooledMapIcon.rend.color = Color.yellow;
+                    pooledMapIcon.name = __instance.data.Count.ToString();
+                    pooledMapIcon.lastMapTaskStep = pulse ? 1 : 0;
+                    pooledMapIcon.transform.localPosition = localPosition;
+                    if (pulse)
+                    {
+                        pooledMapIcon.alphaPulse.enabled = true;
+                        pooledMapIcon.rend.material.SetFloat("_Outline", 1f);
+                    }
+
+                    if (!__instance.data.ContainsKey(pooledMapIcon.name))
+                    {
+                        __instance.data.Add(pooledMapIcon.name, pooledMapIcon);
+                    }
+                }
+
+                Game.GameData.data.myData.getGlobalData().role.OnShowMapTaskOverlay(__instance, GenerateIcon);
+                
+            }
+
+        }
+    }
+
 }

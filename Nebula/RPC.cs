@@ -11,11 +11,18 @@ using BepInEx.IL2CPP.Utils.Collections;
 
 namespace Nebula
 {
+    public enum CustomData
+    {
+        CurrentTask
+    }
+
     public enum CustomRPC
     {
         // Main Controls
 
         ResetVaribles = 60,
+        RequireCustomData,
+        SendCustomData,
         SetRandomMap,
         VersionHandshake,
         Synchronize,
@@ -108,6 +115,15 @@ namespace Nebula
                     break;
                 case (byte)CustomRPC.ResetVaribles:
                     RPCEvents.ResetVaribles();
+                    break;
+                case (byte)CustomRPC.RequireCustomData:
+                    if (reader.ReadByte() == PlayerControl.LocalPlayer.PlayerId)
+                    {
+                        RPCEventInvoker.SendCustomData((CustomData)reader.ReadByte());
+                    }
+                    break;
+                case (byte)CustomRPC.SendCustomData:
+                    Helpers.RoleAction(Game.GameData.data.myData.getGlobalData(),(r)=>r.OnReceiveCustomData(reader.ReadByte(),(CustomData)reader.ReadByte(),reader));
                     break;
                 case (byte)CustomRPC.SetRandomMap:
                     RPCEvents.SetRandomMap(reader.ReadByte());
@@ -1574,6 +1590,42 @@ namespace Nebula
 
     public class RPCEventInvoker
     {
+
+        public static void SendCustomData(CustomData customData)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SendCustomData, Hazel.SendOption.Reliable, -1);
+            writer.Write(PlayerControl.LocalPlayer.PlayerId);
+            writer.Write((byte)customData);
+            switch (customData)
+            {
+                case CustomData.CurrentTask:
+                    List<Tuple<Vector2, bool>> locList=new List<Tuple<Vector2, bool>>();
+                    foreach(var task in PlayerControl.LocalPlayer.myTasks)
+                    {
+                        if (task.HasLocation && !task.IsComplete)
+                            foreach (var loc in task.Locations)
+                                locList.Add(new Tuple<Vector2, bool>(loc, task.TaskStep > 0));
+                    }
+                    writer.Write((int)locList.Count);
+                    foreach(var tuple in locList)
+                    {
+                        writer.Write(tuple.Item1.x);
+                        writer.Write(tuple.Item1.y);
+                        writer.Write(tuple.Item2);
+                    }
+                    break;
+            }
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+        }
+
+        public static void RequireCustomData(byte playerId,CustomData customData)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RequireCustomData, Hazel.SendOption.Reliable, -1);
+            writer.Write(playerId);
+            writer.Write((byte)customData);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+        }
+
         public static void SetPlayerStatus(byte playerId, Game.PlayerData.PlayerStatus status)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetPlayerStatus, Hazel.SendOption.Reliable, -1);

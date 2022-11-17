@@ -528,5 +528,9 @@ namespace Nebula.Roles
                     role.CreateRoleOption();
             }
         }
+
+        public virtual bool BlocksShowTaskOverlay { get => false; }
+
+        public virtual void OnShowMapTaskOverlay(MapTaskOverlay mapTaskOverlay,Action<Vector2,bool> iconGenerator) {}
     }
 }

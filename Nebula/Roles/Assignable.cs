@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using HarmonyLib;
 using Nebula.Utilities;
+using Hazel;
 
 namespace Nebula.Roles
 {
@@ -456,6 +457,9 @@ namespace Nebula.Roles
         public virtual void OnMeetingEnd() { }
 
         /*--------------------------------------------------------------------------------------*/
+
+        [RoleGlobalMethod]
+        public virtual void OnReceiveCustomData(byte playerId,CustomData data,MessageReader reader){}
 
         /// <summary>
         /// 誰かがガードされたときに呼び出されます。

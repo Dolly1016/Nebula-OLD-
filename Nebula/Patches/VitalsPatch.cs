@@ -35,7 +35,7 @@ namespace Nebula.Patches
 
         static void UseVitalsTime()
         {
-            if (CustomOptionHolder.DevicesOption.getBool() && CustomOptionHolder.VitalsLimitOption.getFloat() > 0f && !PlayerControl.LocalPlayer.Data.IsDead)
+            if (CustomOptionHolder.DevicesOption.getBool() && CustomOptionHolder.VitalsLimitOption.getBool() && !PlayerControl.LocalPlayer.Data.IsDead)
             {
                 RPCEventInvoker.UpdateVitalsRestrictTimer(vitalsTimer);
             }
@@ -66,7 +66,7 @@ namespace Nebula.Patches
                     if (vitalsTimer > 0.1f)
                         UseVitalsTime();
 
-                    if (CustomOptionHolder.DevicesOption.getBool())
+                    if (CustomOptionHolder.DevicesOption.getBool() && CustomOptionHolder.VitalsLimitOption.getBool())
                     {
                         if (TimeRemaining == null)
                         {

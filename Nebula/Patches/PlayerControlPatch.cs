@@ -644,4 +644,13 @@ namespace Nebula.Patches
     }
 
 
+    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.IsKillTimerEnabled), MethodType.Getter)]
+    class PlayerIsKillTimerEnabledPatch
+    {
+        public static void Postfix(PlayerControl __instance, ref bool __result)
+        {
+            __result &= !Minigame.Instance && (!MapBehaviour.Instance || !MapBehaviour.Instance.IsOpenStopped);
+        }
+    }
+
 }

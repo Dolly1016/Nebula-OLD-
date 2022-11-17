@@ -145,7 +145,7 @@ namespace Nebula.Roles.RoleSystem
                 
                 if (arrow == null) arrow = new Objects.Arrow(color);
                 
-                arrow.Update(target.control.transform.position);
+                arrow.Update(target.deadBody.transform.position);
             }
             else
             {

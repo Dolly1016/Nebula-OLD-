@@ -1124,9 +1124,9 @@ namespace Nebula.Game
 
         public UtilityTimer()
         {
-            AdminTimer = CustomOptionHolder.AdminLimitOption.getFloat();
-            VitalsTimer = CustomOptionHolder.VitalsLimitOption.getFloat();
-            CameraTimer = CustomOptionHolder.CameraAndDoorLogLimitOption.getFloat();
+            AdminTimer = CustomOptionHolder.AdminLimitOption.getBool() ? CustomOptionHolder.AdminLimitOption.getFloat() : 10000f;
+            VitalsTimer = CustomOptionHolder.VitalsLimitOption.getBool() ? CustomOptionHolder.VitalsLimitOption.getFloat() : 10000f;
+            CameraTimer = CustomOptionHolder.CameraAndDoorLogLimitOption.getBool() ? CustomOptionHolder.CameraAndDoorLogLimitOption.getFloat() : 10000f;
         }
 
         /// <summary>
@@ -1134,11 +1134,14 @@ namespace Nebula.Game
         /// </summary>
         public void OnMeetingEnd()
         {
-            if (CustomOptionHolder.DevicesOption.getSelection() != 1) return;
+            if (CustomOptionHolder.RestrictModeOption.getSelection() != 0) return;
 
-            AdminTimer = CustomOptionHolder.AdminLimitOption.getFloat();
-            VitalsTimer = CustomOptionHolder.VitalsLimitOption.getFloat();
-            CameraTimer = CustomOptionHolder.CameraAndDoorLogLimitOption.getFloat();
+            if(CustomOptionHolder.AdminLimitOption.getBool()) 
+                AdminTimer = CustomOptionHolder.AdminLimitOption.getFloat();
+            if (CustomOptionHolder.VitalsLimitOption.getBool()) 
+                VitalsTimer = CustomOptionHolder.VitalsLimitOption.getFloat();
+            if (CustomOptionHolder.CameraAndDoorLogLimitOption.getBool()) 
+                CameraTimer = CustomOptionHolder.CameraAndDoorLogLimitOption.getFloat();
         }
     }
 

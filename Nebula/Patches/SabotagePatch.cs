@@ -43,13 +43,24 @@ namespace Nebula.Patches
     [HarmonyPatch(typeof(SabotageSystemType), nameof(SabotageSystemType.RepairDamage))]
     class SabotageCoolDownPatch
     {
-        static void Postfix(SabotageSystemType __instance)
+        static bool flag = false;
+
+        static void Prefix(SabotageSystemType __instance)
         {
             if (__instance.Timer > 0f) return;
             if (MeetingHud.Instance) return;
             if (!CustomOptionHolder.SabotageOption.getBool()) return;
 
-            __instance.Timer = CustomOptionHolder.SabotageCoolDownOption.getFloat();
+            flag = true;
+        }
+
+        static void Postfix(SabotageSystemType __instance)
+        {
+            if (flag)
+            {
+                __instance.Timer = CustomOptionHolder.SabotageCoolDownOption.getFloat();
+                flag = false;
+            }
         }
     }
 
