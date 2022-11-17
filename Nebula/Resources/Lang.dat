@@ -804,6 +804,7 @@
 "role.opportunist.task.staying.decontamination" : "The Decontamination"
 
 "role.teamSanta.name" : "Team Santa"
+"role.teamSanta.info" : "You were welcomed into Team Santa.\nWork together for victory."
 
 "role.santaClaus.name" : "Santa Claus"
 "role.santaClaus.short" : "SC"
@@ -891,7 +892,6 @@
 "role.avengerTarget.info" : "You killed one of lovers.\nThe other of them may take the chance to kill you."
 
 "role.teamSanta.name" : "Team Santa"
-"role.teamSanta.info" : "You were welcomed into Team Santa.\nWork together for victory."
 
 "role.investigator.name" : "Investigator"
 "role.investigator.short" : "I"
