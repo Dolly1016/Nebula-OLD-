@@ -91,6 +91,11 @@ namespace Nebula.Roles.CrewmateRoles
             }
         }
 
+        public override void PreloadOptionData()
+        {
+            extraAssignableOptions.Add(Roles.Lover, null);
+        }
+
         public override void LoadOptionData()
         {
             embroilCoolDownOption = CreateOption(Color.white, "embroilCoolDown", 25f, 10f, 60f, 5f);
@@ -114,7 +119,6 @@ namespace Nebula.Roles.CrewmateRoles
                  Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Crewmate.crewmateEndSet,
                  false, VentPermission.CanNotUse, false, false, false)
         {
-            DefaultCanBeLovers = false;
         }
     }
 }

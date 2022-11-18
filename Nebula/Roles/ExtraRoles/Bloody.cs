@@ -53,7 +53,6 @@ namespace Nebula.Roles.ExtraRoles
         static public Color RoleColor = new Color(180f / 255f, 0f / 255f, 0f / 255f);
 
         private Module.CustomOption bloodyDurationOption;
-        protected override bool IsAssignableTo(Role role) => role.CanBeBloody;
 
         public override void GlobalInitialize(PlayerControl __instance)
         {
@@ -93,6 +92,19 @@ namespace Nebula.Roles.ExtraRoles
 
             Events.LocalEvent.Activate(new BloodyEvent(bloodyDurationOption.getFloat()));
             Helpers.PlayQuickFlash(Palette.ImpostorRed);
+        }
+
+        public override void EditSpawnableRoleShower(ref string suffix, Role role)
+        {
+            if (IsSpawnable() && role.CanHaveExtraAssignable(this)) suffix += Helpers.cs(Color, "†");
+        }
+
+        public override Module.CustomOption? RegisterAssignableOption(Role role)
+        {
+            Module.CustomOption option = role.CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeBloody", role.CanHaveExtraAssignable(this), true).HiddenOnDisplay(true).SetIdentifier("role." + role.LocalizeName + ".canBeBloody");
+            option.AddPrerequisite(CustomOptionHolder.advanceRoleOptions);
+            option.AddCustomPrerequisite(() => { return Roles.Bloody.IsSpawnable(); });
+            return option;
         }
 
         public Bloody() : base("Bloody", "bloody", RoleColor, 0)

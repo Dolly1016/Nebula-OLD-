@@ -150,90 +150,12 @@ namespace Nebula.Roles
 
         public virtual bool CanHaveExtraAssignable(ExtraAssignable extraRole)
         {
-            if(extraRole == Roles.Lover)
+            Module.CustomOption? option;
+            if(extraAssignableOptions.TryGetValue(extraRole,out option) && option != null)
             {
-                return (CustomOptionHolder.advanceRoleOptions.getBool() && CanBeLoversOption != null) ?
-                   CanBeLoversOption.getBool() : DefaultCanBeLovers;
-            }
-            else if(extraRole == Roles.SecondaryGuesser)
-            {
-                return (CustomOptionHolder.advanceRoleOptions.getBool() && CanBeGuesserOption != null) ?
-                    CanBeGuesserOption.getBool() : DefaultCanBeGuesser;
-            }
-            else if(extraRole == Roles.Drunk)
-            {
-                return (CustomOptionHolder.advanceRoleOptions.getBool() && CanBeDrunkOption != null) ?
-                    CanBeDrunkOption.getBool() : DefaultCanBeDrunk;
-            }
-            else if(extraRole == Roles.Bloody)
-            {
-                return (CustomOptionHolder.advanceRoleOptions.getBool() && CanBeBloodyOption != null) ?
-                    CanBeBloodyOption.getBool() : DefaultCanBeBloody;
-            }
-            else if (extraRole == Roles.SecondaryMadmate)
-            {
-                if (category != RoleCategory.Crewmate) return false;
-                return (CustomOptionHolder.advanceRoleOptions.getBool() && CanBeMadmateOption != null) ?
-                    CanBeMadmateOption.getBool() : DefaultCanBeMadmate;
-            }
-            else if (extraRole is AllSideRoles.Secret)
-            {
-                if (category == RoleCategory.Neutral) return false;
-
-                return (CustomOptionHolder.advanceRoleOptions.getBool() && CanBeSecretOption != null) ?
-                    CanBeSecretOption.getBool() : DefaultCanBeSecret;
+                return CustomOptionHolder.advanceRoleOptions.getBool() ? option.getBool() : !defaultUnassignable.Contains(extraRole);
             }
             return false;
-        }
-        public virtual bool CanBeLovers
-        {
-            get
-            {
-                return (CustomOptionHolder.advanceRoleOptions.getBool() && CanBeLoversOption != null) ?
-                    CanBeLoversOption.getBool() : DefaultCanBeLovers;
-            }
-        }
-        public virtual bool CanBeGuesser
-        {
-            get
-            {
-                return (CustomOptionHolder.advanceRoleOptions.getBool() && CanBeGuesserOption != null) ?
-                    CanBeGuesserOption.getBool() : DefaultCanBeGuesser;
-            }
-        }
-        public virtual bool CanBeDrunk { get {
-                return (CustomOptionHolder.advanceRoleOptions.getBool() && CanBeDrunkOption != null) ?
-                    CanBeDrunkOption.getBool() : DefaultCanBeDrunk;
-            } }
-
-        public virtual bool CanBeBloody
-        {
-            get
-            {
-                return (CustomOptionHolder.advanceRoleOptions.getBool() && CanBeBloodyOption != null) ?
-                    CanBeBloodyOption.getBool() : DefaultCanBeBloody;
-            }
-        }
-
-        public virtual bool CanBeMadmate
-        {
-            get
-            {
-                if (category != RoleCategory.Crewmate) return false;
-                return (CustomOptionHolder.advanceRoleOptions.getBool() && CanBeMadmateOption != null) ?
-                    CanBeMadmateOption.getBool() : DefaultCanBeMadmate;
-            }
-        }
-
-        public virtual bool CanBeSecret
-        {
-            get
-            {
-                if (category == RoleCategory.Neutral) return false;
-
-                return (CustomOptionHolder.advanceRoleOptions.getBool() && CanBeSecretOption != null) ?
-                    CanBeSecretOption.getBool() : DefaultCanBeSecret;
-            }
         }
 
         public virtual bool CanHaveGhostRole
@@ -243,12 +165,6 @@ namespace Nebula.Roles
 
         public virtual bool IsSecondaryGenerator { get { return false; } }
 
-        public bool DefaultCanBeLovers { get; set; } = true;
-        public bool DefaultCanBeGuesser { get; set; } = true;
-        public bool DefaultCanBeDrunk { get; set; } = true;
-        public bool DefaultCanBeBloody { get; set; } = true;
-        public bool DefaultCanBeMadmate { get; set; } = false;
-        public bool DefaultCanBeSecret { get; set; } = true;
 
         public virtual List<Role> GetImplicateRoles() { return new List<Role>(); }
         public virtual List<ExtraRole> GetImplicateExtraRoles() { return new List<ExtraRole>(); }
@@ -319,6 +235,13 @@ namespace Nebula.Roles
             }
         }
 
+        protected Dictionary<ExtraAssignable, Module.CustomOption?> extraAssignableOptions = new Dictionary<ExtraAssignable, Module.CustomOption?>();
+        protected HashSet<ExtraAssignable> defaultUnassignable = new HashSet<ExtraAssignable>();
+
+        public bool DefaultExtraAssignableFlag(ExtraAssignable role)
+        {
+            return !defaultUnassignable.Contains(role);
+        }
 
         protected Module.CustomOption? CanBeLoversOption=null;
         protected Module.CustomOption? CanBeGuesserOption=null;
@@ -356,41 +279,14 @@ namespace Nebula.Roles
 
             if (Allocation == AllocationType.None) return;
 
-            CanBeLoversOption = CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeLovers", DefaultCanBeLovers, true).HiddenOnDisplay(true).SetIdentifier("role." + LocalizeName + ".canBeLovers");
-            CanBeLoversOption.AddPrerequisite(CustomOptionHolder.advanceRoleOptions);
-            CanBeLoversOption.AddCustomPrerequisite(() => { return Roles.Lover.IsSpawnable(); });
-            if(category==RoleCategory.Impostor)
-                CanBeLoversOption.AddCustomPrerequisite(() => { return Roles.Lover.chanceThatOneLoverIsImpostorOption.getSelection() > 0; });
+            Module.CustomOption? option;
 
-            CanBeGuesserOption = CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeGuesser", DefaultCanBeGuesser, true).HiddenOnDisplay(true).SetIdentifier("role." + LocalizeName + ".canBeGuesser");
-            CanBeGuesserOption.AddPrerequisite(CustomOptionHolder.advanceRoleOptions);
-            CanBeGuesserOption.AddCustomPrerequisite(() => { return Roles.SecondaryGuesser.IsSpawnable(); });
-            CanBeGuesserOption.AddCustomPrerequisite(() => { return
-                (side == Side.Crewmate && Roles.F_Guesser.crewmateRoleCountOption.getFloat() > 0) ||
-                (side == Side.Impostor && Roles.F_Guesser.impostorRoleCountOption.getFloat() > 0) ||
-                (side != Side.Crewmate && side != Side.Impostor && Roles.F_Guesser.neutralRoleCountOption.getFloat() > 0);
-                });
-
-            CanBeDrunkOption = CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeDrunk", DefaultCanBeDrunk, true).HiddenOnDisplay(true).SetIdentifier("role." + LocalizeName + ".canBeDrunk");
-            CanBeDrunkOption.AddPrerequisite(CustomOptionHolder.advanceRoleOptions);
-            CanBeDrunkOption.AddCustomPrerequisite(() => { return Roles.Drunk.IsSpawnable(); });
-
-            CanBeBloodyOption = CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeBloody", DefaultCanBeBloody, true).HiddenOnDisplay(true).SetIdentifier("role." + LocalizeName + ".canBeBloody");
-            CanBeBloodyOption.AddPrerequisite(CustomOptionHolder.advanceRoleOptions);
-            CanBeBloodyOption.AddCustomPrerequisite(() => { return Roles.Bloody.IsSpawnable(); });
-
-            CanBeMadmateOption = CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeMadmate", DefaultCanBeMadmate, true).HiddenOnDisplay(true).SetIdentifier("role." + LocalizeName + ".canBeMadmate");
-            CanBeMadmateOption.AddPrerequisite(CustomOptionHolder.advanceRoleOptions);
-            CanBeMadmateOption.AddCustomPrerequisite(() => { return Roles.SecondaryMadmate.IsSpawnable() && category==RoleCategory.Crewmate; });
-
-            if(category== RoleCategory.Impostor || category == RoleCategory.Crewmate || category == RoleCategory.Complex)
+            foreach(var extraRole in Roles.AllExtraAssignable)
             {
-                CanBeSecretOption = CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeSecret", DefaultCanBeSecret, true).HiddenOnDisplay(true).SetIdentifier("role." + LocalizeName + ".canBeSecret");
-                CanBeSecretOption.AddPrerequisite(CustomOptionHolder.advanceRoleOptions);
-                if (category == RoleCategory.Crewmate)
-                    CanBeSecretOption.AddCustomPrerequisite(() => { return CustomOptionHolder.NumOfSecretCrewmateOption.getSelection() >= 1; });
-                else
-                    CanBeSecretOption.AddCustomPrerequisite(() => { return CustomOptionHolder.NumOfSecretImpostorOption.getSelection() >= 1; });
+                if (extraAssignableOptions.ContainsKey(extraRole)) continue;
+
+                option = extraRole.RegisterAssignableOption(this);
+                if (option != null) extraAssignableOptions.Add(extraRole, option);
             }
 
             TopOption.Decorator = new Module.CustomOptionDecorator((original, option) =>
@@ -399,22 +295,11 @@ namespace Nebula.Roles
                 if (IsSecondaryGenerator) return original;
 
                 string suffix = "";
-                if (Roles.Lover.IsSpawnable() && CanBeLovers)
+
+                foreach(var extra in Roles.AllExtraAssignable)
                 {
-                    if (category != RoleCategory.Impostor || Roles.Lover.chanceThatOneLoverIsImpostorOption.getSelection() > 0)
-                    {
-                        suffix += Helpers.cs(Roles.Lover.Color, "♥");
-                    }
+                    extra.EditSpawnableRoleShower(ref suffix,this);
                 }
-                if (Roles.SecondaryGuesser.IsSpawnable() && CanBeGuesser &&
-                (
-                (side == Side.Crewmate && Roles.F_Guesser.crewmateRoleCountOption.getFloat() > 0) ||
-                (side == Side.Impostor && Roles.F_Guesser.impostorRoleCountOption.getFloat() > 0) ||
-                (side != Side.Crewmate && side != Side.Impostor && Roles.F_Guesser.neutralRoleCountOption.getFloat() > 0)))
-                    suffix += Helpers.cs(Roles.SecondaryGuesser.Color, "⊕");
-                if (Roles.Drunk.IsSpawnable() && CanBeDrunk) suffix += Helpers.cs(Roles.Drunk.Color, "〻");
-                if (Roles.Bloody.IsSpawnable() && CanBeBloody) suffix += Helpers.cs(Roles.Bloody.Color, "†");
-                if (Roles.SecondaryMadmate.IsSpawnable() && CanBeMadmate) suffix += Helpers.cs(Roles.Madmate.Color, "*");
 
                 return suffix == "" ? original : (original + " " + suffix);
             }
@@ -495,12 +380,6 @@ namespace Nebula.Roles
 
             this.VentDurationMaxTimer = 10f;
             this.VentCoolDownMaxTimer = 20f;
-
-            DefaultCanBeLovers = true;
-            DefaultCanBeGuesser = true;
-            DefaultCanBeDrunk = true;
-            DefaultCanBeBloody = true;
-            DefaultCanBeMadmate = true;
         }
 
         public static Role GetRoleById(byte id)

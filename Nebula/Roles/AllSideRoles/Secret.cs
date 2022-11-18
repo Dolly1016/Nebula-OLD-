@@ -78,7 +78,7 @@ namespace Nebula.Roles.AllSideRoles
             if (!CustomOptionHolder.SecretRoleOption.getBool()) return;
 
             List<PlayerControl> players = PlayerControl.AllPlayerControls.ToArray().ToList().OrderBy(x => Guid.NewGuid()).ToList();
-            players.RemoveAll(x => x.GetModData().role.category != category || !x.GetModData().role.CanBeSecret);
+            players.RemoveAll(x => x.GetModData().role.category != category || !x.GetModData().role.CanHaveExtraAssignable(this));
             int max = 0;
             float chance = 1;
 
@@ -178,6 +178,25 @@ namespace Nebula.Roles.AllSideRoles
         public override void SpawnableTest(ref Dictionary<Role, int> DefinitiveRoles, ref HashSet<Role> SpawnableRoles)
         {
             return;
+        }
+
+        public Module.CustomOption? RegisterAssignableOption(Role role)
+        {
+            if (role.category !=  category && role.category != RoleCategory.Complex) return null;
+
+            Module.CustomOption option = role.CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeSecret" + (role.category == RoleCategory.Complex ? (category == RoleCategory.Crewmate ? "Crewmate" : "Impostor") : ""), role.DefaultExtraAssignableFlag(this), true).HiddenOnDisplay(true)
+                .SetIdentifier("role." + role.LocalizeName + ".canBeSecret" + (role.category==RoleCategory.Complex ? (category==RoleCategory.Crewmate ? "Crewmate":"Impostor") : ""));
+            option.AddPrerequisite(CustomOptionHolder.advanceRoleOptions);
+            if (role.category == RoleCategory.Crewmate)
+                option.AddCustomPrerequisite(() => { return CustomOptionHolder.NumOfSecretCrewmateOption.getSelection() >= 1; });
+            else if (role.category == RoleCategory.Impostor)
+                option.AddCustomPrerequisite(() => { return CustomOptionHolder.NumOfSecretImpostorOption.getSelection() >= 1; }); 
+            return option;
+        }
+
+        public void EditSpawnableRoleShower(ref string suffix, Role role)
+        {
+
         }
 
         public Secret(Role templateRole)

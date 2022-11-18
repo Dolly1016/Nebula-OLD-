@@ -60,6 +60,11 @@ namespace Nebula.Roles.CrewmateRoles
             RelatedRoles.Add(Roles.Madmate);
         }
 
+        public override void PreloadOptionData()
+        {
+            extraAssignableOptions.Add(Roles.Lover, null);
+        }
+
         public override void LoadOptionData()
         {
             killerCanKnowBaitKillByFlash = CreateOption(Color.white, "killerCanKnowBaitKillByFlash", true);
@@ -70,7 +75,6 @@ namespace Nebula.Roles.CrewmateRoles
                  Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Crewmate.crewmateEndSet,
                  false, VentPermission.CanNotUse, false, false, false)
         {
-            DefaultCanBeLovers = false;
         }
     }
 }

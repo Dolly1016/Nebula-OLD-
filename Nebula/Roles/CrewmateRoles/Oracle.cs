@@ -135,6 +135,11 @@ namespace Nebula.Roles.CrewmateRoles
             }
         }
 
+        public override void PreloadOptionData()
+        {
+            extraAssignableOptions.Add(Roles.SecondaryGuesser, null);
+        }
+
         public override void LoadOptionData()
         {
             OracleCooldownOption = CreateOption(Color.white, "divineCoolDown", 30f, 10f, 60f, 2.5f);
@@ -253,8 +258,6 @@ namespace Nebula.Roles.CrewmateRoles
                  false, VentPermission.CanNotUse, false, false, false)
         {
             oracleButton = null;
-
-            DefaultCanBeGuesser = false;
         }
     }
 }

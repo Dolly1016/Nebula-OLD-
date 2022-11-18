@@ -147,52 +147,9 @@ namespace Nebula.Roles.Template
             FRole = GetFRoleFunc.Invoke();    
         }
 
-        public override bool CanBeLovers
+        public override bool CanHaveExtraAssignable(ExtraAssignable extraRole)
         {
-            get
-            {
-                return FRole.CanBeLovers;
-            }
-        }
-
-        public override bool CanBeGuesser
-        {
-            get
-            {
-                return FRole.CanBeGuesser;
-            }
-        }
-
-        public override bool CanBeDrunk
-        {
-            get
-            {
-                return FRole.CanBeDrunk;
-            }
-        }
-
-        public override bool CanBeBloody
-        {
-            get
-            {
-                return FRole.CanBeBloody;
-            }
-        }
-
-        public override bool CanBeMadmate
-        {
-            get
-            {
-                return FRole.CanBeMadmate;
-            }
-        }
-
-        public override bool CanBeSecret
-        {
-            get
-            {
-                return FRole.CanBeSecret;
-            }
+            return FRole.CanHaveExtraAssignable(extraRole);
         }
 
         public override bool IsSpawnable()

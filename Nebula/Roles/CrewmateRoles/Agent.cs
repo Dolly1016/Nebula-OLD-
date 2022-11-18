@@ -33,7 +33,7 @@ namespace Nebula.Roles.CrewmateRoles
             maxVentsOption = CreateOption(Color.white, "maxVents", 3f, 0f, 20f, 1f);
 
             madmateKillCoolDownOption = CreateOption(Color.white, "killCoolDownBonus", 5f, 2.5f, 20f, 2.5f).
-                AddCustomPrerequisite(() => { return CanBeMadmate && Roles.SecondaryMadmate.IsSpawnable(); });
+                AddCustomPrerequisite(() => { return CanHaveExtraAssignable(Roles.SecondaryMadmate) && Roles.SecondaryMadmate.IsSpawnable(); });
             madmateKillCoolDownOption.suffix = "second";
         }
 

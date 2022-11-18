@@ -38,7 +38,6 @@ namespace Nebula.Roles.CrewmateRoles
             RPCEventInvoker.UpdatePlayerVisibility(PlayerControl.LocalPlayer.PlayerId, true);
         }
 
-        public override bool CanBeLovers { get => false; }
         public override bool CanHaveGhostRole { get => false; }
  
         private bool checkPseudocide()
@@ -138,6 +137,11 @@ namespace Nebula.Roles.CrewmateRoles
             }
         }
 
+        public override void PreloadOptionData()
+        {
+            extraAssignableOptions.Add(Roles.Lover, null);
+        }
+
         public override void LoadOptionData()
         {
             buskCoolDownOption = CreateOption(Color.white, "buskCoolDown", 20f, 5f, 60f, 2.5f);
@@ -145,8 +149,6 @@ namespace Nebula.Roles.CrewmateRoles
 
             buskDurationOption = CreateOption(Color.white, "buskDuration", 10f, 5f, 30f, 2.5f);
             buskDurationOption.suffix = "second";
-
-            CanBeLoversOption.isHidden = true;
         }
 
         public override void OnRoleRelationSetting()
@@ -161,7 +163,6 @@ namespace Nebula.Roles.CrewmateRoles
                  Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Crewmate.crewmateEndSet,
                  false, VentPermission.CanNotUse, false, false, false)
         {
-            DefaultCanBeLovers = false;
         }
     }
 }

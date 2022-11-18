@@ -48,10 +48,11 @@ namespace Nebula.Roles.ComplexRoles
                 else return preBuilder(refresher);
             };
 
-            CanBeBloodyOption.AddPrerequisite(TopOption);
-            CanBeDrunkOption.AddPrerequisite(TopOption);
-            CanBeGuesserOption.AddPrerequisite(TopOption);
-            CanBeLoversOption.AddPrerequisite(TopOption);
+            foreach(var option in extraAssignableOptions)
+            {
+                if (option.Value == null) continue;
+                option.Value.AddPrerequisite(TopOption);
+            }
 
             isGuessableOption = CreateOption(Color.white, "isGuessable", true);
             chanceOfDamnedOption = CreateOption(Color.white, "chanceOfDamned", CustomOptionHolder.rates).AddPrerequisite(TopOption);

@@ -236,6 +236,8 @@ namespace Nebula.Roles
 
         }
 
+        public virtual void PreloadOptionData() { }
+
         public virtual void SetupRoleOptionData()
         {
             SetupRoleOptionData(Module.CustomOptionTab.None);
@@ -258,12 +260,12 @@ namespace Nebula.Roles
             return option;
         }
 
-        protected Module.CustomOption CreateOption(Color color, string name, string[] selections, bool isGeneral = false)
+        public Module.CustomOption CreateOption(Color color, string name, string[] selections, bool isGeneral = false)
         {
             return CreateOption(color, name, selections, "", isGeneral);
         }
 
-        protected Module.CustomOption CreateOption(Color color, string name, float defaultValue, float min, float max, float step, bool isGeneral = false)
+        public Module.CustomOption CreateOption(Color color, string name, float defaultValue, float min, float max, float step, bool isGeneral = false)
         {
             List<float> selections = new List<float>();
             for (float s = min; s <= max; s += step)
@@ -271,7 +273,7 @@ namespace Nebula.Roles
             return CreateOption(color, name, selections.Cast<object>().ToArray(), defaultValue,isGeneral);
         }
 
-        protected Module.CustomOption CreateOption(Color color, string name, bool defaultValue, bool isGeneral = false)
+        public Module.CustomOption CreateOption(Color color, string name, bool defaultValue, bool isGeneral = false)
         {
             return CreateOption(color, name, new string[] { "option.switch.off", "option.switch.on" }, defaultValue ? "option.switch.on" : "option.switch.off", isGeneral);
         }
@@ -716,6 +718,8 @@ namespace Nebula.Roles
         public void CreateRoleOption()
         {
             if (CreateOptionFlag) return;
+
+            PreloadOptionData();
 
             if (!IsHideRole)
             {

@@ -80,9 +80,13 @@ namespace Nebula.Roles
         {
         }
 
+        public virtual void EditSpawnableRoleShower(ref string roleName, Role role) { }
+
         sealed public override void SetupRoleOptionData()
         {
             SetupRoleOptionData(Module.CustomOptionTab.Modifiers);
         }
+
+        public virtual Module.CustomOption? RegisterAssignableOption(Role role) => null;
     }
 }

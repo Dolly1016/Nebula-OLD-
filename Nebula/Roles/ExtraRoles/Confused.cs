@@ -8,9 +8,9 @@ namespace Nebula.Roles.ExtraRoles
 {
     public class Confused : Template.StandardExtraRole
     {
-        static public Color RoleColor = new Color(133f / 255f, 161f / 255f, 190f / 255f);
+        static public Color RoleColor = new Color(242f / 255f, 247f / 255f, 226f / 255f);
 
-        protected override bool IsAssignableTo(Role role) => role.CanBeConfused;
+        protected override bool IsAssignableTo(Role role) => role.CanHaveExtraAssignable(this);
         public override Assignable AssignableOnHelp { get => null; }
 
         private Module.CustomOption chanceOfShuffleOption;
@@ -46,7 +46,7 @@ namespace Nebula.Roles.ExtraRoles
 
         public override void EditDisplayRoleNameForcely(byte playerId, ref string roleName)
         {
-            roleName += Language.Language.GetString("role.confused.name");
+            roleName += "✿";
         }
 
         public override void LoadOptionData()
@@ -58,6 +58,18 @@ namespace Nebula.Roles.ExtraRoles
             numOfShuffledPlayersOption = CreateOption(Color.white, "numOfShuffledPlayers", 2f, 1f, 14f, 1f);
         }
 
+        public override void EditSpawnableRoleShower(ref string suffix, Role role)
+        {
+            if (IsSpawnable() && role.CanHaveExtraAssignable(this)) suffix += Helpers.cs(Color, "✿");
+        }
+
+        public override Module.CustomOption? RegisterAssignableOption(Role role)
+        {
+            Module.CustomOption option = role.CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeConfused", role.DefaultExtraAssignableFlag(this), true).HiddenOnDisplay(true).SetIdentifier("role." + role.LocalizeName + ".canBeConfused");
+            option.AddPrerequisite(CustomOptionHolder.advanceRoleOptions);
+            option.AddCustomPrerequisite(() => { return Roles.Confused.IsSpawnable(); });
+            return option;
+        }
         public Confused() : base("Confused", "confused", RoleColor, 0)
         {
         }

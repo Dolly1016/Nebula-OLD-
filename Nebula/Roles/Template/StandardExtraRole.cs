@@ -48,7 +48,7 @@ namespace Nebula.Roles.Template
             return false;
         }
 
-        protected virtual bool IsAssignableTo(Role role) => true;
+        protected virtual bool IsAssignableTo(Role role) => role.CanHaveExtraAssignable(this);
 
         public override void Assignment(Patches.AssignMap assignMap)
         {

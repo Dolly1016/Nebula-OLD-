@@ -163,8 +163,8 @@ namespace Nebula.Roles.ExtraRoles
             crewmates.RemoveAll(x => x.Data.Role.IsImpostor);
             impostors.RemoveAll(x => !x.Data.Role.IsImpostor);
 
-            crewmates.RemoveAll((player) => { return !player.GetModData().role.CanBeLovers; });
-            impostors.RemoveAll((player) => { return !player.GetModData().role.CanBeLovers; });
+            crewmates.RemoveAll((player) => { return !player.GetModData().role.CanHaveExtraAssignable(this) ; });
+            impostors.RemoveAll((player) => { return !player.GetModData().role.CanHaveExtraAssignable(this); });
 
             int[] crewmateIndex = Helpers.GetRandomArray(crewmates.Count);
             int[] impostorIndex = Helpers.GetRandomArray(impostors.Count);
@@ -421,6 +421,25 @@ namespace Nebula.Roles.ExtraRoles
         public override bool HasCrewmateTask(byte playerId)
         {
             return false;
+        }
+
+        public override void EditSpawnableRoleShower(ref string suffix, Role role) {
+            if (IsSpawnable() && role.CanHaveExtraAssignable(this))
+            {
+                if (role.category != RoleCategory.Impostor || chanceThatOneLoverIsImpostorOption.getSelection() > 0)
+                {
+                    suffix += Helpers.cs(Roles.Lover.Color, "♥");
+                }
+            }
+        }
+
+        public override Module.CustomOption? RegisterAssignableOption(Role role) {
+            Module.CustomOption option = role.CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeLovers", role.DefaultExtraAssignableFlag(this), true).HiddenOnDisplay(true).SetIdentifier("role." + role.LocalizeName + ".canBeLovers");
+            option.AddPrerequisite(CustomOptionHolder.advanceRoleOptions);
+            option.AddCustomPrerequisite(() => { return Roles.Lover.IsSpawnable(); });
+            if (role.category == RoleCategory.Impostor)
+                option.AddCustomPrerequisite(() => { return Roles.Lover.chanceThatOneLoverIsImpostorOption.getSelection() > 0; });
+            return option;
         }
 
         public Lover() : base("Lover", "lover", iconColor[0],48)

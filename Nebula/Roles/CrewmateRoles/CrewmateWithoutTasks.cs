@@ -15,46 +15,10 @@ namespace Nebula.Roles.CrewmateRoles
 
         public override bool ShowInHelpWindow => false;
 
-        public override bool CanBeLovers
+        public override bool CanHaveExtraAssignable(ExtraAssignable extraRole)
         {
-            get
-            {
-                return Roles.F_Crewmate.CanBeLovers;
-            }
+            return Roles.F_Crewmate.CanHaveExtraAssignable(extraRole);
         }
-
-        public override bool CanBeGuesser
-        {
-            get
-            {
-                return Roles.F_Crewmate.CanBeGuesser;
-            }
-        }
-
-        public override bool CanBeDrunk
-        {
-            get
-            {
-                return Roles.F_Crewmate.CanBeDrunk;
-            }
-        }
-
-        public override bool CanBeBloody
-        {
-            get
-            {
-                return Roles.F_Crewmate.CanBeBloody;
-            }
-        }
-
-        public override bool CanBeMadmate
-        {
-            get
-            {
-                return Roles.F_Crewmate.CanBeMadmate;
-            }
-        }
-
         public override bool HasExecutableFakeTask(byte playerId) => false;
 
         public CrewmateWithoutTasks() : base(true)

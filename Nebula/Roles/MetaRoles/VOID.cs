@@ -454,16 +454,17 @@ namespace Nebula.Roles.MetaRoles
             MetaDialog.Initialize();
         }
 
+        public override void PreloadOptionData()
+        {
+            foreach(var role in Roles.AllExtraAssignable)
+                extraAssignableOptions.Add(role, null);
+        }
+
         public VOID()
             : base("VOID", "void", RoleColor, RoleCategory.Neutral, Side.VOID, Side.VOID,
                  new HashSet<Side>(), new HashSet<Side>(), new HashSet<Patches.EndCondition>(),
                  true, VentPermission.CanNotUse, false, true,true)
         {
-            DefaultCanBeLovers = false;
-            DefaultCanBeDrunk = false;
-            DefaultCanBeGuesser = false;
-            DefaultCanBeMadmate = false;
-            DefaultCanBeSecret = false;
 
             Allocation = AllocationType.Switch;
             FixedRoleCount = true;

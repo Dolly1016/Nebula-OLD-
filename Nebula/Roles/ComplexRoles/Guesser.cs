@@ -75,12 +75,11 @@ namespace Nebula.Roles.ComplexRoles
             FirstRole = Roles.NiceGuesser;
             SecondaryRole = Roles.EvilGuesser;
 
-            CanBeGuesserOption?.AddInvPrerequisite(secondoryRoleOption);
-            CanBeDrunkOption?.AddInvPrerequisite(secondoryRoleOption);
-            CanBeBloodyOption?.AddInvPrerequisite(secondoryRoleOption);
-            CanBeLoversOption?.AddInvPrerequisite(secondoryRoleOption);
-            CanBeMadmateOption?.AddInvPrerequisite(secondoryRoleOption);
-            CanBeSecretOption?.AddInvPrerequisite(secondoryRoleOption);
+            foreach (var option in extraAssignableOptions)
+            {
+                if (option.Value == null) continue;
+                option.Value.AddInvPrerequisite(secondoryRoleOption);
+            }
         }
 
         public override void SpawnableTest(ref Dictionary<Role, int> DefinitiveRoles, ref HashSet<Role> SpawnableRoles)
@@ -307,9 +306,9 @@ namespace Nebula.Roles.ComplexRoles
     public class SecondaryGuesser : ExtraRole
     {
         public override RelatedExtraRoleData[] RelatedExtraRoleDataInfo => GuesserSystem.RelatedExtraRoleDataInfo;
-     
+
         public SecondaryGuesser()
-                : base("Guesser", "guesser" ,FGuesser.RoleColor,0)
+                : base("Guesser", "guesser", FGuesser.RoleColor, 0)
         {
             IsHideRole = true;
         }
@@ -317,12 +316,12 @@ namespace Nebula.Roles.ComplexRoles
         public override Assignable AssignableOnHelp => Roles.F_Guesser;
         public override HelpSprite[] helpSprite => Roles.F_Guesser.helpSprite;
 
-        private void _sub_Assignment(Patches.AssignMap assignMap,List<byte> players,int count)
+        private void _sub_Assignment(Patches.AssignMap assignMap, List<byte> players, int count)
         {
-            int chance = Roles.F_Guesser.RoleChanceOption.getSelection()+1;
+            int chance = Roles.F_Guesser.RoleChanceOption.getSelection() + 1;
 
             byte playerId;
-            for(int i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
             {
                 //割り当てられない場合終了
                 if (players.Count == 0) return;
@@ -346,7 +345,7 @@ namespace Nebula.Roles.ComplexRoles
 
             foreach (PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
-                if (!player.GetModData()?.role.CanBeGuesser ?? true) continue;
+                if (!player.GetModData()?.role.CanHaveExtraAssignable(this) ?? true) continue;
 
                 switch (player.GetModData().role.category)
                 {
@@ -389,7 +388,7 @@ namespace Nebula.Roles.ComplexRoles
 
         public override void EditDisplayName(byte playerId, ref string displayName, bool hideFlag)
         {
-            if (playerId==PlayerControl.LocalPlayer.PlayerId || Game.GameData.data.myData.CanSeeEveryoneInfo) 
+            if (playerId == PlayerControl.LocalPlayer.PlayerId || Game.GameData.data.myData.CanSeeEveryoneInfo)
                 EditDisplayNameForcely(playerId, ref displayName);
         }
 
@@ -407,6 +406,31 @@ namespace Nebula.Roles.ComplexRoles
             if (!Roles.F_Guesser.TopOption.getBool()) return false;
 
             return true;
+        }
+
+        public override void EditSpawnableRoleShower(ref string suffix, Role role)
+        {
+            if (IsSpawnable() && role.CanHaveExtraAssignable(this) &&
+                (
+                (role.side == Side.Crewmate && Roles.F_Guesser.crewmateRoleCountOption.getFloat() > 0) ||
+                (role.side == Side.Impostor && Roles.F_Guesser.impostorRoleCountOption.getFloat() > 0) ||
+                (role.side != Side.Crewmate && role.side != Side.Impostor && Roles.F_Guesser.neutralRoleCountOption.getFloat() > 0)))
+                suffix += Helpers.cs(Roles.SecondaryGuesser.Color, "⊕");
+        }
+
+        public override Module.CustomOption? RegisterAssignableOption(Role role)
+        {
+            Module.CustomOption option = role.CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeGuesser", role.DefaultExtraAssignableFlag(this), true).HiddenOnDisplay(true).SetIdentifier("role." + role.LocalizeName + ".canBeGuesser");
+            option.AddPrerequisite(CustomOptionHolder.advanceRoleOptions);
+            option.AddCustomPrerequisite(() => { return Roles.SecondaryGuesser.IsSpawnable(); });
+            option.AddCustomPrerequisite(() =>
+            {
+                return
+                    (role.side == Side.Crewmate && Roles.F_Guesser.crewmateRoleCountOption.getFloat() > 0) ||
+                    (role.side == Side.Impostor && Roles.F_Guesser.impostorRoleCountOption.getFloat() > 0) ||
+                    (role.side != Side.Crewmate && role.side != Side.Impostor && Roles.F_Guesser.neutralRoleCountOption.getFloat() > 0);
+            });
+            return option;
         }
     }
 }

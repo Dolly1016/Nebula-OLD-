@@ -178,7 +178,7 @@ namespace Nebula.Roles.CrewmateRoles
 
             foreach (PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
-                if (!player.GetModData()?.role.CanBeMadmate ?? true) continue;
+                if (!player.GetModData()?.role.CanHaveExtraAssignable(this) ?? true) continue;
 
                 switch (player.GetModData()?.role.category)
                 {
@@ -205,7 +205,6 @@ namespace Nebula.Roles.CrewmateRoles
         public override bool IsSpawnable()
         {
             if (!Roles.Madmate.SecondoryRoleOption.getBool()) return false;
-            if (!Roles.Madmate.RoleChanceOption.getBool()) return false;
 
             return true;
         }
@@ -226,6 +225,21 @@ namespace Nebula.Roles.CrewmateRoles
         public override bool CheckAdditionalWin(PlayerControl player, Patches.EndCondition condition)
         {
             return Roles.Impostor.winReasons.Contains(condition);
+        }
+
+        public override void EditSpawnableRoleShower(ref string suffix, Role role)
+        {
+            if (IsSpawnable() && role.CanHaveExtraAssignable(this)) suffix += Helpers.cs(Color, "*");
+        }
+
+        public override Module.CustomOption? RegisterAssignableOption(Role role)
+        {
+            if (role.category != RoleCategory.Crewmate) return null;
+
+            Module.CustomOption option = role.CreateOption(new Color(0.8f, 0.95f, 1f), "option.canBeMadmate", role.DefaultExtraAssignableFlag(this), true).HiddenOnDisplay(true).SetIdentifier("role." + role.LocalizeName + ".canBeMadmate");
+            option.AddPrerequisite(CustomOptionHolder.advanceRoleOptions);
+            option.AddCustomPrerequisite(() => { return Roles.SecondaryMadmate.IsSpawnable(); });
+            return option;
         }
     }
 

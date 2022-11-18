@@ -14,5 +14,10 @@ namespace Nebula.Roles
 
         public byte assignmentPriority { get; }
         public Module.CustomGameMode ValidGamemode { get; }
+
+        public Module.CustomOption? RegisterAssignableOption(Role role);
+
+        public void EditSpawnableRoleShower(ref string suffix, Role role);
+        
     }
 }
