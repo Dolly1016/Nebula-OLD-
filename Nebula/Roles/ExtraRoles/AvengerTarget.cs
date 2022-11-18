@@ -13,6 +13,8 @@ namespace Nebula.Roles.ExtraRoles
 
         public override RelatedExtraRoleData[] RelatedExtraRoleDataInfo { get => new RelatedExtraRoleData[] { new RelatedExtraRoleData("Target Lovers Identifer", this, 0, 6) }; }
 
+        public override Assignable AssignableOnHelp { get => Roles.Avenger.canKnowExistenceOfAvengerOption.getSelection() != 0 ? this : null; }
+
         /* 矢印 */
         private Arrow Arrow;
         private float noticeInterval = 0f;

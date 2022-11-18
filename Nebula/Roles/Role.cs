@@ -148,6 +148,43 @@ namespace Nebula.Roles
 
         public bool HideKillButtonEvenImpostor { get; protected set; }
 
+        public virtual bool CanHaveExtraAssignable(ExtraAssignable extraRole)
+        {
+            if(extraRole == Roles.Lover)
+            {
+                return (CustomOptionHolder.advanceRoleOptions.getBool() && CanBeLoversOption != null) ?
+                   CanBeLoversOption.getBool() : DefaultCanBeLovers;
+            }
+            else if(extraRole == Roles.SecondaryGuesser)
+            {
+                return (CustomOptionHolder.advanceRoleOptions.getBool() && CanBeGuesserOption != null) ?
+                    CanBeGuesserOption.getBool() : DefaultCanBeGuesser;
+            }
+            else if(extraRole == Roles.Drunk)
+            {
+                return (CustomOptionHolder.advanceRoleOptions.getBool() && CanBeDrunkOption != null) ?
+                    CanBeDrunkOption.getBool() : DefaultCanBeDrunk;
+            }
+            else if(extraRole == Roles.Bloody)
+            {
+                return (CustomOptionHolder.advanceRoleOptions.getBool() && CanBeBloodyOption != null) ?
+                    CanBeBloodyOption.getBool() : DefaultCanBeBloody;
+            }
+            else if (extraRole == Roles.SecondaryMadmate)
+            {
+                if (category != RoleCategory.Crewmate) return false;
+                return (CustomOptionHolder.advanceRoleOptions.getBool() && CanBeMadmateOption != null) ?
+                    CanBeMadmateOption.getBool() : DefaultCanBeMadmate;
+            }
+            else if (extraRole is AllSideRoles.Secret)
+            {
+                if (category == RoleCategory.Neutral) return false;
+
+                return (CustomOptionHolder.advanceRoleOptions.getBool() && CanBeSecretOption != null) ?
+                    CanBeSecretOption.getBool() : DefaultCanBeSecret;
+            }
+            return false;
+        }
         public virtual bool CanBeLovers
         {
             get

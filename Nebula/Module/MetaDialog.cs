@@ -204,7 +204,7 @@ namespace Nebula.Module
             foreach(var hs in assignable.helpSprite)
                 designers[1].AddTopic(new MSSprite(hs.sprite,0.1f,hs.ratio),new MSMultiString(designers[1].size.x-0.8f,1.2f,Language.Language.GetString(hs.localizedName),TMPro.TextAlignmentOptions.Left,TMPro.FontStyles.Normal));
             
-            if(assignable.AssignableOnHelp.TopOption != null) designers[2].AddTopic(new MSMultiString(designers[2].size.x, 1.4f, Module.GameOptionStringGenerator.optionsToString(assignable.AssignableOnHelp.TopOption), TMPro.TextAlignmentOptions.TopLeft, TMPro.FontStyles.Normal));
+            if((assignable.AssignableOnHelp?.TopOption ?? null) != null) designers[2].AddTopic(new MSMultiString(designers[2].size.x, 1.4f, Module.GameOptionStringGenerator.optionsToString(assignable.AssignableOnHelp.TopOption), TMPro.TextAlignmentOptions.TopLeft, TMPro.FontStyles.Normal));
         }
 
         static public MSDesigner OpenAssignableHelpDialog(Roles.Assignable assignable)

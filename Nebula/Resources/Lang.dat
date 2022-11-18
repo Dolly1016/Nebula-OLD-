@@ -235,6 +235,7 @@
 "option.suffix.cross" : "x"
 "option.suffix.second" : "s"
 "option.suffix.minute" : "m"
+"option.suffix.percent" : "%"
 
 "ritual.mission.formularize" : "Formularize"
 "ritual.rooms.bothEngines" : "Upper&Lower Engine"
@@ -852,6 +853,11 @@
 "role.bloody.name" : "Bloody"
 "role.bloody.info" : "Your murder bathe in blood."
 "role.bloody.bloodyDuration" : "Bloody Duration"
+
+"role.confused.name" : "Confused"
+"role.confused.info" : "You cannot find the true form of my companions."
+"role.confused.chanceOfShuffle" : "Chance Of Shuffle"
+"role.confused.numOfShuffledPlayers" : "Num Of Shuffled Players"
 
 "role.drunk.name" : "Drunk"
 "role.drunk.info" : "Your control is reversed."

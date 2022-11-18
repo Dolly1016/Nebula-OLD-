@@ -113,6 +113,7 @@ namespace Nebula.Roles
         public static CrewmateRoles.SecondaryMadmate SecondaryMadmate = new CrewmateRoles.SecondaryMadmate();
         public static ExtraRoles.DiamondPossessor DiamondPossessor = new ExtraRoles.DiamondPossessor();
         public static ExtraRoles.Bloody Bloody = new ExtraRoles.Bloody();
+        public static ExtraRoles.Confused Confused = new ExtraRoles.Confused();
         public static ExtraRoles.Drunk Drunk = new ExtraRoles.Drunk();
         public static ExtraRoles.Lover Lover = new ExtraRoles.Lover();
         public static ExtraRoles.Trilemma Trilemma = new ExtraRoles.Trilemma();
@@ -143,7 +144,7 @@ namespace Nebula.Roles
         {
             SecondaryGuesser,SecondarySidekick,SecondaryMadmate,
             DiamondPossessor,TeamSanta,
-            Bloody,Drunk,Lover,Trilemma,
+            Bloody,Confused,Drunk,Lover,Trilemma,
             MetaRole,AvengerTarget,
             PerkHolder
         };
