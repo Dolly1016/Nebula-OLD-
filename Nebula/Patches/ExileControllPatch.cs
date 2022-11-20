@@ -145,7 +145,8 @@ namespace Nebula.Patches
             
             Game.GameData.data.ColliderManager.OnMeetingEnd();
             Game.GameData.data.UtilityTimer.OnMeetingEnd();
-            Game.GameData.data.myData.getGlobalData().role.OnMeetingEnd();
+
+            Helpers.RoleAction(Game.GameData.data.myData.getGlobalData(), (r) => r.OnMeetingEnd());
 
             if (Game.GameData.data.GameMode == Module.CustomGameMode.Investigators)
             {

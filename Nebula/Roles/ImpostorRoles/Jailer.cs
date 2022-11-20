@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Nebula.Patches;
 using Nebula.Objects;
-using HarmonyLib;
-using Hazel;
+using Nebula.Utilities;
 
 namespace Nebula.Roles.ImpostorRoles
 {
@@ -16,7 +15,10 @@ namespace Nebula.Roles.ImpostorRoles
         /* オプション */
         private Module.CustomOption ignoreCommSabotageOption;
 
-        
+        MapCountOverlay? jailerCountOverlay = null;
+
+        public bool IsJailerCountOverlay(MapCountOverlay overlay) => overlay == jailerCountOverlay;
+
         public override void LoadOptionData()
         {
             ignoreCommSabotageOption = CreateOption(Color.white, "ignoreCommSabotage", true);
@@ -27,6 +29,8 @@ namespace Nebula.Roles.ImpostorRoles
         static private CustomButton adminButton;
         public override void ButtonInitialize(HudManager __instance)
         {
+            jailerCountOverlay = null;
+
             if (adminButton != null)
             {
                 adminButton.Destroy();
@@ -56,6 +60,14 @@ namespace Nebula.Roles.ImpostorRoles
                 adminButton.Destroy();
                 adminButton = null;
             }
+
+            if (jailerCountOverlay)
+            {
+                GameObject.Destroy(jailerCountOverlay.gameObject);
+            }
+            jailerCountOverlay = null;
+
+            if (MapBehaviour.Instance) GameObject.Destroy(MapBehaviour.Instance.gameObject);
         }
 
         public override void OnRoleRelationSetting()
@@ -66,6 +78,30 @@ namespace Nebula.Roles.ImpostorRoles
             RelatedRoles.Add(Roles.EvilTrapper);
             RelatedRoles.Add(Roles.Arsonist);
             RelatedRoles.Add(Roles.Opportunist);
+        }
+
+        public override void OnShowMapTaskOverlay(MapTaskOverlay mapTaskOverlay, Action<Vector2, bool> iconGenerator)
+        {
+            if (jailerCountOverlay == null)
+            {
+                jailerCountOverlay=GameObject.Instantiate(MapBehaviour.Instance.countOverlay);
+                jailerCountOverlay.transform.SetParent(MapBehaviour.Instance.transform);
+                jailerCountOverlay.transform.localPosition = MapBehaviour.Instance.countOverlay.transform.localPosition;
+                jailerCountOverlay.transform.localScale = MapBehaviour.Instance.countOverlay.transform.localScale;
+                jailerCountOverlay.gameObject.name = "JailerCountOverlay";
+
+                Map.MapEditor.MapEditors[PlayerControl.GameOptions.MapId].MinimapOptimizeForJailer(MapBehaviour.Instance.transform.FindChild("RoomNames") , jailerCountOverlay, MapBehaviour.Instance.infectedOverlay);
+            }
+
+            jailerCountOverlay.gameObject.SetActive(true);
+        }
+
+        /// <summary>
+        /// マップを閉じるときに呼び出されます。
+        /// </summary>
+        [RoleLocalMethod]
+        public override void OnMapClose(MapBehaviour mapBehaviour) {
+            if (jailerCountOverlay != null) jailerCountOverlay.gameObject.SetActive(false);
         }
 
         public Jailer()

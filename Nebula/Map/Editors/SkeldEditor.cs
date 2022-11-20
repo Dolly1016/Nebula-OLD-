@@ -40,5 +40,21 @@ namespace Nebula.Map.Editors
 
            // RPCEventInvoker.ObjectInstantiate(Objects.CustomObject.Type.Diamond, new Vector3(3, 0, 0));
         }
+
+        public override void MinimapOptimizeForJailer(Transform romeNames, MapCountOverlay countOverlay, InfectedOverlay infectedOverlay)
+        {
+            for (int i = 0; i < infectedOverlay.transform.childCount; i++)
+                infectedOverlay.transform.GetChild(i).transform.localScale *= 0.8f;
+
+
+            //romeNames.GetChild(0).localPosition += new Vector3(0f, 0.2f, 0f);
+
+            //infectedOverlay.transform.GetChild(0).localPosition += new Vector3(0f, -0.15f, 0f);
+
+            //countOverlay.transform.GetChild(2).localPosition += new Vector3(-0.2f, -0.4f, 0f);
+
+            foreach (var c in countOverlay.CountAreas) c.YOffset *= -1f;
+
+        }
     }
 }

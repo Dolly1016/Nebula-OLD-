@@ -245,6 +245,7 @@ namespace Nebula.Map
         /// </summary>
         public virtual void MapCustomize() { }
 
+        public virtual void MinimapOptimizeForJailer(Transform romeNames,MapCountOverlay countOverlay,InfectedOverlay infectedOverlay) { }
         public MapEditor(int mapId)
         {
             MapId = mapId;

@@ -34,6 +34,18 @@ namespace Nebula.Patches
             }
 
         }
+
+        [HarmonyPatch(typeof(MapBehaviour), nameof(MapBehaviour.Close))]
+        class MapBehaviourClosePatch
+        {
+            static void Postfix(MapBehaviour __instance)
+            {
+                Helpers.RoleAction(Game.GameData.data.myData.getGlobalData(),(r)=> {
+                    r.OnMapClose(__instance);
+                });
+            }
+
+        }
     }
 
     [HarmonyPatch]
@@ -160,6 +172,26 @@ namespace Nebula.Patches
 
                 Game.GameData.data.myData.getGlobalData().role.OnShowMapTaskOverlay(__instance, GenerateIcon);
                 
+            }
+
+        }
+    }
+
+    [HarmonyPatch]
+    class MapCountOverlayPatch
+    {
+        [HarmonyPatch(typeof(MapCountOverlay), nameof(MapCountOverlay.OnEnable))]
+        class MapCountOverlayOnEnablePatch
+        {
+            static bool Prefix(MapCountOverlay __instance)
+            {
+                if (Roles.Roles.Jailer.IsJailerCountOverlay(__instance))
+                {
+                    __instance.timer = 1f;
+                    return false;
+                }
+
+                return true;
             }
 
         }

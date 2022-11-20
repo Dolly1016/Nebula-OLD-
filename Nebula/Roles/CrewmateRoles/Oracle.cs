@@ -137,7 +137,8 @@ namespace Nebula.Roles.CrewmateRoles
 
         public override void PreloadOptionData()
         {
-            extraAssignableOptions.Add(Roles.SecondaryGuesser, null);
+            extraAssignableOptions.Add(Roles.Confused, null);
+            defaultUnassignable.Add(Roles.SecondaryGuesser);
         }
 
         public override void LoadOptionData()

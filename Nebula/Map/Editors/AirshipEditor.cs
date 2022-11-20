@@ -274,6 +274,39 @@ namespace Nebula.Map.Editors
 
 
         }
+
+        public override void MinimapOptimizeForJailer(Transform romeNames, MapCountOverlay countOverlay, InfectedOverlay infectedOverlay)
+        {
+            for (int i = 0; i < infectedOverlay.transform.childCount; i++)
+                infectedOverlay.transform.GetChild(i).transform.localScale *= 0.8f;
+
+
+            romeNames.GetChild(0).localPosition += new Vector3(0f, 0.2f, 0f);
+            romeNames.GetChild(2).localPosition += new Vector3(0f, 0.2f, 0f);
+            romeNames.GetChild(3).localPosition += new Vector3(0f, 0.25f, 0f);
+            romeNames.GetChild(8).localPosition += new Vector3(0f, 0.3f, 0f);
+            romeNames.GetChild(11).localPosition += new Vector3(0f, 0.1f, 0f);
+            romeNames.GetChild(15).localPosition += new Vector3(0f, 0.1f, 0f);
+
+            infectedOverlay.transform.GetChild(0).localPosition += new Vector3(0f, -0.15f, 0f);
+            infectedOverlay.transform.GetChild(1).localPosition += new Vector3(-0.12f, 0.35f, 0f);
+            infectedOverlay.transform.GetChild(2).localPosition += new Vector3(0f, 0.15f, 0f);
+            infectedOverlay.transform.GetChild(3).localPosition += new Vector3(0f, 0.15f, 0f);
+            infectedOverlay.transform.GetChild(4).localPosition += new Vector3(0.02f, 0.3f, 0f);
+            infectedOverlay.transform.GetChild(5).localPosition += new Vector3(0.06f, 0.12f, 0f);
+            infectedOverlay.transform.GetChild(6).localPosition += new Vector3(0f, 0.35f, 0f);
+            infectedOverlay.transform.GetChild(7).localPosition += new Vector3(0f, 0.25f, 0f);
+
+            countOverlay.transform.GetChild(2).localPosition += new Vector3(-0.2f, -0.4f, 0f);
+            countOverlay.transform.GetChild(3).localPosition += new Vector3(0.05f, -0.2f, 0f);
+            countOverlay.transform.GetChild(5).localPosition += new Vector3(0.06f, -0.25f, 0f);
+            countOverlay.transform.GetChild(6).localPosition += new Vector3(0f, -0.28f, 0f);
+            countOverlay.transform.GetChild(16).localPosition += new Vector3(0.15f, -0.3f, 0f);
+            countOverlay.transform.GetChild(17).localPosition += new Vector3(-0.1f, -0.5f, 0f);
+
+            foreach (var c in countOverlay.CountAreas) c.YOffset *= -1f;
+
+        }
     }
 
     //これだけ定数なのでパッチで対応

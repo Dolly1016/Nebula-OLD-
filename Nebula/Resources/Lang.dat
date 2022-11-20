@@ -231,6 +231,9 @@
 "option.canBeBloody" : "Can Be Bloody"
 "option.canBeMadmate" : "Can Be Madmate"
 "option.canBeSecret" : "Can Be Secret"
+"option.canBeSecretCrewmate" : "Can Be Secret (Crewmate)"
+"option.canBeSecretImpostor" : "Can Be Secret (Impostor)"
+"option.canBeConfused" : "Can Be Confused"
 
 "option.suffix.cross" : "x"
 "option.suffix.second" : "s"
@@ -391,7 +394,7 @@
 "role.necromancer.name" : "Necromancer"
 "role.necromancer.short" : "N"
 "role.necromancer.description" : "Revive Phantoms"
-"role.necromancer.info" : "You can drag dead bodies to revive in the room that the dragging body requests."
+"role.necromancer.info" : "You can drag dead bodies to revive in the room \nthat the dragging body requests."
 "role.necromancer.help.dragAndDrop" : "Drap and drop dead bodies."
 "role.necromancer.help.revive" : "Revive the player."
 "role.necromancer.phantomMessage" : "Please take me to %ROOM%..."
@@ -570,7 +573,7 @@
 "role.cleaner.name" : "Cleaner"
 "role.cleaner.short" : "Cl"
 "role.cleaner.description" : "Kill Everyone and Leave No Traces"
-"role.cleaner.info" : "You can remove the dead bodies.\nWhen you kill or clean anyone, both of clean cool down and kill cool down start."
+"role.cleaner.info" : "You can remove the dead bodies.\nWhen you kill or clean anyone, \nboth of clean cool down and kill cool down start."
 "role.cleaner.help.clean" : "Clean dead body."
 "role.cleaner.cleanCoolDown" : "Clean Cool Down"
 

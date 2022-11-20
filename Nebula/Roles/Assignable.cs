@@ -365,6 +365,13 @@ namespace Nebula.Roles
         public virtual void MyMapUpdate(MapBehaviour mapBehaviour) { }
 
         /// <summary>
+        /// マップを閉じるときに呼び出されます。
+        /// </summary>
+        [RoleLocalMethod]
+        public virtual void OnMapClose(MapBehaviour mapBehaviour) { }
+        
+
+        /// <summary>
         /// タスクを完了すると呼び出されます。
         /// </summary>
         [RoleLocalMethod]

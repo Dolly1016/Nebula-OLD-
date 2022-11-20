@@ -55,7 +55,7 @@ namespace Nebula.Roles.ExtraRoles
 
             chanceOfShuffleOption = CreateOption(Color.white, "chanceOfShuffle", 50f, 0f,100f,10f);
             chanceOfShuffleOption.suffix = "percent";
-            numOfShuffledPlayersOption = CreateOption(Color.white, "numOfShuffledPlayers", 2f, 1f, 14f, 1f);
+            numOfShuffledPlayersOption = CreateOption(Color.white, "numOfShuffledPlayers", 2f, 2f, 14f, 1f);
         }
 
         public override void EditSpawnableRoleShower(ref string suffix, Role role)

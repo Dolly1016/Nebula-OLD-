@@ -62,7 +62,7 @@ namespace Nebula.Roles.CrewmateRoles
 
         public override void PreloadOptionData()
         {
-            extraAssignableOptions.Add(Roles.Lover, null);
+            defaultUnassignable.Add(Roles.Lover);
         }
 
         public override void LoadOptionData()

@@ -116,7 +116,7 @@ namespace Nebula.Module
         protected TMPro.FontStyles style { get; }
         public TMPro.TextMeshPro? text { get; protected set; }
         public float fontSize { get; protected set; }
-        public override Vector2 GetSize() => new Vector2(width + 0.06f, 0.1f + 0.72f * fontSize / 6f * (float)(1 + rawText.Count((c) => c == '\n')));
+        public override Vector2 GetSize() => new Vector2(width + 0.06f, 0.1f + 0.74f * fontSize / 6f * (float)(1 + rawText.Count((c) => c == '\n')));
 
         public MSMultiString(float width, float size, string text, TMPro.TextAlignmentOptions alignment, TMPro.FontStyles style)
         {

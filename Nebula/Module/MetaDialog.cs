@@ -269,7 +269,7 @@ namespace Nebula.Module
             }
 
             //見出し
-            designer.AddTopic(new MSString(4f,new string[] { "My Roles","Roles","Ghost Roles","Modifies","All Options"}[tab],TMPro.TextAlignmentOptions.Center,TMPro.FontStyles.Bold));
+            designer.AddTopic(new MSString(4f,new string[] { "My Roles","Roles","Ghost Roles","Modifiers","All Options"}[tab],TMPro.TextAlignmentOptions.Center,TMPro.FontStyles.Bold));
 
             switch (tab)
             {
