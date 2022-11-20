@@ -53,6 +53,9 @@ namespace Nebula.Module
         /// <param name="num"></param>
         static public void EraseDialog(int num)
         {
+            if (dialogOrder.Count < num) num = dialogOrder.Count;
+            if (num == 0) return;
+
             for (int i = 0; i <num; i++)
             {
                 dialogOrder[dialogOrder.Count-1-i].dialog.Hide();

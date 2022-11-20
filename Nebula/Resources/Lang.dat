@@ -281,6 +281,7 @@
 "role.tracker.changeTargetCoolDown" : "Change Target Cool Down"
 "role.tracker.canUseMeetingActionOption" : "Can Use Meeting Action"
 "role.tracker.canChangeTrackingTargetInMeegingOption" : "Can Change Target In Meeting"
+"role.tracker.evilTrackerCanTrackImpostors" : "Evil Tracker Can Track Impostors"
 "role.tracker.evilTrackerCanKnowImpostorsKill" : "Evil Tracker Can Know Impostors Kill"
 
 "role.trapper.name" : "Trapper"
@@ -636,6 +637,8 @@
 "role.jailer.short" : "J"
 "role.jailer.info" : "You can use admin anywhere."
 "role.jailer.description" : "Be Under the Control"
+"role.jailer.canMoveWithLookingMap" : "Can Move With Locking Map"
+"role.jailer.canIdentifyImpostors" : "Can Identify Impostors And Dead Bodies In Map"
 "role.jailer.ignoreCommSabotage" : "Ignore Comms. Sabotage"
 
 "role.marionette.name" : "Marionette"

@@ -14,6 +14,8 @@ namespace Nebula.Roles.ImpostorRoles
     {
         /* オプション */
         private Module.CustomOption ignoreCommSabotageOption;
+        private Module.CustomOption canMoveWithLookingMapOption;
+        private Module.CustomOption canIdentifyImpostorsOption;
 
         MapCountOverlay? jailerCountOverlay = null;
 
@@ -21,6 +23,8 @@ namespace Nebula.Roles.ImpostorRoles
 
         public override void LoadOptionData()
         {
+            canMoveWithLookingMapOption = CreateOption(Color.white, "canMoveWithLookingMap", true);
+            canIdentifyImpostorsOption = CreateOption(Color.white, "canIdentifyImpostors", true);
             ignoreCommSabotageOption = CreateOption(Color.white, "ignoreCommSabotage", true);
         }
         
@@ -35,23 +39,30 @@ namespace Nebula.Roles.ImpostorRoles
             {
                 adminButton.Destroy();
             }
-            adminButton = new CustomButton(
-                () =>
-                {
-                    RoleSystem.HackSystem.showAdminMap(ignoreCommSabotageOption.getBool());
-                },
-                () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
-                () => { return PlayerControl.LocalPlayer.CanMove; },
-                () => {  },
-                __instance.UseButton.fastUseSettings[ImageNames.AdminMapButton].Image,
-                new Vector3(-1.8f, 0f, 0),
-                __instance,
-                Module.NebulaInputManager.abilityInput.keyCode,
-                false,
-                "button.label.admin"
-            );
-            adminButton.MaxTimer = 0f;
-            adminButton.Timer = 0f;
+            if (!canMoveWithLookingMapOption.getBool())
+            {
+                adminButton = new CustomButton(
+                    () =>
+                    {
+                        RoleSystem.HackSystem.showAdminMap(ignoreCommSabotageOption.getBool(), canIdentifyImpostorsOption.getBool() ? AdminPatch.AdminMode.ImpostorsAndDeadBodies : AdminPatch.AdminMode.Default);
+                    },
+                    () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
+                    () => { return PlayerControl.LocalPlayer.CanMove; },
+                    () => { },
+                    __instance.UseButton.fastUseSettings[ImageNames.AdminMapButton].Image,
+                    new Vector3(-1.8f, 0f, 0),
+                    __instance,
+                    Module.NebulaInputManager.abilityInput.keyCode,
+                    false,
+                    "button.label.admin"
+                );
+                adminButton.MaxTimer = 0f;
+                adminButton.Timer = 0f;
+            }
+            else
+            {
+                adminButton = null;
+            }
         }
         public override void CleanUp()
         {
@@ -82,6 +93,8 @@ namespace Nebula.Roles.ImpostorRoles
 
         public override void OnShowMapTaskOverlay(MapTaskOverlay mapTaskOverlay, Action<Vector2, bool> iconGenerator)
         {
+            if (!canMoveWithLookingMapOption.getBool()) return;
+
             if (jailerCountOverlay == null)
             {
                 jailerCountOverlay=GameObject.Instantiate(MapBehaviour.Instance.countOverlay);
@@ -90,10 +103,20 @@ namespace Nebula.Roles.ImpostorRoles
                 jailerCountOverlay.transform.localScale = MapBehaviour.Instance.countOverlay.transform.localScale;
                 jailerCountOverlay.gameObject.name = "JailerCountOverlay";
 
-                Map.MapEditor.MapEditors[PlayerControl.GameOptions.MapId].MinimapOptimizeForJailer(MapBehaviour.Instance.transform.FindChild("RoomNames") , jailerCountOverlay, MapBehaviour.Instance.infectedOverlay);
+                Transform roomNames;
+                if (PlayerControl.GameOptions.MapId == 0)
+                    roomNames = MapBehaviour.Instance.transform.FindChild("RoomNames (1)");
+                else
+                    roomNames = MapBehaviour.Instance.transform.FindChild("RoomNames");
+                Map.MapEditor.MapEditors[PlayerControl.GameOptions.MapId].MinimapOptimizeForJailer(roomNames , jailerCountOverlay, MapBehaviour.Instance.infectedOverlay);
             }
 
             jailerCountOverlay.gameObject.SetActive(true);
+
+            Patches.AdminPatch.adminMode = canIdentifyImpostorsOption.getBool() ? AdminPatch.AdminMode.ImpostorsAndDeadBodies : AdminPatch.AdminMode.Default;
+            Patches.AdminPatch.isAffectedByCommAdmin = !ignoreCommSabotageOption.getBool();
+            Patches.AdminPatch.isStandardAdmin = false;
+            Patches.AdminPatch.shouldChangeColor = false;
         }
 
         /// <summary>

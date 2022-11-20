@@ -15,6 +15,7 @@ namespace Nebula.Roles.ComplexRoles
         public Module.CustomOption canUseMeetingActionOption;
         public Module.CustomOption canChangeTrackingTargetInMeegingOption;
         public Module.CustomOption evilTrackerCanKnowImpostorsKillOption;
+        public Module.CustomOption evilTrackerCanTrackImpostorsOption;
 
         static public Color RoleColor = new Color(114f / 255f, 163f / 255f, 207f / 255f);
 
@@ -35,6 +36,7 @@ namespace Nebula.Roles.ComplexRoles
             changeTargetCoolDownOption.suffix = "second";
             canUseMeetingActionOption = CreateOption(Color.white, "canUseMeetingActionOption", true);
             canChangeTrackingTargetInMeegingOption = CreateOption(Color.white, "canChangeTrackingTargetInMeegingOption", false).AddPrerequisite(canUseMeetingActionOption);
+            evilTrackerCanTrackImpostorsOption = CreateOption(Color.white, "evilTrackerCanTrackImpostors", true);
             evilTrackerCanKnowImpostorsKillOption = CreateOption(Color.white, "evilTrackerCanKnowImpostorsKill", true);
 
             FirstRole = Roles.NiceTracker;
@@ -134,6 +136,8 @@ namespace Nebula.Roles.ComplexRoles
             data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(1f);
             Patches.PlayerControlPatch.SetPlayerOutline(data.currentTarget, Color.yellow);
 
+            if (!Roles.F_Tracker.evilTrackerCanTrackImpostorsOption.getBool()) return;
+
             RoleSystem.TrackSystem.PlayerTrack_MyControlUpdate(ref arrow, trackTarget, Roles.F_Tracker.Color);
 
             int i = 0;
@@ -141,7 +145,7 @@ namespace Nebula.Roles.ComplexRoles
             {
                 foreach(var p in PlayerControl.AllPlayerControls.GetFastEnumerator())
                 {
-                    if (p.Data.Role.IsImpostor && !p.Data.IsDead && p.PlayerId != PlayerControl.LocalPlayer.PlayerId && p.PlayerId != (trackTarget?.control?.PlayerId ?? byte.MaxValue)) 
+                    if ((p.Data.Role.IsImpostor || p.GetModData().role.DeceiveImpostorInNameDisplay) && !p.Data.IsDead && p.PlayerId != PlayerControl.LocalPlayer.PlayerId && p.PlayerId != (trackTarget?.control?.PlayerId ?? byte.MaxValue)) 
                     {
                         if (impostorArrows.Count >= i) impostorArrows.Add(null);
 
