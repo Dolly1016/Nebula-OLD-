@@ -80,6 +80,21 @@ namespace Nebula.Map.Database
             RegisterObjectPosition("reactor", new Vector2(2.549f, 12.407f), SystemTypes.Reactor, 40f);
 
             MapScale = 36f;
+
+            SpawnPoints.Add(new SpawnPointData("launchpad", new Vector2(-4.4f, 2.1969f)));
+            SpawnPoints.Add(new SpawnPointData("medBay", new Vector2(15.3094f, -0.4085f)));
+            SpawnPoints.Add(new SpawnPointData("comms", new Vector2(14.4909f, 4.0153f)));
+            SpawnPoints.Add(new SpawnPointData("locker", new Vector2(9.0862f, 1.3112f)));
+            SpawnPoints.Add(new SpawnPointData("decontamination", new Vector2(6.1333f, 6.27f)));
+            SpawnPoints.Add(new SpawnPointData("reactor", new Vector2(2.4809f, 13.2443f)));
+            SpawnPoints.Add(new SpawnPointData("laboratory", new Vector2(9.0136f, 12.081f)));
+            SpawnPoints.Add(new SpawnPointData("rendezvous", new Vector2(17.8176f, 11.3095f)));
+            SpawnPoints.Add(new SpawnPointData("office", new Vector2(14.7004f, 20.0933f)));
+            SpawnPoints.Add(new SpawnPointData("admin", new Vector2(19.4462f, 19.0366f)));
+            SpawnPoints.Add(new SpawnPointData("greenhouse", new Vector2(17.857f, 23.5425f)));
+            SpawnPoints.Add(new SpawnPointData("cafeteria", new Vector2(25.433f, 2.553f)));
+            SpawnPoints.Add(new SpawnPointData("storage", new Vector2(19.9159f, 4.718f)));
+            SpawnPoints.Add(new SpawnPointData("balcony", new Vector2(26.7091f, -1.9142f)));
         }
     }
 }

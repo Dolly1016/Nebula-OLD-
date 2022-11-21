@@ -205,7 +205,7 @@ namespace Nebula.Module
             return buttonSprite;
         }
 
-        static protected AudioClip? getHoverClip()
+        static public AudioClip? getHoverClip()
         {
             if (audioHover == null) audioHover = Helpers.FindSound("UI_Hover");
             return audioHover;
@@ -255,6 +255,7 @@ namespace Nebula.Module
                 obj.transform.localScale = new Vector3(1f, 1f, 1f);
                 var renderer = obj.AddComponent<SpriteRenderer>();
                 var collider = obj.AddComponent<BoxCollider2D>();
+
                 var text = GameObject.Instantiate(HudManager.Instance.Dialogue.target);
                 text.transform.SetParent(obj.transform);
                 text.transform.localScale = new Vector3(1f, 1f, 1f);
@@ -294,12 +295,12 @@ namespace Nebula.Module
                 return button;
             }
 
-            static public PassiveButton AddSubButton(GameObject parent, Vector2 size, string name, string display)
+            static public PassiveButton AddSubButton(GameObject parent, Vector2 size, string name, string display,Color? normalColor=null)
             {
                 GameObject obj = new GameObject(name);
                 obj.transform.SetParent(parent.transform);
                 obj.transform.localPosition = new Vector3(0, 0, -5f);
-                var result = SetUpButton(obj, size, display);
+                var result = SetUpButton(obj, size, display, normalColor);
 
                 return result;
             }
@@ -309,19 +310,25 @@ namespace Nebula.Module
                 return AddSubButton(button.gameObject,size,name,display);
             }
 
-            static public TMPro.TextMeshPro AddSubText(PassiveButton button, float width, float fontsize, string display)
+            static public TMPro.TextMeshPro AddSubText(GameObject obj, float width, float fontsize, string display,TMPro.FontStyles style,TMPro.TextAlignmentOptions alignment)
             {
                 TMPro.TextMeshPro text = GameObject.Instantiate(HudManager.Instance.Dialogue.target);
-                text.transform.SetParent(button.transform);
+                text.transform.SetParent(obj.transform);
                 text.transform.localPosition = new Vector3(0, 0, -5f);
                 text.text = display;
-                text.alignment = TMPro.TextAlignmentOptions.Center;
+                text.alignment = alignment;
+                text.fontStyle = style;
                 text.rectTransform.sizeDelta = new Vector2(width, 0.4f);
                 text.rectTransform.pivot = new Vector2(0.5f, 0.5f);
                 text.text = display;
                 text.fontSize = text.fontSizeMax = text.fontSizeMax = fontsize;
 
                 return text;
+            }
+
+            static public TMPro.TextMeshPro AddSubText(PassiveButton button, float width, float fontsize, string display)
+            {
+                return AddSubText(button.gameObject,width,fontsize,display,TMPro.FontStyles.Normal,TMPro.TextAlignmentOptions.Center);
             }
 
             public PassiveButton AddButton(float width, string name, string display)

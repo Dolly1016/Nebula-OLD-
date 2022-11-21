@@ -230,5 +230,37 @@ namespace Nebula.Patches
 				return false;
 			}
 		}
+
+		[HarmonyPatch]
+		class SafeMinigamePatch
+		{
+			static int[] numbers = new int[5];
+			static int progress = 0;
+
+			[HarmonyPatch(typeof(SafeMinigame), nameof(SafeMinigame.Begin))]
+			class SafeMinigameBeginPatch
+			{
+				static void Postfix(SafeMinigame __instance)
+				{
+					if (CustomOptionHolder.mapOptions.getBool() && !CustomOptionHolder.UseVanillaSafeTaskOption.getBool())
+					{
+						__instance.ComboText.transform.localPosition = new Vector3(0.1648f, 0f);
+						__instance.Tumbler.gameObject.SetActive(false);
+
+						__instance.ComboText.text = "";
+
+						progress = 0;
+						for (int i = 0; i < 5; i++)
+						{
+							numbers[i] = 1 + NebulaPlugin.rnd.Next(9);
+							if (i != 0) __instance.ComboText.text += " ";
+							 __instance.ComboText.text += numbers[i].ToString();
+						}
+
+						foreach (var arrow in __instance.Arrows) arrow.gameObject.SetActive(false);
+					}
+				}
+			}
+		}
 	}
 }

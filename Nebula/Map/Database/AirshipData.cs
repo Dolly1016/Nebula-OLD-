@@ -142,6 +142,26 @@ namespace Nebula.Map.Database
             RitualRooms.Add(new SystemTypes[] { SystemTypes.ViewingDeck });
             RitualRooms.Add(new SystemTypes[] { SystemTypes.Kitchen,SystemTypes.ViewingDeck });
             RitualRooms.Add(new SystemTypes[] { SystemTypes.Security });
+
+            SpawnPoints.Add(new SpawnPointData("cargoBay", new Vector2(33.5778f, -1.5979f)));
+            SpawnPoints.Add(new SpawnPointData("toilet", new Vector2(32.3184f, 7.0118f)));
+            SpawnPoints.Add(new SpawnPointData("lounge", new Vector2(24.8702f, 6.459f)));
+            SpawnPoints.Add(new SpawnPointData("record", new Vector2(19.8717f, 10.1845f)));
+            SpawnPoints.Add(new SpawnPointData("gapRoom", new Vector2(11.9727f, 8.6011f)));
+            SpawnPoints.Add(new SpawnPointData("shower", new Vector2(19.8887f, -0.0723f)));
+            SpawnPoints.Add(new SpawnPointData("mainHall", new Vector2(10.6875f, -0.1902f)));
+            SpawnPoints.Add(new SpawnPointData("electrical", new Vector2(16.3201f, -8.808f)));
+            SpawnPoints.Add(new SpawnPointData("medical", new Vector2(28.4471f, -5.8789f)));
+            SpawnPoints.Add(new SpawnPointData("security", new Vector2(7.0693f, -11.6312f)));
+            SpawnPoints.Add(new SpawnPointData("kitchen", new Vector2(-4.0987f, -11.3393f)));
+            SpawnPoints.Add(new SpawnPointData("viewingDeck", new Vector2(-13.5882f, -12.5294f)));
+            SpawnPoints.Add(new SpawnPointData("armory", new Vector2(-10.141f, -6.3739f)));
+            SpawnPoints.Add(new SpawnPointData("comms", new Vector2(-12.9433f, 1.4259f)));
+            SpawnPoints.Add(new SpawnPointData("cockpit", new Vector2(-23.5643f, -1.4405f)));
+            SpawnPoints.Add(new SpawnPointData("engineRoom", new Vector2(0.0174f, -1.1194f)));
+            SpawnPoints.Add(new SpawnPointData("brig", new Vector2(-0.4439f,8.5204f)));
+            SpawnPoints.Add(new SpawnPointData("vault", new Vector2(-8.789f,8.049f)));
+            SpawnPoints.Add(new SpawnPointData("meetingRoom", new Vector2(11.1469f, 16.0138f)));
         }
     }
 }

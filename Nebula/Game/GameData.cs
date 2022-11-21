@@ -824,6 +824,8 @@ namespace Nebula.Game
 
         public GuardStatus guardStatus { get; private set; }
 
+        public Vector2? preMeetingPosition { get; set; }
+
         public Patches.FinalPlayerData.FinalPlayer? FinalData { get {
                 return Patches.OnGameEndPatch.FinalData.players.FirstOrDefault((p) => p.id == id);
         }}
@@ -859,7 +861,10 @@ namespace Nebula.Game
             this.isInvisiblePlayer = false;
             this.roleHistory=new List<Tuple<string, string>>();
             this.guardStatus = new GuardStatus(id);
-            
+
+            this.preMeetingPosition = null;
+
+
         }
 
         public void RemoveOutfit(PlayerOutfitData outfit)

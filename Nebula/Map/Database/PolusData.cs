@@ -112,6 +112,22 @@ namespace Nebula.Map.Database
             RegisterObjectPosition("drill", new Vector2(27.421f, -6.9823f), SystemTypes.Laboratory, 35f);
             RegisterObjectPosition("reactor", new Vector2(34.7578f, -18.8785f), SystemTypes.Specimens, 50f);
             RegisterObjectPosition("decontamination", new Vector2(39.8686f, -9.8323f), SystemTypes.Decontamination, 50f);
+
+            SpawnPoints.Add(new SpawnPointData("dropship", new Vector2(16.6f, -1.5f)));
+            SpawnPoints.Add(new SpawnPointData("storage", new Vector2(20.6f, -11.7f)));
+            SpawnPoints.Add(new SpawnPointData("laboratory", new Vector2(34.8f, -6.0f)));
+            SpawnPoints.Add(new SpawnPointData("specimenRoom", new Vector2(36.5f, -21.2f)));
+            SpawnPoints.Add(new SpawnPointData("office", new Vector2(19.5f, -17.6f)));
+            SpawnPoints.Add(new SpawnPointData("weapons", new Vector2(12.2f, -23.3f)));
+            SpawnPoints.Add(new SpawnPointData("lifeSupport", new Vector2(3.5f, -21.5f)));
+            SpawnPoints.Add(new SpawnPointData("electrical", new Vector2(7.4f, -9.6f)));
+            SpawnPoints.Add(new SpawnPointData("comms", new Vector2(10.9f, -17.7f)));
+            SpawnPoints.Add(new SpawnPointData("security", new Vector2(3.0694f, -11.9939f)));
+            SpawnPoints.Add(new SpawnPointData("snowdrift", new Vector2(12.918f, -13.0296f)));
+            SpawnPoints.Add(new SpawnPointData("admin", new Vector2(21.1384f, -22.7731f)));
+            SpawnPoints.Add(new SpawnPointData("ejection", new Vector2(32.1547f, -15.7529f)));
+            SpawnPoints.Add(new SpawnPointData("abditory", new Vector2(25.7226f, -12.8779f)));
+            SpawnPoints.Add(new SpawnPointData("drill", new Vector2(27.5518f, -7.3609f)));
         }
     }
 }

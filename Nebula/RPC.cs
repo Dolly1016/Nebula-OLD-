@@ -32,6 +32,7 @@ namespace Nebula
         ForceEnd,
         WinTrigger,
         ShareOptions,
+        SendPreMeetingPosition,
         SetPlayerStatus,
         SetRoles,
         SetExtraRole,
@@ -155,6 +156,9 @@ namespace Nebula
                     break;
                 case (byte)CustomRPC.ForceEnd:
                     RPCEvents.ForceEnd(reader.ReadByte());
+                    break;
+                case (byte)CustomRPC.SendPreMeetingPosition:
+                    RPCEvents.SendPreMeetingPosition(reader.ReadByte(),new Vector2(reader.ReadSingle(), reader.ReadSingle()));
                     break;
                 case (byte)CustomRPC.WinTrigger:
                     RPCEvents.WinTrigger(reader.ReadByte(), reader.ReadByte());
@@ -433,6 +437,11 @@ namespace Nebula
         public static void UpdatePlayerControl(byte playerId,float mouseAngle)
         {
             Helpers.playerById(playerId).GetModData().MouseAngle = mouseAngle;
+        }
+
+        public static void SendPreMeetingPosition (byte playerId, Vector2 pos)
+        {
+            Game.GameData.data.playersArray[playerId].preMeetingPosition = pos;
         }
 
         public static void SetRole(byte playerId,Roles.Role role,int roleDataId ,int roleData)
@@ -1651,6 +1660,17 @@ namespace Nebula
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             RPCEvents.SetRandomMap(mapId);
         }
+
+        public static void SendPreMeetingPosition(Vector2 pos)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SendPreMeetingPosition, Hazel.SendOption.Reliable, -1);
+            writer.Write(PlayerControl.LocalPlayer.PlayerId);
+            writer.Write(pos.x);
+            writer.Write(pos.y);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RPCEvents.SendPreMeetingPosition(PlayerControl.LocalPlayer.PlayerId,pos);
+        }
+
 
         private static void WriteRolesData(MessageWriter writer, Patches.AssignMap assignMap)
         {

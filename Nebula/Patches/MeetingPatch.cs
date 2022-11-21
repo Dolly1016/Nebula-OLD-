@@ -275,6 +275,9 @@ namespace Nebula.Patches
         {
             public static void Prefix(PlayerControl __instance, [HarmonyArgument(0)] GameData.PlayerInfo meetingTarget)
             {
+                //会議前の位置を共有する
+                RPCEventInvoker.SendPreMeetingPosition(PlayerControl.LocalPlayer.transform.position);
+
                 if (meetingTarget == null) EmergencyPatch.meetingsCount++;
 
                 //票の重み設定をリセット
