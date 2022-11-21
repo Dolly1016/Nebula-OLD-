@@ -165,6 +165,7 @@ namespace Nebula
         public static CustomOption MeistersFilterOption;
         public static CustomOption MeistersFuelEnginesOption;
         public static CustomOption DangerousDownloadSpotOption;
+        public static CustomOption UseVanillaSafeTaskOption;
 
         public static CustomOption SabotageOption;
         public static CustomOption SabotageCoolDownOption;
@@ -345,7 +346,15 @@ namespace Nebula
                 MetaScreenContent getSuitableContent()
                 {
                     if (spawnMethod.getSelection() == 2)
-                        return new MSButton(1.6f, 0.4f, "Setting", TMPro.FontStyles.Bold, () => { });
+                        return new MSButton(1.6f, 0.4f, "Customize", TMPro.FontStyles.Bold, () => {
+                            Action<byte> refresher = null;
+                            refresher = (mapId)=>MetaDialog.OpenMapDialog(mapId, true,(obj,id)=>Map.MapData.MapDatabase[id].SetUpSpawnPointButton(obj, ()=>
+                            {
+                                MetaDialog.EraseDialog(1);
+                                refresher(id);
+                            }));
+                            refresher(PlayerControl.GameOptions.MapId);
+                        });
                     else
                         return new MSMargin(1.7f);
                 }
@@ -403,6 +412,7 @@ namespace Nebula
             MeistersFilterOption = CustomOption.Create(Color.white, "option.meistersO2Filter", false, TasksOption).SetGameMode(CustomGameMode.All);
             MeistersFuelEnginesOption = CustomOption.Create(Color.white, "option.meistersFuelEngines", false, TasksOption).SetGameMode(CustomGameMode.All);
             DangerousDownloadSpotOption = CustomOption.Create(Color.white, "option.dangerousDownloadSpot", false, TasksOption).SetGameMode(CustomGameMode.All);
+            UseVanillaSafeTaskOption = CustomOption.Create(Color.white, "option.useVanillaSafeTask", true, TasksOption).SetGameMode(CustomGameMode.All);
 
             SabotageOption = CustomOption.Create(Color.white, "option.sabotageOption", false, null, true, false, "", CustomOptionTab.Settings).SetGameMode(~(CustomGameMode.Ritual | CustomGameMode.Minigame));
             CustomOption.RegisterTopOption(SabotageOption);
@@ -496,6 +506,8 @@ namespace Nebula
                         );
                 }
             }
+
+            Map.MapData.CreateOptionData();
 
 
         }

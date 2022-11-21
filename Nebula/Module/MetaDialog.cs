@@ -113,6 +113,48 @@ namespace Nebula.Module
             return new MSDesigner(metaDialog, size, title.Length > 0 ? dialogue.target.GetPreferredHeight() + 0.1f : 0.2f);
         }
 
+        static public MSDesigner OpenMapDialog(byte mapId,bool canChangeMap,Action<GameObject,byte>? mapDecorator)
+        {
+            float[] rates = { 0.74f, 0.765f, 0.74f, 1f,1.005f };
+            string[] mapNames = { "The Skeld", "MIRA HQ", "Polus", "Undefined", "Airship" };
+            byte changeMapId(bool incrementFlag)
+            {
+                int id = mapId;
+                while (true)
+                {
+                    id += incrementFlag ? 1 : -1;
+
+                    if (id < 0) id = 4;
+                    if (id > 4) id = 0;
+
+                    if (id != 3) break;
+                }
+                return (byte)id;
+            }
+
+            var dialog = OpenDialog(new Vector2(8.8f, canChangeMap ? 5.4f : 5f), "");
+            if (canChangeMap) dialog.AddTopic(
+                new MSButton(0.5f, 0.5f, "<", TMPro.FontStyles.Bold, () => {
+                    EraseDialog(1);
+                    OpenMapDialog(changeMapId(false), true, mapDecorator);
+                }),
+                new MSString(2f,mapNames[mapId],TMPro.TextAlignmentOptions.Center,TMPro.FontStyles.Bold),
+                new MSButton(0.5f, 0.5f, ">", TMPro.FontStyles.Bold, () => {
+                    EraseDialog(1);
+                    OpenMapDialog(changeMapId(true), true, mapDecorator);
+                })
+                );
+            dialog.CustomUse(0.12f);
+            MSSprite sprite = new MSSprite(new SpriteLoader(Map.MapData.MapDatabase[mapId].GetMapSprite()), 0f, rates[mapId]);
+            dialog.AddTopic(sprite);
+            sprite.renderer.material = Map.MapData.MapDatabase[0].GetMapMaterial();
+            sprite.renderer.color=new Color(0.05f, 0.2f, 1f, 1f);
+
+            if (mapDecorator != null) mapDecorator(sprite.renderer.gameObject, mapId);
+
+            return dialog;
+        }
+
         static public MSDesigner OpenPlayerDialog(Vector2 size,PlayerControl player)
         {
             var dialog = OpenDialog(size, player.name);
@@ -348,19 +390,18 @@ namespace Nebula.Module
                     if (arg == 0)
                     {
                         var subDesigner = designer.Split(1);
-                        subDesigner[0].AddTopic(new MSButton(1.2f, 0.4f, "Ship", TMPro.FontStyles.Bold, () => {
-                            var dialog = MetaDialog.OpenDialog(new Vector2(7.5f,5f),"");
-                            dialog.AddTopic(new MSSprite(new SpriteLoader(Map.MapData.MapDatabase[0].GetMapSprite()), 0f, 0.65f));
+                        subDesigner[0].AddTopic(new MSButton(1.2f, 0.4f, "Spawn Points", TMPro.FontStyles.Bold, () => {
+                            OpenMapDialog(PlayerControl.GameOptions.MapId, AmongUsClient.Instance.GameState != AmongUsClient.GameStates.Started, (obj,id)=>Map.MapData.MapDatabase[id].SetUpSpawnPointInfo(obj));
                         }));
                     }
                     else
                     {
                         var designers = designer.SplitVertically(new float[] { 0.05f, 0.5f, 0.5f, 0.05f });
-                        for (int i = 0; i < 2; i++) if (options.Count > i + (arg - 1) * 2) designers[1 + i].AddTopic(new MSMultiString(designers[i + 1].size.x, 1f, options[i + arg * 2], TMPro.TextAlignmentOptions.TopLeft, TMPro.FontStyles.Normal));
+                        for (int i = 0; i < 2; i++) if (options.Count > i + (arg - 1) * 2) designers[1 + i].AddTopic(new MSMultiString(designers[i + 1].size.x, 1f, options[i + (arg-1) * 2], TMPro.TextAlignmentOptions.TopLeft, TMPro.FontStyles.Normal));
                     }
 
                     designer.CustomUse(3.7f);
-                    designer.AddPageListTopic(arg,(options.Count+1)/2,(p)=> {
+                    designer.AddPageListTopic(arg,1 + (options.Count+1)/2,(p)=> {
                         MetaDialog.EraseDialog(1);
                         OpenHelpDialog(tab, p, options);
                     });

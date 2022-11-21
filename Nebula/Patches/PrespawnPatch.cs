@@ -8,12 +8,13 @@ using UnityEngine;
 using TMPro;
 using PowerTools;
 using Nebula.Utilities;
+using BepInEx.IL2CPP.Utils.Collections;
 
 namespace Nebula.Patches
 {
 	[HarmonyPatch]
 	class PrespawnPatch
-    {
+	{
 		private static PassiveButton? selected = null;
 
 		[HarmonyPatch(typeof(SpawnInMinigame), nameof(SpawnInMinigame.SpawnAt))]
@@ -21,7 +22,7 @@ namespace Nebula.Patches
 		{
 			public static bool SpawnAt(SpawnInMinigame __instance, Vector2 spawnAt)
 			{
-				if (!CustomOptionHolder.mapOptions.getBool()|| !CustomOptionHolder.synchronizedSpawning.getBool())
+				if (!CustomOptionHolder.mapOptions.getBool() || !CustomOptionHolder.synchronizedSpawning.getBool())
 				{
 					if (__instance.amClosing != Minigame.CloseState.None)
 					{
@@ -37,7 +38,7 @@ namespace Nebula.Patches
 					return true;
 				}
 
-				RPCEventInvoker.Synchronize(Game.SynchronizeTag.PreSpawnMinigame,PlayerControl.LocalPlayer.PlayerId);
+				RPCEventInvoker.Synchronize(Game.SynchronizeTag.PreSpawnMinigame, PlayerControl.LocalPlayer.PlayerId);
 				if (__instance.amClosing != Minigame.CloseState.None)
 				{
 					return false;
@@ -55,12 +56,12 @@ namespace Nebula.Patches
 				__instance.StartCoroutine(Effects.Lerp(10f, (Il2CppSystem.Action<float>)((p) =>
 				{
 					float time = p * 10f;
-					
+
 
 					foreach (var button in __instance.LocationButtons)
 					{
-                        if (selected == button)
-                        {
+						if (selected == button)
+						{
 							if (time > 0.3f)
 							{
 								float x = button.transform.localPosition.x;
@@ -70,8 +71,8 @@ namespace Nebula.Patches
 								button.transform.localPosition = new Vector3(x, button.transform.localPosition.y, button.transform.localPosition.z);
 							}
 						}
-                        else
-                        {
+						else
+						{
 							var color = button.GetComponent<SpriteRenderer>().color;
 							float a = color.a;
 							if (a > 0f) a -= 2f * Time.deltaTime;
@@ -104,17 +105,17 @@ namespace Nebula.Patches
 			public static void Postfix(SpawnInMinigame._RunTimer_d__10 __instance)
 			{
 				if (!CustomOptionHolder.mapOptions.getBool() || !CustomOptionHolder.synchronizedSpawning.getBool()) return;
-				
-				if (selected!=null)
+
+				if (selected != null)
 					__instance.__4__this.Text.text = Language.Language.GetString("game.minigame.waitSpawning");
 			}
 		}
 
 		[HarmonyPatch(typeof(SpawnInMinigame), nameof(SpawnInMinigame.Begin))]
 		public static class PrespawnBeginPatch
-        {
+		{
 			public static bool Prefix(SpawnInMinigame __instance)
-            {
+			{
 				SpawnInMinigame.Instance = __instance;
 
 				if (PlayerControl.GameOptions.MapId != 4) return true;
@@ -127,7 +128,7 @@ namespace Nebula.Patches
 				{
 					PassiveButton passiveButton = __instance.LocationButtons[i];
 					SpawnInMinigame.SpawnLocation pt = array[i];
-					passiveButton.OnClick.AddListener((System.Action)(()=>
+					passiveButton.OnClick.AddListener((System.Action)(() =>
 					{
 						PrespawnSpawnAtPatch.SpawnAt(__instance, pt.Location);
 					}));
@@ -147,32 +148,32 @@ namespace Nebula.Patches
 				ConsoleJoystick.SetMode_Menu();
 
 				return false;
-            }
+			}
 
 			public static void Postfix(SpawnInMinigame __instance)
-            {
-				selected = null;				
+			{
+				selected = null;
 
 				if (!CustomOptionHolder.mapOptions.getBool() || !CustomOptionHolder.synchronizedSpawning.getBool()) return;
 
-				foreach(var button in __instance.LocationButtons)
-                {
+				foreach (var button in __instance.LocationButtons)
+				{
 					button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
 					{
 						if (selected == null)
 							selected = button;
 					}
 					));
-                }
-            }
-        }
+				}
+			}
+		}
 
 		[HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.PrespawnStep))]
 		public static class PrespawnStepPatch
 		{
 			public static bool RequireCustomSpawnGame()
-            {
-				if (!CustomOptionHolder.mapOptions.getBool() || CustomOptionHolder.spawnMethod.getSelection()!=1) return false;
+			{
+				if (!CustomOptionHolder.mapOptions.getBool() || CustomOptionHolder.spawnMethod.getSelection() != 1) return false;
 
 				if (Map.MapData.GetCurrentMapData().SpawnOriginalPositionAtFirst && !ExileController.Instance) return false;
 
@@ -182,75 +183,111 @@ namespace Nebula.Patches
 				return true;
 			}
 
+			public static bool ShouldSpawnRandomly()
+			{
+				return CustomOptionHolder.mapOptions.getBool() && CustomOptionHolder.spawnMethod.getSelection() == 2 && Map.MapData.GetCurrentMapData().ValidSpawnPoints.Count > 0;
+			}
+
+			public static IEnumerator GetEmptyEnumerator()
+			{
+				yield return null;
+			}
+
 			public static void Postfix(ShipStatus __instance, ref Il2CppSystem.Collections.IEnumerator __result)
 			{
-				if (!RequireCustomSpawnGame()) return;
-
-				var spawnCandidates = Map.MapData.GetCurrentMapData().SpawnCandidates;
-				if (spawnCandidates.Count < 3) return;
-
-				SpawnInMinigame spawnInMinigame = UnityEngine.Object.Instantiate<SpawnInMinigame>(Map.MapData.MapDatabase[4].Assets.gameObject.GetComponent<AirshipStatus>().SpawnInGame);
-
-				spawnInMinigame.transform.SetParent(Camera.main.transform, false);
-				spawnInMinigame.transform.localPosition = new Vector3(0f, 0f, -600f);
-
-				/* Begin (Minigame) */
-				Minigame.Instance = spawnInMinigame;
-				SpawnInMinigame.Instance = spawnInMinigame;
-				spawnInMinigame.MyTask = null;
-				spawnInMinigame.MyNormTask = null;
-
-				if (PlayerControl.LocalPlayer)
+				if (RequireCustomSpawnGame())
 				{
-					if (MapBehaviour.Instance)
+
+					var spawnCandidates = Map.MapData.GetCurrentMapData().SpawnCandidates;
+					if (spawnCandidates.Count < 3) return;
+
+					SpawnInMinigame spawnInMinigame = UnityEngine.Object.Instantiate<SpawnInMinigame>(Map.MapData.MapDatabase[4].Assets.gameObject.GetComponent<AirshipStatus>().SpawnInGame);
+
+					spawnInMinigame.transform.SetParent(Camera.main.transform, false);
+					spawnInMinigame.transform.localPosition = new Vector3(0f, 0f, -600f);
+
+					/* Begin (Minigame) */
+					Minigame.Instance = spawnInMinigame;
+					SpawnInMinigame.Instance = spawnInMinigame;
+					spawnInMinigame.MyTask = null;
+					spawnInMinigame.MyNormTask = null;
+
+					if (PlayerControl.LocalPlayer)
 					{
-						MapBehaviour.Instance.Close();
+						if (MapBehaviour.Instance)
+						{
+							MapBehaviour.Instance.Close();
+						}
+						PlayerControl.LocalPlayer.NetTransform.Halt();
 					}
-					PlayerControl.LocalPlayer.NetTransform.Halt();
-				}
-				spawnInMinigame.StartCoroutine(spawnInMinigame.CoAnimateOpen());
-				/* Begin (Minigame) */
+					spawnInMinigame.StartCoroutine(spawnInMinigame.CoAnimateOpen());
+					/* Begin (Minigame) */
 
-				/* Begin (SpawnInMinigame) */
+					/* Begin (SpawnInMinigame) */
 
-				var randomArray=Helpers.GetRandomArray(spawnCandidates.Count);
-				for (int i = 0; i < spawnInMinigame.LocationButtons.Length; i++)
-				{
-					PassiveButton passiveButton = spawnInMinigame.LocationButtons[i];
-					
-					int index = randomArray[i];
-
-					spawnCandidates[index].ReloadTexture();
-
-					passiveButton.OnClick.RemoveAllListeners();
-					passiveButton.OnClick.AddListener(new System.Action(() =>
+					var randomArray = Helpers.GetRandomArray(spawnCandidates.Count);
+					for (int i = 0; i < spawnInMinigame.LocationButtons.Length; i++)
 					{
-						PrespawnSpawnAtPatch.SpawnAt(spawnInMinigame, spawnCandidates[index].SpawnLocation);
-					}));
-					passiveButton.OnMouseOver.AddListener(new System.Action( ()=> HudManager.Instance.StartCoroutine(spawnCandidates[index].GetEnumerator(passiveButton.GetComponent<SpriteRenderer>()))));
+						PassiveButton passiveButton = spawnInMinigame.LocationButtons[i];
 
-					passiveButton.GetComponent<SpriteAnim>().Stop();
-					passiveButton.GetComponent<SpriteRenderer>().sprite = spawnCandidates[index].GetSprite();
-					passiveButton.GetComponentInChildren<TextMeshPro>().text = Language.Language.GetString("game.spawnLocation." + spawnCandidates[index].LocationKey);
-					ButtonAnimRolloverHandler component = passiveButton.GetComponent<ButtonAnimRolloverHandler>();
-					component.StaticOutImage = spawnCandidates[index].GetSprite();
-					component.RolloverAnim = new AnimationClip();
-					component.HoverSound = spawnCandidates[index].GetAudioClip() ?? spawnInMinigame.DefaultRolloverSound;
+						int index = randomArray[i];
+
+						spawnCandidates[index].ReloadTexture();
+
+						passiveButton.OnClick.RemoveAllListeners();
+						passiveButton.OnClick.AddListener(new System.Action(() =>
+						{
+							PrespawnSpawnAtPatch.SpawnAt(spawnInMinigame, spawnCandidates[index].SpawnLocation);
+						}));
+						passiveButton.OnMouseOver.AddListener(new System.Action(() => HudManager.Instance.StartCoroutine(spawnCandidates[index].GetEnumerator(passiveButton.GetComponent<SpriteRenderer>()))));
+
+						passiveButton.GetComponent<SpriteAnim>().Stop();
+						passiveButton.GetComponent<SpriteRenderer>().sprite = spawnCandidates[index].GetSprite();
+						passiveButton.GetComponentInChildren<TextMeshPro>().text = Language.Language.GetString("game.spawnLocation." + spawnCandidates[index].LocationKey);
+						ButtonAnimRolloverHandler component = passiveButton.GetComponent<ButtonAnimRolloverHandler>();
+						component.StaticOutImage = spawnCandidates[index].GetSprite();
+						component.RolloverAnim = new AnimationClip();
+						component.HoverSound = spawnCandidates[index].GetAudioClip() ?? spawnInMinigame.DefaultRolloverSound;
+					}
+					PlayerControl.LocalPlayer.gameObject.SetActive(false);
+					PlayerControl.LocalPlayer.NetTransform.RpcSnapTo(new Vector2(20f, 40f));
+
+					PrespawnBeginPatch.Postfix(spawnInMinigame);
+
+					spawnInMinigame.StartCoroutine(spawnInMinigame.RunTimer());
+					ControllerManager.Instance.OpenOverlayMenu(spawnInMinigame.name, null, spawnInMinigame.DefaultButtonSelected, spawnInMinigame.ControllerSelectable, false);
+					PlayerControl.HideCursorTemporarily();
+					ConsoleJoystick.SetMode_Menu();
+
+					/* Begin (SpawnInMinigame) */
+
+					__result = spawnInMinigame.WaitForFinish();
 				}
-				PlayerControl.LocalPlayer.gameObject.SetActive(false);
-				PlayerControl.LocalPlayer.NetTransform.RpcSnapTo(new Vector2(20f, 40f));
+				else if (ShouldSpawnRandomly())
+				{
+					__result = GetEmptyEnumerator().WrapToIl2Cpp();
 
-				PrespawnBeginPatch.Postfix(spawnInMinigame);
+					var points = Map.MapData.GetCurrentMapData().ValidSpawnPoints;
+					if (points.Count == 0) return;
 
-				spawnInMinigame.StartCoroutine(spawnInMinigame.RunTimer());
-				ControllerManager.Instance.OpenOverlayMenu(spawnInMinigame.name, null, spawnInMinigame.DefaultButtonSelected, spawnInMinigame.ControllerSelectable, false);
-				PlayerControl.HideCursorTemporarily();
-				ConsoleJoystick.SetMode_Menu();
+					var spawnAt = points[NebulaPlugin.rnd.Next(points.Count)];
+					PlayerControl.LocalPlayer.NetTransform.RpcSnapTo(spawnAt);
+					DestroyableSingleton<HudManager>.Instance.PlayerCam.SnapToTarget();
+				}
+			}
+		}
 
-				/* Begin (SpawnInMinigame) */
-
-				__result = spawnInMinigame.WaitForFinish();
-
+		[HarmonyPatch(typeof(AirshipStatus), nameof(AirshipStatus.PrespawnStep))]
+		public static class AirshipPrespawnStepPatch
+		{
+			public static bool Prefix(AirshipStatus __instance, ref Il2CppSystem.Collections.IEnumerator __result)
+			{
+				if (PrespawnStepPatch.ShouldSpawnRandomly())
+				{
+					PrespawnStepPatch.Postfix(__instance, ref __result);
+					return false;
+				}
+				return true;
 			}
 		}
 	}
