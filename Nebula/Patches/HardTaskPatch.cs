@@ -53,7 +53,6 @@ namespace Nebula.Patches
 		[HarmonyPatch(typeof(NormalPlayerTask), nameof(NormalPlayerTask.Initialize))]
 		public static class VeryLongTaskPatch
 		{
-			
 			public static bool Prefix(NormalPlayerTask __instance)
 			{
 				if (!CustomOptionHolder.TasksOption.getBool()) return true;
