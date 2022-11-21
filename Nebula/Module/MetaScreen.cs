@@ -294,14 +294,19 @@ namespace Nebula.Module
                 return button;
             }
 
-            static public PassiveButton AddSubButton(PassiveButton button, Vector2 size, string name, string display)
+            static public PassiveButton AddSubButton(GameObject parent, Vector2 size, string name, string display)
             {
                 GameObject obj = new GameObject(name);
-                obj.transform.SetParent(button.transform);
+                obj.transform.SetParent(parent.transform);
                 obj.transform.localPosition = new Vector3(0, 0, -5f);
                 var result = SetUpButton(obj, size, display);
 
                 return result;
+            }
+
+            static public PassiveButton AddSubButton(PassiveButton button, Vector2 size, string name, string display)
+            {
+                return AddSubButton(button.gameObject,size,name,display);
             }
 
             static public TMPro.TextMeshPro AddSubText(PassiveButton button, float width, float fontsize, string display)
@@ -451,9 +456,15 @@ namespace Nebula.Module
                 for (int i = 0; i < pages; i++)
                 {
                     int index = i;
-                    contents[i] = new MSButton(0.3f, 0.3f, i.ToString(), TMPro.FontStyles.Normal, () => { changePageFunc(index); }, (i == currentPage) ? new Color(0.5f, 0.5f, 0.5f) : Color.white);
+                    contents[i] = new MSButton(0.3f, 0.3f, (i+1).ToString(), TMPro.FontStyles.Normal, () => { changePageFunc(index); }, (i == currentPage) ? new Color(0.5f, 0.5f, 0.5f) : Color.white);
                 }
                 AddTopic(contents.ToArray());
+
+                foreach(var content in contents)
+                {
+                    ((MSButton)content).text.rectTransform.sizeDelta *= 2f;
+                }
+                
             }
 
             public void AddEnumerableTopic(int contentsPerRow, int rowsPerPage, int page, IEnumerator<MetaScreenContent> enumerator, Action<MetaScreenContent> onGenerated, Action<int>? changePageFunc = null)

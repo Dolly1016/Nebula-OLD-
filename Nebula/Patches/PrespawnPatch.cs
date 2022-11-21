@@ -172,7 +172,7 @@ namespace Nebula.Patches
 		{
 			public static bool RequireCustomSpawnGame()
             {
-				if (!CustomOptionHolder.mapOptions.getBool() || !CustomOptionHolder.multipleSpawnPoints.getBool()) return false;
+				if (!CustomOptionHolder.mapOptions.getBool() || CustomOptionHolder.spawnMethod.getSelection()!=1) return false;
 
 				if (Map.MapData.GetCurrentMapData().SpawnOriginalPositionAtFirst && !ExileController.Instance) return false;
 

@@ -104,6 +104,7 @@ namespace Nebula.Module
         public delegate MetaScreenContent[][] ScreenBuilder(Action refresher);
         public ScreenBuilder? preOptionScreenBuilder;
         public ScreenBuilder? postOptionScreenBuilder;
+        public ScreenBuilder? alternativeOptionScreenBuilder;
 
         public CustomOptionDecorator? Decorator { get; set; }
 
@@ -203,6 +204,7 @@ namespace Nebula.Module
 
             this.preOptionScreenBuilder = null;
             this.postOptionScreenBuilder = null;
+            this.alternativeOptionScreenBuilder = null;
 
             this.children = new List<CustomOption>();
             if (parent != null)
@@ -662,24 +664,37 @@ namespace Nebula.Module
             {
                 if (option.IsHidden(gamemode) || option.isHiddenOnMetaScreen) return true;
 
-                if (!AddTopic(
-                new MSString(3f, option.getName(), 2f, 0.8f, TMPro.TextAlignmentOptions.MidlineRight, TMPro.FontStyles.Bold),
-                new MSString(0.2f, ":", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
-                new MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () =>
-                {
-                    option.addSelection(-1);
-                    refresher();
-                }),
-                new MSString(1.5f, option.getString(), 2f, 0.6f, TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
-                new MSButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () =>
-                {
-                    option.addSelection(1);
-                    refresher();
-                }),
-                new MSMargin(1f)
-                )) return false;
+                if (option.preOptionScreenBuilder != null)
+                    foreach (var topic in option.preOptionScreenBuilder(refresher)) if (!AddTopic(topic)) return false;
 
-                if(option.getBool()) foreach (var child in option.children) if (!AddOption(child)) return false;
+                if (option.alternativeOptionScreenBuilder != null)
+                {
+                    foreach (var topic in option.alternativeOptionScreenBuilder(refresher)) if (!AddTopic(topic)) return false;
+                }
+                else
+                {
+                    if (!AddTopic(
+                    new MSString(3f, option.getName(), 2f, 0.8f, TMPro.TextAlignmentOptions.MidlineRight, TMPro.FontStyles.Bold),
+                    new MSString(0.2f, ":", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
+                    new MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () =>
+                    {
+                        option.addSelection(-1);
+                        refresher();
+                    }),
+                    new MSString(1.5f, option.getString(), 2f, 0.6f, TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
+                    new MSButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () =>
+                    {
+                        option.addSelection(1);
+                        refresher();
+                    }),
+                    new MSMargin(1f)
+                    )) return false;
+                }
+
+                if (option.postOptionScreenBuilder != null)
+                    foreach (var topic in option.postOptionScreenBuilder(refresher)) if (!AddTopic(topic)) return false;
+
+                if (option.getBool()) foreach (var child in option.children) if (!AddOption(child)) return false;
                 return true;
             }
 

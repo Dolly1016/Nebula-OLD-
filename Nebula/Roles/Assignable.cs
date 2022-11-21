@@ -98,7 +98,7 @@ namespace Nebula.Roles
         public virtual bool ShowInHelpWindow { get => true; }
 
         /// <summary>
-        /// ヘルプ画面で使用するロールを返します。
+        /// ヘルプ画面で使用するロールを返します。　nullの場合自身の所持するロールとして表示しません
         /// </summary>
         public virtual Assignable AssignableOnHelp { get => this; }
 

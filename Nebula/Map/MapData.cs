@@ -326,6 +326,16 @@ namespace Nebula.Map
             Assets = assetReference.Asset.Cast<GameObject>().GetComponent<ShipStatus>();
         }
 
+        public Sprite GetMapSprite()
+        {
+            return Assets.MapPrefab.transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().sprite;
+        }
+
+        public Vector2 ConvertMinimapPosition(Vector2 pos)
+        {
+            return (Vector2)(pos / Assets.MapScale) + (Vector2)Assets.MapPrefab.transform.GetChild(5).localPosition;
+        }
+
         
         public bool PlayInitialPrespawnMinigame
         {
@@ -333,7 +343,7 @@ namespace Nebula.Map
             {
                 if (HasDefaultPrespawnMinigame) return true;
 
-                return (SpawnCandidates.Count >= 3 && !SpawnOriginalPositionAtFirst && CustomOptionHolder.mapOptions.getBool() && CustomOptionHolder.multipleSpawnPoints.getBool());
+                return (SpawnCandidates.Count >= 3 && !SpawnOriginalPositionAtFirst && CustomOptionHolder.mapOptions.getBool() && CustomOptionHolder.spawnMethod.getSelection()==1);
             }
         }
     }

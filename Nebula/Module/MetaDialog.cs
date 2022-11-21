@@ -103,7 +103,7 @@ namespace Nebula.Module
             closeButton.transform.localPosition = new Vector3(-size.x / 2f - 0.3f, size.y / 2f - 0.3f, -10f);
             dialogue.transform.localScale = new Vector3(1, 1, 1);
             dialogue.transform.localPosition = new Vector3(0f, 0f, -50f);
-            if (dialogue.transform.parent == HudManager.Instance.transform) dialogue.transform.localPosition += new Vector3(0, 0, -50f);
+            if (dialogue.transform.parent == HudManager.Instance.transform) dialogue.transform.localPosition += new Vector3(0, 0, -500f);
             var metaDialog = new MetaDialog(dialogue);
             dialogOrder.Add(metaDialog);
 
@@ -325,19 +325,19 @@ namespace Nebula.Module
 
                     break;
                 case 1:
-                    designer.AddRolesTopic((r) => r.category != Roles.RoleCategory.Complex, (r) => OpenAssignableHelpDialog(r), 5, 6, arg, (p) => {
+                    designer.AddRolesTopic((r) => r.category != Roles.RoleCategory.Complex && r.ShowInHelpWindow, (r) => OpenAssignableHelpDialog(r), 5, 6, arg, (p) => {
                         MetaDialog.EraseDialog(1);
                         OpenHelpDialog(tab, arg + p, options);
                     });
                     break;
                 case 2:
-                    designer.AddGhostRoleTopic((r) => true, (r) => OpenAssignableHelpDialog(r), 5, 6, arg, (p) => {
+                    designer.AddGhostRoleTopic((r) => r.ShowInHelpWindow, (r) => OpenAssignableHelpDialog(r), 5, 6, arg, (p) => {
                         MetaDialog.EraseDialog(1);
                         OpenHelpDialog(tab, arg + p, options);
                     });
                     break;
                 case 3:
-                    designer.AddModifyTopic((r) => true, (r) => OpenAssignableHelpDialog(r), 5, 6, arg,(p)=> {
+                    designer.AddModifyTopic((r) => r.ShowInHelpWindow, (r) => OpenAssignableHelpDialog(r), 5, 6, arg,(p)=> {
                         MetaDialog.EraseDialog(1);
                         OpenHelpDialog(tab, arg + p, options);
                         });
@@ -345,9 +345,19 @@ namespace Nebula.Module
                 case 4:
                     if (options == null) options = GameOptionStringGenerator.GenerateString(20);
 
-                    var designers = designer.SplitVertically(new float[] { 0.05f, 0.5f, 0.5f, 0.05f });
-
-                    for (int i = 0; i < 2; i++) if (options.Count > i + arg * 2) designers[1+i].AddTopic(new MSMultiString(designers[i+1].size.x,1f,options[i+arg*2],TMPro.TextAlignmentOptions.TopLeft,TMPro.FontStyles.Normal));
+                    if (arg == 0)
+                    {
+                        var subDesigner = designer.Split(1);
+                        subDesigner[0].AddTopic(new MSButton(1.2f, 0.4f, "Ship", TMPro.FontStyles.Bold, () => {
+                            var dialog = MetaDialog.OpenDialog(new Vector2(7.5f,5f),"");
+                            dialog.AddTopic(new MSSprite(new SpriteLoader(Map.MapData.MapDatabase[0].GetMapSprite()), 0f, 0.65f));
+                        }));
+                    }
+                    else
+                    {
+                        var designers = designer.SplitVertically(new float[] { 0.05f, 0.5f, 0.5f, 0.05f });
+                        for (int i = 0; i < 2; i++) if (options.Count > i + (arg - 1) * 2) designers[1 + i].AddTopic(new MSMultiString(designers[i + 1].size.x, 1f, options[i + arg * 2], TMPro.TextAlignmentOptions.TopLeft, TMPro.FontStyles.Normal));
+                    }
 
                     designer.CustomUse(3.7f);
                     designer.AddPageListTopic(arg,(options.Count+1)/2,(p)=> {
