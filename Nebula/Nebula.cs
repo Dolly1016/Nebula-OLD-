@@ -142,6 +142,9 @@ namespace Nebula
             //GlobalEventデータを読み込む
             Events.Events.Load();
 
+            //ヘルプを読み込む
+            Module.HelpContent.Load();
+
             //ゴースト情報を読み込む
             //Ghost.GhostInfo.Load();
             //Ghost.Ghost.Load();

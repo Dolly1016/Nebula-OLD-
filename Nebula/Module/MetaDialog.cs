@@ -365,13 +365,13 @@ namespace Nebula.Module
                         }
                     }
 
-                    designer.AddEnumerableTopic(6,1,0, myRoleEnumerator(), (c) => {
+                    designer.AddEnumerableTopic(6, 1, 0, myRoleEnumerator(), (c) => {
                         var text = ((MSButton)c).text;
                         text.fontSizeMin = 0.5f;
                         text.overflowMode = TMPro.TextOverflowModes.Ellipsis;
                     });
 
-                    if(assignable!=null)AddRoleInfo(designer,assignable);
+                    if (assignable != null) AddRoleInfo(designer, assignable);
 
                     break;
                 case 1:
@@ -387,10 +387,10 @@ namespace Nebula.Module
                     });
                     break;
                 case 3:
-                    designer.AddModifyTopic((r) => r.ShowInHelpWindow, (r) => OpenAssignableHelpDialog(r), 5, 6, arg,(p)=> {
+                    designer.AddModifyTopic((r) => r.ShowInHelpWindow, (r) => OpenAssignableHelpDialog(r), 5, 6, arg, (p) => {
                         MetaDialog.EraseDialog(1);
                         OpenHelpDialog(tab, arg + p, options);
-                        });
+                    });
                     break;
                 case 4:
                     if (options == null) options = GameOptionStringGenerator.GenerateString(20);
@@ -399,23 +399,26 @@ namespace Nebula.Module
                     {
                         var subDesigner = designer.Split(1);
                         subDesigner[0].AddTopic(new MSButton(1.2f, 0.4f, "Spawn Points", TMPro.FontStyles.Bold, () => {
-                            OpenMapDialog(PlayerControl.GameOptions.MapId, AmongUsClient.Instance.GameState != AmongUsClient.GameStates.Started, (obj,id)=>Map.MapData.MapDatabase[id].SetUpSpawnPointInfo(obj));
+                            OpenMapDialog(PlayerControl.GameOptions.MapId, AmongUsClient.Instance.GameState != AmongUsClient.GameStates.Started, (obj, id) => Map.MapData.MapDatabase[id].SetUpSpawnPointInfo(obj));
                         }));
                     }
                     else
                     {
                         var designers = designer.SplitVertically(new float[] { 0.05f, 0.5f, 0.5f, 0.05f });
-                        for (int i = 0; i < 2; i++) if (options.Count > i + (arg - 1) * 2) designers[1 + i].AddTopic(new MSMultiString(designers[i + 1].size.x, 1f, options[i + (arg-1) * 2], TMPro.TextAlignmentOptions.TopLeft, TMPro.FontStyles.Normal));
+                        for (int i = 0; i < 2; i++) if (options.Count > i + (arg - 1) * 2) designers[1 + i].AddTopic(new MSMultiString(designers[i + 1].size.x, 1f, options[i + (arg - 1) * 2], TMPro.TextAlignmentOptions.TopLeft, TMPro.FontStyles.Normal));
                     }
 
                     designer.CustomUse(3.7f);
-                    designer.AddPageListTopic(arg,1 + (options.Count+1)/2,(p)=> {
+                    designer.AddPageListTopic(arg, 1 + (options.Count + 1) / 2, (p) => {
                         MetaDialog.EraseDialog(1);
                         OpenHelpDialog(tab, p, options);
                     });
                     break;
                 case 5:
                     //ヘルプ画面
+                    var helpDesigners = designer.SplitVertically(new float[] { 0.3f,0.4f,0.3f});
+                    helpDesigners[1].AddTopic(new MSString(5f,Language.Language.GetString("help.contents"), 2f, 2f, TMPro.TextAlignmentOptions.Center,TMPro.FontStyles.Bold));
+                    if (HelpContent.rootContent != null && HelpContent.rootContent.ContentGenerator != null) HelpContent.rootContent.ContentGenerator(helpDesigners[1]);
                     break;
             }
 
