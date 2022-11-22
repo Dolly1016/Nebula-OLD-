@@ -10,6 +10,7 @@ using BepInEx.IL2CPP.Utils.Collections;
 using static GameData;
 using Hazel;
 
+
 namespace Nebula.Game
 {
     public class PlayerObject

@@ -33,6 +33,7 @@
     <EmbeddedResource Include="Resources\Lang.dat" />
     <EmbeddedResource Include="Resources\Color.dat" />
     <EmbeddedResource Include="Resources\RandomName.dat" />
+    <EmbeddedResource Include="Resources\Help.dat" />
     <EmbeddedResource Include="Resources\Shaders\*.shader" />
     <EmbeddedResource Include="Resources\Assets\nebula_asset" />
   </ItemGroup>

@@ -13,8 +13,9 @@ namespace Nebula.Roles.CrewmateRoles
         public Module.CustomOption CanFixSabotageOption;
         private Module.CustomOption HasImpostorVisionOption;
         private Module.CustomOption CanInvokeSabotageOption;
+        private Module.CustomOption InvolveNonImpostorPlayerOnExile;
         private Module.CustomOption CanKnowImpostorsByTasksOption;
-        private Module.CustomOption NumOfMaxImpostorsCanKnowOption;
+        //private Module.CustomOption NumOfMaxImpostorsCanKnowOption;
         private Module.CustomOption[] NumOfTasksRequiredToKnowImpostorsOption;
         public Module.CustomOption SecondoryRoleOption;
 
@@ -42,16 +43,78 @@ namespace Nebula.Roles.CrewmateRoles
 
             HasImpostorVisionOption = CreateOption(Color.white, "hasImpostorVision", false).AddInvPrerequisite(SecondoryRoleOption);
 
+            InvolveNonImpostorPlayerOnExile = CreateOption(Color.white, "involveNonImpostorPlayerOnExile", false).AddInvPrerequisite(SecondoryRoleOption);
+
             CanKnowImpostorsByTasksOption = CreateOption(Color.white, "canKnowImpostorsByTasks", true).AddInvPrerequisite(SecondoryRoleOption);
-            NumOfMaxImpostorsCanKnowOption = CreateOption(Color.white, "numOfMaxImpostorsCanKnow", 1f,1f,5f,1f).AddPrerequisite(CanKnowImpostorsByTasksOption);
-            NumOfTasksRequiredToKnowImpostorsOption = new Module.CustomOption[5];
-            for (int i = 0; i < 5; i++)
+            CanKnowImpostorsByTasksOption.postOptionScreenBuilder = (refresher) => {
+                Module.MetaScreenContent[] contents;
+
+                if (CanKnowImpostorsByTasksOption.getBool())
+                {
+                    contents = new Module.MetaScreenContent[14];
+
+                    contents[0] = new Module.MSMargin(0.5f);
+                    contents[1] = new Module.MSString(3f, Language.Language.GetString("role.madmate.numOfTasksRequired"), TMPro.TextAlignmentOptions.Right, TMPro.FontStyles.Bold);
+                    contents[2] = new Module.MSString(0.2f, ":", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold);
+                    bool flag = false;
+                    for (int i = 0; i < 3; i++)
+                    {
+                        int index = i;
+                        if (flag)
+                        {
+                            contents[3 + i * 4] = new Module.MSMargin(0.5f);
+                            contents[4 + i * 4] = new Module.MSMargin(0.46f);
+                            contents[5 + i * 4] = new Module.MSMargin(0.5f);
+                        }
+                        else
+                        {
+                            contents[3 + i * 4] = new Module.MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () =>
+                            {
+                                NumOfTasksRequiredToKnowImpostorsOption[index].addSelection(-1);
+                                refresher();
+                            });
+                            contents[4 + i * 4] = new Module.MSString(0.4f, NumOfTasksRequiredToKnowImpostorsOption[index].getString(), 2f, 0.6f, TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold);
+                            contents[5 + i * 4] = new Module.MSButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () =>
+                            {
+                                NumOfTasksRequiredToKnowImpostorsOption[index].addSelection(1);
+                                refresher();
+                            });
+                        }
+                        if (i != 2) contents[6 + i * 4] = new Module.MSMargin(0.05f);
+
+                        if (NumOfTasksRequiredToKnowImpostorsOption[index].getSelection() == 0) flag = true;
+                    }
+                }
+                else
+                {
+                    contents = new Module.MetaScreenContent[0];
+                }
+                return new Module.MetaScreenContent[][] { contents };
+                };
+            CanKnowImpostorsByTasksOption.ValueDecorator = (orig, option) => {
+                if (!option.getBool()) return orig;
+                for (int i = 0; i < 3; i++)
+                {
+                    if (NumOfTasksRequiredToKnowImpostorsOption[i].getSelection() == 0)
+                    {
+                        if (i == 0) return orig;
+                        break;
+                    }
+                    if (i == 0) orig += " ("; else orig += ", ";
+                    orig += NumOfTasksRequiredToKnowImpostorsOption[i].getFloat();
+                }
+                orig += ")";
+                return orig;
+            };
+
+
+            NumOfTasksRequiredToKnowImpostorsOption = new Module.CustomOption[3];
+            for (int i = 0; i < 3; i++)
             {
                 int index = i;
                 NumOfTasksRequiredToKnowImpostorsOption[i] =
-                    CreateOption(Color.white, "numOfTasksRequiredToKnowImpostors" + (i + 1), (float)(2*(1+i)), 1f, 25f, 1f)
-                    .AddPrerequisite(CanKnowImpostorsByTasksOption)
-                    .AddCustomPrerequisite(() => { return ((int)NumOfMaxImpostorsCanKnowOption.getFloat()) >= index + 1; });
+                    CreateOption(Color.white, "numOfTasksRequiredToKnowImpostors" + (i + 1), CustomOptionHolder.GetStringMixedSelections("option.display.percentage.andSoForth", 1f, 25f, 1f, 25f, 1f).ToArray(), i == 0 ? (object)1f : (object)"option.display.percentage.andSoForth");
+                NumOfTasksRequiredToKnowImpostorsOption[i].isHidden = true;
             }
 
             CanBeGuesserOption?.AddInvPrerequisite(SecondoryRoleOption);
@@ -70,9 +133,10 @@ namespace Nebula.Roles.CrewmateRoles
         private void UpdateKnownImpostors()
         {
             int completedTasks = Game.GameData.data.myData.getGlobalData().Tasks.Completed;
-
-            if (knownImpostors.Count >= NumOfMaxImpostorsCanKnowOption.getFloat()) return;
-            while ((int)NumOfTasksRequiredToKnowImpostorsOption[knownImpostors.Count].getFloat() <= completedTasks)
+            
+            //5人全員までは分かっておらず、タスク数が設定されておりかつ条件を満たしている
+            while (knownImpostors.Count < 3 && NumOfTasksRequiredToKnowImpostorsOption[knownImpostors.Count].getSelection()!=0&&
+                NumOfTasksRequiredToKnowImpostorsOption[knownImpostors.Count].getFloat() <= completedTasks)
             {
                 List<byte> candidates = new List<byte>();
                 foreach (var player in PlayerControl.AllPlayerControls.GetFastEnumerator())
@@ -84,8 +148,6 @@ namespace Nebula.Roles.CrewmateRoles
 
                 if (candidates.Count == 0) return;
                 knownImpostors.Add(candidates[NebulaPlugin.rnd.Next(candidates.Count)]);
-
-                if (knownImpostors.Count >= NumOfMaxImpostorsCanKnowOption.getFloat()) return;
             }
         }
 
@@ -107,11 +169,16 @@ namespace Nebula.Roles.CrewmateRoles
             int impostors = 0;
             foreach (var player in PlayerControl.AllPlayerControls.GetFastEnumerator())
                 if (player.GetModData().role.category == RoleCategory.Impostor) impostors++;
-            if (impostors > NumOfMaxImpostorsCanKnowOption.getFloat()) impostors = (int)NumOfMaxImpostorsCanKnowOption.getFloat();
+            if (impostors > 3) impostors = 3;
 
             int requireTasks = 0;
             for (int i = 0; i < impostors; i++)
+            {
+                //未設定まで到達したらそこで終了
+                if (NumOfTasksRequiredToKnowImpostorsOption[i].getSelection() == 0) break;
+
                 if (requireTasks < NumOfTasksRequiredToKnowImpostorsOption[i].getFloat()) requireTasks = (int)NumOfTasksRequiredToKnowImpostorsOption[i].getFloat();
+            }
 
             int taskNum = PlayerControl.GameOptions.NumCommonTasks + PlayerControl.GameOptions.NumLongTasks + PlayerControl.GameOptions.NumShortTasks;
 
@@ -120,6 +187,26 @@ namespace Nebula.Roles.CrewmateRoles
                 if (initialTasks.Count == 0) break;
                 initialTasks.RemoveAt(NebulaPlugin.rnd.Next(initialTasks.Count));
             }
+        }
+
+        //黒猫設定
+        public override void OnExiledPre(byte[] voters)
+        {
+            if (!InvolveNonImpostorPlayerOnExile.getBool()) return;
+
+            List<PlayerControl> players=new List<PlayerControl>();
+            foreach(var p in PlayerControl.AllPlayerControls)
+            {
+                if (p.Data.IsDead) continue;
+                if (p.PlayerId == PlayerControl.LocalPlayer.PlayerId) continue;
+                var data = p.GetModData();
+                if (data.role.DeceiveImpostorInNameDisplay || data.role.category == RoleCategory.Impostor) continue;
+
+                players.Add(p);
+            }
+
+            //ランダムに相手を選んで追放する
+            RPCEventInvoker.UncheckedExilePlayer(players[NebulaPlugin.rnd.Next(players.Count)].PlayerId, Game.PlayerData.PlayerStatus.Embroiled.Id);
         }
 
         public override void GlobalIntroInitialize(PlayerControl __instance)

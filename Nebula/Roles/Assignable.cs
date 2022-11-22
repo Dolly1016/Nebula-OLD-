@@ -252,7 +252,7 @@ namespace Nebula.Roles
 
         }
 
-        private Module.CustomOption CreateOption(Color color, string name, object[] selections, System.Object defaultValue,bool isGeneral=false)
+        public Module.CustomOption CreateOption(Color color, string name, object[] selections, System.Object defaultValue,bool isGeneral=false)
         {
             Module.CustomOption option = new Module.CustomOption(color, (isGeneral ? "" : "role." + this.LocalizeName + ".") + name, selections, defaultValue, TopOption, false, false, "",Module.CustomOptionTab.None);
             option.GameMode = ValidGamemode | Module.CustomGameMode.FreePlay;

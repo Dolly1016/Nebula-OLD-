@@ -295,6 +295,14 @@ namespace Nebula.Module
                 }
             });
 
+            var helpTab = new MSButton(1.2f, 0.4f, "Help", TMPro.FontStyles.Bold, () => {
+                if (tab != 5)
+                {
+                    EraseDialog((MetaDialog)designer.screen);
+                    OpenHelpDialog(5, 0, options);
+                }
+            });
+
             if (AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started)
             {
                 var myTab = new MSButton(1.2f, 0.4f, "My Role", TMPro.FontStyles.Bold, () => {
@@ -305,16 +313,16 @@ namespace Nebula.Module
                     }
                 });
 
-                designer.AddTopic(myTab,rolesTab, ghostRolesTab,modifiesTab, optionsTab);
+                designer.AddTopic(myTab,rolesTab, ghostRolesTab,modifiesTab, optionsTab, helpTab);
             }
             else
             {
                 if (tab == 0) tab = 1;
-                designer.AddTopic(rolesTab, ghostRolesTab,modifiesTab, optionsTab);
+                designer.AddTopic(rolesTab, ghostRolesTab,modifiesTab, optionsTab,helpTab);
             }
 
             //見出し
-            designer.AddTopic(new MSString(4f,new string[] { "My Roles","Roles","Ghost Roles","Modifiers","All Options"}[tab],TMPro.TextAlignmentOptions.Center,TMPro.FontStyles.Bold));
+            designer.AddTopic(new MSString(4f,new string[] { "My Roles","Roles","Ghost Roles","Modifiers","All Options","Help"}[tab],TMPro.TextAlignmentOptions.Center,TMPro.FontStyles.Bold));
 
             switch (tab)
             {
@@ -405,6 +413,9 @@ namespace Nebula.Module
                         MetaDialog.EraseDialog(1);
                         OpenHelpDialog(tab, p, options);
                     });
+                    break;
+                case 5:
+                    //ヘルプ画面
                     break;
             }
 

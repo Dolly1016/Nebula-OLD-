@@ -106,7 +106,8 @@ namespace Nebula.Module
         public ScreenBuilder? postOptionScreenBuilder;
         public ScreenBuilder? alternativeOptionScreenBuilder;
 
-        public CustomOptionDecorator? Decorator { get; set; }
+        public CustomOptionDecorator? NameDecorator { get; set; }
+        public CustomOptionDecorator? ValueDecorator { get; set; }
 
         public virtual bool enabled
         {
@@ -223,7 +224,8 @@ namespace Nebula.Module
             this.prerequisiteOptionsCustom = new List<Func<bool>>();
             this.GameMode = CustomGameMode.Standard;
 
-            this.Decorator = null;
+            this.NameDecorator = null;
+            this.ValueDecorator = null;
         }
 
         private void bind()
@@ -407,12 +409,13 @@ namespace Nebula.Module
             return text;
         }
 
-        public virtual string getName(bool display=false)
+        public virtual string getName(bool display=false,Color? color=null)
         {
-            string original = Helpers.cs(color, Language.Language.GetString(name));
-            if (Decorator != null && display)
+            string original = Helpers.cs(color!=null ? color.Value : this.color, Language.Language.GetString(name));
+
+            if (NameDecorator != null && display)
             {
-                return Decorator.Invoke(original, this);
+                return NameDecorator.Invoke(original, this);
             }
             else
             {
@@ -750,6 +753,12 @@ namespace Nebula.Module
             designer.screen.screen.AddComponent<CustomOptionBehaviour>().StartCoroutine(GetEnumerator().WrapToIl2Cpp());
         }
 
+        private static Color? GetTabUnifiedColor(CustomOptionTab tab)
+        {
+            if (tab == CustomOptionTab.ImpostorRoles) return Palette.ImpostorRed;
+            return null;
+        }
+
         private static void OpenConfigTopOptionScreen(GameObject leftTabScreen)
         {
             var designer = MetaScreen.OpenScreen(leftTabScreen, new Vector2(5.4f, 6f), new Vector2(3.7f, 0f));
@@ -819,7 +828,7 @@ namespace Nebula.Module
                 if (option.IsHidden(gamemode)) continue;
 
                 var myOption = option;
-                buttons.Add(new MSButton(1.6f, 0.45f, option.getName(), TMPro.FontStyles.Bold, () =>
+                buttons.Add(new MSButton(1.6f, 0.45f, option.getName(false, GetTabUnifiedColor(CustomOption.CurrentTab)), TMPro.FontStyles.Bold, () =>
                 {
                     if (myOption.selections.Length > 1)
                     {
@@ -1281,7 +1290,9 @@ namespace Nebula.Module
         public static string optionToString(CustomOption option)
         {
             if (option == null) return "";
-            return $"{option.getName(true)}: {option.getString()}";
+            string value= option.getString();
+            if (option.ValueDecorator != null) value = option.ValueDecorator(value, option);
+            return $"{option.getName(true)}: {value}";
         }
 
         public static string optionsToString(CustomOption option, bool skipFirst = false)
