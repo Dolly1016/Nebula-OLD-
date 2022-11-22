@@ -81,6 +81,12 @@ namespace Nebula.Roles.NeutralRoles
         }
         public override bool CheckAdditionalWin(PlayerControl player, EndCondition condition)
         {
+            if (condition == EndCondition.NoGame) return false;
+            if (condition == EndCondition.NobodySkeldWin) return false;
+            if (condition == EndCondition.NobodyMiraWin) return false;
+            if (condition == EndCondition.NobodyPolusWin) return false;
+            if (condition == EndCondition.NobodyAirshipWin) return false;
+
             if (player.Data.IsDead && player.GetModData().FinalData?.status != Game.PlayerData.PlayerStatus.Burned) return false;
             if (condition == EndCondition.ArsonistWin && !canWinWithArsonistOption.getBool()) return false;
             if (condition == EndCondition.EmpiricWin && !canWinWithEmpiricOption.getBool()) return false;
@@ -89,10 +95,7 @@ namespace Nebula.Roles.NeutralRoles
             if (condition == EndCondition.AvengerWin && !canWinWithAvengerOption.getBool()) return false;
             if (condition == EndCondition.LoversWin && !canWinWithLoversOption.getBool()) return false;
             if (condition == EndCondition.TrilemmaWin && !canWinWithLoversOption.getBool()) return false;
-            if (condition == EndCondition.NobodySkeldWin) return false;
-            if (condition == EndCondition.NobodyMiraWin) return false;
-            if (condition == EndCondition.NobodyPolusWin) return false;
-            if (condition == EndCondition.NobodyAirshipWin) return false;
+            
 
             if (player.GetModData().Tasks.AllTasks <= player.GetModData().Tasks.Completed)
             {
