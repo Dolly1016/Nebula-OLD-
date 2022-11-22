@@ -111,7 +111,10 @@ namespace Nebula.Roles.ComplexRoles
                         if (__instance.CurrentState == MeetingHud.VoteStates.Discussion) return;
 
                         if (Roles.F_Tracker.canChangeTrackingTargetInMeegingOption.getBool())
+                        {
                             trackTarget = new Game.PlayerObject(Helpers.playerById(playerVoteArea.TargetPlayerId));
+                            trackButton.UpperText.text = trackTarget.control.GetModData().currentName;
+                        }
 
                         if (category == RoleCategory.Impostor)
                         {
