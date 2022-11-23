@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Nebula.Game
+﻿namespace Nebula.Game
 {
     public class GameModeProperty
     {
