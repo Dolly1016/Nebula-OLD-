@@ -5,9 +5,9 @@ namespace Nebula.Roles.ImpostorRoles;
 public class Jailer : Role
 {
     /* オプション */
-    private Module.CustomOption ignoreCommSabotageOption;
-    private Module.CustomOption canMoveWithLookingMapOption;
-    private Module.CustomOption canIdentifyImpostorsOption;
+    private Module.CustomOption? ignoreCommSabotageOption;
+    private Module.CustomOption? canMoveWithLookingMapOption;
+    private Module.CustomOption? canIdentifyImpostorsOption;
 
     MapCountOverlay? jailerCountOverlay = null;
 

@@ -24,9 +24,9 @@ public class Marionette : Role
 
 
 
-    private CustomButton placeButton;
-    private CustomButton marionetteButton;
-    private CustomButton cameraButton;
+    private CustomButton? placeButton;
+    private CustomButton? marionetteButton;
+    private CustomButton? cameraButton;
 
     private Module.CustomOption swapCoolDownOption;
     private Module.CustomOption decoyDurationOption;
@@ -45,13 +45,13 @@ public class Marionette : Role
         marionetteMode = mode;
         if (marionetteMode == 0)
         {
-            marionetteButton.Sprite = swapButtonSprite.GetSprite();
-            marionetteButton.SetLabel("button.label.swap");
+            marionetteButton!.Sprite = swapButtonSprite.GetSprite();
+            marionetteButton!.SetLabel("button.label.swap");
         }
         else
         {
-            marionetteButton.Sprite = destroyButtonSprite.GetSprite();
-            marionetteButton.SetLabel("button.label.destroy");
+            marionetteButton!.Sprite = destroyButtonSprite.GetSprite();
+            marionetteButton!.SetLabel("button.label.destroy");
         }
     }
 

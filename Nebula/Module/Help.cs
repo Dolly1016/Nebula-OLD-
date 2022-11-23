@@ -48,7 +48,7 @@ public class HelpContent
             if (jary.Count == 2)
             {
                 var val = jary[0];
-                if (val.Type == JTokenType.Float || val.Type == JTokenType.Integer)
+                if (val.Type is JTokenType.Float or JTokenType.Integer)
                 {
                     occupancy = float.Parse(val.ToString());
                     //占有率指定付きコンテンツ
