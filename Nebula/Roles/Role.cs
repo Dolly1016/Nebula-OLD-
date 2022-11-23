@@ -289,7 +289,7 @@ namespace Nebula.Roles
                 if (option != null) extraAssignableOptions.Add(extraRole, option);
             }
 
-            TopOption.Decorator = new Module.CustomOptionDecorator((original, option) =>
+            TopOption.NameDecorator = new Module.CustomOptionDecorator((original, option) =>
             {
                 //追加役職化した場合は何もしない
                 if (IsSecondaryGenerator) return original;

@@ -1,0 +1,90 @@
+{ 
+    "subcontents" : [
+        {
+            "caption" : "help.contents.general",
+            "size" : [4.5,5],
+            "subcontents" : [
+                {
+                    "caption" : "help.contents.general.button",
+                    "subcontents" : [
+                        "help.contents.general.button.detail",
+                        {
+                            "picture" : "Help.Button"
+                        },
+                        "help.contents.general.button.killButtonDetail",
+                        {
+                            "picture" : "Help.KillButton"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "caption" : "help.contents.roles",
+            "size" : [4.5,5],
+            "subcontents" : [
+                {
+                    "caption" : "help.contents.roles.deadBodiesDragging",
+                    "subcontents" : [
+                        "help.contents.roles.deadBodiesDragging.detail",
+                        {
+                            "picture" : "Help.SafeTask"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "caption" : "help.contents.tasks",
+            "size" : [4.5,5],
+            "subcontents" : [
+                {
+                    "caption" : "help.contents.tasks.additionalWirings",
+                    "subcontents" : [
+                        "help.contents.tasks.additionalWirings.detail",
+                        [
+                            [ 0.2, { "margin" : 0 } ],
+                            {
+                                "picture" : "Help.AdditionalWiring0"
+                            },
+                            {
+                                "picture" : "Help.AdditionalWiring1"
+                            },
+                            {
+                                "picture" : "Help.AdditionalWiring2"
+                            },
+                            {
+                                "picture" : "Help.AdditionalWiring3"
+                            },
+                            [ 0.2, { "margin" : 0 } ]
+                        ]
+                    ]
+                },
+                {
+                    "caption" : "help.contents.tasks.safeTask",
+                    "subcontents" : [
+                        "help.contents.tasks.safeTask.detail",
+                        {
+                            "picture" : "Help.SafeTask"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "caption" : "help.contents.maps",
+            "size" : [4.5,5],
+            "subcontents" : [
+                {
+                    "caption" : "help.contents.maps.onewayMeetingRoom",
+                    "subcontents" : [
+                        "help.contents.maps.onewayMeetingRoom.detail",
+                        {
+                            "picture" : "Help.OneWayMeetingRoom"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

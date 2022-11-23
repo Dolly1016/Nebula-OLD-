@@ -48,7 +48,7 @@ namespace Nebula.Module
                 return ms.ToArray();
             }
         }
-        public static T? LoadAsset<T>(this AssetBundle assetBundle, string name) where T : UnityEngine.Object
+        public static T LoadAsset<T>(this AssetBundle assetBundle, string name) where T : UnityEngine.Object
         {
             return assetBundle.LoadAsset(name, Il2CppType.Of<T>())?.Cast<T>();
         }

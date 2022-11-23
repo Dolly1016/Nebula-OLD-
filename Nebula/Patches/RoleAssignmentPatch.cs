@@ -118,7 +118,7 @@ namespace Nebula.Patches
                         }
                         else
                         {
-                            if (role.RoleChanceSecondaryOption != null)
+                            if (role.RoleChanceSecondaryOption != null && role.RoleChanceSecondaryOption.getBool())
                             {
                                 chanceList.Add(new Tuple<int, int>(1, role.RoleChanceOption.getSelection() + 1));
                                 chanceList.Add(new Tuple<int, int>(roleCount-1, role.RoleChanceSecondaryOption.getSelection()));

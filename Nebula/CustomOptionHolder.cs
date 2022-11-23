@@ -99,7 +99,7 @@ namespace Nebula
         public static CustomOption exceptAirship;
         public static CustomOption additionalVents;
         public static CustomOption additionalWirings;
-        public static CustomOption multipleSpawnPoints;
+        public static CustomOption spawnMethod;
         public static CustomOption synchronizedSpawning;
         public static CustomOption optimizedMaps;
         public static CustomOption invalidatePrimaryAdmin;
@@ -165,6 +165,7 @@ namespace Nebula
         public static CustomOption MeistersFilterOption;
         public static CustomOption MeistersFuelEnginesOption;
         public static CustomOption DangerousDownloadSpotOption;
+        public static CustomOption UseVanillaSafeTaskOption;
 
         public static CustomOption SabotageOption;
         public static CustomOption SabotageCoolDownOption;
@@ -331,15 +332,56 @@ namespace Nebula
             exceptPolus = CustomOption.Create(Color.white, "option.exceptPolus", false, dynamicMap).SetGameMode(CustomGameMode.All);
             exceptAirship = CustomOption.Create(Color.white, "option.exceptAirship", false, dynamicMap).SetGameMode(CustomGameMode.All);
             additionalVents = CustomOption.Create(Color.white, "option.additionalVents", false, mapOptions).SetGameMode(~CustomGameMode.Minigame);
-            multipleSpawnPoints = CustomOption.Create(Color.white, "option.multipleSpawnPoints", false, mapOptions).SetGameMode(~(CustomGameMode.Minigame | CustomGameMode.Ritual));
+            spawnMethod = CustomOption.Create(Color.white, "option.spawnMethod", new string[] { "option.spawnMethod.default", "option.spawnMethod.selectable", "option.spawnMethod.random" }, "option.spawnMethod.default", mapOptions).SetGameMode(~(CustomGameMode.Minigame | CustomGameMode.Ritual));
             synchronizedSpawning = CustomOption.Create(Color.white, "option.synchronizedSpawning", false, mapOptions).SetGameMode(~(CustomGameMode.Minigame | CustomGameMode.Ritual));
             optimizedMaps = CustomOption.Create(Color.white, "option.optimizedMaps", true, mapOptions).SetGameMode(CustomGameMode.All);
-            invalidatePrimaryAdmin = CustomOption.Create(Color.white, "option.invalidatePrimaryAdmin", new string[] { "option.switch.off", "option.invalidatePrimaryAdmin.onlyAirship", "option.switch.on" }, "option.empty", mapOptions).SetGameMode(CustomGameMode.All);
+            invalidatePrimaryAdmin = CustomOption.Create(Color.white, "option.invalidatePrimaryAdmin", new string[] { "option.switch.off", "option.invalidatePrimaryAdmin.onlyAirship", "option.switch.on" }, "option.switch.off", mapOptions).SetGameMode(CustomGameMode.All);
             invalidateSecondaryAdmin = CustomOption.Create(Color.white, "option.invalidateSecondaryAdmin", true, mapOptions).SetGameMode(CustomGameMode.All);
             useClassicAdmin = CustomOption.Create(Color.white, "option.useClassicAdmin", false, mapOptions).SetGameMode(CustomGameMode.All);
             allowParallelMedBayScans = CustomOption.Create(Color.white, "option.allowParallelMedBayScans", false, mapOptions).SetGameMode(CustomGameMode.All);
             quietVentsInTheShadow = CustomOption.Create(Color.white, "option.quietVentsInTheShadow", false, mapOptions).SetGameMode(CustomGameMode.All);
             oneWayMeetingRoomOption = CustomOption.Create(Color.white, "option.oneWayMeetingRoom", false, mapOptions).SetGameMode(CustomGameMode.All);
+
+            spawnMethod.alternativeOptionScreenBuilder = (refresher) => {
+                MetaScreenContent getSuitableContent()
+                {
+                    if (spawnMethod.getSelection() == 2)
+                        return new MSButton(1.6f, 0.4f, "Customize", TMPro.FontStyles.Bold, () => {
+                            Action<byte> refresher = null;
+                            refresher = (mapId)=>MetaDialog.OpenMapDialog(mapId, true,(obj,id)=>Map.MapData.MapDatabase[id].SetUpSpawnPointButton(obj, ()=>
+                            {
+                                MetaDialog.EraseDialog(1);
+                                refresher(id);
+                            }));
+                            refresher(PlayerControl.GameOptions.MapId);
+                        });
+                    else
+                        return new MSMargin(1.7f);
+                }
+
+                return new MetaScreenContent[][] {
+                    new MetaScreenContent[]
+                    {
+                        new MSMargin(1.9f),
+                       new MSString(3f, spawnMethod.getName(), 2f, 0.8f, TMPro.TextAlignmentOptions.MidlineRight, TMPro.FontStyles.Bold),
+                    new MSString(0.2f, ":", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
+                    new MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () =>
+                    {
+                        spawnMethod.addSelection(-1);
+                        refresher();
+                    }),
+                    new MSString(1.5f, spawnMethod.getString(), 2f, 0.6f, TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
+                    new MSButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () =>
+                    {
+                        spawnMethod.addSelection(1);
+                        refresher();
+                    }),
+                    new MSMargin(0.2f),
+                    getSuitableContent(),
+                    new MSMargin(1f)
+                    }
+                };
+            };
 
             limiterOptions = CustomOption.Create(Color.white, "option.limitOptions", false, null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.All);
             CustomOption.RegisterTopOption(limiterOptions);
@@ -370,6 +412,7 @@ namespace Nebula
             MeistersFilterOption = CustomOption.Create(Color.white, "option.meistersO2Filter", false, TasksOption).SetGameMode(CustomGameMode.All);
             MeistersFuelEnginesOption = CustomOption.Create(Color.white, "option.meistersFuelEngines", false, TasksOption).SetGameMode(CustomGameMode.All);
             DangerousDownloadSpotOption = CustomOption.Create(Color.white, "option.dangerousDownloadSpot", false, TasksOption).SetGameMode(CustomGameMode.All);
+            UseVanillaSafeTaskOption = CustomOption.Create(Color.white, "option.useVanillaSafeTask", true, TasksOption).SetGameMode(CustomGameMode.All);
 
             SabotageOption = CustomOption.Create(Color.white, "option.sabotageOption", false, null, true, false, "", CustomOptionTab.Settings).SetGameMode(~(CustomGameMode.Ritual | CustomGameMode.Minigame));
             CustomOption.RegisterTopOption(SabotageOption);
@@ -463,6 +506,8 @@ namespace Nebula
                         );
                 }
             }
+
+            Map.MapData.CreateOptionData();
 
 
         }

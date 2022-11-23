@@ -817,6 +817,13 @@ namespace Nebula
                 myColor.b * myRate + color.b * rate,
                 myColor.a * myRate + color.a * rate);
         }
+
+        public static T[] ToArray<T>(this IEnumerator<T> enumerator)
+        {
+            List<T> result = new List<T>();
+            while (enumerator.MoveNext()) result.Add(enumerator.Current);
+            return result.ToArray();
+        }
     }
 }
 

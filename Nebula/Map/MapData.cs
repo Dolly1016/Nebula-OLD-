@@ -119,6 +119,25 @@ namespace Nebula.Map
         }
     }
 
+    public class SpawnPointData
+    {
+        public Vector2 spawnPoint;
+        public string name;
+        public Module.CustomOption option;
+
+        public SpawnPointData(string name,Vector2 spawnPoint)
+        {
+            this.name = name;
+            this.spawnPoint = spawnPoint;
+        }
+
+        static string[] mapNames = { "skeld", "mira", "polus", "undefined","airship" };
+        public void CreateOption(byte mapId)
+        {
+            option = Module.CustomOption.Create(Color.white, "option.spawnMethod.location." + name, true, CustomOptionHolder.spawnMethod, false, true).SetIdentifier("option.spawnMethod.location." + mapNames[mapId]+"."+name);
+        }
+    }
+
     public class MapData
     {
         //Skeld=0,MIRA=1,Polus=2,AirShip=4
@@ -160,6 +179,71 @@ namespace Nebula.Map
         public List<SystemTypes[]> RitualRooms;
         //Ritualミッション位置候補
         public Dictionary<SystemTypes, List<VectorRange>> RitualMissionPositions;
+        //ランダムスポーン位置候補
+        public List<SpawnPointData> SpawnPoints;
+
+        public List<Vector2> ValidSpawnPoints
+        {
+            get
+            {
+                List<Vector2> list = new List<Vector2>();
+                foreach(var sPoint in SpawnPoints)
+                    if (sPoint.option.getBool()) list.Add(sPoint.spawnPoint);
+                
+                return list;
+            }
+        }
+
+        public void SetUpSpawnPointButton(GameObject obj,Action reopener)
+        {
+            foreach (var point in SpawnPoints)
+            {
+                NebulaPlugin.Instance.Logger.Print("1");
+                PassiveButton button = Module.MetaScreen.MSDesigner.AddSubButton(obj, new Vector2(2.4f, 0.4f), "Point", point.option.getName(), point.option.getBool() ? Color.yellow : Color.white);
+                button.transform.localPosition = (Vector3)ConvertMinimapPosition(point.spawnPoint) + new Vector3(0f,0f,-5f);
+                button.transform.localScale /= (obj.transform.localScale.x/0.75f);
+                
+                SpriteRenderer renderer = button.GetComponent<SpriteRenderer>();
+                TMPro.TextMeshPro text = button.transform.GetChild(0).GetComponent<TMPro.TextMeshPro>();
+
+                renderer.size = new Vector2(text.preferredWidth+0.3f,renderer.size.y);
+                button.GetComponent<BoxCollider2D>().size = renderer.size;
+
+                var option = point.option;
+                button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => {
+                    option.addSelection(1);
+                    reopener();
+                }));
+
+            }
+        }
+
+        public void SetUpSpawnPointInfo(GameObject obj)
+        {
+            switch (CustomOptionHolder.spawnMethod.getSelection())
+            {
+                case 2:
+                    foreach (var vec in ValidSpawnPoints)
+                    {
+                        var text = Module.MetaScreen.MSDesigner.AddSubText(obj, 0.4f, 2f, "★", TMPro.FontStyles.Bold, TMPro.TextAlignmentOptions.Center);
+                        text.color = Color.yellow;
+                        text.transform.localPosition = (Vector3)ConvertMinimapPosition(vec) + new Vector3(0f, 0f, -5f);
+                        text.transform.localScale /= (obj.transform.localScale.x / 0.75f);
+
+                    }
+                    break;
+                case 1:
+                    foreach (var point in SpawnCandidates)
+                    {
+                        var text = Module.MetaScreen.MSDesigner.AddSubText(obj, 0.4f, 2f, "★", TMPro.FontStyles.Bold, TMPro.TextAlignmentOptions.Center);
+                        text.color = Color.yellow;
+                        text.transform.localPosition = (Vector3)ConvertMinimapPosition(point.SpawnLocation) + new Vector3(0f, 0f, -5f);
+                        text.transform.localScale /= (obj.transform.localScale.x / 0.75f);
+
+                    }
+                    break;
+            }
+        }
 
         public void RegisterRitualMissionPosition(SystemTypes room,VectorRange range)
         {
@@ -190,6 +274,16 @@ namespace Nebula.Map
             new MapData(5);
         }
 
+        public static void CreateOptionData()
+        {
+            foreach(var mapData in MapDatabase)
+            {
+                foreach(var point in mapData.Value.SpawnPoints)
+                {
+                    point.CreateOption((byte)mapData.Value.MapId);
+                }
+            }
+        }
         public static Map.MapData GetCurrentMapData()
         {
             if (MapDatabase.ContainsKey(PlayerControl.GameOptions.MapId))
@@ -314,6 +408,8 @@ namespace Nebula.Map
             RitualRooms = new List<SystemTypes[]>();
             RitualSpawnLocations = new List<RitualSpawnCandidate>();
             RitualMissionPositions = new Dictionary<SystemTypes, List<VectorRange>>();
+
+            SpawnPoints = new List<SpawnPointData>();
         }
 
         public void LoadAssets(AmongUsClient __instance)
@@ -326,6 +422,21 @@ namespace Nebula.Map
             Assets = assetReference.Asset.Cast<GameObject>().GetComponent<ShipStatus>();
         }
 
+        public Sprite GetMapSprite()
+        {
+            return Assets.MapPrefab.transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().sprite;
+        }
+
+        public Material GetMapMaterial()
+        {
+            return new Material(Assets.MapPrefab.transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().material);
+        }
+
+        public Vector2 ConvertMinimapPosition(Vector2 pos)
+        {
+            return (Vector2)(pos / Assets.MapScale) + (Vector2)Assets.MapPrefab.transform.GetChild(5).localPosition;
+        }
+
         
         public bool PlayInitialPrespawnMinigame
         {
@@ -333,7 +444,7 @@ namespace Nebula.Map
             {
                 if (HasDefaultPrespawnMinigame) return true;
 
-                return (SpawnCandidates.Count >= 3 && !SpawnOriginalPositionAtFirst && CustomOptionHolder.mapOptions.getBool() && CustomOptionHolder.multipleSpawnPoints.getBool());
+                return (SpawnCandidates.Count >= 3 && !SpawnOriginalPositionAtFirst && CustomOptionHolder.mapOptions.getBool() && CustomOptionHolder.spawnMethod.getSelection()==1);
             }
         }
     }

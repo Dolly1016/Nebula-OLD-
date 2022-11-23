@@ -176,25 +176,4 @@ namespace Nebula.Patches
 
         }
     }
-
-    [HarmonyPatch]
-    class MapCountOverlayPatch
-    {
-        [HarmonyPatch(typeof(MapCountOverlay), nameof(MapCountOverlay.OnEnable))]
-        class MapCountOverlayOnEnablePatch
-        {
-            static bool Prefix(MapCountOverlay __instance)
-            {
-                if (Roles.Roles.Jailer.IsJailerCountOverlay(__instance))
-                {
-                    __instance.timer = 1f;
-                    return false;
-                }
-
-                return true;
-            }
-
-        }
-    }
-
 }

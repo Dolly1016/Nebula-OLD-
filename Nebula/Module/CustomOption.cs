@@ -104,8 +104,10 @@ namespace Nebula.Module
         public delegate MetaScreenContent[][] ScreenBuilder(Action refresher);
         public ScreenBuilder? preOptionScreenBuilder;
         public ScreenBuilder? postOptionScreenBuilder;
+        public ScreenBuilder? alternativeOptionScreenBuilder;
 
-        public CustomOptionDecorator? Decorator { get; set; }
+        public CustomOptionDecorator? NameDecorator { get; set; }
+        public CustomOptionDecorator? ValueDecorator { get; set; }
 
         public virtual bool enabled
         {
@@ -203,6 +205,7 @@ namespace Nebula.Module
 
             this.preOptionScreenBuilder = null;
             this.postOptionScreenBuilder = null;
+            this.alternativeOptionScreenBuilder = null;
 
             this.children = new List<CustomOption>();
             if (parent != null)
@@ -221,7 +224,8 @@ namespace Nebula.Module
             this.prerequisiteOptionsCustom = new List<Func<bool>>();
             this.GameMode = CustomGameMode.Standard;
 
-            this.Decorator = null;
+            this.NameDecorator = null;
+            this.ValueDecorator = null;
         }
 
         private void bind()
@@ -405,12 +409,13 @@ namespace Nebula.Module
             return text;
         }
 
-        public virtual string getName(bool display=false)
+        public virtual string getName(bool display=false,Color? color=null)
         {
-            string original = Helpers.cs(color, Language.Language.GetString(name));
-            if (Decorator != null && display)
+            string original = Helpers.cs(color!=null ? color.Value : this.color, Language.Language.GetString(name));
+
+            if (NameDecorator != null && display)
             {
-                return Decorator.Invoke(original, this);
+                return NameDecorator.Invoke(original, this);
             }
             else
             {
@@ -662,24 +667,37 @@ namespace Nebula.Module
             {
                 if (option.IsHidden(gamemode) || option.isHiddenOnMetaScreen) return true;
 
-                if (!AddTopic(
-                new MSString(3f, option.getName(), 2f, 0.8f, TMPro.TextAlignmentOptions.MidlineRight, TMPro.FontStyles.Bold),
-                new MSString(0.2f, ":", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
-                new MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () =>
-                {
-                    option.addSelection(-1);
-                    refresher();
-                }),
-                new MSString(1.5f, option.getString(), 2f, 0.6f, TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
-                new MSButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () =>
-                {
-                    option.addSelection(1);
-                    refresher();
-                }),
-                new MSMargin(1f)
-                )) return false;
+                if (option.preOptionScreenBuilder != null)
+                    foreach (var topic in option.preOptionScreenBuilder(refresher)) if (!AddTopic(topic)) return false;
 
-                if(option.getBool()) foreach (var child in option.children) if (!AddOption(child)) return false;
+                if (option.alternativeOptionScreenBuilder != null)
+                {
+                    foreach (var topic in option.alternativeOptionScreenBuilder(refresher)) if (!AddTopic(topic)) return false;
+                }
+                else
+                {
+                    if (!AddTopic(
+                    new MSString(3f, option.getName(), 2f, 0.8f, TMPro.TextAlignmentOptions.MidlineRight, TMPro.FontStyles.Bold),
+                    new MSString(0.2f, ":", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
+                    new MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () =>
+                    {
+                        option.addSelection(-1);
+                        refresher();
+                    }),
+                    new MSString(1.5f, option.getString(), 2f, 0.6f, TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
+                    new MSButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () =>
+                    {
+                        option.addSelection(1);
+                        refresher();
+                    }),
+                    new MSMargin(1f)
+                    )) return false;
+                }
+
+                if (option.postOptionScreenBuilder != null)
+                    foreach (var topic in option.postOptionScreenBuilder(refresher)) if (!AddTopic(topic)) return false;
+
+                if (option.getBool()) foreach (var child in option.children) if (!AddOption(child)) return false;
                 return true;
             }
 
@@ -733,6 +751,12 @@ namespace Nebula.Module
             }
 
             designer.screen.screen.AddComponent<CustomOptionBehaviour>().StartCoroutine(GetEnumerator().WrapToIl2Cpp());
+        }
+
+        private static Color? GetTabUnifiedColor(CustomOptionTab tab)
+        {
+            if (tab == CustomOptionTab.ImpostorRoles) return Palette.ImpostorRed;
+            return null;
         }
 
         private static void OpenConfigTopOptionScreen(GameObject leftTabScreen)
@@ -804,7 +828,7 @@ namespace Nebula.Module
                 if (option.IsHidden(gamemode)) continue;
 
                 var myOption = option;
-                buttons.Add(new MSButton(1.6f, 0.45f, option.getName(), TMPro.FontStyles.Bold, () =>
+                buttons.Add(new MSButton(1.6f, 0.45f, option.getName(false, GetTabUnifiedColor(CustomOption.CurrentTab)), TMPro.FontStyles.Bold, () =>
                 {
                     if (myOption.selections.Length > 1)
                     {
@@ -1266,7 +1290,9 @@ namespace Nebula.Module
         public static string optionToString(CustomOption option)
         {
             if (option == null) return "";
-            return $"{option.getName(true)}: {option.getString()}";
+            string value= option.getString();
+            if (option.ValueDecorator != null) value = option.ValueDecorator(value, option);
+            return $"{option.getName(true)}: {value}";
         }
 
         public static string optionsToString(CustomOption option, bool skipFirst = false)

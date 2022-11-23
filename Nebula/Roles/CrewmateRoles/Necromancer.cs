@@ -18,7 +18,7 @@ namespace Nebula.Roles.CrewmateRoles
         public Module.CustomOption maxReviveRoomDistanceOption;
         private Module.CustomOption maxNotificationDistanceOption;
 
-        private SpriteLoader reviveButtonSprite = new SpriteLoader("Nebula.Resources.reviveButton.png", 115f);
+        private SpriteLoader reviveButtonSprite = new SpriteLoader("Nebula.Resources.ReviveButton.png", 115f);
         public override HelpSprite[] helpSprite => new HelpSprite[]
         {
             new HelpSprite(DaDSprite,"role.necromancer.help.dragAndDrop",0.3f),

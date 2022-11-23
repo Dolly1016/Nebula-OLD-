@@ -17,6 +17,11 @@ namespace Nebula.Utilities
             this.pixelsPerUnit = pixelsPerUnit;
         }
 
+        public SpriteLoader(Sprite sprite)
+        {
+            this.sprite = sprite;
+        }
+
         public Sprite GetSprite()
         {
             if (!sprite) sprite = Helpers.loadSpriteFromResources(address,pixelsPerUnit);

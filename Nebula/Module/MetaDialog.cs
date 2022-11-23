@@ -53,6 +53,9 @@ namespace Nebula.Module
         /// <param name="num"></param>
         static public void EraseDialog(int num)
         {
+            if (dialogOrder.Count < num) num = dialogOrder.Count;
+            if (num == 0) return;
+
             for (int i = 0; i <num; i++)
             {
                 dialogOrder[dialogOrder.Count-1-i].dialog.Hide();
@@ -100,7 +103,7 @@ namespace Nebula.Module
             closeButton.transform.localPosition = new Vector3(-size.x / 2f - 0.3f, size.y / 2f - 0.3f, -10f);
             dialogue.transform.localScale = new Vector3(1, 1, 1);
             dialogue.transform.localPosition = new Vector3(0f, 0f, -50f);
-            if (dialogue.transform.parent == HudManager.Instance.transform) dialogue.transform.localPosition += new Vector3(0, 0, -50f);
+            if (dialogue.transform.parent == HudManager.Instance.transform) dialogue.transform.localPosition += new Vector3(0, 0, -500f);
             var metaDialog = new MetaDialog(dialogue);
             dialogOrder.Add(metaDialog);
 
@@ -108,6 +111,48 @@ namespace Nebula.Module
             dialogue.Show(title);
 
             return new MSDesigner(metaDialog, size, title.Length > 0 ? dialogue.target.GetPreferredHeight() + 0.1f : 0.2f);
+        }
+
+        static public MSDesigner OpenMapDialog(byte mapId,bool canChangeMap,Action<GameObject,byte>? mapDecorator)
+        {
+            float[] rates = { 0.74f, 0.765f, 0.74f, 1f,1.005f };
+            string[] mapNames = { "The Skeld", "MIRA HQ", "Polus", "Undefined", "Airship" };
+            byte changeMapId(bool incrementFlag)
+            {
+                int id = mapId;
+                while (true)
+                {
+                    id += incrementFlag ? 1 : -1;
+
+                    if (id < 0) id = 4;
+                    if (id > 4) id = 0;
+
+                    if (id != 3) break;
+                }
+                return (byte)id;
+            }
+
+            var dialog = OpenDialog(new Vector2(8.8f, canChangeMap ? 5.4f : 5f), "");
+            if (canChangeMap) dialog.AddTopic(
+                new MSButton(0.5f, 0.5f, "<", TMPro.FontStyles.Bold, () => {
+                    EraseDialog(1);
+                    OpenMapDialog(changeMapId(false), true, mapDecorator);
+                }),
+                new MSString(2f,mapNames[mapId],TMPro.TextAlignmentOptions.Center,TMPro.FontStyles.Bold),
+                new MSButton(0.5f, 0.5f, ">", TMPro.FontStyles.Bold, () => {
+                    EraseDialog(1);
+                    OpenMapDialog(changeMapId(true), true, mapDecorator);
+                })
+                );
+            dialog.CustomUse(0.12f);
+            MSSprite sprite = new MSSprite(new SpriteLoader(Map.MapData.MapDatabase[mapId].GetMapSprite()), 0f, rates[mapId]);
+            dialog.AddTopic(sprite);
+            sprite.renderer.material = Map.MapData.MapDatabase[0].GetMapMaterial();
+            sprite.renderer.color=new Color(0.05f, 0.2f, 1f, 1f);
+
+            if (mapDecorator != null) mapDecorator(sprite.renderer.gameObject, mapId);
+
+            return dialog;
         }
 
         static public MSDesigner OpenPlayerDialog(Vector2 size,PlayerControl player)
@@ -250,6 +295,14 @@ namespace Nebula.Module
                 }
             });
 
+            var helpTab = new MSButton(1.2f, 0.4f, "Help", TMPro.FontStyles.Bold, () => {
+                if (tab != 5)
+                {
+                    EraseDialog((MetaDialog)designer.screen);
+                    OpenHelpDialog(5, 0, options);
+                }
+            });
+
             if (AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started)
             {
                 var myTab = new MSButton(1.2f, 0.4f, "My Role", TMPro.FontStyles.Bold, () => {
@@ -260,16 +313,16 @@ namespace Nebula.Module
                     }
                 });
 
-                designer.AddTopic(myTab,rolesTab, ghostRolesTab,modifiesTab, optionsTab);
+                designer.AddTopic(myTab,rolesTab, ghostRolesTab,modifiesTab, optionsTab, helpTab);
             }
             else
             {
                 if (tab == 0) tab = 1;
-                designer.AddTopic(rolesTab, ghostRolesTab,modifiesTab, optionsTab);
+                designer.AddTopic(rolesTab, ghostRolesTab,modifiesTab, optionsTab,helpTab);
             }
 
             //見出し
-            designer.AddTopic(new MSString(4f,new string[] { "My Roles","Roles","Ghost Roles","Modifiers","All Options"}[tab],TMPro.TextAlignmentOptions.Center,TMPro.FontStyles.Bold));
+            designer.AddTopic(new MSString(4f,new string[] { "My Roles","Roles","Ghost Roles","Modifiers","All Options","Help"}[tab],TMPro.TextAlignmentOptions.Center,TMPro.FontStyles.Bold));
 
             switch (tab)
             {
@@ -312,45 +365,60 @@ namespace Nebula.Module
                         }
                     }
 
-                    designer.AddEnumerableTopic(6,1,0, myRoleEnumerator(), (c) => {
+                    designer.AddEnumerableTopic(6, 1, 0, myRoleEnumerator(), (c) => {
                         var text = ((MSButton)c).text;
                         text.fontSizeMin = 0.5f;
                         text.overflowMode = TMPro.TextOverflowModes.Ellipsis;
                     });
 
-                    if(assignable!=null)AddRoleInfo(designer,assignable);
+                    if (assignable != null) AddRoleInfo(designer, assignable);
 
                     break;
                 case 1:
-                    designer.AddRolesTopic((r) => r.category != Roles.RoleCategory.Complex, (r) => OpenAssignableHelpDialog(r), 5, 6, arg, (p) => {
+                    designer.AddRolesTopic((r) => r.category != Roles.RoleCategory.Complex && r.ShowInHelpWindow, (r) => OpenAssignableHelpDialog(r), 5, 6, arg, (p) => {
                         MetaDialog.EraseDialog(1);
                         OpenHelpDialog(tab, arg + p, options);
                     });
                     break;
                 case 2:
-                    designer.AddGhostRoleTopic((r) => true, (r) => OpenAssignableHelpDialog(r), 5, 6, arg, (p) => {
+                    designer.AddGhostRoleTopic((r) => r.ShowInHelpWindow, (r) => OpenAssignableHelpDialog(r), 5, 6, arg, (p) => {
                         MetaDialog.EraseDialog(1);
                         OpenHelpDialog(tab, arg + p, options);
                     });
                     break;
                 case 3:
-                    designer.AddModifyTopic((r) => true, (r) => OpenAssignableHelpDialog(r), 5, 6, arg,(p)=> {
+                    designer.AddModifyTopic((r) => r.ShowInHelpWindow, (r) => OpenAssignableHelpDialog(r), 5, 6, arg, (p) => {
                         MetaDialog.EraseDialog(1);
                         OpenHelpDialog(tab, arg + p, options);
-                        });
+                    });
                     break;
                 case 4:
                     if (options == null) options = GameOptionStringGenerator.GenerateString(20);
 
-                    var designers = designer.SplitVertically(new float[] { 0.05f, 0.5f, 0.5f, 0.05f });
-
-                    for (int i = 0; i < 2; i++) if (options.Count > i + arg * 2) designers[1+i].AddTopic(new MSMultiString(designers[i+1].size.x,1f,options[i+arg*2],TMPro.TextAlignmentOptions.TopLeft,TMPro.FontStyles.Normal));
+                    if (arg == 0)
+                    {
+                        var subDesigner = designer.Split(1);
+                        subDesigner[0].AddTopic(new MSButton(1.2f, 0.4f, "Spawn Points", TMPro.FontStyles.Bold, () => {
+                            OpenMapDialog(PlayerControl.GameOptions.MapId, AmongUsClient.Instance.GameState != AmongUsClient.GameStates.Started, (obj, id) => Map.MapData.MapDatabase[id].SetUpSpawnPointInfo(obj));
+                        }));
+                    }
+                    else
+                    {
+                        var designers = designer.SplitVertically(new float[] { 0.05f, 0.5f, 0.5f, 0.05f });
+                        for (int i = 0; i < 2; i++) if (options.Count > i + (arg - 1) * 2) designers[1 + i].AddTopic(new MSMultiString(designers[i + 1].size.x, 1f, options[i + (arg - 1) * 2], TMPro.TextAlignmentOptions.TopLeft, TMPro.FontStyles.Normal));
+                    }
 
                     designer.CustomUse(3.7f);
-                    designer.AddPageListTopic(arg,(options.Count+1)/2,(p)=> {
+                    designer.AddPageListTopic(arg, 1 + (options.Count + 1) / 2, (p) => {
                         MetaDialog.EraseDialog(1);
                         OpenHelpDialog(tab, p, options);
                     });
+                    break;
+                case 5:
+                    //ヘルプ画面
+                    var helpDesigners = designer.SplitVertically(new float[] { 0.3f,0.4f,0.3f});
+                    helpDesigners[1].AddTopic(new MSString(5f,Language.Language.GetString("help.contents"), 2f, 2f, TMPro.TextAlignmentOptions.Center,TMPro.FontStyles.Bold));
+                    if (HelpContent.rootContent != null && HelpContent.rootContent.ContentGenerator != null) HelpContent.rootContent.ContentGenerator(helpDesigners[1]);
                     break;
             }
 

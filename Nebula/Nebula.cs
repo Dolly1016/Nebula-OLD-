@@ -71,7 +71,7 @@ namespace Nebula
         public const string PluginVersion = "1.16";
         public const bool IsSnapshot = true;
 
-        public static string PluginVisualVersion = IsSnapshot ? "22.11.18e" : PluginVersion;
+        public static string PluginVisualVersion = IsSnapshot ? "22.11.21c" : PluginVersion;
         public static string PluginStage = IsSnapshot?"Snapshot":"";
 
         public const string PluginVersionForFetch = "1.16.1";
@@ -132,6 +132,9 @@ namespace Nebula
             //ゲームモードデータを読み込む
             Game.GameModeProperty.Load();
 
+            //マップ関連のデータを読み込む
+            Map.MapEditor.Load();
+            Map.MapData.Load();
 
             //オプションを読み込む
             CustomOptionHolder.Load();
@@ -139,9 +142,8 @@ namespace Nebula
             //GlobalEventデータを読み込む
             Events.Events.Load();
 
-            //マップ関連のデータを読み込む
-            Map.MapEditor.Load();
-            Map.MapData.Load();
+            //ヘルプを読み込む
+            Module.HelpContent.Load();
 
             //ゴースト情報を読み込む
             //Ghost.GhostInfo.Load();

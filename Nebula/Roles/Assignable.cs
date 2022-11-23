@@ -98,7 +98,7 @@ namespace Nebula.Roles
         public virtual bool ShowInHelpWindow { get => true; }
 
         /// <summary>
-        /// ヘルプ画面で使用するロールを返します。
+        /// ヘルプ画面で使用するロールを返します。　nullの場合自身の所持するロールとして表示しません
         /// </summary>
         public virtual Assignable AssignableOnHelp { get => this; }
 
@@ -252,7 +252,7 @@ namespace Nebula.Roles
 
         }
 
-        private Module.CustomOption CreateOption(Color color, string name, object[] selections, System.Object defaultValue,bool isGeneral=false)
+        public Module.CustomOption CreateOption(Color color, string name, object[] selections, System.Object defaultValue,bool isGeneral=false)
         {
             Module.CustomOption option = new Module.CustomOption(color, (isGeneral ? "" : "role." + this.LocalizeName + ".") + name, selections, defaultValue, TopOption, false, false, "",Module.CustomOptionTab.None);
             option.GameMode = ValidGamemode | Module.CustomGameMode.FreePlay;
