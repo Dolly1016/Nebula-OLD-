@@ -1,10 +1,37 @@
 { 
     "subcontents" : [
         {
+            "caption" : "help.contents.general",
+            "size" : [4.5,5],
+            "subcontents" : [
+                {
+                    "caption" : "help.contents.general.button",
+                    "subcontents" : [
+                        "help.contents.general.button.detail",
+                        {
+                            "picture" : "Help.Button"
+                        },
+                        "help.contents.general.button.killButtonDetail",
+                        {
+                            "picture" : "Help.KillButton"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
             "caption" : "help.contents.roles",
             "size" : [4.5,5],
             "subcontents" : [
-                
+                {
+                    "caption" : "help.contents.roles.deadBodiesDragging",
+                    "subcontents" : [
+                        "help.contents.roles.deadBodiesDragging.detail",
+                        {
+                            "picture" : "Help.SafeTask"
+                        }
+                    ]
+                }
             ]
         },
         {

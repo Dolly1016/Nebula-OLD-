@@ -33,7 +33,7 @@
 "config.option.keyBinding.secondaryAbility" : "Use Secondary Ability"
 "config.option.keyBinding.changeAbility" : "Change Ability"
 "config.option.keyBinding.modifierAbility" : "Use Modifier Ability"
-"config.option.keyBinding.kill" : "Kill (Mod)"
+"config.option.keyBinding.kill" : "Kill"
 "config.option.keyBinding.help" : "Help"
 "config.option.keyBinding.observer" : "Toggle Observer Mode"
 "config.option.keyBinding.changeEyesightLeft" : "Change Eyesight(Left)"
@@ -249,7 +249,6 @@
 "option.devicesOption.camera.cargoBay" : "Cargo Bay"
 "option.devicesOption.camera.meetingRoom" : "Meeting Room"
 
-
 "option.tasksOption" : "Meister's Task Option"
 "option.randomizedWiring" : "Randomized Wiring"
 "option.stepsOfWiring" : "Steps Of Wiring"
@@ -322,7 +321,7 @@
 
 "role.tracker.name" : "Tracker"
 "role.tracker.help.track" : "Track selected player."
-"role.tracker.help.meeting" : "Can change tracked player in a meeting."
+"role.tracker.help.meeting" : "Can know progress of selected players' task."
 "role.tracker.chanceToSpawnAsSecondarySide" : "Chance to Spawn as Impostor"
 "role.tracker.definitiveAssignment" : "Definitive Assignment"
 "role.tracker.canChangeTrackingTarget" : "Can Change Tracking Target"
@@ -504,15 +503,15 @@
 "role.niceGuesser.description" : "Guess and Shoot"
 "role.niceGuesser.info" : "You can guess other alive players.\nIf your guess is correct, guessed player will die."
 
-"role.niceTrapper.name" : "Nice Trapper"
-"role.niceTrapper.short" : "T"
-"role.niceTrapper.description" : "Entrap and Find the <color=#ff1919ff>Impostors</color>"
-"role.niceTrapper.info" : "You can place some traps.\nKinds of traps can change."
-
 "role.niceTracker.name" : "Nice Tracker"
 "role.niceTracker.short" : "T"
 "role.niceTracker.description" : "Will Not Let You Do"
 "role.niceTracker.info" : "You can track players."
+
+"role.niceTrapper.name" : "Nice Trapper"
+"role.niceTrapper.short" : "T"
+"role.niceTrapper.description" : "Entrap and Find the <color=#ff1919ff>Impostors</color>"
+"role.niceTrapper.info" : "You can place some traps.\nKinds of traps can change."
 
 "role.oracle.name" : "Oracle"
 "role.oracle.short" : "O"
@@ -667,20 +666,20 @@
 "role.evilGuesser.description" : "Guess and Shoot"
 "role.evilGuesser.info" : "You can guess other alive players.\nIf your guess is correct, guessed player will die."
 
-"role.evilTrapper.name" : "Evil Trapper"
-"role.evilTrapper.short" : "Tp"
-"role.evilTrapper.description" : "Entrap and Kill Crewmates"
-"role.evilTrapper.info" : "You can place some traps.\nKinds of traps can change."
-
 "role.evilTracker.name" : "Evil Tracker"
 "role.evilTracker.short" : "Tk"
 "role.evilTracker.description" : "A Stranger Is Watching"
 "role.evilTracker.info" : "You can track a player.\nIn a meeting, you can know selected player's progress of tasks."
 
+"role.evilTrapper.name" : "Evil Trapper"
+"role.evilTrapper.short" : "Tp"
+"role.evilTrapper.description" : "Entrap and Kill Crewmates"
+"role.evilTrapper.info" : "You can place some traps.\nKinds of traps can change."
+
 "role.jailer.name" : "Jailer"
 "role.jailer.short" : "J"
-"role.jailer.info" : "You can use admin anywhere."
 "role.jailer.description" : "Be Under the Control"
+"role.jailer.info" : "You can use admin anywhere."
 "role.jailer.canMoveWithLookingMap" : "Can Move With Locking Map"
 "role.jailer.canIdentifyImpostors" : "Can Identify Impostors And Dead Bodies In Map"
 "role.jailer.ignoreCommSabotage" : "Ignore Comms. Sabotage"
@@ -855,6 +854,7 @@
 "role.opportunist.task.staying.decontamination" : "The Decontamination"
 
 "role.teamSanta.name" : "Team Santa"
+"role.teamSanta.info" : "You were welcomed into Team Santa.\nWork together for victory."
 
 "role.santaClaus.name" : "Santa Claus"
 "role.santaClaus.short" : "SC"
@@ -945,9 +945,6 @@
 
 "role.avengerTarget.name" : "[CAUTION] You're being targeted by Avenger."
 "role.avengerTarget.info" : "You killed one of lovers.\nThe other of them may take the chance to kill you."
-
-"role.teamSanta.name" : "Team Santa"
-"role.teamSanta.info" : "You were welcomed into Team Santa.\nWork together for victory."
 
 "role.investigator.name" : "Investigator"
 "role.investigator.short" : "I"
@@ -1145,12 +1142,18 @@
 "button.label.void" : "void"
 
 "help.contents" : "Contents"
+"help.contents.general" : "General"
 "help.contents.roles" : "Roles"
 "help.contents.tasks" : "Tasks"
 "help.contents.maps" : "Maps"
+"help.contents.general.button" : "Button Operation"
+"help.contents.general.button.detail" : "NoS adds some buttons.You can interact a button by mouse click or key operation.\nKill buttons that invoke the unique action can be fired by click near your own player. "
+"help.contents.general.button.killButtonDetail" : "Kill buttons of Sniper and Raider invoke the unique action can be fired by click near your own player. "
+"help.contents.roles.deadBodiesDragging" : "Dead Bodies Dragging"
+"help.contents.roles.deadBodiesDragging.detail" : "Players have some of the roles can drag and drop dead bodies.\nThere are the relevant roles.\n\n<color=#6e33a3ff><b>Necromancer</b></color> (<color=#8cffffff>Crewmate</color>)\n  Necromancer can make the dead body revive in the designated room.\n<color=#f51818ff><b>Reaper</b></color> (<color=#f51818ff>Impostor</color>)\n  Reaper can move from a vent to all vents.\n<color=#fd54a7ff><b>Jester</b></color> (<color=#ffaa00ff>Neutral</color>)\n  Jester use the abilities to win by exile."
 "help.contents.maps.onewayMeetingRoom" : "One-way Meeting Room (Airship)"
 "help.contents.maps.onewayMeetingRoom.detail" : "In Airship, the one-way radders connect between Gap Room and Meeting Room.\n\nRequired Settings:\n  Map Option: On\n    One Way Meeting Room (Airship): On"
 "help.contents.tasks.additionalWirings" : "Additional Wirings"
-"help.contents.tasks.additionalWirings.detail" : "In Airship, some of wiring spots are added.\n\nRequired Settings:\n  Meister's Task Option: On\n    Additional Wirings: On"
+"help.contents.tasks.additionalWirings.detail" : "In Airship, some of wiring spots are added.\n\nRequired Settings:\n  Map Option: On\n    Additional Wirings: On"
 "help.contents.tasks.safeTask" : "Easy Safe Task (Airship)"
 "help.contents.tasks.safeTask.detail" : "In Airship, Safe task's first step is changed.\nIt requires entering PIN shown by the paper.\n\nBe careful, you cannot check input state.\n\nRequired Settings:\n  Meister's Task Option: On\n    Use Vanilla Safe Task: Off"

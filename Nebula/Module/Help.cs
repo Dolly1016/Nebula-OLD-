@@ -141,6 +141,7 @@ namespace Nebula.Module
 
                     ContentGenerator = (designer) =>
                     {
+                        designer.CustomUse(0.15f);
                         Utilities.SpriteLoader sprite = new Utilities.SpriteLoader(pic, 100f);
                         designer.AddTopic(new MSSprite(sprite, 0.1f, size));
                     };

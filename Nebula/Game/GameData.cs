@@ -185,7 +185,7 @@ namespace Nebula.Game
         {
             if (globalData == null)
             {
-                if (Game.GameData.data.AllPlayers.ContainsKey(PlayerControl.LocalPlayer.PlayerId))
+                if (Game.GameData.data?.AllPlayers.ContainsKey(PlayerControl.LocalPlayer.PlayerId)??false)
                 {
                     globalData = Game.GameData.data.playersArray[PlayerControl.LocalPlayer.PlayerId];
                 }
