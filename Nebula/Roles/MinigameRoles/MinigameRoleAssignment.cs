@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Nebula.Roles.MinigameRoles
+﻿namespace Nebula.Roles.MinigameRoles
 {
     public static class MinigameRoleAssignment
     {

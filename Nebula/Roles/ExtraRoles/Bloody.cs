@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
-
-namespace Nebula.Roles.ExtraRoles
+﻿namespace Nebula.Roles.ExtraRoles
 {
     public class Bloody : Template.StandardExtraRole
     {

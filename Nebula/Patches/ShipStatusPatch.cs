@@ -1,7 +1,4 @@
-﻿using HarmonyLib;
-using UnityEngine;
-
-namespace Nebula.Patches
+﻿namespace Nebula.Patches
 {
     [HarmonyPatch(typeof(ShipStatus))]
     public class ShipStatusPatch

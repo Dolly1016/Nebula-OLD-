@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
-using Nebula.Objects;
-using Nebula.Utilities;
-
-namespace Nebula.Roles.NeutralRoles
+﻿namespace Nebula.Roles.NeutralRoles
 {
     public class Jester : Template.Draggable , Template.HasWinTrigger
     {

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
-
-namespace Nebula.Images
+﻿namespace Nebula.Images
 {
     static class GlobalImage
     {

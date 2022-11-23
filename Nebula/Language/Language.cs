@@ -1,18 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
+﻿using System.Text;
 using System.Text.Json;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
 using System.Reflection;
-using HarmonyLib;
-using UnityEngine;
-using Hazel;
-using BepInEx.Configuration;
-using Nebula.Language;
 
 namespace Nebula.Language
 {

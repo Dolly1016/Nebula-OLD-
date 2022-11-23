@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
-
-namespace Nebula.Roles.CrewmateRoles
+﻿namespace Nebula.Roles.CrewmateRoles
 {
     public class Spy : Role
     {

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
-
-namespace Nebula.Map.Editors
+﻿namespace Nebula.Map.Editors
 {
     class PolusEditor : MapEditor
     {

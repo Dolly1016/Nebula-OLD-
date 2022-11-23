@@ -1,9 +1,4 @@
-﻿using HarmonyLib;
-using System.Collections.Generic;
-using UnityEngine;
-using Nebula.Utilities;
-
-namespace Nebula.Patches
+﻿namespace Nebula.Patches
 {
     [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.CoBegin))]
     public class CoStartPatch

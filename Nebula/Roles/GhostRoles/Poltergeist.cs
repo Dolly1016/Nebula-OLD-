@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
-using Nebula.Objects;
-using Nebula.Utilities;
-
-namespace Nebula.Roles.GhostRoles
+﻿namespace Nebula.Roles.GhostRoles
 {
     public class Poltergeist : GhostRole
     {

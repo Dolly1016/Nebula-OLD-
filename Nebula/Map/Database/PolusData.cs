@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
-using UnityEngine;
-
-namespace Nebula.Map.Database
+﻿namespace Nebula.Map.Database
 {
     public class PolusData : MapData
     {

@@ -1,11 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using System;
-using BepInEx.IL2CPP.Utils.Collections;
-using Nebula.Utilities;
-
-namespace Nebula.Objects
+﻿namespace Nebula.Objects
 {
 
     public class CustomMessage

@@ -1,5 +1,4 @@
 ﻿using Nebula.Patches;
-using System.Collections.Generic;
 
 namespace Nebula.Roles.CrewmateRoles
 {

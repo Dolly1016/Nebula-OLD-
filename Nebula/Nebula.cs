@@ -1,14 +1,15 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
+﻿global using BepInEx.IL2CPP.Utils.Collections;
+global using UnityEngine;
+global using System.Collections;
+global using System.Collections.Generic;
+global using System.Linq;
+global using HarmonyLib;
+global using Nebula.Objects;
+global using Nebula.Utilities;
 
-using BepInEx.IL2CPP.Utils.Collections;
-using BepInEx;
-using HarmonyLib;
 using BepInEx.IL2CPP;
-using UnityEngine;
+using BepInEx;
 using System.Text;
-using System.Collections;
 using System.Reflection;
 
 namespace Nebula
@@ -71,7 +72,7 @@ namespace Nebula
         public const string PluginVersion = "1.16";
         public const bool IsSnapshot = true;
 
-        public static string PluginVisualVersion = IsSnapshot ? "22.11.21c" : PluginVersion;
+        public static string PluginVisualVersion = IsSnapshot ? "22.11.23a" : PluginVersion;
         public static string PluginStage = IsSnapshot?"Snapshot":"";
 
         public const string PluginVersionForFetch = "1.16.1";

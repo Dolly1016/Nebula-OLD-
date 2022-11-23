@@ -1,8 +1,4 @@
-﻿using Nebula.Utilities;
-using System;
-using System.Collections.Generic;
-
-namespace Nebula.Events.Variation
+﻿namespace Nebula.Events.Variation
 {
     class Camouflage : GlobalEvent
     {

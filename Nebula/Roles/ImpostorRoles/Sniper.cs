@@ -1,18 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
-using Nebula.Patches;
-using Nebula.Objects;
-using HarmonyLib;
-using Hazel;
-using System.Collections;
-using BepInEx.IL2CPP.Utils.Collections;
-using Nebula.Utilities;
-
-namespace Nebula.Roles.ImpostorRoles
+﻿namespace Nebula.Roles.ImpostorRoles
 {
     public class Sniper : Role
     {

@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
-using HarmonyLib;
-using UnityEngine;
-using Nebula.Utilities;
-
-namespace Nebula.Patches.VanillaRework
+﻿namespace Nebula.Patches.VanillaRework
 {
 	[HarmonyPatch]
 	class PassiveButtonManagerPatch

@@ -1148,7 +1148,7 @@
 "help.contents.maps" : "マップ"
 "help.contents.general.button" : "ボタン操作"
 "help.contents.general.button.detail" : "ゲーム中に使用できるボタンはマウスクリックやキー操作によって使用できます。\nボタンに対応するキーがボタン右上に表示されており、キー割り当ては変更できます。"
-"help.contents.general.button.killButtonDetail" : "SniperやRaiderのキルボタンは、\n画面中央付近をクリックすることによっても使用できます。"
+"help.contents.general.button.killButtonDetail" : "SniperやRaiderのキルボタンは、\n画面中央付近をクリックすることによっても使用できます。\nクリックできる範囲は下の塗りつぶされていない部分の通りです。"
 "help.contents.roles.deadBodiesDragging" : "死体を動かせる役職"
 "help.contents.roles.deadBodiesDragging.detail" : "一部役職を持つプレイヤーは死体を引きずることができます。\n該当役職は下の通りです。\n\n<color=#6e33a3ff><b>ネクロマンサー</b></color> (<color=#8cffffff>クルー陣営</color>)\n  死体を指定された部屋に持っていくことでプレイヤーを復活させることができます。\n<color=#f51818ff><b>リーパー</b></color> (<color=#f51818ff>インポスター陣営</color>)\n  すべてのベントが繋がっており、死体を持ち込むこともできます。\n<color=#fd54a7ff><b>ジェスター</b></color> (<color=#ffaa00ff>第三陣営</color>)\n  自身が追放されるためにこれらの能力を駆使します。"
 "help.contents.maps.onewayMeetingRoom" : "一方通行のミーティングルーム"

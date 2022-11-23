@@ -27,9 +27,28 @@
                     "caption" : "help.contents.roles.deadBodiesDragging",
                     "subcontents" : [
                         "help.contents.roles.deadBodiesDragging.detail",
-                        {
-                            "picture" : "Help.SafeTask"
-                        }
+                        [
+                            [ 0.8, { "margin" : 0 } ],
+                            [
+                                5.3,
+                                {
+                                    "picture" : "Help.Dragging0"
+                                }
+                            ],
+                            [
+                                2.9,
+                                {
+                                    "picture" : "Help.Dragging1"
+                                }
+                            ],
+                            [
+                                2.9,
+                                {
+                                    "picture" : "Help.Dragging2"
+                                }
+                            ],
+                            [ 0.8, { "margin" : 0 } ]
+                        ]
                     ]
                 }
             ]

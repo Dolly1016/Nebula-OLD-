@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Nebula.Objects;
-using Nebula.Utilities;
-using UnityEngine;
-
-namespace Nebula.Roles.ImpostorRoles
+﻿namespace Nebula.Roles.ImpostorRoles
 {
     public class Painter : Role
     {

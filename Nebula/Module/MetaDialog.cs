@@ -1,11 +1,4 @@
-﻿using Nebula.Utilities;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-using System.Linq;
-using System.Collections;
-
-namespace Nebula.Module
+﻿namespace Nebula.Module
 {
     
     public class MetaDialog : MetaScreen

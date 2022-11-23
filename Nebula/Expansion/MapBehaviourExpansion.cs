@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
-using HarmonyLib;
-
-namespace Nebula
+﻿namespace Nebula
 {
     [HarmonyPatch]
     public static class MapBehaviourExpansion

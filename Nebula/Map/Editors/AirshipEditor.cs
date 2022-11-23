@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
-using HarmonyLib;
-using Nebula.Utilities;
-using System.Linq;
-
-namespace Nebula.Map.Editors
+﻿namespace Nebula.Map.Editors
 {
     public class AirshipEditor : MapEditor
     {

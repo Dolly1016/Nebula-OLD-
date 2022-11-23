@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
-
-namespace Nebula.Roles.MinigameRoles.Hunters
+﻿namespace Nebula.Roles.MinigameRoles.Hunters
 {
     public class Hunter : Role
     {

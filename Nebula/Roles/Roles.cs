@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Nebula.Roles
+﻿namespace Nebula.Roles
 {
     static public class Roles
     {

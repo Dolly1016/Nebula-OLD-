@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Nebula.Patches;
-using UnityEngine;
+﻿using Nebula.Patches;
 
 namespace Nebula.Roles.RitualRoles
 {

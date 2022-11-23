@@ -1,14 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HarmonyLib;
-using UnityEngine;
-using BepInEx.Configuration;
+﻿using BepInEx.Configuration;
 using System.Diagnostics;
-using System.Collections;
-using BepInEx.IL2CPP.Utils.Collections;
 
 namespace Nebula.Patches
 {

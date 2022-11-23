@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
-using HarmonyLib;
-using Hazel;
-using Nebula.Objects;
-using Nebula.Utilities;
+﻿using Hazel;
 
 namespace Nebula.Roles.CrewmateRoles
 {

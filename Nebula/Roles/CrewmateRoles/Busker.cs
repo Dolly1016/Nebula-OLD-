@@ -1,14 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Hazel;
-using UnityEngine;
-using Nebula.Objects;
-using Nebula.Utilities;
-
-namespace Nebula.Roles.CrewmateRoles
+﻿namespace Nebula.Roles.CrewmateRoles
 {
     public class Busker : Role
     {

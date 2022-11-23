@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
+﻿using System.Reflection;
 using Hazel;
-using HarmonyLib;
-using UnityEngine;
 using UnhollowerBaseLib;
-using Nebula.Utilities;
-using BepInEx.IL2CPP.Utils.Collections;
 
 namespace Nebula.Patches
 {

@@ -1,9 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-using Nebula.Utilities;
-
-namespace Nebula.Ghost
+﻿namespace Nebula.Ghost
 {
     static public class InvestigatorMeetingUI
     {

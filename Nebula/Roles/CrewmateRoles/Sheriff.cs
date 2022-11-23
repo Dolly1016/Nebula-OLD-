@@ -1,14 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
-using HarmonyLib;
-using Hazel;
-using Nebula.Objects;
-
-namespace Nebula.Roles.CrewmateRoles
+﻿namespace Nebula.Roles.CrewmateRoles
 {
     public class Sheriff : Role
     {

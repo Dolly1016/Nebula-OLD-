@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
-using System.Collections;
-using BepInEx.IL2CPP.Utils.Collections;
-
-namespace Nebula.Objects
+﻿namespace Nebula.Objects
 {
     public class PlayerList
     {

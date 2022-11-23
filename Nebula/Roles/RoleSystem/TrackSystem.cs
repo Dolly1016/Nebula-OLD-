@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
-
-namespace Nebula.Roles.RoleSystem
+﻿namespace Nebula.Roles.RoleSystem
 {
     static public class TrackSystem
     {

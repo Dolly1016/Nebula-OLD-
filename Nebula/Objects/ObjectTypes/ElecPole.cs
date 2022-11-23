@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Nebula.Objects.ObjectTypes
+﻿namespace Nebula.Objects.ObjectTypes
 {
     public class ElecPole : DelayedObject
     {

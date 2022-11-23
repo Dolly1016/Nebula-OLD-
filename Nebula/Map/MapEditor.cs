@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections;
-using UnityEngine;
-using System.Linq;
-
-namespace Nebula.Map
+﻿namespace Nebula.Map
 {
     public class MapEditor
     {

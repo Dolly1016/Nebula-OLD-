@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using HarmonyLib;
-using UnityEngine;
-using Il2CppSystem.Collections.Generic;
-
-namespace Nebula.Module
+﻿namespace Nebula.Module
 {
     [HarmonyPatch]
     public class PerksTabPacth

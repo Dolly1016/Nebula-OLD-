@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Nebula.Objects;
-using UnityEngine;
-using Nebula.Utilities;
-
-namespace Nebula.Roles.CrewmateRoles
+﻿namespace Nebula.Roles.CrewmateRoles
 {
     public class Necromancer : Template.Draggable
     {

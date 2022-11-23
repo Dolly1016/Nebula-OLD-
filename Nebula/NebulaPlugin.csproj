@@ -3,12 +3,11 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>disable</Nullable>
     <ApplicationIcon />
     <Win32Resource />
     <RootNamespace>Nebula</RootNamespace>
     <AssemblyName>Nebula</AssemblyName>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 

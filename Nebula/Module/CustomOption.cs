@@ -1,17 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using System.Reflection;
-using System.Threading.Tasks;
-using HarmonyLib;
-using UnityEngine;
 using Hazel;
 using BepInEx.Configuration;
-using Nebula.Language;
-using BepInEx.IL2CPP.Utils.Collections;
-using Nebula.Utilities;
 using UnhollowerRuntimeLib;
 
 namespace Nebula.Module

@@ -1,8 +1,4 @@
-﻿using System;
-using UnityEngine;
-using Nebula.Utilities;
-
-namespace Nebula.Ghost
+﻿namespace Nebula.Ghost
 {
     public enum NoiseDestination
     {

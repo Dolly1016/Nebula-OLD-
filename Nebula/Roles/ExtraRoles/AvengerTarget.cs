@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
-using Nebula.Objects;
-
-namespace Nebula.Roles.ExtraRoles
+﻿namespace Nebula.Roles.ExtraRoles
 {
     public class AvengerTarget : ExtraRole
     {

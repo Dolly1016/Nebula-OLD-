@@ -1,11 +1,4 @@
-﻿using HarmonyLib;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Reflection.Emit;
-using Nebula.Utilities;
-using UnityEngine;
-
-namespace Nebula.Patches
+﻿namespace Nebula.Patches
 {
     [HarmonyPatch]
     class ExileControllerPatch

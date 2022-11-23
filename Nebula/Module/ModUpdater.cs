@@ -1,23 +1,11 @@
-﻿using System;
-using BepInEx;
-using BepInEx.Configuration;
-using BepInEx.IL2CPP;
-using Il2CppSystem;
-using Hazel;
-using HarmonyLib;
-using UnityEngine;
+﻿using BepInEx.Configuration;
 using UnityEngine.UI;
-using System.IO;
 using System.Reflection;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Twitch;
 using System.Text.RegularExpressions;
-using System.Collections.Generic;
 
 namespace Nebula.Module
 {

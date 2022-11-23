@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
-
-namespace Nebula.Roles.Template
+﻿namespace Nebula.Roles.Template
 {
     public class StandardExtraRole : ExtraRole
     {

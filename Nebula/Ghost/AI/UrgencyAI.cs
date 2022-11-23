@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Nebula.Ghost.AI
+﻿namespace Nebula.Ghost.AI
 {
     public class AI_UrgencyCommsForDeadBodies : GhostWeightedAI
     {

@@ -1,11 +1,4 @@
-﻿using HarmonyLib;
-using Hazel;
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-using Nebula.Utilities;
-
-namespace Nebula.Patches
+﻿namespace Nebula.Patches
 {
     [Harmony]
     public class AdminPatch

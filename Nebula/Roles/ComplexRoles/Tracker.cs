@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
-using Nebula.Utilities;
-using Nebula.Objects;
+﻿using Nebula.Objects;
 using Hazel;
 
 namespace Nebula.Roles.ComplexRoles

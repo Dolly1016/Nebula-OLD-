@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Nebula.Utilities;
-
-namespace Nebula.Roles.RoleSystem
+﻿namespace Nebula.Roles.RoleSystem
 {
     static public class HackSystem
     {

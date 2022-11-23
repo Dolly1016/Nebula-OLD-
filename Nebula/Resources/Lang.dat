@@ -1147,7 +1147,7 @@
 "help.contents.tasks" : "Tasks"
 "help.contents.maps" : "Maps"
 "help.contents.general.button" : "Button Operation"
-"help.contents.general.button.detail" : "NoS adds some buttons.You can interact a button by mouse click or key operation.\nKill buttons that invoke the unique action can be fired by click near your own player. "
+"help.contents.general.button.detail" : "NoS adds some buttons.You can interact a button by mouse click or key operation."
 "help.contents.general.button.killButtonDetail" : "Kill buttons of Sniper and Raider invoke the unique action can be fired by click near your own player. "
 "help.contents.roles.deadBodiesDragging" : "Dead Bodies Dragging"
 "help.contents.roles.deadBodiesDragging.detail" : "Players have some of the roles can drag and drop dead bodies.\nThere are the relevant roles.\n\n<color=#6e33a3ff><b>Necromancer</b></color> (<color=#8cffffff>Crewmate</color>)\n  Necromancer can make the dead body revive in the designated room.\n<color=#f51818ff><b>Reaper</b></color> (<color=#f51818ff>Impostor</color>)\n  Reaper can move from a vent to all vents.\n<color=#fd54a7ff><b>Jester</b></color> (<color=#ffaa00ff>Neutral</color>)\n  Jester use the abilities to win by exile."

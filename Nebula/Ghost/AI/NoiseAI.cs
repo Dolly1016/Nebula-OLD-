@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Nebula.Ghost.AI
+﻿namespace Nebula.Ghost.AI
 {
     public class AI_Noise : GhostWeightedAI
     {

@@ -1,8 +1,4 @@
-﻿using System;
-using UnityEngine;
-using HarmonyLib;
-
-namespace Nebula.Roles.MetaRoles
+﻿namespace Nebula.Roles.MetaRoles
 {
     public class MetaRole : ExtraRole
     {

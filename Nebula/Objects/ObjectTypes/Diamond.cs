@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
-
-namespace Nebula.Objects.ObjectTypes
+﻿namespace Nebula.Objects.ObjectTypes
 {
     public class Diamond : TypeWithImage
     {

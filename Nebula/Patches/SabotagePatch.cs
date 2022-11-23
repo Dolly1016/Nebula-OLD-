@@ -1,12 +1,4 @@
-﻿using HarmonyLib;
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using UnityEngine;
-using System.Collections;
-using Nebula.Utilities;
-
-namespace Nebula.Patches
+﻿namespace Nebula.Patches
 {
     //CanUseDoorDespiteSabotageOption
     [HarmonyPatch(typeof(InfectedOverlay), nameof(InfectedOverlay.CanUseDoors),MethodType.Getter)]

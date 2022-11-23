@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Nebula.Events.Variation
+﻿namespace Nebula.Events.Variation
 {
     public class EMI : GlobalEvent
     {

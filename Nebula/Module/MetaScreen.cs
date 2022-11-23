@@ -1,11 +1,4 @@
-﻿using Nebula.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
-
-namespace Nebula.Module
+﻿namespace Nebula.Module
 {
     public class MetaScreenContent
     {

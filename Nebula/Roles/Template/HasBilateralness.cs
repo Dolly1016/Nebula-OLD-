@@ -1,16 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
-using Nebula.Patches;
-using Nebula.Objects;
-using HarmonyLib;
-using Hazel;
-using Nebula.Game;
-
-namespace Nebula.Roles.Template
+﻿namespace Nebula.Roles.Template
 {
     public class HasBilateralness : Role
     {

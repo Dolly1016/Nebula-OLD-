@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
-using UnityEngine;
-
-namespace Nebula.Objects
+﻿namespace Nebula.Objects
 {
     public class DynamicCollider
     {

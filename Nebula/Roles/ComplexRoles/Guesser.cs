@@ -1,9 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-using Nebula.Utilities;
-
-namespace Nebula.Roles.ComplexRoles
+﻿namespace Nebula.Roles.ComplexRoles
 {
     public class FGuesser : Template.HasBilateralness
     {

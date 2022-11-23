@@ -1,14 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HarmonyLib;
-using UnityEngine;
-using Nebula.Patches;
-using Nebula.Objects;
+﻿using Nebula.Patches;
 using Nebula.Roles.CrewmateRoles;
-using Nebula.Utilities;
 
 namespace Nebula.Roles
 {

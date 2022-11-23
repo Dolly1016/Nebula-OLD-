@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
-using Nebula.Objects;
-using Nebula.Module;
-using Nebula.Utilities;
+﻿using Nebula.Module;
 
 namespace Nebula.Roles.CrewmateRoles
 {

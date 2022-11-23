@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections;
-using System.Text;
-using Nebula.Patches;
-using BepInEx.IL2CPP.Utils.Collections;
-using UnityEngine;
+﻿using Nebula.Patches;
 
 namespace Nebula.Roles.RitualRoles
 {

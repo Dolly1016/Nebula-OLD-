@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Nebula.Roles.RoleAI
+﻿namespace Nebula.Roles.RoleAI
 {
     public class EstimationAI
     {

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
-using BepInEx.Configuration;
-using Nebula.Utilities;
+﻿using BepInEx.Configuration;
 
 namespace Nebula.Module
 {

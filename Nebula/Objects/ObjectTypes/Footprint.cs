@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
-using BepInEx.IL2CPP.Utils.Collections;
-using System.Collections;
-
-namespace Nebula.Objects.ObjectTypes
+﻿namespace Nebula.Objects.ObjectTypes
 {
     public class Footprint : TypeWithImage
     {

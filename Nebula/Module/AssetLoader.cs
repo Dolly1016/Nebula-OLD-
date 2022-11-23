@@ -1,7 +1,4 @@
-﻿using System.IO;
-using System.Reflection;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using System.Reflection;
 using Il2CppType = UnhollowerRuntimeLib.Il2CppType;
 
 namespace Nebula.Module
@@ -52,7 +49,7 @@ namespace Nebula.Module
         {
             return assetBundle.LoadAsset(name, Il2CppType.Of<T>())?.Cast<T>();
         }
-        public static T DontUnload<T>(this T obj) where T : Object
+        public static T DontUnload<T>(this T obj) where T : UnityEngine.Object
         {
             obj.hideFlags |= HideFlags.DontUnloadUnusedAsset;
 

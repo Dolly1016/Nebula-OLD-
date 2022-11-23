@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HarmonyLib;
-using Nebula.Utilities;
-
-namespace Nebula.Patches
+﻿namespace Nebula.Patches
 {
 
     [HarmonyPatch(typeof(KillButton), nameof(KillButton.DoClick))]

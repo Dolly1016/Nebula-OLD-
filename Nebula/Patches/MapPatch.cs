@@ -1,8 +1,4 @@
-﻿using HarmonyLib;
-using UnityEngine;
-using System.Collections.Generic;
-
-namespace Nebula.Patches
+﻿namespace Nebula.Patches
 {
     [HarmonyPatch]
     class MapBehaviorPatch

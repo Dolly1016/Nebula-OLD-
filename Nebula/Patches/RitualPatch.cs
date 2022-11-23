@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using BepInEx.IL2CPP.Utils.Collections;
-using HarmonyLib;
-using UnityEngine;
-
-namespace Nebula.Patches
+﻿namespace Nebula.Patches
 {
     [HarmonyPatch]
     public class RitualPatch

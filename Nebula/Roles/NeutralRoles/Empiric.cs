@@ -1,17 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
-using Nebula.Patches;
-using Nebula.Objects;
-using HarmonyLib;
-using Hazel;
-using Nebula.Game;
-using Nebula.Utilities;
-
-namespace Nebula.Roles.NeutralRoles
+﻿namespace Nebula.Roles.NeutralRoles
 {
     public class Empiric : Template.HasAlignedHologram , Template.HasWinTrigger
     {

@@ -1,14 +1,4 @@
-﻿using HarmonyLib;
-using System.Collections;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Reflection.Emit;
-using System.Linq;
-using UnityEngine;
-using BepInEx.IL2CPP.Utils.Collections;
-using Nebula.Utilities;
-
-namespace Nebula.Patches
+﻿namespace Nebula.Patches
 {
 	public static class BeginHubHelper
     {

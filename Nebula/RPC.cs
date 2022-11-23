@@ -1,13 +1,5 @@
-﻿using HarmonyLib;
-using Hazel;
+﻿using Hazel;
 using Nebula.Module;
-using System;
-using System.Collections.Generic;
-using System.Collections;
-using System.Linq;
-using UnityEngine;
-using Nebula.Utilities;
-using BepInEx.IL2CPP.Utils.Collections;
 
 namespace Nebula
 {

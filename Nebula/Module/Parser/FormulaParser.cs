@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Nebula.Module.Parser
+﻿namespace Nebula.Module.Parser
 {
     public class FormulaResult
     {

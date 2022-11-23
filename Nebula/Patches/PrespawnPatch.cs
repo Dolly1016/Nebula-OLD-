@@ -1,14 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HarmonyLib;
-using UnityEngine;
-using TMPro;
+﻿using TMPro;
 using PowerTools;
-using Nebula.Utilities;
-using BepInEx.IL2CPP.Utils.Collections;
 
 namespace Nebula.Patches
 {

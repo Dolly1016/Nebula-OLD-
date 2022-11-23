@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using HarmonyLib;
-using UnityEngine;
-using System.Linq;
-
-namespace Nebula.Patches
+﻿namespace Nebula.Patches
 {
 
     [HarmonyPatch(typeof(AspectPosition), nameof(AspectPosition.OnEnable))]

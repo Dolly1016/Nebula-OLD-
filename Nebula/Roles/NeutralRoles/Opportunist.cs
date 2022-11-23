@@ -1,16 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
-using HarmonyLib;
-using Hazel;
-using Nebula.Objects;
-using Nebula.Patches;
-using System.Collections;
-using Nebula.Utilities;
-using BepInEx.IL2CPP.Utils.Collections;
+﻿using Nebula.Patches;
 
 namespace Nebula.Roles.NeutralRoles
 {
