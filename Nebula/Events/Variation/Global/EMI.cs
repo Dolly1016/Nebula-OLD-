@@ -1,9 +1,9 @@
-﻿namespace Nebula.Events.Variation
+﻿namespace Nebula.Events.Variation;
+
+public class EMI : GlobalEvent
 {
-    public class EMI : GlobalEvent
+    public EMI(float duration, ulong option) : base(GlobalEvent.Type.EMI, duration, option)
     {
-        public EMI(float duration, ulong option) : base(GlobalEvent.Type.EMI, duration, option)
-        {
-        }
     }
 }
+

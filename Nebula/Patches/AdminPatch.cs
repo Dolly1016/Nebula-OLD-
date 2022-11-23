@@ -1,321 +1,321 @@
-﻿namespace Nebula.Patches
+﻿namespace Nebula.Patches;
+
+[Harmony]
+public class AdminPatch
 {
-    [Harmony]
-    public class AdminPatch
+    static float adminTimer = 0f;
+    static TMPro.TextMeshPro OutOfTime;
+    static TMPro.TextMeshPro TimeRemaining;
+    static bool clearedIcons = false;
+
+    public enum AdminMode
     {
-        static float adminTimer = 0f;
-        static TMPro.TextMeshPro OutOfTime;
-        static TMPro.TextMeshPro TimeRemaining;
-        static bool clearedIcons = false;
+        Default,
+        ImpostorsAndDeadBodies,
+        PlayerColors
+    }
 
-        public enum AdminMode
+    //時間制限が適用されるアドミンであるかどうか
+    public static bool isStandardAdmin = false;
+    //コミュ制限が適用されるアドミンであるかどうか
+    public static bool isAffectedByCommAdmin = false;
+    //アイコンの色表示設定
+    public static AdminMode adminMode = AdminMode.Default;
+    //背景色を変更するべきかどうか
+    public static bool shouldChangeColor = true;
+
+    public static void ResetData()
+    {
+        adminTimer = 0f;
+        if (TimeRemaining != null)
         {
-            Default,
-            ImpostorsAndDeadBodies,
-            PlayerColors
+            UnityEngine.Object.Destroy(TimeRemaining);
+            TimeRemaining = null;
         }
 
-        //時間制限が適用されるアドミンであるかどうか
-        public static bool isStandardAdmin = false;
-        //コミュ制限が適用されるアドミンであるかどうか
-        public static bool isAffectedByCommAdmin = false;
-        //アイコンの色表示設定
-        public static AdminMode adminMode = AdminMode.Default;
-        //背景色を変更するべきかどうか
-        public static bool shouldChangeColor = true;
+        if (OutOfTime != null)
+        {
+            UnityEngine.Object.Destroy(OutOfTime);
+            OutOfTime = null;
+        }
+    }
 
-        public static void ResetData()
+    static void UseAdminTime()
+    {
+        if (CustomOptionHolder.DevicesOption.getBool() && CustomOptionHolder.AdminLimitOption.getBool() && !PlayerControl.LocalPlayer.Data.IsDead)
+        {
+            RPCEventInvoker.UpdateAdminRestrictTimer(adminTimer);
+        }
+        adminTimer = 0f;
+    }
+
+    [HarmonyPatch(typeof(MapConsole), nameof(MapConsole.CanUse))]
+    public static class MapConsoleCanUsePatch
+    {
+        public static bool Prefix(ref float __result, MapConsole __instance, [HarmonyArgument(0)] GameData.PlayerInfo pc, [HarmonyArgument(1)] out bool canUse, [HarmonyArgument(2)] out bool couldUse)
+        {
+            // temp fix for the admin bug on airship
+            if (PlayerControl.GameOptions.MapId == 4)
+                __instance.useIcon = ImageNames.PolusAdminButton;
+
+            canUse = couldUse = false;
+            return true;
+        }
+    }
+
+    [HarmonyPatch(typeof(MapConsole), nameof(MapConsole.Use))]
+    public static class MapConsoleUsePatch
+    {
+        public static void Postfix(MapConsole __instance)
+        {
+            isStandardAdmin = true;
+            isAffectedByCommAdmin = true;
+            adminMode = AdminMode.Default;
+            shouldChangeColor = true;
+        }
+    }
+
+    static Dictionary<CounterArea, int> impostorsMap = new Dictionary<CounterArea, int>();
+    static Dictionary<CounterArea, int> deadBodiesMap = new Dictionary<CounterArea, int>();
+
+    [HarmonyPatch(typeof(MapCountOverlay), nameof(MapCountOverlay.OnEnable))]
+    public static class MapCountOverlayOnEnablePatch
+    {
+        static bool Prefix(MapCountOverlay __instance)
         {
             adminTimer = 0f;
-            if (TimeRemaining != null)
+            impostorsMap.Clear();
+            deadBodiesMap.Clear();
+
+            if (Roles.Roles.Jailer.IsJailerCountOverlay(__instance))
             {
-                UnityEngine.Object.Destroy(TimeRemaining);
-                TimeRemaining = null;
+                __instance.timer = 1f;
+                return false;
             }
 
-            if (OutOfTime != null)
-            {
-                UnityEngine.Object.Destroy(OutOfTime);
-                OutOfTime = null;
-            }
+            return true;
         }
+    }
 
-        static void UseAdminTime()
+
+    [HarmonyPatch(typeof(MapCountOverlay), nameof(MapCountOverlay.OnDisable))]
+    public static class MapCountOverlayOnDisablePatch
+    {
+        static void Prefix(MapCountOverlay __instance)
         {
-            if (CustomOptionHolder.DevicesOption.getBool() && CustomOptionHolder.AdminLimitOption.getBool() && !PlayerControl.LocalPlayer.Data.IsDead)
-            {
-                RPCEventInvoker.UpdateAdminRestrictTimer(adminTimer);
-            }
-            adminTimer = 0f;
+            UseAdminTime();
         }
+    }
 
-        [HarmonyPatch(typeof(MapConsole), nameof(MapConsole.CanUse))]
-        public static class MapConsoleCanUsePatch
+    [HarmonyPatch(typeof(MapCountOverlay), nameof(MapCountOverlay.Update))]
+    public static class MapCountOverlayUpdatePatch
+    {
+        static void updateImpostors(CounterArea counterArea, int impostors, int deadBodies)
         {
-            public static bool Prefix(ref float __result, MapConsole __instance, [HarmonyArgument(0)] GameData.PlayerInfo pc, [HarmonyArgument(1)] out bool canUse, [HarmonyArgument(2)] out bool couldUse)
+            foreach (var icon in counterArea.myIcons.GetFastEnumerator())
             {
-                // temp fix for the admin bug on airship
-                if (PlayerControl.GameOptions.MapId == 4)
-                    __instance.useIcon = ImageNames.PolusAdminButton;
-
-                canUse = couldUse = false;
-                return true;
-            }
-        }
-
-        [HarmonyPatch(typeof(MapConsole), nameof(MapConsole.Use))]
-        public static class MapConsoleUsePatch
-        {
-            public static void Postfix(MapConsole __instance)
-            {
-                isStandardAdmin = true;
-                isAffectedByCommAdmin = true;
-                adminMode = AdminMode.Default;
-                shouldChangeColor = true;
-            }
-        }
-
-        static Dictionary<CounterArea, int> impostorsMap = new Dictionary<CounterArea, int>();
-        static Dictionary<CounterArea, int> deadBodiesMap = new Dictionary<CounterArea, int>();
-
-        [HarmonyPatch(typeof(MapCountOverlay), nameof(MapCountOverlay.OnEnable))]
-        public static class MapCountOverlayOnEnablePatch
-        {
-            static bool Prefix(MapCountOverlay __instance)
-            {
-                adminTimer = 0f;
-                impostorsMap.Clear();
-                deadBodiesMap.Clear();
-
-                if (Roles.Roles.Jailer.IsJailerCountOverlay(__instance))
+                if (impostors > 0)
                 {
-                    __instance.timer = 1f;
-                    return false;
+                    PlayerMaterial.SetColors(Palette.ImpostorRed, icon.GetComponent<SpriteRenderer>());
+                    impostors--;
                 }
-
-                return true;
-            }
-        }
-
-
-        [HarmonyPatch(typeof(MapCountOverlay), nameof(MapCountOverlay.OnDisable))]
-        public static class MapCountOverlayOnDisablePatch
-        {
-            static void Prefix(MapCountOverlay __instance)
-            {
-                UseAdminTime();
-            }
-        }
-
-        [HarmonyPatch(typeof(MapCountOverlay), nameof(MapCountOverlay.Update))]
-        public static class MapCountOverlayUpdatePatch
-        {
-            static void updateImpostors(CounterArea counterArea,int impostors,int deadBodies)
-            {
-                foreach (var icon in counterArea.myIcons.GetFastEnumerator())
+                else if (deadBodies > 0)
                 {
-                    if (impostors > 0)
+                    PlayerMaterial.SetColors(Palette.DisabledGrey, icon.GetComponent<SpriteRenderer>());
+                    deadBodies--;
+                }
+                else
+                {
+                    PlayerMaterial.SetColors(new Color(224f / 255f, 255f / 255f, 0f / 255f), icon.GetComponent<SpriteRenderer>());
+                }
+            }
+        }
+
+        static void update(MapCountOverlay __instance)
+        {
+            __instance.timer += Time.deltaTime;
+            if (__instance.timer < 0.1f) return;
+
+
+            __instance.timer = 0f;
+            if (isAffectedByCommAdmin && !__instance.isSab && PlayerTask.PlayerHasTaskOfType<IHudOverrideTask>(PlayerControl.LocalPlayer))
+            {
+                __instance.isSab = true;
+                if (shouldChangeColor) __instance.BackgroundColor.SetColor(Palette.DisabledGrey);
+                __instance.SabotageText.gameObject.SetActive(shouldChangeColor);
+                return;
+            }
+            if (!isAffectedByCommAdmin || (__instance.isSab && !PlayerTask.PlayerHasTaskOfType<IHudOverrideTask>(PlayerControl.LocalPlayer)))
+            {
+                __instance.isSab = false;
+                if (shouldChangeColor) __instance.BackgroundColor.SetColor(Color.green);
+                __instance.SabotageText.gameObject.SetActive(false);
+            }
+
+            //重複防止
+            HashSet<byte> detectedPlayers = new HashSet<byte>();
+
+
+            for (int i = 0; i < __instance.CountAreas.Length; i++)
+            {
+                CounterArea counterArea = __instance.CountAreas[i];
+                int impostors = 0;
+                int deadBodies = 0;
+
+                if (!PlayerTask.PlayerHasTaskOfType<IHudOverrideTask>(PlayerControl.LocalPlayer))
+                {
+                    PlainShipRoom plainShipRoom;
+                    try
                     {
-                        PlayerMaterial.SetColors(Palette.ImpostorRed, icon.GetComponent<SpriteRenderer>());
-                        impostors--;
+                        plainShipRoom = ShipStatus.Instance.FastRooms[counterArea.RoomType];
                     }
-                    else if (deadBodies > 0)
+                    catch
                     {
-                        PlayerMaterial.SetColors(Palette.DisabledGrey, icon.GetComponent<SpriteRenderer>());
-                        deadBodies--;
+                        counterArea.UpdateCount(0);
+                        continue;
                     }
-                    else
+
+                    if (plainShipRoom != null && plainShipRoom.roomArea)
                     {
-                        PlayerMaterial.SetColors(new Color(224f / 255f, 255f / 255f, 0f / 255f), icon.GetComponent<SpriteRenderer>());
-                    }
-                }
-            }
-
-            static void update(MapCountOverlay __instance)
-            {
-                __instance.timer += Time.deltaTime;
-                if (__instance.timer < 0.1f) return;
-
-
-                __instance.timer = 0f;
-                if (isAffectedByCommAdmin && !__instance.isSab && PlayerTask.PlayerHasTaskOfType<IHudOverrideTask>(PlayerControl.LocalPlayer))
-                {
-                    __instance.isSab = true;
-                    if(shouldChangeColor)__instance.BackgroundColor.SetColor(Palette.DisabledGrey);
-                    __instance.SabotageText.gameObject.SetActive(shouldChangeColor);
-                    return;
-                }
-                if (!isAffectedByCommAdmin || (__instance.isSab && !PlayerTask.PlayerHasTaskOfType<IHudOverrideTask>(PlayerControl.LocalPlayer)))
-                {
-                    __instance.isSab = false;
-                    if (shouldChangeColor) __instance.BackgroundColor.SetColor(Color.green);
-                    __instance.SabotageText.gameObject.SetActive(false);
-                }
-
-                //重複防止
-                HashSet<byte> detectedPlayers = new HashSet<byte>();
-
-
-                for (int i = 0; i < __instance.CountAreas.Length; i++)
-                {
-                    CounterArea counterArea = __instance.CountAreas[i];
-                    int impostors = 0;
-                    int deadBodies = 0;
-
-                    if (!PlayerTask.PlayerHasTaskOfType<IHudOverrideTask>(PlayerControl.LocalPlayer))
-                    {
-                        PlainShipRoom plainShipRoom;
-                        try
+                        if (!MeetingHud.Instance)
                         {
-                            plainShipRoom = ShipStatus.Instance.FastRooms[counterArea.RoomType];
-                        }
-                        catch {
-                            counterArea.UpdateCount(0);
-                            continue;
-                        }
+                            //通常時のアドミン
 
-                        if (plainShipRoom!=null && plainShipRoom.roomArea)
-                        {
-                            if (!MeetingHud.Instance)
+                            int num = plainShipRoom.roomArea.OverlapCollider(__instance.filter, __instance.buffer);
+                            int num2 = num;
+                            for (int j = 0; j < num; j++)
                             {
-                                //通常時のアドミン
-
-                                int num = plainShipRoom.roomArea.OverlapCollider(__instance.filter, __instance.buffer);
-                                int num2 = num;
-                                for (int j = 0; j < num; j++)
+                                Collider2D collider2D = __instance.buffer[j];
+                                if (!(collider2D.tag == "DeadBody"))
                                 {
-                                    Collider2D collider2D = __instance.buffer[j];
-                                    if (!(collider2D.tag == "DeadBody"))
+                                    PlayerControl component = collider2D.GetComponent<PlayerControl>();
+                                    if (!component || component.Data == null || component.Data.Disconnected || component.Data.IsDead || detectedPlayers.Contains(component.PlayerId))
                                     {
-                                        PlayerControl component = collider2D.GetComponent<PlayerControl>();
-                                        if (!component || component.Data == null || component.Data.Disconnected || component.Data.IsDead || detectedPlayers.Contains(component.PlayerId))
-                                        {
-                                            num2--;
-                                        }
-                                        else
-                                        {
-                                            if (adminMode == AdminMode.ImpostorsAndDeadBodies && (component.Data.Role.IsImpostor || component.GetModData().role.DeceiveImpostorInNameDisplay))
-                                                impostors++;
-                                            detectedPlayers.Add(component.PlayerId);
-                                        }
+                                        num2--;
                                     }
                                     else
                                     {
-                                        DeadBody component = collider2D.GetComponent<DeadBody>();
-                                        if (detectedPlayers.Contains(component.ParentId))
-                                        {
-                                            num2--;
-                                        }
-                                        else
-                                        {
-                                            if (adminMode == AdminMode.ImpostorsAndDeadBodies)
-                                            {
-                                                deadBodies++;
-                                            }
-
-                                            detectedPlayers.Add(component.ParentId);
-                                        }
+                                        if (adminMode == AdminMode.ImpostorsAndDeadBodies && (component.Data.Role.IsImpostor || component.GetModData().role.DeceiveImpostorInNameDisplay))
+                                            impostors++;
+                                        detectedPlayers.Add(component.PlayerId);
                                     }
                                 }
-
-                                counterArea.UpdateCount(num2);
-                            }
-                            else
-                            {
-                                //会議中のアドミン
-
-                                int num = 0;
-                                foreach(var data in Game.GameData.data.AllPlayers)
+                                else
                                 {
-                                    if (data.Value.preMeetingPosition == null || detectedPlayers.Contains(data.Value.id)) continue;
+                                    DeadBody component = collider2D.GetComponent<DeadBody>();
+                                    if (detectedPlayers.Contains(component.ParentId))
+                                    {
+                                        num2--;
+                                    }
+                                    else
+                                    {
+                                        if (adminMode == AdminMode.ImpostorsAndDeadBodies)
+                                        {
+                                            deadBodies++;
+                                        }
 
-                                    if (!plainShipRoom.roomArea.OverlapPoint(data.Value.preMeetingPosition.Value)) continue;
-
-                                    num++;
-                                    if (data.Value.role.category == Roles.RoleCategory.Impostor || data.Value.role.DeceiveImpostorInNameDisplay) impostors++;
+                                        detectedPlayers.Add(component.ParentId);
+                                    }
                                 }
-
-                                counterArea.UpdateCount(num);
-                                counterArea.UpdateCount(num);
                             }
 
-                            int lastImpostors = 0;
-                            int lastDeadBodies = 0;
-                            if (adminMode != AdminMode.PlayerColors && (!impostorsMap.TryGetValue(counterArea, out lastImpostors) || lastImpostors != impostors || !deadBodiesMap.TryGetValue(counterArea, out lastDeadBodies) || lastDeadBodies != deadBodies))
+                            counterArea.UpdateCount(num2);
+                        }
+                        else
+                        {
+                            //会議中のアドミン
+
+                            int num = 0;
+                            foreach (var data in Game.GameData.data.AllPlayers)
                             {
-                                impostorsMap[counterArea] = impostors;
-                                deadBodiesMap[counterArea] = deadBodies;
-                                //インポスター人数変更
-                                updateImpostors(counterArea, impostors, deadBodies);
+                                if (data.Value.preMeetingPosition == null || detectedPlayers.Contains(data.Value.id)) continue;
+
+                                if (!plainShipRoom.roomArea.OverlapPoint(data.Value.preMeetingPosition.Value)) continue;
+
+                                num++;
+                                if (data.Value.role.category == Roles.RoleCategory.Impostor || data.Value.role.DeceiveImpostorInNameDisplay) impostors++;
                             }
+
+                            counterArea.UpdateCount(num);
+                            counterArea.UpdateCount(num);
+                        }
+
+                        int lastImpostors = 0;
+                        int lastDeadBodies = 0;
+                        if (adminMode != AdminMode.PlayerColors && (!impostorsMap.TryGetValue(counterArea, out lastImpostors) || lastImpostors != impostors || !deadBodiesMap.TryGetValue(counterArea, out lastDeadBodies) || lastDeadBodies != deadBodies))
+                        {
+                            impostorsMap[counterArea] = impostors;
+                            deadBodiesMap[counterArea] = deadBodies;
+                            //インポスター人数変更
+                            updateImpostors(counterArea, impostors, deadBodies);
                         }
                     }
-                    else
-                    {
-                        counterArea.UpdateCount(0);
-                    }
                 }
-            }
-
-            static bool Prefix(MapCountOverlay __instance)
-            {
-                if (CustomOptionHolder.DevicesOption.getBool() && CustomOptionHolder.AdminLimitOption.getBool())
+                else
                 {
-                    if (isStandardAdmin)
-                    {
-                        adminTimer += Time.deltaTime;
-                        if (adminTimer > 0.1f)
-                            UseAdminTime();
-
-
-
-                        if (OutOfTime == null)
-                        {
-                            OutOfTime = UnityEngine.Object.Instantiate(__instance.SabotageText, __instance.SabotageText.transform.parent);
-                            OutOfTime.text = Language.Language.GetString("game.device.restrictOutOfTime");
-                        }
-
-                        if (TimeRemaining == null)
-                        {
-                            TimeRemaining = UnityEngine.Object.Instantiate(HudManager.Instance.TaskText, __instance.transform);
-                            TimeRemaining.alignment = TMPro.TextAlignmentOptions.BottomRight;
-                            TimeRemaining.transform.position = Vector3.zero;
-                            TimeRemaining.transform.localPosition = new Vector3(3.25f, 5.25f);
-                            TimeRemaining.transform.localScale *= 2f;
-                            TimeRemaining.color = Palette.White;
-                        }
-
-                        if (Game.GameData.data.UtilityTimer.AdminTimer <= 0f)
-                        {
-                            __instance.BackgroundColor.SetColor(Palette.DisabledGrey);
-                            OutOfTime.gameObject.SetActive(true);
-                            TimeRemaining.gameObject.SetActive(false);
-                            if (clearedIcons == false)
-                            {
-                                foreach (CounterArea ca in __instance.CountAreas) ca.UpdateCount(0);
-                                clearedIcons = true;
-                            }
-                            return false;
-                        }
-
-                        clearedIcons = false;
-                        OutOfTime.gameObject.SetActive(false);
-                        string timeString = TimeSpan.FromSeconds(Game.GameData.data.UtilityTimer.AdminTimer).ToString(@"mm\:ss\.f");
-                        TimeRemaining.text = Language.Language.GetString("game.device.timeRemaining").Replace("%TIMER%", timeString);
-                        TimeRemaining.gameObject.SetActive(true);
-                    }
-                    else
-                    {
-                        if (TimeRemaining != null)
-                            TimeRemaining.gameObject.SetActive(false);
-                        if (OutOfTime != null)
-                            OutOfTime.gameObject.SetActive(false);
-                    }
+                    counterArea.UpdateCount(0);
                 }
-
-                update(__instance);
-                return false;
             }
+        }
+
+        static bool Prefix(MapCountOverlay __instance)
+        {
+            if (CustomOptionHolder.DevicesOption.getBool() && CustomOptionHolder.AdminLimitOption.getBool())
+            {
+                if (isStandardAdmin)
+                {
+                    adminTimer += Time.deltaTime;
+                    if (adminTimer > 0.1f)
+                        UseAdminTime();
+
+
+
+                    if (OutOfTime == null)
+                    {
+                        OutOfTime = UnityEngine.Object.Instantiate(__instance.SabotageText, __instance.SabotageText.transform.parent);
+                        OutOfTime.text = Language.Language.GetString("game.device.restrictOutOfTime");
+                    }
+
+                    if (TimeRemaining == null)
+                    {
+                        TimeRemaining = UnityEngine.Object.Instantiate(HudManager.Instance.TaskText, __instance.transform);
+                        TimeRemaining.alignment = TMPro.TextAlignmentOptions.BottomRight;
+                        TimeRemaining.transform.position = Vector3.zero;
+                        TimeRemaining.transform.localPosition = new Vector3(3.25f, 5.25f);
+                        TimeRemaining.transform.localScale *= 2f;
+                        TimeRemaining.color = Palette.White;
+                    }
+
+                    if (Game.GameData.data.UtilityTimer.AdminTimer <= 0f)
+                    {
+                        __instance.BackgroundColor.SetColor(Palette.DisabledGrey);
+                        OutOfTime.gameObject.SetActive(true);
+                        TimeRemaining.gameObject.SetActive(false);
+                        if (clearedIcons == false)
+                        {
+                            foreach (CounterArea ca in __instance.CountAreas) ca.UpdateCount(0);
+                            clearedIcons = true;
+                        }
+                        return false;
+                    }
+
+                    clearedIcons = false;
+                    OutOfTime.gameObject.SetActive(false);
+                    string timeString = TimeSpan.FromSeconds(Game.GameData.data.UtilityTimer.AdminTimer).ToString(@"mm\:ss\.f");
+                    TimeRemaining.text = Language.Language.GetString("game.device.timeRemaining").Replace("%TIMER%", timeString);
+                    TimeRemaining.gameObject.SetActive(true);
+                }
+                else
+                {
+                    if (TimeRemaining != null)
+                        TimeRemaining.gameObject.SetActive(false);
+                    if (OutOfTime != null)
+                        OutOfTime.gameObject.SetActive(false);
+                }
+            }
+
+            update(__instance);
+            return false;
         }
     }
 }

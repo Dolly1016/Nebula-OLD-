@@ -1,153 +1,154 @@
-﻿namespace Nebula.Roles.ImpostorRoles
+﻿namespace Nebula.Roles.ImpostorRoles;
+
+public class Morphing : Role
 {
-    public class Morphing : Role
+    public class MorphEvent : Events.LocalEvent
     {
-        public class MorphEvent : Events.LocalEvent
+        public byte PlayerId { get; private set; }
+        private Game.PlayerData.PlayerOutfitData outfit;
+
+        public override void OnTerminal()
         {
-            public byte PlayerId { get; private set; }
-            private Game.PlayerData.PlayerOutfitData outfit;
-
-            public override void OnTerminal()
-            {
-                Helpers.GetModData(PlayerId).RemoveOutfit(outfit);
-            }
-
-            public override void OnActivate()
-            {
-                Helpers.GetModData(PlayerId).AddOutfit(outfit);
-            }
-
-            public MorphEvent(byte playerId, Game.PlayerData.PlayerOutfitData outfit) :base(Roles.Morphing.morphDurationOption.getFloat())
-            {
-                PlayerId = playerId;
-                this.outfit = outfit;
-                SpreadOverMeeting = false;
-            }
-
+            Helpers.GetModData(PlayerId).RemoveOutfit(outfit);
         }
 
-        private CustomButton morphButton;
-
-        private Module.CustomOption morphCoolDownOption;
-        private Module.CustomOption morphDurationOption;
-
-        private PlayerControl? morphTarget;
-        private Game.PlayerData.PlayerOutfitData morphOutfit;
-        private Objects.Arrow? arrow;
-
-        private SpriteLoader sampleButtonSprite = new SpriteLoader("Nebula.Resources.SampleButton.png", 115f);
-        private SpriteLoader morphButtonSprite = new SpriteLoader("Nebula.Resources.MorphButton.png", 115f);
-
-        public override HelpSprite[] helpSprite => new HelpSprite[]
+        public override void OnActivate()
         {
+            Helpers.GetModData(PlayerId).AddOutfit(outfit);
+        }
+
+        public MorphEvent(byte playerId, Game.PlayerData.PlayerOutfitData outfit) : base(Roles.Morphing.morphDurationOption.getFloat())
+        {
+            PlayerId = playerId;
+            this.outfit = outfit;
+            SpreadOverMeeting = false;
+        }
+
+    }
+
+    private CustomButton morphButton;
+
+    private Module.CustomOption morphCoolDownOption;
+    private Module.CustomOption morphDurationOption;
+
+    private PlayerControl? morphTarget;
+    private Game.PlayerData.PlayerOutfitData morphOutfit;
+    private Objects.Arrow? arrow;
+
+    private SpriteLoader sampleButtonSprite = new SpriteLoader("Nebula.Resources.SampleButton.png", 115f);
+    private SpriteLoader morphButtonSprite = new SpriteLoader("Nebula.Resources.MorphButton.png", 115f);
+
+    public override HelpSprite[] helpSprite => new HelpSprite[]
+    {
             new HelpSprite(sampleButtonSprite,"role.morphing.help.sample",0.3f),
             new HelpSprite(morphButtonSprite,"role.morphing.help.morph",0.3f)
-        };
+    };
 
-        public override void LoadOptionData()
+    public override void LoadOptionData()
+    {
+        morphCoolDownOption = CreateOption(Color.white, "morphCoolDown", 25f, 10f, 60f, 5f);
+        morphCoolDownOption.suffix = "second";
+
+        morphDurationOption = CreateOption(Color.white, "morphDuration", 15f, 5f, 40f, 2.5f);
+        morphDurationOption.suffix = "second";
+    }
+
+    public override void ButtonInitialize(HudManager __instance)
+    {
+        morphTarget = null;
+
+        if (morphButton != null)
         {
-            morphCoolDownOption = CreateOption(Color.white, "morphCoolDown", 25f, 10f, 60f, 5f);
-            morphCoolDownOption.suffix = "second";
-
-            morphDurationOption = CreateOption(Color.white, "morphDuration", 15f, 5f, 40f, 2.5f);
-            morphDurationOption.suffix = "second";
+            morphButton.Destroy();
         }
-
-        public override void ButtonInitialize(HudManager __instance)
-        {
-            morphTarget = null;
-
-            if (morphButton != null)
+        morphButton = new CustomButton(
+            () =>
             {
-                morphButton.Destroy();
-            }
-            morphButton = new CustomButton(
-                () =>
+                if (morphTarget == null)
                 {
-                    if (morphTarget == null)
-                    {
-                        morphButton.Timer = 3f;
-                        morphButton.isEffectActive = false;
-                        morphTarget = Game.GameData.data.myData.currentTarget;
-                        Game.GameData.data.myData.currentTarget = null;
-                        morphButton.Sprite = morphButtonSprite.GetSprite();
-                        morphButton.SetLabel("button.label.morph");
-                        morphOutfit = morphTarget.GetModData().GetOutfitData(50).Clone(80);
-                    }
-                    else
-                    {
-                        RPCEventInvoker.Morph(morphOutfit);
-                    }
-                },
-                () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
-                () => { return PlayerControl.LocalPlayer.CanMove && (morphTarget!=null||Game.GameData.data.myData.currentTarget!=null); },
-                () => {
-                    morphButton.Timer = morphButton.MaxTimer;
+                    morphButton.Timer = 3f;
                     morphButton.isEffectActive = false;
-                    morphButton.actionButton.cooldownTimerText.color = Palette.EnabledColor;
-                    RPCEventInvoker.MorphCancel();
-                },
-                sampleButtonSprite.GetSprite(),
-                new Vector3(-1.8f, 0f, 0),
-                __instance,
-                Module.NebulaInputManager.abilityInput.keyCode,
-                true,
-                morphDurationOption.getFloat(),
-                () => { morphButton.Timer = morphButton.MaxTimer; },
-                false,
-                "button.label.sample"
-            ).SetTimer(CustomOptionHolder.InitialModestAbilityCoolDownOption.getFloat());
-            morphButton.MaxTimer = morphCoolDownOption.getFloat();
-            morphButton.EffectDuration = morphDurationOption.getFloat();
-            morphButton.SetSuspendAction(()=> {
+                    morphTarget = Game.GameData.data.myData.currentTarget;
+                    Game.GameData.data.myData.currentTarget = null;
+                    morphButton.Sprite = morphButtonSprite.GetSprite();
+                    morphButton.SetLabel("button.label.morph");
+                    morphOutfit = morphTarget.GetModData().GetOutfitData(50).Clone(80);
+                }
+                else
+                {
+                    RPCEventInvoker.Morph(morphOutfit);
+                }
+            },
+            () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
+            () => { return PlayerControl.LocalPlayer.CanMove && (morphTarget != null || Game.GameData.data.myData.currentTarget != null); },
+            () =>
+            {
                 morphButton.Timer = morphButton.MaxTimer;
                 morphButton.isEffectActive = false;
                 morphButton.actionButton.cooldownTimerText.color = Palette.EnabledColor;
                 RPCEventInvoker.MorphCancel();
-            });
-        }
-
-        public override void MyPlayerControlUpdate()
+            },
+            sampleButtonSprite.GetSprite(),
+            new Vector3(-1.8f, 0f, 0),
+            __instance,
+            Module.NebulaInputManager.abilityInput.keyCode,
+            true,
+            morphDurationOption.getFloat(),
+            () => { morphButton.Timer = morphButton.MaxTimer; },
+            false,
+            "button.label.sample"
+        ).SetTimer(CustomOptionHolder.InitialModestAbilityCoolDownOption.getFloat());
+        morphButton.MaxTimer = morphCoolDownOption.getFloat();
+        morphButton.EffectDuration = morphDurationOption.getFloat();
+        morphButton.SetSuspendAction(() =>
         {
-            Game.MyPlayerData data = Game.GameData.data.myData;
-            data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(1f);
-            Patches.PlayerControlPatch.SetPlayerOutline(data.currentTarget, Color.yellow);
+            morphButton.Timer = morphButton.MaxTimer;
+            morphButton.isEffectActive = false;
+            morphButton.actionButton.cooldownTimerText.color = Palette.EnabledColor;
+            RPCEventInvoker.MorphCancel();
+        });
+    }
 
-            RoleSystem.TrackSystem.PlayerTrack_MyControlUpdate(ref arrow,morphTarget,Color.red);
-        }
+    public override void MyPlayerControlUpdate()
+    {
+        Game.MyPlayerData data = Game.GameData.data.myData;
+        data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(1f);
+        Patches.PlayerControlPatch.SetPlayerOutline(data.currentTarget, Color.yellow);
 
-        public override void OnMeetingEnd()
+        RoleSystem.TrackSystem.PlayerTrack_MyControlUpdate(ref arrow, morphTarget, Color.red);
+    }
+
+    public override void OnMeetingEnd()
+    {
+        morphTarget = null;
+        morphButton.Sprite = sampleButtonSprite.GetSprite();
+        morphButton.SetLabel("button.label.sample");
+    }
+
+    public override void CleanUp()
+    {
+        if (morphButton != null)
         {
-            morphTarget = null;
-            morphButton.Sprite = sampleButtonSprite.GetSprite();
-            morphButton.SetLabel("button.label.sample");
-        }
-
-        public override void CleanUp()
-        {
-            if (morphButton != null)
-            {
-                morphButton.Destroy();
-                morphButton = null;
-            }
-            if (arrow != null)
-            {
-                GameObject.Destroy(arrow.arrow);
-                arrow = null;
-            }
-        }
-
-        public override void OnRoleRelationSetting()
-        {
-            RelatedRoles.Add(Roles.Arsonist);
-        }
-
-        public Morphing()
-                : base("Morphing", "morphing", Palette.ImpostorRed, RoleCategory.Impostor, Side.Impostor, Side.Impostor,
-                     Impostor.impostorSideSet, Impostor.impostorSideSet, Impostor.impostorEndSet,
-                     true, VentPermission.CanUseUnlimittedVent, true, true, true)
-        {
+            morphButton.Destroy();
             morphButton = null;
         }
+        if (arrow != null)
+        {
+            GameObject.Destroy(arrow.arrow);
+            arrow = null;
+        }
+    }
+
+    public override void OnRoleRelationSetting()
+    {
+        RelatedRoles.Add(Roles.Arsonist);
+    }
+
+    public Morphing()
+            : base("Morphing", "morphing", Palette.ImpostorRed, RoleCategory.Impostor, Side.Impostor, Side.Impostor,
+                 Impostor.impostorSideSet, Impostor.impostorSideSet, Impostor.impostorEndSet,
+                 true, VentPermission.CanUseUnlimittedVent, true, true, true)
+    {
+        morphButton = null;
     }
 }

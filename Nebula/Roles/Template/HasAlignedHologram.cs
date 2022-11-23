@@ -1,103 +1,102 @@
-﻿namespace Nebula.Roles.Template
+﻿namespace Nebula.Roles.Template;
+
+public class HasAlignedHologram : HasHologram
 {
-    public class HasAlignedHologram : HasHologram
+    protected List<byte> activePlayers = new List<byte>();
+
+    public override void Initialize(PlayerControl __instance)
     {
-        protected List<byte> activePlayers = new List<byte>();
+        base.Initialize(__instance);
 
-        public override void Initialize(PlayerControl __instance)
+        activePlayers.Clear();
+        UpdatePlayerIcon();
+    }
+
+    public override void CleanUp()
+    {
+        base.CleanUp();
+
+        activePlayers.Clear();
+    }
+    public override void InitializePlayerIcon(PoolablePlayer player, byte PlayerId, int index)
+    {
+        HudManager hudManager = FastDestroyableSingleton<HudManager>.Instance;
+        Vector3 bottomLeft = new Vector3(
+            -hudManager.UseButton.transform.localPosition.x,
+            hudManager.UseButton.transform.localPosition.y,
+            hudManager.UseButton.transform.localPosition.z);
+
+        player.transform.localPosition = bottomLeft + new Vector3(-0.25f, -0.25f, 0) + Vector3.right * index++ * 0.3f;
+        player.transform.localScale = Vector3.one * 0.25f;
+        player.setSemiTransparent(true);
+        player.gameObject.SetActive(true);
+    }
+
+    public override void MyPlayerControlUpdate()
+    {
+        base.MyPlayerControlUpdate();
+
+        foreach (PlayerControl p in PlayerControl.AllPlayerControls)
         {
-            base.Initialize(__instance);
+            if (!PlayerIcons.ContainsKey(p.PlayerId)) continue;
 
-            activePlayers.Clear();
-            UpdatePlayerIcon();
-        }
+            //半透明表示の切り替え
+            bool isActive = activePlayers.Any(x => x == p.PlayerId);
+            PlayerIcons[p.PlayerId].setSemiTransparent(!isActive);
 
-        public override void CleanUp()
-        {
-            base.CleanUp();
-
-            activePlayers.Clear();
-        }
-        public override void InitializePlayerIcon(PoolablePlayer player, byte PlayerId, int index)
-        {
-            HudManager hudManager = FastDestroyableSingleton<HudManager>.Instance;
-            Vector3 bottomLeft = new Vector3(
-                -hudManager.UseButton.transform.localPosition.x, 
-                hudManager.UseButton.transform.localPosition.y, 
-                hudManager.UseButton.transform.localPosition.z);
-
-            player.transform.localPosition = bottomLeft + new Vector3(-0.25f, -0.25f, 0) + Vector3.right * index++ * 0.3f;
-            player.transform.localScale = Vector3.one * 0.25f;
-            player.setSemiTransparent(true);
-            player.gameObject.SetActive(true);
-        }
-
-        public override void MyPlayerControlUpdate()
-        {
-            base.MyPlayerControlUpdate();
-
-            foreach (PlayerControl p in PlayerControl.AllPlayerControls)
+            if (!PlayerIcons[p.PlayerId].gameObject.active)
             {
-                if (!PlayerIcons.ContainsKey(p.PlayerId)) continue;
-
-                //半透明表示の切り替え
-                bool isActive = activePlayers.Any(x => x == p.PlayerId);
-                PlayerIcons[p.PlayerId].setSemiTransparent(!isActive);
-
-                if (!PlayerIcons[p.PlayerId].gameObject.active)
-                {
-                    PlayerIcons[p.PlayerId].cosmetics.nameText.text = "";
-                    PlayerIcons[p.PlayerId].cosmetics.nameText.enabled = false;
-                }
+                PlayerIcons[p.PlayerId].cosmetics.nameText.text = "";
+                PlayerIcons[p.PlayerId].cosmetics.nameText.enabled = false;
             }
         }
+    }
 
-        public override void OnMeetingEnd()
+    public override void OnMeetingEnd()
+    {
+        base.OnMeetingEnd();
+
+        UpdatePlayerIcon();
+    }
+
+    private void UpdatePlayerIcon()
+    {
+        int visibleCounter = 0;
+        Vector3 bottomLeft = HudManager.Instance.UseButton.transform.localPosition;
+        bottomLeft.x *= -1;
+        bottomLeft += new Vector3(-0.25f, -0.25f, 0);
+
+        foreach (PlayerControl p in PlayerControl.AllPlayerControls)
         {
-            base.OnMeetingEnd();
+            if (p.PlayerId == PlayerControl.LocalPlayer.PlayerId) { PlayerIcons[p.PlayerId].gameObject.SetActive(false); continue; }
+            if (!PlayerIcons.ContainsKey(p.PlayerId)) continue;
 
-            UpdatePlayerIcon();
-        }
-
-        private void UpdatePlayerIcon()
-        {
-            int visibleCounter = 0;
-            Vector3 bottomLeft = HudManager.Instance.UseButton.transform.localPosition;
-            bottomLeft.x *= -1;
-            bottomLeft += new Vector3(-0.25f, -0.25f, 0);
-
-            foreach (PlayerControl p in PlayerControl.AllPlayerControls)
+            if (p.Data.IsDead || p.Data.Disconnected)
             {
-                if (p.PlayerId == PlayerControl.LocalPlayer.PlayerId) { PlayerIcons[p.PlayerId].gameObject.SetActive(false); continue; }
-                if (!PlayerIcons.ContainsKey(p.PlayerId)) continue;
-
-                if (p.Data.IsDead || p.Data.Disconnected)
-                {
-                    PlayerIcons[p.PlayerId].gameObject.SetActive(false);
-                }
-                else
-                {
-                    PlayerIcons[p.PlayerId].gameObject.SetActive(true);
-                    PlayerIcons[p.PlayerId].transform.localScale = Vector3.one * 0.25f;
-                    PlayerIcons[p.PlayerId].transform.localPosition = bottomLeft + Vector3.right * visibleCounter * 0.3f;
-                    visibleCounter++;
-                }
+                PlayerIcons[p.PlayerId].gameObject.SetActive(false);
+            }
+            else
+            {
+                PlayerIcons[p.PlayerId].gameObject.SetActive(true);
+                PlayerIcons[p.PlayerId].transform.localScale = Vector3.one * 0.25f;
+                PlayerIcons[p.PlayerId].transform.localPosition = bottomLeft + Vector3.right * visibleCounter * 0.3f;
+                visibleCounter++;
             }
         }
+    }
 
-        protected HasAlignedHologram(string name, string localizeName, Color color, RoleCategory category,
-                Side side, Side introMainDisplaySide, HashSet<Side> introDisplaySides, HashSet<Side> introInfluenceSides,
-                HashSet<Patches.EndCondition> winReasons,
-                bool hasFakeTask, VentPermission canUseVents, bool canMoveInVents,
-                bool ignoreBlackout, bool useImpostorLightRadius) :
-                base(name, localizeName, color, category,
-                    side, introMainDisplaySide, introDisplaySides, introInfluenceSides,
-                    winReasons,
-                    hasFakeTask, canUseVents, canMoveInVents,
-                    ignoreBlackout, useImpostorLightRadius)
-        {
-            PlayerIcons = new Dictionary<byte, PoolablePlayer>();
-            activePlayers = new List<byte>();
-        }
+    protected HasAlignedHologram(string name, string localizeName, Color color, RoleCategory category,
+            Side side, Side introMainDisplaySide, HashSet<Side> introDisplaySides, HashSet<Side> introInfluenceSides,
+            HashSet<Patches.EndCondition> winReasons,
+            bool hasFakeTask, VentPermission canUseVents, bool canMoveInVents,
+            bool ignoreBlackout, bool useImpostorLightRadius) :
+            base(name, localizeName, color, category,
+                side, introMainDisplaySide, introDisplaySides, introInfluenceSides,
+                winReasons,
+                hasFakeTask, canUseVents, canMoveInVents,
+                ignoreBlackout, useImpostorLightRadius)
+    {
+        PlayerIcons = new Dictionary<byte, PoolablePlayer>();
+        activePlayers = new List<byte>();
     }
 }

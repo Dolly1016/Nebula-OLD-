@@ -1,282 +1,283 @@
-﻿namespace Nebula.Roles.NeutralRoles
+﻿namespace Nebula.Roles.NeutralRoles;
+
+public class Empiric : Template.HasAlignedHologram, Template.HasWinTrigger
 {
-    public class Empiric : Template.HasAlignedHologram , Template.HasWinTrigger
+    static public Color RoleColor = new Color(183f / 255f, 233f / 255f, 0f / 255f);
+
+    static private CustomButton infectButton;
+    private TMPro.TMP_Text infectButtonString;
+
+    private Module.CustomOption maxInfectMyselfOption;
+    private Module.CustomOption infectRangeOption;
+    private Module.CustomOption infectDurationOption;
+    private Module.CustomOption canInfectMyKillerOption;
+    private Module.CustomOption coastingPhaseOption;
+    private Module.CustomOption canUseVentsOption;
+    private Module.CustomOption ventCoolDownOption;
+    private Module.CustomOption ventDurationOption;
+
+    private int leftInfect;
+    private Dictionary<byte, float> infectProgress;
+    private float coasting;
+    private float infoUpdateCounter = 0f;
+
+    public bool WinTrigger { get; set; } = false;
+    public byte Winner { get; set; } = Byte.MaxValue;
+
+    public override void LoadOptionData()
     {
-        static public Color RoleColor = new Color(183f / 255f, 233f / 255f, 0f / 255f);
+        maxInfectMyselfOption = CreateOption(Color.white, "maxInfectMyself", 1f, 1f, 5f, 1f);
 
-        static private CustomButton infectButton;
-        private TMPro.TMP_Text infectButtonString;
+        infectRangeOption = CreateOption(Color.white, "infectRange", 1f, 0.25f, 3f, 0.25f);
+        infectRangeOption.suffix = "cross";
 
-        private Module.CustomOption maxInfectMyselfOption;
-        private Module.CustomOption infectRangeOption;
-        private Module.CustomOption infectDurationOption;
-        private Module.CustomOption canInfectMyKillerOption;
-        private Module.CustomOption coastingPhaseOption;
-        private Module.CustomOption canUseVentsOption;
-        private Module.CustomOption ventCoolDownOption;
-        private Module.CustomOption ventDurationOption;
+        infectDurationOption = CreateOption(Color.white, "infectDuration", 20f, 5f, 60f, 1f);
+        infectDurationOption.suffix = "second";
 
-        private int leftInfect;
-        private Dictionary<byte, float> infectProgress;
-        private float coasting;
-        private float infoUpdateCounter=0f;
+        canInfectMyKillerOption = CreateOption(Color.white, "canInfectMyKiller", true);
 
-        public bool WinTrigger { get; set; } = false;
-        public byte Winner { get; set; } = Byte.MaxValue;
+        coastingPhaseOption = CreateOption(Color.white, "coastingPhase", 10f, 0f, 30f, 1f);
+        coastingPhaseOption.suffix = "second";
 
-        public override void LoadOptionData()
-        {
-            maxInfectMyselfOption = CreateOption(Color.white, "maxInfectMyself", 1f, 1f, 5f, 1f);
+        canUseVentsOption = CreateOption(Color.white, "canUseVents", true);
+        ventCoolDownOption = CreateOption(Color.white, "ventCoolDown", 20f, 5f, 60f, 2.5f).AddPrerequisite(canUseVentsOption);
+        ventCoolDownOption.suffix = "second";
+        ventDurationOption = CreateOption(Color.white, "ventDuration", 10f, 5f, 60f, 2.5f).AddPrerequisite(canUseVentsOption);
+        ventDurationOption.suffix = "second";
+    }
 
-            infectRangeOption = CreateOption(Color.white, "infectRange", 1f, 0.25f, 3f, 0.25f);
-            infectRangeOption.suffix = "cross";
+    SpriteLoader infectSprite = new SpriteLoader("Nebula.Resources.InfectButton.png", 115f);
 
-            infectDurationOption = CreateOption(Color.white, "infectDuration", 20f, 5f, 60f, 1f);
-            infectDurationOption.suffix = "second";
-
-            canInfectMyKillerOption = CreateOption(Color.white, "canInfectMyKiller", true);
-
-            coastingPhaseOption = CreateOption(Color.white, "coastingPhase", 10f, 0f, 30f, 1f);
-            coastingPhaseOption.suffix = "second";
-
-            canUseVentsOption = CreateOption(Color.white, "canUseVents", true);
-            ventCoolDownOption = CreateOption(Color.white, "ventCoolDown", 20f, 5f, 60f, 2.5f).AddPrerequisite(canUseVentsOption);
-            ventCoolDownOption.suffix = "second";
-            ventDurationOption = CreateOption(Color.white, "ventDuration", 10f, 5f, 60f, 2.5f).AddPrerequisite(canUseVentsOption);
-            ventDurationOption.suffix = "second";
-        }
-
-        SpriteLoader infectSprite= new SpriteLoader("Nebula.Resources.InfectButton.png", 115f);
-
-        public override HelpSprite[] helpSprite => new HelpSprite[]
-        {
+    public override HelpSprite[] helpSprite => new HelpSprite[]
+    {
             new HelpSprite(infectSprite,"role.empiric.help.infect",0.3f)
-        };
+    };
 
-        public override void GlobalIntroInitialize(PlayerControl __instance)
+    public override void GlobalIntroInitialize(PlayerControl __instance)
+    {
+        canMoveInVents = canUseVentsOption.getBool();
+        VentPermission = canUseVentsOption.getBool() ? VentPermission.CanUseUnlimittedVent : VentPermission.CanNotUse;
+    }
+
+    public override void Initialize(PlayerControl __instance)
+    {
+        base.Initialize(__instance);
+
+        infectProgress.Clear();
+        leftInfect = (int)maxInfectMyselfOption.getFloat();
+        WinTrigger = false;
+
+        VentCoolDownMaxTimer = ventCoolDownOption.getFloat();
+        VentDurationMaxTimer = ventDurationOption.getFloat();
+    }
+
+    public override void CleanUp()
+    {
+        base.CleanUp();
+
+        leftInfect = 0;
+        WinTrigger = false;
+
+        if (infectButton != null)
         {
-            canMoveInVents = canUseVentsOption.getBool();
-            VentPermission = canUseVentsOption.getBool() ? VentPermission.CanUseUnlimittedVent : VentPermission.CanNotUse;
+            infectButton.Destroy();
+            infectButton = null;
         }
-
-        public override void Initialize(PlayerControl __instance)
+        if (infectButtonString != null)
         {
-            base.Initialize(__instance);
-
-            infectProgress.Clear();
-            leftInfect = (int)maxInfectMyselfOption.getFloat();
-            WinTrigger = false;
-
-            VentCoolDownMaxTimer = ventCoolDownOption.getFloat();
-            VentDurationMaxTimer = ventDurationOption.getFloat();
+            UnityEngine.Object.Destroy(infectButtonString.gameObject);
+            infectButtonString = null;
         }
+    }
 
-        public override void CleanUp()
+    public override void InitializePlayerIcon(PoolablePlayer player, byte PlayerId, int index)
+    {
+        base.InitializePlayerIcon(player, PlayerId, index);
+
+        player.cosmetics.nameText.transform.localScale *= 2f;
+        player.cosmetics.nameText.transform.position += new Vector3(0, 0.25f);
+    }
+
+    public override void ButtonInitialize(HudManager __instance)
+    {
+        if (infectButton != null)
         {
-            base.CleanUp();
-
-            leftInfect = 0;
-            WinTrigger = false;
-
-            if (infectButton != null)
+            infectButton.Destroy();
+        }
+        infectButton = new CustomButton(
+            () =>
             {
-                infectButton.Destroy();
-                infectButton = null;
-            }
-            if (infectButtonString != null)
-            {
-                UnityEngine.Object.Destroy(infectButtonString.gameObject);
-                infectButtonString = null;
-            }
-        }
-
-        public override void InitializePlayerIcon(PoolablePlayer player, byte PlayerId, int index)
-        {
-            base.InitializePlayerIcon(player, PlayerId, index);
-
-            player.cosmetics.nameText.transform.localScale *= 2f;
-            player.cosmetics.nameText.transform.position += new Vector3(0,0.25f);
-        }
-
-        public override void ButtonInitialize(HudManager __instance)
-        {
-            if (infectButton != null)
-            {
-                infectButton.Destroy();
-            }
-            infectButton = new CustomButton(
-                () =>
+                if (!activePlayers.Contains(Game.GameData.data.myData.currentTarget.PlayerId))
                 {
-                    if (!activePlayers.Contains(Game.GameData.data.myData.currentTarget.PlayerId))
-                    {
-                        activePlayers.Add(Game.GameData.data.myData.currentTarget.PlayerId);
-                        leftInfect--;
-                        Game.GameData.data.myData.currentTarget = null;
-                    }
-                },
-                () => { return !PlayerControl.LocalPlayer.Data.IsDead && leftInfect>0; },
-                () => {
-                    infectButtonString.text = $"{leftInfect}/{(int)maxInfectMyselfOption.getFloat()}";
-                    return Game.GameData.data.myData.currentTarget!=null && PlayerControl.LocalPlayer.CanMove; },
-                () => { },
-                infectSprite.GetSprite(),
-                new Vector3(-1.8f, -0.06f, 0),
-                __instance,
-                Module.NebulaInputManager.abilityInput.keyCode,
-                false,
-                "button.label.infect"
-            ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());
-
-            infectButtonString = GameObject.Instantiate(infectButton.actionButton.cooldownTimerText, infectButton.actionButton.cooldownTimerText.transform.parent);
-            infectButtonString.text = "";
-            infectButtonString.enableWordWrapping = false;
-            infectButtonString.transform.localScale = Vector3.one * 0.5f;
-            infectButtonString.transform.localPosition += new Vector3(-0.05f, 0.7f, 0);
-        }
-
-
-        public override void OnMeetingStart()
-        {
-            base.OnMeetingStart();
-            
-            //停滞期
-            coasting = coastingPhaseOption.getFloat();
-        }
-
-        public override void OnMurdered(byte murderId)
-        {
-            base.OnMurdered(murderId);
-
-            if(canInfectMyKillerOption.getBool())
-                activePlayers.Add(murderId);
-        }
-
-        public override void MyPlayerControlUpdate()
-        {
-            base.MyPlayerControlUpdate();
-
-            Game.MyPlayerData data = Game.GameData.data.myData;
-            data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(1f,false, false, activePlayers);
-            Patches.PlayerControlPatch.SetPlayerOutline(data.currentTarget, Color.yellow);
-
-            //感染停滞期を進める
-            if (MeetingHud.Instance == null && SpawnInMinigame.Instance==null && ExileController.Instance ==null)
-            {
-                coasting -= Time.deltaTime;
-            }
-
-            //感染しない間はなにもしない
-            if (coasting > 0f || MeetingHud.Instance!=null)
-            {
-                return;
-            }
-
-            bool allPlayerInfected = true;
-
-            float infectDistance = 1f*infectRangeOption.getFloat();
-            float infectProgressPerTime = Time.deltaTime / infectDurationOption.getFloat();
-            bool infectProceedFlag = false;
-            PlayerControl infected;
-            foreach (PlayerControl player in PlayerControl.AllPlayerControls)
-            {
-                if (player.Data.IsDead) continue;
-                if (activePlayers.Contains(player.PlayerId)) continue;
-                if (player.PlayerId == PlayerControl.LocalPlayer.PlayerId) continue;
-                if (!player.gameObject.active) continue;
-
-                allPlayerInfected = false;
-
-                infectProceedFlag = false;
-
-                foreach (byte playerId in activePlayers)
-                {
-                    infected = Helpers.playerById(playerId);
-                    if (infected.Data.IsDead) continue;
-                    if(infected.transform.position.Distance(player.transform.position)< infectDistance)
-                    {
-                        infectProceedFlag = true;
-                        break;
-                    }
+                    activePlayers.Add(Game.GameData.data.myData.currentTarget.PlayerId);
+                    leftInfect--;
+                    Game.GameData.data.myData.currentTarget = null;
                 }
+            },
+            () => { return !PlayerControl.LocalPlayer.Data.IsDead && leftInfect > 0; },
+            () =>
+            {
+                infectButtonString.text = $"{leftInfect}/{(int)maxInfectMyselfOption.getFloat()}";
+                return Game.GameData.data.myData.currentTarget != null && PlayerControl.LocalPlayer.CanMove;
+            },
+            () => { },
+            infectSprite.GetSprite(),
+            new Vector3(-1.8f, -0.06f, 0),
+            __instance,
+            Module.NebulaInputManager.abilityInput.keyCode,
+            false,
+            "button.label.infect"
+        ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());
 
-                if (infectProceedFlag)
+        infectButtonString = GameObject.Instantiate(infectButton.actionButton.cooldownTimerText, infectButton.actionButton.cooldownTimerText.transform.parent);
+        infectButtonString.text = "";
+        infectButtonString.enableWordWrapping = false;
+        infectButtonString.transform.localScale = Vector3.one * 0.5f;
+        infectButtonString.transform.localPosition += new Vector3(-0.05f, 0.7f, 0);
+    }
+
+
+    public override void OnMeetingStart()
+    {
+        base.OnMeetingStart();
+
+        //停滞期
+        coasting = coastingPhaseOption.getFloat();
+    }
+
+    public override void OnMurdered(byte murderId)
+    {
+        base.OnMurdered(murderId);
+
+        if (canInfectMyKillerOption.getBool())
+            activePlayers.Add(murderId);
+    }
+
+    public override void MyPlayerControlUpdate()
+    {
+        base.MyPlayerControlUpdate();
+
+        Game.MyPlayerData data = Game.GameData.data.myData;
+        data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(1f, false, false, activePlayers);
+        Patches.PlayerControlPatch.SetPlayerOutline(data.currentTarget, Color.yellow);
+
+        //感染停滞期を進める
+        if (MeetingHud.Instance == null && SpawnInMinigame.Instance == null && ExileController.Instance == null)
+        {
+            coasting -= Time.deltaTime;
+        }
+
+        //感染しない間はなにもしない
+        if (coasting > 0f || MeetingHud.Instance != null)
+        {
+            return;
+        }
+
+        bool allPlayerInfected = true;
+
+        float infectDistance = 1f * infectRangeOption.getFloat();
+        float infectProgressPerTime = Time.deltaTime / infectDurationOption.getFloat();
+        bool infectProceedFlag = false;
+        PlayerControl infected;
+        foreach (PlayerControl player in PlayerControl.AllPlayerControls)
+        {
+            if (player.Data.IsDead) continue;
+            if (activePlayers.Contains(player.PlayerId)) continue;
+            if (player.PlayerId == PlayerControl.LocalPlayer.PlayerId) continue;
+            if (!player.gameObject.active) continue;
+
+            allPlayerInfected = false;
+
+            infectProceedFlag = false;
+
+            foreach (byte playerId in activePlayers)
+            {
+                infected = Helpers.playerById(playerId);
+                if (infected.Data.IsDead) continue;
+                if (infected.transform.position.Distance(player.transform.position) < infectDistance)
                 {
-                    if (!infectProgress.ContainsKey(player.PlayerId))
-                    {
-                        infectProgress.Add(player.PlayerId, 0);
-                    }
-                    infectProgress[player.PlayerId] += infectProgressPerTime;
-
-                    if (infectProgress[player.PlayerId] > 1)
-                    {
-                        activePlayers.Add(player.PlayerId);
-                    }
+                    infectProceedFlag = true;
+                    break;
                 }
             }
 
-            if (allPlayerInfected)RPCEventInvoker.WinTrigger(this);
-
-            foreach (KeyValuePair<byte,PoolablePlayer> player in PlayerIcons)
+            if (infectProceedFlag)
             {
-                if (!player.Value.gameObject.active)
+                if (!infectProgress.ContainsKey(player.PlayerId))
                 {
-                    player.Value.cosmetics.nameText.text = "";
-                    continue;
+                    infectProgress.Add(player.PlayerId, 0);
                 }
+                infectProgress[player.PlayerId] += infectProgressPerTime;
 
-                if (activePlayers.Contains(player.Key))
+                if (infectProgress[player.PlayerId] > 1)
                 {
-                    player.Value.cosmetics.nameText.text = "";
+                    activePlayers.Add(player.PlayerId);
+                }
+            }
+        }
+
+        if (allPlayerInfected) RPCEventInvoker.WinTrigger(this);
+
+        foreach (KeyValuePair<byte, PoolablePlayer> player in PlayerIcons)
+        {
+            if (!player.Value.gameObject.active)
+            {
+                player.Value.cosmetics.nameText.text = "";
+                continue;
+            }
+
+            if (activePlayers.Contains(player.Key))
+            {
+                player.Value.cosmetics.nameText.text = "";
+            }
+            else
+            {
+                if (infectProgress.ContainsKey(player.Key))
+                {
+                    player.Value.cosmetics.nameText.text = String.Format("{0:f1}%", infectProgress[player.Key] * 100f);
                 }
                 else
                 {
-                    if (infectProgress.ContainsKey(player.Key))
-                    {
-                        player.Value.cosmetics.nameText.text = String.Format("{0:f1}%", infectProgress[player.Key]*100f);
-                    }
-                    else
-                    {
-                        player.Value.cosmetics.nameText.text = "0.0%";
-                    }
-                    player.Value.cosmetics.nameText.color = Color.white;
+                    player.Value.cosmetics.nameText.text = "0.0%";
                 }
-            }
-
-            infoUpdateCounter += Time.deltaTime;
-            if (infoUpdateCounter > 0.5f)
-            {
-                RPCEventInvoker.UpdatePlayersIconInfo(this,activePlayers,infectProgress);
-                infoUpdateCounter = 0f;
+                player.Value.cosmetics.nameText.color = Color.white;
             }
         }
 
-        public override void GlobalInitialize(PlayerControl __instance)
+        infoUpdateCounter += Time.deltaTime;
+        if (infoUpdateCounter > 0.5f)
         {
-            base.GlobalInitialize(__instance);
-
-            new Module.Information.PlayersIconInformation(Helpers.cs(RoleColor,__instance.name),__instance.PlayerId,this);
+            RPCEventInvoker.UpdatePlayersIconInfo(this, activePlayers, infectProgress);
+            infoUpdateCounter = 0f;
         }
+    }
 
-        public override void GlobalFinalizeInGame(PlayerControl __instance)
-        {
-            Module.Information.UpperInformationManager.Remove((i) =>
-            i is Module.Information.PlayersIconInformation &&
-            ((Module.Information.PlayersIconInformation)i).relatedPlayerId == __instance.PlayerId &&
-            ((Module.Information.PlayersIconInformation)i).relatedRole == this
-            );
-        }
+    public override void GlobalInitialize(PlayerControl __instance)
+    {
+        base.GlobalInitialize(__instance);
 
-        public Empiric()
-            : base("Empiric", "empiric", RoleColor, RoleCategory.Neutral, Side.Empiric, Side.Empiric,
-                 new HashSet<Side>() { Side.Empiric }, new HashSet<Side>() { Side.Empiric },
-                 new HashSet<Patches.EndCondition>() { Patches.EndCondition.EmpiricWin },
-                 true, VentPermission.CanUseLimittedVent, true, false, false)
-        {
-            infectButton = null;
-            infectProgress = new Dictionary<byte, float>();
-            coasting = 0f;
+        new Module.Information.PlayersIconInformation(Helpers.cs(RoleColor, __instance.name), __instance.PlayerId, this);
+    }
 
-            Patches.EndCondition.EmpiricWin.TriggerRole = this;
-        }
+    public override void GlobalFinalizeInGame(PlayerControl __instance)
+    {
+        Module.Information.UpperInformationManager.Remove((i) =>
+        i is Module.Information.PlayersIconInformation &&
+        ((Module.Information.PlayersIconInformation)i).relatedPlayerId == __instance.PlayerId &&
+        ((Module.Information.PlayersIconInformation)i).relatedRole == this
+        );
+    }
+
+    public Empiric()
+        : base("Empiric", "empiric", RoleColor, RoleCategory.Neutral, Side.Empiric, Side.Empiric,
+             new HashSet<Side>() { Side.Empiric }, new HashSet<Side>() { Side.Empiric },
+             new HashSet<Patches.EndCondition>() { Patches.EndCondition.EmpiricWin },
+             true, VentPermission.CanUseLimittedVent, true, false, false)
+    {
+        infectButton = null;
+        infectProgress = new Dictionary<byte, float>();
+        coasting = 0f;
+
+        Patches.EndCondition.EmpiricWin.TriggerRole = this;
     }
 }

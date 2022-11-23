@@ -1,71 +1,70 @@
-﻿namespace Nebula.Patches
+﻿namespace Nebula.Patches;
+
+//CanUseDoorDespiteSabotageOption
+[HarmonyPatch(typeof(InfectedOverlay), nameof(InfectedOverlay.CanUseDoors), MethodType.Getter)]
+class CanUseDoorPatch
 {
-    //CanUseDoorDespiteSabotageOption
-    [HarmonyPatch(typeof(InfectedOverlay), nameof(InfectedOverlay.CanUseDoors),MethodType.Getter)]
-    class CanUseDoorPatch
+    static void Postfix(InfectedOverlay __instance, ref bool __result)
     {
-        static void Postfix(InfectedOverlay __instance,ref bool __result)
-        {
-            if (PlayerControl.GameOptions.MapId != 4) return;
+        if (PlayerControl.GameOptions.MapId != 4) return;
 
-            __result |= CustomOptionHolder.CanUseDoorDespiteSabotageOption.getBool();
-        }
+        __result |= CustomOptionHolder.CanUseDoorDespiteSabotageOption.getBool();
     }
+}
 
-    [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.RpcRepairSystem))]
-    class InvokeSabotagePatch
+[HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.RpcRepairSystem))]
+class InvokeSabotagePatch
+{
+    static void Postfix(ShipStatus __instance, [HarmonyArgument(0)] SystemTypes systemType)
     {
-        static void Postfix(ShipStatus __instance, [HarmonyArgument(0)] SystemTypes systemType)
-        {
-            if(MapBehaviour.Instance && MapBehaviour.Instance.IsOpen)
+        if (MapBehaviour.Instance && MapBehaviour.Instance.IsOpen)
             Helpers.RoleAction(Game.GameData.data.myData.getGlobalData(), (role) => role.OnInvokeSabotage(systemType));
-        }
+    }
+}
+
+[HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.RpcCloseDoorsOfType))]
+class InvokeDoorSabotagePatch
+{
+    static void Postfix(ShipStatus __instance)
+    {
+        Helpers.RoleAction(Game.GameData.data.myData.getGlobalData(), (role) => role.OnInvokeSabotage(SystemTypes.Doors));
+    }
+}
+
+//サボクールダウン
+[HarmonyPatch(typeof(SabotageSystemType), nameof(SabotageSystemType.RepairDamage))]
+class SabotageCoolDownPatch
+{
+    static bool flag = false;
+
+    static void Prefix(SabotageSystemType __instance)
+    {
+        if (__instance.Timer > 0f) return;
+        if (MeetingHud.Instance) return;
+        if (!CustomOptionHolder.SabotageOption.getBool()) return;
+
+        flag = true;
     }
 
-    [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.RpcCloseDoorsOfType))]
-    class InvokeDoorSabotagePatch
+    static void Postfix(SabotageSystemType __instance)
     {
-        static void Postfix(ShipStatus __instance)
+        if (flag)
         {
-            Helpers.RoleAction(Game.GameData.data.myData.getGlobalData(), (role) => role.OnInvokeSabotage(SystemTypes.Doors));
+            __instance.Timer = CustomOptionHolder.SabotageCoolDownOption.getFloat();
+            flag = false;
         }
     }
+}
 
-    //サボクールダウン
-    [HarmonyPatch(typeof(SabotageSystemType), nameof(SabotageSystemType.RepairDamage))]
-    class SabotageCoolDownPatch
+//サボクールダウンの割合表示
+[HarmonyPatch(typeof(SabotageSystemType), nameof(SabotageSystemType.PercentCool), MethodType.Getter)]
+class SabotageCoolDownGetterPatch
+{
+    static bool Prefix(SabotageSystemType __instance, ref float __result)
     {
-        static bool flag = false;
+        if (!CustomOptionHolder.SabotageOption.getBool()) return true;
 
-        static void Prefix(SabotageSystemType __instance)
-        {
-            if (__instance.Timer > 0f) return;
-            if (MeetingHud.Instance) return;
-            if (!CustomOptionHolder.SabotageOption.getBool()) return;
-
-            flag = true;
-        }
-
-        static void Postfix(SabotageSystemType __instance)
-        {
-            if (flag)
-            {
-                __instance.Timer = CustomOptionHolder.SabotageCoolDownOption.getFloat();
-                flag = false;
-            }
-        }
-    }
-
-    //サボクールダウンの割合表示
-    [HarmonyPatch(typeof(SabotageSystemType), nameof(SabotageSystemType.PercentCool),MethodType.Getter)]
-    class SabotageCoolDownGetterPatch
-    {
-        static bool Prefix(SabotageSystemType __instance,ref float __result)
-        {
-            if (!CustomOptionHolder.SabotageOption.getBool()) return true;
-
-            __result = __instance.Timer / CustomOptionHolder.SabotageCoolDownOption.getFloat();
-            return false;
-        }
+        __result = __instance.Timer / CustomOptionHolder.SabotageCoolDownOption.getFloat();
+        return false;
     }
 }

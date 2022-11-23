@@ -1,22 +1,20 @@
-﻿namespace Nebula.Images
+﻿namespace Nebula.Images;
+static class GlobalImage
 {
-    static class GlobalImage
+    private static Sprite MeetingButtonLeft = null;
+    private static Sprite MeetingButtonRight = null;
+
+    public static Sprite GetMeetingButtonLeft()
     {
-        private static Sprite MeetingButtonLeft = null;
-        private static Sprite MeetingButtonRight = null;
+        if (MeetingButtonLeft) return MeetingButtonLeft;
+        MeetingButtonLeft = Helpers.loadSpriteFromResources("Nebula.Resources.MeetingButtonLeft.png", 100f);
+        return MeetingButtonLeft;
+    }
 
-        public static Sprite GetMeetingButtonLeft()
-        {
-            if (MeetingButtonLeft) return MeetingButtonLeft;
-            MeetingButtonLeft = Helpers.loadSpriteFromResources("Nebula.Resources.MeetingButtonLeft.png", 100f);
-            return MeetingButtonLeft;
-        }
-
-        public static Sprite GetMeetingButtonRight()
-        {
-            if (MeetingButtonRight) return MeetingButtonRight;
-            MeetingButtonRight = Helpers.loadSpriteFromResources("Nebula.Resources.MeetingButtonRight.png", 100f);
-            return MeetingButtonRight;
-        }
+    public static Sprite GetMeetingButtonRight()
+    {
+        if (MeetingButtonRight) return MeetingButtonRight;
+        MeetingButtonRight = Helpers.loadSpriteFromResources("Nebula.Resources.MeetingButtonRight.png", 100f);
+        return MeetingButtonRight;
     }
 }

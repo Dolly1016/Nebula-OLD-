@@ -1,83 +1,82 @@
-﻿namespace Nebula.Ghost.AI
+﻿namespace Nebula.Ghost.AI;
+
+public class AI_UrgencyCommsForDeadBodies : GhostWeightedAI
 {
-    public class AI_UrgencyCommsForDeadBodies : GhostWeightedAI
+    private int MaxBodies;
+    public override void Update(Ghost ghost)
     {
-        private int MaxBodies;
-        public override void Update(Ghost ghost)
-        {
-            if (!ghost.SabotageMood.ContainsKey(SystemTypes.Comms)) return;
+        if (!ghost.SabotageMood.ContainsKey(SystemTypes.Comms)) return;
 
-            float value = (float)Helpers.AllDeadBodies().Length / (float)MaxBodies;
-            ghost.SabotageMood[SystemTypes.Comms] += (value > 1 ? 1f : value) * Weight;
-        }
-
-        public AI_UrgencyCommsForDeadBodies(uint priority, float weight, int maxBodies) : base(priority, weight)
-        {
-            MaxBodies = maxBodies;
-        }
+        float value = (float)Helpers.AllDeadBodies().Length / (float)MaxBodies;
+        ghost.SabotageMood[SystemTypes.Comms] += (value > 1 ? 1f : value) * Weight;
     }
 
-    public class AI_UrgencyCommsForAdmin : GhostWeightedAI
+    public AI_UrgencyCommsForDeadBodies(uint priority, float weight, int maxBodies) : base(priority, weight)
     {
-        private int MaxPlayers;
+        MaxBodies = maxBodies;
+    }
+}
 
-        public override void Update(Ghost ghost)
-        {
-            if (!ghost.SabotageMood.ContainsKey(SystemTypes.Comms)) return;
+public class AI_UrgencyCommsForAdmin : GhostWeightedAI
+{
+    private int MaxPlayers;
 
-            SystemTypes? room = GhostAI.GetValidType(SystemTypes.Admin, SystemTypes.Cockpit);
+    public override void Update(Ghost ghost)
+    {
+        if (!ghost.SabotageMood.ContainsKey(SystemTypes.Comms)) return;
 
-            if (room == null) return;
+        SystemTypes? room = GhostAI.GetValidType(SystemTypes.Admin, SystemTypes.Cockpit);
 
-            int num = GhostAI.GetCountOfAlivePlayers(room.Value, MaxPlayers);
-            ghost.SabotageMood[SystemTypes.Comms] += Weight * (float)num / (float)MaxPlayers;
-        }
+        if (room == null) return;
 
-        public AI_UrgencyCommsForAdmin(uint priority, float weight, int maxPlayers) : base(priority, weight)
-        {
-            MaxPlayers = maxPlayers;
-        }
+        int num = GhostAI.GetCountOfAlivePlayers(room.Value, MaxPlayers);
+        ghost.SabotageMood[SystemTypes.Comms] += Weight * (float)num / (float)MaxPlayers;
     }
 
-    public class AI_UrgencyCommsForVital : GhostWeightedAI
+    public AI_UrgencyCommsForAdmin(uint priority, float weight, int maxPlayers) : base(priority, weight)
     {
-        private int MaxPlayers;
-        public override void Update(Ghost ghost)
-        {
-            if (!ghost.SabotageMood.ContainsKey(SystemTypes.Comms)) return;
+        MaxPlayers = maxPlayers;
+    }
+}
 
-            SystemTypes? room = GhostAI.GetValidType(SystemTypes.Medical, SystemTypes.Office);
+public class AI_UrgencyCommsForVital : GhostWeightedAI
+{
+    private int MaxPlayers;
+    public override void Update(Ghost ghost)
+    {
+        if (!ghost.SabotageMood.ContainsKey(SystemTypes.Comms)) return;
 
-            if (room == null) return;
+        SystemTypes? room = GhostAI.GetValidType(SystemTypes.Medical, SystemTypes.Office);
 
-            int num = GhostAI.GetCountOfAlivePlayers(room.Value, MaxPlayers);
-            ghost.SabotageMood[SystemTypes.Comms] += Weight * (float)num / (float)MaxPlayers;
-        }
+        if (room == null) return;
 
-        public AI_UrgencyCommsForVital(uint priority, float weight, int maxPlayers) : base(priority, weight)
-        {
-            MaxPlayers = maxPlayers;
-        }
+        int num = GhostAI.GetCountOfAlivePlayers(room.Value, MaxPlayers);
+        ghost.SabotageMood[SystemTypes.Comms] += Weight * (float)num / (float)MaxPlayers;
     }
 
-    public class AI_UrgencyCommsForCamera : GhostWeightedAI
+    public AI_UrgencyCommsForVital(uint priority, float weight, int maxPlayers) : base(priority, weight)
     {
-        private int MaxPlayers;
-        public override void Update(Ghost ghost)
-        {
-            if (!ghost.SabotageMood.ContainsKey(SystemTypes.Comms)) return;
-            
-            SystemTypes? room = GhostAI.GetValidType(SystemTypes.Security);
+        MaxPlayers = maxPlayers;
+    }
+}
 
-            if (room == null) return;
+public class AI_UrgencyCommsForCamera : GhostWeightedAI
+{
+    private int MaxPlayers;
+    public override void Update(Ghost ghost)
+    {
+        if (!ghost.SabotageMood.ContainsKey(SystemTypes.Comms)) return;
 
-            int num = GhostAI.GetCountOfAlivePlayers(room.Value, MaxPlayers);
-            ghost.SabotageMood[SystemTypes.Comms] += Weight * (float)num / (float)MaxPlayers;
-        }
+        SystemTypes? room = GhostAI.GetValidType(SystemTypes.Security);
 
-        public AI_UrgencyCommsForCamera(uint priority, float weight, int maxPlayers) : base(priority, weight)
-        {
-            MaxPlayers = maxPlayers;
-        }
+        if (room == null) return;
+
+        int num = GhostAI.GetCountOfAlivePlayers(room.Value, MaxPlayers);
+        ghost.SabotageMood[SystemTypes.Comms] += Weight * (float)num / (float)MaxPlayers;
+    }
+
+    public AI_UrgencyCommsForCamera(uint priority, float weight, int maxPlayers) : base(priority, weight)
+    {
+        MaxPlayers = maxPlayers;
     }
 }

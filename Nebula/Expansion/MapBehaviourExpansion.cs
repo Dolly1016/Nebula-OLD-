@@ -1,51 +1,50 @@
-﻿namespace Nebula
+﻿namespace Nebula;
+
+[HarmonyPatch]
+public static class MapBehaviourExpansion
 {
-    [HarmonyPatch]
-    public static class MapBehaviourExpansion
+    static GameObject? TrackOverlay = null;
+
+    static public GameObject? GetTrackOverlay(this MapBehaviour mapBehaviour)
     {
-        static GameObject? TrackOverlay = null;
-        
-        static public GameObject? GetTrackOverlay(this MapBehaviour mapBehaviour)
-        {
-            return TrackOverlay;
-        }
+        return TrackOverlay;
+    }
 
-        static public void ShowTrackOverlay(this MapBehaviour mapBehaviour)
+    static public void ShowTrackOverlay(this MapBehaviour mapBehaviour)
+    {
+        if (!TrackOverlay)
         {
-            if (!TrackOverlay)
-            {
-                TrackOverlay = new GameObject("TrackOverlay");
-                TrackOverlay.transform.SetParent(mapBehaviour.transform);
-                TrackOverlay.transform.localScale = new Vector3(1f,1f,1f);
-                TrackOverlay.transform.localPosition=mapBehaviour.HerePoint.transform.parent.localPosition;
-            }
+            TrackOverlay = new GameObject("TrackOverlay");
+            TrackOverlay.transform.SetParent(mapBehaviour.transform);
+            TrackOverlay.transform.localScale = new Vector3(1f, 1f, 1f);
+            TrackOverlay.transform.localPosition = mapBehaviour.HerePoint.transform.parent.localPosition;
         }
+    }
 
-        static public Vector3 ConvertMapLocalPosition(Vector3 position,byte order)
+    static public Vector3 ConvertMapLocalPosition(Vector3 position, byte order)
+    {
+        Vector3 vector = position;
+        vector /= ShipStatus.Instance.MapScale;
+        vector.x *= Mathf.Sign(ShipStatus.Instance.transform.localScale.x);
+        vector.z = -1f - 0.01f * (float)order;
+        return vector;
+    }
+
+    [HarmonyPatch(typeof(MapBehaviour), nameof(MapBehaviour.GenericShow))]
+    static class MapBehaviourGenericShowPatch
+    {
+        static void Postfix(MapBehaviour __instance)
         {
-            Vector3 vector = position;
-            vector /= ShipStatus.Instance.MapScale;
-            vector.x *= Mathf.Sign(ShipStatus.Instance.transform.localScale.x);
-            vector.z = -1f - 0.01f * (float)order;
-            return vector;
+            __instance.ShowTrackOverlay();
         }
+    }
 
-        [HarmonyPatch(typeof(MapBehaviour), nameof(MapBehaviour.GenericShow))]
-        static class MapBehaviourGenericShowPatch
+    [HarmonyPatch(typeof(MapBehaviour), nameof(MapBehaviour.ShowCountOverlay))]
+    static class MapBehaviourShowCountOverlayPatch
+    {
+        static void Postfix(MapBehaviour __instance)
         {
-            static void Postfix(MapBehaviour __instance)
-            {
-                __instance.ShowTrackOverlay();
-            }
-        }
-
-        [HarmonyPatch(typeof(MapBehaviour), nameof(MapBehaviour.ShowCountOverlay))]
-        static class MapBehaviourShowCountOverlayPatch
-        {
-            static void Postfix(MapBehaviour __instance)
-            {
-                if (TrackOverlay) TrackOverlay.SetActive(false);
-            }
+            if (TrackOverlay) TrackOverlay.SetActive(false);
         }
     }
 }

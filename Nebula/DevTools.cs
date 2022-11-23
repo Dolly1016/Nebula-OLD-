@@ -1,173 +1,172 @@
 ﻿using System.Reflection;
 
-namespace Nebula
+namespace Nebula;
+
+public static class DevTools
 {
-    public static class DevTools
+    private static FileStream CreateEmptyWav(string filepath)
     {
-        private static FileStream CreateEmptyWav(string filepath)
-        {
-            var fileStream = new FileStream(filepath, FileMode.Create);
+        var fileStream = new FileStream(filepath, FileMode.Create);
 
-            return fileStream;
+        return fileStream;
+    }
+
+    public static void SearchAndSaveTextureFromMesh(string objName, string fileName)
+    {
+        var obj = UnityEngine.GameObject.Find(objName);
+        var renderer = obj.GetComponent<MeshRenderer>();
+        if (renderer == null) return;
+
+        byte[] bytes = UnityEngine.ImageConversion.EncodeToPNG(Helpers.CreateReadabeTexture(renderer.material.mainTexture));
+        //保存
+        File.WriteAllBytes(fileName + ".png", bytes);
+    }
+
+    public static void SearchAndSaveTexture(string objName, string fileName)
+    {
+        var obj = UnityEngine.GameObject.Find(objName);
+        var renderer = obj.GetComponent<SpriteRenderer>();
+        if (renderer == null) return;
+
+        byte[] bytes = UnityEngine.ImageConversion.EncodeToPNG(Helpers.CreateReadabeTexture(renderer.sprite.texture));
+        //保存
+        File.WriteAllBytes(fileName + ".png", bytes);
+    }
+
+    public static void SearchAndSaveTextureFromSprite(string objName, string fileName)
+    {
+        foreach (var sprite in UnityEngine.Object.FindObjectsOfTypeAll(Sprite.Il2CppType))
+        {
+            if (sprite.name != objName) continue;
+
+            byte[] bytes = UnityEngine.ImageConversion.EncodeToPNG(Helpers.CreateReadabeTexture(sprite.Cast<Sprite>().texture));
+            //保存
+            File.WriteAllBytes(fileName + ".png", bytes);
+
+            break;
         }
+    }
 
-		public static void SearchAndSaveTextureFromMesh(string objName, string fileName)
-		{
-			var obj = UnityEngine.GameObject.Find(objName);
-			var renderer = obj.GetComponent<MeshRenderer>();
-			if (renderer == null) return;
-
-			byte[] bytes = UnityEngine.ImageConversion.EncodeToPNG(Helpers.CreateReadabeTexture(renderer.material.mainTexture));
-			//保存
-			File.WriteAllBytes(fileName + ".png", bytes);
-		}
-
-		public static void SearchAndSaveTexture(string objName, string fileName)
-		{
-			var obj=UnityEngine.GameObject.Find(objName);
-			var renderer = obj.GetComponent<SpriteRenderer>();
-			if (renderer == null) return;
-
-			byte[] bytes = UnityEngine.ImageConversion.EncodeToPNG(Helpers.CreateReadabeTexture(renderer.sprite.texture));
-			//保存
-			File.WriteAllBytes(fileName + ".png", bytes);
-		}
-
-		public static void SearchAndSaveTextureFromSprite(string objName, string fileName)
-		{
-			foreach(var sprite in UnityEngine.Object.FindObjectsOfTypeAll(Sprite.Il2CppType))
-            {
-				if (sprite.name != objName) continue;
-
-				byte[] bytes = UnityEngine.ImageConversion.EncodeToPNG(Helpers.CreateReadabeTexture(sprite.Cast<Sprite>().texture));
-				//保存
-				File.WriteAllBytes(fileName + ".png", bytes);
-
-				break;
-			}
-		}
-
-		public static void SaveAllSound(string directory)
+    public static void SaveAllSound(string directory)
+    {
+        foreach (var audio in UnityEngine.Object.FindObjectsOfTypeIncludingAssets(AudioClip.Il2CppType))
         {
-            foreach (var audio in UnityEngine.Object.FindObjectsOfTypeIncludingAssets(AudioClip.Il2CppType))
+            var filepath = directory + "/" + audio.name + ".wav";
+
+            // Make sure directory exists if user is saving to sub dir.
+            Directory.CreateDirectory(Path.GetDirectoryName(filepath));
+
+            using (var fileStream = CreateEmptyWav(filepath))
             {
-                var filepath = directory + "/" + audio.name + ".wav";
+                var clip = audio.Cast<AudioClip>();
 
-                // Make sure directory exists if user is saving to sub dir.
-                Directory.CreateDirectory(Path.GetDirectoryName(filepath));
-
-                using (var fileStream = CreateEmptyWav(filepath))
-                {
-					var clip = audio.Cast<AudioClip>();
-
-					WriteHeader(fileStream, clip);
-					ConvertAndWrite(fileStream, clip);
-				}
-
+                WriteHeader(fileStream, clip);
+                ConvertAndWrite(fileStream, clip);
             }
+
+        }
+    }
+
+    private static void ConvertAndWrite(FileStream fileStream, AudioClip clip)
+    {
+
+        var samples = new float[clip.samples * clip.channels];
+
+        clip.LoadAudioData();
+
+        clip.GetData(samples, 0);
+
+        int rescaleFactor = 32767; //to convert float to Int16
+
+        for (int i = 0; i < samples.Length; i++)
+        {
+            short shortData = (short)(samples[i] * rescaleFactor);
+            Byte[] byteArr = BitConverter.GetBytes(shortData);
+            fileStream.Write(byteArr, 0, byteArr.Length);
         }
 
-		private static void ConvertAndWrite(FileStream fileStream, AudioClip clip)
-		{
+        clip.UnloadAudioData();
+    }
 
-			var samples = new float[clip.samples * clip.channels];
-			
-			clip.LoadAudioData();
+    private static void WriteHeader(FileStream fileStream, AudioClip clip)
+    {
 
-			clip.GetData(samples, 0);
+        var hz = clip.frequency;
+        var channels = clip.channels;
+        var samples = clip.samples;
 
-			int rescaleFactor = 32767; //to convert float to Int16
+        fileStream.Seek(0, SeekOrigin.Begin);
 
-			for (int i = 0; i < samples.Length; i++)
-			{
-				short shortData = (short)(samples[i] * rescaleFactor);
-				Byte[] byteArr = BitConverter.GetBytes(shortData);
-				fileStream.Write(byteArr, 0, byteArr.Length);
-			}
+        Byte[] riff = System.Text.Encoding.UTF8.GetBytes("RIFF");
+        fileStream.Write(riff, 0, 4);
 
-			clip.UnloadAudioData();
-		}
+        Byte[] chunkSize = BitConverter.GetBytes((UInt32)(44 + clip.samples * clip.channels * 2));
+        fileStream.Write(chunkSize, 0, 4);
 
-		private static void WriteHeader(FileStream fileStream, AudioClip clip)
-		{
+        Byte[] wave = System.Text.Encoding.UTF8.GetBytes("WAVE");
+        fileStream.Write(wave, 0, 4);
 
-			var hz = clip.frequency;
-			var channels = clip.channels;
-			var samples = clip.samples;
+        Byte[] fmt = System.Text.Encoding.UTF8.GetBytes("fmt ");
+        fileStream.Write(fmt, 0, 4);
 
-			fileStream.Seek(0, SeekOrigin.Begin);
+        Byte[] subChunk1 = BitConverter.GetBytes(16);
+        fileStream.Write(subChunk1, 0, 4);
 
-			Byte[] riff = System.Text.Encoding.UTF8.GetBytes("RIFF");
-			fileStream.Write(riff, 0, 4);
+        UInt16 one = 1;
 
-			Byte[] chunkSize = BitConverter.GetBytes((UInt32)(44 + clip.samples * clip.channels * 2));
-			fileStream.Write(chunkSize, 0, 4);
+        Byte[] audioFormat = BitConverter.GetBytes(one);
+        fileStream.Write(audioFormat, 0, 2);
 
-			Byte[] wave = System.Text.Encoding.UTF8.GetBytes("WAVE");
-			fileStream.Write(wave, 0, 4);
+        Byte[] numChannels = BitConverter.GetBytes(channels);
+        fileStream.Write(numChannels, 0, 2);
 
-			Byte[] fmt = System.Text.Encoding.UTF8.GetBytes("fmt ");
-			fileStream.Write(fmt, 0, 4);
+        Byte[] sampleRate = BitConverter.GetBytes(hz);
+        fileStream.Write(sampleRate, 0, 4);
 
-			Byte[] subChunk1 = BitConverter.GetBytes(16);
-			fileStream.Write(subChunk1, 0, 4);
+        Byte[] byteRate = BitConverter.GetBytes(hz * channels * 2); // sampleRate * bytesPerSample*number of channels, here 44100*2*2
+        fileStream.Write(byteRate, 0, 4);
 
-			UInt16 one = 1;
+        UInt16 blockAlign = (ushort)(channels * 2);
+        fileStream.Write(BitConverter.GetBytes(blockAlign), 0, 2);
 
-			Byte[] audioFormat = BitConverter.GetBytes(one);
-			fileStream.Write(audioFormat, 0, 2);
+        UInt16 bps = 16;
+        Byte[] bitsPerSample = BitConverter.GetBytes(bps);
+        fileStream.Write(bitsPerSample, 0, 2);
 
-			Byte[] numChannels = BitConverter.GetBytes(channels);
-			fileStream.Write(numChannels, 0, 2);
+        Byte[] datastring = System.Text.Encoding.UTF8.GetBytes("data");
+        fileStream.Write(datastring, 0, 4);
 
-			Byte[] sampleRate = BitConverter.GetBytes(hz);
-			fileStream.Write(sampleRate, 0, 4);
+        Byte[] subChunk2 = BitConverter.GetBytes(samples * channels * 2);
+        fileStream.Write(subChunk2, 0, 4);
+    }
 
-			Byte[] byteRate = BitConverter.GetBytes(hz * channels * 2); // sampleRate * bytesPerSample*number of channels, here 44100*2*2
-			fileStream.Write(byteRate, 0, 4);
+    public static string TestFunc()
+    {
+        var methods = typeof(UnityEngine.Object).GetMethods(BindingFlags.Static | BindingFlags.Public);
+        var method = methods.First(m => m.Name == "FindObjectsOfType" && m.GetParameters().Length == 0).MakeGenericMethod(typeof(UnityEngine.SpriteRenderer));
+        object returned = method.Invoke(null, new object[0]);
+        Type type = returned.GetType();
+        var indexer = type.GetMethod("get_Item");
+        UnityEngine.GameObject obj = (indexer.Invoke(returned, new object[] { 0 }) as Component).gameObject;
 
-			UInt16 blockAlign = (ushort)(channels * 2);
-			fileStream.Write(BitConverter.GetBytes(blockAlign), 0, 2);
+        return obj.name;
+    }
 
-			UInt16 bps = 16;
-			Byte[] bitsPerSample = BitConverter.GetBytes(bps);
-			fileStream.Write(bitsPerSample, 0, 2);
+    public static bool IsIndexerPropertyMethod(this MethodInfo method)
+    {
+        var declaringType = method.DeclaringType;
+        if (declaringType is null) return false;
+        var indexerProperty = GetIndexerProperty(method.DeclaringType);
+        if (indexerProperty is null) return false;
+        return method == indexerProperty.GetMethod || method == indexerProperty.SetMethod;
+    }
 
-			Byte[] datastring = System.Text.Encoding.UTF8.GetBytes("data");
-			fileStream.Write(datastring, 0, 4);
-
-			Byte[] subChunk2 = BitConverter.GetBytes(samples * channels * 2);
-			fileStream.Write(subChunk2, 0, 4);
-		}
-
-		public static string TestFunc()
-        {
-			var methods= typeof(UnityEngine.Object).GetMethods(BindingFlags.Static | BindingFlags.Public);
-			var method = methods.First(m=> m.Name == "FindObjectsOfType" && m.GetParameters().Length==0).MakeGenericMethod(typeof(UnityEngine.SpriteRenderer));
-			object returned = method.Invoke(null, new object[0]);
-			Type type = returned.GetType();
-			var indexer = type.GetMethod("get_Item");
-			UnityEngine.GameObject obj = (indexer.Invoke(returned,new object[] { 0 }) as Component).gameObject;
-			
-			return obj.name;
-		}
-		
-		public static bool IsIndexerPropertyMethod(this MethodInfo method)
-		{
-			var declaringType = method.DeclaringType;
-			if (declaringType is null) return false;
-			var indexerProperty = GetIndexerProperty(method.DeclaringType);
-			if (indexerProperty is null) return false;
-			return method == indexerProperty.GetMethod || method == indexerProperty.SetMethod;
-		}
-
-		private static PropertyInfo GetIndexerProperty(this Type type)
-		{
-			var defaultPropertyAttribute = type.GetCustomAttributes<DefaultMemberAttribute>()
-				.FirstOrDefault();
-			if (defaultPropertyAttribute is null) return null;
-			return type.GetProperty(defaultPropertyAttribute.MemberName,
-				BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-		}
-	}
+    private static PropertyInfo GetIndexerProperty(this Type type)
+    {
+        var defaultPropertyAttribute = type.GetCustomAttributes<DefaultMemberAttribute>()
+            .FirstOrDefault();
+        if (defaultPropertyAttribute is null) return null;
+        return type.GetProperty(defaultPropertyAttribute.MemberName,
+            BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+    }
 }

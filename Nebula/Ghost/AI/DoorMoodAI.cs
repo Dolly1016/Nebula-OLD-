@@ -1,51 +1,51 @@
-﻿namespace Nebula.Ghost.AI
-{ 
-    public class AI_PlayerDoorMood : GhostWeightedAI
+﻿namespace Nebula.Ghost.AI;
+
+public class AI_PlayerDoorMood : GhostWeightedAI
+{
+    private int MaxPlayer;
+
+    public override void Update(Ghost ghost)
     {
-        private int MaxPlayer;
-
-        public override void Update(Ghost ghost)
+        foreach (var room in ghost.DoorKeys)
         {
-            foreach (var room in ghost.DoorKeys)
-            {
-                ghost.DoorMood[room] += Weight * (float)GhostAI.GetCountOfAlivePlayers(room, MaxPlayer) / (float)MaxPlayer;
-            }
-        }
-
-        public AI_PlayerDoorMood(uint priority, float weight,int maxPlayer):base(priority, weight) {
-            MaxPlayer = maxPlayer;
+            ghost.DoorMood[room] += Weight * (float)GhostAI.GetCountOfAlivePlayers(room, MaxPlayer) / (float)MaxPlayer;
         }
     }
 
-    public class AI_HideDeadBodyDoorMood : GhostWeightedAI
+    public AI_PlayerDoorMood(uint priority, float weight, int maxPlayer) : base(priority, weight)
     {
-        private int MaxBodies;
+        MaxPlayer = maxPlayer;
+    }
+}
 
-        public override void Update(Ghost ghost)
-        {
-            foreach (var room in ghost.DoorKeys)
-            {
-                ghost.DoorMood[room] += Weight * (float)GhostAI.GetCountOfDeadBodies(room, MaxBodies) / (float)MaxBodies;
-            }
-        }
+public class AI_HideDeadBodyDoorMood : GhostWeightedAI
+{
+    private int MaxBodies;
 
-        public AI_HideDeadBodyDoorMood(uint priority, float weight, int maxBodies) : base(priority, weight)
+    public override void Update(Ghost ghost)
+    {
+        foreach (var room in ghost.DoorKeys)
         {
-            MaxBodies = maxBodies;
+            ghost.DoorMood[room] += Weight * (float)GhostAI.GetCountOfDeadBodies(room, MaxBodies) / (float)MaxBodies;
         }
     }
 
-    public class AI_RandomDoorMoodWithoutSkeld : AI_WhiteNoise
+    public AI_HideDeadBodyDoorMood(uint priority, float weight, int maxBodies) : base(priority, weight)
     {
-        public override void Update(Ghost ghost)
-        {
-            if (Map.MapData.GetCurrentMapData().DoorHackingCanBlockSabotage) return;
+        MaxBodies = maxBodies;
+    }
+}
 
-            base.Update(ghost);
-        }
+public class AI_RandomDoorMoodWithoutSkeld : AI_WhiteNoise
+{
+    public override void Update(Ghost ghost)
+    {
+        if (Map.MapData.GetCurrentMapData().DoorHackingCanBlockSabotage) return;
 
-        public AI_RandomDoorMoodWithoutSkeld(uint priority, float weight) : base(priority, weight,NoiseDestination.DoorMood,false)
-        {
-        }
+        base.Update(ghost);
+    }
+
+    public AI_RandomDoorMoodWithoutSkeld(uint priority, float weight) : base(priority, weight, NoiseDestination.DoorMood, false)
+    {
     }
 }
