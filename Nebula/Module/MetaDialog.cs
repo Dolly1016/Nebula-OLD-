@@ -195,7 +195,9 @@ public class MetaDialog : MetaScreen
             var r = role;
             var button = designers[index % 6].AddButton(new Vector2(1.65f, 0.36f), role.Name, Helpers.cs(role.Color, Language.Language.GetString("role." + role.LocalizeName + ".name")));
             button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => onClick(r)));
-            button.transform.GetChild(0).gameObject.GetComponent<TMPro.TextMeshPro>().fontStyle = TMPro.FontStyles.Bold;
+            var text = button.transform.GetChild(0).gameObject.GetComponent<TMPro.TextMeshPro>();
+            text.fontStyle = TMPro.FontStyles.Bold;
+            text.fontSizeMin /= 2f;
             designers[index % 6].CustomUse(-0.07f);
             index++;
         }
@@ -376,21 +378,21 @@ public class MetaDialog : MetaScreen
 
                 break;
             case 1:
-                designer.AddRolesTopic((r) => r.category != Roles.RoleCategory.Complex && r.ShowInHelpWindow, (r) => OpenAssignableHelpDialog(r), 5, 6, arg, (p) =>
+                designer.AddRolesTopic((r) => r.category != Roles.RoleCategory.Complex && r.ShowInHelpWindow, (r) => OpenAssignableHelpDialog(r), 5, 7, arg, (p) =>
                 {
                     MetaDialog.EraseDialog(1);
                     OpenHelpDialog(tab, arg + p, options);
                 });
                 break;
             case 2:
-                designer.AddGhostRoleTopic((r) => r.ShowInHelpWindow, (r) => OpenAssignableHelpDialog(r), 5, 6, arg, (p) =>
+                designer.AddGhostRoleTopic((r) => r.ShowInHelpWindow, (r) => OpenAssignableHelpDialog(r), 5, 7, arg, (p) =>
                 {
                     MetaDialog.EraseDialog(1);
                     OpenHelpDialog(tab, arg + p, options);
                 });
                 break;
             case 3:
-                designer.AddModifyTopic((r) => r.ShowInHelpWindow, (r) => OpenAssignableHelpDialog(r), 5, 6, arg, (p) =>
+                designer.AddModifyTopic((r) => r.ShowInHelpWindow, (r) => OpenAssignableHelpDialog(r), 5, 7, arg, (p) =>
                 {
                     MetaDialog.EraseDialog(1);
                     OpenHelpDialog(tab, arg + p, options);

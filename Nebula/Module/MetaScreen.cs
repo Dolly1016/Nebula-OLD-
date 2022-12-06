@@ -97,7 +97,8 @@ public class MSTextArea : MetaScreenContent
         text.rectTransform.sizeDelta = size - new Vector2(0.2f, 0f);
         text.rectTransform.pivot = new Vector2(0.5f, 0.5f);
         text.text = rawText;
-        text.fontSize = text.fontSizeMax = text.fontSizeMax = fontSize;
+        text.fontSize = text.fontSizeMax = fontSize;
+        text.fontSizeMin = fontSize / 2;
     }
 }
 
@@ -182,6 +183,7 @@ public class MSButton : MSString
         var text = button.transform.GetChild(0).GetComponent<TMPro.TextMeshPro>();
         text.alignment = TMPro.TextAlignmentOptions.Center;
         text.fontStyle = style;
+        text.fontSize /= 2f;
         this.text = text;
     }
 }

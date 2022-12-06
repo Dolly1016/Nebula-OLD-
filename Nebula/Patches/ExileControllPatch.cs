@@ -18,7 +18,18 @@ class ExileControllerPatch
     {
         public static void Postfix(ExileController __instance)
         {
-
+            if(CustomOptionHolder.mapOptions.getBool() && CustomOptionHolder.additionalEmergencyCoolDown.getFloat() > 0f)
+            {
+                int deadPlayers = 0;
+                foreach(var p in PlayerControl.AllPlayerControls)
+                {
+                    if (p.Data.IsDead) deadPlayers++;
+                }
+                if (deadPlayers <= (int)CustomOptionHolder.additionalEmergencyCoolDownCondition.getFloat())
+                {
+                    ShipStatus.Instance.EmergencyCooldown += CustomOptionHolder.additionalEmergencyCoolDown.getFloat();
+                }
+            }
         }
     }
 

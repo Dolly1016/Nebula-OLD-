@@ -19,14 +19,17 @@ public class FCrewmate : Role
     //Complexなロールカテゴリーについてのみ呼ばれます。
     public override Patches.AssignRoles.RoleAllocation[] GetComplexAllocations()
     {
-        Patches.AssignRoles.RoleAllocation[] result = new Patches.AssignRoles.RoleAllocation[(int)maxCountOfDamnedOption.getFloat()];
+        if (!TopOption.getBool()) return null;
+    
+        Patches.AssignRoles.RoleAllocation[] result = new Patches.AssignRoles.RoleAllocation[(int)RoleCountOption!.getFloat()];
 
-        int damneds = Helpers.CalcProbabilityCount(ChanceOfDamned(), result.Length);
+        int damneds = Helpers.CalcProbabilityCount(ChanceOfDamned(), (int)maxCountOfDamnedOption.getFloat());
 
-        int chance = RoleChanceOption.getSelection() + 1;
+        int chance = RoleChanceOption!.getSelection() + 1;
         for (int i = 0; i < result.Length; i++)
         {
             result[i] = new Patches.AssignRoles.RoleAllocation(i < damneds ? Roles.DamnedCrew : Roles.Crewmate, chance);
+            if (i == 0 && RoleChanceSecondaryOption!.getSelection() != 0) chance = RoleChanceSecondaryOption.getSelection();
         }
 
         return result;

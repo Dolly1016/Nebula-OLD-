@@ -13,6 +13,8 @@ public class RitualCrewmate : RitualRole
         ValidGamemode = Module.CustomGameMode.Ritual;
     }
 
+    public override bool ShowInHelpWindow => false;
+
     Sprite circleSprite;
     private Sprite GetCircleSprite()
     {

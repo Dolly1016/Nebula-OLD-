@@ -3,6 +3,7 @@ using Nebula.Game;
 
 namespace Nebula.Roles.NeutralRoles;
 
+/*
 public class SantaClaus : Role
 {
     public override void EditDisplayNameColor(byte playerId, ref Color displayColor)
@@ -14,10 +15,9 @@ public class SantaClaus : Role
         }
     }
 
-    /* 陣営色 */
+
     static public Color RoleColor = new Color(255f / 255f, 102f / 255f, 102f / 255f);
 
-    /* オプション */
     private Module.CustomOption isGuessableOption;
     public Module.CustomOption killCoolDownOption;
     private Module.CustomOption tasksPerPresentOption;
@@ -69,7 +69,6 @@ public class SantaClaus : Role
         RPCEventInvoker.UpdateRoleData(PlayerControl.LocalPlayer.PlayerId, leftTaskSetDataId, (int)maxPresentsOption.getFloat() - 1);
     }
 
-    /* ボタン */
     private CustomButton? santaButton = null;
     public override void ButtonInitialize(HudManager __instance)
     {
@@ -116,7 +115,6 @@ public class SantaClaus : Role
         Patches.PlayerControlPatch.SetPlayerOutline(data.currentTarget, Color.yellow);
     }
 
-    /* 画像 */
     private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.SantaButton.png", 115f);
 
     public override HelpSprite[] helpSprite => new HelpSprite[]
@@ -150,7 +148,6 @@ public class SantaClaus : Role
 
 public class BlackSanta : Role
 {
-    /* 陣営色 */
     static public Color RoleColor = new Color(80f / 255f, 93f / 255f, 100f / 255f);
 
     public override bool IsGuessableRole => Roles.SantaClaus.IsGuessableRole;
@@ -163,7 +160,6 @@ public class BlackSanta : Role
         }
     }
 
-    /* ボタン */
     private DeadBody? targetBody = null;
     private byte capturedBodyId = byte.MaxValue;
 
@@ -290,7 +286,6 @@ public class BlackSanta : Role
         Patches.PlayerControlPatch.SetDeadBodyOutline(targetBody, Color.yellow);
     }
 
-    /* 画像 */
     private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.BlackSantaButton.png", 115f);
     private SpriteLoader buttonDeadBodySprite = new SpriteLoader("Nebula.Resources.BlackSantaBodyButton.png", 115f);
 
@@ -324,3 +319,4 @@ public class BlackSanta : Role
         IsHideRole = true;
     }
 }
+*/

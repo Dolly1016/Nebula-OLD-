@@ -16,10 +16,11 @@ public class HasBilateralness : Role
     public override Patches.AssignRoles.RoleAllocation[] GetComplexAllocations()
     {
         if (FirstRole == null || SecondaryRole == null) return null;
+        if (!TopOption.getBool()) return null;
 
         Patches.AssignRoles.RoleAllocation[] result = new Patches.AssignRoles.RoleAllocation[(int)RoleCountOption.getFloat()];
 
-        int chance = RoleChanceOption.getSelection();
+        int chance = RoleChanceOption.getSelection() + 1;
         int secondary;
 
         if (definitiveAssignmentOption.getBool())
@@ -44,6 +45,7 @@ public class HasBilateralness : Role
         for (int i = 0; i < result.Length; i++)
         {
             result[i] = new Patches.AssignRoles.RoleAllocation(i < secondary ? SecondaryRole : FirstRole, chance);
+            if (i == 0 && RoleChanceSecondaryOption.getSelection() != 0) chance = RoleChanceSecondaryOption.getSelection();
         }
 
         return result;

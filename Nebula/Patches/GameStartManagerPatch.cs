@@ -25,6 +25,8 @@ public class GameStartManagerPatch
 
         public bool Matches()
         {
+            if (version.All((b) => b == 0)) return true;
+
             if (!Assembly.GetExecutingAssembly().ManifestModule.ModuleVersionId.Equals(this.guid))
             {
                 return false;
@@ -147,7 +149,7 @@ public class GameStartManagerPatch
                             message += $"<color=#FF0000FF>{Language.Language.GetString("lobby.hasNoNebula").Replace("%NAME%", client.Character.Data.PlayerName)}</color>\n";
 
                         }
-                        else
+                        else if(!NebulaOption.configDontCareMismatchedNoS.Value)
                         {
                             PlayerVersion version = playerVersions[client.Id];
                             if (!version.Matches())

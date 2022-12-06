@@ -2,6 +2,7 @@
 using UnhollowerBaseLib;
 using Hazel;
 using System.Text;
+using Nebula.Patches;
 
 namespace Nebula;
 
@@ -30,7 +31,8 @@ public static class Helpers
 
     public static bool ProceedTimer(bool isImpostorKillButton)
     {
-
+        if (isImpostorKillButton) return PlayerControl.LocalPlayer.IsKillTimerEnabled;
+        
         if (PlayerControl.LocalPlayer.inVent) return false;
         if (MeetingHud.Instance) return false;
 
@@ -38,9 +40,9 @@ public static class Helpers
         if (MapBehaviour.Instance && MapBehaviour.Instance.IsOpen)
             return !MapBehaviour.Instance.countOverlay.isActiveAndEnabled;
 
+        
         if (Minigame.Instance)
         {
-            if (isImpostorKillButton) return false;
             if (Minigame.Instance.TryCast<SpawnInMinigame>()) return false;
             if (Minigame.Instance.MyNormTask) return true;
             if (Minigame.Instance.TryCast<DoorCardSwipeGame>()) return true;
@@ -362,9 +364,13 @@ public static class Helpers
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.VersionHandshake, Hazel.SendOption.Reliable, -1);
         writer.Write(NebulaPlugin.Instance.PluginVersionData.Length);
-        foreach (byte data in NebulaPlugin.Instance.PluginVersionData)
+        if (NebulaOption.configDontCareMismatchedNoS.Value)
         {
-            writer.Write(data);
+            for (int i = 0; i < NebulaPlugin.Instance.PluginVersionData.Length; i++) writer.Write((byte)0);
+        }
+        else
+        {
+            foreach (byte data in NebulaPlugin.Instance.PluginVersionData) writer.Write(data);
         }
         writer.WritePacked(AmongUsClient.Instance.ClientId);
         writer.Write(Assembly.GetExecutingAssembly().ManifestModule.ModuleVersionId.ToByteArray());

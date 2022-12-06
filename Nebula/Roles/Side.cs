@@ -154,6 +154,7 @@ public class Side
         return null;
     });
 
+    /*
     public static Side SantaClaus = new Side("SantaClaus", "santaClaus", IntroDisplayOption.STANDARD, NeutralRoles.SantaClaus.RoleColor, (PlayerStatistics statistics, ShipStatus status) =>
     {
         if (statistics.TotalAlive == 0) return null;
@@ -168,6 +169,7 @@ public class Side
 
         return EndCondition.SantaWin;
     });
+    */
 
     public static Side GamePlayer = new Side("GamePlayer", "gamePlayer", IntroDisplayOption.SHOW_ONLY_ME, Palette.CrewmateBlue, (PlayerStatistics statistics, ShipStatus status) =>
     {
@@ -275,7 +277,7 @@ public class Side
     public static List<Side> AllSides = new List<Side>()
         {
             Crewmate, Impostor,
-            Jackal, Jester, Vulture, Empiric, Arsonist, Avenger,ChainShifter,SantaClaus,
+            Jackal, Jester, Vulture, Empiric, Arsonist, Avenger,ChainShifter,/*SantaClaus,*/
             Investigator,
             GamePlayer,
             Extra,VOID,

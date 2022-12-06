@@ -25,6 +25,7 @@ public class NebulaOption
     static public ConfigEntry<int> configProcessorAffinity;
     static public ConfigEntry<bool> configPrioritizeAmongUs;
     static public ConfigEntry<int> configTimeoutExtension;
+    static public ConfigEntry<bool> configDontCareMismatchedNoS;
 
     static public string GetPicturePath(NebulaPictureDest dest)
     {
@@ -209,6 +210,7 @@ public static class StartOptionMenuPatch
         NebulaOption.configProcessorAffinity = NebulaPlugin.Instance.Config.Bind("Config", "ProcessorAffinity", 0);
         NebulaOption.configPrioritizeAmongUs = NebulaPlugin.Instance.Config.Bind("Config", "PrioritizeAmongUs", false);
         NebulaOption.configTimeoutExtension = NebulaPlugin.Instance.Config.Bind("Config", "TimeoutExtension", 0);
+        NebulaOption.configDontCareMismatchedNoS = NebulaPlugin.Instance.Config.Bind("Config", "DontCareMismatchedNoS", false);
         NebulaOption.ReflectProcessorAffinity();
         NebulaOption.ReflectProcessorPriority();
     }
@@ -255,6 +257,7 @@ public static class StartOptionMenuPatch
     static ToggleButtonBehaviour prioritizeAmongUs;
     static ToggleButtonBehaviour pictureDest;
     static ToggleButtonBehaviour timeoutExtension;
+    static ToggleButtonBehaviour dontCareMismatchedNoS;
 
     private static GameObject ShowConfirmDialogue(Transform parent, GameObject buttonTemplate, string text, System.Action yesAction)
     {
@@ -478,6 +481,20 @@ public static class StartOptionMenuPatch
             timeoutExtension.UpdateButtonText(Language.Language.GetString("config.option.timeoutExtension"), NebulaOption.GetTimeoutExtension());
         }));
 
+        var dontCareMismatchedNosButton = GameObject.Instantiate(toggleButtonTemplate, null);
+        dontCareMismatchedNosButton.transform.SetParent(nebulaTab.transform);
+        dontCareMismatchedNosButton.transform.localScale = new Vector3(1f, 1f, 1f);
+        dontCareMismatchedNosButton.transform.localPosition = new Vector3(-1.3f, -1f, 0f);
+        dontCareMismatchedNosButton.name = "TimeoutExtension";
+        dontCareMismatchedNoS = dontCareMismatchedNosButton.GetComponent<ToggleButtonBehaviour>();
+        passiveButton = dontCareMismatchedNosButton.GetComponent<PassiveButton>();
+        passiveButton.OnClick = new UnityEngine.UI.Button.ButtonClickedEvent();
+        passiveButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
+        {
+            NebulaOption.configDontCareMismatchedNoS.Value = !NebulaOption.configDontCareMismatchedNoS.Value;
+            dontCareMismatchedNoS.UpdateToggleText(NebulaOption.configDontCareMismatchedNoS.Value, Language.Language.GetString("config.option.dontCareMismatchedNoS"));
+        }));
+
         //キー割り当てボタン
         GameObject TextObject;
 
@@ -628,6 +645,7 @@ public static class StartOptionMenuPatch
             processorAffinity.UpdateButtonText(Language.Language.GetString("config.option.processorRestriction"), NebulaOption.GetProcessorAffinityMode());
             prioritizeAmongUs.UpdateToggleText(NebulaOption.configPrioritizeAmongUs.Value, Language.Language.GetString("config.option.prioritizeAmongUs"));
             timeoutExtension.UpdateButtonText(Language.Language.GetString("config.option.timeoutExtension"), NebulaOption.GetTimeoutExtension());
+            dontCareMismatchedNoS.UpdateToggleText(NebulaOption.configDontCareMismatchedNoS.Value, Language.Language.GetString("config.option.dontCareMismatchedNoS"));
 
             passiveButton.OnMouseOver.Invoke();
         }

@@ -1,5 +1,6 @@
 ﻿using Hazel;
 using Nebula.Module;
+using UnityEngine;
 
 namespace Nebula;
 
@@ -19,6 +20,7 @@ public enum CustomRPC
     VersionHandshake,
     Synchronize,
     SetMyColor,
+    ShareColor,
     SynchronizeTimer,
     UpdatePlayerControl,
     ForceEnd,
@@ -132,7 +134,10 @@ class RPCHandlerPatch
                 RPCEvents.VersionHandshake(version, new Guid(reader.ReadBytes(16)), clientId);
                 break;
             case (byte)CustomRPC.SetMyColor:
-                RPCEvents.SetMyColor(reader.ReadByte(), new Color(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), 1f), reader.ReadByte());
+                RPCEvents.SetMyColor(reader.ReadByte(), reader.ReadByte(), reader.ReadByte(), new Color(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), 1f), new Color(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), 1f));
+                break;
+            case (byte)CustomRPC.ShareColor:
+                RPCEvents.ShareColor(reader.ReadByte(), new Color(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), 1f), reader.ReadSingle(), reader.ReadByte(), reader.ReadByte(), new Color(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), 1f), reader.ReadSingle(), reader.ReadByte(), reader.ReadByte());
                 break;
             case (byte)CustomRPC.Synchronize:
                 RPCEvents.Synchronize(reader.ReadByte(), reader.ReadInt32());
@@ -381,10 +386,16 @@ static class RPCEvents
         Objects.SoundPlayer.Initialize();
     }
 
-    public static void SetMyColor(byte playerId, Color color, byte shadowType)
+    public static void SetMyColor(byte playerId, byte hue,byte dis,Color mainColor,Color shadowColor)
     {
-        DynamicColors.SetOthersColor(color, DynamicColors.GetShadowColor(color, shadowType), playerId);
+        DynamicColors.SetOthersColor(hue, dis, mainColor, shadowColor, playerId);
     }
+
+    public static void ShareColor(byte shadowType,Color mainOriginalColor,float mainLum,byte mainHue,byte mainDis, Color shadowOriginalColor, float shadowLum, byte shadowHue, byte shadowDis)
+    {
+        DynamicColors.ReceiveSharedColor(shadowType,mainOriginalColor,mainLum,mainHue,mainDis,shadowOriginalColor,shadowLum,shadowHue,shadowDis);
+    }
+
     public static void SynchronizeTimer(float timer)
     {
         if (Game.GameData.data != null)
@@ -1386,7 +1397,7 @@ static class RPCEvents
         var MeshFilter = obj.AddComponent<MeshFilter>();
         var MeshRenderer = obj.AddComponent<MeshRenderer>();
         var Collider = obj.AddComponent<EdgeCollider2D>();
-
+        
         obj.transform.localPosition = new Vector3(center.x, center.y, center.y / 1000f);
 
         var mesh = new Mesh();
@@ -1406,7 +1417,7 @@ static class RPCEvents
         mesh.SetVertices(vertextList);
         mesh.SetUVs(0, uvList);
         mesh.SetIndices(new int[6] { 0, 2, 1, 1, 2, 3 }, MeshTopology.Triangles, 0);
-
+        
         Collider.points = new Vector2[5] { pos1 - center, pos1Upper - center, pos2Upper - center, pos2 - center, pos1 - center };
         Collider.edgeRadius = 0.2f;
 
@@ -1716,12 +1727,40 @@ public class RPCEventInvoker
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetMyColor, Hazel.SendOption.Reliable, -1);
         writer.Write(PlayerControl.LocalPlayer.PlayerId);
-        writer.Write(DynamicColors.MyColor.Color.r);
-        writer.Write(DynamicColors.MyColor.Color.g);
-        writer.Write(DynamicColors.MyColor.Color.b);
-        writer.Write(DynamicColors.MyColor.GetShadowType());
+        writer.Write(DynamicColors.MyColor.GetMainHue());
+        writer.Write(DynamicColors.MyColor.GetMainDistance());
+        var color = DynamicColors.MyColor.GetMainColor();
+        writer.Write(color.r);
+        writer.Write(color.g);
+        writer.Write(color.b);
+        color = DynamicColors.MyColor.GetShadowColor();
+        writer.Write(color.r);
+        writer.Write(color.g);
+        writer.Write(color.b);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
-        RPCEvents.SetMyColor(PlayerControl.LocalPlayer.PlayerId, DynamicColors.MyColor.Color, DynamicColors.MyColor.GetShadowType());
+        RPCEvents.SetMyColor(PlayerControl.LocalPlayer.PlayerId, DynamicColors.MyColor.GetMainHue(), DynamicColors.MyColor.GetMainDistance(), DynamicColors.MyColor.GetMainColor(), DynamicColors.MyColor.GetShadowColor());
+    }
+
+    public static void ShareColor(DynamicColors.CustomColor customColor) 
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ShareColor, Hazel.SendOption.Reliable, -1);
+        writer.Write(customColor.GetShadowType());
+        var color = customColor.GetMainOriginalColor();
+        writer.Write(color.r);
+        writer.Write(color.g);
+        writer.Write(color.b);
+        writer.Write(customColor.GetMainLuminosity());
+        writer.Write(customColor.GetMainHue());
+        writer.Write(customColor.GetMainDistance());
+        color = customColor.GetShadowOriginalColor();
+        writer.Write(color.r);
+        writer.Write(color.g);
+        writer.Write(color.b);
+        writer.Write(customColor.GetShadowLuminosity());
+        writer.Write(customColor.GetShadowHue());
+        writer.Write(customColor.GetShadowDistance());
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RPCEvents.ShareColor(customColor.GetShadowType(), customColor.GetMainOriginalColor(), customColor.GetMainLuminosity(), customColor.GetMainHue(), customColor.GetMainDistance(), customColor.GetShadowColor(),customColor.GetShadowLuminosity(),customColor.GetShadowHue(),customColor.GetShadowDistance());
     }
 
     public static void WinTrigger(Roles.Role role)

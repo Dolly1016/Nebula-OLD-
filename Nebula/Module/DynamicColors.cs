@@ -1,224 +1,38 @@
-﻿using UnhollowerBaseLib;
-using BepInEx.Configuration;
+﻿using BepInEx.Configuration;
+using Nebula.Patches;
+using Rewired.Utils.Platforms.Windows;
+using UnhollowerBaseLib;
+using UnityEngine;
+using UnityEngine.UI;
+using static Nebula.Module.DynamicColors;
 
 namespace Nebula.Module;
 
 [HarmonyPatch]
 public static class DynamicColors
 {
-    static public bool IsLightColor(Color color)
-    {
-        return (color.r + color.g * 1.15f + color.b * 0.5f > 1.05f);
-    }
-
-    public class CustomColor
-    {
-        private ConfigEntry<float> EntryR;
-        private ConfigEntry<float> EntryG;
-        private ConfigEntry<float> EntryB;
-        //ShadowType
-        private ConfigEntry<byte> EntryS;
-        //Luminosity 
-        private ConfigEntry<float> EntryL;
-        //ColorName
-        private ConfigEntry<byte> EntryH;
-        private ConfigEntry<byte> EntryD;
-
-        public Color OriginalColor { get; private set; }
-        public Color Color { get; private set; }
-        public Color ShadowColor { get; private set; }
-
-        public CustomColor(string saveCategory)
-        {
-            EntryR = NebulaPlugin.Instance.Config.Bind(saveCategory, "R", (float)1f);
-            EntryG = NebulaPlugin.Instance.Config.Bind(saveCategory, "G", (float)0f);
-            EntryB = NebulaPlugin.Instance.Config.Bind(saveCategory, "B", (float)0f);
-
-            EntryL = NebulaPlugin.Instance.Config.Bind(saveCategory, "L", (float)1f);
-
-            //陰タイプ
-            EntryS = NebulaPlugin.Instance.Config.Bind(saveCategory, "S", (byte)0);
-
-            //色名判別
-            EntryH = NebulaPlugin.Instance.Config.Bind(saveCategory, "H", (byte)0);
-            EntryD = NebulaPlugin.Instance.Config.Bind(saveCategory, "D", (byte)8);
-
-            OriginalColor = new Color(EntryR.Value, EntryG.Value, EntryB.Value, 1f);
-            Color = GetColor(OriginalColor, EntryL.Value);
-            ShadowColor = GetShadowColor(Color, EntryS.Value);
-        }
-
-        public void SetColor(Color color, byte h, byte d, byte shadowType, float luminosity)
-        {
-            EntryR.Value = color.r;
-            EntryG.Value = color.g;
-            EntryB.Value = color.b;
-
-            EntryS.Value = shadowType;
-
-            EntryL.Value = luminosity;
-
-            if (h < 80)
-                EntryH.Value = (byte)(h % 64);
-            else
-                EntryH.Value = (byte)h;
-            if (d < 24)
-                EntryD.Value = d;
-            else
-                EntryD.Value = 23;
-
-            OriginalColor = color;
-            Color = GetColor(OriginalColor, EntryL.Value);
-            ShadowColor = GetShadowColor(Color, EntryS.Value);
-        }
-
-        public byte GetHue()
-        {
-            return EntryH.Value;
-        }
-
-        public byte GetDistance()
-        {
-            return EntryD.Value;
-        }
-
-        public byte GetShadowType()
-        {
-            return EntryS.Value;
-        }
-
-        public float GetLuminosity()
-        {
-            return EntryL.Value;
-        }
-    }
-
-    public class SaveButton
-    {
-        GameObject ButtonObject;
-        PassiveButton PassiveButton;
-        BoxCollider2D Collider;
-        SpriteRenderer Renderer;
-        int RefBodyId;
-
-        public SaveButton(PlayerTab __instance, ColorButton relateButton)
-        {
-            RefBodyId = relateButton.RefBodyId;
-
-            ButtonObject = new GameObject("SaveButton");
-            ButtonObject.transform.SetParent(relateButton.ButtonObject.transform);
-
-            Collider = ButtonObject.AddComponent<BoxCollider2D>();
-            PassiveButton = ButtonObject.AddComponent<PassiveButton>();
-
-            Renderer = ButtonObject.AddComponent<SpriteRenderer>();
-            Renderer.sprite = GetSaveButtonSprite();
-            Renderer.transform.localPosition = new Vector3(0.6f, -0.01f, 0);
-
-            Collider.size = new Vector2(0.45f, 0.45f);
-
-            PassiveButton.ClickSound = __instance.ColorChips[0].Button.ClickSound;
-            PassiveButton.OnMouseOut = __instance.ColorChips[0].Button.OnMouseOut;
-            PassiveButton.OnClick.RemoveAllListeners();
-            PassiveButton.OnClick.AddListener((System.Action)(() =>
-            {
-                SaveCurrentColor(RefBodyId);
-            }));
-            PassiveButton.enabled = true;
-
-            OnEnable(__instance);
-        }
-
-        public void OnEnable(PlayerTab __instance)
-        {
-            ButtonObject.layer = __instance.ColorChips[0].gameObject.layer;
-        }
-    }
-
-    public class ColorButton
-    {
-        public GameObject ButtonObject { get; private set; }
-        GameObject SubObject;
-        PassiveButton PassiveButton;
-        BoxCollider2D Collider;
-        SpriteRenderer BaseRenderer;
-        SpriteRenderer ShadowRenderer;
-        public int RefBodyId { get; private set; }
-        Vector3 Position;
-
-        CustomColor Color;
-
-        public ColorButton(PlayerTab __instance, Vector3 position, int refBodyId, System.Action onClick, CustomColor color = null)
-        {
-            RefBodyId = refBodyId;
-            Position = position;
-            Color = color;
-
-            ButtonObject = new GameObject("ColorButton");
-
-            Collider = ButtonObject.AddComponent<BoxCollider2D>();
-            PassiveButton = ButtonObject.AddComponent<PassiveButton>();
-
-            ShadowRenderer = ButtonObject.AddComponent<SpriteRenderer>();
-            ShadowRenderer.sprite = GetButtonSprite();
-
-            SubObject = new GameObject("ColorButtonBase");
-            SubObject.transform.SetParent(ButtonObject.transform);
-            BaseRenderer = SubObject.AddComponent<SpriteRenderer>();
-            BaseRenderer.sprite = GetBaseButtonSprite();
-            BaseRenderer.transform.position += new Vector3(0, 0, -1f);
-
-            Collider.size = new Vector2(0.68f, 0.45f);
-
-            PassiveButton.ClickSound = __instance.ColorChips[0].Button.ClickSound;
-            PassiveButton.OnMouseOut = __instance.ColorChips[0].Button.OnMouseOut;
-            PassiveButton.OnMouseOver = new UnityEngine.Events.UnityEvent();
-            PassiveButton.OnMouseOver.AddListener((System.Action)(() =>
-            {
-                PlayerCustomizationMenu.Instance.PreviewArea.cosmetics.SetColor(RefBodyId);
-                if (Color != null)
-                {
-                    PlayerCustomizationMenu.Instance.SetItemName(GetColorName(Color.GetHue(), Color.GetDistance()));
-                }
-            }));
-
-            PassiveButton.OnClick.RemoveAllListeners();
-            PassiveButton.OnClick.AddListener(onClick);
-            PassiveButton.OnClick.AddListener((System.Action)(() =>
-            {
-                PlayerCustomizationMenu.Instance.PreviewArea.cosmetics.SetColor(AmongUs.Data.DataManager.Player.Customization.Color);
-                PlayerCustomizationMenu.Instance.SetItemName(GetColorName());
-            }));
-            PassiveButton.enabled = true;
-
-            OnEnable(__instance);
-        }
-
-        public void OnEnable(PlayerTab __instance)
-        {
-            ButtonObject.transform.SetParent(__instance.ColorChips[0].transform.parent);
-            ButtonObject.transform.localPosition = Position;
-            ButtonObject.layer = __instance.ColorChips[0].gameObject.layer;
-
-            SubObject.layer = __instance.ColorChips[0].gameObject.layer;
-        }
-
-        public void Update()
-        {
-            BaseRenderer.color = Palette.PlayerColors[RefBodyId];
-            ShadowRenderer.color = Palette.ShadowColors[RefBodyId];
-        }
-    }
-
-    static private ColorButton[] VanillaVariations = null;
-    static private ColorButton[] ShadowVariations = null;
-    static private ColorButton[] SaveVariations = null;
-    static private SaveButton[] WriteSaveVariations = null;
+    static private SpriteLoader ShareIconSprite = new SpriteLoader("Nebula.Resources.ShareIcon.png", 100f);
+    static private SpriteLoader PaletteSprite = new SpriteLoader("Nebula.Resources.Palette.png", 100f);
+    static private SpriteLoader LPaletteSprite = new SpriteLoader("Nebula.Resources.PaletteBrightness.png", 100f);
+    static private SpriteLoader BaseButtonSprite = new SpriteLoader("Nebula.Resources.ColorHalfButton.png", 100f);
+    static private SpriteLoader ButtonSprite = new SpriteLoader("Nebula.Resources.ColorFullBase.png", 100f);
+    static private SpriteLoader SaveButtonSprite = new SpriteLoader("Nebula.Resources.ColorSaveButton.png", 100f);
+    static private SpriteLoader ColorTargetSprite = new SpriteLoader("Nebula.Resources.TargetIcon.png", 140f);
+    static private SpriteLoader LTargetSprite = new SpriteLoader("Nebula.Resources.PaletteKnob.png", 100f);
+    static private SpriteLoader[] BrightnessSprite = new SpriteLoader[2] {
+        new SpriteLoader("Nebula.Resources.ColorLight.png", 100f),
+        new SpriteLoader("Nebula.Resources.ColorDark.png", 100f)
+    };
+    static private SpriteLoader[] SelectedSprite = new SpriteLoader[3] {
+        new SpriteLoader("Nebula.Resources.ColorButtonSelected.png", 100f),
+        new SpriteLoader("Nebula.Resources.ColorHalfButtonSelected0.png", 100f),
+        new SpriteLoader("Nebula.Resources.ColorHalfButtonSelected1.png", 100f)
+    };
 
     static private Sprite ModeVanillaSprite, ModeDynamicSprite;
-    static private Sprite GetModeChangeSprite()
+    static private Sprite GetModeChangeSprite(bool showVanillaColorsNow)
     {
-        if (ShowVanillaColorFlag)
+        if (showVanillaColorsNow)
         {
             if (ModeDynamicSprite) return ModeDynamicSprite;
             ModeDynamicSprite = Helpers.loadSpriteFromResources(
@@ -236,222 +50,398 @@ public static class DynamicColors
         }
     }
 
-    static private Sprite PaletteSprite;
-    static private Sprite GetPalleteSprite()
+    static public bool IsLightColor(Color color)
     {
-        if (PaletteSprite) return PaletteSprite;
-        PaletteSprite = Helpers.loadSpriteFromResources("Nebula.Resources.Palette.png", 100f);
-        return PaletteSprite;
+        return (color.r + color.g * 1.15f + color.b * 0.5f > 1.05f);
     }
 
-    static private Sprite LPaletteSprite;
-    static private Sprite GetLPalleteSprite()
+    public class CustomColor
     {
-        if (LPaletteSprite) return LPaletteSprite;
-        LPaletteSprite = Helpers.loadSpriteFromResources("Nebula.Resources.PaletteBrightness.png", 100f);
-        return LPaletteSprite;
+        public class CustomOriginalColor
+        {
+            private ConfigEntry<float> EntryR;
+            private ConfigEntry<float> EntryG;
+            private ConfigEntry<float> EntryB;
+            private ConfigEntry<byte> EntryH;
+            private ConfigEntry<byte> EntryD;
+            private ConfigEntry<float> EntryL;
+
+            public Color OriginalColor { get; private set; }
+            public Color Color { get; private set; }
+
+            public CustomOriginalColor(string saveCategory, string identifier, float multiplier)
+            {
+                EntryR = NebulaPlugin.Instance.Config.Bind(saveCategory, identifier + ".R", (float)multiplier);
+                EntryG = NebulaPlugin.Instance.Config.Bind(saveCategory, identifier + ".G", (float)0f);
+                EntryB = NebulaPlugin.Instance.Config.Bind(saveCategory, identifier + ".B", (float)0f);
+                EntryL = NebulaPlugin.Instance.Config.Bind(saveCategory, identifier + ".L", (float)1f);
+                EntryH = NebulaPlugin.Instance.Config.Bind(saveCategory, identifier + ".H", (byte)0);
+                EntryD = NebulaPlugin.Instance.Config.Bind(saveCategory, identifier + ".D", (byte)0);
+
+                OriginalColor = new Color(EntryR.Value, EntryG.Value, EntryB.Value, 1f);
+                Color = GetColor(OriginalColor, EntryL.Value);
+            }
+
+            public void SetColor(Color originalColor, float l,byte h,byte d)
+            {
+                EntryR.Value = originalColor.r;
+                EntryG.Value = originalColor.g;
+                EntryB.Value = originalColor.b;
+                EntryL.Value = l;
+
+                if (h < 80)
+                    EntryH.Value = (byte)(h % 64);
+                else
+                    EntryH.Value = (byte)h;
+                if (d < 24)
+                    EntryD.Value = d;
+                else
+                    EntryD.Value = 23;
+
+
+                OriginalColor = originalColor;
+                Color = GetColor(originalColor, l);
+            }
+
+            public void Transcribe(CustomOriginalColor source)
+            {
+                SetColor(source.OriginalColor, source.EntryL.Value,source.EntryH.Value,source.EntryD.Value);
+            }
+
+            public void Simulate(Color? originalColor,float? l, out Color color)
+            {
+                if (!originalColor.HasValue) originalColor = this.OriginalColor;
+                if (!l.HasValue) l = this.EntryL.Value;
+
+                color = GetColor(originalColor.Value,l.Value);
+            }
+
+            static private Color GetColor(Color originalColor, float l)
+            {
+                originalColor = new Color(
+                    originalColor.r > 1f ? 1f : originalColor.r,
+                    originalColor.g > 1f ? 1f : originalColor.g,
+                    originalColor.b > 1f ? 1f : originalColor.b);
+                return originalColor.RGBMultiplied(l * 0.85f + 0.15f);
+            }
+
+            public float GetLuminosity()
+            {
+                return EntryL.Value;
+            }
+
+            public byte GetHue()
+            {
+                return EntryH.Value;
+            }
+
+            public byte GetDistance()
+            {
+                return EntryD.Value;
+            }
+        }
+
+        private CustomOriginalColor mainColor;
+        private CustomOriginalColor shadowColor;
+        private ConfigEntry<byte> EntryS;
+
+        public CustomColor(string saveCategory,float initialMul=0.6f)
+        {
+            mainColor = new CustomOriginalColor(saveCategory, "main", initialMul > 0f ? 1f : 0f);
+            shadowColor = new CustomOriginalColor(saveCategory, "shadow", initialMul);
+
+            //陰タイプ
+            EntryS = NebulaPlugin.Instance.Config.Bind(saveCategory, "S", (byte)0);
+            if (EntryS.Value > 3) EntryS.Value = 0;
+        }
+
+        public void SetMainColor(Color originalColor, float luminosity, byte h, byte d)
+        {
+            mainColor.SetColor(originalColor, luminosity,h,d);
+        }
+
+        public void SetShadowColor(Color originalColor, float luminosity, byte h, byte d)
+        {
+            shadowColor.SetColor(originalColor, luminosity, h, d);
+        }
+
+        public void SetShadowType(byte type)
+        {
+            EntryS.Value = type;
+        }
+
+        public void Set(Color originalColor, float l, byte h, byte d, Color shadowColor, float sl, byte sh, byte sd, byte shadowType)
+        {
+            SetMainColor(originalColor, l, h, d);
+            SetShadowColor(shadowColor, sl, sh, sd);
+            SetShadowType(shadowType);
+        }
+
+        public void Transcribe(CustomColor source)
+        {
+            mainColor.Transcribe(source.mainColor);
+            shadowColor.Transcribe(source.shadowColor);
+            EntryS.Value = source.EntryS.Value;
+        }
+
+        public void Simulate(Color? mainOriginalColor,float? mL,Color? shadowOriginalColor,float? sL,ref byte? h,ref byte? d,out Color mainColor,out Color shadowColor)
+        {
+            this.mainColor.Simulate(mainOriginalColor, mL, out mainColor);
+            this.shadowColor.Simulate(shadowOriginalColor, sL, out shadowColor);
+            shadowColor = CustomShadow.allShadows[EntryS.Value].GetShadowColor(mainColor,shadowColor);
+            if (!h.HasValue) h = GetMainHue();
+            if (!d.HasValue) d = GetMainDistance();
+        }
+
+        public byte GetShadowType() { return EntryS.Value; }
+
+        public Color GetMainColor() { return mainColor.Color; }
+        public Color GetShadowColor() { return shadowColor.Color; }
+
+        public Color GetMainOriginalColor() { return mainColor.OriginalColor; }
+        public Color GetShadowOriginalColor() { return shadowColor.OriginalColor; }
+
+        public float GetMainLuminosity() { return mainColor.GetLuminosity(); }
+        public float GetShadowLuminosity() { return shadowColor.GetLuminosity(); }
+
+        public byte GetMainHue() { return mainColor.GetHue(); }
+        public byte GetShadowHue() { return shadowColor.GetHue(); }
+
+        public byte GetMainDistance() { return mainColor.GetDistance(); }
+        public byte GetShadowDistance() { return shadowColor.GetDistance(); }
+
     }
 
-    static private Sprite BaseButtonSprite;
-    static private Sprite GetBaseButtonSprite()
+    public class CustomShadow
     {
-        if (BaseButtonSprite) return BaseButtonSprite;
-        BaseButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.ColorHalfButton.png", 100f);
-        return BaseButtonSprite;
+        public static CustomShadow?[] allShadows = new CustomShadow?[4] { null, null, null, null };
+
+        public bool HasUniqueShadow { private set; get; }
+        public Func<Color, Color> shadowColorGenerater;
+
+        public CustomShadow(bool hasUniqueShadow, Func<Color, Color> shadowColorGenerater, byte type)
+        {
+            this.HasUniqueShadow = hasUniqueShadow;
+            this.shadowColorGenerater = shadowColorGenerater;
+            allShadows[type] = this;
+        }
+
+        public static void Load()
+        {
+            new CustomShadow(false, (c) => c.RGBMultiplied(0.6f), 0);
+            new CustomShadow(false, (c) => c.RGBMultiplied(0.8f) * c * c * c, 1);
+            new CustomShadow(true, (c) => c.RGBMultiplied(0.6f), 2);
+        }
+
+        public Color GetShadowColor(Color mainColor,Color shadowColor)
+        {
+            if (HasUniqueShadow) return shadowColor;
+            return shadowColorGenerater(mainColor);
+        }
     }
 
-    static private Sprite ButtonSprite;
-    static private Sprite GetButtonSprite()
+    public class SaveButton
     {
-        if (ButtonSprite) return ButtonSprite;
-        ButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.ColorFullBase.png", 100f);
-        return ButtonSprite;
+        GameObject ButtonObject;
+        ColorButton colorButton;
+
+        public SaveButton(PlayerTab __instance, ColorButton relateButton)
+        {
+            colorButton = relateButton;
+
+            ButtonObject = new GameObject("SaveButton");
+            ButtonObject.transform.SetParent(relateButton.ButtonObject.transform);
+
+            BoxCollider2D Collider = ButtonObject.AddComponent<BoxCollider2D>();
+            PassiveButton PassiveButton = ButtonObject.AddComponent<PassiveButton>();
+
+            SpriteRenderer Renderer = ButtonObject.AddComponent<SpriteRenderer>();
+            Renderer.sprite = SaveButtonSprite.GetSprite();
+            Renderer.transform.localPosition = new Vector3(0.6f, -0.01f, 0);
+
+            Collider.size = new Vector2(0.45f, 0.45f);
+
+            PassiveButton.ClickSound = __instance.ColorChips[0].Button.ClickSound;
+            PassiveButton.OnMouseOut = __instance.ColorChips[0].Button.OnMouseOut;
+            PassiveButton.OnClick=new Button.ButtonClickedEvent();
+            PassiveButton.OnClick.AddListener((System.Action)(() =>
+            {
+                relateButton.customColor.Transcribe(MyColor);
+                relateButton.Reflect();
+            }));
+            PassiveButton.OnMouseOver = new UnityEngine.Events.UnityEvent();
+            PassiveButton.enabled = true;
+
+            ButtonObject.layer = LayerExpansion.GetUILayer();
+        }
     }
 
-    static private Sprite SaveButtonSprite;
-    static private Sprite GetSaveButtonSprite()
+    public class ColorButton
     {
-        if (SaveButtonSprite) return SaveButtonSprite;
-        SaveButtonSprite = Helpers.loadSpriteFromResources("Nebula.Resources.ColorSaveButton.png", 100f);
-        return SaveButtonSprite;
+        public GameObject ButtonObject;
+        SpriteRenderer BaseRenderer, ShadowRenderer;
+        public CustomColor? customColor { get; private set; }
+
+        //CustomColorの形式で保持していない場合
+        Color mainColor, shadowColor;
+        Color mainOrigColor, shadowOrigColor;
+        byte h, d, sh, sd;
+        float l,sl;
+
+        private void SetUp(PlayerTab __instance, GameObject layer, Vector3 position, System.Action? onClick)
+        {
+            ButtonObject = new GameObject("ColorButton");
+
+            BoxCollider2D Collider = ButtonObject.AddComponent<BoxCollider2D>();
+            PassiveButton PassiveButton = ButtonObject.AddComponent<PassiveButton>();
+
+            ShadowRenderer = ButtonObject.AddComponent<SpriteRenderer>();
+            ShadowRenderer.sprite = ButtonSprite.GetSprite();
+
+            GameObject SubObject = new GameObject("ColorButtonBase");
+            SubObject.transform.SetParent(ButtonObject.transform);
+            BaseRenderer = SubObject.AddComponent<SpriteRenderer>();
+            BaseRenderer.sprite = BaseButtonSprite.GetSprite();
+            BaseRenderer.transform.position += new Vector3(0, 0, -1f);
+
+            Collider.size = new Vector2(0.68f, 0.45f);
+
+            PassiveButton.ClickSound = __instance.ColorChips[0].Button.ClickSound;
+            PassiveButton.OnMouseOut = __instance.ColorChips[0].Button.OnMouseOut;
+            PassiveButton.OnMouseOver = new UnityEngine.Events.UnityEvent();
+            PassiveButton.OnMouseOver.AddListener((System.Action)(() =>
+            {
+                if (customColor != null)
+                {
+                    Palette.PlayerColors[32] = customColor.GetMainColor();
+                    Palette.ShadowColors[32] = customColor.GetShadowColor();
+                    PlayerCustomizationMenu.Instance.SetItemName(GetColorName(customColor.GetMainHue(), customColor.GetMainDistance()));
+                }
+                else
+                {
+                    Palette.PlayerColors[32] = mainColor;
+                    Palette.ShadowColors[32] = shadowColor;
+                    PlayerCustomizationMenu.Instance.SetItemName(GetColorName(h,d));
+                }
+
+                PlayerCustomizationMenu.Instance.PreviewArea.cosmetics.SetColor(32);
+                 
+
+            }));
+
+            PassiveButton.OnClick = new Button.ButtonClickedEvent();
+            PassiveButton.OnClick.AddListener((System.Action)(() =>
+            {
+                if (customColor != null)
+                {
+                    Palette.PlayerColors[AmongUs.Data.DataManager.Player.Customization.Color] = customColor.GetMainColor();
+                    Palette.ShadowColors[AmongUs.Data.DataManager.Player.Customization.Color] = customColor.GetShadowColor();
+                    MyColor.Transcribe(customColor);
+                }
+                else
+                {
+                    Palette.PlayerColors[AmongUs.Data.DataManager.Player.Customization.Color] = mainColor;
+                    Palette.ShadowColors[AmongUs.Data.DataManager.Player.Customization.Color] = shadowColor;
+                    MyColor.Set(mainOrigColor, l, h, d, shadowOrigColor, sl, sh, sd, 2);
+                }
+
+                PlayerCustomizationMenu.Instance.PreviewArea.cosmetics.SetColor(AmongUs.Data.DataManager.Player.Customization.Color);
+                PlayerCustomizationMenu.Instance.SetItemName(GetColorName());
+
+                if (MyColorChangedAction != null) MyColorChangedAction();
+            }));
+            if (onClick is not null) PassiveButton.OnClick.AddListener(onClick);
+            PassiveButton.enabled = true;
+
+            ButtonObject.transform.SetParent(layer.transform);
+            ButtonObject.transform.localPosition = position;
+            ButtonObject.layer = LayerExpansion.GetUILayer();
+            SubObject.layer = LayerExpansion.GetUILayer();
+        }
+
+        public ColorButton(PlayerTab __instance, GameObject layer, Vector3 position,  CustomColor? color = null)
+        {
+            customColor = color;
+
+            SetUp(__instance,layer,position,null);
+
+            Reflect();
+        }
+
+        public ColorButton(PlayerTab __instance, GameObject layer, Vector3 position, System.Action? onClick, Color mainColor, Color shadowColor, Color mainOrigColor, Color shadowOrigColor, byte h, byte d, float l, byte sh,byte sd,float sl)
+        {
+            customColor = null;
+
+            SetUp(__instance, layer, position, onClick);
+
+            this.mainColor = mainColor;
+            this.shadowColor = shadowColor;
+            this.mainOrigColor = mainOrigColor;
+            this.shadowOrigColor = shadowOrigColor;
+            this.h = h;
+            this.d = d;
+            this.l = l;
+            this.sh = sh;
+            this.sd = sd;
+            this.sl = sl;
+
+            BaseRenderer.color = mainColor;
+            ShadowRenderer.color = shadowColor;
+        }
+
+        public void Reflect()
+        {
+            if (customColor is not null)
+            {
+                BaseRenderer.color = customColor.GetMainColor();
+                ShadowRenderer.color = customColor.GetShadowColor();
+            }
+            else
+            {
+                BaseRenderer.color = mainColor;
+                ShadowRenderer.color = shadowColor;
+            }
+        }
+
+        public void Reflect(Color mainColor,Color shadowColor, Color mainOrigColor,Color shadowOrigColor,byte h, byte d, float l,byte sh, byte sd,float sl)
+        {
+            BaseRenderer.color = mainColor;
+            ShadowRenderer.color = shadowColor;
+            if (customColor == null)
+            {
+                this.mainColor = mainColor;
+                this.shadowColor = shadowColor;
+                this.mainOrigColor = mainOrigColor;
+                this.shadowOrigColor = shadowOrigColor;
+                this.h = h;
+                this.d = d;
+                this.sh = sh;
+                this.sd = sd;
+                this.l = l;
+                this.sl = sl;
+            }
+        }
     }
-
-    static private Sprite ColorTargetSprite;
-    static private Sprite GetColorTargetSprite()
-    {
-        if (ColorTargetSprite) return ColorTargetSprite;
-        ColorTargetSprite = Helpers.loadSpriteFromResources("Nebula.Resources.TargetIcon.png", 140f);
-        return ColorTargetSprite;
-    }
-
-    static private Sprite LTargetSprite;
-    static private Sprite GetLTargetSprite()
-    {
-        if (LTargetSprite) return LTargetSprite;
-        LTargetSprite = Helpers.loadSpriteFromResources("Nebula.Resources.PaletteKnob.png", 100f);
-        return LTargetSprite;
-    }
-
-    static private Sprite[] BrightnessSprite = new Sprite[2];
-    static private Sprite GetBrightnessSprite(bool light)
-    {
-        int index = light ? 0 : 1;
-        if (!BrightnessSprite[index]) BrightnessSprite[index] = Helpers.loadSpriteFromResources($"Nebula.Resources.Color{ (light ? "Light" : "Dark")  }.png", 100f);
-
-        return BrightnessSprite[index];
-    }
-
-    static private GameObject PaletteObject = null;
-    static private SpriteRenderer PaletteRenderer = null;
-    static private PassiveButton PalettePassiveButton = null;
-    static private CircleCollider2D PaletteCollider = null;
-
-    static private GameObject LPaletteObject = null;
-    static private SpriteRenderer LPaletteRenderer = null;
-    static private PassiveButton LPalettePassiveButton = null;
-    static private BoxCollider2D LPaletteCollider = null;
-
-    static private GameObject ChangeModeObject = null;
-    static private SpriteRenderer ChangeModeRenderer = null;
-    static private PassiveButton ChangeModePassiveButton = null;
-    static private BoxCollider2D ChangeModeCollider = null;
-
-    static private GameObject ColorTargetObject = null;
-    static private SpriteRenderer ColorTargetRenderer = null;
-
-    static private GameObject LTargetObject = null;
-    static private SpriteRenderer LTargetRenderer = null;
-
-    static private GameObject BrightnessObject = null;
-    static private SpriteRenderer BrightnessRenderer = null;
-
-    static private string ColorName;
 
     static public CustomColor MyColor;
+    static public Action? MyColorChangedAction=null;
     static private CustomColor[] SaveColor;
-    static private CustomColor[] VanillaColor;
+    static private CustomColor[] SharedColor;
+    static private Tuple<Color, Color>[] VanillaColor;
 
-    static private bool ShowVanillaColorFlag = false;
+    static private ColorButton[] VanillaVariations = null;
+    static private ColorButton[] ShadowVariations = null;
+    static private SpriteRenderer[] ShadowVariationsSelected = null;
+    static private ColorButton[] SaveVariations = null;
+    static private SaveButton[] WriteSaveVariations = null;
+    static private ColorButton[] SharedVariations = null;
 
-    static public Color GetColor(Color originalColor, float l)
-    {
-        originalColor = new Color(
-            originalColor.r > 1f ? 1f : originalColor.r,
-            originalColor.g > 1f ? 1f : originalColor.g,
-            originalColor.b > 1f ? 1f : originalColor.b);
-        return originalColor.RGBMultiplied(l * 0.5f + 0.5f);
-    }
-
-    static public Color GetShadowColor(Color myColor, byte shadowType)
-    {
-        switch (shadowType)
-        {
-            case 0:
-                return myColor.RGBMultiplied(0.6f);
-            case 1:
-                return myColor.RGBMultiplied(0.8f) * myColor * myColor * myColor;
-            case 8:
-                for (int i = 0; i < 18; i++)
-                {
-                    if (((Color32)myColor).rgba == Palette.PlayerColors[32 + i].rgba)
-                    {
-                        return Palette.ShadowColors[32 + i];
-                    }
-                }
-                return myColor.RGBMultiplied(0.6f);
-        }
-        return Color.black;
-    }
-
-    static public void Load()
-    {
-        var PlayerColors = Enumerable.ToList<Color32>(Palette.PlayerColors);
-        var ShadowColors = Enumerable.ToList<Color32>(Palette.ShadowColors);
-
-        while (PlayerColors.Count < 50)
-        {
-            PlayerColors.Add(new Color32());
-        }
-
-        while (ShadowColors.Count < 50)
-        {
-            ShadowColors.Add(new Color32());
-        }
-
-        //Camo Color
-        PlayerColors[31] = PlayerColors[6];
-
-        for (int i = 0; i < 18; i++)
-        {
-            PlayerColors[32 + i] = PlayerColors[i];
-            ShadowColors[32 + i] = ShadowColors[i];
-        }
-
-        Palette.PlayerColors = PlayerColors.ToArray();
-        Palette.ShadowColors = ShadowColors.ToArray();
-
-        MyColor = new CustomColor("Color");
-        SaveColor = new CustomColor[5];
-        VanillaColor = new CustomColor[18];
-
-        for (int i = 0; i < VanillaColor.Length; i++)
-        {
-            VanillaColor[i] = new CustomColor("VanillaColor" + i);
-            VanillaColor[i].SetColor(Palette.PlayerColors[i], 100, (byte)i, 8, 1f);
-        }
-
-        for (int i = 0; i < SaveColor.Length; i++)
-        {
-            SaveColor[i] = new CustomColor("SaveColor" + i);
-            Palette.PlayerColors[20 + i] = SaveColor[i].Color;
-            Palette.ShadowColors[20 + i] = SaveColor[i].ShadowColor;
-        }
-
-        if (AmongUs.Data.DataManager.Player.Customization.Color >= Palette.PlayerColors.Count) AmongUs.Data.DataManager.Player.Customization.Color = 0;
-        Palette.PlayerColors[AmongUs.Data.DataManager.Player.Customization.Color] = MyColor.Color;
-        Palette.ShadowColors[AmongUs.Data.DataManager.Player.Customization.Color] = MyColor.ShadowColor;
-
-        for (int i = 0; i < 2; i++)
-        {
-            Palette.PlayerColors[16 + i] = MyColor.Color;
-            Palette.ShadowColors[16 + i] = GetShadowColor(MyColor.Color, (byte)i);
-        }
-
-    }
-
-    static public void SaveAndSetColor(Color color, float l, byte h, byte d, byte shadowType, byte playerId)
-    {
-        if (h < 80) { h = (byte)(h % 64); }
-        MyColor.SetColor(color, h, d >= 24 ? (byte)23 : d, shadowType, l);
-
-        Palette.PlayerColors[playerId] = MyColor.Color;
-        Palette.ShadowColors[playerId] = MyColor.ShadowColor;
-
-        for (int i = 0; i < 2; i++)
-        {
-            Palette.PlayerColors[16 + i] = MyColor.Color;
-            Palette.ShadowColors[16 + i] = GetShadowColor(MyColor.Color, (byte)i);
-        }
-    }
-
-    static public void SaveCurrentColor(int ColorId)
-    {
-        SaveColor[ColorId - 20].SetColor(MyColor.OriginalColor, MyColor.GetHue(), MyColor.GetDistance(), MyColor.GetShadowType(), MyColor.GetLuminosity());
-        Palette.PlayerColors[ColorId] = SaveColor[ColorId - 20].Color;
-        Palette.ShadowColors[ColorId] = SaveColor[ColorId - 20].ShadowColor;
-    }
-
-    static public void SetOthersColor(Color color, Color shadowColor, byte playerId)
-    {
-        Palette.PlayerColors[playerId] = color;
-        Palette.ShadowColors[playerId] = shadowColor;
-        var p = Helpers.playerById(playerId);
-        if (p) p.RawSetColor(playerId);
-    }
+    static private GameObject DynamicLayer = null;
+    static private GameObject LegacyLayer = null;
 
     private static string GetColorName()
     {
-        return Language.Language.GetString("color." + (MyColor.GetHue()) + "." + MyColor.GetDistance());
+        return Language.Language.GetString("color." + (MyColor.GetMainHue()) + "." + MyColor.GetMainDistance());
     }
 
     private static string GetColorName(byte h, byte d)
@@ -459,6 +449,51 @@ public static class DynamicColors
         return Language.Language.GetString("color." + h + "." + d);
     }
 
+   
+
+    static public void Load()
+    {
+        CustomShadow.Load();
+
+        var PlayerColors = Enumerable.ToList<Color32>(Palette.PlayerColors);
+        var ShadowColors = Enumerable.ToList<Color32>(Palette.ShadowColors);
+
+        //31以降をModの使用領域とする
+        while (PlayerColors.Count < 64) PlayerColors.Add(new Color32());
+        while (ShadowColors.Count < 64) ShadowColors.Add(new Color32());
+
+        //Camo Color
+        PlayerColors[31] = PlayerColors[6];
+        //Preview Color
+//      PlayerColors[32]
+
+        Palette.PlayerColors = PlayerColors.ToArray();
+        Palette.ShadowColors = ShadowColors.ToArray();
+
+        MyColor = new CustomColor("Color");
+        SaveColor = new CustomColor[5];
+        SharedColor = new CustomColor[6];
+        VanillaColor = new Tuple<Color, Color>[18];
+        for (int i = 0; i < 18; i++) VanillaColor[i] = new(PlayerColors[i], ShadowColors[i]);
+        for (int i = 0; i < SaveColor.Length; i++) SaveColor[i] = new CustomColor("SaveColor" + i);
+        for (int i = 0; i < SharedColor.Length; i++) SharedColor[i] = new CustomColor("SharedColor" + i, 0f);
+
+        AmongUs.Data.DataManager.Player.Customization.Color = 0;
+        Palette.PlayerColors[AmongUs.Data.DataManager.Player.Customization.Color] = MyColor.GetMainColor();
+        Palette.ShadowColors[AmongUs.Data.DataManager.Player.Customization.Color] = MyColor.GetShadowColor();
+    }
+
+    //他人の色名を覚えておく
+    static public Dictionary<int, Tuple<byte, byte>> ColorNameDic = new();
+
+    static public void SetOthersColor(byte hue, byte dis, Color color, Color shadowColor, byte playerId)
+    {
+        ColorNameDic[(int)playerId] = new Tuple<byte, byte>(hue, dis);
+        Palette.PlayerColors[playerId] = color;
+        Palette.ShadowColors[playerId] = shadowColor;
+        var p = Helpers.playerById(playerId);
+        if (p) p.RawSetColor(playerId);
+    }
 
     [HarmonyPatch(typeof(TranslationController), nameof(TranslationController.GetString), new[] {
                 typeof(StringNames),
@@ -479,43 +514,48 @@ public static class DynamicColors
         }
     }
 
-    private static void DetectColor(Color color, float l, byte h, byte d, byte shadowType, bool setFlag)
+
+    [HarmonyPatch(typeof(CosmeticsLayer), nameof(CosmeticsLayer.SetColorBlindColor))]
+    private class CosmeticsLayerColorStringPatch
     {
-        if (setFlag)
+        public static bool Prefix(CosmeticsLayer __instance, [HarmonyArgument(0)] int color)
         {
-            if (PlayerControl.LocalPlayer != null)
+            if (__instance.colorBlindText == null || !__instance.showColorBlindText) return false;
+
+            string colorName;
+            if (ColorNameDic.ContainsKey(color))
             {
-                SaveAndSetColor(color, l, h, d, shadowType, PlayerControl.LocalPlayer.PlayerId);
-                PlayerControl.LocalPlayer.SetColor(PlayerControl.LocalPlayer.PlayerId);
-                RPCEventInvoker.SetMyColor();
+                var tuple = ColorNameDic[color];
+                colorName = GetColorName(tuple.Item1, tuple.Item2);
             }
             else
             {
-                SaveAndSetColor(color, l, h, d, shadowType, AmongUs.Data.DataManager.Player.Customization.Color);
+                colorName = GetColorName();
             }
-        }
-        else
-        {
-            var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            if (PaletteCollider.OverlapPoint(pos))
-            {
-                Palette.PlayerColors[15] = GetColor(color, MyColor.GetLuminosity());
-                Palette.ShadowColors[15] = GetShadowColor(Palette.PlayerColors[15], MyColor.GetShadowType());
-                PlayerCustomizationMenu.Instance.SetItemName(GetColorName(h, d));
-            }
-            else if (LPaletteCollider.OverlapPoint(pos))
-            {
-                Palette.PlayerColors[15] = GetColor(MyColor.OriginalColor, l);
-                Palette.ShadowColors[15] = GetShadowColor(Palette.PlayerColors[15], MyColor.GetShadowType());
-            }
-            else { return; }
 
-            PlayerCustomizationMenu.Instance.PreviewArea.cosmetics.SetColor(15);
-            if (BrightnessRenderer) BrightnessRenderer.sprite = GetBrightnessSprite(IsLightColor(Palette.PlayerColors[15]));
+            char[] array = colorName.ToCharArray();
+            if (array.Length != 0)
+            {
+                array[0] = char.ToUpper(array[0]);
+                for (int i = 1; i < array.Length; i++) array[i] = char.ToLower(array[i]);
+            }
+            __instance.colorBlindText.text = new string(array);
+
+            return false;
         }
     }
 
-    private static void DetectColor(bool setFlag)
+    static private GameObject PaletteObject = null;
+    static private SpriteRenderer PaletteRenderer = null;
+    static private CircleCollider2D PaletteCollider = null;
+
+    static private GameObject LPaletteObject = null;
+    static private SpriteRenderer LPaletteRenderer = null;
+    static private BoxCollider2D LPaletteCollider = null;
+
+    static private SpriteRenderer BrightnessRenderer = null;
+
+    private static void DetectColor(out Color? detectedColor,out byte? detectedH, out byte? detectedD, out float? detectedL)
     {
         Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition) - PaletteObject.transform.position;
         float dis = Mathf.Sqrt(pos.x * pos.x + pos.y * pos.y);
@@ -542,12 +582,30 @@ public static class DynamicColors
 
         pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         if (PaletteCollider.OverlapPoint(pos))
-            DetectColor(color, MyColor.GetLuminosity(), (byte)((h * 64) % 64), (byte)((dis / 2.1f) * 24), MyColor.GetShadowType(), setFlag);
+        {
+            detectedL = null;
+            detectedColor = color;
+            detectedH = (byte)((h * 64) % 64);
+            detectedD = (byte)((dis / 2.1f) * 24);
+        }
         else if (LPaletteCollider.OverlapPoint(pos))
-            DetectColor(MyColor.OriginalColor, l, MyColor.GetHue(), MyColor.GetDistance(), MyColor.GetShadowType(), setFlag);
+        {
+            detectedL = l;
+            detectedColor = null;
+            detectedH = null;
+            detectedD = null;
+        }
         else
-            DetectColor(MyColor.OriginalColor, MyColor.GetLuminosity(), MyColor.GetHue(), MyColor.GetDistance(), MyColor.GetShadowType(), setFlag);
+        {
+            detectedL = null;
+            detectedColor = null;
+            detectedH = null;
+            detectedD = null;
+        }
     }
+
+    static bool ShowVanillaColorFlag = false;
+    static bool EditMainColorFlag = true;
 
     [HarmonyPatch(typeof(PlayerTab), nameof(PlayerTab.Update))]
     private static class PlayerTabUpdatePatch
@@ -558,59 +616,25 @@ public static class DynamicColors
 
             if (!ShowVanillaColorFlag)
             {
-                DetectColor(false);
-            }
+                Color? c;
+                byte? h, d;
+                float? l;
+                DetectColor(out c,out h,out d,out l);
 
-            if (ShadowVariations != null)
-            {
-                foreach (ColorButton button in ShadowVariations)
+                if(c.HasValue || l.HasValue)
                 {
-                    button.Update();
+                    Color main, shadow;
+                    MyColor.Simulate(EditMainColorFlag ? c : null, EditMainColorFlag ? l : null, EditMainColorFlag ? null : c, EditMainColorFlag ? null : l, ref h, ref d, out main, out shadow);
+                    Palette.PlayerColors[32] = main;
+                    Palette.ShadowColors[32] = shadow;
+                    if (c.HasValue) PlayerCustomizationMenu.Instance.SetItemName(GetColorName(h!.Value, d!.Value));
+
+                    PlayerCustomizationMenu.Instance.PreviewArea.cosmetics.SetColor(32);
                 }
+                
             }
 
-            if (SaveVariations != null)
-            {
-                foreach (ColorButton button in SaveVariations)
-                {
-                    button.Update();
-                }
-            }
-
-            if (PaletteRenderer.color.r != MyColor.GetLuminosity() * 0.5f + 0.5f)
-            {
-                float l = MyColor.GetLuminosity() * 0.5f + 0.5f;
-                PaletteRenderer.color = new Color(l, l, l);
-            }
-            if (LPaletteRenderer.color != MyColor.OriginalColor)
-            {
-                LPaletteRenderer.color = MyColor.OriginalColor;
-            }
-
-            {
-                float angle = MyColor.GetHue() / 64f * 2f * (float)System.Math.PI;
-                float r = MyColor.GetDistance() / 10f * 0.88f;
-                ColorTargetObject.transform.localPosition = new Vector3(-MathF.Sin(angle) * r, MathF.Cos(angle) * r, -200f);
-
-                float l = (MyColor.GetLuminosity() - 0.5f) * 2f;
-                LTargetObject.transform.localPosition = new Vector3(0f, l * 1.35f, -200f);
-            }
-
-            //Vanillaカラーは変化しないのでUpdateは不要
-
-            if (PaletteObject.active != !ShowVanillaColorFlag)
-            {
-                PaletteObject.SetActive(!ShowVanillaColorFlag);
-                LPaletteObject.SetActive(!ShowVanillaColorFlag);
-            }
-            else
-            {
-                foreach (ColorButton button in VanillaVariations)
-                {
-                    if (button.ButtonObject.active != ShowVanillaColorFlag)
-                        button.ButtonObject.SetActive(ShowVanillaColorFlag);
-                }
-            }
+            BrightnessRenderer.sprite = BrightnessSprite[IsLightColor(Palette.PlayerColors[32]) ? 0 : 1].GetSprite();
         }
     }
 
@@ -629,42 +653,69 @@ public static class DynamicColors
             }
 
             //パレット
-            if (PaletteObject == null)
+            if (!PaletteObject)
             {
+                var VanillaLayer = new GameObject("VanillaLayer");
+                var ModLayer = new GameObject("ModLayer");
+                VanillaLayer.transform.SetParent(__instance.transform);
+                ModLayer.transform.SetParent(__instance.transform);
+                VanillaLayer.transform.localPosition = new Vector3(0, 0, 0);
+                ModLayer.transform.localPosition = new Vector3(0, 0, 0);
+
                 PaletteObject = new GameObject("DynamicPalette");
+                PaletteObject.transform.SetParent(ModLayer.transform);
                 PaletteRenderer = PaletteObject.AddComponent<SpriteRenderer>();
                 PaletteCollider = PaletteObject.AddComponent<CircleCollider2D>();
-                PalettePassiveButton = PaletteObject.AddComponent<PassiveButton>();
+                var PalettePassiveButton = PaletteObject.AddComponent<PassiveButton>();
 
                 LPaletteObject = new GameObject("LuminosityPalette");
+                LPaletteObject.transform.SetParent(ModLayer.transform);
                 LPaletteRenderer = LPaletteObject.AddComponent<SpriteRenderer>();
                 LPaletteCollider = LPaletteObject.AddComponent<BoxCollider2D>();
-                LPalettePassiveButton = LPaletteObject.AddComponent<PassiveButton>();
+                var LPalettePassiveButton = LPaletteObject.AddComponent<PassiveButton>();
 
-                ChangeModeObject = new GameObject("ChangeButton");
-                ChangeModeRenderer = ChangeModeObject.AddComponent<SpriteRenderer>();
-                ChangeModeCollider = ChangeModeObject.AddComponent<BoxCollider2D>();
-                ChangeModePassiveButton = ChangeModeObject.AddComponent<PassiveButton>();
+                var ChangeModeObject = new GameObject("ChangeButton");
+                var ChangeModeRenderer = ChangeModeObject.AddComponent<SpriteRenderer>();
+                var ChangeModeCollider = ChangeModeObject.AddComponent<BoxCollider2D>();
+                var ChangeModePassiveButton = ChangeModeObject.AddComponent<PassiveButton>();
 
-                ColorTargetObject = new GameObject("ColorTarget");
-                ColorTargetRenderer = ColorTargetObject.AddComponent<SpriteRenderer>();
+                var ColorTargetObject = new GameObject("ColorTarget");
+                ColorTargetObject.transform.SetParent(ModLayer.transform);
+                var ColorTargetRenderer = ColorTargetObject.AddComponent<SpriteRenderer>();
 
-                LTargetObject = new GameObject("LTarget");
-                LTargetRenderer = LTargetObject.AddComponent<SpriteRenderer>();
+                var LTargetObject = new GameObject("LTarget");
+                LTargetObject.transform.SetParent(ModLayer.transform);
+                var LTargetRenderer = LTargetObject.AddComponent<SpriteRenderer>();
 
-                BrightnessObject = new GameObject("Brightness");
+                var BrightnessObject = new GameObject("Brightness");
+                BrightnessObject.transform.SetParent(__instance.transform);
                 BrightnessRenderer = BrightnessObject.AddComponent<SpriteRenderer>();
 
-                ShadowVariations = new ColorButton[2];
+                ShadowVariations = new ColorButton[3];
+                ShadowVariationsSelected = new SpriteRenderer[3];
                 for (int i = 0; i < ShadowVariations.Length; i++)
                 {
                     int index = i;
                     ShadowVariations[i] =
-                        new ColorButton(__instance, new Vector3(1.4f + (float)i * 0.8f, -2.2f, -75f), 16 + i,
+                        new ColorButton(__instance, ModLayer, new Vector3(1.8f + (((float)i) - 1f) * 0.8f, -2.2f, -75f),
                         () =>
                         {
-                            DetectColor(MyColor.OriginalColor, MyColor.GetLuminosity(), MyColor.GetHue(), MyColor.GetDistance(), (byte)index, true);
-                        });
+                            if (CustomShadow.allShadows[index].HasUniqueShadow && MyColor.GetShadowType() == index)
+                                EditMainColorFlag = !EditMainColorFlag;
+                            else
+                            {
+                                EditMainColorFlag = true;
+                                MyColor.SetShadowType((byte)index);
+                            }
+
+                            if (MyColorChangedAction is not null) MyColorChangedAction();
+                        }, MyColor.GetMainColor(), MyColor.GetShadowColor(), MyColor.GetMainOriginalColor(), MyColor.GetShadowOriginalColor(), MyColor.GetMainHue(), MyColor.GetMainDistance(), MyColor.GetMainLuminosity(), MyColor.GetShadowHue(), MyColor.GetShadowDistance(), MyColor.GetShadowLuminosity());
+                    GameObject selectedObject = new GameObject("Selected");
+                    selectedObject.layer = LayerExpansion.GetUILayer();
+                    selectedObject.transform.SetParent(ShadowVariations[i].ButtonObject.transform);
+                    selectedObject.transform.localPosition = new Vector3(0,0,-2f);
+                    ShadowVariationsSelected[i] = selectedObject.AddComponent<SpriteRenderer>();
+                    ShadowVariationsSelected[i].sprite = SelectedSprite[0].GetSprite();
                 }
 
                 SaveVariations = new ColorButton[5];
@@ -675,11 +726,7 @@ public static class DynamicColors
                     int index = i;
                     pos = new Vector3(-1.5f, 1.2f - (float)i * 0.6f, -75f);
                     SaveVariations[i] =
-                        new ColorButton(__instance, pos, 20 + i,
-                        () =>
-                        {
-                            DetectColor(SaveColor[index].OriginalColor, SaveColor[index].GetLuminosity(), SaveColor[index].GetHue(), SaveColor[index].GetDistance(), SaveColor[index].GetShadowType(), true);
-                        }, SaveColor[i]);
+                        new ColorButton(__instance, __instance.gameObject, pos, SaveColor[i]);
                     WriteSaveVariations[i] = new SaveButton(__instance, SaveVariations[i]);
                 }
 
@@ -688,105 +735,237 @@ public static class DynamicColors
                 {
                     int index = i;
                     VanillaVariations[i] =
-                        new ColorButton(__instance, new Vector3(1.0f + (float)(i % 3) * 0.8f, 1.3f - 0.5f * (float)(i / 3), -75f), 32 + i,
-                        () =>
-                        {
-                            DetectColor(VanillaColor[index].OriginalColor, 1f, 100, (byte)index, VanillaColor[index].GetShadowType(), true);
-                        }, VanillaColor[i]);
-                    VanillaVariations[i].Update();
+                        new ColorButton(__instance, VanillaLayer, new Vector3(0.2f + (float)(i % 6) * 0.8f, 1.3f - 0.5f * (float)(i / 6), -75f),
+                        null, VanillaColor[i].Item1, VanillaColor[i].Item2, VanillaColor[i].Item1, VanillaColor[i].Item2, 100, (byte)i, 1f, 100, (byte)0, 1f);
                 }
-            }
 
-            PaletteObject.transform.SetParent(__instance.ColorChips[0].transform.parent);
-            PaletteObject.transform.localPosition = new Vector3(1.8f, 0.35f, -40f);
-            PaletteObject.layer = __instance.ColorChips[0].gameObject.layer;
+                SharedVariations = new ColorButton[6];
+                for (int i = 0; i < SharedVariations.Length; i++)
+                {
+                    int index = i;
+                    SharedVariations[i] =
+                        new ColorButton(__instance, VanillaLayer, new Vector3(0.2f + (float)(i % 6) * 0.8f, -0.8f - 0.5f * (float)(i / 6), -75f),SharedColor[i]);
+                    SharedVariations[i].ButtonObject.SetActive(false);
+                }
 
-            PaletteRenderer.sprite = GetPalleteSprite();
-            PaletteCollider.radius = 2.1f;
-            PalettePassiveButton.ClickSound = __instance.ColorChips[0].Button.ClickSound;
-            PalettePassiveButton.OnMouseOut = __instance.ColorChips[0].Button.OnMouseOut;
-            PalettePassiveButton.OnMouseOut.AddListener((UnityEngine.Events.UnityAction)(() =>
-            {
-                PlayerCustomizationMenu.Instance.PreviewArea.cosmetics.SetColor(AmongUs.Data.DataManager.Player.Customization.Color);
-                PlayerCustomizationMenu.Instance.SetItemName(GetColorName());
-            }));
-            PalettePassiveButton.OnClick.RemoveAllListeners();
-            PalettePassiveButton.OnClick.AddListener((System.Action)(() =>
-            {
-                DetectColor(true);
-            }));
-            PalettePassiveButton.enabled = true;
+                PaletteObject.transform.localPosition = new Vector3(1.8f, 0.35f, -40f);
+                PaletteObject.layer = __instance.ColorChips[0].gameObject.layer;
 
-            // ------------------------------------------------------ //
+                PaletteRenderer.sprite = PaletteSprite.GetSprite();
+                PaletteCollider.radius = 2.1f;
+                PalettePassiveButton.ClickSound = __instance.ColorChips[0].Button.ClickSound;
+                PalettePassiveButton.OnMouseOver = new UnityEngine.Events.UnityEvent();
+                PalettePassiveButton.OnMouseOut = __instance.ColorChips[0].Button.OnMouseOut;
+                PalettePassiveButton.OnMouseOut.AddListener((UnityEngine.Events.UnityAction)(() =>
+                {
+                    PlayerCustomizationMenu.Instance.PreviewArea.cosmetics.SetColor(AmongUs.Data.DataManager.Player.Customization.Color);
+                    PlayerCustomizationMenu.Instance.SetItemName(GetColorName());
+                }));
+                PalettePassiveButton.OnClick.RemoveAllListeners();
+                PalettePassiveButton.OnClick.AddListener((System.Action)(() =>
+                {
+                    Color? c;
+                    byte? h, d;
+                    float? l;
+                    DetectColor(out c,out h,out d,out l);
+                    if (!CustomShadow.allShadows[MyColor.GetShadowType()]!.HasUniqueShadow)
+                    {
+                        MyColor.SetMainColor(c!.Value, MyColor.GetMainLuminosity(), h!.Value, d!.Value);
+                        MyColor.SetShadowColor(CustomShadow.allShadows[MyColor.GetShadowType()]!.GetShadowColor(MyColor.GetMainColor(), MyColor.GetShadowColor()), 1f,0,0);
+                    }
+                    else
+                    {
+                        if(EditMainColorFlag)
+                            MyColor.SetMainColor(c!.Value, MyColor.GetMainLuminosity(), h!.Value, d!.Value);
+                        else 
+                            MyColor.SetShadowColor(c!.Value, MyColor.GetShadowLuminosity(), h!.Value, d!.Value);
+                    }
 
-            LPaletteObject.transform.SetParent(__instance.ColorChips[0].transform.parent);
-            LPaletteObject.transform.localPosition = new Vector3(4.5f, 0.35f, -40f);
-            LPaletteObject.layer = __instance.ColorChips[0].gameObject.layer;
+                    if (MyColorChangedAction is not null) MyColorChangedAction();
+                }));
+                PalettePassiveButton.enabled = true;
 
-            LPaletteRenderer.sprite = GetLPalleteSprite();
-            LPaletteCollider.size = new Vector2(0.3f, 2.7f);
-            LPalettePassiveButton.ClickSound = __instance.ColorChips[0].Button.ClickSound;
-            LPalettePassiveButton.OnMouseOut = __instance.ColorChips[0].Button.OnMouseOut;
-            LPalettePassiveButton.OnClick.RemoveAllListeners();
-            LPalettePassiveButton.OnClick.AddListener((System.Action)(() =>
-            {
-                DetectColor(true);
-            }));
-            LPalettePassiveButton.enabled = true;
+                // ------------------------------------------------------ //
 
-            // ------------------------------------------------------ //
+                LPaletteObject.transform.localPosition = new Vector3(4.5f, 0.35f, -40f);
+                LPaletteObject.layer = __instance.ColorChips[0].gameObject.layer;
+
+                LPaletteRenderer.sprite = LPaletteSprite.GetSprite();
+                LPaletteCollider.size = new Vector2(0.3f, 2.7f);
+                LPalettePassiveButton.ClickSound = __instance.ColorChips[0].Button.ClickSound;
+                LPalettePassiveButton.OnMouseOver = new UnityEngine.Events.UnityEvent();
+                LPalettePassiveButton.OnMouseOut = __instance.ColorChips[0].Button.OnMouseOut;
+                LPalettePassiveButton.OnClick.RemoveAllListeners();
+                LPalettePassiveButton.OnClick.AddListener((System.Action)(() =>
+                {
+                    Color? c;
+                    byte? h, d;
+                    float? l;
+                    DetectColor(out c, out h, out d, out l);
+
+                    if (!CustomShadow.allShadows[MyColor.GetShadowType()]!.HasUniqueShadow)
+                    {
+                        MyColor.SetMainColor(MyColor.GetMainOriginalColor(), l.Value, MyColor.GetMainHue(), MyColor.GetMainDistance());
+                        MyColor.SetShadowColor(CustomShadow.allShadows[MyColor.GetShadowType()]!.GetShadowColor(MyColor.GetMainColor(), MyColor.GetShadowColor()), 1f, 0, 0);
+                    }
+                    else
+                    {
+                        if (EditMainColorFlag)
+                            MyColor.SetMainColor(MyColor.GetMainOriginalColor(), l.Value, MyColor.GetMainHue(), MyColor.GetMainDistance());
+                        else
+                            MyColor.SetShadowColor(MyColor.GetShadowOriginalColor(), l.Value, MyColor.GetShadowHue(), MyColor.GetShadowDistance());
+                    }
+
+                    if (MyColorChangedAction is not null) MyColorChangedAction();
+                }));
+                LPalettePassiveButton.enabled = true;
+
+                // ------------------------------------------------------ //
 
 
-            ChangeModeObject.transform.SetParent(__instance.ColorChips[0].transform.parent);
-            ChangeModeObject.transform.localPosition = new Vector3(3.8f, -1.4f, -40f);
-            ChangeModeObject.layer = __instance.ColorChips[0].gameObject.layer;
+                ChangeModeObject.transform.SetParent(__instance.ColorChips[0].transform.parent);
+                ChangeModeObject.transform.localPosition = new Vector3(4.3f, -1.6f, -40f);
+                ChangeModeObject.layer = __instance.ColorChips[0].gameObject.layer;
 
-            ChangeModeRenderer.sprite = GetModeChangeSprite();
-            ChangeModeCollider.size = new Vector2(0.55f, 0.55f);
-            ChangeModePassiveButton.ClickSound = __instance.ColorChips[0].Button.ClickSound;
-            ChangeModePassiveButton.OnMouseOut = __instance.ColorChips[0].Button.OnMouseOut;
-            ChangeModePassiveButton.OnClick.RemoveAllListeners();
-            ChangeModePassiveButton.OnClick.AddListener((System.Action)(() =>
-            {
-                ShowVanillaColorFlag = !ShowVanillaColorFlag;
-                ChangeModeRenderer.sprite = GetModeChangeSprite();
-            }));
-            ChangeModePassiveButton.enabled = true;
+                ChangeModeRenderer.sprite = GetModeChangeSprite(ShowVanillaColorFlag);
+                ChangeModeCollider.size = new Vector2(0.55f, 0.55f);
+                ChangeModePassiveButton.ClickSound = __instance.ColorChips[0].Button.ClickSound;
+                ChangeModePassiveButton.OnMouseOut = __instance.ColorChips[0].Button.OnMouseOut;
+                ChangeModePassiveButton.OnMouseOver = new UnityEngine.Events.UnityEvent();
+                ChangeModePassiveButton.OnClick.RemoveAllListeners();
+                ChangeModePassiveButton.OnClick.AddListener((System.Action)(() =>
+                {
+                    ShowVanillaColorFlag = !ShowVanillaColorFlag;
+                    ChangeModeRenderer.sprite = GetModeChangeSprite(ShowVanillaColorFlag);
+                    VanillaLayer.SetActive(ShowVanillaColorFlag);
+                    ModLayer.SetActive(!ShowVanillaColorFlag);
+                }));
+                ChangeModePassiveButton.enabled = true;
 
-            // ------------------------------------------------------ //
+                // ------------------------------------------------------ //
 
-            ColorTargetObject.transform.SetParent(PaletteObject.transform);
-            ColorTargetObject.layer = __instance.ColorChips[0].gameObject.layer;
-            ColorTargetRenderer.sprite = GetColorTargetSprite();
+                ColorTargetObject.transform.SetParent(PaletteObject.transform);
+                ColorTargetObject.layer = __instance.ColorChips[0].gameObject.layer;
+                ColorTargetRenderer.sprite = ColorTargetSprite.GetSprite();
 
-            LTargetObject.transform.SetParent(LPaletteObject.transform);
-            LTargetObject.layer = __instance.ColorChips[0].gameObject.layer;
-            LTargetRenderer.sprite = GetLTargetSprite();
+                LTargetObject.transform.SetParent(LPaletteObject.transform);
+                LTargetObject.layer = __instance.ColorChips[0].gameObject.layer;
+                LTargetRenderer.sprite = LTargetSprite.GetSprite();
 
-            BrightnessObject.transform.SetParent(__instance.ColorChips[0].transform.parent);
-            BrightnessObject.transform.localPosition = new Vector3(6.7f, -0.5f, -75f);
-            BrightnessObject.layer = __instance.ColorChips[0].gameObject.layer;
-            BrightnessRenderer.sprite = GetBrightnessSprite(false);
+                BrightnessObject.transform.localPosition = new Vector3(6.7f, -0.5f, -75f);
+                BrightnessObject.layer = __instance.ColorChips[0].gameObject.layer;
+                BrightnessRenderer.sprite = BrightnessSprite[IsLightColor(MyColor.GetMainColor()) ? 0 : 1].GetSprite();
 
-            foreach (ColorButton button in ShadowVariations)
-            {
-                button.OnEnable(__instance);
-            }
+                MyColorChangedAction = () =>
+                {
+                    if (!CustomShadow.allShadows[MyColor.GetShadowType()].HasUniqueShadow && !EditMainColorFlag) EditMainColorFlag = true;
 
-            foreach (ColorButton button in SaveVariations)
-            {
-                button.OnEnable(__instance);
-            }
+                    Palette.PlayerColors[AmongUs.Data.DataManager.Player.Customization.Color] = MyColor.GetMainColor();
+                    Palette.ShadowColors[AmongUs.Data.DataManager.Player.Customization.Color] = MyColor.GetShadowColor();
 
-            foreach (SaveButton button in WriteSaveVariations)
-            {
-                button.OnEnable(__instance);
-            }
+                    if (AmongUsClient.Instance.AmConnected)RPCEventInvoker.SetMyColor();
+                    
 
-            foreach (ColorButton button in VanillaVariations)
-            {
-                button.OnEnable(__instance);
+                    float l = (EditMainColorFlag ? MyColor.GetMainLuminosity(): MyColor.GetShadowLuminosity()) * 0.85f + 0.15f;
+                    PaletteRenderer.color = new Color(l, l, l);
+
+                    LPaletteRenderer.color = EditMainColorFlag ? MyColor.GetMainOriginalColor() : MyColor.GetShadowOriginalColor();
+
+
+                    float angle = (EditMainColorFlag ? MyColor.GetMainHue() : MyColor.GetShadowHue()) / 64f * 2f * (float)System.Math.PI;
+                    float r = (EditMainColorFlag ? MyColor.GetMainDistance() : MyColor.GetShadowDistance()) / 10f * 0.88f;
+                    ColorTargetObject.transform.localPosition = new Vector3(-MathF.Sin(angle) * r, MathF.Cos(angle) * r, -200f);
+
+                    l = ((EditMainColorFlag ? MyColor.GetMainLuminosity() : MyColor.GetShadowLuminosity()) - 0.5f) * 2f;
+                    LTargetObject.transform.localPosition = new Vector3(0f, l * 1.35f, -200f);
+
+                    for(int i=0;i< ShadowVariations.Length; i++)
+                    {
+                        ShadowVariations[i].Reflect(MyColor.GetMainColor(),CustomShadow.allShadows[i].GetShadowColor(MyColor.GetMainColor(),MyColor.GetShadowColor()),
+                            MyColor.GetMainOriginalColor(),MyColor.GetShadowOriginalColor(),
+                            MyColor.GetMainHue(),MyColor.GetMainDistance(), MyColor.GetMainLuminosity(), MyColor.GetShadowHue(), MyColor.GetShadowDistance(),MyColor.GetShadowLuminosity());
+                        
+                        ShadowVariationsSelected[i].gameObject.SetActive(i == MyColor.GetShadowType());
+                        if (i == MyColor.GetShadowType() && CustomShadow.allShadows[i].HasUniqueShadow)
+                        {
+                            ShadowVariationsSelected[i].sprite = SelectedSprite[EditMainColorFlag ? 1 : 2].GetSprite();
+                        }
+                    }
+                };
+                MyColorChangedAction();
+                UpdateSharedColor();
+
+                if (AmongUsClient.Instance.AmConnected) {
+                    GameObject shareButton = GameObject.Instantiate(PlayerCustomizationMenu.Instance.equipButton);
+                    shareButton.transform.SetParent(__instance.transform);
+                    shareButton.transform.localPosition = new Vector3(6.069f, -1.92f, -1f);
+                    shareButton.transform.GetChild(1).gameObject.SetActive(false);
+                    var bRenderer = shareButton.transform.GetChild(0).GetComponent<SpriteRenderer>();
+                    bRenderer.size = new Vector2(bRenderer.size.y, bRenderer.size.y);
+                    var bCollider = shareButton.GetComponent<BoxCollider2D>();
+                    bCollider.size = new Vector2(bCollider.size.y, bCollider.size.y);
+
+                    GameObject shareIconRenderer = new GameObject("ShareIcon");
+                    shareIconRenderer.layer = LayerExpansion.GetUILayer();
+                    shareIconRenderer.transform.SetParent(shareButton.transform);
+                    shareIconRenderer.transform.localPosition = new Vector3(0, 0, -0.5f);
+                    shareIconRenderer.AddComponent<SpriteRenderer>().sprite = ShareIconSprite.GetSprite();
+
+                    var sButton = shareButton.GetComponent<PassiveButton>();
+                    sButton.OnClick = new Button.ButtonClickedEvent();
+                    sButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => {
+                        RPCEventInvoker.ShareColor(MyColor);
+                    }));
+
+                    shareButton.SetActive(true);
+                }
+
+                VanillaLayer.SetActive(ShowVanillaColorFlag);
+                ModLayer.SetActive(!ShowVanillaColorFlag);
             }
         }
     }
+
+    static public void UpdateSharedColor()
+    {
+        for(int i = 0; i < 6; i++) 
+        {
+            if(SharedColor[i].GetMainColor().r>0f|| SharedColor[i].GetMainColor().g > 0f|| SharedColor[i].GetMainColor().b > 0f)
+            {
+                SharedVariations[i].ButtonObject.SetActive(true);
+                SharedVariations[i].Reflect();
+            }
+            else
+            {
+                SharedVariations[i].ButtonObject.SetActive(false);
+            }
+        }
+    }
+
+    static public void ReceiveSharedColor(byte shadowType,Color mainColor,float mainLum, byte mainHue,byte mainDis,Color shadowColor,float shadowLum,byte shadowHue,byte shadowDis)
+    {
+        for(int i = 5; i >= 1; i--)
+        {
+            SharedColor[i].Transcribe(SharedColor[i - 1]);
+        }
+        SharedColor[0].Set(mainColor, mainLum, mainHue, mainDis, shadowColor, shadowLum, shadowHue, shadowDis, shadowType);
+
+        if (PlayerCustomizationMenu.Instance)
+        {
+            UpdateSharedColor();
+        }
+    }
+
+    [HarmonyPatch(typeof(PlayerCustomizationMenu), nameof(PlayerCustomizationMenu.Update))]
+    class PlayerCustomizationMenuUpdatePatch
+    {
+        public static void Postfix(PlayerCustomizationMenu __instance)
+        {
+            if (__instance.selectedTab == 0)
+            {
+                __instance.equippedText.SetActive(false);
+            }
+        }
+    }
+
 }

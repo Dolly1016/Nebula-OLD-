@@ -644,6 +644,20 @@ class PlayerIsKillTimerEnabledPatch
 {
     public static void Postfix(PlayerControl __instance, ref bool __result)
     {
-        __result &= !Minigame.Instance && (!MapBehaviour.Instance || !MapBehaviour.Instance.IsOpenStopped);
+        __result &= (!MapBehaviour.Instance || !MapBehaviour.Instance.IsOpenStopped);
+
+        if (__result)
+        {
+            if (Minigame.Instance)
+            {
+                if (CustomOptionHolder.CoolDownOption.getBool())
+                {
+                    if (CustomOptionHolder.KillCoolDownProceedIgnoringBlackOutGame.getBool() && Minigame.Instance.TryCast<SwitchMinigame>())return;
+                    if (CustomOptionHolder.KillCoolDownProceedIgnoringDoorGame.getBool() && Minigame.Instance.TryCast<IDoorMinigame>()!=null) return;
+                    if (CustomOptionHolder.KillCoolDownProceedIgnoringSecurityCamera.getBool() && (Minigame.Instance.TryCast<PlanetSurveillanceMinigame>()|| Minigame.Instance.TryCast<SurveillanceMinigame>())) return;
+                }
+                __result = false;
+            }
+        }
     }
 }

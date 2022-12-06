@@ -2,6 +2,7 @@
 
 namespace Nebula.Roles.ExtraRoles;
 
+/*
 public class TeamSanta : ExtraRole
 {
     static public Color RoleColor = new Color(255f / 255f, 120f / 255f, 120f / 255f);
@@ -36,3 +37,4 @@ public class TeamSanta : ExtraRole
         IsHideRole = true;
     }
 }
+*/

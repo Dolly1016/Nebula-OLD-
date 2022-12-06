@@ -55,7 +55,12 @@ public class MetaRole : ExtraRole
         if (Input.GetKeyDown(KeyCode.Keypad2) || Input.GetKeyDown(KeyCode.Alpha2))
         {
             Module.MetaDialog.MSDesigner? dialog = null;
-            dialog = Module.MetaDialog.OpenRolesDialog((r) => r.category != RoleCategory.Complex, 0, 60, (r) =>
+            dialog = Module.MetaDialog.OpenRolesDialog((r) => 
+                r.category != RoleCategory.Complex &&
+                r != Roles.DamnedCrew &&
+                r != Roles.CrewmateWithoutTasks &&
+                r != Roles.RitualCrewmate
+            , 0, 60, (r) =>
             {
                 RPCEventInvoker.ImmediatelyChangeRole(PlayerControl.LocalPlayer, r);
                 dialog?.screen.Close();

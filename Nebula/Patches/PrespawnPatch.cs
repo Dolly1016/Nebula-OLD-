@@ -261,8 +261,31 @@ class PrespawnPatch
                 var points = Map.MapData.GetCurrentMapData().ValidSpawnPoints;
                 if (points.Count == 0) return;
 
-                var spawnAt = points[NebulaPlugin.rnd.Next(points.Count)];
-                PlayerControl.LocalPlayer.NetTransform.RpcSnapTo(spawnAt);
+                Vector2? lastPos = Game.GameData.data.myData.getGlobalData().preMeetingPosition;
+
+                Vector2? spawnAt = null;
+                if (lastPos==null || !CustomOptionHolder.respawnNearbyFinalPosition.getBool())
+                {
+                    spawnAt = points[NebulaPlugin.rnd.Next(points.Count)];
+                    
+                }
+                else
+                {
+                    float dis = -1f;
+                    foreach(var p in points)
+                    {
+                        float t = ((Vector3)p).Distance(lastPos.Value);
+                        if (dis<0f || dis > t)
+                        {
+                            dis = t;
+                            spawnAt = p;
+                        }
+                    }
+                }
+
+                if (spawnAt == null) spawnAt = points[0];
+
+                PlayerControl.LocalPlayer.NetTransform.RpcSnapTo(spawnAt.Value);
                 DestroyableSingleton<HudManager>.Instance.PlayerCam.SnapToTarget();
             }
         }
@@ -273,6 +296,11 @@ class PrespawnPatch
     {
         public static bool Prefix(AirshipStatus __instance, ref Il2CppSystem.Collections.IEnumerator __result)
         {
+            if (CustomOptionHolder.mapOptions.getBool() && CustomOptionHolder.shuffledElectricalOption.getBool() && AmongUsClient.Instance.AmHost)
+            {
+                __instance.Systems[SystemTypes.Decontamination].Cast<ElectricalDoors>().Initialize();
+            }
+
             if (PrespawnStepPatch.ShouldSpawnRandomly())
             {
                 PrespawnStepPatch.Postfix(__instance, ref __result);
