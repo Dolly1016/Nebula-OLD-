@@ -29,6 +29,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 2.0 | 2022.10.25s | [Download](https://github.com/Dolly1016/Nebula/releases/download/2.0,2022.10.25/Nebula_v2.0.zip)|
 | 1.16.1 | 2022.10.25s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.16.1,2022.10.25/Nebula_v1.16.1.zip)|
 | 1.16 | 2022.10.25s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.16,2022.10.25/Nebula_v1.16.zip)|
 | 1.15.1.1 | 2022.9.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.15.1.1,2022.8.24/Nebula_v1.15.1.1.zip)|
@@ -227,8 +228,42 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 <details>
   <summary>クリックで展開</summary>
   
+ **Version 2.0**
+ - 新役職 Nice Tracker, Evil Trackerを追加
+ - 追加役職 Bloody, Confusedを追加
+ - Opportunistのタスクを特別なものに差し替え
+ - Cometの能力に視野拡大を追加
+ - Eraserに新オプション「Eraser Can Guess Crewmate」を追加
+ - Opportunistに新オプション「Can Win With Lovers」を追加
+ - Jailerに新オプション「Can Move With Locking Map」「Can Identify Impostors」を追加
+ - Madmateに黒猫設定を追加
+ - ランダムスポーンを追加
+ - HキーダイアログにHelpを追加
+ - Map Optionsに新たなオプション「Quiet Vents In The Shadow」「One Way Meeting Room (Airship)」「Shuffled Electrical (Airship)」を追加
+ - Meister's Task Optionに新たなオプション「Dangerous Download Spot」「Use Vanilla Safe Task」を追加
+ - Cool Down Optionに新たなオプション「Kill Cool Down Proceeds Ignoring Door Game」「Kill Cool Down Proceeds Ignoring Black Out Game」「Kill Cool Down Proceeds Ignoring Security Camera」を追加
+ - Meeting Optionに新たなオプション「Additional Emergency Cool Down」を追加
+ - 情報端末制限の制限時間に∞(無制限)を追加し、10秒未満の場合について1秒単位で指定できるように
+ - 情報端末制限のカメラ制限について、マップごとに時間制限の影響を受けないカメラを一つまで指定できるように
+ - ゲームオプション画面をリワーク
+ - 役職の2人目以降の出現確率を別に設定できるように
+ - キーバインディングを追加
+ - 一部のフォーク向けに、バージョンチェックを無効化するオプションを追加
+ - カスタムハットに新たな属性「IsSkinny」を、カスタムバイザーに新たな属性「BehindHat」を追加
+ - Psychicのボタン画像を更新
+ - Oracleの占いによって、できる限り各陣営最低1つずつの役職が現れる仕様が十分に満たされていない問題を修正
+ - 引きずった死体がレポートできない場所に置かれてしまうことがある問題を修正
+ - 引きずられた死体位置に、プレイヤーによって誤差が生まれてしまう問題を修正
+ - AirshipにてVOIDのボタンが出現しない問題を修正
+ - 「Sabotage Cool Down」が正しく機能していなかった問題を修正
+ - 会議終了直後に単独勝利できるか否かが、該当するプレイヤーがホストか否かによって変わってしまう問題を修正
+ - 画面サイズ変更時にタイトル画面のボタンが左下に集まる問題を修正
+ - 無効試合でOpportunistが勝利してしまうことがある問題を修正
+ - 他人の色名が正しく表示されない問題を修正
+ 
  **Version 1.16.1**
  - 歯車設定でNoSタブが出現していない問題を修正しました。
+ - Madmateの狂信者設定がOffにもかかわらずタスクができてしまう問題を修正
  
  **Version 1.16**
  - 幽霊役職 Poltergeistを追加
