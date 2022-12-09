@@ -102,9 +102,9 @@ public static class UpdatePatch
 
             player.Visible = !IsInvisible(player);
 
-            if (player.MyPhysics?.GlowAnimator != null)
+            if (player.MyPhysics?.Animations.glowAnimator != null)
             {
-                player.MyPhysics.GlowAnimator.gameObject.SetActive(player.Visible && !ShipStatus.Instance);
+                player.MyPhysics.Animations.glowAnimator.gameObject.SetActive(player.Visible && !ShipStatus.Instance);
             }
 
 
@@ -150,7 +150,7 @@ public static class UpdatePatch
                 var targetPos = player.transform.position;
 
                 var result = AnyShadowsBetween(PlayerControl.LocalPlayer.transform.position, targetPos);
-                if (result && (PlayerControl.LocalPlayer.transform.position - targetPos).magnitude < PlayerControl.LocalPlayer.myLight.LightRadius + 5f)
+                if (result && (PlayerControl.LocalPlayer.transform.position - targetPos).magnitude < PlayerControl.LocalPlayer.lightSource.viewDistance + 5f)
                 {
                     //ある程度近いプレイヤーはより精密に判定する
                     var norm = (targetPos - PlayerControl.LocalPlayer.transform.position).normalized * 0.22f;

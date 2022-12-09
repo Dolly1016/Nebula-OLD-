@@ -56,7 +56,7 @@ public class RitualKiller : RitualRole
             },
             () => { killButton.Timer = killButton.MaxTimer; },
             __instance.KillButton.graphic.sprite,
-            new Vector3(0f, 1f, 0),
+            -1,
             __instance,
             Module.NebulaInputManager.modKillInput.keyCode,
             true,

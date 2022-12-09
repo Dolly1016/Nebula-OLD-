@@ -6,6 +6,7 @@ global using System.Linq;
 global using HarmonyLib;
 global using Nebula.Objects;
 global using Nebula.Utilities;
+global using AmongUs.GameOptions;
 
 using BepInEx.IL2CPP;
 using BepInEx;
@@ -65,13 +66,13 @@ public class NebulaPlugin : BasePlugin
 {
     public static Module.Random rnd = new Module.Random();
 
-    public const string AmongUsVersion = "2022.10.25";
+    public const string AmongUsVersion = "2022.12.8";
     public const string PluginGuid = "jp.dreamingpig.amongus.nebula";
     public const string PluginName = "TheNebula";
     public const string PluginVersion = "2.0";
     public const bool IsSnapshot = true;
 
-    public static string PluginVisualVersion = IsSnapshot ? "22.12.06a" : PluginVersion;
+    public static string PluginVisualVersion = IsSnapshot ? "22.12.10a" : PluginVersion;
     public static string PluginStage = IsSnapshot ? "Snapshot" : "";
 
     public const string PluginVersionForFetch = "2.0";
@@ -244,7 +245,7 @@ public static class MetaControlManager
             GameData.Instance.AddPlayer(playerControl);
 
             //playerControl.transform.position = PlayerControl.LocalPlayer.transform.position;
-            //playerControl.GetComponent<DummyBehaviour>().enabled = true;
+            playerControl.GetComponent<DummyBehaviour>().enabled = true;
             playerControl.SetName(Patches.RandomNamePatch.GetRandomName());
             playerControl.SetColor((byte)random.Next(Palette.PlayerColors.Length));
 
@@ -269,7 +270,7 @@ public static class MetaControlManager
 
             GameData.Instance.RpcSetTasks(playerControl.PlayerId, new byte[0]);
 
-            playerControl.StartCoroutine(playerControl.CoPlayerAppear().WrapToIl2Cpp());
+            //playerControl.StartCoroutine(playerControl.CoPlayerAppear().WrapToIl2Cpp());
         }
 
         // Suiside

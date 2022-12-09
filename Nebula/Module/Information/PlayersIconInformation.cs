@@ -39,7 +39,7 @@ public class PlayersIconInformation : UpperInformation
             var renderer = GameObject.Instantiate(prefab, obj.transform);
             PlayerMaterial.SetColors(p.cosmetics.bodyMatProperties.ColorId, renderer);
 
-            var text = GameObject.Instantiate(HudManager.Instance.TaskText, obj.transform);
+            var text = GameObject.Instantiate(HudManager.Instance.TaskPanel.taskText, obj.transform);
             text.alignment = TMPro.TextAlignmentOptions.Center;
             text.fontSize = text.fontSizeMin = text.fontSizeMax = 1.0f;
             text.fontStyle = TMPro.FontStyles.Bold;
@@ -54,7 +54,7 @@ public class PlayersIconInformation : UpperInformation
             allPlayers.Add(p.PlayerId, new PlayersIcon(obj, text, renderer));
         }
 
-        subText = GameObject.Instantiate(HudManager.Instance.TaskText, gameObject.transform);
+        subText = GameObject.Instantiate(HudManager.Instance.TaskPanel.taskText, gameObject.transform);
         subText.alignment = TMPro.TextAlignmentOptions.Left;
         subText.fontSize = subText.fontSizeMin = subText.fontSizeMax = 1.4f;
         subText.transform.SetParent(gameObject.transform);

@@ -1,4 +1,6 @@
-﻿namespace Nebula.Patches;
+﻿using AmongUs.GameOptions;
+
+namespace Nebula.Patches;
 
 [HarmonyPatch(typeof(ShipStatus))]
 public class ShipStatusPatch
@@ -74,19 +76,19 @@ public class ShipStatusPatch
 
         if (role.UseImpostorLightRadius)
         {
-            __result = rate * PlayerControl.GameOptions.ImpostorLightMod;
+            __result = rate * GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().ImpostorLightMod;
         }
         else
         {
-            __result = rate * PlayerControl.GameOptions.CrewLightMod;
+            __result = rate * GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().CrewLightMod;
         }
 
         return false;
     }
 
     [HarmonyPostfix]
-    [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.IsGameOverDueToDeath))]
-    public static void Postfix2(ShipStatus __instance, ref bool __result)
+    [HarmonyPatch(typeof(LogicGameFlowNormal), nameof(LogicGameFlowNormal.IsGameOverDueToDeath))]
+    public static void Postfix2(LogicGameFlowNormal __instance, ref bool __result)
     {
         __result = false;
     }
@@ -142,10 +144,10 @@ static class AirshipSpawnDummyPatch
 }
 
 //デフォルトのタスク終了を回避する
-[HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.CheckTaskCompletion))]
+[HarmonyPatch(typeof(GameManager), nameof(GameManager.CheckTaskCompletion))]
 static class CheckTaskCompletionPatch
 {
-    static bool Prefix(ShipStatus __instance)
+    static bool Prefix(GameManager __instance)
     {
         return false;
     }

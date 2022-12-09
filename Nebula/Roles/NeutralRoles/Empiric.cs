@@ -122,7 +122,7 @@ public class Empiric : Template.HasAlignedHologram, Template.HasWinTrigger
             },
             () => { },
             infectSprite.GetSprite(),
-            new Vector3(-1.8f, -0.06f, 0),
+            -1,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
             false,

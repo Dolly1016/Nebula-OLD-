@@ -48,7 +48,7 @@ public class CustomOptionPreset
 
     private void LoadVanillaOption(string option, int value)
     {
-        GameOptionsData data = PlayerControl.GameOptions;
+        var data = GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>();
         switch (option)
         {
             case "vanilla.map":
@@ -94,7 +94,7 @@ public class CustomOptionPreset
                 data.VisualTasks = (value == 1);
                 break;
             case "vanilla.taskBarUpdates":
-                data.TaskBarMode = (TaskBarMode)value;
+                data.TaskBarMode = (AmongUs.GameOptions.TaskBarMode)value;
                 break;
             case "vanilla.commonTasks":
                 data.NumCommonTasks = value;
@@ -110,7 +110,7 @@ public class CustomOptionPreset
 
     private void OutputVanillaOptions(StreamWriter writer)
     {
-        GameOptionsData data = PlayerControl.GameOptions;
+        var data = GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>();
 
         writer.WriteLine("vanilla.map:" + data.MapId);
         writer.WriteLine("vanilla.impostors:" + data.NumImpostors);
@@ -143,7 +143,7 @@ public class CustomOptionPreset
 
                 option.updateSelection(option.defaultSelection);
 
-                PlayerControl.GameOptions.SetRecommendations(PlayerControl.AllPlayerControls.Count, GameModes.LocalGame);
+                GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().SetRecommendations(PlayerControl.AllPlayerControls.Count, true);
             }
         }
 
@@ -236,7 +236,7 @@ public class CustomOptionPreset
 
             var players = PlayerControl.AllPlayerControls.Count.ToString();
 
-            var mapId = PlayerControl.GameOptions.MapId.ToString();
+            var mapId = GameOptionsManager.Instance.CurrentGameOptions.MapId.ToString();
 
             masterVariables["Players"] = players;
             masterVariables["P"] = players;

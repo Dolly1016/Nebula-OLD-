@@ -684,7 +684,7 @@ public static class Helpers
             if (LightSource.NoShadows.ContainsKey(c.gameObject))
                 if (LightSource.NoShadows[c.gameObject].hitOverride == c) continue;
             if (LightSource.OneWayShadows.ContainsKey(c.gameObject))
-                if (LightSource.OneWayShadows[c.gameObject].IsIgnored(PlayerControl.LocalPlayer.myLight)) continue;
+                if (LightSource.OneWayShadows[c.gameObject].IsIgnored(PlayerControl.LocalPlayer.lightSource)) continue;
 
             result = true;
             break;
@@ -728,7 +728,7 @@ public static class Helpers
     public static void SetTargetWithLight(this FollowerCamera camera, MonoBehaviour target)
     {
         camera.Target = target;
-        PlayerControl.LocalPlayer.myLight.transform.SetParent(target.transform, false);
+        PlayerControl.LocalPlayer.lightSource.transform.SetParent(target.transform, false);
         if (target != PlayerControl.LocalPlayer) PlayerControl.LocalPlayer.NetTransform.Halt();
     }
 

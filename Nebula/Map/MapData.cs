@@ -280,9 +280,9 @@ public class MapData
     }
     public static Map.MapData GetCurrentMapData()
     {
-        if (MapDatabase.ContainsKey(PlayerControl.GameOptions.MapId))
+        if (MapDatabase.ContainsKey(GameOptionsManager.Instance.CurrentGameOptions.MapId))
         {
-            return MapDatabase[PlayerControl.GameOptions.MapId];
+            return MapDatabase[GameOptionsManager.Instance.CurrentGameOptions.MapId];
         }
         else
         {

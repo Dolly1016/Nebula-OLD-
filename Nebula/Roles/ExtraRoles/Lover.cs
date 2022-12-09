@@ -387,7 +387,7 @@ public class Lover : ExtraRole
             () => { return trilemmaTarget && PlayerControl.LocalPlayer.CanMove; },
             () => { },
             buttonSprite.GetSprite(),
-            new Vector3(0f, 1f, 0f),
+            0,
             __instance,
             Module.NebulaInputManager.modifierAbilityInput.keyCode,
             true,

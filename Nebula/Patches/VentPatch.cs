@@ -55,7 +55,7 @@ public static class VentCanUsePatch
 
             canUse &= (num <= usableDistance && !PhysicsHelpers.AnythingBetween(truePosition, position, Constants.ShipOnlyMask, false));
 
-            if (@object.MyPhysics.Animator.Clip == @object.MyPhysics.CurrentAnimationGroup.EnterVentAnim && @object.MyPhysics.Animator.Playing) canUse = false;
+            if (@object.MyPhysics.Animations.Animator.m_currAnim == @object.MyPhysics.Animations.group.EnterVentAnim && @object.MyPhysics.Animations.Animator.Playing) canUse = false;
         }
         __result = num;
 

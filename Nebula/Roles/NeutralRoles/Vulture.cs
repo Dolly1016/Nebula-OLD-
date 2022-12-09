@@ -55,7 +55,7 @@ public class Vulture : Role, Template.HasWinTrigger
             () => { return deadBodyId != Byte.MaxValue && PlayerControl.LocalPlayer.CanMove; },
             () => { eatButton.Timer = eatButton.MaxTimer; },
             eatButtonSprite.GetSprite(),
-            new Vector3(-1.8f, 0, 0),
+            -1,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
             false,

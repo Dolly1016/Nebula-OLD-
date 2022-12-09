@@ -39,7 +39,7 @@ public class AssignMap
     }
 }
 
-[HarmonyPatch(typeof(RoleOptionsData), nameof(RoleOptionsData.GetNumPerGame))]
+[HarmonyPatch(typeof(AmongUs.GameOptions.RoleOptionsData), nameof(AmongUs.GameOptions.RoleOptionsData.GetNumPerGame))]
 class RoleOptionsDataGetNumPerGamePatch
 {
     public static void Postfix(ref int __result)
@@ -468,7 +468,7 @@ class RoleAssignmentPatch
                 }
             }
 
-            int impostorCount = PlayerControl.GameOptions.NumImpostors;
+            int impostorCount = GameOptionsManager.Instance.CurrentGameOptions.NumImpostors;
             if (PlayerControl.AllPlayerControls.Count < 7 && impostorCount > 1) impostorCount = 1;
             else if (PlayerControl.AllPlayerControls.Count < 9 && impostorCount > 2) impostorCount = 2;
             //インポスターを決定する
@@ -569,7 +569,7 @@ class RoleAssignmentPatch
         return playerId;
     }
 }
-[HarmonyPatch(typeof(RoleManager), nameof(RoleManager.TryAssignRoleOnDeath))]
+[HarmonyPatch(typeof(RoleManager), nameof(RoleManager.AssignRoleOnDeath))]
 class GhostRoleAssignmentPatch
 {
     static Dictionary<GhostRole, int> assigned = new Dictionary<GhostRole, int>();

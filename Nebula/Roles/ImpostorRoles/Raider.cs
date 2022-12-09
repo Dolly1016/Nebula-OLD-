@@ -64,7 +64,7 @@ public class Raider : Role
                 axeButton.SetLabel("button.label.equip");
             },
             axeButtonSprite.GetSprite(),
-            new Vector3(-1.8f, 0f, 0),
+            -1,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
             false,
@@ -93,7 +93,7 @@ public class Raider : Role
             () => { return PlayerControl.LocalPlayer.CanMove && equipAxeFlag && lastAxe.Renderer.color.g > 0.5f; },
             () => { killButton.Timer = killButton.MaxTimer; },
             __instance.KillButton.graphic.sprite,
-            new Vector3(0f, 1f, 0),
+            2,
             __instance,
             Module.NebulaInputManager.modKillInput.keyCode,
             false,

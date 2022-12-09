@@ -109,7 +109,7 @@ class PrespawnPatch
         {
             SpawnInMinigame.Instance = __instance;
 
-            if (PlayerControl.GameOptions.MapId != 4) return true;
+            if (GameOptionsManager.Instance.CurrentGameOptions.MapId != 4) return true;
 
             SpawnInMinigame.SpawnLocation[] array = Enumerable.ToArray<SpawnInMinigame.SpawnLocation>(__instance.Locations);
             array = array.OrderBy((i) => Guid.NewGuid()).ToArray();

@@ -66,7 +66,7 @@ public class Draggable : Role
             () => { return PlayerControl.LocalPlayer.CanMove && (Game.GameData.data.myData.getGlobalData().dragPlayerId != Byte.MaxValue || deadBodyId != Byte.MaxValue); },
             () => { },
             DaDSprite.GetSprite(),
-            new Vector3(-1.8f, 0f, 0),
+            -1,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
             false,

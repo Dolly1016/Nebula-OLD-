@@ -57,18 +57,18 @@ public class BountyHunter : Template.HasHologram
                     killButton.Timer = killButton.MaxTimer;
                 Game.GameData.data.myData.currentTarget = null;
 
-                killButton.Timer = PlayerControl.GameOptions.killCooldown * ((target.PlayerId == currentBounty) ? killCoolDownMultiplierAfterKillingBountyOption.getFloat() : killCoolDownMultiplierAfterKillingOthersOption.getFloat());
+                killButton.Timer = GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().KillCooldown * ((target.PlayerId == currentBounty) ? killCoolDownMultiplierAfterKillingBountyOption.getFloat() : killCoolDownMultiplierAfterKillingOthersOption.getFloat());
                 ChangeBounty();
             },
             () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
             () => { return PlayerControl.LocalPlayer.CanMove; },
             () => { killButton.Timer = killButton.MaxTimer; },
             __instance.KillButton.graphic.sprite,
-            new Vector3(0f, 1f, 0),
+            2,
             __instance,
             Module.NebulaInputManager.modKillInput.keyCode
         ).SetTimer(CustomOptionHolder.InitialKillCoolDownOption.getFloat());
-        killButton.MaxTimer = PlayerControl.GameOptions.KillCooldown;
+        killButton.MaxTimer = GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().KillCooldown;
         killButton.SetButtonCoolDownOption(true);
     }
 

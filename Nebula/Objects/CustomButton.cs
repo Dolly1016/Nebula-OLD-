@@ -1,4 +1,5 @@
-﻿using UnityEngine.UI;
+﻿using Nebula.Patches;
+using UnityEngine.UI;
 
 namespace Nebula.Objects;
 
@@ -94,13 +95,13 @@ public class CustomButton
     }
 
 
-    public CustomButton(Action OnClick, Func<bool> HasButton, Func<bool> CouldUse, Action OnMeetingEnds, Sprite Sprite, Vector3 PositionOffset, HudManager hudManager, KeyCode? hotkey, bool HasEffect, float EffectDuration, Action OnEffectEnds, bool mirror = false, string buttonText = "", ImageNames labelType = ImageNames.UseButton)
+    public CustomButton(Action OnClick, Func<bool> HasButton, Func<bool> CouldUse, Action OnMeetingEnds, Sprite Sprite, int PositionOffset, HudManager hudManager, KeyCode? hotkey, bool HasEffect, float EffectDuration, Action OnEffectEnds, bool mirror = false, string buttonText = "", ImageNames labelType = ImageNames.UseButton)
     {
         this.hudManager = hudManager;
         this.OnClick = OnClick;
         this.HasButton = HasButton;
         this.CouldUse = CouldUse;
-        this.PositionOffset = PositionOffset;
+        this.PositionOffset = new Vector3(PositionOffset,0f,0f);
         this.OnMeetingEnds = OnMeetingEnds;
         this.HasEffect = HasEffect;
         this.EffectDuration = EffectDuration;
@@ -124,11 +125,20 @@ public class CustomButton
         button.OnClick = new Button.ButtonClickedEvent();
         button.OnClick.AddListener((UnityEngine.Events.UnityAction)onClickEvent);
 
+        if (!mirror)
+        {
+            if (PositionOffset == -1)
+                GridArrange.currentChildren.Add(button.transform);
+            else
+            {
+                GridArrange.currentChildren.Insert(PositionOffset, button.transform);
+            }
+        }
 
         setActive(true);
     }
 
-    public CustomButton(Action OnClick, Func<bool> HasButton, Func<bool> CouldUse, Action OnMeetingEnds, Sprite Sprite, Vector3 PositionOffset, HudManager hudManager, KeyCode? hotkey, bool mirror = false, string buttonText = "", ImageNames labelType = ImageNames.UseButton)
+    public CustomButton(Action OnClick, Func<bool> HasButton, Func<bool> CouldUse, Action OnMeetingEnds, Sprite Sprite, int PositionOffset, HudManager hudManager, KeyCode? hotkey, bool mirror = false, string buttonText = "", ImageNames labelType = ImageNames.UseButton)
     : this(OnClick, HasButton, CouldUse, OnMeetingEnds, Sprite, PositionOffset, hudManager, hotkey, false, 0f, () => { }, mirror, buttonText, labelType) { }
 
     static public GameObject? SetKeyGuide(GameObject button, KeyCode key, Vector2 pos)
@@ -247,8 +257,14 @@ public class CustomButton
     }
     public void Destroy()
     {
-        setActive(false);
-        if (actionButton) UnityEngine.Object.Destroy(actionButton.gameObject);
+        if (actionButton)
+        {
+            if (HudManager.InstanceExists)
+            {
+                GridArrange.currentChildren.Remove(actionButton.transform);
+            }
+            UnityEngine.Object.Destroy(actionButton.gameObject);
+        }
         actionButton = null;
         buttons.Remove(this);
     }
@@ -407,10 +423,10 @@ public class CustomButton
             actionButton.buttonLabelText.SetSharedMaterial(HudManager.Instance.UseButton.fastUseSettings[textType].FontMaterial);
         }
         actionButton.buttonLabelText.enabled = showButtonText; // Only show the text if it's a kill button
-        if (hudManager.UseButton != null)
+        if (mirror)
         {
-            Vector3 pos = hudManager.UseButton.transform.localPosition;
-            if (mirror) pos = new Vector3(-pos.x, pos.y, pos.z);
+            Vector3 pos = hudManager.UseButton.transform.parent.localPosition;
+            if (mirror) pos = new Vector3(-pos.x * 2, 0, -9);
             actionButton.transform.localPosition = pos + PositionOffset;
         }
         if (CouldUse())

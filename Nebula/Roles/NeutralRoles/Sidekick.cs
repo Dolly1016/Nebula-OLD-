@@ -81,7 +81,7 @@ public class Sidekick : Role
                 () => { return Game.GameData.data.myData.currentTarget && PlayerControl.LocalPlayer.CanMove; },
                 () => { killButton.Timer = killButton.MaxTimer; },
                 __instance.KillButton.graphic.sprite,
-                new Vector3(0f, 1f, 0),
+                -1,
                 __instance,
                 Module.NebulaInputManager.modKillInput.keyCode
             ).SetTimer(CustomOptionHolder.InitialKillCoolDownOption.getFloat());

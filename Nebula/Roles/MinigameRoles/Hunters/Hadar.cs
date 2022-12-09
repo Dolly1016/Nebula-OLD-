@@ -135,7 +135,7 @@ public class Hadar : Hunter
             () => { return PlayerControl.LocalPlayer.CanMove; },
             () => { ventButton.Timer = ventButton.MaxTimer; },
             GetVentHideButtonSprite(),
-            new Vector3(-1.8f, 0f, 0),
+            -1,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
             false,

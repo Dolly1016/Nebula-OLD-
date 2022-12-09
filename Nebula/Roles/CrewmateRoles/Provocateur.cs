@@ -57,7 +57,7 @@ public class Provocateur : Role
                 embroilButton.isEffectActive = false;
             },
             buttonSprite.GetSprite(),
-            new Vector3(-1.8f, 0, 0),
+            -1,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
             true,

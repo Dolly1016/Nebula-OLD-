@@ -909,6 +909,7 @@ public static class DynamicColors
                     shareIconRenderer.layer = LayerExpansion.GetUILayer();
                     shareIconRenderer.transform.SetParent(shareButton.transform);
                     shareIconRenderer.transform.localPosition = new Vector3(0, 0, -0.5f);
+                    shareIconRenderer.transform.localScale = new Vector3(0.85f,0.85f,1f);
                     shareIconRenderer.AddComponent<SpriteRenderer>().sprite = ShareIconSprite.GetSprite();
 
                     var sButton = shareButton.GetComponent<PassiveButton>();

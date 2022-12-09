@@ -15,7 +15,7 @@ public class GameRule
 
     public GameRule()
     {
-        vanillaVotingTime = PlayerControl.GameOptions.VotingTime;
+        vanillaVotingTime = GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().VotingTime;
 
         if (CustomOptionHolder.meetingOptions.getBool())
         {
@@ -142,7 +142,7 @@ public class CustomOptionHolder
 
     public static CustomOption? GetUnlimitedCameraOption()
     {
-        switch (PlayerControl.GameOptions.MapId)
+        switch (GameOptionsManager.Instance.CurrentGameOptions.MapId)
         {
             case 0:
                 return UnlimitedCameraSkeldOption;
@@ -427,7 +427,7 @@ public class CustomOptionHolder
                                   MetaDialog.EraseDialog(1);
                                   refresher(id);
                               }));
-                        refresher(PlayerControl.GameOptions.MapId);
+                        refresher(GameOptionsManager.Instance.CurrentGameOptions.MapId);
                     });
                 else
                     return new MSMargin(1.7f);

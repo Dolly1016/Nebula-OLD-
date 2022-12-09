@@ -192,7 +192,7 @@ public class Tracker : Template.BilateralnessRole
             },
             () => { trackButton.Timer = trackButton.MaxTimer; },
             category == RoleCategory.Impostor ? FTracker.trackButtonEvilSprite.GetSprite() : FTracker.trackButtonNiceSprite.GetSprite(),
-            new Vector3(-1.8f, 0, 0),
+            -1,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
             false,
@@ -270,7 +270,11 @@ public class Tracker : Template.BilateralnessRole
 
         taskTrackTarget = Byte.MaxValue;
 
-        if (!MapBehaviour.Instance || !MapBehaviour.Instance.IsOpen) HudManager.Instance.OpenMap();
+        if (!MapBehaviour.Instance || !MapBehaviour.Instance.IsOpen) HudManager.Instance.ToggleMapVisible(new MapOptions
+        {
+            Mode = MapOptions.Modes.Normal,
+            ShowLivePlayerPosition = true
+        });
     }
 
     public override void OnShowMapTaskOverlay(MapTaskOverlay mapTaskOverlay, Action<Vector2, bool> iconGenerator)

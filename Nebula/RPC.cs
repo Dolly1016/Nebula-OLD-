@@ -23,7 +23,6 @@ public enum CustomRPC
     ShareColor,
     SynchronizeTimer,
     UpdatePlayerControl,
-    ForceEnd,
     WinTrigger,
     ShareOptions,
     SendPreMeetingPosition,
@@ -150,9 +149,6 @@ class RPCHandlerPatch
                 break;
             case (byte)CustomRPC.UpdatePlayerControl:
                 RPCEvents.UpdatePlayerControl(reader.ReadByte(), reader.ReadSingle());
-                break;
-            case (byte)CustomRPC.ForceEnd:
-                RPCEvents.ForceEnd(reader.ReadByte());
                 break;
             case (byte)CustomRPC.SendPreMeetingPosition:
                 RPCEvents.SendPreMeetingPosition(reader.ReadByte(), new Vector2(reader.ReadSingle(), reader.ReadSingle()));
@@ -409,22 +405,12 @@ static class RPCEvents
 
     public static void SetRandomMap(byte mapId)
     {
-        PlayerControl.GameOptions.MapId = mapId;
+        GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().MapId = mapId;
     }
 
     public static void VersionHandshake(byte[] version, Guid guid, int clientId)
     {
         Patches.GameStartManagerPatch.playerVersions[clientId] = new Patches.GameStartManagerPatch.PlayerVersion(version, guid);
-    }
-
-    public static void ForceEnd(byte playerId)
-    {
-        foreach (PlayerControl player in PlayerControl.AllPlayerControls)
-        {
-            player.RemoveInfected();
-            player.MurderPlayer(player);
-            player.Data.IsDead = true;
-        }
     }
 
     public static void WinTrigger(byte roleId, byte winnerId)
@@ -932,7 +918,7 @@ static class RPCEvents
             Game.GameData.data.playersArray[playerId]?.Revive(changeStatus);
             PlayerControl player = Helpers.playerById(playerId);
             if (pos != null) player.NetTransform.SnapTo(pos);
-            player.Revive(false);
+            player.Revive();
             player.Data.IsDead = false;
             Game.GameData.data.deadPlayers.Remove(playerId);
         }
@@ -946,7 +932,7 @@ static class RPCEvents
 
             Game.GameData.data.playersArray[playerId]?.Revive();
             PlayerControl player = Helpers.playerById(playerId);
-            player.Revive(false);
+            player.Revive();
             player.Data.IsDead = false;
             Game.GameData.data.deadPlayers.Remove(playerId);
         }
@@ -993,7 +979,7 @@ static class RPCEvents
 
                 if (optionId == uint.MaxValue)
                 {
-                    PlayerControl.GameOptions.NumImpostors = (int)selection;
+                    GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().NumImpostors = (int)selection;
                 }
                 else
                 {
@@ -1421,7 +1407,7 @@ static class RPCEvents
         Collider.points = new Vector2[5] { pos1 - center, pos1Upper - center, pos2Upper - center, pos2 - center, pos1 - center };
         Collider.edgeRadius = 0.2f;
 
-        MeshRenderer.material = new Material(FastDestroyableSingleton<HudManager>.Instance.MapButton.material);
+        MeshRenderer.material = new Material(FastDestroyableSingleton<HudManager>.Instance.MapButton.HeldButtonSprite.material);
         MeshRenderer.material.mainTexture = vertical ? Roles.Roles.Disturber.getElecAnimSubTexture() : Roles.Roles.Disturber.getElecAnimTexture();
 
         MeshFilter.mesh = mesh;

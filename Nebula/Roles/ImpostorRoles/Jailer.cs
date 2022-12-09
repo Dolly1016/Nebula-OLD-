@@ -42,7 +42,7 @@ public class Jailer : Role
                 () => { return PlayerControl.LocalPlayer.CanMove; },
                 () => { },
                 __instance.UseButton.fastUseSettings[ImageNames.AdminMapButton].Image,
-                new Vector3(-1.8f, 0f, 0),
+                -1,
                 __instance,
                 Module.NebulaInputManager.abilityInput.keyCode,
                 false,
@@ -96,11 +96,11 @@ public class Jailer : Role
             jailerCountOverlay.gameObject.name = "JailerCountOverlay";
 
             Transform roomNames;
-            if (PlayerControl.GameOptions.MapId == 0)
+            if (GameOptionsManager.Instance.CurrentGameOptions.MapId == 0)
                 roomNames = MapBehaviour.Instance.transform.FindChild("RoomNames (1)");
             else
                 roomNames = MapBehaviour.Instance.transform.FindChild("RoomNames");
-            Map.MapEditor.MapEditors[PlayerControl.GameOptions.MapId].MinimapOptimizeForJailer(roomNames, jailerCountOverlay, MapBehaviour.Instance.infectedOverlay);
+            Map.MapEditor.MapEditors[GameOptionsManager.Instance.CurrentGameOptions.MapId].MinimapOptimizeForJailer(roomNames, jailerCountOverlay, MapBehaviour.Instance.infectedOverlay);
         }
 
         jailerCountOverlay.gameObject.SetActive(true);

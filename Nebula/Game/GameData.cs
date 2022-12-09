@@ -467,7 +467,8 @@ public class TaskData
         int tasks;
         if (Game.GameModeProperty.GetProperty(Game.GameData.data.GameMode).CountTasks)
         {
-            tasks = PlayerControl.GameOptions.NumCommonTasks + PlayerControl.GameOptions.NumShortTasks + PlayerControl.GameOptions.NumLongTasks; ;
+            var gameOption = GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>();
+            tasks = gameOption.NumCommonTasks + gameOption.NumShortTasks + gameOption.NumLongTasks; ;
         }
         else
         {
@@ -524,8 +525,7 @@ public class PlayerProperty
             if (player.AmOwner)
                 player.MyPhysics.inputHandler.enabled = true;
             player.cosmetics.skin.SetEnterVent(player.cosmetics.FlipX);
-            player.MyPhysics.Animator.Play(player.MyPhysics.CurrentAnimationGroup.EnterVentAnim, 1f);
-            player.MyPhysics.Animator.Time = 0f;
+            player.MyPhysics.Animations.StartCoroutine(player.MyPhysics.Animations.CoPlayEnterVentAnimation());
             player.moveable = false;
 
             if (player.PlayerId == PlayerControl.LocalPlayer.PlayerId && player.GetModData().role == Roles.Roles.Hadar)
@@ -533,14 +533,14 @@ public class PlayerProperty
                 Objects.SoundPlayer.PlaySound(Module.AudioAsset.HadarDive);
             }
         })));
-        sequence.Add(Effects.Wait(player.MyPhysics.CurrentAnimationGroup.EnterVentAnim.length));
+        sequence.Add(Effects.Wait(player.MyPhysics.Animations.group.EnterVentAnim.length));
         sequence.Add(Effects.Action(new System.Action(() =>
         {
             if (player.AmOwner)
                 player.MyPhysics.inputHandler.enabled = false;
             player.MyPhysics.myPlayer.Visible = false;
             player.cosmetics.skin.SetIdle(player.cosmetics.FlipX);
-            player.MyPhysics.Animator.Play(player.MyPhysics.CurrentAnimationGroup.IdleAnim, 1f);
+            player.MyPhysics.Animations.PlayIdleAnimation();
             player.moveable = true;
             underTheFloor = true;
         })));
@@ -560,8 +560,7 @@ public class PlayerProperty
             if (player.AmOwner)
                 player.MyPhysics.inputHandler.enabled = true;
             player.cosmetics.skin.SetExitVent(player.cosmetics.FlipX);
-            player.MyPhysics.Animator.Play(player.MyPhysics.CurrentAnimationGroup.ExitVentAnim, 1f);
-            player.MyPhysics.Animator.Time = 0f;
+            player.MyPhysics.Animations.StartCoroutine(player.MyPhysics.Animations.CoPlayExitVentAnimation());
             player.moveable = false;
             player.MyPhysics.myPlayer.Visible = true;
             underTheFloor = false;
@@ -571,13 +570,13 @@ public class PlayerProperty
                 Objects.SoundPlayer.PlaySound(Module.AudioAsset.HadarReappear);
             }
         })));
-        sequence.Add(Effects.Wait(player.MyPhysics.CurrentAnimationGroup.ExitVentAnim.length));
+        sequence.Add(Effects.Wait(player.MyPhysics.Animations.group.ExitVentAnim.length));
         sequence.Add(Effects.Action(new System.Action(() =>
         {
             if (player.AmOwner)
                 player.MyPhysics.inputHandler.enabled = false;
             player.cosmetics.skin.SetIdle(player.cosmetics.FlipX);
-            player.MyPhysics.Animator.Play(player.MyPhysics.CurrentAnimationGroup.IdleAnim, 1f);
+            player.MyPhysics.Animations.PlayIdleAnimation();
             player.moveable = true;
         })));
 
@@ -1327,19 +1326,20 @@ public class GameData
             VentMap.Add(vent.gameObject.name, new VentData(vent));
         }
 
-        Map.MapEditor.FixTasks(PlayerControl.GameOptions.MapId);
+        var mapId = GameOptionsManager.Instance.CurrentGameOptions.MapId;
+        Map.MapEditor.FixTasks(mapId);
 
 
         if (CustomOptionHolder.mapOptions.getBool())
         {
-            Map.MapEditor.OptimizeMap(PlayerControl.GameOptions.MapId);
-            Map.MapEditor.AddVents(PlayerControl.GameOptions.MapId);
-            Map.MapEditor.MapCustomize(PlayerControl.GameOptions.MapId);
+            Map.MapEditor.OptimizeMap(mapId);
+            Map.MapEditor.AddVents(mapId);
+            Map.MapEditor.MapCustomize(mapId);
         }
 
         if (CustomOptionHolder.TasksOption.getBool())
         {
-            Map.MapEditor.AddWirings(PlayerControl.GameOptions.MapId);
+            Map.MapEditor.AddWirings(mapId);
         }
 
         Rooms = new List<SystemTypes>();
@@ -1353,7 +1353,7 @@ public class GameData
     {
         if (CustomOptionHolder.mapOptions.getBool())
         {
-            Map.MapEditor.ModifySabotage(PlayerControl.GameOptions.MapId);
+            Map.MapEditor.ModifySabotage(GameOptionsManager.Instance.CurrentGameOptions.MapId);
         }
     }
 

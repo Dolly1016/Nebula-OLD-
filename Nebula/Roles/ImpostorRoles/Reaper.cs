@@ -14,7 +14,7 @@ public class Reaper : Template.Draggable
     private void ConnectVent(bool connect)
     {
         Dictionary<string, VentData> ventMap = Game.GameData.data.VentMap;
-        switch (PlayerControl.GameOptions.MapId)
+        switch (GameOptionsManager.Instance.CurrentGameOptions.MapId)
         {
             case 0:
                 //Skeld

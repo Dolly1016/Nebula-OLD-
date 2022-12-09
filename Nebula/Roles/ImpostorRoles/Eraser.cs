@@ -76,7 +76,7 @@ public class Eraser : Role
                 eraserButton.Timer = eraserButton.MaxTimer + eraseCoolDownAdditionOption.getFloat() * PlayerControl.LocalPlayer.GetModData().GetRoleData(eraseCountId);
             },
             buttonSprite.GetSprite(),
-            new Vector3(-1.8f, 0, 0),
+            -1,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode, true, eraseDurationOption.getFloat(),
             () =>

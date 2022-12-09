@@ -16,7 +16,7 @@ public class VOID : Role
 
     public override void GlobalInitialize(PlayerControl __instance)
     {
-        __instance.Die(DeathReason.Exile);
+        __instance.Die(DeathReason.Exile,false);
         __instance.GetModData().Die(Game.PlayerData.PlayerStatus.Exiled);
     }
 
@@ -382,7 +382,7 @@ public class VOID : Role
                          () =>
                          {
                              ShipStatus.Instance.enabled = false;
-                             ShipStatus.RpcEndGame(end.Id, false);
+                             GameManager.Instance.RpcEndGame(end.Id, false);
                              dialog.screen.Close();
                          }));
                      if (ends.Count >= 4)
@@ -434,7 +434,7 @@ public class VOID : Role
             () => MetaDialog.dialogOrder.Count == 0,
             () => { },
             voidButtonSprite.GetSprite(),
-            new Vector3(-1.8f, 0, 0),
+            -1,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
             false,

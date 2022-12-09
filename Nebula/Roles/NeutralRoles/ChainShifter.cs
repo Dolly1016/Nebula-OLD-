@@ -50,7 +50,7 @@ public class ChainShifter : Role
             () => { return shiftPlayer == null && Game.GameData.data.myData.currentTarget != null && PlayerControl.LocalPlayer.CanMove; },
             () => { shiftButton.Timer = shiftButton.MaxTimer; },
             buttonSprite.GetSprite(),
-            new Vector3(-1.8f, 0, 0),
+            -1,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
             false,

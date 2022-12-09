@@ -110,7 +110,7 @@ public class Sniper : Role
                 sniperButton.SetLabel("button.label.equip");
             },
             snipeButtonSprite.GetSprite(),
-            new Vector3(-1.8f, 0f, 0),
+            -1,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
             false,
@@ -148,7 +148,7 @@ public class Sniper : Role
             () => { return PlayerControl.LocalPlayer.CanMove && equipRifleFlag; },
             () => { killButton.Timer = killButton.MaxTimer; },
             __instance.KillButton.graphic.sprite,
-            new Vector3(0f, 1f, 0),
+            2,
             __instance,
             Module.NebulaInputManager.modKillInput.keyCode,
             false,

@@ -137,7 +137,7 @@ public class Arsonist : Template.HasAlignedHologram, Template.HasWinTrigger
                 arsonistButton.actionButton.cooldownTimerText.color = Palette.EnabledColor;
             },
             douseSprite.GetSprite(),
-            new Vector3(-1.8f, 0, 0),
+            -1,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
             true,

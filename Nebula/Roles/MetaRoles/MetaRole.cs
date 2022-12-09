@@ -22,7 +22,7 @@ public class MetaRole : ExtraRole
 
     public override void Initialize(PlayerControl __instance)
     {
-        log = UnityEngine.Object.Instantiate(HudManager.Instance.TaskText, HudManager.Instance.transform);
+        log = UnityEngine.Object.Instantiate(HudManager.Instance.TaskPanel.taskText, HudManager.Instance.transform);
         log.maxVisibleLines = 28;
         log.fontSize = log.fontSizeMin = log.fontSizeMax = 2.5f;
         log.outlineWidth += 0.04f;

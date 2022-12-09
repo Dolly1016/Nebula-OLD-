@@ -55,7 +55,7 @@ public class AdminPatch
         public static bool Prefix(ref float __result, MapConsole __instance, [HarmonyArgument(0)] GameData.PlayerInfo pc, [HarmonyArgument(1)] out bool canUse, [HarmonyArgument(2)] out bool couldUse)
         {
             // temp fix for the admin bug on airship
-            if (PlayerControl.GameOptions.MapId == 4)
+            if (GameOptionsManager.Instance.CurrentGameOptions.MapId == 4)
                 __instance.useIcon = ImageNames.PolusAdminButton;
 
             canUse = couldUse = false;
@@ -278,7 +278,7 @@ public class AdminPatch
 
                     if (TimeRemaining == null)
                     {
-                        TimeRemaining = UnityEngine.Object.Instantiate(HudManager.Instance.TaskText, __instance.transform);
+                        TimeRemaining = UnityEngine.Object.Instantiate(HudManager.Instance.TaskPanel.taskText, __instance.transform);
                         TimeRemaining.alignment = TMPro.TextAlignmentOptions.BottomRight;
                         TimeRemaining.transform.position = Vector3.zero;
                         TimeRemaining.transform.localPosition = new Vector3(3.25f, 5.25f);

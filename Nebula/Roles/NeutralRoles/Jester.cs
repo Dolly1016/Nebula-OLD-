@@ -89,7 +89,7 @@ public class Jester : Template.Draggable, Template.HasWinTrigger
                 () => { return PlayerControl.LocalPlayer.CanMove; },
                 () => { blankButton.Timer = blankButton.MaxTimer; },
                 blankButtonSprite.GetSprite(),
-                new Vector3(0f, 1f, 0),
+                -1,
                 __instance,
                 Module.NebulaInputManager.modKillInput.keyCode,
                 false,

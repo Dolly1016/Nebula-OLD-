@@ -102,7 +102,7 @@ public class Navvy : Role
     public void SetSealedVentSprite(Vent vent, float alpha)
     {
         vent.EnterVentAnim = vent.ExitVentAnim = null;
-        if (PlayerControl.GameOptions.MapId == 2)
+        if (GameOptionsManager.Instance.CurrentGameOptions.MapId == 2)
         {
             //Polus
             vent.myRend.sprite = getCaveSealedSprite();
@@ -153,7 +153,7 @@ public class Navvy : Role
             },
             () => { sealButton.Timer = sealButton.MaxTimer; },
             sealButtonSprite.GetSprite(),
-            new Vector3(-1.8f, 0f, 0),
+            -1,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
             false,
@@ -180,7 +180,7 @@ public class Navvy : Role
             },
             () => { repairButton.Timer = 0; },
             repairButtonSprite.GetSprite(),
-            new Vector3(0f, 1f, 0),
+            -1,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
             false,

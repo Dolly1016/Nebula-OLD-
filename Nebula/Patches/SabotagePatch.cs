@@ -6,7 +6,7 @@ class CanUseDoorPatch
 {
     static void Postfix(InfectedOverlay __instance, ref bool __result)
     {
-        if (PlayerControl.GameOptions.MapId != 4) return;
+        if (GameOptionsManager.Instance.CurrentGameOptions.MapId != 4) return;
 
         __result |= CustomOptionHolder.CanUseDoorDespiteSabotageOption.getBool();
     }

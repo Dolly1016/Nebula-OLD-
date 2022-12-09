@@ -210,7 +210,7 @@ public class Side
                 }
                 else
                 {
-                    switch (PlayerControl.GameOptions.MapId)
+                    switch (GameOptionsManager.Instance.CurrentGameOptions.MapId)
                     {
                         case 0:
                         case 3:

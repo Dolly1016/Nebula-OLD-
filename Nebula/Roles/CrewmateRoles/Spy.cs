@@ -46,7 +46,7 @@ public class Spy : Role
         RelatedRoles.Add(Roles.Provocateur);
     }
 
-    public override bool IsUnsuitable { get { return PlayerControl.GameOptions.NumImpostors <= 1 || PlayerControl.AllPlayerControls.Count < 7; } }
+    public override bool IsUnsuitable { get { return GameOptionsManager.Instance.CurrentGameOptions.NumImpostors <= 1 || PlayerControl.AllPlayerControls.Count < 7; } }
 
     public Spy()
             : base("Spy", "spy", Palette.ImpostorRed, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,

@@ -10,7 +10,7 @@ class KillButtonDoClickPatch
             Helpers.MurderAttemptResult res = Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, __instance.currentTarget, Game.PlayerData.PlayerStatus.Dead);
             if (res != Helpers.MurderAttemptResult.BlankKill)
             {
-                PlayerControl.LocalPlayer.killTimer = PlayerControl.GameOptions.KillCooldown;
+                PlayerControl.LocalPlayer.killTimer = GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().KillCooldown;
             }
             __instance.SetTarget(null);
         }
@@ -53,7 +53,11 @@ public static class SabotageButtonDoClickPatch
         //インポスターなら特段何もしない
         if (PlayerControl.LocalPlayer.Data.Role.TeamType == RoleTeamTypes.Impostor) return true;
 
-        HudManager.Instance.ShowMap((Il2CppSystem.Action<MapBehaviour>)((m) => { m.ShowSabotageMap(); }));
+        HudManager.Instance.ToggleMapVisible(new MapOptions()
+        {
+            Mode = MapOptions.Modes.Sabotage,
+            AllowMovementWhileMapOpen = true
+        });
         return false;
     }
 }

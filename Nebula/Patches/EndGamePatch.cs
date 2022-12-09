@@ -597,29 +597,31 @@ public class EndGameManagerSetUpPatch
 }
 
 
-[HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.CheckEndCriteria))]
+[HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.FixedUpdate))]
 class CheckEndCriteriaPatch
 {
-    public static bool Prefix(ShipStatus __instance)
+    public static void Postfix(ShipStatus __instance)
     {
-
+        
         if (ExileController.Instance != null)
         {
             if (SpawnInMinigame.Instance == null)
-                return false;
+                return;// return false;
         }
 
-        if (!GameData.Instance) return false;
+        if (!GameData.Instance) return;// return false;
 
-        var statistics = new PlayerStatistics(__instance);
+        if (AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Started) return;
+
+        var statistics = new PlayerStatistics(ShipStatus.Instance);
 
         Patches.EndCondition endCondition = null, temp;
         byte priority = Byte.MaxValue;
-
+        
         foreach (Roles.Side side in Roles.Side.AllSides)
         {
 
-            temp = side.endCriteriaChecker(statistics, __instance);
+            temp = side.endCriteriaChecker(statistics, ShipStatus.Instance);
             if (temp != null && priority >= temp.Priority)
             {
                 if ((temp.GameMode & Game.GameData.data.GameMode) == 0) continue;
@@ -635,16 +637,17 @@ class CheckEndCriteriaPatch
             //勝利乗っ取り
             foreach (Roles.Side side in Roles.Side.AllSides)
             {
-                temp = side.endTakeoverChecker(endCondition, statistics, __instance);
+                temp = side.endTakeoverChecker(endCondition, statistics, ShipStatus.Instance);
                 if (temp != null) endCondition = temp;
             }
 
-            __instance.enabled = false;
-            ShipStatus.RpcEndGame(endCondition.Id, false);
-            return false;
+            ShipStatus.Instance.enabled = false;
+            GameManager.Instance.RpcEndGame(endCondition.Id, false);
+            //return false;
+            return;
         }
 
-        return false;
+        return;// return false;
     }
 }
 

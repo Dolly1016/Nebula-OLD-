@@ -133,7 +133,7 @@ public class Doctor : Role
             () => { return gadgetTimer > 0f && PlayerControl.LocalPlayer.CanMove; },
             () => { },
             getVitalsSprite(),
-            new Vector3(-1.8f, 0f, 0),
+            -1,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
             false,

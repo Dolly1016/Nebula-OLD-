@@ -138,7 +138,7 @@ public class RitualCrewmate : RitualRole
             () => { return PlayerControl.LocalPlayer.CanMove; },
             () => { searchButton.Timer = searchButton.MaxTimer; },
             getButtonSprite(),
-            new Vector3(-0.9f, 0, 0),
+            -1,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
             false,

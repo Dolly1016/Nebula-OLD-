@@ -3,6 +3,7 @@ using System.Reflection;
 using Hazel;
 using BepInEx.Configuration;
 using UnhollowerRuntimeLib;
+using AmongUs.GameOptions;
 
 namespace Nebula.Module;
 
@@ -295,7 +296,7 @@ public class CustomOption
                     firstFlag = false;
 
                     messageWriter.WritePacked((uint)uint.MaxValue);
-                    messageWriter.WritePacked((uint)PlayerControl.GameOptions.NumImpostors);
+                    messageWriter.WritePacked((uint)(GameOptionsManager.Instance.CurrentGameOptions.NumImpostors));
                     written++;
                 }
             }
@@ -1345,7 +1346,7 @@ public static class GameOptionStringGenerator
     public static List<string> GenerateString(int maxLines = 28)
     {
         List<string> pages = new List<string>();
-        pages.Add(PlayerControl.GameOptions.ToHudString(PlayerControl.AllPlayerControls.Count));
+        pages.Add(GameOptionsManager.Instance.CurrentGameOptions.ToHudString(PlayerControl.AllPlayerControls.Count));
 
         StringBuilder entry = new StringBuilder();
         List<string> entries = new List<string>();
@@ -1422,7 +1423,7 @@ public class GameOptionsDataPatch
 
     private static void Postfix()
     {
-        if (PlayerControl.GameOptions == null) return;
+        if (GameOptionsManager.Instance.CurrentGameOptions == null) return;
 
         CustomOption.CurrentGameMode = CustomGameModes.GetGameMode(CustomOptionHolder.gameMode.getSelection());
 
@@ -1438,43 +1439,55 @@ public class GameOptionsDataPatch
     }
 }
 
-[HarmonyPatch(typeof(GameOptionsData), nameof(GameOptionsData.Deserialize), typeof(Il2CppSystem.IO.BinaryReader))]
+[HarmonyPatch(typeof(GameOptionsData), nameof(GameOptionsData.Deserialize))]
 public static class GameOptionsDeserializePatch
 {
-    static private int NumImpostors = PlayerControl.GameOptions.NumImpostors;
+    static private int NumImpostors = GameOptionsManager.Instance.CurrentGameOptions.NumImpostors;
     public static bool Prefix(GameOptionsData __instance)
     {
-        NumImpostors = PlayerControl.GameOptions.NumImpostors;
+        NumImpostors = GameOptionsManager.Instance.CurrentGameOptions.NumImpostors;
         return true;
     }
 
     public static void Postfix(GameOptionsData __instance)
     {
-        PlayerControl.GameOptions.NumImpostors = NumImpostors;
+        try
+        {
+            GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().NumImpostors = NumImpostors;
+        }
+        catch{ }
     }
 }
 
 [HarmonyPatch(typeof(GameOptionsData), nameof(GameOptionsData.Serialize))]
 public static class GameOptionsSerializePatch
 {
-    static private int NumImpostors = PlayerControl.GameOptions.NumImpostors;
+    static private int NumImpostors = GameOptionsManager.Instance.CurrentGameOptions.NumImpostors;
     public static bool Prefix(GameOptionsData __instance)
     {
-        NumImpostors = PlayerControl.GameOptions.NumImpostors;
-        if (NumImpostors == 0)
+        try
         {
-            PlayerControl.GameOptions.NumImpostors = 1;
+            NumImpostors = GameOptionsManager.Instance.CurrentGameOptions.NumImpostors;
+            if (NumImpostors == 0)
+            {
+                GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().NumImpostors = 1;
+            }
+            else if (NumImpostors > 3)
+            {
+                GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().NumImpostors = 3;
+            }
         }
-        else if (NumImpostors > 3)
-        {
-            PlayerControl.GameOptions.NumImpostors = 3;
-        }
+        catch { }
         return true;
     }
 
     public static void Postfix(GameOptionsData __instance)
     {
-        PlayerControl.GameOptions.NumImpostors = NumImpostors;
+        try
+        {
+            GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().NumImpostors = NumImpostors;
+        }
+        catch { }
     }
 }
 

@@ -45,7 +45,7 @@ class ExileControllerPatch
 
             List<Il2CppSystem.Collections.IEnumerator> sequence = new List<Il2CppSystem.Collections.IEnumerator>();
 
-            if (DestroyableSingleton<TutorialManager>.InstanceExists || !ShipStatus.Instance.IsGameOverDueToDeath())
+            if (DestroyableSingleton<TutorialManager>.InstanceExists || !GameManager.Instance.LogicFlow.IsGameOverDueToDeath())
             {
                 sequence.Add(ShipStatus.Instance.PrespawnStep());
                 sequence.Add(Effects.Action(new System.Action(() => { __instance.ReEnableGameplay(); })));

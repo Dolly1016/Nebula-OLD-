@@ -722,8 +722,8 @@ public class CustomParts
 
         private static void HandleHat(PlayerPhysics __instance)
         {
-            AnimationClip currentAnimation = __instance.Animator.GetCurrentAnimation();
-            if (currentAnimation == __instance.CurrentAnimationGroup.ClimbAnim || currentAnimation == __instance.CurrentAnimationGroup.ClimbDownAnim) return;
+            AnimationClip currentAnimation = __instance.Animations.Animator.m_currAnim;
+            if (currentAnimation == __instance.Animations.group.ClimbUpAnim || currentAnimation == __instance.Animations.group.ClimbDownAnim) return;
             HatParent hp = __instance.myPlayer.cosmetics.hat;
             if (hp.Hat == null) return;
             CustomHat extend = hp.Hat.getHatData();
@@ -733,7 +733,7 @@ public class CustomParts
             cosmicTimer.Timer -= Time.deltaTime;
             if (cosmicTimer.Timer < 0f) { cosmicTimer.Timer = extend.SecPerFrame.SecPerFrame; cosmicTimer.Index++; }
 
-            if (currentAnimation == __instance.CurrentAnimationGroup.RunAnim)
+            if (currentAnimation == __instance.Animations.group.RunAnim)
             {
                 if (extend.I_Move)
                     hp.FrontLayer.sprite = UpdateAndGetSprite(cosmicTimer, (__instance.myPlayer.cosmetics.FlipX && extend.I_MoveFlip) ? extend.I_MoveFlip.Images : extend.I_Move.Images);
@@ -749,8 +749,8 @@ public class CustomParts
 
         private static void HandleVisor(PlayerPhysics __instance)
         {
-            AnimationClip currentAnimation = __instance.Animator.GetCurrentAnimation();
-            if (currentAnimation == __instance.CurrentAnimationGroup.ClimbAnim || currentAnimation == __instance.CurrentAnimationGroup.ClimbDownAnim) return;
+            AnimationClip currentAnimation = __instance.Animations.Animator.m_currAnim;
+            if (currentAnimation == __instance.Animations.group.ClimbUpAnim || currentAnimation == __instance.Animations.group.ClimbDownAnim) return;
 
             var visor = __instance.myPlayer.cosmetics.visor;
             if (visor.currentVisor == null) return;

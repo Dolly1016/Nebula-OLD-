@@ -37,7 +37,7 @@ class MeetingHudPatch
             PlayerVoteArea playerVoteArea = __instance.playerStates[num];
             if (!playerVoteArea.AmDead && !playerVoteArea.DidVote)
             {
-                if (PlayerControl.LocalPlayer.PlayerId == srcPlayerId || AmongUsClient.Instance.GameMode != GameModes.LocalGame)
+                if (PlayerControl.LocalPlayer.PlayerId == srcPlayerId)
                 {
                     SoundManager.Instance.PlaySound(__instance.VoteLockinSound, false, 1f, null);
                 }
@@ -174,7 +174,7 @@ class MeetingHudPatch
 
             if (meetingInfoText == null)
             {
-                meetingInfoText = UnityEngine.Object.Instantiate(HudManager.Instance.TaskText, __instance.transform);
+                meetingInfoText = UnityEngine.Object.Instantiate(HudManager.Instance.TaskPanel.taskText, __instance.transform);
                 meetingInfoText.alignment = TMPro.TextAlignmentOptions.BottomLeft;
                 meetingInfoText.transform.position = Vector3.zero;
                 meetingInfoText.transform.localPosition = new Vector3(-3.07f, 3.33f, -20f);

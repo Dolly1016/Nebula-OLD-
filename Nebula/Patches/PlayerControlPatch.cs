@@ -118,13 +118,13 @@ public class PlayerControlPatch
 
     static public PlayerControl? SetMyTarget(bool onlyWhiteNames = false, bool targetPlayersInVents = false, List<byte> untargetablePlayers = null, PlayerControl targetingPlayer = null)
     {
-        return SetMyTarget(GameOptionsData.KillDistances[Mathf.Clamp(PlayerControl.GameOptions.KillDistance, 0, 2)],
+        return SetMyTarget(GameOptionsData.KillDistances[Mathf.Clamp(GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().KillDistance, 0, 2)],
                 onlyWhiteNames, targetPlayersInVents, untargetablePlayers, targetingPlayer);
     }
 
     static public PlayerControl? SetMyTarget(System.Predicate<GameData.PlayerInfo> targetablePlayers, PlayerControl targetingPlayer = null)
     {
-        return SetMyTarget(GameOptionsData.KillDistances[Mathf.Clamp(PlayerControl.GameOptions.KillDistance, 0, 2)],
+        return SetMyTarget(GameOptionsData.KillDistances[Mathf.Clamp(GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().KillDistance, 0, 2)],
             targetablePlayers);
     }
 
@@ -172,7 +172,7 @@ public class PlayerControlPatch
         target.cosmetics.currentBodySprite.BodySprite.material.SetColor("_OutlineColor", color);
     }
 
-    static public DeadBody? SetMyDeadTarget() => SetMyDeadTarget(GameOptionsData.KillDistances[Mathf.Clamp(PlayerControl.GameOptions.KillDistance, 0, 2)]);
+    static public DeadBody? SetMyDeadTarget() => SetMyDeadTarget(GameOptionsData.KillDistances[Mathf.Clamp(GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().KillDistance, 0, 2)]);
 
     static public DeadBody? SetMyDeadTarget(float num)
     {
@@ -435,11 +435,8 @@ class PlayerPhysicsHandleAnimationPatch
 {
     public static bool Prefix(PlayerPhysics __instance)
     {
-        if (
-            __instance.Animator.IsPlaying(__instance.CurrentAnimationGroup.ExitVentAnim) ||
-            __instance.Animator.IsPlaying(__instance.CurrentAnimationGroup.EnterVentAnim))
-            return false;
-        return true;
+        var currentAnim = __instance.Animations.group.SpriteAnimator.m_currAnim;
+        return currentAnim != __instance.Animations.group.ExitVentAnim && currentAnim != __instance.Animations.group.EnterVentAnim;
     }
 }
 
@@ -493,7 +490,7 @@ class PlayerControlSetCoolDownPatch
         {
             if (Game.GameData.data == null) return true;
 
-            if (PlayerControl.GameOptions.KillCooldown <= 0f) return false;
+            if (GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().KillCooldown <= 0f) return false;
             float multiplier = 1f;
             float addition = 0f;
 
@@ -503,8 +500,8 @@ class PlayerControlSetCoolDownPatch
                 Game.GameData.data.myData.getGlobalData().role.SetKillCoolDown(ref multiplier, ref addition);
             }
 
-            __instance.killTimer = Mathf.Clamp(time, 0f, PlayerControl.GameOptions.KillCooldown * multiplier + addition);
-            HudManager.Instance.KillButton.SetCoolDown(__instance.killTimer, PlayerControl.GameOptions.KillCooldown * multiplier + addition);
+            __instance.killTimer = Mathf.Clamp(time, 0f, GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().KillCooldown * multiplier + addition);
+            HudManager.Instance.KillButton.SetCoolDown(__instance.killTimer, GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().KillCooldown * multiplier + addition);
             return false;
         }
         catch (NullReferenceException excep) { return true; }

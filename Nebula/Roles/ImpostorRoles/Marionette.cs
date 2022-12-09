@@ -106,7 +106,7 @@ public class Marionette : Role
                 placeButton.Timer = 10f;
             },
             decoyButtonSprite.GetSprite(),
-            new Vector3(-1.8f, 0f, 0),
+            -1,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
             false,
@@ -143,7 +143,7 @@ public class Marionette : Role
                 SetMarionetteMode(0);
             },
             decoyButtonSprite.GetSprite(),
-            new Vector3(-1.8f, 0f, 0),
+            -1,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
             false,
@@ -169,7 +169,7 @@ public class Marionette : Role
                 marionetteButton.Timer = marionetteButton.MaxTimer;
             },
             monitorButtonSprite.GetSprite(),
-            new Vector3(-2.7f, 0f, 0),
+            -1,
             __instance,
             Module.NebulaInputManager.secondaryAbilityInput.keyCode,
             false,

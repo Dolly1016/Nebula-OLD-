@@ -159,7 +159,7 @@ public class Necromancer : Template.Draggable
                 reviveButton.isEffectActive = false;
             },
             reviveButtonSprite.GetSprite(),
-            new Vector3(0f, 1f, 0),
+            -1, 
             __instance,
             Module.NebulaInputManager.secondaryAbilityInput.keyCode,
             true,

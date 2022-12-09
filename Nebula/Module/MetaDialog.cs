@@ -406,7 +406,7 @@ public class MetaDialog : MetaScreen
                     var subDesigner = designer.Split(1);
                     subDesigner[0].AddTopic(new MSButton(1.2f, 0.4f, "Spawn Points", TMPro.FontStyles.Bold, () =>
                     {
-                        OpenMapDialog(PlayerControl.GameOptions.MapId, AmongUsClient.Instance.GameState != AmongUsClient.GameStates.Started, (obj, id) => Map.MapData.MapDatabase[id].SetUpSpawnPointInfo(obj));
+                        OpenMapDialog(GameOptionsManager.Instance.CurrentGameOptions.MapId, AmongUsClient.Instance.GameState != AmongUsClient.GameStates.Started, (obj, id) => Map.MapData.MapDatabase[id].SetUpSpawnPointInfo(obj));
                     }));
                 }
                 else

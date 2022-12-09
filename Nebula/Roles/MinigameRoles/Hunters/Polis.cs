@@ -50,7 +50,7 @@ public class Polis : Hunter
             () => { return Game.GameData.data.myData.currentTarget && PlayerControl.LocalPlayer.CanMove; },
             () => { arrestButton.Timer = arrestButton.MaxTimer; },
             GetButtonSprite(),
-            new Vector3(0f, 1f, 0),
+            -1,
             __instance,
             Module.NebulaInputManager.modKillInput.keyCode,
             false,

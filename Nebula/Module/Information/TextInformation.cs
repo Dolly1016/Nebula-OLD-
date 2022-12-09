@@ -6,11 +6,11 @@ public class TextInformation : UpperInformation
 
     public TextInformation(string text) : base("TextInfo")
     {
-        if (!HudManager.Instance.TaskText) return;
+        if (!HudManager.Instance.TaskPanel.taskText) return;
 
         height = 0.28f;
 
-        this.text = GameObject.Instantiate(HudManager.Instance.TaskText, gameObject.transform);
+        this.text = GameObject.Instantiate(HudManager.Instance.TaskPanel.taskText, gameObject.transform);
         this.text.rectTransform.localPosition = new Vector2(0.0f, 0.0f);
         this.text.rectTransform.sizeDelta = new Vector2(0.0f, 0.0f);
         this.text.alignment = TMPro.TextAlignmentOptions.Center;

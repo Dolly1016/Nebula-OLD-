@@ -160,7 +160,7 @@ public class Trapper : Template.BilateralnessRole
                         RPCEventInvoker.ObjectUpdate(obj, 0);
                         Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, player, Game.PlayerData.PlayerStatus.Trapped, false, false);
 
-                        PlayerControl.LocalPlayer.killTimer = PlayerControl.GameOptions.KillCooldown;
+                        PlayerControl.LocalPlayer.killTimer = GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().KillCooldown;
                     }
 
                 }
@@ -316,7 +316,7 @@ public class Trapper : Template.BilateralnessRole
             },
             () => { trapButton.Timer = trapButton.MaxTimer; },
             FTrapper.accelButtonSprite.GetSprite(),
-            new Vector3(-1.8f, 0, 0),
+            -1,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
             true,
