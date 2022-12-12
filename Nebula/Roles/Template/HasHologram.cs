@@ -41,9 +41,9 @@ public class HasHologram : Role
         HudManager hudManager = FastDestroyableSingleton<HudManager>.Instance;
 
         Vector3 bottomLeft = new Vector3(
-            -hudManager.UseButton.transform.localPosition.x,
-            hudManager.UseButton.transform.localPosition.y,
-            hudManager.UseButton.transform.localPosition.z);
+            -hudManager.UseButton.transform.parent.localPosition.x,
+            hudManager.UseButton.transform.parent.localPosition.y,
+            hudManager.UseButton.transform.parent.localPosition.z);
 
         player.transform.localPosition = bottomLeft + new Vector3(-0.35f, -0.25f, 0);
         player.transform.localScale = Vector3.one * 0.35f;

@@ -10,7 +10,7 @@ class KillButtonDoClickPatch
             Helpers.MurderAttemptResult res = Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, __instance.currentTarget, Game.PlayerData.PlayerStatus.Dead);
             if (res != Helpers.MurderAttemptResult.BlankKill)
             {
-                PlayerControl.LocalPlayer.killTimer = GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().KillCooldown;
+                PlayerControl.LocalPlayer.killTimer = GameOptionsManager.Instance.CurrentGameOptions.GetFloat(FloatOptionNames.KillCooldown);
             }
             __instance.SetTarget(null);
         }
@@ -83,5 +83,41 @@ class LightsMinigameBeginPatch
         bool cannotFixSabotage = false;
         Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId, (role) => { cannotFixSabotage |= !role.CanFixSabotage; });
         if (cannotFixSabotage) __instance.Close();
+    }
+}
+
+//ぬ～ん使用不可能
+[HarmonyPatch(typeof(MovingPlatformBehaviour), nameof(MovingPlatformBehaviour.MeetingCalled))]
+class MovingPlatformBehaviourMeetingCalledPatch
+{
+    static bool Prefix(MovingPlatformBehaviour __instance)
+    {
+        return !(CustomOptionHolder.mapOptions.getBool() && CustomOptionHolder.oneWayMeetingRoomOption.getBool());
+    }
+}
+
+[HarmonyPatch(typeof(MovingPlatformBehaviour), nameof(MovingPlatformBehaviour.InUse),MethodType.Getter)]
+class CanUseMovingPlayformPatch
+{
+    static bool Prefix(MovingPlatformBehaviour __instance,bool __result)
+    {
+        if (CustomOptionHolder.mapOptions.getBool() && CustomOptionHolder.oneWayMeetingRoomOption.getBool())
+        {
+            __result = true;
+            return false;
+        }
+        return true;
+    }
+}
+
+[HarmonyPatch(typeof(MovingPlatformBehaviour), nameof(MovingPlatformBehaviour.SetSide))]
+class MovingPlatformBehaviourSetSidePatch
+{
+    static bool Prefix(MovingPlatformBehaviour __instance)
+    {
+        if (GameOptionsManager.Instance.currentGameMode == GameModes.HideNSeek) return true;
+
+        __instance.IsDirty = true;
+        return !(CustomOptionHolder.mapOptions.getBool() && CustomOptionHolder.oneWayMeetingRoomOption.getBool());
     }
 }

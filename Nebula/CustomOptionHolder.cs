@@ -15,7 +15,14 @@ public class GameRule
 
     public GameRule()
     {
-        vanillaVotingTime = GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().VotingTime;
+        if (GameOptionsManager.Instance.CurrentGameOptions.GameMode == GameModes.Normal)
+        {
+            vanillaVotingTime = GameOptionsManager.Instance.CurrentGameOptions.GetInt(Int32OptionNames.VotingTime);
+        }
+        else
+        {
+            vanillaVotingTime = 0;
+        }
 
         if (CustomOptionHolder.meetingOptions.getBool())
         {

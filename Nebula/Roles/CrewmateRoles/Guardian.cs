@@ -178,6 +178,7 @@ public class Guardian : Role
                 RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, remainAntennasId, -1);
                 myAntennaSet.Add(obj);
                 antennaButton.Timer = antennaButton.MaxTimer;
+                antennaButton.UsesText.text = Game.GameData.data.myData.getGlobalData().GetRoleData(remainAntennasId).ToString();
             },
             () =>
             {
@@ -185,10 +186,7 @@ public class Guardian : Role
             },
             () =>
             {
-                int total = (int)maxAntennaOption.getFloat();
                 int remain = Game.GameData.data.myData.getGlobalData().GetRoleData(remainAntennasId);
-                antennaButton.UpperText.text = $"{remain}/{total}";
-
                 return remain > 0 && PlayerControl.LocalPlayer.CanMove;
             },
             () => { antennaButton.Timer = antennaButton.MaxTimer; },
@@ -199,7 +197,7 @@ public class Guardian : Role
             false,
             "button.label.place"
         ).SetTimer(CustomOptionHolder.InitialModestAbilityCoolDownOption.getFloat());
-
+        antennaButton.UsesText.text = Game.GameData.data.myData.getGlobalData().GetRoleData(remainAntennasId).ToString();
         antennaButton.MaxTimer = placeCoolDownOption.getFloat();
 
         if (guardButton != null)

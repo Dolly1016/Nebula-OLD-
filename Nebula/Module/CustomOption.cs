@@ -1453,7 +1453,7 @@ public static class GameOptionsDeserializePatch
     {
         try
         {
-            GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().NumImpostors = NumImpostors;
+            GameOptionsManager.Instance.CurrentGameOptions.SetInt(Int32OptionNames.NumImpostors, NumImpostors);
         }
         catch{ }
     }
@@ -1470,11 +1470,11 @@ public static class GameOptionsSerializePatch
             NumImpostors = GameOptionsManager.Instance.CurrentGameOptions.NumImpostors;
             if (NumImpostors == 0)
             {
-                GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().NumImpostors = 1;
+                GameOptionsManager.Instance.CurrentGameOptions.SetInt(Int32OptionNames.NumImpostors, 1);
             }
             else if (NumImpostors > 3)
             {
-                GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().NumImpostors = 3;
+                GameOptionsManager.Instance.CurrentGameOptions.SetInt(Int32OptionNames.NumImpostors, 3);
             }
         }
         catch { }
@@ -1485,7 +1485,7 @@ public static class GameOptionsSerializePatch
     {
         try
         {
-            GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().NumImpostors = NumImpostors;
+            GameOptionsManager.Instance.CurrentGameOptions.SetInt(Int32OptionNames.NumImpostors, NumImpostors);
         }
         catch { }
     }

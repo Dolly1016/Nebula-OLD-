@@ -141,6 +141,7 @@ class IntroCutsceneOnDestroyPatch
         {
             actionMap = actionArray[0];
             Objects.CustomButton.SetKeyGuide(HudManager.Instance.UseButton.gameObject, actionMap.keyCode);
+            Objects.CustomButton.SetKeyGuide(HudManager.Instance.PetButton.gameObject, actionMap.keyCode);
         }
 
         //レポート
@@ -239,7 +240,11 @@ class IntroPatch
 
             list.Add(Effects.Action((Il2CppSystem.Action)(() =>
             {
-                setUpRoleText(__instance);
+                if (GameOptionsManager.Instance.currentGameMode == GameModes.Normal)
+                {
+
+                    setUpRoleText(__instance);
+                }
             })));
             list.Add(Effects.Wait(2.5f));
             list.Add(Effects.Action((Il2CppSystem.Action)(() =>
@@ -260,19 +265,21 @@ class IntroPatch
     {
         public static void Prefix(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> teamToShow)
         {
-            foreach (PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
+            if (GameOptionsManager.Instance.currentGameMode == GameModes.Normal)
             {
-                if (Game.GameData.data.AllPlayers[player.PlayerId].role.category == Roles.RoleCategory.Impostor)
+                foreach (PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
                 {
-                    DestroyableSingleton<RoleManager>.Instance.SetRole(player, RoleTypes.Impostor);
+                    if (Game.GameData.data.AllPlayers[player.PlayerId].role.category == Roles.RoleCategory.Impostor)
+                    {
+                        DestroyableSingleton<RoleManager>.Instance.SetRole(player, RoleTypes.Impostor);
+                    }
+                    else
+                    {
+                        DestroyableSingleton<RoleManager>.Instance.SetRole(player, RoleTypes.Crewmate);
+                    }
+                    Game.GameData.data.AllPlayers[player.PlayerId].role.ReflectRoleEyesight(player.Data.Role);
                 }
-                else
-                {
-                    DestroyableSingleton<RoleManager>.Instance.SetRole(player, RoleTypes.Crewmate);
-                }
-                Game.GameData.data.AllPlayers[player.PlayerId].role.ReflectRoleEyesight(player.Data.Role);
             }
-
             //isImpostor = (Game.GameData.data.myData.getGlobalData().role.category == Roles.RoleCategory.Impostor);
         }
     }

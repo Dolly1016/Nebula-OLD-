@@ -11,7 +11,9 @@ public class Alien : Role
     private Module.CustomOption countOfCallingSabotageOption;
 
     private int sabotageCount;
-    private TMPro.TextMeshPro sabotageText;
+
+    private TMPro.TextMeshPro sabotageUsesString;
+    private GameObject sabotageUsesObject;
 
     public override void LoadOptionData()
     {
@@ -71,7 +73,7 @@ public class Alien : Role
     public override bool CanInvokeSabotage => sabotageCount > 0 && !PlayerControl.LocalPlayer.Data.IsDead;
     public override void MyPlayerControlUpdate()
     {
-        if (sabotageText) sabotageText.text = sabotageCount + "/" + (int)countOfCallingSabotageOption.getFloat();
+        if (sabotageUsesString) sabotageUsesString.text = sabotageCount.ToString();
     }
 
     public override void OnInvokeSabotage(SystemTypes systemType)
@@ -82,8 +84,8 @@ public class Alien : Role
     public override void ButtonInitialize(HudManager __instance)
     {
         sabotageCount = (int)countOfCallingSabotageOption.getFloat();
-        sabotageText = HudManager.Instance.SabotageButton.CreateButtonUpperText();
-        sabotageText.text = sabotageCount + "/" + (int)countOfCallingSabotageOption.getFloat();
+        sabotageUsesObject = HudManager.Instance.SabotageButton.ShowUsesIcon(0,out sabotageUsesString);
+        
 
         if (emiButton != null)
         {
@@ -122,6 +124,10 @@ public class Alien : Role
         {
             emiButton.Destroy();
             emiButton = null;
+        }
+        if (sabotageUsesObject)
+        {
+            GameObject.Destroy(sabotageUsesObject);
         }
     }
 

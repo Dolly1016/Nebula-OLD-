@@ -18,7 +18,7 @@ public class Marionette : Role
         public override void LocalUpdate()
         {
             if (Roles.Marionette.marionetteButton != null)
-                Roles.Marionette.marionetteButton.UpperText.text = ((int)duration).ToString();
+                Roles.Marionette.marionetteButton.UpperText.text = ((int)duration).ToString() + "s";
         }
     }
 

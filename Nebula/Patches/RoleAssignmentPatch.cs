@@ -468,17 +468,29 @@ class RoleAssignmentPatch
                 }
             }
 
-            int impostorCount = GameOptionsManager.Instance.CurrentGameOptions.NumImpostors;
-            if (PlayerControl.AllPlayerControls.Count < 7 && impostorCount > 1) impostorCount = 1;
-            else if (PlayerControl.AllPlayerControls.Count < 9 && impostorCount > 2) impostorCount = 2;
-            //インポスターを決定する
-
-            var array = Helpers.GetRandomArray(crewmates.Count);
-            int i = 0;
-            while (impostors.Count < impostorCount)
+            if (GameOptionsManager.Instance.currentGameMode == GameModes.Normal)
             {
-                impostors.Add(crewmates[array[i]]);
-                i++;
+                //ModでImpostorを選定する場合
+
+                int impostorCount = GameOptionsManager.Instance.CurrentGameOptions.NumImpostors;
+                if (PlayerControl.AllPlayerControls.Count < 7 && impostorCount > 1) impostorCount = 1;
+                else if (PlayerControl.AllPlayerControls.Count < 9 && impostorCount > 2) impostorCount = 2;
+                //インポスターを決定する
+
+                var array = Helpers.GetRandomArray(crewmates.Count);
+                int i = 0;
+                while (impostors.Count < impostorCount)
+                {
+                    impostors.Add(crewmates[array[i]]);
+                    i++;
+                }
+            }
+            else
+            {
+                foreach(var p in crewmates)
+                {
+                    if (p.Data.Role.Role != RoleTypes.Impostor) impostors.Remove(p);
+                }
             }
             foreach (var imp in impostors)
             {

@@ -32,7 +32,7 @@ public class Secret : AllSideRole, ExtraAssignable
             {
                 if (initialTasks.Count == 0) break;
 
-                int min = GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().NumCommonTasks;
+                int min = GameOptionsManager.Instance.CurrentGameOptions.GetInt(Int32OptionNames.NumCommonTasks);
                 if (initialTasks.Count <= min)
                 {
                     min = 0;

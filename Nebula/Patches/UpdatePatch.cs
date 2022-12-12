@@ -39,7 +39,7 @@ public static class UpdatePatch
         return
             (player == PlayerControl.LocalPlayer && EyesightPatch.ObserverMode)
             || (player.GetModData().Property.UnderTheFloor)
-            || (player.inVent)
+            || (player.inVent && !player.walkingToVent)
             || (!PlayerControl.LocalPlayer.Data.IsDead && player.Data.IsDead);
     }
 

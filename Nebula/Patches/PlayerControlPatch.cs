@@ -5,6 +5,7 @@ public class PlayerControlSetTaskPatch
 {
     public static bool Prefix(GameData __instance, [HarmonyArgument(0)] byte playerId, [HarmonyArgument(1)] UnhollowerBaseLib.Il2CppStructArray<byte> taskTypeIds)
     {
+        return true;
         if (playerId != PlayerControl.LocalPlayer.PlayerId) return true;
 
         GameData.PlayerInfo playerById = __instance.GetPlayerById(playerId);
@@ -118,13 +119,13 @@ public class PlayerControlPatch
 
     static public PlayerControl? SetMyTarget(bool onlyWhiteNames = false, bool targetPlayersInVents = false, List<byte> untargetablePlayers = null, PlayerControl targetingPlayer = null)
     {
-        return SetMyTarget(GameOptionsData.KillDistances[Mathf.Clamp(GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().KillDistance, 0, 2)],
+        return SetMyTarget(GameOptionsData.KillDistances[Mathf.Clamp(GameOptionsManager.Instance.CurrentGameOptions.GetInt(Int32OptionNames.KillDistance), 0, 2)],
                 onlyWhiteNames, targetPlayersInVents, untargetablePlayers, targetingPlayer);
     }
 
     static public PlayerControl? SetMyTarget(System.Predicate<GameData.PlayerInfo> targetablePlayers, PlayerControl targetingPlayer = null)
     {
-        return SetMyTarget(GameOptionsData.KillDistances[Mathf.Clamp(GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().KillDistance, 0, 2)],
+        return SetMyTarget(GameOptionsData.KillDistances[Mathf.Clamp(GameOptionsManager.Instance.CurrentGameOptions.GetInt(Int32OptionNames.KillDistance), 0, 2)],
             targetablePlayers);
     }
 
@@ -172,7 +173,7 @@ public class PlayerControlPatch
         target.cosmetics.currentBodySprite.BodySprite.material.SetColor("_OutlineColor", color);
     }
 
-    static public DeadBody? SetMyDeadTarget() => SetMyDeadTarget(GameOptionsData.KillDistances[Mathf.Clamp(GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().KillDistance, 0, 2)]);
+    static public DeadBody? SetMyDeadTarget() => SetMyDeadTarget(GameOptionsData.KillDistances[Mathf.Clamp(GameOptionsManager.Instance.CurrentGameOptions.GetInt(Int32OptionNames.KillDistance), 0, 2)]);
 
     static public DeadBody? SetMyDeadTarget(float num)
     {
@@ -490,7 +491,7 @@ class PlayerControlSetCoolDownPatch
         {
             if (Game.GameData.data == null) return true;
 
-            if (GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().KillCooldown <= 0f) return false;
+            if (GameOptionsManager.Instance.CurrentGameOptions.GetFloat(FloatOptionNames.KillCooldown) <= 0f) return false;
             float multiplier = 1f;
             float addition = 0f;
 
@@ -500,8 +501,8 @@ class PlayerControlSetCoolDownPatch
                 Game.GameData.data.myData.getGlobalData().role.SetKillCoolDown(ref multiplier, ref addition);
             }
 
-            __instance.killTimer = Mathf.Clamp(time, 0f, GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().KillCooldown * multiplier + addition);
-            HudManager.Instance.KillButton.SetCoolDown(__instance.killTimer, GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().KillCooldown * multiplier + addition);
+            __instance.killTimer = Mathf.Clamp(time, 0f, GameOptionsManager.Instance.CurrentGameOptions.GetFloat(FloatOptionNames.KillCooldown) * multiplier + addition);
+            HudManager.Instance.KillButton.SetCoolDown(__instance.killTimer, GameOptionsManager.Instance.CurrentGameOptions.GetFloat(FloatOptionNames.KillCooldown) * multiplier + addition);
             return false;
         }
         catch (NullReferenceException excep) { return true; }
@@ -540,15 +541,19 @@ class WalkPatch
 {
     public static void Prefix(PlayerPhysics __instance)
     {
-        if (Helpers.HasModData(__instance.myPlayer.PlayerId))
+        try
         {
-            __instance.myPlayer.GetModData().Speed.Reflect();
+            if (Helpers.HasModData(__instance.myPlayer.PlayerId))
+            {
+                __instance.myPlayer.GetModData().Speed.Reflect();
+            }
+            else
+            {
+                __instance.Speed = 2.5f;
+            }
+            if (__instance.Speed < 0f) __instance.Speed *= -1f;
         }
-        else
-        {
-            __instance.Speed = 2.5f;
-        }
-        if (__instance.Speed < 0f) __instance.Speed *= -1f;
+        catch { }
     }
 
     public static void Postfix(PlayerPhysics __instance)
@@ -571,14 +576,18 @@ class MyWalkPatch
 {
     public static void Prefix(PlayerPhysics __instance)
     {
-        if (Helpers.HasModData(__instance.myPlayer.PlayerId))
+        try
         {
-            __instance.myPlayer.GetModData().Speed.Reflect();
+            if (Helpers.HasModData(__instance.myPlayer.PlayerId))
+            {
+                __instance.myPlayer.GetModData().Speed.Reflect();
+            }
+            else
+            {
+                __instance.Speed = 2.5f;
+            }
         }
-        else
-        {
-            __instance.Speed = 2.5f;
-        }
+        catch { }
     }
 }
 

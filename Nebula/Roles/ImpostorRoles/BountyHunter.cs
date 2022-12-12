@@ -57,7 +57,7 @@ public class BountyHunter : Template.HasHologram
                     killButton.Timer = killButton.MaxTimer;
                 Game.GameData.data.myData.currentTarget = null;
 
-                killButton.Timer = GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().KillCooldown * ((target.PlayerId == currentBounty) ? killCoolDownMultiplierAfterKillingBountyOption.getFloat() : killCoolDownMultiplierAfterKillingOthersOption.getFloat());
+                killButton.Timer = GameOptionsManager.Instance.CurrentGameOptions.GetFloat(FloatOptionNames.KillCooldown) * ((target.PlayerId == currentBounty) ? killCoolDownMultiplierAfterKillingBountyOption.getFloat() : killCoolDownMultiplierAfterKillingOthersOption.getFloat());
                 ChangeBounty();
             },
             () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
@@ -68,7 +68,7 @@ public class BountyHunter : Template.HasHologram
             __instance,
             Module.NebulaInputManager.modKillInput.keyCode
         ).SetTimer(CustomOptionHolder.InitialKillCoolDownOption.getFloat());
-        killButton.MaxTimer = GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().KillCooldown;
+        killButton.MaxTimer = GameOptionsManager.Instance.CurrentGameOptions.GetFloat(FloatOptionNames.KillCooldown);
         killButton.SetButtonCoolDownOption(true);
     }
 
@@ -175,7 +175,6 @@ public class BountyHunter : Template.HasHologram
         base.InitializePlayerIcon(player, PlayerId, index);
 
         player.cosmetics.nameText.transform.localScale *= 5f;
-        player.cosmetics.nameText.transform.position += new Vector3(0, 0.25f);
     }
 
     public BountyHunter()

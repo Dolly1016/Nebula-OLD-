@@ -27,7 +27,7 @@ public class Cleaner : Role
 
                     //キル・クリーンボタンのクールダウンは同期する
                     cleanButton.Timer = cleanButton.MaxTimer;
-                PlayerControl.LocalPlayer.killTimer = GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().KillCooldown;
+                PlayerControl.LocalPlayer.killTimer = GameOptionsManager.Instance.CurrentGameOptions.GetFloat(FloatOptionNames.KillCooldown);
             },
             () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
             () => { return deadBodyId != Byte.MaxValue && PlayerControl.LocalPlayer.CanMove; },

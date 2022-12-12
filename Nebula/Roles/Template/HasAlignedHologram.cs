@@ -62,7 +62,7 @@ public class HasAlignedHologram : HasHologram
     private void UpdatePlayerIcon()
     {
         int visibleCounter = 0;
-        Vector3 bottomLeft = HudManager.Instance.UseButton.transform.localPosition;
+        Vector3 bottomLeft = HudManager.Instance.UseButton.transform.parent.localPosition;
         bottomLeft.x *= -1;
         bottomLeft += new Vector3(-0.25f, -0.25f, 0);
 

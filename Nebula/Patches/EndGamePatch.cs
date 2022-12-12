@@ -597,12 +597,18 @@ public class EndGameManagerSetUpPatch
 }
 
 
-[HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.FixedUpdate))]
 class CheckEndCriteriaPatch
 {
-    public static void Postfix(ShipStatus __instance)
+    public static void CommonPrefix()
     {
+        if (!AmongUsClient.Instance.AmHost) return;
         
+        if (GameOptionsManager.Instance.currentGameMode == GameModes.HideNSeek)
+        {
+            if(GameManager.Instance.ShouldCheckForGameEnd)GameManager.Instance.LogicFlow.CheckEndCriteria();
+            return;
+        }
+
         if (ExileController.Instance != null)
         {
             if (SpawnInMinigame.Instance == null)
@@ -614,6 +620,7 @@ class CheckEndCriteriaPatch
         if (AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Started) return;
 
         var statistics = new PlayerStatistics(ShipStatus.Instance);
+        if (!statistics.IsValid) return;
 
         Patches.EndCondition endCondition = null, temp;
         byte priority = Byte.MaxValue;
@@ -651,6 +658,25 @@ class CheckEndCriteriaPatch
     }
 }
 
+[HarmonyPatch(typeof(GameManager), nameof(GameManager.FixedUpdate))]
+class CheckNormalEndCriteriaPatch
+{
+    static bool lastShouldCheckedFlag;
+
+    public static void Prefix(GameManager __instance)
+    {
+        CheckEndCriteriaPatch.CommonPrefix();
+
+        lastShouldCheckedFlag = __instance.ShouldCheckForGameEnd;
+        __instance.ShouldCheckForGameEnd = false;
+    }
+
+    public static void Postfix(GameManager __instance)
+    {
+        __instance.ShouldCheckForGameEnd = lastShouldCheckedFlag;
+    }
+}
+
 public class PlayerStatistics
 {
     private Dictionary<Roles.Side, int> alivePlayers;
@@ -672,6 +698,8 @@ public class PlayerStatistics
     public int AliveInLoveImpostors;
     public int AliveInLoveJackals;
 
+    public bool IsValid;
+
     //
     public int GetAlivePlayers(Roles.Side side)
     {
@@ -684,8 +712,7 @@ public class PlayerStatistics
 
     public PlayerStatistics(ShipStatus __instance)
     {
-
-
+        IsValid = false;
 
         alivePlayers = new Dictionary<Roles.Side, int>();
         TotalAlive = 0;
@@ -701,7 +728,7 @@ public class PlayerStatistics
         AliveImpostorsWithSidekick = 0;
 
         Roles.Side side;
-
+        
 
         foreach (GameData.PlayerInfo playerInfo in GameData.Instance.AllPlayers.GetFastEnumerator())
         {
@@ -709,10 +736,12 @@ public class PlayerStatistics
             {
                 if (playerInfo.Disconnected)
                 {
+                    IsValid = true;
                     continue;
                 }
                 if (playerInfo.IsDead)
                 {
+                    IsValid = true;
                     continue;
                 }
 
@@ -803,8 +832,10 @@ public class PlayerStatistics
                         AliveImpostorsWithSidekick++;
                     }
                 }
+
+                IsValid = true;
             }
-            catch (NullReferenceException exp)
+            catch 
             {
                 continue;
             }

@@ -88,13 +88,15 @@ public class RitualPatch
             yield return DestroyableSingleton<HudManager>.Instance.ShowEmblem(true);
             IntroCutscene introCutscene = UnityEngine.Object.Instantiate<IntroCutscene>(__instance.IntroPrefab, __instance.transform);
             yield return introCutscene.CoBegin();
+            yield return ShipStatus.Instance.PrespawnStep();
             PlayerControl.LocalPlayer.SetKillTimer(CustomOptionHolder.InitialKillCoolDownOption.getFloat());
             (ShipStatus.Instance.Systems[SystemTypes.Sabotage].Cast<SabotageSystemType>()).ForceSabTime(10f);
-            yield return ShipStatus.Instance.PrespawnStep();
             PlayerControl.LocalPlayer.AdjustLighting();
             yield return __instance.CoFadeFullScreen(Color.black, Color.clear, 0.2f, false);
             DestroyableSingleton<HudManager>.Instance.FullScreen.transform.localPosition = new Vector3(0f, 0f, -500f);
             __instance.IsIntroDisplayed = false;
+            __instance.CrewmatesKilled.gameObject.SetActive(GameManager.Instance.ShowCrewmatesKilled());
+            GameManager.Instance.StartGame();
             yield break;
         }
 

@@ -260,9 +260,9 @@ public class AirshipEditor : MapEditor
 
 
                 //MovingPlatformを無効化する
-                airship.GapPlatform.LeftPosition += new Vector3(1000, 0, 0);
-                airship.GapPlatform.RightPosition += new Vector3(1000, 0, 0);
                 airship.GapPlatform.SetSide(true);
+                airship.outOfOrderPlat.SetActive(true);
+                airship.GapPlatform.transform.localPosition = airship.GapPlatform.DisabledPosition;
             }
         }
 

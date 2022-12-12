@@ -467,8 +467,8 @@ public class TaskData
         int tasks;
         if (Game.GameModeProperty.GetProperty(Game.GameData.data.GameMode).CountTasks)
         {
-            var gameOption = GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>();
-            tasks = gameOption.NumCommonTasks + gameOption.NumShortTasks + gameOption.NumLongTasks; ;
+            var gameOption = GameOptionsManager.Instance.CurrentGameOptions;
+            tasks = gameOption.GetInt(Int32OptionNames.NumCommonTasks) + gameOption.GetInt(Int32OptionNames.NumLongTasks) + gameOption.GetInt(Int32OptionNames.NumShortTasks);
         }
         else
         {

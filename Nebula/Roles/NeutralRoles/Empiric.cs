@@ -5,7 +5,6 @@ public class Empiric : Template.HasAlignedHologram, Template.HasWinTrigger
     static public Color RoleColor = new Color(183f / 255f, 233f / 255f, 0f / 255f);
 
     static private CustomButton infectButton;
-    private TMPro.TMP_Text infectButtonString;
 
     private Module.CustomOption maxInfectMyselfOption;
     private Module.CustomOption infectRangeOption;
@@ -83,11 +82,6 @@ public class Empiric : Template.HasAlignedHologram, Template.HasWinTrigger
             infectButton.Destroy();
             infectButton = null;
         }
-        if (infectButtonString != null)
-        {
-            UnityEngine.Object.Destroy(infectButtonString.gameObject);
-            infectButtonString = null;
-        }
     }
 
     public override void InitializePlayerIcon(PoolablePlayer player, byte PlayerId, int index)
@@ -95,7 +89,6 @@ public class Empiric : Template.HasAlignedHologram, Template.HasWinTrigger
         base.InitializePlayerIcon(player, PlayerId, index);
 
         player.cosmetics.nameText.transform.localScale *= 2f;
-        player.cosmetics.nameText.transform.position += new Vector3(0, 0.25f);
     }
 
     public override void ButtonInitialize(HudManager __instance)
@@ -111,13 +104,13 @@ public class Empiric : Template.HasAlignedHologram, Template.HasWinTrigger
                 {
                     activePlayers.Add(Game.GameData.data.myData.currentTarget.PlayerId);
                     leftInfect--;
+                    infectButton.UsesText.text = (leftInfect).ToString();
                     Game.GameData.data.myData.currentTarget = null;
                 }
             },
             () => { return !PlayerControl.LocalPlayer.Data.IsDead && leftInfect > 0; },
             () =>
             {
-                infectButtonString.text = $"{leftInfect}/{(int)maxInfectMyselfOption.getFloat()}";
                 return Game.GameData.data.myData.currentTarget != null && PlayerControl.LocalPlayer.CanMove;
             },
             () => { },
@@ -128,12 +121,9 @@ public class Empiric : Template.HasAlignedHologram, Template.HasWinTrigger
             false,
             "button.label.infect"
         ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());
-
-        infectButtonString = GameObject.Instantiate(infectButton.actionButton.cooldownTimerText, infectButton.actionButton.cooldownTimerText.transform.parent);
-        infectButtonString.text = "";
-        infectButtonString.enableWordWrapping = false;
-        infectButtonString.transform.localScale = Vector3.one * 0.5f;
-        infectButtonString.transform.localPosition += new Vector3(-0.05f, 0.7f, 0);
+        infectButton.UsesText.text = (leftInfect).ToString();
+        infectButton.SetUsesIcon(2);
+        infectButton.MaxTimer = CustomOptionHolder.InitialAbilityCoolDownOption.getFloat();
     }
 
 

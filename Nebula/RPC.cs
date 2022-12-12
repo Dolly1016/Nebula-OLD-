@@ -405,7 +405,7 @@ static class RPCEvents
 
     public static void SetRandomMap(byte mapId)
     {
-        GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().MapId = mapId;
+        GameOptionsManager.Instance.CurrentGameOptions.SetByte(ByteOptionNames.MapId, mapId);
     }
 
     public static void VersionHandshake(byte[] version, Guid guid, int clientId)
@@ -435,13 +435,16 @@ static class RPCEvents
 
     public static void SetRole(byte playerId, Roles.Role role, int roleDataId, int roleData)
     {
-        if (role.category == Roles.RoleCategory.Impostor)
+        if (GameOptionsManager.Instance.currentGameMode == GameModes.Normal)
         {
-            DestroyableSingleton<RoleManager>.Instance.SetRole(Helpers.playerById(playerId), RoleTypes.Impostor);
-        }
-        else
-        {
-            DestroyableSingleton<RoleManager>.Instance.SetRole(Helpers.playerById(playerId), RoleTypes.Crewmate);
+            if (role.category == Roles.RoleCategory.Impostor)
+            {
+                DestroyableSingleton<RoleManager>.Instance.SetRole(Helpers.playerById(playerId), RoleTypes.Impostor);
+            }
+            else
+            {
+                DestroyableSingleton<RoleManager>.Instance.SetRole(Helpers.playerById(playerId), RoleTypes.Crewmate);
+            }
         }
         role.ReflectRoleEyesight(Helpers.playerById(playerId).Data.Role);
         Game.GameData.data.RegisterPlayer(playerId, role, roleDataId, roleData);
@@ -979,7 +982,7 @@ static class RPCEvents
 
                 if (optionId == uint.MaxValue)
                 {
-                    GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().NumImpostors = (int)selection;
+                    GameOptionsManager.Instance.CurrentGameOptions.SetInt(Int32OptionNames.NumImpostors, (int)selection);
                 }
                 else
                 {

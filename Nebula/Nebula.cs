@@ -72,7 +72,7 @@ public class NebulaPlugin : BasePlugin
     public const string PluginVersion = "2.0";
     public const bool IsSnapshot = true;
 
-    public static string PluginVisualVersion = IsSnapshot ? "22.12.10a" : PluginVersion;
+    public static string PluginVisualVersion = IsSnapshot ? "22.12.13a" : PluginVersion;
     public static string PluginStage = IsSnapshot ? "Snapshot" : "";
 
     public const string PluginVersionForFetch = "2.0";
@@ -246,6 +246,7 @@ public static class MetaControlManager
 
             //playerControl.transform.position = PlayerControl.LocalPlayer.transform.position;
             playerControl.GetComponent<DummyBehaviour>().enabled = true;
+            playerControl.isDummy = true;
             playerControl.SetName(Patches.RandomNamePatch.GetRandomName());
             playerControl.SetColor((byte)random.Next(Palette.PlayerColors.Length));
 
@@ -265,6 +266,7 @@ public static class MetaControlManager
 
             playerControl.transform.position = PlayerControl.LocalPlayer.transform.position;
             playerControl.GetComponent<DummyBehaviour>().enabled = true;
+            playerControl.isDummy = true;
             playerControl.SetName(Patches.RandomNamePatch.GetRandomName());
             playerControl.SetColor((byte)random.Next(Palette.PlayerColors.Length));
 

@@ -1,4 +1,6 @@
-﻿namespace Nebula.Roles.ComplexRoles;
+﻿using Rewired.Utils.Platforms.Windows;
+
+namespace Nebula.Roles.ComplexRoles;
 
 public class FTrapper : Template.HasBilateralness
 {
@@ -84,7 +86,6 @@ public class FTrapper : Template.HasBilateralness
 public class Trapper : Template.BilateralnessRole
 {
     private CustomButton trapButton;
-    private TMPro.TMP_Text trapButtonString;
     private byte trapKind;
     private static List<byte> detectedPlayers = new List<byte>();
 
@@ -160,7 +161,7 @@ public class Trapper : Template.BilateralnessRole
                         RPCEventInvoker.ObjectUpdate(obj, 0);
                         Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, player, Game.PlayerData.PlayerStatus.Trapped, false, false);
 
-                        PlayerControl.LocalPlayer.killTimer = GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().KillCooldown;
+                        PlayerControl.LocalPlayer.killTimer = GameOptionsManager.Instance.CurrentGameOptions.GetFloat(FloatOptionNames.KillCooldown);
                     }
 
                 }
@@ -284,9 +285,8 @@ public class Trapper : Template.BilateralnessRole
             },
             () =>
             {
-                int total = (int)Roles.F_Trapper.maxTrapsOption.getFloat();
                 int remain = Game.GameData.data.myData.getGlobalData().GetRoleData(Roles.F_Trapper.remainTrapsId);
-                trapButtonString.text = $"{remain}/{total}";
+                trapButton.UsesText.text = remain.ToString();
 
                 return remain > 0 && !PlayerControl.LocalPlayer.Data.IsDead;
 
@@ -328,12 +328,7 @@ public class Trapper : Template.BilateralnessRole
         ).SetTimer(CustomOptionHolder.InitialModestAbilityCoolDownOption.getFloat());
         trapButton.MaxTimer = Roles.F_Trapper.placeCoolDownOption.getFloat();
         trapButton.EffectDuration = Roles.F_Trapper.rootTimeOption.getFloat();
-
-        trapButtonString = GameObject.Instantiate(trapButton.actionButton.cooldownTimerText, trapButton.actionButton.cooldownTimerText.transform.parent);
-        trapButtonString.text = "";
-        trapButtonString.enableWordWrapping = false;
-        trapButtonString.transform.localScale = Vector3.one * 0.5f;
-        trapButtonString.transform.localPosition += new Vector3(-0.05f, 0.7f, 0);
+        trapButton.SetUsesIcon(side == Side.Impostor ? 1 : 0);
 
         trapButton.SetAidAction(Module.NebulaInputManager.changeAbilityInput.keyCode, true, ChangeTrapType);
 
@@ -348,12 +343,6 @@ public class Trapper : Template.BilateralnessRole
         {
             trapButton.Destroy();
             trapButton = null;
-        }
-
-        if (trapButtonString != null)
-        {
-            UnityEngine.Object.Destroy(trapButtonString.gameObject);
-            trapButtonString = null;
         }
     }
 

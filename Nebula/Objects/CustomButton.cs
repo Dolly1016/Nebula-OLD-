@@ -29,6 +29,25 @@ public static class ButtonEffect
             }
         })));
     }
+
+    static public GameObject ShowUsesIcon(this ActionButton button)
+    {
+        Transform template = HudManager.Instance.AbilityButton.transform.GetChild(2);
+        var usesObject = GameObject.Instantiate(template.gameObject);
+        usesObject.transform.SetParent(button.gameObject.transform);
+        usesObject.transform.localScale = template.localScale;
+        usesObject.transform.localPosition = template.localPosition * 1.2f;
+        return usesObject;
+    }
+
+    static public GameObject ShowUsesIcon(this ActionButton button,int iconVariation, out TMPro.TextMeshPro text)
+    {
+        GameObject result = ShowUsesIcon(button);
+        var renderer = result.GetComponent<SpriteRenderer>();
+        renderer.sprite = CustomButton.GetUsesIconSprite(iconVariation);
+        text = result.transform.GetChild(0).GetComponent<TMPro.TextMeshPro>();
+        return result;
+    }
 }
 
 public class CustomButton
@@ -57,6 +76,8 @@ public class CustomButton
     private bool canInvokeAidActionWithMouseRightButton = true;
     private string buttonText;
     private ImageNames textType;
+    private GameObject? usesObject=null;
+    private TMPro.TextMeshPro? usesText = null;
     //ボタンの有効化フラグと、一時的な隠しフラグ
     private bool activeFlag, hideFlag;
     public bool FireOnClicked = false;
@@ -68,6 +89,8 @@ public class CustomButton
 
     private static Sprite spriteKeyBindBackGround;
     private static Sprite spriteKeyBindOption;
+    private static Texture2D textureUsesIcon;
+    private static Sprite[] spriteCustomUsesIcon = new Sprite[10];
 
     private TMPro.TextMeshPro? upperText;
     public TMPro.TextMeshPro UpperText
@@ -78,6 +101,31 @@ public class CustomButton
             upperText = actionButton.CreateButtonUpperText();
             return upperText;
         }
+    }
+
+    public TMPro.TextMeshPro UsesText
+    {
+        get
+        {
+            if (usesObject != null) return usesText!;
+            usesObject = actionButton.ShowUsesIcon();
+            usesText = usesObject.transform.GetChild(0).GetComponent<TMPro.TextMeshPro>();
+            return usesText;
+        }
+    }
+
+    public void SetUsesIcon(int variation)
+    {
+        if (usesObject == null) { var text = UsesText; }
+        var renderer = usesObject.GetComponent<SpriteRenderer>();
+        renderer.sprite = GetUsesIconSprite(variation);
+        CooldownHelpers.SetCooldownNormalizedUvs(renderer);
+    }
+
+    public void ShowUsesText(bool showFlag = true)
+    {
+        if (usesObject == null && showFlag) { var text = UsesText; }
+        if (usesObject) usesObject.SetActive(showFlag);
     }
 
     public static Sprite GetKeyBindBackgroundSprite()
@@ -92,6 +140,21 @@ public class CustomButton
         if (spriteKeyBindOption) return spriteKeyBindOption;
         spriteKeyBindOption = Helpers.loadSpriteFromResources("Nebula.Resources.KeyBindOption.png", 100f);
         return spriteKeyBindOption;
+    }
+
+    public static Sprite GetUsesIconSprite(int variation)
+    {
+        if (variation == 0)
+        {
+            return HudManager.Instance.AbilityButton.transform.GetChild(2).GetComponent<SpriteRenderer>().sprite;
+        }
+        if (variation < 0 || variation > 10) return null;
+        if (!textureUsesIcon)textureUsesIcon = Helpers.loadTextureFromResources("Nebula.Resources.UsesIcon.png");
+        if (!spriteCustomUsesIcon[variation])
+        {
+            spriteCustomUsesIcon[variation] = Helpers.loadSpriteFromResources(textureUsesIcon, 100f, new Rect(57f * (float)(variation - 1),-56f,57f,56f));
+        }
+        return spriteCustomUsesIcon[variation];
     }
 
 

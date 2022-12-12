@@ -48,7 +48,7 @@ public class Vulture : Role, Template.HasWinTrigger
                 RPCEventInvoker.CleanDeadBody(targetId);
 
                 RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, eatLeftId, -1);
-
+                eatButton.UsesText.text = (Game.GameData.data.myData.getGlobalData().GetRoleData(eatLeftId)).ToString();
                 eatButton.Timer = eatButton.MaxTimer;
             },
             () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
@@ -61,6 +61,8 @@ public class Vulture : Role, Template.HasWinTrigger
             false,
             "button.label.eat"
         ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());
+        eatButton.UsesText.text = (Game.GameData.data.myData.getGlobalData().GetRoleData(eatLeftId)).ToString();
+        eatButton.SetUsesIcon(3);
         eatButton.MaxTimer = eatCoolDownOption.getFloat();
     }
 

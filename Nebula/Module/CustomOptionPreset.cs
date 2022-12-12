@@ -48,88 +48,88 @@ public class CustomOptionPreset
 
     private void LoadVanillaOption(string option, int value)
     {
-        var data = GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>();
+        var data = GameOptionsManager.Instance.CurrentGameOptions;
         switch (option)
         {
             case "vanilla.map":
-                data.MapId = (byte)value;
+                data.SetByte(ByteOptionNames.MapId, (byte)value);
                 break;
             case "vanilla.impostors":
-                data.NumImpostors = value;
+                data.SetInt(Int32OptionNames.NumImpostors, value);
                 break;
             case "vanilla.confirmImpostor":
-                data.ConfirmImpostor = (value == 1);
+                data.SetBool(BoolOptionNames.ConfirmImpostor ,(value == 1));
                 break;
             case "vanilla.emergencyMeeting":
-                data.NumEmergencyMeetings = value;
+                data.SetInt(Int32OptionNames.NumEmergencyMeetings, value);
                 break;
             case "vanilla.anonymousVotes":
-                data.AnonymousVotes = (value == 1);
+                data.SetBool(BoolOptionNames.AnonymousVotes , (value == 1));
                 break;
             case "vanilla.emergencyCooldown":
-                data.EmergencyCooldown = value;
+                data.SetInt(Int32OptionNames.EmergencyCooldown, value);
                 break;
             case "vanilla.discussionTime":
-                data.DiscussionTime = value;
+                data.SetInt(Int32OptionNames.DiscussionTime, value);
                 break;
             case "vanilla.votingTime":
-                data.VotingTime = value;
+                data.SetInt(Int32OptionNames.VotingTime, value);
                 break;
             case "vanilla.playerSpeed":
-                data.PlayerSpeedMod = value / 4f;
+                data.SetFloat(FloatOptionNames.PlayerSpeedMod, value / 4f);
                 break;
             case "vanilla.crewmateVision":
-                data.CrewLightMod = value / 4f;
+                data.SetFloat(FloatOptionNames.CrewLightMod, value / 4f);
                 break;
             case "vanilla.impostorVision":
-                data.ImpostorLightMod = value / 4f;
+                data.SetFloat(FloatOptionNames.ImpostorLightMod , value / 4f);
                 break;
             case "vanilla.killCooldown":
-                data.KillCooldown = value / 2f;
+                data.SetFloat(FloatOptionNames.KillCooldown , value / 2f);
                 break;
             case "vanilla.killDistance":
-                data.KillDistance = value;
+                data.SetInt(Int32OptionNames.KillDistance, value);
                 break;
             case "vanilla.visualTasks":
-                data.VisualTasks = (value == 1);
+                data.SetBool(BoolOptionNames.VisualTasks, (value == 1));
                 break;
             case "vanilla.taskBarUpdates":
-                data.TaskBarMode = (AmongUs.GameOptions.TaskBarMode)value;
+                data.SetInt(Int32OptionNames.TaskBarMode, value);
                 break;
             case "vanilla.commonTasks":
-                data.NumCommonTasks = value;
+                data.SetInt(Int32OptionNames.NumCommonTasks, value);
                 break;
             case "vanilla.shortTasks":
-                data.NumShortTasks = value;
+                data.SetInt(Int32OptionNames.NumShortTasks, value);
                 break;
             case "vanilla.longTasks":
-                data.NumLongTasks = value;
+                data.SetInt(Int32OptionNames.NumLongTasks, value);
                 break;
         }
     }
 
     private void OutputVanillaOptions(StreamWriter writer)
     {
-        var data = GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>();
+        var data = GameOptionsManager.Instance.CurrentGameOptions;
 
         writer.WriteLine("vanilla.map:" + data.MapId);
         writer.WriteLine("vanilla.impostors:" + data.NumImpostors);
-        writer.WriteLine("vanilla.confirmImpostor:" + (data.ConfirmImpostor ? 1 : 0));
-        writer.WriteLine("vanilla.emergencyMeeting:" + data.NumEmergencyMeetings);
-        writer.WriteLine("vanilla.anonymousVotes:" + (data.AnonymousVotes ? 1 : 0));
-        writer.WriteLine("vanilla.emergencyCooldown:" + data.EmergencyCooldown);
-        writer.WriteLine("vanilla.discussionTime:" + data.DiscussionTime);
-        writer.WriteLine("vanilla.votingTime:" + data.VotingTime);
-        writer.WriteLine("vanilla.playerSpeed:" + (int)(data.PlayerSpeedMod * 4f));
-        writer.WriteLine("vanilla.crewmateVision:" + (int)(data.CrewLightMod * 4f));
-        writer.WriteLine("vanilla.impostorVision:" + (int)(data.ImpostorLightMod * 4f));
-        writer.WriteLine("vanilla.killCooldown:" + (int)(data.KillCooldown * 2f));
-        writer.WriteLine("vanilla.killDistance:" + data.KillDistance);
-        writer.WriteLine("vanilla.visualTasks:" + (data.VisualTasks ? 1 : 0));
-        writer.WriteLine("vanilla.taskBarUpdates:" + (int)data.TaskBarMode);
-        writer.WriteLine("vanilla.commonTasks:" + data.NumCommonTasks);
-        writer.WriteLine("vanilla.shortTasks:" + data.NumShortTasks);
-        writer.WriteLine("vanilla.longTasks:" + data.NumLongTasks);
+        writer.WriteLine("vanilla.confirmImpostor:" + (data.GetBool(BoolOptionNames.ConfirmImpostor) ? 1 : 0));
+        writer.WriteLine("vanilla.emergencyMeeting:" + data.GetInt(Int32OptionNames.NumEmergencyMeetings));
+        writer.WriteLine("vanilla.anonymousVotes:" + (data.GetBool(BoolOptionNames.AnonymousVotes) ? 1 : 0));
+        writer.WriteLine("vanilla.emergencyCooldown:" + data.GetInt(Int32OptionNames.EmergencyCooldown));
+        writer.WriteLine("vanilla.discussionTime:" + data.GetInt(Int32OptionNames.DiscussionTime));
+        writer.WriteLine("vanilla.votingTime:" + data.GetInt(Int32OptionNames.VotingTime));
+        writer.WriteLine("vanilla.playerSpeed:" + (int)(data.GetFloat(FloatOptionNames.PlayerSpeedMod) * 4f));
+        writer.WriteLine("vanilla.crewmateVision:" + (int)(data.GetFloat(FloatOptionNames.CrewLightMod) * 4f));
+        writer.WriteLine("vanilla.impostorVision:" + (int)(data.GetFloat(FloatOptionNames.ImpostorLightMod) * 4f));
+        writer.WriteLine("vanilla.killCooldown:" + (int)(data.GetFloat(FloatOptionNames.KillCooldown) * 2f));
+        writer.WriteLine("vanilla.killDistance:" + data.GetInt(Int32OptionNames.KillDistance));
+        writer.WriteLine("vanilla.visualTasks:" + (data.GetBool(BoolOptionNames.VisualTasks) ? 1 : 0));
+        writer.WriteLine("vanilla.taskBarUpdates:" + (int)data.GetInt(Int32OptionNames.TaskBarMode));
+        writer.WriteLine("vanilla.commonTasks:" + data.GetInt(Int32OptionNames.NumCommonTasks));
+        writer.WriteLine("vanilla.shortTasks:" + data.GetInt(Int32OptionNames.NumShortTasks));
+        writer.WriteLine("vanilla.longTasks:" + data.GetInt(Int32OptionNames.NumLongTasks));
     }
 
     private void Import()
@@ -143,7 +143,7 @@ public class CustomOptionPreset
 
                 option.updateSelection(option.defaultSelection);
 
-                GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().SetRecommendations(PlayerControl.AllPlayerControls.Count, true);
+                GameOptionsManager.Instance.CurrentGameOptions.SetRecommendations(PlayerControl.AllPlayerControls.Count, true);
             }
         }
 

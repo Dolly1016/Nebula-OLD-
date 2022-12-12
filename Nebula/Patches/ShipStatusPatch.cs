@@ -76,13 +76,12 @@ public class ShipStatusPatch
 
         if (role.UseImpostorLightRadius)
         {
-            __result = rate * GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().ImpostorLightMod;
+            __result = rate * GameOptionsManager.Instance.CurrentGameOptions.GetFloat(FloatOptionNames.ImpostorLightMod);
         }
         else
         {
-            __result = rate * GameOptionsManager.Instance.CurrentGameOptions.Cast<NormalGameOptionsV07>().CrewLightMod;
+            __result = rate * GameOptionsManager.Instance.CurrentGameOptions.GetFloat(FloatOptionNames.CrewLightMod);
         }
-
         return false;
     }
 

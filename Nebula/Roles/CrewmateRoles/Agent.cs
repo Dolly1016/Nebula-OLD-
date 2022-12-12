@@ -6,7 +6,8 @@ public class Agent : Template.ExemptTasks
 
     private CustomButton agentButton;
 
-    private TMPro.TMP_Text ventButtonString;
+    private TMPro.TextMeshPro ventButtonUsesString;
+    private GameObject ventButtonUsesObject;
     public int remainingVentsDataId { get; private set; }
     public override RelatedRoleData[] RelatedRoleDataInfo { get => new RelatedRoleData[] { new RelatedRoleData(remainingVentsDataId, "Use of Vent", 0, 20) }; }
 
@@ -14,6 +15,7 @@ public class Agent : Template.ExemptTasks
     private Module.CustomOption maxVentsOption;
     private Module.CustomOption actOverOption;
     private Module.CustomOption madmateKillCoolDownOption;
+
     public override void LoadOptionData()
     {
         base.LoadOptionData();
@@ -70,8 +72,8 @@ public class Agent : Template.ExemptTasks
         );
         agentButton.MaxTimer = agentButton.Timer = 0;
 
-        ventButtonString = FastDestroyableSingleton<HudManager>.Instance.ImpostorVentButton.CreateButtonUpperText();
-        ventButtonString.text = (int)maxVentsOption.getFloat() + "/" + (int)maxVentsOption.getFloat();
+        ventButtonUsesObject = FastDestroyableSingleton<HudManager>.Instance.ImpostorVentButton.ShowUsesIcon(0,out ventButtonUsesString);
+        ventButtonUsesString.text = maxVentsOption.getFloat().ToString();
     }
 
     public override void MyUpdate()
@@ -86,7 +88,8 @@ public class Agent : Template.ExemptTasks
     {
         PlayerControl.LocalPlayer.GetModData().AddRoleData(remainingVentsDataId, -1);
         int remain = PlayerControl.LocalPlayer.GetModData().GetRoleData(remainingVentsDataId);
-        ventButtonString.text = (int)remain + "/" + (int)maxVentsOption.getFloat();
+        if (ventButtonUsesObject)
+            ventButtonUsesString.text = remain.ToString();
     }
 
 
@@ -97,10 +100,9 @@ public class Agent : Template.ExemptTasks
             agentButton.Destroy();
             agentButton = null;
         }
-        if (ventButtonString != null)
+        if (ventButtonUsesObject)
         {
-            UnityEngine.Object.Destroy(ventButtonString.gameObject);
-            ventButtonString = null;
+            UnityEngine.Object.Destroy(ventButtonUsesObject);
         }
     }
 

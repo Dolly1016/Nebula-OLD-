@@ -83,6 +83,11 @@ public class Disturber : Role
                     PolesGuide[i].Destroy();
                     PolesGuide[i] = null;
                 }
+                int cnt = (int)countOfBarriorsOption.getFloat() - Poles.Count;
+                if (cnt > 0)
+                    elecButton.UsesText.text = ((int)countOfBarriorsOption.getFloat() - Poles.Count).ToString();
+                else
+                    elecButton.ShowUsesText(false);
                 return;
             }
         }
@@ -125,6 +130,8 @@ public class Disturber : Role
             false,
             "button.label.place"
         ).SetTimer(CustomOptionHolder.InitialModestAbilityCoolDownOption.getFloat());
+        elecButton.UsesText.text = ((int)countOfBarriorsOption.getFloat()).ToString();
+        elecButton.SetUsesIcon(1);
         elecButton.MaxTimer = 10f;
         elecButton.HasEffect = false;
     }

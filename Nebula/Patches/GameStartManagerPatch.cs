@@ -289,6 +289,7 @@ public class GameStartManagerPatch
 
                             playerControl.transform.position = PlayerControl.LocalPlayer.transform.position;
                             playerControl.GetComponent<DummyBehaviour>().enabled = true;
+                            playerControl.isDummy = true;
                             playerControl.SetName(Patches.RandomNamePatch.GetRandomName());
                             playerControl.SetColor(i);
 

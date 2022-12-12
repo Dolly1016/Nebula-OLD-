@@ -144,9 +144,8 @@ public class Navvy : Role
             () => { return !PlayerControl.LocalPlayer.Data.IsDead && Game.GameData.data.myData.getGlobalData().GetRoleData(remainingScrewsDataId) > 0; },
             () =>
             {
-                int total = (int)maxScrewsOption.getFloat();
                 int remain = Game.GameData.data.myData.getGlobalData().GetRoleData(remainingScrewsDataId);
-                sealButton.UpperText.text = $"{remain}/{total}";
+                sealButton.UsesText.text = remain.ToString();
 
                 return (ventTarget != null) && remain > 0 && PlayerControl.LocalPlayer.CanMove;
 
@@ -160,6 +159,7 @@ public class Navvy : Role
             "button.label.seal"
         ).SetTimer(CustomOptionHolder.InitialModestAbilityCoolDownOption.getFloat());
         sealButton.MaxTimer = sealCoolDownOption.getFloat();
+        sealButton.UsesText.text = ((int)maxScrewsOption.getFloat()).ToString();
 
 
         if (repairButton != null)

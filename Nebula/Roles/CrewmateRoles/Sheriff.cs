@@ -66,7 +66,7 @@ public class Sheriff : Role
                 Game.GameData.data.myData.currentTarget = null;
 
                 shots--;
-                killButton.UpperText.text = shots + "/" + (int)numberOfShotsOption.getFloat();
+                killButton.UsesText.text = shots.ToString();
             },
             () => { return !PlayerControl.LocalPlayer.Data.IsDead && shots > 0; },
             () => { return Game.GameData.data.myData.currentTarget && PlayerControl.LocalPlayer.CanMove; },
@@ -77,7 +77,7 @@ public class Sheriff : Role
             Module.NebulaInputManager.modKillInput.keyCode
         ).SetTimer(CustomOptionHolder.InitialKillCoolDownOption.getFloat());
         killButton.MaxTimer = killCooldownOption.getFloat();
-        killButton.UpperText.text = shots + "/" + (int)numberOfShotsOption.getFloat();
+        killButton.UsesText.text = shots.ToString();
     }
     public override void CleanUp()
     {
