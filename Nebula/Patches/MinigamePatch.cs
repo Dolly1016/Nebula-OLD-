@@ -16,6 +16,8 @@ public static class ConsoleCanUsePatch
 
         if (__instance.AllowImpostor) return true;
 
+        if (GameOptionsManager.Instance.currentGameMode == GameModes.HideNSeek) return true;
+
         bool hasFakeTask = false, fakeTaskIsExecutable = false;
         Helpers.RoleAction(pc.PlayerId, (role) =>
         {

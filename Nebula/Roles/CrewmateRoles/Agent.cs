@@ -57,7 +57,8 @@ public class Agent : Template.ExemptTasks
             () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
             () =>
             {
-                Game.TaskData task = PlayerControl.LocalPlayer.GetModData().Tasks;
+                Game.TaskData? task = PlayerControl.LocalPlayer.GetModData().Tasks;
+                if (task == null) return false;
 
                 return task.AllTasks == task.Completed && PlayerControl.LocalPlayer.CanMove && task.Quota > 0;
 

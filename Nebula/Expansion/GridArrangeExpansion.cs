@@ -1,4 +1,6 @@
-﻿namespace Nebula.Expansion;
+﻿using BepInEx.IL2CPP.Utils;
+
+namespace Nebula.Expansion;
 
 [HarmonyPatch]
 static public class GridArrangeExpansion
@@ -54,6 +56,20 @@ static public class GridArrangeExpansion
     [HarmonyPatch(typeof(GridArrange), nameof(GridArrange.CheckCurrentChildren))]
     class CheckCurrentChildrenPatch
     {
+        static IEnumerator GetEnumerator(GameObject obj,Vector3 dest)
+        {
+            float t = 0f;
+            Vector3 pos = obj.transform.localPosition;
+            while (t < 1f && obj)
+            {
+                float p = (1 - t) * (1 - t);
+                obj.transform.localPosition = dest * (1 - p) + pos * p;
+                t += Time.deltaTime * 1.02f;
+                yield return null;
+            }
+            if(obj)obj.transform.localPosition = dest;
+        }
+
         static public bool Prefix(GridArrange __instance)
         {
             __instance.GetChildsActive();
@@ -72,6 +88,12 @@ static public class GridArrangeExpansion
                 if (flag) return false;
             }
 
+            __instance.StopAllCoroutines();
+
+            //直前に存在していたボタン
+            List<int> lastContents = new List<int>();
+            foreach(var t in __instance.cells) if(t) lastContents.Add(t.gameObject.GetInstanceID());
+            
             //cellsを更新
             __instance.cells.Clear();
             foreach (Transform transform in GridArrange.currentChildren)
@@ -112,7 +134,13 @@ static public class GridArrangeExpansion
                 else
                     posX *= -1f;
 
-                c.localPosition = new Vector3(posX, posY, c.position.z);
+                if (Helpers.ShowButtons)
+                {
+                    if (!lastContents.Contains(c.gameObject.GetInstanceID()))
+                        c.localPosition = new Vector3(posX, posY, c.position.z);
+                    else
+                        __instance.StartCoroutine(GetEnumerator(c.gameObject, new Vector3(posX, posY, c.position.z)).WrapToIl2Cpp());
+                }
 
                 if (y == (float)((isLeftSide ? leftVec : rightVec).y))
                 {

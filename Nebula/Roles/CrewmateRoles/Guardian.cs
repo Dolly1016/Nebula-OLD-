@@ -191,7 +191,7 @@ public class Guardian : Role
             },
             () => { antennaButton.Timer = antennaButton.MaxTimer; },
             placeButtonSprite.GetSprite(),
-            Expansion.GridArrangeExpansion.GridArrangeParameter.BottomContent,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.None,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
             "button.label.place"
@@ -221,7 +221,7 @@ public class Guardian : Role
             },
             () => { guardButton.Timer = guardButton.MaxTimer; },
             guardButtonSprite.GetSprite(),
-           Expansion.GridArrangeExpansion.GridArrangeParameter.BottomContent,
+           Expansion.GridArrangeExpansion.GridArrangeParameter.None,
             __instance,
             Module.NebulaInputManager.secondaryAbilityInput.keyCode,
             "button.label.guard"

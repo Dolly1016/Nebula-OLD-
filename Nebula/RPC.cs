@@ -435,17 +435,15 @@ static class RPCEvents
 
     public static void SetRole(byte playerId, Roles.Role role, int roleDataId, int roleData)
     {
-        if (GameOptionsManager.Instance.currentGameMode == GameModes.Normal)
+        if (role.category == Roles.RoleCategory.Impostor)
         {
-            if (role.category == Roles.RoleCategory.Impostor)
-            {
-                DestroyableSingleton<RoleManager>.Instance.SetRole(Helpers.playerById(playerId), RoleTypes.Impostor);
-            }
-            else
-            {
-                DestroyableSingleton<RoleManager>.Instance.SetRole(Helpers.playerById(playerId), RoleTypes.Crewmate);
-            }
+            DestroyableSingleton<RoleManager>.Instance.SetRole(Helpers.playerById(playerId), RoleTypes.Impostor);
         }
+        else
+        {
+            DestroyableSingleton<RoleManager>.Instance.SetRole(Helpers.playerById(playerId), RoleTypes.Crewmate);
+        }
+
         role.ReflectRoleEyesight(Helpers.playerById(playerId).Data.Role);
         Game.GameData.data.RegisterPlayer(playerId, role, roleDataId, roleData);
     }

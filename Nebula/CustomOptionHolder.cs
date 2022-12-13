@@ -1,4 +1,5 @@
-﻿using Nebula.Module;
+﻿using AmongUs.GameOptions;
+using Nebula.Module;
 
 namespace Nebula;
 
@@ -66,7 +67,8 @@ public class CustomOptionHolder
             "option.display.percentage.andSoForth", "option.display.percentage.10", "option.display.percentage.20", "option.display.percentage.30", "option.display.percentage.40",
             "option.display.percentage.50", "option.display.percentage.60", "option.display.percentage.70", "option.display.percentage.80", "option.display.percentage.90" };
     public static string[] presets = new string[] { "option.display.preset.1", "option.display.preset.2", "option.display.preset.3", "option.display.preset.4", "option.display.preset.5" };
-    public static string[] gamemodes = new string[] { "gamemode.standard", "gamemode.minigame", "gamemode.ritual", "gamemode.investigators", "gamemode.freePlay" };
+    public static string[] gamemodesNormal = new string[] { "gamemode.standard", "gamemode.minigame", "gamemode.ritual", "gamemode.investigators", "gamemode.freePlay" };
+    public static string[] gamemodesHnS = new string[] { "gamemode.standard"};
 
     private static byte ToByte(float f)
     {
@@ -81,7 +83,8 @@ public class CustomOptionHolder
 
     public static int optionsPage = 0;
 
-    public static CustomOption gameMode;
+    public static CustomOption gameModeNormal;
+    public static CustomOption gameModeHnS;
 
     public static CustomOption roleCountOption;
     public static CustomOption crewmateRolesCountMin;
@@ -248,7 +251,12 @@ public class CustomOptionHolder
 
     public static CustomGameMode GetCustomGameMode()
     {
-        return CustomGameModes.GetGameMode(gameMode.getSelection());
+        if(GameOptionsManager.Instance.currentGameMode==GameModes.Normal)
+            return CustomGameModes.GetGameMode(gameModeNormal.getSelection());
+        if (GameOptionsManager.Instance.currentGameMode == GameModes.HideNSeek)
+            return CustomGameModes.GetGameMode(gameModeHnS.getSelection()+8);
+
+        return CustomGameMode.Standard;
     }
 
     public static IEnumerator<object> GetStringMixedSelections(string topSelection, float min, float mid, float step1, float max, float step2)
@@ -294,7 +302,9 @@ public class CustomOptionHolder
 
     public static void Load()
     {
-        gameMode = CustomOption.Create(Color.white, "option.gameMode", gamemodes, gamemodes[0], null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.All);
+        gameModeNormal = CustomOption.Create(Color.white, "option.gameMode", gamemodesNormal, gamemodesNormal[0], null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.All).SetIdentifier("option.gameModeNormal");
+        gameModeHnS = CustomOption.Create(Color.white, "option.gameMode", gamemodesHnS, gamemodesHnS[0], null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.All).SetIdentifier("option.gameModeHnS");
+
 
         roleCountOption = CustomOption.Create(Color.white, "option.roleCount", new string[] { "option.empty" }, "option.empty", null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.All).HiddenOnDisplay(true);
         CustomOption.RegisterTopOption(roleCountOption);

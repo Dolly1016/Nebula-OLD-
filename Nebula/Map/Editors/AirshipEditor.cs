@@ -256,7 +256,9 @@ public class AirshipEditor : MapEditor
                 airship.Ladders = new UnhollowerBaseLib.Il2CppReferenceArray<Ladder>(airship.GetComponentsInChildren<Ladder>());
 
                 originalLadderObj.transform.GetChild(0).gameObject.SetActive(false);
-                ladderObj.transform.GetChild(1).gameObject.SetActive(false);
+                originalLadderObj.transform.GetChild(1).gameObject.SetActive(false);
+                ladderObj.transform.GetChild(2).gameObject.SetActive(false);
+                ladderObj.transform.GetChild(3).gameObject.SetActive(false);
 
 
                 //MovingPlatformを無効化する

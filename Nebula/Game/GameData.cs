@@ -1218,7 +1218,7 @@ public class GameData
         OriginalSpeed = 2.5f;
 
         GameRule = new GameRule();
-        GameMode = Module.CustomGameModes.GetGameMode(CustomOptionHolder.gameMode.getSelection());
+        GameMode = CustomOptionHolder.GetCustomGameMode();
 
         Ghost = null;
         CountDownMessage = null;

@@ -10,11 +10,12 @@ namespace Nebula.Module;
 [Flags]
 public enum CustomGameMode
 {
-    Standard = 0x01,
-    Minigame = 0x02,
-    Ritual = 0x04,
-    Investigators = 0x08,
-    FreePlay = 0x10,
+    Standard = 0x0001,
+    Minigame = 0x0002,
+    Ritual = 0x0004,
+    Investigators = 0x0008,
+    FreePlay = 0x0010,
+    StandardHnS = 0x0100,
     All = int.MaxValue
 }
 
@@ -38,7 +39,8 @@ public static class CustomGameModes
     static public List<CustomGameMode> AllGameModes = new List<CustomGameMode>()
         {
             CustomGameMode.Standard,CustomGameMode.Minigame,CustomGameMode.Ritual,CustomGameMode.Investigators,
-            CustomGameMode.FreePlay
+            CustomGameMode.FreePlay,CustomGameMode.Standard,CustomGameMode.Standard,CustomGameMode.Standard,
+            CustomGameMode.StandardHnS,
         };
 
     static public CustomGameMode GetGameMode(int GameModeIndex)
@@ -578,21 +580,24 @@ class GameOptionsMenuStartPatch
 
     private static bool FixTab(GameObject? currentSettings, GameOptionsMenu __instance, string tabIconPath, string tabName, string settingsName, string settingsDisplayName, OptionInitializer initializer)
     {
-
+        var tabs = GameSettingMenu.Instance.transform.FindChild("Header").FindChild("Tabs");
+        tabs.gameObject.SetActive(true);
+        
         if (currentSettings)
         {
-            currentSettings.transform.FindChild("GameGroup").FindChild("Text").GetComponent<TMPro.TextMeshPro>().SetText(settingsDisplayName);
+            var gameGroup = currentSettings.transform.FindChild("GameGroup");
+            gameGroup?.FindChild("Text").GetComponent<TMPro.TextMeshPro>().SetText(settingsDisplayName);
             return false;
         }
 
-        var template = UnityEngine.Object.FindObjectsOfType<StringOption>().FirstOrDefault();
+        var template = UnityEngine.Object.FindObjectOfType<StringOption>(true);
         if (template == null) return false;
-        var gameSettings = GameObject.Find("Game Settings");
-        var customSettings = UnityEngine.Object.Instantiate(gameSettings, gameSettings.transform.parent);
+        var gameSettings = __instance.transform.parent.parent.transform.gameObject;
+        var customSettings = UnityEngine.Object.Instantiate(gameSettings, GameSettingMenu.Instance.transform);
         var customMenu = customSettings.transform.FindChild("GameGroup").FindChild("SliderInner").GetComponent<GameOptionsMenu>();
         UnityEngine.GameObject.SetName(customSettings, settingsName);
 
-        var roleTab = GameObject.Find("RoleTab");
+        var roleTab = tabs.FindChild("RoleTab");
 
         var customTab = UnityEngine.Object.Instantiate(roleTab, roleTab.transform.parent);
         customTab.gameObject.name = tabName;
@@ -855,11 +860,11 @@ class GameOptionsMenuStartPatch
     {
         var designer = MetaScreen.OpenScreen(setting, new Vector2(1.5f, 6f), new Vector2(-4.15f, -0.8f));
 
-        designer.AddTopic(new MSString(1.5f, CustomOptionHolder.gameMode.getName(), TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold));
+        designer.AddTopic(new MSString(1.5f, CustomOptionHolder.gameModeNormal.getName(), TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold));
         designer.CustomUse(-0.08f);
-        designer.AddTopic(new MSButton(1.5f, 0.4f, CustomOptionHolder.gameMode.getString(), TMPro.FontStyles.Bold, () =>
+        designer.AddTopic(new MSButton(1.5f, 0.4f, CustomOptionHolder.gameModeNormal.getString(), TMPro.FontStyles.Bold, () =>
         {
-            CustomOptionHolder.gameMode.addSelection(1);
+            CustomOptionHolder.gameModeNormal.addSelection(1);
             designer.screen.Close();
 
             //今のタブが存在しないゲームモードに変わる場合
@@ -912,56 +917,18 @@ class GameOptionsMenuStartPatch
                 setting.transform.DestroyChildren();
 
                 OpenConfigScreen(setting);
-
-                /*
-                nebulaSettings = setting;
-
-                for (int i = 0; i < CustomOption.options.Count; i++)
-                {
-                    CustomOption option = CustomOption.options[i];
-                    if (option.optionBehaviour == null)
-                    {
-                        StringOption stringOption = UnityEngine.Object.Instantiate(temp, menu.transform);
-                        list.Add(stringOption);
-                        stringOption.OnValueChanged = new Action<OptionBehaviour>((o) => { });
-                        stringOption.TitleText.text = option.name;
-                        stringOption.Value = stringOption.oldValue = option.selection;
-                        stringOption.ValueText.text = option.selections[option.selection].ToString();
-
-                        if (option.selections.Length == 1)
-                        {
-                            stringOption.gameObject.transform.FindChild("Plus_TMP").gameObject.SetActive(false);
-                            stringOption.gameObject.transform.FindChild("Minus_TMP").gameObject.SetActive(false);
-                        }
-
-                        if (option.prefix != null)
-                        {
-                            stringOption.ValueText.text = Language.Language.GetString("option.prefix." + option.prefix) + stringOption.ValueText.text;
-                        }
-
-                        if (option.suffix != null)
-                        {
-                            stringOption.ValueText.text += Language.Language.GetString("option.suffix." + option.suffix);
-                        }
-
-                        option.optionBehaviour = stringOption;
-                    }
-                    option.optionBehaviour.gameObject.SetActive(true);
-                }
-                */
             });
     }
 
     private static StringOption SetupStringOption(List<OptionBehaviour> list, StringOption template, GameOptionsMenu menu)
     {
         StringOption stringOption = UnityEngine.Object.Instantiate(template, menu.transform);
+        stringOption.enabled = false;
         list.Add(stringOption);
         stringOption.OnValueChanged = new Action<OptionBehaviour>((o) => { });
         stringOption.TitleText.text = "";
         stringOption.TitleText.rectTransform.sizeDelta = new Vector2(stringOption.TitleText.rectTransform.sizeDelta.x + 2.4f, stringOption.TitleText.rectTransform.sizeDelta.y);
         stringOption.TitleText.rectTransform.anchoredPosition = new Vector2(stringOption.TitleText.rectTransform.anchoredPosition.x + 1.2f, 0);
-
-
 
         stringOption.Value = 0;
         stringOption.ValueText.text = "";
@@ -1077,15 +1044,16 @@ class GameOptionsMenuStartPatch
 
         if (!result) return;
 
-        var roleTab = GameObject.Find("RoleTab");
-        var gameTab = GameObject.Find("GameTab");
-        var nebulaTab = GameObject.Find("NebulaTab");
-        var presetTab = GameObject.Find("PresetTab");
+        var header = GameSettingMenu.Instance.transform.FindChild("Header").FindChild("Tabs");
+        var gameTab = header.FindChild("GameTab").gameObject;
+        var nebulaTab = header.FindChild("NebulaTab").gameObject;
+        var presetTab = header.FindChild("PresetTab").gameObject;
+        header.FindChild("RoleTab").gameObject.SetActive(false);
 
-        gameTab.transform.localPosition = new Vector3(-1.5f, 0, -5);
-        roleTab.transform.localPosition = new Vector3(-0.5f, 0, -5);
-        nebulaTab.transform.localPosition = new Vector3(0.5f, 0, -5);
-        presetTab.transform.localPosition = new Vector3(1.5f, 0, -5);
+        gameTab.transform.localPosition = new Vector3(-1f, 0, -5);
+        //roleTab.transform.localPosition = new Vector3(-0.5f, 0, -5);
+        nebulaTab.transform.localPosition = new Vector3(0f, 0, -5);
+        presetTab.transform.localPosition = new Vector3(1f, 0, -5);
 
         var gameSettings = GameObject.Find("Game Settings");
         var gameSettingMenu = UnityEngine.Object.FindObjectsOfType<GameSettingMenu>().FirstOrDefault();
@@ -1093,7 +1061,7 @@ class GameOptionsMenuStartPatch
         var nebulaTabHighlight = nebulaTab.transform.FindChild("Hat Button").FindChild("Tab Background").GetComponent<SpriteRenderer>();
         var presetTabHighlight = presetTab.transform.FindChild("Hat Button").FindChild("Tab Background").GetComponent<SpriteRenderer>();
 
-        var tabs = new GameObject[] { gameTab, roleTab, nebulaTab, presetTab };
+        var tabs = new GameObject[] { gameTab, nebulaTab, presetTab };
         for (int i = 0; i < tabs.Length; i++)
         {
             var button = tabs[i].GetComponentInChildren<PassiveButton>();
@@ -1103,29 +1071,28 @@ class GameOptionsMenuStartPatch
             button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
             {
                 gameSettingMenu.RegularGameSettings.SetActive(false);
+                gameSettingMenu.HideNSeekSettings.SetActive(false);
                 gameSettingMenu.RolesSettings.gameObject.SetActive(false);
-                nebulaSettings.gameObject.SetActive(false);
-                presetSettings.gameObject.SetActive(false);
+                nebulaSettings?.gameObject.SetActive(false);
+                presetSettings?.gameObject.SetActive(false);
                 gameSettingMenu.GameSettingsHightlight.enabled = false;
                 gameSettingMenu.RolesSettingsHightlight.enabled = false;
                 nebulaTabHighlight.enabled = false;
                 presetTabHighlight.enabled = false;
                 if (copiedIndex == 0)
                 {
-                    gameSettingMenu.RegularGameSettings.SetActive(true);
+                    if(GameOptionsManager.Instance.currentGameMode==GameModes.Normal)
+                        gameSettingMenu.RegularGameSettings.SetActive(true);
+                    else
+                        gameSettingMenu.HideNSeekSettings.SetActive(true);
                     gameSettingMenu.GameSettingsHightlight.enabled = true;
                 }
                 else if (copiedIndex == 1)
                 {
-                    gameSettingMenu.RolesSettings.gameObject.SetActive(true);
-                    gameSettingMenu.RolesSettingsHightlight.enabled = true;
-                }
-                else if (copiedIndex == 2)
-                {
                     nebulaSettings.gameObject.SetActive(true);
                     nebulaTabHighlight.enabled = true;
                 }
-                else if (copiedIndex == 3)
+                else if (copiedIndex == 2)
                 {
                     presetSettings.gameObject.SetActive(true);
                     presetTabHighlight.enabled = true;
@@ -1213,7 +1180,7 @@ class GameOptionsMenuUpdatePatch
 
 
         var setting = __instance.transform.parent.parent;
-        if (setting == GameOptionsMenuStartPatch.presetSettings.transform)
+        if (GameOptionsMenuStartPatch.presetSettings && setting == GameOptionsMenuStartPatch.presetSettings.transform)
         {
             offset = 2f;
 
@@ -1425,7 +1392,7 @@ public class GameOptionsDataPatch
     {
         if (GameOptionsManager.Instance.CurrentGameOptions == null) return;
 
-        CustomOption.CurrentGameMode = CustomGameModes.GetGameMode(CustomOptionHolder.gameMode.getSelection());
+        CustomOption.CurrentGameMode = CustomOptionHolder.GetCustomGameMode();
 
         if (dirtyFlag)
         {

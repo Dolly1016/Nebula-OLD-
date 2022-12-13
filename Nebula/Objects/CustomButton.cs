@@ -487,7 +487,9 @@ public class CustomButton
             actionButton.graphic.material.SetFloat("_Desat", 1f);
         }
 
-        actionButton.SetCoolDown(Timer, (HasEffect && isEffectActive) ? EffectDuration : MaxTimer);
+        float max = (HasEffect && isEffectActive) ? EffectDuration : MaxTimer;
+        if (!(max > 0f)) max = 1f;
+        actionButton.SetCoolDown(Timer, max);
         CooldownHelpers.SetCooldownNormalizedUvs(actionButton.graphic);
 
         if (actionButton.gameObject.active)

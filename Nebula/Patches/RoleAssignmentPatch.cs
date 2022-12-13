@@ -489,7 +489,7 @@ class RoleAssignmentPatch
             {
                 foreach(var p in crewmates)
                 {
-                    if (p.Data.Role.Role != RoleTypes.Impostor) impostors.Remove(p);
+                    if (p.Data.Role.Role == RoleTypes.Impostor) impostors.Add(p);
                 }
             }
             foreach (var imp in impostors)

@@ -37,4 +37,28 @@ class LightPatch
             __instance.StartCoroutine(GetEnumerator(__instance).WrapToIl2Cpp());
         }
     }
+    /*
+    [HarmonyPatch(typeof(LightSource), nameof(LightSource.Update))]
+    public static class LightSourceUpdatePatch
+    {
+        static public float FlashLightSize = 100f;
+        static public float ViewDistance = 1f;
+        static public float PlayerRadius = 1f;
+        public static bool Prefix(LightSource __instance)
+        {
+            Vector3 position = __instance.transform.position;
+            position.z -= 7f;
+            __instance.UpdateFlashlightAngle();
+            __instance.LightCutawayMaterial.SetFloat("_PlayerRadius", PlayerRadius);
+            __instance.LightCutawayMaterial.SetFloat("_LightRadius", ViewDistance);
+            __instance.LightCutawayMaterial.SetVector("_LightOffset", __instance.LightOffset);
+            __instance.LightCutawayMaterial.SetFloat("_FlashlightSize", FlashLightSize);
+            __instance.LightCutawayMaterial.SetFloat("_FlashlightAngle", PlayerControl.LocalPlayer.FlashlightAngle);
+            __instance.lightChild.transform.position = position;
+            __instance.renderer.Render(position);
+
+            return false;
+        }
+    }
+    */
 }

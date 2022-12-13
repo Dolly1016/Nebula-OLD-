@@ -265,20 +265,18 @@ class IntroPatch
     {
         public static void Prefix(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> teamToShow)
         {
-            if (GameOptionsManager.Instance.currentGameMode == GameModes.Normal)
+            foreach (PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
-                foreach (PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
+                if (Game.GameData.data.AllPlayers[player.PlayerId].role.category == Roles.RoleCategory.Impostor)
                 {
-                    if (Game.GameData.data.AllPlayers[player.PlayerId].role.category == Roles.RoleCategory.Impostor)
-                    {
-                        DestroyableSingleton<RoleManager>.Instance.SetRole(player, RoleTypes.Impostor);
-                    }
-                    else
-                    {
-                        DestroyableSingleton<RoleManager>.Instance.SetRole(player, RoleTypes.Crewmate);
-                    }
-                    Game.GameData.data.AllPlayers[player.PlayerId].role.ReflectRoleEyesight(player.Data.Role);
+                    DestroyableSingleton<RoleManager>.Instance.SetRole(player, RoleTypes.Impostor);
                 }
+                else
+                {
+                    DestroyableSingleton<RoleManager>.Instance.SetRole(player, RoleTypes.Crewmate);
+                }
+                Game.GameData.data.AllPlayers[player.PlayerId].role.ReflectRoleEyesight(player.Data.Role);
+
             }
             //isImpostor = (Game.GameData.data.myData.getGlobalData().role.category == Roles.RoleCategory.Impostor);
         }
