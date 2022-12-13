@@ -133,10 +133,9 @@ public class Doctor : Role
             () => { return gadgetTimer > 0f && PlayerControl.LocalPlayer.CanMove; },
             () => { },
             getVitalsSprite(),
-            -1,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.None,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
-            false,
             "button.label.vital",
             ImageNames.VitalsButton
         );

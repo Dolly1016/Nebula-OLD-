@@ -152,10 +152,9 @@ public class Navvy : Role
             },
             () => { sealButton.Timer = sealButton.MaxTimer; },
             sealButtonSprite.GetSprite(),
-            -1,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.None,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
-            false,
             "button.label.seal"
         ).SetTimer(CustomOptionHolder.InitialModestAbilityCoolDownOption.getFloat());
         sealButton.MaxTimer = sealCoolDownOption.getFloat();
@@ -180,10 +179,9 @@ public class Navvy : Role
             },
             () => { repairButton.Timer = 0; },
             repairButtonSprite.GetSprite(),
-            -1,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.None,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
-            false,
             "button.label.repair"
         );
         repairButton.MaxTimer = repairButton.Timer = 0;

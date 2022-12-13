@@ -76,7 +76,7 @@ public class Eraser : Role
                 eraserButton.Timer = eraserButton.MaxTimer + eraseCoolDownAdditionOption.getFloat() * PlayerControl.LocalPlayer.GetModData().GetRoleData(eraseCountId);
             },
             buttonSprite.GetSprite(),
-            -1,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.None,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode, true, eraseDurationOption.getFloat(),
             () =>
@@ -94,7 +94,6 @@ public class Eraser : Role
                 RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, eraseCountId, 1);
                 eraserButton.Timer = eraserButton.MaxTimer + eraseCoolDownAdditionOption.getFloat() * PlayerControl.LocalPlayer.GetModData().GetRoleData(eraseCountId);
             },
-            false,
             "button.label.erase"
         ).SetTimer(CustomOptionHolder.InitialForcefulAbilityCoolDownOption.getFloat());
         eraserButton.MaxTimer = eraseCoolDownOption.getFloat();

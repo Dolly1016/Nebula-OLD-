@@ -387,10 +387,9 @@ public class Lover : ExtraRole
             () => { return trilemmaTarget && PlayerControl.LocalPlayer.CanMove; },
             () => { },
             buttonSprite.GetSprite(),
-            0,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.LeftSideContent,
             __instance,
             Module.NebulaInputManager.modifierAbilityInput.keyCode,
-            true,
             "button.label.involve"
         ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());
         involveButton.MaxTimer = 0;

@@ -135,10 +135,9 @@ public class Hadar : Hunter
             () => { return PlayerControl.LocalPlayer.CanMove; },
             () => { ventButton.Timer = ventButton.MaxTimer; },
             GetVentHideButtonSprite(),
-            -1,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.None,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
-            false,
             "button.label.hadar.hide"
         );
         ventButton.MaxTimer = ventButton.Timer = 0f;

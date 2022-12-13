@@ -89,13 +89,12 @@ public class Morphing : Role
                 RPCEventInvoker.MorphCancel();
             },
             sampleButtonSprite.GetSprite(),
-            -1,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.None,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
             true,
             morphDurationOption.getFloat(),
             () => { morphButton.Timer = morphButton.MaxTimer; },
-            false,
             "button.label.sample"
         ).SetTimer(CustomOptionHolder.InitialModestAbilityCoolDownOption.getFloat());
         morphButton.MaxTimer = morphCoolDownOption.getFloat();

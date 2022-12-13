@@ -84,10 +84,9 @@ public class Painter : Role
                 paintButton.Timer = sampleCoolDownOption.getFloat();
             },
             sampleButtonSprite.GetSprite(),
-            -1,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.None,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
-            false,
             "button.label.sample"
         ).SetTimer(CustomOptionHolder.InitialModestAbilityCoolDownOption.getFloat());
         paintButton.MaxTimer = paintCoolDownOption.getFloat();

@@ -55,10 +55,9 @@ public class Vulture : Role, Template.HasWinTrigger
             () => { return deadBodyId != Byte.MaxValue && PlayerControl.LocalPlayer.CanMove; },
             () => { eatButton.Timer = eatButton.MaxTimer; },
             eatButtonSprite.GetSprite(),
-            -1,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.None,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
-            false,
             "button.label.eat"
         ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());
         eatButton.UsesText.text = (Game.GameData.data.myData.getGlobalData().GetRoleData(eatLeftId)).ToString();

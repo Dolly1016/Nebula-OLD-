@@ -64,7 +64,7 @@ public class Oracle : Role
             },
             () => { oracleButton.Timer = oracleButton.MaxTimer; },
             buttonSprite.GetSprite(),
-            -1,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.None,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
             true,
@@ -112,7 +112,6 @@ public class Oracle : Role
                 oracleButton.Timer = oracleButton.MaxTimer;
                 Game.GameData.data.myData.currentTarget = null;
             },
-            false,
             "button.label.oracle"
         ).SetTimer(CustomOptionHolder.InitialModestAbilityCoolDownOption.getFloat());
         oracleButton.MaxTimer = OracleCooldownOption.getFloat();

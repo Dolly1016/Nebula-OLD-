@@ -3,11 +3,18 @@
 public class HasHologram : Role
 {
     protected Dictionary<byte, PoolablePlayer> PlayerIcons;
+    protected Transform PlayerIconsTop;
 
     public bool GetIconState(byte playerId) { return PlayerIcons[playerId].gameObject.activeSelf; }
 
     public override void Initialize(PlayerControl __instance)
     {
+        PlayerIconsTop = new GameObject("PlayerIcons").transform;
+        PlayerIconsTop.SetParent(HudManager.Instance.UseButton.transform.parent);
+        PlayerIconsTop.localScale = new Vector3(1f, 1f, 1f);
+        Expansion.GridArrangeExpansion.AddGridArrangeContent(PlayerIconsTop.gameObject,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.LeftSideContent | Expansion.GridArrangeExpansion.GridArrangeParameter.OccupyingLineContent);
+
         int playerCounter = 0;
         if (HudManager.InstanceExists && PlayerControl.LocalPlayer != null)
         {
@@ -15,6 +22,8 @@ public class HasHologram : Role
             {
                 GameData.PlayerInfo data = p.Data;
                 PoolablePlayer player = UnityEngine.Object.Instantiate<PoolablePlayer>(Patches.IntroCutsceneOnDestroyPatch.PlayerPrefab, HudManager.Instance.transform);
+
+                player.transform.SetParent(PlayerIconsTop);
                 player.cosmetics.ResetCosmetics();
                 player.cosmetics.SetColor(data.DefaultOutfit.ColorId);
                 player.cosmetics.SetBodyColor(data.DefaultOutfit.ColorId);
@@ -38,14 +47,7 @@ public class HasHologram : Role
 
     public virtual void InitializePlayerIcon(PoolablePlayer player, byte PlayerId, int index)
     {
-        HudManager hudManager = FastDestroyableSingleton<HudManager>.Instance;
-
-        Vector3 bottomLeft = new Vector3(
-            -hudManager.UseButton.transform.parent.localPosition.x,
-            hudManager.UseButton.transform.parent.localPosition.y,
-            hudManager.UseButton.transform.parent.localPosition.z);
-
-        player.transform.localPosition = bottomLeft + new Vector3(-0.35f, -0.25f, 0);
+        player.transform.localPosition = new Vector3(-0.35f, -0.25f, 0);
         player.transform.localScale = Vector3.one * 0.35f;
 
         player.gameObject.SetActive(false);
@@ -63,6 +65,8 @@ public class HasHologram : Role
         }
 
         PlayerIcons.Clear();
+
+        UnityEngine.GameObject.Destroy(PlayerIconsTop.gameObject);
     }
 
     protected HasHologram(string name, string localizeName, Color color, RoleCategory category,

@@ -138,10 +138,9 @@ public class RitualCrewmate : RitualRole
             () => { return PlayerControl.LocalPlayer.CanMove; },
             () => { searchButton.Timer = searchButton.MaxTimer; },
             getButtonSprite(),
-            -1,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.None,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
-            false,
             "button.label.ritual.search"
         );
         searchButton.MaxTimer = searchButton.Timer = CustomOptionHolder.RitualSearchCoolDownOption.getFloat();

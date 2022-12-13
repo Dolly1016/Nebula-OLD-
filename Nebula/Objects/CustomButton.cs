@@ -70,7 +70,6 @@ public class CustomButton
     public float EffectDuration;
     public Sprite Sprite;
     private HudManager hudManager;
-    private bool mirror;
     private KeyCode? hotkey;
     private KeyCode? aidHotkey = null;
     private bool canInvokeAidActionWithMouseRightButton = true;
@@ -158,19 +157,17 @@ public class CustomButton
     }
 
 
-    public CustomButton(Action OnClick, Func<bool> HasButton, Func<bool> CouldUse, Action OnMeetingEnds, Sprite Sprite, int PositionOffset, HudManager hudManager, KeyCode? hotkey, bool HasEffect, float EffectDuration, Action OnEffectEnds, bool mirror = false, string buttonText = "", ImageNames labelType = ImageNames.UseButton)
+    public CustomButton(Action OnClick, Func<bool> HasButton, Func<bool> CouldUse, Action OnMeetingEnds, Sprite Sprite, Expansion.GridArrangeExpansion.GridArrangeParameter GridParam, HudManager hudManager, KeyCode? hotkey, bool HasEffect, float EffectDuration, Action OnEffectEnds, string buttonText = "", ImageNames labelType = ImageNames.UseButton)
     {
         this.hudManager = hudManager;
         this.OnClick = OnClick;
         this.HasButton = HasButton;
         this.CouldUse = CouldUse;
-        this.PositionOffset = new Vector3(PositionOffset,0f,0f);
         this.OnMeetingEnds = OnMeetingEnds;
         this.HasEffect = HasEffect;
         this.EffectDuration = EffectDuration;
         this.OnEffectEnds = OnEffectEnds;
         this.Sprite = Sprite;
-        this.mirror = mirror;
         this.hotkey = hotkey;
         this.activeFlag = false;
         this.textType = labelType;
@@ -188,21 +185,13 @@ public class CustomButton
         button.OnClick = new Button.ButtonClickedEvent();
         button.OnClick.AddListener((UnityEngine.Events.UnityAction)onClickEvent);
 
-        if (!mirror)
-        {
-            if (PositionOffset == -1)
-                GridArrange.currentChildren.Add(button.transform);
-            else
-            {
-                GridArrange.currentChildren.Insert(PositionOffset, button.transform);
-            }
-        }
+        Expansion.GridArrangeExpansion.AddGridArrangeContent(button.gameObject,GridParam);
 
         setActive(true);
     }
 
-    public CustomButton(Action OnClick, Func<bool> HasButton, Func<bool> CouldUse, Action OnMeetingEnds, Sprite Sprite, int PositionOffset, HudManager hudManager, KeyCode? hotkey, bool mirror = false, string buttonText = "", ImageNames labelType = ImageNames.UseButton)
-    : this(OnClick, HasButton, CouldUse, OnMeetingEnds, Sprite, PositionOffset, hudManager, hotkey, false, 0f, () => { }, mirror, buttonText, labelType) { }
+    public CustomButton(Action OnClick, Func<bool> HasButton, Func<bool> CouldUse, Action OnMeetingEnds, Sprite Sprite, Expansion.GridArrangeExpansion.GridArrangeParameter GridParam, HudManager hudManager, KeyCode? hotkey, string buttonText = "", ImageNames labelType = ImageNames.UseButton)
+    : this(OnClick, HasButton, CouldUse, OnMeetingEnds, Sprite, GridParam, hudManager, hotkey, false, 0f, () => { }, buttonText, labelType) { }
 
     static public GameObject? SetKeyGuide(GameObject button, KeyCode key, Vector2 pos)
     {
@@ -486,12 +475,7 @@ public class CustomButton
             actionButton.buttonLabelText.SetSharedMaterial(HudManager.Instance.UseButton.fastUseSettings[textType].FontMaterial);
         }
         actionButton.buttonLabelText.enabled = showButtonText; // Only show the text if it's a kill button
-        if (mirror)
-        {
-            Vector3 pos = hudManager.UseButton.transform.parent.localPosition;
-            if (mirror) pos = new Vector3(-pos.x * 2, 0, -9);
-            actionButton.transform.localPosition = pos + PositionOffset;
-        }
+
         if (CouldUse())
         {
             actionButton.graphic.color = actionButton.buttonLabelText.color = Palette.EnabledColor;

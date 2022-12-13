@@ -42,13 +42,12 @@ public class Camouflager : Role
                 camouflageButton.actionButton.cooldownTimerText.color = Palette.EnabledColor;
             },
             buttonSprite.GetSprite(),
-            -1,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.None,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
             true,
             camouflageDurationOption.getFloat(),
             () => { camouflageButton.Timer = camouflageButton.MaxTimer; },
-            false,
             "button.label.camouflage"
         ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());
         camouflageButton.MaxTimer = camouflageCoolDownOption.getFloat();

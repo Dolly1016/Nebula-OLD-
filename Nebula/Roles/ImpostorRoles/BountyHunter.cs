@@ -64,7 +64,7 @@ public class BountyHunter : Template.HasHologram
             () => { return PlayerControl.LocalPlayer.CanMove; },
             () => { killButton.Timer = killButton.MaxTimer; },
             __instance.KillButton.graphic.sprite,
-            2,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.AlternativeKillButtonContent,
             __instance,
             Module.NebulaInputManager.modKillInput.keyCode
         ).SetTimer(CustomOptionHolder.InitialKillCoolDownOption.getFloat());

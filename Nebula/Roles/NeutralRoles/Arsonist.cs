@@ -137,7 +137,7 @@ public class Arsonist : Template.HasAlignedHologram, Template.HasWinTrigger
                 arsonistButton.actionButton.cooldownTimerText.color = Palette.EnabledColor;
             },
             douseSprite.GetSprite(),
-            -1,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.None,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
             true,
@@ -152,7 +152,6 @@ public class Arsonist : Template.HasAlignedHologram, Template.HasWinTrigger
 
                 CheckIgnite();
             },
-            false,
             "button.label.douse"
         ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());
         arsonistButton.MaxTimer = douseCoolDownOption.getFloat();

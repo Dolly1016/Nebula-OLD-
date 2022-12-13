@@ -434,10 +434,9 @@ public class VOID : Role
             () => MetaDialog.dialogOrder.Count == 0,
             () => { },
             voidButtonSprite.GetSprite(),
-            -1,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.None,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
-            false,
             "button.label.void"
         ).SetTimer(0f);
     }

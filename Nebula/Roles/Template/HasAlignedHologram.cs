@@ -20,13 +20,7 @@ public class HasAlignedHologram : HasHologram
     }
     public override void InitializePlayerIcon(PoolablePlayer player, byte PlayerId, int index)
     {
-        HudManager hudManager = FastDestroyableSingleton<HudManager>.Instance;
-        Vector3 bottomLeft = new Vector3(
-            -hudManager.UseButton.transform.localPosition.x,
-            hudManager.UseButton.transform.localPosition.y,
-            hudManager.UseButton.transform.localPosition.z);
-
-        player.transform.localPosition = bottomLeft + new Vector3(-0.25f, -0.25f, 0) + Vector3.right * index++ * 0.3f;
+        player.transform.localPosition = new Vector3(-0.25f, -0.25f, 0) + Vector3.right * index++ * 0.3f;
         player.transform.localScale = Vector3.one * 0.25f;
         player.setSemiTransparent(true);
         player.gameObject.SetActive(true);
@@ -62,9 +56,6 @@ public class HasAlignedHologram : HasHologram
     private void UpdatePlayerIcon()
     {
         int visibleCounter = 0;
-        Vector3 bottomLeft = HudManager.Instance.UseButton.transform.parent.localPosition;
-        bottomLeft.x *= -1;
-        bottomLeft += new Vector3(-0.25f, -0.25f, 0);
 
         foreach (PlayerControl p in PlayerControl.AllPlayerControls)
         {
@@ -79,7 +70,7 @@ public class HasAlignedHologram : HasHologram
             {
                 PlayerIcons[p.PlayerId].gameObject.SetActive(true);
                 PlayerIcons[p.PlayerId].transform.localScale = Vector3.one * 0.25f;
-                PlayerIcons[p.PlayerId].transform.localPosition = bottomLeft + Vector3.right * visibleCounter * 0.3f;
+                PlayerIcons[p.PlayerId].transform.localPosition = new Vector3(-0.25f, -0.25f, 0) + Vector3.right * visibleCounter * 0.3f;
                 visibleCounter++;
             }
         }

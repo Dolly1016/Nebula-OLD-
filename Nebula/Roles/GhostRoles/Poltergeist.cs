@@ -79,10 +79,9 @@ public class Poltergeist : GhostRole
             },
             () => { poltergeistButton.Timer = poltergeistButton.MaxTimer; },
             buttonSprite.GetSprite(),
-            -1,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.None,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
-            false,
             "button.label.poltergeist"
         ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());
         poltergeistButton.MaxTimer = poltergeistCoolDownOption.getFloat();

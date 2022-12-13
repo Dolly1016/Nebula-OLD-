@@ -51,6 +51,7 @@ class IntroCutsceneOnDestroyPatch
     public static PoolablePlayer PlayerPrefab = null;
     public static void Postfix(IntroCutscene __instance)
     {
+        Expansion.GridArrangeExpansion.OnStartGame();
         CloseSpawnGUIPatch.Actions.Clear();
 
         PlayerPrefab = __instance.PlayerPrefab;
@@ -167,7 +168,6 @@ class IntroCutsceneOnDestroyPatch
             actionMap = actionArray[0];
             Objects.CustomButton.SetKeyGuide(HudManager.Instance.ImpostorVentButton.gameObject, actionMap.keyCode);
         }
-
     }
 }
 

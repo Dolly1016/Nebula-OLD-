@@ -64,10 +64,9 @@ public class Raider : Role
                 axeButton.SetLabel("button.label.equip");
             },
             axeButtonSprite.GetSprite(),
-            -1,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.None,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
-            false,
             "button.label.equip"
         );
         axeButton.Timer = axeButton.MaxTimer = 0f;
@@ -93,10 +92,9 @@ public class Raider : Role
             () => { return PlayerControl.LocalPlayer.CanMove && equipAxeFlag && lastAxe.Renderer.color.g > 0.5f; },
             () => { killButton.Timer = killButton.MaxTimer; },
             __instance.KillButton.graphic.sprite,
-            2,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.AlternativeKillButtonContent,
             __instance,
             Module.NebulaInputManager.modKillInput.keyCode,
-            false,
              "button.label.throw"
         ).SetTimer(CustomOptionHolder.InitialKillCoolDownOption.getFloat());
         killButton.MaxTimer = throwCoolDownOption.getFloat();

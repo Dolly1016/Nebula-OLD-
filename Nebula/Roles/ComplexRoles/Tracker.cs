@@ -192,10 +192,9 @@ public class Tracker : Template.BilateralnessRole
             },
             () => { trackButton.Timer = trackButton.MaxTimer; },
             category == RoleCategory.Impostor ? FTracker.trackButtonEvilSprite.GetSprite() : FTracker.trackButtonNiceSprite.GetSprite(),
-            -1,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.None,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
-            false,
             "button.label.track"
         ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());
 

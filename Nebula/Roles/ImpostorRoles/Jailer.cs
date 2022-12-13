@@ -42,10 +42,9 @@ public class Jailer : Role
                 () => { return PlayerControl.LocalPlayer.CanMove; },
                 () => { },
                 __instance.UseButton.fastUseSettings[ImageNames.AdminMapButton].Image,
-                -1,
+                Expansion.GridArrangeExpansion.GridArrangeParameter.None,
                 __instance,
                 Module.NebulaInputManager.abilityInput.keyCode,
-                false,
                 "button.label.admin"
             );
             adminButton.MaxTimer = 0f;

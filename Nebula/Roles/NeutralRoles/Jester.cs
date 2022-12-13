@@ -89,10 +89,9 @@ public class Jester : Template.Draggable, Template.HasWinTrigger
                 () => { return PlayerControl.LocalPlayer.CanMove; },
                 () => { blankButton.Timer = blankButton.MaxTimer; },
                 blankButtonSprite.GetSprite(),
-                -1,
+                Expansion.GridArrangeExpansion.GridArrangeParameter.None,
                 __instance,
                 Module.NebulaInputManager.modKillInput.keyCode,
-                false,
                 "button.label.blank"
             ).SetTimer(CustomOptionHolder.InitialKillCoolDownOption.getFloat());
             blankButton.MaxTimer = 5.0f;

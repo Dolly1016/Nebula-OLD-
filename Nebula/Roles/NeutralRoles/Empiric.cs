@@ -115,10 +115,9 @@ public class Empiric : Template.HasAlignedHologram, Template.HasWinTrigger
             },
             () => { },
             infectSprite.GetSprite(),
-            -1,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.None,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
-            false,
             "button.label.infect"
         ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());
         infectButton.UsesText.text = (leftInfect).ToString();

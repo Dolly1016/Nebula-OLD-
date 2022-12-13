@@ -66,7 +66,7 @@ public class Comet : Role
                 RPCEventInvoker.UpdatePlayerVisibility(PlayerControl.LocalPlayer.PlayerId, true);
             },
             buttonSprite.GetSprite(),
-            -1,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.None,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
             true,
@@ -76,7 +76,6 @@ public class Comet : Role
                boostButton.Timer = boostButton.MaxTimer;
                RPCEventInvoker.UpdatePlayerVisibility(PlayerControl.LocalPlayer.PlayerId, true);
            },
-            false,
             "button.label.blaze"
         ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());
         boostButton.MaxTimer = boostCooldownOption.getFloat();

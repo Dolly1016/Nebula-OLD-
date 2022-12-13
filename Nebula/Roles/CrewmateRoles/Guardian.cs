@@ -191,10 +191,9 @@ public class Guardian : Role
             },
             () => { antennaButton.Timer = antennaButton.MaxTimer; },
             placeButtonSprite.GetSprite(),
-            -1,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.BottomContent,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
-            false,
             "button.label.place"
         ).SetTimer(CustomOptionHolder.InitialModestAbilityCoolDownOption.getFloat());
         antennaButton.UsesText.text = Game.GameData.data.myData.getGlobalData().GetRoleData(remainAntennasId).ToString();
@@ -222,10 +221,9 @@ public class Guardian : Role
             },
             () => { guardButton.Timer = guardButton.MaxTimer; },
             guardButtonSprite.GetSprite(),
-            -1,
+           Expansion.GridArrangeExpansion.GridArrangeParameter.BottomContent,
             __instance,
             Module.NebulaInputManager.secondaryAbilityInput.keyCode,
-            false,
             "button.label.guard"
         ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());
         guardButton.MaxTimer = 10f;

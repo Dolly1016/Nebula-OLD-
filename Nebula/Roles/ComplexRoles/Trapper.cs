@@ -316,7 +316,7 @@ public class Trapper : Template.BilateralnessRole
             },
             () => { trapButton.Timer = trapButton.MaxTimer; },
             FTrapper.accelButtonSprite.GetSprite(),
-            -1,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.None,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
             true,
@@ -324,7 +324,7 @@ public class Trapper : Template.BilateralnessRole
             () =>
             {
                 trapButton.Timer = trapButton.MaxTimer;
-            }, false, "button.label.place"
+            }, "button.label.place"
         ).SetTimer(CustomOptionHolder.InitialModestAbilityCoolDownOption.getFloat());
         trapButton.MaxTimer = Roles.F_Trapper.placeCoolDownOption.getFloat();
         trapButton.EffectDuration = Roles.F_Trapper.rootTimeOption.getFloat();

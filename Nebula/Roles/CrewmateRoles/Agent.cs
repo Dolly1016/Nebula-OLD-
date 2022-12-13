@@ -64,10 +64,9 @@ public class Agent : Template.ExemptTasks
             },
             () => { agentButton.Timer = 0; },
             buttonSprite.GetSprite(),
-            -1,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.None,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
-            false,
             "button.label.agent"
         );
         agentButton.MaxTimer = agentButton.Timer = 0;

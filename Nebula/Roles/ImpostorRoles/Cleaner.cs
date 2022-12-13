@@ -33,10 +33,9 @@ public class Cleaner : Role
             () => { return deadBodyId != Byte.MaxValue && PlayerControl.LocalPlayer.CanMove; },
             () => { cleanButton.Timer = cleanButton.MaxTimer; },
             cleanButtonSprite.GetSprite(),
-            -1,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.None,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
-            false,
             "button.label.clean"
         ).SetTimer(CustomOptionHolder.InitialForcefulAbilityCoolDownOption.getFloat());
         cleanButton.MaxTimer = cleanCoolDownOption.getFloat();

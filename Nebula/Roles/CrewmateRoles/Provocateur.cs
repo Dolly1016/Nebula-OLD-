@@ -57,7 +57,7 @@ public class Provocateur : Role
                 embroilButton.isEffectActive = false;
             },
             buttonSprite.GetSprite(),
-            -1,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.None,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
             true,
@@ -66,7 +66,7 @@ public class Provocateur : Role
             {
                 embroilButton.MaxTimer += embroilCoolDownAdditionOption.getFloat();
                 embroilButton.Timer = embroilButton.MaxTimer;
-            }, false,
+            },
             "button.label.embroil"
         ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());
         embroilButton.MaxTimer = embroilCoolDownOption.getFloat();

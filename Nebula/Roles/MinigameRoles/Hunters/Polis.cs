@@ -50,10 +50,9 @@ public class Polis : Hunter
             () => { return Game.GameData.data.myData.currentTarget && PlayerControl.LocalPlayer.CanMove; },
             () => { arrestButton.Timer = arrestButton.MaxTimer; },
             GetButtonSprite(),
-            -1,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.AlternativeKillButtonContent,
             __instance,
             Module.NebulaInputManager.modKillInput.keyCode,
-            false,
             "button.label.arrest"
         );
         arrestButton.MaxTimer = arrestButton.Timer = ArrestCoolDownOption.getFloat();

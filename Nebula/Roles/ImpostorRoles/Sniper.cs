@@ -110,10 +110,9 @@ public class Sniper : Role
                 sniperButton.SetLabel("button.label.equip");
             },
             snipeButtonSprite.GetSprite(),
-            -1,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.None,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
-            false,
             "button.label.equip"
         );
         sniperButton.Timer = sniperButton.MaxTimer = 0f;
@@ -148,10 +147,9 @@ public class Sniper : Role
             () => { return PlayerControl.LocalPlayer.CanMove && equipRifleFlag; },
             () => { killButton.Timer = killButton.MaxTimer; },
             __instance.KillButton.graphic.sprite,
-            2,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.AlternativeKillButtonContent,
             __instance,
             Module.NebulaInputManager.modKillInput.keyCode,
-            false,
              "button.label.snipe"
         ).SetTimer(CustomOptionHolder.InitialKillCoolDownOption.getFloat());
         killButton.MaxTimer = snipeCoolDownOption.getFloat();

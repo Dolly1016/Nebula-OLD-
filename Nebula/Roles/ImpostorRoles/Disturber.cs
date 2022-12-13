@@ -121,13 +121,12 @@ public class Disturber : Role
                 elecButton.Timer = elecButton.MaxTimer;
             },
             placeButtonSprite.GetSprite(),
-            -1,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.None,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
             true,
             disturbDurationOption.getFloat(),
             () => { },
-            false,
             "button.label.place"
         ).SetTimer(CustomOptionHolder.InitialModestAbilityCoolDownOption.getFloat());
         elecButton.UsesText.text = ((int)countOfBarriorsOption.getFloat()).ToString();

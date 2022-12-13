@@ -159,7 +159,7 @@ public class Necromancer : Template.Draggable
                 reviveButton.isEffectActive = false;
             },
             reviveButtonSprite.GetSprite(),
-            -1, 
+            Expansion.GridArrangeExpansion.GridArrangeParameter.None, 
             __instance,
             Module.NebulaInputManager.secondaryAbilityInput.keyCode,
             true,
@@ -175,7 +175,6 @@ public class Necromancer : Template.Draggable
                     RPCEventInvoker.ImmediatelyChangeRole(Helpers.playerById(PlayerControl.LocalPlayer.GetModData().dragPlayerId), Roles.Madmate);
                 }
             },
-            false,
             "button.label.revive",
             ImageNames.VitalsButton
         ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());

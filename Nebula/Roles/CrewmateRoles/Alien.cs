@@ -105,13 +105,12 @@ public class Alien : Role
                 emiButton.actionButton.cooldownTimerText.color = Palette.EnabledColor;
             },
             buttonSprite.GetSprite(),
-            -1,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.None,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
             true,
             emiDurationOption.getFloat(),
             () => { emiButton.Timer = emiButton.MaxTimer; },
-            false,
             "button.label.emi"
         ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());
         emiButton.MaxTimer = emiCoolDownOption.getFloat();

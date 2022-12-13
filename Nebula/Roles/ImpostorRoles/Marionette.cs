@@ -106,10 +106,9 @@ public class Marionette : Role
                 placeButton.Timer = 10f;
             },
             decoyButtonSprite.GetSprite(),
-            -1,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.BottomContent,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
-            false,
             "button.label.decoy"
         ).SetTimer(CustomOptionHolder.InitialModestAbilityCoolDownOption.getFloat());
         placeButton.MaxTimer = 10f;
@@ -143,10 +142,9 @@ public class Marionette : Role
                 SetMarionetteMode(0);
             },
             decoyButtonSprite.GetSprite(),
-            -1,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.BottomContent,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
-            false,
             "button.label.decoy"
         );
         marionetteButton.MaxTimer = swapCoolDownOption.getFloat();
@@ -169,10 +167,9 @@ public class Marionette : Role
                 marionetteButton.Timer = marionetteButton.MaxTimer;
             },
             monitorButtonSprite.GetSprite(),
-            -1,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.None,
             __instance,
             Module.NebulaInputManager.secondaryAbilityInput.keyCode,
-            false,
             "button.label.monitor"
         );
 

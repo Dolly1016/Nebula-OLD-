@@ -50,10 +50,9 @@ public class ChainShifter : Role
             () => { return shiftPlayer == null && Game.GameData.data.myData.currentTarget != null && PlayerControl.LocalPlayer.CanMove; },
             () => { shiftButton.Timer = shiftButton.MaxTimer; },
             buttonSprite.GetSprite(),
-            -1,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.None,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
-            false,
             "button.label.chainShift"
         ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());
         shiftButton.MaxTimer = 10.0f;

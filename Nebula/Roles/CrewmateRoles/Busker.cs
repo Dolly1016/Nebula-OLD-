@@ -103,13 +103,12 @@ public class Busker : Role
                 buskButton.Timer = buskButton.MaxTimer;
             },
             pseudocideButtonSprite.GetSprite(),
-            -1,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.None,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
             true,
            buskDurationOption.getFloat(),
            () => { dieBusker(); },
-            false,
             "button.label.busker.pseudocide"
         ).SetTimer(CustomOptionHolder.InitialModestAbilityCoolDownOption.getFloat());
         buskButton.MaxTimer = buskCoolDownOption.getFloat();

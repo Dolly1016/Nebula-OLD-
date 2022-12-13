@@ -93,7 +93,7 @@ public class Jackal : Role
             () => { return Game.GameData.data.myData.currentTarget && PlayerControl.LocalPlayer.CanMove; },
             () => { killButton.Timer = killButton.MaxTimer; },
             __instance.KillButton.graphic.sprite,
-            0,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.AlternativeKillButtonContent,
             __instance,
             Module.NebulaInputManager.modKillInput.keyCode
         ).SetTimer(CustomOptionHolder.InitialKillCoolDownOption.getFloat());
@@ -118,10 +118,9 @@ public class Jackal : Role
             () => { return Game.GameData.data.myData.currentTarget && PlayerControl.LocalPlayer.CanMove && PlayerControl.LocalPlayer.GetModData().GetRoleData(killingDataId) >= NumOfKillingToCreateSidekickOption.getFloat(); },
             () => { sidekickButton.Timer = sidekickButton.MaxTimer; },
             sidekickButtonSprite.GetSprite(),
-            0,
+            Expansion.GridArrangeExpansion.GridArrangeParameter.LeftSideContent,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
-            true,
             "button.label.sidekick"
         );
         sidekickButton.MaxTimer = 20;
