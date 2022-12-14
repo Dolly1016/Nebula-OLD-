@@ -12,3 +12,4 @@ D:\AmongUsModding\Nebula\CPUAffinityEditor\obj\Release\CPUAffinityEditor.csprojA
 D:\AmongUsModding\Nebula\CPUAffinityEditor\obj\Release\CPUAffinityEditor.csproj.CoreCompileInputs.cache
 D:\AmongUsModding\Nebula\CPUAffinityEditor\obj\Release\CPUAffinityEditor.exe
 D:\AmongUsModding\Nebula\CPUAffinityEditor\obj\Release\CPUAffinityEditor.pdb
+C:\Users\kawam\source\repos\Dolly1016\Nebula\CPUAffinityEditor\obj\Release\CPUAffinityEditor.csproj.SuggestedBindingRedirects.cache

@@ -292,6 +292,15 @@ public class MapData
 
     public bool isOnTheShip(Vector2 pos)
     {
+        int num = Physics2D.OverlapCircleNonAlloc(pos, 0.23f, PhysicsHelpers.colliderHits, Constants.ShipAndAllObjectsMask);
+        if (num > 0)
+        {
+            for (int i = 0; i < num; i++)
+            {
+                if (!PhysicsHelpers.colliderHits[i].isTrigger) return false;
+            }
+        }
+
         Vector2 vector;
         float magnitude;
 

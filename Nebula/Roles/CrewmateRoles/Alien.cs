@@ -74,6 +74,8 @@ public class Alien : Role
     public override void MyPlayerControlUpdate()
     {
         if (sabotageUsesString) sabotageUsesString.text = sabotageCount.ToString();
+
+        Patches.PlayerControlPatch.SetPlayerOutline(Game.GameData.data.myData.currentTarget, Color.yellow);
     }
 
     public override void OnInvokeSabotage(SystemTypes systemType)
@@ -94,7 +96,12 @@ public class Alien : Role
         emiButton = new CustomButton(
             () =>
             {
-                RPCEventInvoker.GlobalEvent(Events.GlobalEvent.Type.EMI, emiDurationOption.getFloat());
+                PlayerControl.LocalPlayer.lightSource.StartCoroutine(RoleSystem.WarpSystem.CoOrient(PlayerControl.LocalPlayer.lightSource, 0.6f,2f,
+                    (p) => {
+                        Game.MyPlayerData data = Game.GameData.data.myData;
+                        data.currentTarget = p;
+                    }, (p) => { }).WrapToIl2Cpp());
+                //RPCEventInvoker.GlobalEvent(Events.GlobalEvent.Type.EMI, emiDurationOption.getFloat());
             },
             () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
             () => { return PlayerControl.LocalPlayer.CanMove; },

@@ -52,15 +52,6 @@ public class Busker : Role
         if (!PlayerControl.LocalPlayer.CanMove) return false;
         if (!PlayerControl.LocalPlayer.Data.IsDead) return true;
 
-        int num = Physics2D.OverlapCircleNonAlloc(PlayerControl.LocalPlayer.GetTruePosition(), 0.23f, PhysicsHelpers.colliderHits, Constants.ShipAndAllObjectsMask);
-        if (num > 0)
-        {
-            for(int i=0;i<num; i++)
-            {
-                if (!PhysicsHelpers.colliderHits[i].isTrigger) return false;
-            }
-        }
-
         var mapData = Map.MapData.GetCurrentMapData();
         if (mapData == null) return false;
 

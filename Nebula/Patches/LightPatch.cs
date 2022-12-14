@@ -3,6 +3,12 @@
 [HarmonyPatch]
 class LightPatch
 {
+    public static void Initialize()
+    {
+        PlayerRadius = 0.5f;
+        ClairvoyanceFlag = false;
+    }
+
     [HarmonyPatch(typeof(OneWayShadows), nameof(OneWayShadows.IsIgnored))]
     public static class OneWayShadowsPatch
     {
@@ -37,22 +43,22 @@ class LightPatch
             __instance.StartCoroutine(GetEnumerator(__instance).WrapToIl2Cpp());
         }
     }
-    /*
+
+    static public float PlayerRadius = 0.5f;
+
     [HarmonyPatch(typeof(LightSource), nameof(LightSource.Update))]
     public static class LightSourceUpdatePatch
     {
-        static public float FlashLightSize = 100f;
-        static public float ViewDistance = 1f;
-        static public float PlayerRadius = 1f;
+        
         public static bool Prefix(LightSource __instance)
         {
             Vector3 position = __instance.transform.position;
             position.z -= 7f;
             __instance.UpdateFlashlightAngle();
             __instance.LightCutawayMaterial.SetFloat("_PlayerRadius", PlayerRadius);
-            __instance.LightCutawayMaterial.SetFloat("_LightRadius", ViewDistance);
+            __instance.LightCutawayMaterial.SetFloat("_LightRadius", __instance.ViewDistance);
             __instance.LightCutawayMaterial.SetVector("_LightOffset", __instance.LightOffset);
-            __instance.LightCutawayMaterial.SetFloat("_FlashlightSize", FlashLightSize);
+            __instance.LightCutawayMaterial.SetFloat("_FlashlightSize", __instance.FlashlightSize);
             __instance.LightCutawayMaterial.SetFloat("_FlashlightAngle", PlayerControl.LocalPlayer.FlashlightAngle);
             __instance.lightChild.transform.position = position;
             __instance.renderer.Render(position);
@@ -60,5 +66,81 @@ class LightPatch
             return false;
         }
     }
-    */
+
+    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.AdjustLighting))]
+    public static class AdjustLightingPatch
+    {
+
+        public static bool Prefix(PlayerControl __instance)
+        {
+            if (PlayerControl.LocalPlayer != __instance)return false;
+            
+            float num = 0f;
+            bool flashFlag = false ;
+            if (__instance.IsFlashlightEnabled())
+            {
+                flashFlag = true;
+                if (__instance.Data.Role.IsImpostor)
+                    GameOptionsManager.Instance.CurrentGameOptions.TryGetFloat(FloatOptionNames.ImpostorFlashlightSize, out num);
+                else
+                    GameOptionsManager.Instance.CurrentGameOptions.TryGetFloat(FloatOptionNames.CrewmateFlashlightSize, out num);
+            }
+            else if (__instance.lightSource.useFlashlight)
+            {
+                num = __instance.lightSource.flashlightSize;
+                flashFlag = true;
+            }
+
+            __instance.SetFlashlightInputMethod();
+            __instance.lightSource.SetupLightingForGameplay(flashFlag, num, __instance.TargetFlashlight.transform);
+
+            return false;
+        }
+    }
+
+    public static bool ClairvoyanceFlag = false;
+
+    //影貫通
+
+    [HarmonyPatch(typeof(LightSourceGpuRenderer), nameof(LightSourceGpuRenderer.GPUShadows))]
+    public static class LightSourceGpuRendererPatch
+    {
+        static UnhollowerBaseLib.Il2CppReferenceArray<Collider2D> origArray;
+        static UnhollowerBaseLib.Il2CppReferenceArray<Collider2D> zeroArray = new(0);
+
+        public static void Prefix(LightSourceGpuRenderer __instance)
+        {
+            origArray = __instance.hits;
+            if (ClairvoyanceFlag)
+            {
+                __instance.hits = zeroArray;
+            }
+        }
+
+        public static void Postfix(LightSourceGpuRenderer __instance)
+        {
+            if (__instance.hits != origArray) __instance.hits = origArray;
+        }
+    }
+
+    [HarmonyPatch(typeof(LightSourceRaycastRenderer), nameof(LightSourceRaycastRenderer.RaycastShadows))]
+    public static class LightSourceRaycastRendererPatch
+    {
+        static UnhollowerBaseLib.Il2CppReferenceArray<Collider2D> origArray;
+        static UnhollowerBaseLib.Il2CppReferenceArray<Collider2D> zeroArray = new(0);
+
+        public static void Prefix(LightSourceRaycastRenderer __instance)
+        {
+            origArray = __instance.hits;
+            if (ClairvoyanceFlag)
+            {
+                __instance.hits = zeroArray;
+            }
+        }
+
+        public static void Postfix(LightSourceGpuRenderer __instance)
+        {
+            if (__instance.hits != origArray) __instance.hits = origArray;
+        }
+    }
 }

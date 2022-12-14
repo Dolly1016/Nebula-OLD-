@@ -810,6 +810,7 @@ public static class Helpers
 
     public static Color Blend(this Color myColor, Color color, float rate)
     {
+        if (rate > 1f) rate = 1f;
         float myRate = 1 - rate;
         return new Color(
             myColor.r * myRate + color.r * rate,

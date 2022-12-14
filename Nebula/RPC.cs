@@ -380,6 +380,7 @@ static class RPCEvents
         Patches.EmergencyPatch.Initialize();
         Objects.Ghost.Initialize();
         Objects.SoundPlayer.Initialize();
+        Patches.LightPatch.Initialize();
     }
 
     public static void SetMyColor(byte playerId, byte hue,byte dis,Color mainColor,Color shadowColor)
