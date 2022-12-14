@@ -29,6 +29,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 2.0.1 | 2022.12.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/2.0.1,2022.12.8/Nebula_v2.0.1.zip)|
 | 2.0 | 2022.10.25s | [Download](https://github.com/Dolly1016/Nebula/releases/download/2.0,2022.10.25/Nebula_v2.0.zip)|
 | 1.16.1 | 2022.10.25s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.16.1,2022.10.25/Nebula_v1.16.1.zip)|
 | 1.16 | 2022.10.25s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.16,2022.10.25/Nebula_v1.16.zip)|
@@ -227,6 +228,16 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+  
+ **Version 2.0.1**
+ - Among Us本体の対応バージョンを v2022.12.8s に引き上げ
+ - 新たな影バリエーションを追加
+ - Dynamic Paletteの明度の幅を拡張
+ - 色共有機能を追加
+ - Vultureの残り捕食回数などの表示に関するリワーク
+ - ぬ～んを使用不可にしている場合(One-Way Meeting Room)のぬ～んの表示を公式鬼ごっこモードに準じたものに変更するように
+ - Sheriffのキルボタン画像、Agent,Navvyのベントボタン画像を変更
+ - タスクを持たないままAgentになったとき、Agentボタンの表示が適切でない問題を修正
   
  **Version 2.0**
  - 新役職 Nice Tracker, Evil Trackerを追加
