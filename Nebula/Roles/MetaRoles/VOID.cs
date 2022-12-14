@@ -468,5 +468,7 @@ public class VOID : Role
         FixedRoleCount = true;
 
         IsGuessableRole = false;
+
+        ValidGamemode = CustomGameMode.All;
     }
 }

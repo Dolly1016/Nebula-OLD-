@@ -132,7 +132,7 @@ class VentButtonVisibilityPatch
         HudManager hudManager = HudManager.Instance;
 
         var role = data.role;
-        var showFlag = hudManager.ReportButton.isActiveAndEnabled;
+        var showFlag = Helpers.ShowButtons;
 
 
         if (__instance.CanMove) Game.GameData.data.myData.VentCoolDownTimer -= Time.deltaTime;

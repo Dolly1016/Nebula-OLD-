@@ -185,6 +185,10 @@ public class Navvy : Role
             "button.label.repair"
         );
         repairButton.MaxTimer = repairButton.Timer = 0;
+
+        var ventButton = FastDestroyableSingleton<HudManager>.Instance.ImpostorVentButton;
+        ventButton.gameObject.GetComponent<SpriteRenderer>().sprite = RoleManager.Instance.AllRoles.First(r => r.Role == RoleTypes.Engineer).Ability.Image;
+        ventButton.transform.GetChild(1).GetComponent<TMPro.TextMeshPro>().outlineColor = Palette.CrewmateBlue;
     }
     public override void CleanUp()
     {
@@ -198,6 +202,15 @@ public class Navvy : Role
         {
             repairButton.Destroy();
             repairButton = null;
+        }
+    }
+    public override void FinalizeInGame(PlayerControl __instance)
+    {
+        if (HudManager.InstanceExists)
+        {
+            var ventButton = FastDestroyableSingleton<HudManager>.Instance.ImpostorVentButton;
+            ventButton.gameObject.GetComponent<SpriteRenderer>().sprite = CustomButton.OriginalVentButtonSprite;
+            ventButton.transform.GetChild(1).GetComponent<TMPro.TextMeshPro>().outlineColor = Palette.ImpostorRed;
         }
     }
 

@@ -52,6 +52,8 @@ public static class ButtonEffect
 
 public class CustomButton
 {
+    public static Sprite OriginalVentButtonSprite;
+
     public static List<CustomButton> buttons = new List<CustomButton>();
     public ActionButton actionButton;
     public Vector3 PositionOffset;
@@ -91,6 +93,7 @@ public class CustomButton
     private static Texture2D textureUsesIcon;
     private static Sprite[] spriteCustomUsesIcon = new Sprite[10];
 
+    public TMPro.TextMeshPro LabelText { get { return actionButton.buttonLabelText; } }
     private TMPro.TextMeshPro? upperText;
     public TMPro.TextMeshPro UpperText
     {

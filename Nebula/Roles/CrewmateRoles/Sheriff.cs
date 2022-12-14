@@ -14,6 +14,9 @@ public class Sheriff : Role
     private Module.CustomOption canKillOpportunistOption;
     private Module.CustomOption canKillChainShifterOption;
     private Module.CustomOption numberOfShotsOption;
+    
+    private SpriteLoader killButtonSprite = new SpriteLoader("Nebula.Resources.SheriffKillButton.png", 100f);
+
 
     int shots;
 
@@ -71,13 +74,15 @@ public class Sheriff : Role
             () => { return !PlayerControl.LocalPlayer.Data.IsDead && shots > 0; },
             () => { return Game.GameData.data.myData.currentTarget && PlayerControl.LocalPlayer.CanMove; },
             () => { killButton.Timer = killButton.MaxTimer; },
-            __instance.KillButton.graphic.sprite,
+            killButtonSprite.GetSprite(),
             Expansion.GridArrangeExpansion.GridArrangeParameter.AlternativeKillButtonContent,
             __instance,
-            Module.NebulaInputManager.modKillInput.keyCode
+            Module.NebulaInputManager.modKillInput.keyCode,
+            "button.label.kill",ImageNames.AdminMapButton
         ).SetTimer(CustomOptionHolder.InitialKillCoolDownOption.getFloat());
         killButton.MaxTimer = killCooldownOption.getFloat();
         killButton.UsesText.text = shots.ToString();
+        killButton.LabelText.outlineColor = Palette.CrewmateBlue;
     }
     public override void CleanUp()
     {

@@ -100,6 +100,8 @@ static public class Roles
     public static RitualRoles.RitualCrewmate RitualCrewmate = new RitualRoles.RitualCrewmate();
     public static RitualRoles.RitualKiller RitualKiller = new RitualRoles.RitualKiller();
 
+    public static HnSCrewmateRoles.Crewmate HnSCrewmate = new HnSCrewmateRoles.Crewmate();
+    public static HnSImpostorRoles.Impostor HnSImpostor = new HnSImpostorRoles.Impostor();
 
     public static ComplexRoles.FCrewmate F_Crewmate = new ComplexRoles.FCrewmate();
     public static ComplexRoles.FGuesser F_Guesser = new ComplexRoles.FGuesser();
@@ -135,7 +137,9 @@ static public class Roles
             Player,
             Halley,Biela,
             Polis,Hadar,
-            RitualCrewmate,RitualKiller
+            RitualCrewmate,RitualKiller,
+            HnSCrewmate,
+            HnSImpostor
         };
 
     public static List<ExtraRole> AllExtraRoles = new List<ExtraRole>()

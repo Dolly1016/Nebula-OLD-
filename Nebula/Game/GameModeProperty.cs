@@ -58,7 +58,7 @@ public class GameModeProperty
         InvestigatorsMode = new GameModeProperty(Module.CustomGameMode.Investigators, 2, false, true, false, null, Roles.Roles.Crewmate, Roles.Roles.Impostor, Module.CustomOptionTab.None);
         FreePlayMode = new GameModeProperty(Module.CustomGameMode.FreePlay, 0, false, false, false, null, Roles.Roles.Player, Roles.Roles.Impostor,
             Module.CustomOptionTab.Settings | Module.CustomOptionTab.CrewmateRoles | Module.CustomOptionTab.ImpostorRoles | Module.CustomOptionTab.NeutralRoles | Module.CustomOptionTab.GhostRoles | Module.CustomOptionTab.Modifiers | Module.CustomOptionTab.AdvancedSettings | Module.CustomOptionTab.EscapeRoles);
-        StandardHnSMode = new GameModeProperty(Module.CustomGameMode.StandardHnS, 4, true, false, false, null, Roles.Roles.Crewmate, Roles.Roles.Impostor,
+        StandardHnSMode = new GameModeProperty(Module.CustomGameMode.StandardHnS, 4, true, false, false, null, Roles.Roles.HnSCrewmate, Roles.Roles.HnSImpostor,
             Module.CustomOptionTab.Settings | Module.CustomOptionTab.CrewmateRoles | Module.CustomOptionTab.ImpostorRoles | Module.CustomOptionTab.AdvancedSettings);
     }
 

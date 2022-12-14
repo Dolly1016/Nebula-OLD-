@@ -14,6 +14,8 @@ public class EndCondition
     public static EndCondition ImpostorWinBySabotage = new EndCondition(GameOverReason.ImpostorBySabotage, Palette.ImpostorRed, "impostor", 16, Module.CustomGameMode.Standard);
     public static EndCondition ImpostorWinByVote = new EndCondition(GameOverReason.ImpostorByVote, Palette.ImpostorRed, "impostor", 16, Module.CustomGameMode.Standard);
     public static EndCondition ImpostorWinDisconnect = new EndCondition(GameOverReason.ImpostorDisconnect, Palette.ImpostorRed, "impostor", 16, Module.CustomGameMode.Standard);
+    public static EndCondition CrewmateWinHnS = new EndCondition(GameOverReason.HideAndSeek_ByTimer, Palette.CrewmateBlue, "crewmate", 16, Module.CustomGameMode.StandardHnS);
+    public static EndCondition ImpostorWinHnS = new EndCondition(GameOverReason.HideAndSeek_ByKills, Palette.ImpostorRed, "lonelyImpostor", 16, Module.CustomGameMode.StandardHnS);
     public static EndCondition JesterWin = new EndCondition(16, Roles.NeutralRoles.Jester.RoleColor, "jester", 1, Module.CustomGameMode.Standard);
     public static EndCondition JackalWin = new EndCondition(17, Roles.NeutralRoles.Jackal.RoleColor, "jackal", 2, Module.CustomGameMode.Standard);
     public static EndCondition ArsonistWin = new EndCondition(18, Roles.NeutralRoles.Arsonist.RoleColor, "arsonist", 1, Module.CustomGameMode.Standard, false, (fpData) => { PlayerControl.AllPlayerControls.ForEach((Action<PlayerControl>)((p) => { if (!p.Data.IsDead && Roles.Roles.Arsonist.Winner != p.PlayerId) { p.MurderPlayer(p); fpData.GetPlayer(p.PlayerId).status = Game.PlayerData.PlayerStatus.Burned; } })); });
@@ -55,6 +57,7 @@ public class EndCondition
     public static HashSet<EndCondition> AllEnds = new HashSet<EndCondition>() {
             CrewmateWinByVote ,CrewmateWinByTask,CrewmateWinDisconnect,
             ImpostorWinByKill,ImpostorWinBySabotage,ImpostorWinByVote,ImpostorWinDisconnect,
+            CrewmateWinHnS,ImpostorWinHnS,
             JesterWin,JackalWin,ArsonistWin,EmpiricWin,VultureWin,/*SantaWin,*/
             LoversWin,TrilemmaWin,AvengerWin,
             NoGame,NobodyWin,NobodySkeldWin,NobodyMiraWin,NobodyPolusWin,NobodyAirshipWin,
@@ -602,14 +605,11 @@ class CheckEndCriteriaPatch
     public static void CommonPrefix()
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        
-        if (GameOptionsManager.Instance.currentGameMode == GameModes.HideNSeek)
-        {
-            if(GameManager.Instance.ShouldCheckForGameEnd)GameManager.Instance.LogicFlow.CheckEndCriteria();
-            return;
-        }
 
-        if (ExileController.Instance != null)
+        if (!GameManager.Instance) return;
+        if (!GameManager.Instance.ShouldCheckForGameEnd) return;
+
+            if (ExileController.Instance != null)
         {
             if (SpawnInMinigame.Instance == null)
                 return;// return false;

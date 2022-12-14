@@ -85,6 +85,17 @@ public class CustomOptionHolder
 
     public static CustomOption gameModeNormal;
     public static CustomOption gameModeHnS;
+    public static CustomOption GetCurrentGameModeOption()
+    {
+        switch (GameOptionsManager.Instance.currentGameMode)
+        {
+            case GameModes.Normal:
+                return gameModeNormal;
+            case GameModes.HideNSeek:
+                return gameModeHnS;
+        }
+        return gameModeNormal;
+    }
 
     public static CustomOption roleCountOption;
     public static CustomOption crewmateRolesCountMin;

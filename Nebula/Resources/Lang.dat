@@ -1049,6 +1049,7 @@
 
 "game.endText.crewmate" : "Team Crewmate Wins"
 "game.endText.impostor" : "Team Impostor Wins"
+"game.endText.lonelyImpostor" : "Impostor Wins"
 "game.endText.arsonist" : "Arsonist Wins"
 "game.endText.avenger" : "Avenger Wins"
 "game.endText.empiric" : "Empiric Wins"
@@ -1125,6 +1126,7 @@
 "button.label.ignite" : "ignite"
 "button.label.infect" : "infect"
 "button.label.involve" : "involve"
+"button.label.kill" : "kill"
 "button.label.monitor" : "monitor"
 "button.label.morph" : "morph"
 "button.label.oracle" : "oracle"

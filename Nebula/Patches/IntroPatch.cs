@@ -55,6 +55,10 @@ class IntroCutsceneOnDestroyPatch
         CloseSpawnGUIPatch.Actions.Clear();
 
         PlayerPrefab = __instance.PlayerPrefab;
+        
+        if (CustomButton.OriginalVentButtonSprite) CustomButton.OriginalVentButtonSprite.hideFlags&= ~HideFlags.DontUnloadUnusedAsset;
+        CustomButton.OriginalVentButtonSprite = HudManager.Instance.ImpostorVentButton.GetComponent<SpriteRenderer>().sprite;
+        CustomButton.OriginalVentButtonSprite.hideFlags |= HideFlags.DontUnloadUnusedAsset;
 
         Module.Information.UpperInformationManager.Initialize();
         if (CustomOptionHolder.limiterOptions.getBool())

@@ -6,7 +6,7 @@ public class Impostor : Role
 {
     public static HashSet<Side> impostorSideSet = new HashSet<Side>() { Side.Impostor };
     public static HashSet<EndCondition> impostorEndSet =
-       new HashSet<EndCondition>() { EndCondition.ImpostorWinByKill, EndCondition.ImpostorWinBySabotage, EndCondition.ImpostorWinByVote, EndCondition.ImpostorWinDisconnect };
+       new HashSet<EndCondition>() { EndCondition.ImpostorWinByKill, EndCondition.ImpostorWinBySabotage, EndCondition.ImpostorWinByVote, EndCondition.ImpostorWinDisconnect, EndCondition.ImpostorWinHnS };
 
     public Impostor()
             : base("Impostor", "impostor", Palette.ImpostorRed, RoleCategory.Impostor, Side.Impostor, Side.Impostor,

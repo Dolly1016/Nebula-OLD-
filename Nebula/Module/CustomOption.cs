@@ -860,11 +860,12 @@ class GameOptionsMenuStartPatch
     {
         var designer = MetaScreen.OpenScreen(setting, new Vector2(1.5f, 6f), new Vector2(-4.15f, -0.8f));
 
-        designer.AddTopic(new MSString(1.5f, CustomOptionHolder.gameModeNormal.getName(), TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold));
+        var gameModeOption = CustomOptionHolder.GetCurrentGameModeOption();
+        designer.AddTopic(new MSString(1.5f, gameModeOption.getName(), TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold));
         designer.CustomUse(-0.08f);
-        designer.AddTopic(new MSButton(1.5f, 0.4f, CustomOptionHolder.gameModeNormal.getString(), TMPro.FontStyles.Bold, () =>
+        designer.AddTopic(new MSButton(1.5f, 0.4f, gameModeOption.getString(), TMPro.FontStyles.Bold, () =>
         {
-            CustomOptionHolder.gameModeNormal.addSelection(1);
+            gameModeOption.addSelection(1);
             designer.screen.Close();
 
             //今のタブが存在しないゲームモードに変わる場合

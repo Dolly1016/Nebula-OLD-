@@ -13,66 +13,81 @@ public class Side
 
     public static Side Crewmate = new Side("Crewmate", "crewmate", IntroDisplayOption.SHOW_ALL, Palette.CrewmateBlue, (PlayerStatistics statistics, ShipStatus status) =>
     {
-        if (statistics.GetAlivePlayers(Impostor) == 0 &&
-        statistics.GetAlivePlayers(Jackal) == 0 &&
-        !Game.GameData.data.AllPlayers.Values.Any((p) => p.IsAlive && p.extraRole.Contains(Roles.SecondarySidekick)))
+        if (GameOptionsManager.Instance.currentGameMode == GameModes.Normal)
         {
-            return EndCondition.CrewmateWinByVote;
-        }
-        if (GameData.Instance.TotalTasks <= GameData.Instance.CompletedTasks && GameData.Instance.CompletedTasks > 0)
+            if (statistics.GetAlivePlayers(Impostor) == 0 &&
+            statistics.GetAlivePlayers(Jackal) == 0 &&
+            !Game.GameData.data.AllPlayers.Values.Any((p) => p.IsAlive && p.extraRole.Contains(Roles.SecondarySidekick)))
+            {
+                return EndCondition.CrewmateWinByVote;
+            }
+            if (GameData.Instance.TotalTasks <= GameData.Instance.CompletedTasks && GameData.Instance.CompletedTasks > 0)
+            {
+                return EndCondition.CrewmateWinByTask;
+            }
+        }else if (GameOptionsManager.Instance.currentGameMode == GameModes.HideNSeek)
         {
-            return EndCondition.CrewmateWinByTask;
+            if (GameManager.Instance.Cast<HideAndSeekManager>().LogicFlowHnS.AllTimersExpired())
+                return EndCondition.CrewmateWinHnS;
+            if (statistics.AliveCrewmates > 0 && statistics.AliveImpostors == 0)
+                return EndCondition.CrewmateWinHnS;
         }
-
         return null;
     });
 
     public static Side Impostor = new Side("Impostor", "impostor", IntroDisplayOption.STANDARD, Palette.ImpostorRed, (PlayerStatistics statistics, ShipStatus status) =>
     {
+        if (GameOptionsManager.Instance.currentGameMode == GameModes.Normal)
+        {
             //Sabotage
             if (status.Systems != null)
-        {
-            ISystemType systemType = status.Systems.ContainsKey(SystemTypes.LifeSupp) ? status.Systems[SystemTypes.LifeSupp] : null;
-            if (systemType != null)
             {
-                LifeSuppSystemType lifeSuppSystemType = systemType.TryCast<LifeSuppSystemType>();
-                if (lifeSuppSystemType != null && lifeSuppSystemType.Countdown < 0f)
+                ISystemType systemType = status.Systems.ContainsKey(SystemTypes.LifeSupp) ? status.Systems[SystemTypes.LifeSupp] : null;
+                if (systemType != null)
                 {
-                    lifeSuppSystemType.Countdown = 10000f;
-                    return EndCondition.ImpostorWinBySabotage;
+                    LifeSuppSystemType lifeSuppSystemType = systemType.TryCast<LifeSuppSystemType>();
+                    if (lifeSuppSystemType != null && lifeSuppSystemType.Countdown < 0f)
+                    {
+                        lifeSuppSystemType.Countdown = 10000f;
+                        return EndCondition.ImpostorWinBySabotage;
+                    }
+                }
+                ISystemType systemType2 = status.Systems.ContainsKey(SystemTypes.Reactor) ? status.Systems[SystemTypes.Reactor] : null;
+                if (systemType2 == null)
+                {
+                    systemType2 = status.Systems.ContainsKey(SystemTypes.Laboratory) ? status.Systems[SystemTypes.Laboratory] : null;
+                }
+                if (systemType2 != null)
+                {
+                    ICriticalSabotage criticalSystem = systemType2.TryCast<ICriticalSabotage>();
+                    if (criticalSystem != null && criticalSystem.Countdown < 0f)
+                    {
+                        criticalSystem.ClearSabotage();
+                        return EndCondition.ImpostorWinBySabotage;
+                    }
                 }
             }
-            ISystemType systemType2 = status.Systems.ContainsKey(SystemTypes.Reactor) ? status.Systems[SystemTypes.Reactor] : null;
-            if (systemType2 == null)
+
+            if (statistics.AliveImpostors > 0 &&
+            statistics.AliveJackals == 0 &&
+            !Game.GameData.data.AllPlayers.Values.Any((p) => p.IsAlive && p.extraRole.Contains(Roles.SecondarySidekick)) &&
+            statistics.TotalAlive <= (statistics.AliveImpostors - statistics.AliveInLoveImpostors) * 2 &&
+            (statistics.AliveImpostorCouple + statistics.AliveImpostorTrilemma == 0 ||
+            statistics.AliveImpostorCouple * 2 + statistics.AliveImpostorTrilemma * 3 >= statistics.AliveCouple * 2 + statistics.AliveTrilemma * 3))
             {
-                systemType2 = status.Systems.ContainsKey(SystemTypes.Laboratory) ? status.Systems[SystemTypes.Laboratory] : null;
-            }
-            if (systemType2 != null)
-            {
-                ICriticalSabotage criticalSystem = systemType2.TryCast<ICriticalSabotage>();
-                if (criticalSystem != null && criticalSystem.Countdown < 0f)
+                if (TempData.LastDeathReason == DeathReason.Kill)
                 {
-                    criticalSystem.ClearSabotage();
-                    return EndCondition.ImpostorWinBySabotage;
+                    return EndCondition.ImpostorWinByKill;
+                }
+                else
+                {
+                    return EndCondition.ImpostorWinByVote;
                 }
             }
         }
-
-        if (statistics.AliveImpostors > 0 &&
-        statistics.AliveJackals == 0 &&
-        !Game.GameData.data.AllPlayers.Values.Any((p) => p.IsAlive && p.extraRole.Contains(Roles.SecondarySidekick)) &&
-        statistics.TotalAlive <= (statistics.AliveImpostors - statistics.AliveInLoveImpostors) * 2 &&
-        (statistics.AliveImpostorCouple + statistics.AliveImpostorTrilemma == 0 ||
-        statistics.AliveImpostorCouple * 2 + statistics.AliveImpostorTrilemma * 3 >= statistics.AliveCouple * 2 + statistics.AliveTrilemma * 3))
+        else if (GameOptionsManager.Instance.currentGameMode == GameModes.HideNSeek)
         {
-            if (TempData.LastDeathReason == DeathReason.Kill)
-            {
-                return EndCondition.ImpostorWinByKill;
-            }
-            else
-            {
-                return EndCondition.ImpostorWinByVote;
-            }
+            if (statistics.AliveCrewmates == 0 && statistics.AliveImpostors>0) return EndCondition.ImpostorWinHnS;
         }
 
         return null;

@@ -6,7 +6,7 @@ public class Crewmate : Role
 {
     public static HashSet<Side> crewmateSideSet = new HashSet<Side>() { Side.Crewmate };
     public static HashSet<EndCondition> crewmateEndSet =
-        new HashSet<EndCondition>() { EndCondition.CrewmateWinByTask, EndCondition.CrewmateWinByVote, EndCondition.CrewmateWinDisconnect };
+        new HashSet<EndCondition>() { EndCondition.CrewmateWinByTask, EndCondition.CrewmateWinByVote, EndCondition.CrewmateWinDisconnect, EndCondition.CrewmateWinHnS };
 
 
     public override bool CanHaveExtraAssignable(ExtraAssignable extraRole)

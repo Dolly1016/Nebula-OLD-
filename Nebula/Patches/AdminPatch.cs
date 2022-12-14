@@ -110,6 +110,13 @@ public class AdminPatch
     [HarmonyPatch(typeof(MapCountOverlay), nameof(MapCountOverlay.Update))]
     public static class MapCountOverlayUpdatePatch
     {
+        static ContactFilter2D filter = new ContactFilter2D()
+        {
+            useTriggers = true,
+            layerMask = LayerMask.GetMask(new string[] { "Players" }),
+            useLayerMask = true
+        };
+
         static void updateImpostors(CounterArea counterArea, int impostors, int deadBodies)
         {
             foreach (var icon in counterArea.myIcons.GetFastEnumerator())
@@ -181,7 +188,7 @@ public class AdminPatch
                         {
                             //通常時のアドミン
 
-                            int num = plainShipRoom.roomArea.OverlapCollider(__instance.filter, __instance.buffer);
+                            int num = plainShipRoom.roomArea.OverlapCollider(filter, __instance.buffer);
                             int num2 = num;
                             for (int j = 0; j < num; j++)
                             {
@@ -210,10 +217,10 @@ public class AdminPatch
                                     else
                                     {
                                         if (adminMode == AdminMode.ImpostorsAndDeadBodies)
-                                        {
                                             deadBodies++;
-                                        }
-
+                                        else if (!__instance.includeDeadBodies)
+                                            num2--;
+                                        
                                         detectedPlayers.Add(component.ParentId);
                                     }
                                 }

@@ -72,8 +72,12 @@ public class Agent : Template.ExemptTasks
         );
         agentButton.MaxTimer = agentButton.Timer = 0;
 
-        ventButtonUsesObject = FastDestroyableSingleton<HudManager>.Instance.ImpostorVentButton.ShowUsesIcon(0,out ventButtonUsesString);
+        var ventButton = FastDestroyableSingleton<HudManager>.Instance.ImpostorVentButton;
+        ventButtonUsesObject = ventButton.ShowUsesIcon(0,out ventButtonUsesString);
         ventButtonUsesString.text = maxVentsOption.getFloat().ToString();
+        ventButton.gameObject.GetComponent<SpriteRenderer>().sprite = RoleManager.Instance.AllRoles.First(r => r.Role == RoleTypes.Engineer).Ability.Image;
+        ventButton.transform.GetChild(1).GetComponent<TMPro.TextMeshPro>().outlineColor = Palette.CrewmateBlue;
+
     }
 
     public override void MyUpdate()
@@ -103,6 +107,15 @@ public class Agent : Template.ExemptTasks
         if (ventButtonUsesObject)
         {
             UnityEngine.Object.Destroy(ventButtonUsesObject);
+        }
+    }
+    public override void FinalizeInGame(PlayerControl __instance) 
+    { 
+        if (HudManager.InstanceExists)
+        {
+            var ventButton = FastDestroyableSingleton<HudManager>.Instance.ImpostorVentButton;
+            ventButton.gameObject.GetComponent<SpriteRenderer>().sprite = CustomButton.OriginalVentButtonSprite;
+            ventButton.transform.GetChild(1).GetComponent<TMPro.TextMeshPro>().outlineColor = Palette.ImpostorRed;
         }
     }
 

@@ -64,7 +64,7 @@ static public class GridArrangeExpansion
             {
                 float p = (1 - t) * (1 - t);
                 obj.transform.localPosition = dest * (1 - p) + pos * p;
-                t += Time.deltaTime * 1.02f;
+                t += Time.deltaTime * 1.4f;
                 yield return null;
             }
             if(obj)obj.transform.localPosition = dest;
