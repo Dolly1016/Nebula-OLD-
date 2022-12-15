@@ -213,6 +213,7 @@ class IntroPatch
             __instance.RoleBlurbText.text = Language.Language.GetString("role." + role.LocalizeName + ".description");
             __instance.RoleBlurbText.color = role.Color;
             __instance.YouAreText.color = role.side.color;
+            
 
             //追加ロールの情報を付加
             string description = __instance.RoleBlurbText.text;
@@ -236,6 +237,7 @@ class IntroPatch
             __instance.ourCrewmate.gameObject.SetActive(true);
             __instance.ourCrewmate.transform.localPosition = new Vector3(0f, -1.05f, -18f);
             __instance.ourCrewmate.transform.localScale = new Vector3(1f, 1f, 1f);
+            __instance.ourCrewmate.ToggleName(false);
         }
 
         public static bool Prefix(IntroCutscene __instance, ref Il2CppSystem.Collections.IEnumerator __result)

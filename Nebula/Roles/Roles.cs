@@ -54,6 +54,7 @@ static public class Roles
     public static CrewmateRoles.Navvy Navvy = new CrewmateRoles.Navvy();
     public static CrewmateRoles.Seer Seer = new CrewmateRoles.Seer();
     public static CrewmateRoles.Sheriff Sheriff = new CrewmateRoles.Sheriff();
+    public static CrewmateRoles.Splicer Splicer = new CrewmateRoles.Splicer();
     public static CrewmateRoles.Spy Spy = new CrewmateRoles.Spy();
 
     public static CrewmateRoles.Madmate Madmate = new CrewmateRoles.Madmate();
@@ -69,6 +70,7 @@ static public class Roles
     public static ComplexRoles.Guesser EvilGuesser = new ComplexRoles.Guesser("EvilGuesser", "evilGuesser", true);
     public static ComplexRoles.Tracker EvilTracker = new ComplexRoles.Tracker("EvilTracker", "evilTracker", true);
     public static ComplexRoles.Trapper EvilTrapper = new ComplexRoles.Trapper("EvilTrapper", "evilTrapper", true);
+    public static ImpostorRoles.Executioner Executioner = new ImpostorRoles.Executioner();
     public static ImpostorRoles.Jailer Jailer = new ImpostorRoles.Jailer();
     public static ImpostorRoles.Marionette Marionette = new ImpostorRoles.Marionette();
     public static ImpostorRoles.Morphing Morphing = new ImpostorRoles.Morphing();
@@ -128,11 +130,11 @@ static public class Roles
     public static List<Role> AllRoles = new List<Role>()
         {
             VOID,
-            Impostor,BountyHunter,Camouflager,Cleaner,Damned,Disturber,Eraser,EvilAce,EvilGuesser,EvilTracker,EvilTrapper,Jailer,Marionette,Morphing,Painter,Raider,Reaper,Sniper,
+            Impostor,BountyHunter,Camouflager,Cleaner,Damned,Disturber,Eraser,EvilAce,EvilGuesser,EvilTracker,EvilTrapper,Executioner,Jailer,Marionette,Morphing,Painter,Raider,Reaper,Sniper,
             /*SantaClaus,BlackSanta,*/Arsonist,Avenger,ChainShifter,Empiric,Jackal,Jester,Opportunist,Sidekick,Vulture,
             F_Crewmate,
             F_Guesser,F_Tracker,F_Trapper,
-            Crewmate,CrewmateWithoutTasks,Agent,Alien,Bait,Busker,Comet,DamnedCrew,Doctor,Guardian,Mayor,Navvy,Necromancer,NiceGuesser,NiceTracker,NiceTrapper,Oracle,Provocateur,Psychic,Seer,Sheriff,Spy,
+            Crewmate,CrewmateWithoutTasks,Agent,Alien,Bait,Busker,Comet,DamnedCrew,Doctor,Guardian,Mayor,Navvy,Necromancer,NiceGuesser,NiceTracker,NiceTrapper,Oracle,Provocateur,Psychic,Seer,Sheriff,Splicer,Spy,
             Madmate,
             Player,
             Halley,Biela,

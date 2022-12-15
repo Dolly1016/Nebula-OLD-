@@ -52,7 +52,7 @@ public class BountyHunter : Template.HasHologram
             {
                 PlayerControl target = Game.GameData.data.myData.currentTarget;
 
-                var res = Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, target, (target == PlayerControl.LocalPlayer) ? Game.PlayerData.PlayerStatus.Misfire : Game.PlayerData.PlayerStatus.Dead, false, true);
+                var res = Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, target, Game.PlayerData.PlayerStatus.Dead, false, true);
                 if (res != Helpers.MurderAttemptResult.SuppressKill)
                     killButton.Timer = killButton.MaxTimer;
                 Game.GameData.data.myData.currentTarget = null;
@@ -61,7 +61,7 @@ public class BountyHunter : Template.HasHologram
                 ChangeBounty();
             },
             () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
-            () => { return PlayerControl.LocalPlayer.CanMove; },
+            () => { return PlayerControl.LocalPlayer.CanMove && Game.GameData.data.myData.currentTarget != null; },
             () => { killButton.Timer = killButton.MaxTimer; },
             __instance.KillButton.graphic.sprite,
             Expansion.GridArrangeExpansion.GridArrangeParameter.AlternativeKillButtonContent,

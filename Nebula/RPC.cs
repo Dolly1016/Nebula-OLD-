@@ -591,7 +591,7 @@ static class RPCEvents
         PlayerControl target = Helpers.playerById(targetId);
         if (source != null && target != null)
         {
-            if (showAnimation == 0) Patches.KillAnimationCoPerformKillPatch.hideNextAnimation = true;
+            Patches.KillAnimationCoPerformKillPatch.hideNextAnimation = (showAnimation == 0);
 
             if (cutOverlay)
             {
@@ -1053,7 +1053,7 @@ static class RPCEvents
         }
     }
 
-    private static IEnumerator GetTasknEnumerator(byte playerId, int allTasks, bool isCrewmateTask, bool isInfiniteQuota)
+    private static IEnumerator GetTasksEnumerator(byte playerId, int allTasks, bool isCrewmateTask, bool isInfiniteQuota)
     {
         while (true)
         {
@@ -1072,7 +1072,7 @@ static class RPCEvents
         var p = Game.GameData.data.GetPlayerData(playerId);
         if (p == null)
         {
-            HudManager.Instance.StartCoroutine(GetTasknEnumerator(playerId, allTasks, isCrewmateTask, isInfiniteQuota).WrapToIl2Cpp());
+            HudManager.Instance.StartCoroutine(GetTasksEnumerator(playerId, allTasks, isCrewmateTask, isInfiniteQuota).WrapToIl2Cpp());
         }
         else
         {

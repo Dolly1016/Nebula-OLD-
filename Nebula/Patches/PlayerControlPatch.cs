@@ -5,7 +5,6 @@ public class PlayerControlSetTaskPatch
 {
     public static bool Prefix(GameData __instance, [HarmonyArgument(0)] byte playerId, [HarmonyArgument(1)] UnhollowerBaseLib.Il2CppStructArray<byte> taskTypeIds)
     {
-        return true;
         if (playerId != PlayerControl.LocalPlayer.PlayerId) return true;
 
         GameData.PlayerInfo playerById = __instance.GetPlayerById(playerId);

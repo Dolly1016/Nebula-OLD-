@@ -577,6 +577,14 @@
 "role.seer.info" : "You can know the moment of deathes by flash.\nAnd you can see ghosts."
 "role.seer.ghostDuration" : "Ghost's Revelation Duration"
 
+"role.splicer.name" : "Splicer"
+"role.splicer.short" : "S"
+"role.splicer.description" : "Hello, from Illusion"
+"role.splicer.info" : ""
+"role.splicer.help.warp" : "Teleport in the specified direction across the wall.\nIf the position across the wall is not found\nthen the teleportation will be failed."
+"role.splicer.warpCoolDown" : "Warp Cool Down"
+"role.splicer.maxWarpDistance" : "Max Warp Distance"
+
 "role.spy.name" : "Spy"
 "role.spy.short" : "Sp"
 "role.spy.description" : "Confuse the <color=#ff1919ff>Impostors</color>"
@@ -683,6 +691,11 @@
 "role.evilTrapper.short" : "Tp"
 "role.evilTrapper.description" : "Entrap and Kill Crewmates"
 "role.evilTrapper.info" : "You can place some traps.\nKinds of traps can change."
+
+"role.executioner.name" : "Executioner"
+"role.executioner.short" : "Ex"
+"role.executioner.description" : "Hello, from Thy Own Spirit"
+"role.executioner.info" : ""
 
 "role.jailer.name" : "Jailer"
 "role.jailer.short" : "J"
@@ -1148,6 +1161,7 @@
 "button.label.throw" : "throw"
 "button.label.track" : "track"
 "button.label.unequip" : "unequip"
+"button.label.warp" : "warp"
 "button.label.vital" : "vitals"
 "button.label.void" : "void"
 

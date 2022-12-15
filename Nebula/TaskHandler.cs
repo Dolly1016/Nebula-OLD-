@@ -32,10 +32,8 @@ public static class TasksHandler
         return Tuple.Create(0, 0);
     }
 
-    [HarmonyPatch(typeof(GameData), nameof(GameData.RecomputeTaskCounts))]
-    private static class GameDataRecomputeTaskCountsPatch
-    {
-        private static bool Prefix(GameData __instance)
+
+        public static bool RecomputeTasks(GameData __instance)
         {
             __instance.TotalTasks = 0;
             __instance.CompletedTasks = 0;
@@ -65,5 +63,5 @@ public static class TasksHandler
             }
             return false;
         }
-    }
+    
 }

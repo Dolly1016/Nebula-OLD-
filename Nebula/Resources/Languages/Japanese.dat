@@ -550,6 +550,12 @@
 "role.psychic.message.myRole" : "私は%MYROLE%だ..."
 "role.psychic.message.losing" : "恨めしい..."
 
+"role.seer.name" : "シア"
+"role.seer.short" : "シ"
+"role.seer.description" : "死を見逃すな"
+"role.seer.info" : "誰かが死ぬとフラッシュが発生します。\nまた、死亡地点にしばらくの間幽霊が現れます。幽霊は会議を挟んで残存します。"
+"role.seer.ghostDuration" : "幽霊の表示時間"
+
 "role.sheriff.name" : "シェリフ"
 "role.sheriff.short" : "シ"
 "role.sheriff.description" : "<color=#ff1919ff>インポスター</color>を撃ち抜け"
@@ -563,11 +569,10 @@
 "role.sheriff.canKillChainShifter" : "キル可能：チェインシフター"
 "role.sheriff.numberOfShots" : "弾丸の数"
 
-"role.seer.name" : "シア"
-"role.seer.short" : "シ"
-"role.seer.description" : "死を見逃すな"
-"role.seer.info" : "誰かが死ぬとフラッシュが発生します。\nまた、死亡地点にしばらくの間幽霊が現れます。幽霊は会議を挟んで残存します。"
-"role.seer.ghostDuration" : "幽霊の表示時間"
+"role.splicer.name" : "スプライサー"
+"role.splicer.short" : "ス"
+"role.splicer.description" : "絶対不可能の壁を越えて"
+"role.splicer.info" : ""
 
 "role.spy.name" : "スパイ"
 "role.spy.short" : "スパ"
@@ -675,6 +680,11 @@
 "role.evilTrapper.short" : "トラッパー"
 "role.evilTrapper.description" : "罠にかけろ"
 "role.evilTrapper.info" : "様々な効果をもたらすトラップを設置することができます。\n3種類のトラップを設置することができます。"
+
+"role.executioner.name" : "イグゼキューショナー"
+"role.executioner.short" : "イ"
+"role.executioner.description" : "心の内より出でしもの"
+"role.executioner.info" : ""
 
 "role.jailer.name" : "ジェイラー"
 "role.jailer.short" : "ジ"

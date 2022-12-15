@@ -665,6 +665,7 @@ class CheckNormalEndCriteriaPatch
 
     public static void Prefix(GameManager __instance)
     {
+        if(GameData.Instance)TasksHandler.RecomputeTasks(GameData.Instance);
         CheckEndCriteriaPatch.CommonPrefix();
 
         lastShouldCheckedFlag = __instance.ShouldCheckForGameEnd;
