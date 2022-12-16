@@ -147,7 +147,6 @@ public class NebulaOption
         }
         catch
         {
-            NebulaPlugin.Instance.Logger.Print("Error");
         }
     }
 
