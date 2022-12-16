@@ -393,6 +393,8 @@ public static class UpdatePatch
             Events.GlobalEvent.Update();
             Events.LocalEvent.Update();
 
+            Objects.EffectCircle.Update();
+
             Game.GameData.data.ColliderManager.Update();
 
             Objects.SoundPlayer.Update();

@@ -5,12 +5,14 @@ public class Jackal : Role
 
     static private CustomButton killButton;
     static private CustomButton sidekickButton;
+    static private SpriteRenderer rockedButtonRenderer;
 
     static public Module.CustomOption CanCreateSidekickOption;
     static public Module.CustomOption NumOfKillingToCreateSidekickOption;
     static public Module.CustomOption KillCoolDownOption;
 
     private SpriteLoader sidekickButtonSprite = new SpriteLoader("Nebula.Resources.SidekickButton.png", 115f);
+    private SpriteLoader lockedButtonSprite = new SpriteLoader("Nebula.Resources.LockedButton.png", 100f);
 
     public override HelpSprite[] helpSprite => new HelpSprite[]
     {
@@ -115,7 +117,21 @@ public class Jackal : Role
                 Game.GameData.data.myData.currentTarget = null;
             },
             () => { return !PlayerControl.LocalPlayer.Data.IsDead && Game.GameData.data.myData.getGlobalData().GetRoleData(leftSidekickDataId) > 0; },
-            () => { return Game.GameData.data.myData.currentTarget && PlayerControl.LocalPlayer.CanMove && PlayerControl.LocalPlayer.GetModData().GetRoleData(killingDataId) >= NumOfKillingToCreateSidekickOption.getFloat(); },
+            () => {
+                int killing = PlayerControl.LocalPlayer.GetModData().GetRoleData(killingDataId);
+                int goal = (int)NumOfKillingToCreateSidekickOption.getFloat();
+                if (killing >= goal)
+                {
+                    rockedButtonRenderer.gameObject.SetActive(false);
+                    sidekickButton.ShowUsesText(false);
+                }
+                else
+                {
+                    sidekickButton.UsesText.text = (goal - killing).ToString();
+                }
+
+                return Game.GameData.data.myData.currentTarget && PlayerControl.LocalPlayer.CanMove && killing >= goal; 
+            },
             () => { sidekickButton.Timer = sidekickButton.MaxTimer; },
             sidekickButtonSprite.GetSprite(),
             Expansion.GridArrangeExpansion.GridArrangeParameter.LeftSideContent,
@@ -124,6 +140,8 @@ public class Jackal : Role
             "button.label.sidekick"
         );
         sidekickButton.MaxTimer = 20;
+        rockedButtonRenderer = sidekickButton.AddOverlay(lockedButtonSprite.GetSprite(), 0f);
+        sidekickButton.UsesText.text= NumOfKillingToCreateSidekickOption.getFloat().ToString();
     }
 
     public override void CleanUp()

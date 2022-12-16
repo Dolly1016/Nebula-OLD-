@@ -175,6 +175,7 @@ public class Guardian : Role
             () =>
             {
                 var obj = RPCEventInvoker.ObjectInstantiate(CustomObject.Type.Antenna, PlayerControl.LocalPlayer.transform.position);
+                new Objects.EffectCircle(obj.GameObject, Palette.CrewmateBlue,antennaEffectiveRangeOption.getFloat());
                 RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, remainAntennasId, -1);
                 myAntennaSet.Add(obj);
                 antennaButton.Timer = antennaButton.MaxTimer;

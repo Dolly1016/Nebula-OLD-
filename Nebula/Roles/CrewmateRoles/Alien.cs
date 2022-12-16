@@ -95,6 +95,7 @@ public class Alien : Role
             () =>
             {
                 RPCEventInvoker.GlobalEvent(Events.GlobalEvent.Type.EMI, emiDurationOption.getFloat());
+                new Objects.EffectCircle(PlayerControl.LocalPlayer.gameObject, RoleColor, emiRangeOption.getFloat(), emiDurationOption.getFloat());
             },
             () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
             () => { return PlayerControl.LocalPlayer.CanMove; },

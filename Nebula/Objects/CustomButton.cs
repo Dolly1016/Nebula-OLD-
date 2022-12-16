@@ -48,6 +48,18 @@ public static class ButtonEffect
         text = result.transform.GetChild(0).GetComponent<TMPro.TextMeshPro>();
         return result;
     }
+
+    static public SpriteRenderer AddOverlay(this ActionButton button,Sprite sprite,float order)
+    {
+        GameObject obj = new GameObject("Overlay");
+        obj.layer = LayerExpansion.GetUILayer();
+        obj.transform.SetParent(button.gameObject.transform);
+        obj.transform.localScale = new Vector3(1, 1, 1);
+        obj.transform.localPosition = new Vector3(0, 0, -1f - order);
+        var renderer = obj.AddComponent<SpriteRenderer>();
+        renderer.sprite = sprite;
+        return renderer;
+    }
 }
 
 public class CustomButton
@@ -92,6 +104,11 @@ public class CustomButton
     private static Sprite spriteKeyBindOption;
     private static Texture2D textureUsesIcon;
     private static Sprite[] spriteCustomUsesIcon = new Sprite[10];
+
+    public SpriteRenderer AddOverlay(Sprite sprite,float order)
+    {
+        return actionButton.AddOverlay(sprite,order);
+    }
 
     public TMPro.TextMeshPro LabelText { get { return actionButton.buttonLabelText; } }
     private TMPro.TextMeshPro? upperText;

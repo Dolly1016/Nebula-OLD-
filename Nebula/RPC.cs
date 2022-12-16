@@ -376,6 +376,7 @@ static class RPCEvents
         Events.Schedule.Initialize();
         Objects.CustomMessage.Initialize();
         Objects.CustomObject.Initialize();
+        Objects.EffectCircle.Initialize();
         Patches.MeetingHudPatch.Initialize();
         Patches.EmergencyPatch.Initialize();
         Objects.Ghost.Initialize();

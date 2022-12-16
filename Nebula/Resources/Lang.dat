@@ -727,7 +727,7 @@
 
 "role.painter.name" : "Painter"
 "role.painter.short" : "P"
-"role.painter.description" : ""
+"role.painter.description" : "No One Knows You Anymore"
 "role.painter.info" : "You can change other players' view."
 "role.painter.help.sample" : "Get sample."
 "role.painter.help.paint" : "Paint the sample to the player."

@@ -293,7 +293,7 @@
 
 "role.void.name" : "VOID"
 "role.void.short" : "V"
-"role.void.description" : "超至適知的支配者"
+"role.void.description" : "超知的至適支配者"
 "role.void.info" : ""
 "role.void.help.void" : "VOID操作画面を開くことができます。\n会議中でも使用できます。"
 
@@ -398,7 +398,7 @@
 
 "role.doctor.name" : "ドクター"
 "role.doctor.short" : "ド"
-"role.doctor.description" : "そして、奴は死んだ"
+"role.doctor.description" : "かくして奴は死んだ"
 "role.doctor.info" : "バイタルでプレイヤーの死因を知ることができます。\nまた、充電がある限りどこでもバイタルを確認できます。"
 "role.doctor.mobileGadgetCharges" : "初期ガジェット充電時間"
 "role.doctor.maxMobileGadgetCharges" : "最大ガジェット充電時間"
@@ -603,7 +603,7 @@
 
 "role.bountyHunter.name" : "バウンティハンター"
 "role.bountyHunter.short" : "バ"
-"role.bountyHunter.description" : "一刻千金だ"
+"role.bountyHunter.description" : "さぁ、一刻千金だ"
 "role.bountyHunter.info" : "賞金首となったプレイヤーを切ると、キルクールダウンが短くなります。\nしかし、それ以外のプレイヤーをキルした場合、キルクールダウンが増えてしまうことに気をつけて下さい。"
 "role.bountyHunter.changingBountyInterval" : "賞金首の変更間隔"
 "role.bountyHunter.killCoolDownMultiplierAfterKillingBounty" : "賞金首キル時のキルクールダウン倍率"
@@ -660,7 +660,7 @@
 
 "role.evilAce.name" : "イビルエース"
 "role.evilAce.short" : "エ"
-"role.evilAce.description" : "クルーメイトを殺しきれ"
+"role.evilAce.description" : "殲滅せよ"
 "role.evilAce.info" : "最後のインポスターになると、キルクールダウンが短縮されます。\nまた、設定によって死亡したプレイヤーの役職を知ることもできます。"
 "role.evilAce.killCoolDown" : "キルクールダウン倍率"
 "role.evilAce.canKnowDeadNonImpostorsRoles" : "死んだ非インポスターの役職が分かる"
@@ -668,7 +668,7 @@
 
 "role.evilGuesser.name" : "イビルゲッサー"
 "role.evilGuesser.short" : "ゲ"
-"role.evilGuesser.description" : "クルーメイトを撃ち抜け"
+"role.evilGuesser.description" : "敵を撃ち抜け"
 "role.evilGuesser.info" : "会議中に、他人の役職を推察してキルすることができます。\n推察が間違っていた場合、自身が代わりに死亡します。"
 
 "role.evilTracker.name" : "イビルトラッカー"
@@ -716,7 +716,7 @@
 
 "role.painter.name" : "ペインター"
 "role.painter.short" : "P"
-"role.painter.description" : ""
+"role.painter.description" : "その目を欺く影"
 "role.painter.info" : "プレイヤーの見た目を変えることができます。\n見た目を変えられたプレイヤーは、自身の見た目が変わっていることに\n気づけません。"
 "role.painter.help.sample" : "サンプルを取得します。"
 "role.painter.help.paint" : "プレイヤーの見た目を取得したサンプルに塗り替えます。\nサンプルを取得していない場合、\n自分自身の見た目に塗り替えます。"
@@ -736,7 +736,7 @@
 
 "role.reaper.name" : "リーパー"
 "role.reaper.short" : "リ"
-"role.reaper.description" : "命を刈り取れ"
+"role.reaper.description" : "死神が来る"
 "role.reaper.info" : "死体を掴んで運ぶことができます。\nまた、マップ内の全てのベントが繋がっています。\nベントに潜伏できる時間の制限と、使用のクールダウンがある点に\n注意してください。"
 "role.reaper.help.dragAndDrop" : "死体を掴む、あるいは離します。\n死体を掴んだままベントに入ることもできます。"
 "role.reaper.ventCoolDown" : "ベントクールダウン"
