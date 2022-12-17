@@ -137,7 +137,7 @@ static public class GridArrangeExpansion
                 if (Helpers.ShowButtons)
                 {
                     if (!lastContents.Contains(c.gameObject.GetInstanceID()))
-                        c.localPosition = new Vector3(posX, posY, c.position.z);
+                        c.localPosition = new Vector3(posX, posY, c.localPosition.z);
                     else
                         __instance.StartCoroutine(GetEnumerator(c.gameObject, new Vector3(posX, posY, c.position.z)).WrapToIl2Cpp());
                 }
