@@ -313,6 +313,8 @@ public class CustomOptionHolder
 
     public static void Load()
     {
+        CustomOption.optionSaver = new DataSaver("options.dat");
+
         gameModeNormal = CustomOption.Create(Color.white, "option.gameMode", gamemodesNormal, gamemodesNormal[0], null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.All).SetIdentifier("option.gameModeNormal");
         gameModeHnS = CustomOption.Create(Color.white, "option.gameMode", gamemodesHnS, gamemodesHnS[0], null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.All).SetIdentifier("option.gameModeHnS");
 

@@ -118,6 +118,7 @@ public class CustomObject
         public static ObjectTypes.DelayedObject Antenna = new ObjectTypes.DelayedObject(9, "Antenna", "Nebula.Resources.Antenna.png");
         public static ObjectTypes.Diamond Diamond = new ObjectTypes.Diamond();
         public static ObjectTypes.Footprint Footprint = new ObjectTypes.Footprint();
+        public static ObjectTypes.TeleportEvidence TeleportEvidence = new ObjectTypes.TeleportEvidence();
 
         public byte Id { get; }
         public string ObjectName { get; }

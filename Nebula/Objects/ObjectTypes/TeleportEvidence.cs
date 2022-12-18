@@ -1,8 +1,12 @@
-﻿namespace Nebula.Objects.ObjectTypes;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
-public class Footprint : TypeWithImage
+namespace Nebula.Objects.ObjectTypes;
+
+public class TeleportEvidence : TypeWithImage
 {
-    public Footprint() : base(11, "Footprint", "Nebula.Resources.BloodyFootprint.png")
+    public TeleportEvidence() : base(12, "TeleportEvidence", "Nebula.Resources.TeleportEvidence.png",100f)
     {
     }
 
@@ -17,14 +21,9 @@ public class Footprint : TypeWithImage
             t += Time.deltaTime;
 
             if (obj.Renderer.color.a < Time.deltaTime) break;
-            else if (t > 4f)
+            else if (t > 10f)
             {
                 obj.Renderer.color = new Color(1f, 1f, 1f, obj.Renderer.color.a - Time.deltaTime);
-                obj.Renderer.transform.localScale += new Vector3(Time.deltaTime * 0.4f, Time.deltaTime * 0.4f, 0f);
-            }
-            else
-            {
-                obj.Renderer.transform.localScale += new Vector3(Time.deltaTime * 0.1f, Time.deltaTime * 0.1f, 0f);
             }
             yield return null;
         }
@@ -36,7 +35,6 @@ public class Footprint : TypeWithImage
     {
         base.Initialize(obj);
 
-        obj.Renderer.transform.eulerAngles = new Vector3(0f, 0f, (float)NebulaPlugin.rnd.NextDouble() * 360f);
         obj.Behaviour.StartCoroutine(GetEnumerator(obj).WrapToIl2Cpp());
     }
 }

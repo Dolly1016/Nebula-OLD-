@@ -39,8 +39,11 @@ public class Executioner : Role
                         data.currentTarget = p;
                     }, (p) =>
                     {
-                        if(p != null)
+                        if (p != null)
+                        {
+                            RPCEventInvoker.ObjectInstantiate(CustomObject.Type.TeleportEvidence,PlayerControl.LocalPlayer.GetTruePosition());
                             Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, p, Game.PlayerData.PlayerStatus.Dead, false, true);
+                        }
                     }).WrapToIl2Cpp());
             },
             () => { return !PlayerControl.LocalPlayer.Data.IsDead; },

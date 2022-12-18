@@ -21,11 +21,15 @@ public enum ProcessorAffinity
 
 public class NebulaOption
 {
-    static public ConfigEntry<int> configPictureDest;
-    static public ConfigEntry<int> configProcessorAffinity;
-    static public ConfigEntry<bool> configPrioritizeAmongUs;
-    static public ConfigEntry<int> configTimeoutExtension;
-    static public ConfigEntry<bool> configDontCareMismatchedNoS;
+    static public Module.DataSaver configSaver = new Module.DataSaver("config.dat");
+    static public Module.IntegerDataEntry configPictureDest;
+    static public Module.IntegerDataEntry configProcessorAffinity;
+    static public Module.BooleanDataEntry configPrioritizeAmongUs;
+    static public Module.IntegerDataEntry configTimeoutExtension;
+    static public Module.BooleanDataEntry configDontCareMismatchedNoS;
+    static public Module.BooleanDataEntry configSnapshot;
+    static public Module.BooleanDataEntry configOutputHash;
+    static public Module.BooleanDataEntry configGameControl;
 
     static public string GetPicturePath(NebulaPictureDest dest)
     {
@@ -205,11 +209,14 @@ public static class StartOptionMenuPatch
 
     static public void LoadOption()
     {
-        NebulaOption.configPictureDest = NebulaPlugin.Instance.Config.Bind("Config", "PicutureDest", 0);
-        NebulaOption.configProcessorAffinity = NebulaPlugin.Instance.Config.Bind("Config", "ProcessorAffinity", 0);
-        NebulaOption.configPrioritizeAmongUs = NebulaPlugin.Instance.Config.Bind("Config", "PrioritizeAmongUs", false);
-        NebulaOption.configTimeoutExtension = NebulaPlugin.Instance.Config.Bind("Config", "TimeoutExtension", 0);
-        NebulaOption.configDontCareMismatchedNoS = NebulaPlugin.Instance.Config.Bind("Config", "DontCareMismatchedNoS", false);
+        NebulaOption.configPictureDest = new Module.IntegerDataEntry("picutureDest",NebulaOption.configSaver, 0);
+        NebulaOption.configProcessorAffinity = new Module.IntegerDataEntry("processorAffinity", NebulaOption.configSaver, 0);
+        NebulaOption.configPrioritizeAmongUs = new Module.BooleanDataEntry("prioritizeAmongUs", NebulaOption.configSaver, false);
+        NebulaOption.configTimeoutExtension = new Module.IntegerDataEntry("timeoutExtension", NebulaOption.configSaver, 0);
+        NebulaOption.configDontCareMismatchedNoS = new Module.BooleanDataEntry("dontCareMismatchedNoS", NebulaOption.configSaver, false);
+        NebulaOption.configSnapshot = new Module.BooleanDataEntry("snapshot", NebulaOption.configSaver, false);
+        NebulaOption.configOutputHash = new Module.BooleanDataEntry("outputHash", NebulaOption.configSaver, false);
+        NebulaOption.configGameControl = new Module.BooleanDataEntry("gameControl", NebulaOption.configSaver, false);
         NebulaOption.ReflectProcessorAffinity();
         NebulaOption.ReflectProcessorPriority();
     }
@@ -373,7 +380,11 @@ public static class StartOptionMenuPatch
         debugSnapshot = snapshotButton.GetComponent<ToggleButtonBehaviour>();
         passiveButton = snapshotButton.GetComponent<PassiveButton>();
         passiveButton.OnClick = new UnityEngine.UI.Button.ButtonClickedEvent();
-        passiveButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => debugSnapshot.UpdateToggleText(!debugSnapshot.onState, Language.Language.GetString("config.debug.snapshot"))));
+        passiveButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => 
+        { 
+            debugSnapshot.UpdateToggleText(!debugSnapshot.onState, Language.Language.GetString("config.debug.snapshot"));
+            NebulaOption.configSnapshot.Value = debugOutputHash.onState;
+        }));
 
         //OutputHash
         var outputHashButton = GameObject.Instantiate(toggleButtonTemplate, null);
@@ -384,30 +395,17 @@ public static class StartOptionMenuPatch
         debugOutputHash = outputHashButton.GetComponent<ToggleButtonBehaviour>();
         passiveButton = outputHashButton.GetComponent<PassiveButton>();
         passiveButton.OnClick = new UnityEngine.UI.Button.ButtonClickedEvent();
-        passiveButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => debugOutputHash.UpdateToggleText(!debugOutputHash.onState, Language.Language.GetString("config.debug.outputHash"))));
-
-        //適用ボタン
-        var applyButton = GameObject.Instantiate(applyButtonTemplate, null);
-        applyButton.transform.SetParent(nebulaTab.transform);
-        applyButton.transform.localScale = new Vector3(1f, 1f, 1f);
-        applyButton.transform.localPosition = new Vector3(0f, 1f, 0f);
-        applyButton.name = "ApplyButton";
-        passiveButton = applyButton.GetComponent<PassiveButton>();
-        passiveButton.OnClick = new UnityEngine.UI.Button.ButtonClickedEvent();
         passiveButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
         {
-            NebulaPlugin.DebugMode.SetToken("Snapshot", debugSnapshot.onState);
-            NebulaPlugin.DebugMode.SetToken("OutputHash", debugOutputHash.onState);
-            NebulaPlugin.DebugMode.OutputToken();
-            SoundManager.Instance.PlaySound(Module.MetaScreen.getSelectClip(), false, 0.8f);
-        }
-        ));
+            debugOutputHash.UpdateToggleText(!debugOutputHash.onState, Language.Language.GetString("config.debug.outputHash"));
+            NebulaOption.configOutputHash.Value = debugOutputHash.onState;
+        }));
 
         //ProcessorAffinity
         var processorAffinityButton = GameObject.Instantiate(toggleButtonTemplate, null);
         processorAffinityButton.transform.SetParent(nebulaTab.transform);
         processorAffinityButton.transform.localScale = new Vector3(1f, 1f, 1f);
-        processorAffinityButton.transform.localPosition = new Vector3(-1.3f, 0f, 0f);
+        processorAffinityButton.transform.localPosition = new Vector3(-1.3f, 1.1f, 0f);
         processorAffinityButton.name = "ProcessorAffinity";
         processorAffinity = processorAffinityButton.GetComponent<ToggleButtonBehaviour>();
         passiveButton = processorAffinityButton.GetComponent<PassiveButton>();
@@ -424,7 +422,7 @@ public static class StartOptionMenuPatch
         var prioritizeAmongUsButton = GameObject.Instantiate(toggleButtonTemplate, null);
         prioritizeAmongUsButton.transform.SetParent(nebulaTab.transform);
         prioritizeAmongUsButton.transform.localScale = new Vector3(1f, 1f, 1f);
-        prioritizeAmongUsButton.transform.localPosition = new Vector3(1.3f, 0f, 0f);
+        prioritizeAmongUsButton.transform.localPosition = new Vector3(1.3f, 1.1f, 0f);
         prioritizeAmongUsButton.name = "PrioritizeAmongUs";
         prioritizeAmongUs = prioritizeAmongUsButton.GetComponent<ToggleButtonBehaviour>();
         passiveButton = prioritizeAmongUsButton.GetComponent<PassiveButton>();
@@ -452,7 +450,7 @@ public static class StartOptionMenuPatch
         var pictureDestButton = GameObject.Instantiate(toggleButtonTemplate, null);
         pictureDestButton.transform.SetParent(nebulaTab.transform);
         pictureDestButton.transform.localScale = new Vector3(1f, 1f, 1f);
-        pictureDestButton.transform.localPosition = new Vector3(-1.3f, -0.5f, 0f);
+        pictureDestButton.transform.localPosition = new Vector3(-1.3f, 0.6f, 0f);
         pictureDestButton.name = "PictureDest";
         pictureDest = pictureDestButton.GetComponent<ToggleButtonBehaviour>();
         passiveButton = pictureDestButton.GetComponent<PassiveButton>();
@@ -468,7 +466,7 @@ public static class StartOptionMenuPatch
         var timeoutExtensionButton = GameObject.Instantiate(toggleButtonTemplate, null);
         timeoutExtensionButton.transform.SetParent(nebulaTab.transform);
         timeoutExtensionButton.transform.localScale = new Vector3(1f, 1f, 1f);
-        timeoutExtensionButton.transform.localPosition = new Vector3(1.3f, -0.5f, 0f);
+        timeoutExtensionButton.transform.localPosition = new Vector3(1.3f, 0.6f, 0f);
         timeoutExtensionButton.name = "TimeoutExtension";
         timeoutExtension = timeoutExtensionButton.GetComponent<ToggleButtonBehaviour>();
         passiveButton = timeoutExtensionButton.GetComponent<PassiveButton>();
@@ -483,7 +481,7 @@ public static class StartOptionMenuPatch
         var dontCareMismatchedNosButton = GameObject.Instantiate(toggleButtonTemplate, null);
         dontCareMismatchedNosButton.transform.SetParent(nebulaTab.transform);
         dontCareMismatchedNosButton.transform.localScale = new Vector3(1f, 1f, 1f);
-        dontCareMismatchedNosButton.transform.localPosition = new Vector3(-1.3f, -1f, 0f);
+        dontCareMismatchedNosButton.transform.localPosition = new Vector3(-1.3f, 0.1f, 0f);
         dontCareMismatchedNosButton.name = "TimeoutExtension";
         dontCareMismatchedNoS = dontCareMismatchedNosButton.GetComponent<ToggleButtonBehaviour>();
         passiveButton = dontCareMismatchedNosButton.GetComponent<PassiveButton>();
@@ -638,8 +636,8 @@ public static class StartOptionMenuPatch
         {
             __instance.OpenTabGroup(tabs.Count - 2);
 
-            debugSnapshot.UpdateToggleText(NebulaPlugin.DebugMode.HasToken("Snapshot"), Language.Language.GetString("config.debug.snapshot"));
-            debugOutputHash.UpdateToggleText(NebulaPlugin.DebugMode.HasToken("OutputHash"), Language.Language.GetString("config.debug.outputHash"));
+            debugSnapshot.UpdateToggleText(NebulaOption.configSnapshot.Value, Language.Language.GetString("config.debug.snapshot"));
+            debugOutputHash.UpdateToggleText(NebulaOption.configOutputHash.Value, Language.Language.GetString("config.debug.outputHash"));
             pictureDest.UpdateButtonText(Language.Language.GetString("config.option.pictureDest"), NebulaOption.GetPictureDestMode());
             processorAffinity.UpdateButtonText(Language.Language.GetString("config.option.processorRestriction"), NebulaOption.GetProcessorAffinityMode());
             prioritizeAmongUs.UpdateToggleText(NebulaOption.configPrioritizeAmongUs.Value, Language.Language.GetString("config.option.prioritizeAmongUs"));

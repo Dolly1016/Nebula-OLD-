@@ -687,6 +687,7 @@ static class RPCEvents
         if (player != null)
         {
             player.Exiled();
+            player.Data.IsDead = true;
             Game.GameData.data.playersArray[playerId]?.Die(Game.PlayerData.PlayerStatus.GetStatusById(statusId), murderId);
 
             Helpers.RoleAction(player.PlayerId, (role) => role.OnDied(playerId));

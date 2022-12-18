@@ -6,6 +6,7 @@ using System.Net.Http.Headers;
 using Newtonsoft.Json.Linq;
 using Twitch;
 using System.Text.RegularExpressions;
+using Nebula.Patches;
 
 namespace Nebula.Module;
 
@@ -204,7 +205,7 @@ public class ModUpdaterButton
         }
 
         //最新版(あるいは後続のスナップショット)を所持している場合のみスナップショットを利用可能
-        if (NebulaPlugin.DebugMode.HasToken("Snapshot") && ModUpdater.hasNewestSnapshot)
+        if (NebulaOption.configSnapshot.Value && ModUpdater.hasNewestSnapshot)
         {
             updateButtons.Add(GenerateButton(template, new Color(0.3f, 0.6f, 0.75f), "title.button.updateNebulaSnapshot", onClickUpdateSnapshotButton, false, ref buttons));
 

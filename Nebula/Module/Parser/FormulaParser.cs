@@ -257,7 +257,7 @@ public class FormulaAnalyzer
                 count = 0;
                 continue;
             }
-
+            
             count++;
         }
     }

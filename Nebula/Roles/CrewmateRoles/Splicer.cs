@@ -64,6 +64,7 @@ public class Splicer : Role
             tempVec = truePos + (vector * d);
             if (data.isOnTheShip(tempVec))
             {
+                RPCEventInvoker.ObjectInstantiate(CustomObject.Type.TeleportEvidence, PlayerControl.LocalPlayer.GetTruePosition());
                 PlayerControl.LocalPlayer.NetTransform.RpcSnapTo(tempVec);
                 break;
             }

@@ -15,51 +15,6 @@ using System.Reflection;
 
 namespace Nebula;
 
-public class DebugMode
-{
-    private HashSet<string> DebugToken;
-
-    public bool IsValid { get; private set; }
-    public DebugMode()
-    {
-        DebugToken = new HashSet<string>();
-
-        if (File.Exists("patches/DebugMode.patch")) IsValid = true;
-        if (!IsValid) return;
-
-        foreach (string token in System.IO.File.ReadLines("patches/DebugMode.patch"))
-        {
-            DebugToken.Add(token.Replace("\n", ""));
-        }
-
-    }
-
-    public static implicit operator bool(DebugMode debugMode)
-    {
-        return debugMode.IsValid;
-    }
-
-    public bool HasToken(string token)
-    {
-        return DebugToken.Contains(token);
-    }
-
-    public void SetToken(string token, bool flag)
-    {
-        if (flag) DebugToken.Add(token);
-        else DebugToken.Remove(token);
-    }
-
-    public void OutputToken()
-    {
-        if (!Directory.Exists("patches")) Directory.CreateDirectory("patches");
-
-        StreamWriter writer = new StreamWriter("patches/DebugMode.patch", false, Encoding.Unicode);
-        foreach (var token in DebugToken) writer.WriteLine(token);
-        writer.Close();
-    }
-}
-
 [BepInPlugin(PluginGuid, PluginName, PluginVersion)]
 [BepInProcess("Among Us.exe")]
 public class NebulaPlugin : BasePlugin
@@ -72,7 +27,7 @@ public class NebulaPlugin : BasePlugin
     public const string PluginVersion = "2.0.1.1";
     public const bool IsSnapshot = true;
 
-    public static string PluginVisualVersion = IsSnapshot ? "22.12.17a" : PluginVersion;
+    public static string PluginVisualVersion = IsSnapshot ? "22.12.19a" : PluginVersion;
     public static string PluginStage = IsSnapshot ? "Snapshot" : "";
     
     public const string PluginVersionForFetch = "2.0.1.1";
@@ -83,8 +38,6 @@ public class NebulaPlugin : BasePlugin
     public Harmony Harmony = new Harmony(PluginGuid);
 
     public static Sprite ModStamp;
-
-    public static DebugMode DebugMode;
 
     public Logger.Logger Logger;
 
@@ -102,7 +55,6 @@ public class NebulaPlugin : BasePlugin
 
     override public void Load()
     {
-        DebugMode = new DebugMode();
 
         Logger = new Logger.Logger(true);
 
@@ -231,7 +183,7 @@ public static class MetaControlManager
         }
 
         /* 以下デバッグモード専用 */
-        if (!NebulaPlugin.DebugMode.HasToken("GameControl")) return;
+        if (!Patches.NebulaOption.configGameControl.Value) return;
 
         // Spawn dummys
         if (Input.GetKeyDown(KeyCode.F1))

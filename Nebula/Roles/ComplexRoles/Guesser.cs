@@ -1,4 +1,6 @@
-﻿namespace Nebula.Roles.ComplexRoles;
+﻿using Nebula.Module;
+
+namespace Nebula.Roles.ComplexRoles;
 
 public class FGuesser : Template.HasBilateralness
 {
@@ -45,7 +47,27 @@ public class FGuesser : Template.HasBilateralness
         var preBuilder = TopOption.preOptionScreenBuilder;
         TopOption.preOptionScreenBuilder = (refresher) =>
         {
-            if (secondoryRoleOption.getBool()) return new Module.MetaScreenContent[0][];
+            if (secondoryRoleOption.getBool())
+            {
+                return new Module.MetaScreenContent[][]{
+                                new Module.MetaScreenContent[]{
+                                    new MSString(3f, RoleChanceOption.getName(), 2f, 0.8f, TMPro.TextAlignmentOptions.MidlineRight, TMPro.FontStyles.Bold),
+                                    new MSString(0.2f, ":", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
+                                    new MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () =>
+                                    {
+                                        RoleChanceOption.addSelection(-1);
+                                        refresher();
+                                    }),
+                                    new MSString(1.5f, RoleChanceOption.getString(), 2f, 0.6f, TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
+                                    new MSButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () =>
+                                    {
+                                        RoleChanceOption.addSelection(1);
+                                        refresher();
+                                    }),
+                                    new MSMargin(1f)
+                                }
+                        };
+            }
             else return preBuilder(refresher);
         };
 

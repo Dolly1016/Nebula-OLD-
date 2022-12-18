@@ -5,6 +5,7 @@ using UnhollowerBaseLib;
 using UnityEngine;
 using UnityEngine.UI;
 using static Nebula.Module.DynamicColors;
+using static UnityEngine.UI.StencilMaterial;
 
 namespace Nebula.Module;
 
@@ -59,24 +60,24 @@ public static class DynamicColors
     {
         public class CustomOriginalColor
         {
-            private ConfigEntry<float> EntryR;
-            private ConfigEntry<float> EntryG;
-            private ConfigEntry<float> EntryB;
-            private ConfigEntry<byte> EntryH;
-            private ConfigEntry<byte> EntryD;
-            private ConfigEntry<float> EntryL;
+            private FloatDataEntry EntryR;
+            private FloatDataEntry EntryG;
+            private FloatDataEntry EntryB;
+            private ByteDataEntry EntryH;
+            private ByteDataEntry EntryD;
+            private FloatDataEntry EntryL;
 
             public Color OriginalColor { get; private set; }
             public Color Color { get; private set; }
 
             public CustomOriginalColor(string saveCategory, string identifier, float multiplier)
             {
-                EntryR = NebulaPlugin.Instance.Config.Bind(saveCategory, identifier + ".R", (float)multiplier);
-                EntryG = NebulaPlugin.Instance.Config.Bind(saveCategory, identifier + ".G", (float)0f);
-                EntryB = NebulaPlugin.Instance.Config.Bind(saveCategory, identifier + ".B", (float)0f);
-                EntryL = NebulaPlugin.Instance.Config.Bind(saveCategory, identifier + ".L", (float)1f);
-                EntryH = NebulaPlugin.Instance.Config.Bind(saveCategory, identifier + ".H", (byte)0);
-                EntryD = NebulaPlugin.Instance.Config.Bind(saveCategory, identifier + ".D", (byte)0);
+                EntryR = new FloatDataEntry(saveCategory + "." + identifier + ".R", colorSaver, (float)multiplier);
+                EntryG = new FloatDataEntry(saveCategory + "." + identifier + ".G", colorSaver, 0f);
+                EntryB = new FloatDataEntry(saveCategory + "." + identifier + ".B", colorSaver, 0f);
+                EntryL = new FloatDataEntry(saveCategory + "." + identifier + ".L", colorSaver, (float)1f);
+                EntryH = new ByteDataEntry(saveCategory + "." + identifier + ".H", colorSaver, (byte)0);
+                EntryD = new ByteDataEntry(saveCategory + "." + identifier + ".D", colorSaver, (byte)0);
 
                 OriginalColor = new Color(EntryR.Value, EntryG.Value, EntryB.Value, 1f);
                 Color = GetColor(OriginalColor, EntryL.Value);
@@ -84,20 +85,21 @@ public static class DynamicColors
 
             public void SetColor(Color originalColor, float l,byte h,byte d)
             {
-                EntryR.Value = originalColor.r;
-                EntryG.Value = originalColor.g;
-                EntryB.Value = originalColor.b;
-                EntryL.Value = l;
+                EntryR.SetValueWithoutSave(originalColor.r);
+                EntryG.SetValueWithoutSave(originalColor.g);
+                EntryB.SetValueWithoutSave(originalColor.b);
+                EntryL.SetValueWithoutSave(l);
 
                 if (h < 80)
-                    EntryH.Value = (byte)(h % 64);
+                    EntryH.SetValueWithoutSave((byte)(h % 64));
                 else
-                    EntryH.Value = (byte)h;
+                    EntryH.SetValueWithoutSave((byte)h);
                 if (d < 24)
-                    EntryD.Value = d;
+                    EntryD.SetValueWithoutSave(d);
                 else
-                    EntryD.Value = 23;
+                    EntryD.SetValueWithoutSave(23);
 
+                colorSaver.Save();
 
                 OriginalColor = originalColor;
                 Color = GetColor(originalColor, l);
@@ -429,6 +431,8 @@ public static class DynamicColors
     static private CustomColor[] SharedColor;
     static private Tuple<Color, Color>[] VanillaColor;
 
+    static DataSaver colorSaver;
+
     static private ColorButton[] VanillaVariations = null;
     static private ColorButton[] ShadowVariations = null;
     static private SpriteRenderer[] ShadowVariationsSelected = null;
@@ -454,6 +458,8 @@ public static class DynamicColors
     static public void Load()
     {
         CustomShadow.Load();
+
+        colorSaver = new DataSaver("dynamicColor.dat");
 
         var PlayerColors = Enumerable.ToList<Color32>(Palette.PlayerColors);
         var ShadowColors = Enumerable.ToList<Color32>(Palette.ShadowColors);

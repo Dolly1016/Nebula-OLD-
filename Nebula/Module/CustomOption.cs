@@ -58,6 +58,8 @@ public delegate string CustomOptionDecorator(string original, CustomOption optio
 
 public class CustomOption
 {
+    public static DataSaver optionSaver;
+
     public static List<CustomOption> AllOptions = new List<CustomOption>();
     public static List<CustomOption> TopOptions = new List<CustomOption>();
 
@@ -72,7 +74,7 @@ public class CustomOption
     public System.Object[] selections;
 
     public int defaultSelection;
-    public ConfigEntry<int> entry;
+    public IntegerDataEntry entry;
     public int selection;
     public CustomOption parent;
     public Predicate<CustomOptionTab>? yellowCondition;
@@ -223,7 +225,7 @@ public class CustomOption
 
     private void bind()
     {
-        entry = NebulaPlugin.Instance.Config.Bind($"Preset0", identifierName, defaultSelection);
+        entry = new IntegerDataEntry(identifierName, optionSaver, defaultSelection);
         selection = Mathf.Clamp(entry.Value, 0, selections.Length - 1);
     }
 

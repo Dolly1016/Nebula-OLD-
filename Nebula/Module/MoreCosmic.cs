@@ -109,7 +109,7 @@ public class CustomVImage : CustomVariable
         if (Hash == null)
         {
             //ローカルコスミックのハッシュを出力
-            if (File.Exists(directoryPath + Address) && NebulaPlugin.DebugMode.HasToken("OutputHash"))
+            if (File.Exists(directoryPath + Address) && Patches.NebulaOption.configOutputHash.Value)
             {
                 using (var stream = File.OpenRead(directoryPath + Address))
                 {
@@ -144,7 +144,7 @@ public class CustomVImage : CustomVariable
                 responseStream.CopyTo(fileStream);
             }
 
-            if (NebulaPlugin.DebugMode.HasToken("OutputHash"))
+            if (Patches.NebulaOption.configOutputHash.Value)
             {
                 MD5 md5 = MD5.Create();
 

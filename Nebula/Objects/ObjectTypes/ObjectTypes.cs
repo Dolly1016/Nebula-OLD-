@@ -5,16 +5,18 @@ public class TypeWithImage : CustomObject.Type
 
     private Sprite Sprite;
     private string SpriteAddress;
+    private float PixelsPerUnit;
     public Sprite GetSprite()
     {
         if (Sprite) return Sprite;
-        Sprite = Helpers.loadSpriteFromResources(SpriteAddress, 150f);
+        Sprite = Helpers.loadSpriteFromResources(SpriteAddress, PixelsPerUnit);
         return Sprite;
     }
 
-    public TypeWithImage(byte id, string objectName, string spriteAddress) : base(id, objectName)
+    public TypeWithImage(byte id, string objectName, string spriteAddress,float pixelsPerUnit =150f) : base(id, objectName)
     {
         SpriteAddress = spriteAddress;
+        PixelsPerUnit= pixelsPerUnit;
     }
 
     public override void Initialize(CustomObject obj)

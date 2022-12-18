@@ -1,5 +1,4 @@
 ﻿using BepInEx.IL2CPP.Utils;
-
 namespace Nebula.Expansion;
 
 [HarmonyPatch]
@@ -19,6 +18,7 @@ static public class GridArrangeExpansion
         OccupyingLineContent = 0x04,
         AlternativeKillButtonContent = 0x08
     }
+
 
     static public void AddGridArrangeContent(GameObject obj, GridArrangeParameter param)
     {
