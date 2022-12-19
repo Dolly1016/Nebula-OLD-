@@ -29,6 +29,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 2.0.2 | 2022.12.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/2.0.2,2022.12.8/Nebula_v2.0.2.zip)|
 | 2.0.1.1 | 2022.12.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/2.0.1.1,2022.12.8/Nebula_v2.0.1.1.zip)|
 | 2.0.1 | 2022.12.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/2.0.1,2022.12.8/Nebula_v2.0.1.zip)|
 | 2.0 | 2022.10.25s | [Download](https://github.com/Dolly1016/Nebula/releases/download/2.0,2022.10.25/Nebula_v2.0.zip)|
@@ -229,6 +230,13 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+ 
+ **Version 2.0.2**
+ - 歯車設定のNoSタブ内をリニューアル
+ - 役職設定や個人設定、色データの保存方式を変更
+ - ゲーム中にボタンが消えてしまうことがある問題を修正
+ - 追加役職としてのGuesserを有効にしている時、Guesserの出現確率を変更できなくなっていた問題を修正
+ - Loversの自滅など一部のケースにおいて、プレイヤーの追放が正常に行えていなかった問題を修正
  
  **Version 2.0.1.1**
  - タスクを開くことができない問題を修正
