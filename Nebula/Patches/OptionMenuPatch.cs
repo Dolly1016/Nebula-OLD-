@@ -383,7 +383,7 @@ public static class StartOptionMenuPatch
         passiveButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => 
         { 
             debugSnapshot.UpdateToggleText(!debugSnapshot.onState, Language.Language.GetString("config.debug.snapshot"));
-            NebulaOption.configSnapshot.Value = debugOutputHash.onState;
+            NebulaOption.configSnapshot.Value = debugSnapshot.onState;
         }));
 
         //OutputHash

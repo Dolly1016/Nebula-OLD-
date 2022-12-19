@@ -1168,6 +1168,15 @@ public class RpcSyncSettingsPatch
     }
 }
 
+[HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.CoSpawnPlayer))]
+public class PlayerJoinedPatch
+{
+    public static void Postfix()
+    {
+        CustomOption.ShareOptionSelections();
+    }
+}
+
 
 [HarmonyPatch(typeof(GameOptionsMenu), nameof(GameOptionsMenu.Update))]
 class GameOptionsMenuUpdatePatch
