@@ -43,7 +43,7 @@
 "config.option.keyBinding.metaControl" : "Meta Control"
 "config.option.keyBinding.noGame" : "No Game(Meta Control)"
 
-"lobby.hasNoNebula" : "%NAME% has a different or no version of Nebula on the Ship"
+"lobby.hasNoNebula" : "%NAME% don't have Nebula on the Ship"
 "lobby.hasDifferentNebula" : "%NAME% has a different version of Nebula on the Ship"
 "lobby.willEliminatedByMismatchVersion" : "The host has no or a different version of Nebula on the Ship\nYou will be kicked in %STAY%s"
 

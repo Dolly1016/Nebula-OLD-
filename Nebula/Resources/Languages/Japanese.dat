@@ -42,7 +42,7 @@
 "config.option.keyBinding.metaControl" : "メタコントロール"
 "config.option.keyBinding.noGame" : "無効試合(メタコントロール)"
 
-"lobby.hasNoNebula" : "%NAME% は Nebula on the Ship を導入していないか、バージョンが合致しません。"
+"lobby.hasNoNebula" : "%NAME% は Nebula on the Ship を導入していません。"
 "lobby.hasDifferentNebula" : "%NAME% の導入している Nebula on the Ship はバージョンが合致していません。"
 "lobby.willEliminatedByMismatchVersion" : "Nebula on the Ship のバージョンがホストのものと合致しません。\nあと %STAY%秒で切断されます..."
 

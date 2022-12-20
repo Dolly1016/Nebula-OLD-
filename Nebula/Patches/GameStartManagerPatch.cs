@@ -46,7 +46,8 @@ public class GameStartManagerPatch
         }
     }
 
-    [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnPlayerJoined))]
+    //[HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.OnPlayerJoined))]
+    [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.CoSpawnPlayer))]
     public class AmongUsClientOnPlayerJoinedPatch
     {
         public static void Postfix()
