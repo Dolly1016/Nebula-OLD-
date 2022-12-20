@@ -29,6 +29,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 2.0.2.1 | 2022.12.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/2.0.2.1,2022.12.8/Nebula_v2.0.2.1.zip)|
 | 2.0.2 | 2022.12.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/2.0.2,2022.12.8/Nebula_v2.0.2.zip)|
 | 2.0.1.1 | 2022.12.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/2.0.1.1,2022.12.8/Nebula_v2.0.1.1.zip)|
 | 2.0.1 | 2022.12.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/2.0.1,2022.12.8/Nebula_v2.0.1.zip)|
@@ -230,6 +231,9 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+ 
+ **Version 2.0.2.1**
+ - ロビーに入れない問題を修正
  
  **Version 2.0.2**
  - 歯車設定のNoSタブ内をリニューアル
