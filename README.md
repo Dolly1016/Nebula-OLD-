@@ -1203,6 +1203,7 @@ Sniperの弾の当たり判定やEmpiric,Alienなどの効果範囲を調べる�
 [Extreme Roles](https://github.com/yukieiji/ExtremeRoles) より偏りのない乱数生成のソースを使用しています。
 
 **バグ修正のご協力**\
+Sakurander
 よっキング
 
 **その他ロールアイデアのご提供等**\
