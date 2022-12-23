@@ -29,10 +29,17 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 2.0.2.1 | 2022.12.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/2.0.2.1,2022.12.8/Nebula_v2.0.2.1.zip)|
 | 2.0.2 | 2022.12.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/2.0.2,2022.12.8/Nebula_v2.0.2.zip)|
 | 2.0.1.1 | 2022.12.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/2.0.1.1,2022.12.8/Nebula_v2.0.1.1.zip)|
 | 2.0.1 | 2022.12.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/2.0.1,2022.12.8/Nebula_v2.0.1.zip)|
 | 2.0 | 2022.10.25s | [Download](https://github.com/Dolly1016/Nebula/releases/download/2.0,2022.10.25/Nebula_v2.0.zip)|
+
+<details>
+  <summary>Old Versions</summary>
+  
+| Version | Among Us Version | Download |
+| ---------- | ---------- | ---------- |
 | 1.16.1 | 2022.10.25s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.16.1,2022.10.25/Nebula_v1.16.1.zip)|
 | 1.16 | 2022.10.25s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.16,2022.10.25/Nebula_v1.16.zip)|
 | 1.15.1.1 | 2022.9.21s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.15.1.1,2022.8.24/Nebula_v1.15.1.1.zip)|
@@ -150,9 +157,6 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 | 1.0.2 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.2,2021.12.15/Nebula.zip)|
 | 1.0.1 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.1,2021.12.15/Nebula.zip)|
 | 1.0.0 | 2021.12.15s | [Download](https://github.com/Dolly1016/Nebula/releases/download/1.0.0,2021.12.15/Nebula.zip)|
-
-<details>
-  <summary>ALPHA Versions</summary>
   
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
@@ -230,6 +234,9 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+ 
+ **Version 2.0.2.1**
+ - ロビーに入れない問題を修正
  
  **Version 2.0.2**
  - 歯車設定のNoSタブ内をリニューアル
@@ -1155,18 +1162,19 @@ Sniperの弾の当たり判定やEmpiric,Alienなどの効果範囲を調べる�
 ## Standard
 | Impostors | Crewmates | Neutral | Secondary | Ghost |
 | ---------- | ---------- | ---------- | ---------- | ---------- |
-| [??? (Secret)](#secret) | [??? (Secret)](#secret) | [Arsonist](#arsonist) | [Drunk](#drunk) | [Poltergeist](#poltergeist) |
-| [Bounty Hunter](#bounty-hunter) | [Agent](#agent) | [Avenger](#avenger) | [Guesser](#guesser) ||
-| [Camouflager](#camouflager) | [Alien](#alien) | [Empiric](#empiric) | [Lover](#lover) ||
-| [Cleaner](#cleaner) | [Bait](#bait) | [Chain Shifter](#chain-shifter) | [Trilemma](#trilemma) ||
-| [Damned](#damned) | [Busker](#busker) | [Jackal](#jackal) |||
-| [Disturber](#disturber) | [Comet](#comet) | [Jester](#jester) |||
+| [??? (Secret)](#secret) | [??? (Secret)](#secret) | [Arsonist](#arsonist) | [Bloody](#bloody) | [Poltergeist](#poltergeist) |
+| [Bounty Hunter](#bounty-hunter) | [Agent](#agent) | [Avenger](#avenger) | [Confused](#confused) ||
+| [Camouflager](#camouflager) | [Alien](#alien) | [Empiric](#empiric) | [Drunk](#drunk) ||
+| [Cleaner](#cleaner) | [Bait](#bait) | [Chain Shifter](#chain-shifter) | [Guesser](#guesser) ||
+| [Damned](#damned) | [Busker](#busker) | [Jackal](#jackal) | [Lover](#lover) ||
+| [Disturber](#disturber) | [Comet](#comet) | [Jester](#jester) | [Trilemma](#trilemma) ||
 | [Eraser](#eraser) | [Doctor](#doctor) | [Opportunist](#opportunist) |||
 | [Evil Ace](#evil-ace) | [Guardian](#guardian) | [Sidekick](#sidekick) |||
 | [Evil Guesser](#guesser) | [Mayor](#mayor) | [Vulture](#vulture) |||
-| [Evil Trapper](#trapper) | [Navvy](#navvy) ||||
-| [Jailer](#jailer) | [Necromancer](#necromancer) ||||
-| [Marionette](#marionette) | [Nice Guesser](#guesser) ||||
+| [Evil Tracker](#tracker) | [Navvy](#navvy) ||||
+| [Evil Trapper](#trapper) | [Necromancer](#necromancer) ||||
+| [Jailer](#jailer) | [Nice Guesser](#guesser) ||||
+| [Marionette](#marionette) | [Nice Tracker](#tracker) ||||
 | [Morphing](#morphing) | [Nice Trapper](#trapper) ||||
 | [Painter](#painter) | [Oracle](#oracle) ||||
 | [Raider](#raider) | [Provocateur](#provocateur) ||||
@@ -1195,6 +1203,7 @@ Sniperの弾の当たり判定やEmpiric,Alienなどの効果範囲を調べる�
 [Extreme Roles](https://github.com/yukieiji/ExtremeRoles) より偏りのない乱数生成のソースを使用しています。
 
 **バグ修正のご協力**\
+Sakurander
 よっキング
 
 **その他ロールアイデアのご提供等**\
