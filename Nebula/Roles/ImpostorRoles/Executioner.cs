@@ -32,6 +32,7 @@ public class Executioner : Role
             () =>
             {
                 RPCEventInvoker.EmitSpeedFactor(PlayerControl.LocalPlayer, new Game.SpeedFactor(0, 3f, 0f, false));
+                Objects.SoundPlayer.PlaySound(Module.AudioAsset.Executioner);
                 PlayerControl.LocalPlayer.lightSource.StartCoroutine(RoleSystem.WarpSystem.CoOrient(PlayerControl.LocalPlayer.lightSource, 0.6f, 2.4f,
                     (p) =>
                     {

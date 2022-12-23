@@ -18,6 +18,8 @@ public static class AssetLoader
     public static AudioClip SniperEquip;
     public static AudioClip RaiderThrow;
 
+    public static AudioClip Executioner;
+
     static public void Load()
     {
         var resourceStream = assembly.GetManifestResourceStream("Nebula.Resources.Assets.nebula_asset");
@@ -35,6 +37,7 @@ public static class AssetLoader
         SniperEquip = assetBundleBundle.LoadAsset<AudioClip>("SniperEquip.wav").DontUnload();
         RaiderThrow = assetBundleBundle.LoadAsset<AudioClip>("RaiderThrow.wav").DontUnload();
 
+        Executioner = assetBundleBundle.LoadAsset<AudioClip>("Executioner.wav").DontUnload();
     }
 
     public static byte[] ReadFully(this Stream input)
@@ -80,6 +83,9 @@ public static class AssetLoader
                 return SniperEquip;
             case AudioAsset.RaiderThrow:
                 return RaiderThrow;
+
+            case AudioAsset.Executioner:
+                return Executioner;
         }
 
         return null;
@@ -96,6 +102,7 @@ public enum AudioAsset
     PlaceKillTrap,
     SniperShot,
     SniperEquip,
-    RaiderThrow
+    RaiderThrow,
+    Executioner
 
 }

@@ -48,9 +48,9 @@ class SoundPlayer
         }
     }
 
-    static public void PlaySound(Module.AudioAsset id)
+    static public void PlaySound(Module.AudioAsset id,float volume=0.8f)
     {
-        if (Constants.ShouldPlaySfx()) SoundManager.Instance.PlaySound(Module.AssetLoader.GetAudioClip(id), false, 0.8f);
+        if (Constants.ShouldPlaySfx()) SoundManager.Instance.PlaySound(Module.AssetLoader.GetAudioClip(id), false, volume, null);
     }
 
     static public void Update()
