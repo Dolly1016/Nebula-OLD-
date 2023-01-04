@@ -180,6 +180,13 @@ public class Sniper : Role
             new HelpSprite(snipeButtonSprite,"role.sniper.help.equip",0.3f)
     };
 
+    public override Tuple<string, Action>[] helpButton => new Tuple<string, Action>[]
+    {
+        new Tuple<string, Action>("role.sniper.help.shotEffective",()=>{ new Objects.EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, Palette.ImpostorRed,shotEffectiveRangeOption.getFloat(), 16f); }),
+        new Tuple<string, Action>("role.sniper.help.soundEffective",()=>{ new Objects.EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, Palette.ImpostorRed, noticeRangeOption.getFloat(),16f); }),
+        new Tuple<string, Action>("role.sniper.help.shotSize",()=>{new Objects.EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, Palette.White, shotSizeOption.getFloat()*0.4f,16f,false,Palette.ImpostorRed);})
+    };
+
     private Sprite snipeArrowSprite = null;
     public Sprite getSnipeArrowSprite()
     {

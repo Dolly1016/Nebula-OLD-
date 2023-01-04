@@ -98,6 +98,8 @@ public class BountyHunter : Template.HasHologram
                 if (player.GetModData().role.category == RoleCategory.Impostor) continue;
                 if (player.GetModData().role == Roles.Spy) continue;
                 if (player.PlayerId == currentBounty) continue;
+                if (player.GetModData().HasExtraRole(Roles.Lover) && Game.GameData.data.myData.getGlobalData().HasExtraRole(Roles.Lover) &&
+                    player.GetModData().GetExtraRoleData(Roles.Lover) == Game.GameData.data.myData.getGlobalData().GetExtraRoleData(Roles.Lover)) continue;
                 if (player.Data.IsDead) continue;
                 candidates.Add(player.PlayerId);
             }

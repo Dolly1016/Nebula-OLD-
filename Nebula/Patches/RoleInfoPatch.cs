@@ -14,4 +14,27 @@ public class CustomOverlays
             }
         }
     }
+
+    [HarmonyPatch(typeof(TaskPanelBehaviour), nameof(TaskPanelBehaviour.SetTaskText))]
+    class TaskTextPatch
+    {
+
+        public static void Postfix(TaskPanelBehaviour __instance)
+        {
+            try
+            {
+                var data = PlayerControl.LocalPlayer.GetModData();
+                if (data == null) return;
+                if (data.role == null) return;
+
+                var role = (Roles.Assignable)(data.ShouldBeGhostRole ? data.ghostRole! : data.role);
+
+                __instance.taskText.text =
+                    Helpers.cs(role.Color, Language.Language.GetString("role." + role.LocalizeName + ".name") + ": " +
+                     Language.Language.GetString("role." + role.LocalizeName + ".hint"))
+                    + "\n" + __instance.taskText.text;
+            }
+            catch { }
+        }
+    }
 }

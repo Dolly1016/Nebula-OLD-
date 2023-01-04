@@ -139,7 +139,7 @@ static public class GridArrangeExpansion
                     if (!lastContents.Contains(c.gameObject.GetInstanceID()))
                         c.localPosition = new Vector3(posX, posY, c.localPosition.z);
                     else
-                        __instance.StartCoroutine(GetEnumerator(c.gameObject, new Vector3(posX, posY, c.position.z)).WrapToIl2Cpp());
+                        __instance.StartCoroutine(GetEnumerator(c.gameObject, new Vector3(posX, posY, c.localPosition.z)).WrapToIl2Cpp());
                 }
 
                 if (y == (float)((isLeftSide ? leftVec : rightVec).y))

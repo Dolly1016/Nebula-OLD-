@@ -108,6 +108,7 @@ public class Assignable
         }
     }
     public virtual HelpSprite[] helpSprite { get => new HelpSprite[0]; }
+    public virtual Tuple<string,Action>[] helpButton { get => new Tuple<string, Action>[0]; }
 
     /*--------------------------------------------------------------------------------------*/
     /*--------------------------------------------------------------------------------------*/

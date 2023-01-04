@@ -169,7 +169,7 @@ public class FinalPlayerData
         {
             //名前に表示を追加する
             name = "";
-            if (!player.IsAlive && player.role.CanHaveGhostRole && player.ghostRole != null)
+            if (player.ShouldBeGhostRole)
                 roleName = Helpers.cs(player.ghostRole.Color, Language.Language.GetString("role." + player.ghostRole.LocalizeName + ".name"));
             else
                 roleName = Helpers.cs(player.role.Color, Language.Language.GetString("role." + player.role.LocalizeName + ".name"));

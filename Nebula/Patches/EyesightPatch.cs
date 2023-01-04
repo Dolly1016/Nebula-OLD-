@@ -104,40 +104,47 @@ class EyesightPatch
 
     public static void Postfix(HudManager __instance)
     {
-        if (Game.GameData.data != null && Game.GameData.data.myData.CanSeeEveryoneInfo)
+        if ((Game.GameData.data != null && Game.GameData.data.myData.CanSeeEveryoneInfo) || AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Joined)
         {
+            if (Input.GetKeyDown(Module.NebulaInputManager.observerInput.keyCode)) ObserverMode = !ObserverMode;
+
             if (Input.GetKeyDown(Module.NebulaInputManager.observerShortcutInput.keyCode))
             {
-                if (!Objects.PlayerList.Instance.IsOpen)
+                if (Game.GameData.data != null && Game.GameData.data.myData.CanSeeEveryoneInfo && Objects.PlayerList.Instance!=null)
                 {
-                    Objects.PlayerList.Instance.Show();
+                    if (!Objects.PlayerList.Instance.IsOpen)
+                    {
+                        Objects.PlayerList.Instance.Show();
+                    }
+
+                    if (ObserverMode)
+                        __instance.PlayerCam.SetTargetWithLight(PlayerControl.LocalPlayer);
+
+                    Objects.PlayerList.Instance.SelectPlayer(PlayerControl.LocalPlayer.PlayerId);
                 }
-
-                if (ObserverMode)
-                    __instance.PlayerCam.SetTargetWithLight(PlayerControl.LocalPlayer);
-
-                Objects.PlayerList.Instance.SelectPlayer(PlayerControl.LocalPlayer.PlayerId);
-
 
                 ObserverMode = !ObserverMode;
 
             }
 
-            if (Input.GetKeyDown(Module.NebulaInputManager.observerInput.keyCode)) ObserverMode = !ObserverMode;
-            if (Input.GetKeyDown(Module.NebulaInputManager.changeEyesightLeftInput.keyCode))
+            if (Game.GameData.data != null && Game.GameData.data.myData.CanSeeEveryoneInfo)
             {
-                ChangeObserverTarget(false);
-                Objects.PlayerList.Instance.Show();
+                if (Input.GetKeyDown(Module.NebulaInputManager.changeEyesightLeftInput.keyCode))
+                {
+                    ChangeObserverTarget(false);
+                    Objects.PlayerList.Instance?.Show();
+                }
+                if (Input.GetKeyDown(Module.NebulaInputManager.changeEyesightRightInput.keyCode))
+                {
+                    ChangeObserverTarget(true);
+                    Objects.PlayerList.Instance?.Show();
+                }
             }
-            if (Input.GetKeyDown(Module.NebulaInputManager.changeEyesightRightInput.keyCode))
-            {
-                ChangeObserverTarget(true);
-                Objects.PlayerList.Instance.Show();
-            }
+
             if (Input.GetKeyDown(KeyCode.Escape) && Module.MetaDialog.dialogOrder.Count == 0)
             {
                 __instance.PlayerCam.SetTargetWithLight(PlayerControl.LocalPlayer);
-                Objects.PlayerList.Instance.Close();
+                Objects.PlayerList.Instance?.Close();
                 ObserverMode = false;
             }
             if (__instance.PlayerCam.Target != PlayerControl.LocalPlayer && __instance.PlayerCam.Target is PlayerControl && ((PlayerControl)__instance.PlayerCam.Target).Data.IsDead)
@@ -145,16 +152,22 @@ class EyesightPatch
                 ChangeObserverTarget(true);
             }
 
-            Objects.PlayerList.Instance.ListUpPlayers((b) => !Helpers.playerById(b)?.Data.IsDead ?? false);
+            if (AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started)
+            {
+                try
+                {
+                    Objects.PlayerList.Instance?.ListUpPlayers((b) => !Helpers.playerById(b)?.Data.IsDead ?? false);
+                }
+                catch { }
+            }
         }
 
-        if (AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Started
-                || !ShipStatus.Instance
+        if ((AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Started && AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Joined)
                 || MeetingHud.Instance
                 || ExileController.Instance
                 || Minigame.Instance
                 || (MapBehaviour.Instance && MapBehaviour.Instance.IsOpen)
-                || (Game.GameData.data == null || !Game.GameData.data.myData.CanSeeEveryoneInfo)
+                || (AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started && Game.GameData.data != null && !Game.GameData.data.myData.CanSeeEveryoneInfo)
                 || Module.MetaDialog.dialogOrder.Count > 0)
         {
             ObserverMode = false;

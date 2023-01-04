@@ -244,7 +244,8 @@ public class MetaDialog : MetaScreen
         designers[1].AddTopic(new MSMultiString(designers[1].size.x, 1.2f, Language.Language.GetString("role." + assignable.LocalizeName + ".info"), TMPro.TextAlignmentOptions.TopLeft, TMPro.FontStyles.Normal));
         foreach (var hs in assignable.helpSprite)
             designers[1].AddTopic(new MSSprite(hs.sprite, 0.1f, hs.ratio), new MSMultiString(designers[1].size.x - 0.8f, 1.2f, Language.Language.GetString(hs.localizedName), TMPro.TextAlignmentOptions.Left, TMPro.FontStyles.Normal));
-
+        foreach (var hb in assignable.helpButton)
+            designers[1].AddTopic(new MSButton(4f,0.4f,Language.Language.GetString(hb.Item1),TMPro.FontStyles.Bold,hb.Item2));
         if ((assignable.AssignableOnHelp?.TopOption ?? null) != null) designers[2].AddTopic(new MSMultiString(designers[2].size.x, 1.4f, Module.GameOptionStringGenerator.optionsToString(assignable.AssignableOnHelp.TopOption), TMPro.TextAlignmentOptions.TopLeft, TMPro.FontStyles.Normal));
     }
 
@@ -343,8 +344,8 @@ public class MetaDialog : MetaScreen
                    TMPro.FontStyles.Bold,
                    () => { MetaDialog.EraseDialog(1); OpenHelpDialog(0, 0, options); });
 
-                    if (arg == 1) assignable = (!data.IsAlive && data.role.CanHaveGhostRole && data.ghostRole != null) ? (Roles.Assignable)data.ghostRole : data.role;
-                    if (!data.IsAlive && data.role.CanHaveGhostRole && data.ghostRole != null)
+                    if (arg == 1) assignable = (data.ShouldBeGhostRole) ? (Roles.Assignable)data.ghostRole : data.role;
+                    if (data.ShouldBeGhostRole)
                     {
                         yield return new MSButton(1.3f, 0.36f,
                        Helpers.cs(data.ghostRole.Color, Language.Language.GetString("role." + data.ghostRole.LocalizeName + ".name")),

@@ -581,7 +581,7 @@ class RoleAssignmentPatch
         return playerId;
     }
 }
-[HarmonyPatch(typeof(RoleManager), nameof(RoleManager.AssignRoleOnDeath))]
+[HarmonyPatch(typeof(GameManager), nameof(GameManager.OnPlayerDeath))]
 class GhostRoleAssignmentPatch
 {
     static Dictionary<GhostRole, int> assigned = new Dictionary<GhostRole, int>();
@@ -591,7 +591,7 @@ class GhostRoleAssignmentPatch
         assigned.Clear();
     }
 
-    static public void Postfix(RoleManager __instance, [HarmonyArgument(0)] PlayerControl player)
+    static public void Postfix(GameManager __instance, [HarmonyArgument(0)] PlayerControl player)
     {
         var data = player.GetModData();
 
@@ -639,5 +639,42 @@ class GhostRoleAssignmentPatch
                 break;
             }
         }
+    }
+}
+
+[HarmonyPatch(typeof(LogicRoleSelectionNormal), nameof(LogicRoleSelectionNormal.OnPlayerDeath))]
+class BlockGhostRoleAssignmentPatch
+{
+    static public bool Prefix()
+    {
+        return false;
+    }
+}
+
+[HarmonyPatch(typeof(RoleManager), nameof(RoleManager.SetRole))]
+class SetRolePatch
+{
+    static public bool Prefix(RoleManager __instance, [HarmonyArgument(0)]PlayerControl targetPlayer, [HarmonyArgument(1)]RoleTypes roleType)
+    {
+        if (!targetPlayer)
+        {
+            return false;
+        }
+        GameData.PlayerInfo data = targetPlayer.Data;
+        if (data == null)
+        {
+            return false;
+        }
+        if (data.Role)
+        {
+            data.Role.Deinitialize(targetPlayer);
+            GameObject.Destroy(data.Role.gameObject);
+        }
+        RoleBehaviour roleBehaviour = GameObject.Instantiate<RoleBehaviour>(__instance.AllRoles.First((RoleBehaviour r) => r.Role == roleType), GameData.Instance.transform);
+        roleBehaviour.Initialize(targetPlayer);
+        targetPlayer.Data.Role = roleBehaviour;
+        targetPlayer.Data.RoleType = roleType;
+        roleBehaviour.AdjustTasks(targetPlayer);
+        return false;
     }
 }

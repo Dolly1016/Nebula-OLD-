@@ -25,7 +25,7 @@ public class DamnedCrew : Crewmate
         if (Game.GameData.data.playersArray[playerId].GetRoleData(guardLeftId) > 0)
         {
             RPCEventInvoker.AddAndUpdateRoleData(playerId, guardLeftId, -1);
-            return Helpers.MurderAttemptResult.BlankKill;
+            return Helpers.MurderAttemptResult.SuppressKill;
         }
         return Helpers.MurderAttemptResult.PerformKill;
     }
@@ -40,6 +40,18 @@ public class DamnedCrew : Crewmate
             changeTrigger = true;
         }
     }
+
+    public override void EditDisplayRoleName(byte playerId, ref string roleName, bool isIntro)
+    {
+        if (Game.GameData.data.myData.CanSeeEveryoneInfo) EditDisplayRoleNameForcely(playerId, ref roleName);
+    }
+
+    public override void EditDisplayRoleNameForcely(byte playerId, ref string roleName)
+    {
+        string shortText = Helpers.cs(Palette.ImpostorRed, Language.Language.GetString("role.damned.short"));
+        roleName += Helpers.cs(new Color(0.6f, 0.6f, 0.6f), $"({shortText})");
+    }
+
 
     public override void OnMeetingStart()
     {

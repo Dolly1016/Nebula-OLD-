@@ -18,6 +18,14 @@ public class Necromancer : Template.Draggable
             new HelpSprite(reviveButtonSprite,"role.necromancer.help.revive",0.3f)
     };
 
+    public override Tuple<string, Action>[] helpButton => new Tuple<string, Action>[]
+   {
+        new Tuple<string, Action>("role.necromancer.help.notificationRange",()=>{
+            new Objects.EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, RoleColor,maxNotificationDistanceOption.getFloat(), 16f);
+            new Objects.EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, RoleColor,2f, 16f,true);
+        }),
+   };
+
     public Arrow reviveArrow;
     public SystemTypes targetRoom;
 

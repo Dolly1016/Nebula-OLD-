@@ -2,6 +2,7 @@
 
 using static GameData;
 using Hazel;
+using AmongUs.Data.Player;
 
 namespace Nebula.Game;
 
@@ -868,6 +869,8 @@ public class PlayerData
 
     }
 
+    public bool ShouldBeGhostRole => (!IsAlive) && role.CanHaveGhostRole && ghostRole != null;
+
     public void RemoveOutfit(PlayerOutfitData outfit)
     {
         this.AllOutfits.Remove(outfit);
@@ -901,7 +904,7 @@ public class PlayerData
         string shortRole;
         string role;
 
-        if (!IsAlive && this.role.CanHaveGhostRole && ghostRole != null)
+        if (ShouldBeGhostRole)
         {
             shortRole = Helpers.cs(this.ghostRole.Color, Language.Language.GetString("role." + this.ghostRole.LocalizeName + ".short"));
             role = Helpers.cs(this.ghostRole.Color, Language.Language.GetString("role." + this.ghostRole.LocalizeName + ".name"));
@@ -1057,7 +1060,7 @@ public class PlayerData
         Game.GameData.data.deadPlayers[id] = new DeadPlayerData(this, murderId);
         Status = status;
 
-        if (role.CanHaveGhostRole && ghostRole != null) AddRoleHistory();
+        if (ShouldBeGhostRole) AddRoleHistory();
     }
 
     public void Die(PlayerStatus status)

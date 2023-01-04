@@ -147,6 +147,7 @@ public class CustomOptionHolder
     public static CustomOption hideVotedIcon;
     public static CustomOption additionalEmergencyCoolDown;
     public static CustomOption additionalEmergencyCoolDownCondition;
+    public static CustomOption showRoleOfExiled;
 
     public static CustomOption limiterOptions;
     public static CustomOption timeLimitOption;
@@ -357,6 +358,7 @@ public class CustomOptionHolder
         canSkip = CustomOption.Create(Color.white, "option.canSkip", true, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
         dealAbstentionAsSelfVote = CustomOption.Create(Color.white, "option.dealAbstentionAsSelfVote", false, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
         hideVotedIcon = CustomOption.Create(Color.white, "option.hideVotedIcon", false, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
+        showRoleOfExiled = CustomOption.Create(Color.white, "option.showRoleOfExiled", false, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
 
         additionalEmergencyCoolDown.alternativeOptionScreenBuilder = (refresher) =>
         {

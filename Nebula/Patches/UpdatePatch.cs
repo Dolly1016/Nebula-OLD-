@@ -122,7 +122,7 @@ public static class UpdatePatch
             if (player == PlayerControl.LocalPlayer)
             {
                 //自分自身ならロールの色にする
-                if (!playerData.IsAlive && playerData.role.CanHaveGhostRole && playerData.ghostRole != null)
+                if(playerData.ShouldBeGhostRole)
                     player.cosmetics.nameText.color = playerData.ghostRole.Color;
                 else
                     player.cosmetics.nameText.color = playerData.role.Color;
@@ -189,7 +189,7 @@ public static class UpdatePatch
                 if (player.TargetPlayerId == PlayerControl.LocalPlayer.PlayerId)
                 {
                     //自分自身ならロールの色にする
-                    player.NameText.color = (!playerData.IsAlive && playerData.role.CanHaveGhostRole && playerData.ghostRole != null) ? playerData.ghostRole.Color : playerData.role.Color;
+                    player.NameText.color = playerData.ShouldBeGhostRole ? playerData.ghostRole.Color : playerData.role.Color;
                 }
                 else
                 {
@@ -321,7 +321,9 @@ public static class UpdatePatch
 
     public static void Postfix(HudManager __instance)
     {
-        Module.MetaDialog.Update();
+        Module.MetaDialog.Update(); 
+        Objects.EffectCircle.Update();
+
 
         //アニメーションを無効化
         if (__instance.GameLoadAnimation.active)
@@ -392,8 +394,6 @@ public static class UpdatePatch
 
             Events.GlobalEvent.Update();
             Events.LocalEvent.Update();
-
-            Objects.EffectCircle.Update();
 
             Game.GameData.data.ColliderManager.Update();
 

@@ -1299,7 +1299,7 @@ static class RPCEvents
         if (Helpers.playerById(murderId).transform.position.Distance(PlayerControl.LocalPlayer.transform.position) > Roles.Roles.Sniper.noticeRangeOption.getFloat())
             return;
 
-        Objects.Arrow arrow = new Objects.Arrow(Color.white);
+        Objects.Arrow arrow = new Objects.Arrow(Color.white,false);
         arrow.image.sprite = Roles.Roles.Sniper.getSnipeArrowSprite();
 
         Vector3 pos = Helpers.playerById(murderId).transform.position;

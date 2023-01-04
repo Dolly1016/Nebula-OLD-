@@ -125,6 +125,11 @@ public class Raider : Role
             new HelpSprite(axeButtonSprite,"role.raider.help.equip",0.3f)
     };
 
+    public override Tuple<string, Action>[] helpButton => new Tuple<string, Action>[]
+    {
+        new Tuple<string, Action>("role.raider.help.axeSize",()=>{new Objects.EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, Palette.White, axeSizeOption.getFloat()*0.4f,16f,false,Palette.ImpostorRed);})
+    };
+
     private IEnumerator GetMessageUpdater()
     {
         while (true)
@@ -220,8 +225,8 @@ public class Raider : Role
 
                         if (p.transform.position.Distance(pos) < d)
                         {
-                            Vector2 vec = ((Vector2)p.GetTruePosition()) - (Vector2)pos;
-                            if (!PhysicsHelpers.AnyNonTriggersBetween(p.GetTruePosition(), vec.normalized, vec.magnitude, Constants.ShipAndAllObjectsMask))
+                            Vector2 vec = ((Vector2)p.transform.position) - (Vector2)pos;
+                            if (!PhysicsHelpers.AnyNonTriggersBetween(p.transform.position, vec.normalized, vec.magnitude, Constants.ShipAndAllObjectsMask))
                             {
                                 var res = Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, p, Game.PlayerData.PlayerStatus.Beaten, false, false);
                             }

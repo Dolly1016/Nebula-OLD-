@@ -558,7 +558,7 @@ public static class Helpers
             data = Game.GameData.data.AllPlayers[playerId];
 
             action.Invoke(data.role);
-            if (data.role.CanHaveGhostRole && data.ghostRole != null) action.Invoke(data.ghostRole);
+            if (data.ShouldBeGhostRole) action.Invoke(data.ghostRole);
 
             if (data.extraRole.Count > 0)
             {
@@ -825,4 +825,34 @@ public static class Helpers
         while (enumerator.MoveNext()) result.Add(enumerator.Current);
         return result.ToArray();
     }
+
+    public static void Ping(Vector2 pos,bool smallenNearPing) => Ping(new Vector2[] { pos }, smallenNearPing);
+    public static void Ping(Vector2[] pos, bool smallenNearPing)
+    {
+        if (!HudManager.InstanceExists) return;
+
+        var prefab = GameManagerCreator.Instance.HideAndSeekManagerPrefab.PingPool.Prefab.CastFast<PingBehaviour>();
+
+        PingBehaviour[] pings = new PingBehaviour[pos.Length];
+        int i = 0;
+        foreach (var p in pos)
+        {
+            var ping = GameObject.Instantiate(prefab);
+            ping.target = p;
+            ping.AmSeeker = smallenNearPing;
+            ping.UpdatePosition();
+            ping.gameObject.SetActive(true);
+            ping.SetImageEnabled(true);
+            pings[i++] = ping;
+        }
+
+        IEnumerator GetEnumarator()
+        {
+            yield return new WaitForSeconds(2f);
+
+            foreach(var p in pings)GameObject.Destroy(p.gameObject);
+        }
+
+        HudManager.Instance.StartCoroutine(GetEnumarator().WrapToIl2Cpp());
+    } 
 }

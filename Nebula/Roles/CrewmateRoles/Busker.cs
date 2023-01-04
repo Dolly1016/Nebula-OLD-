@@ -106,6 +106,7 @@ public class Busker : Role
 
         buskButton.SetSuspendAction(() =>
         {
+            if (buskButton.EffectDuration - buskButton.Timer < 1f) return;
             if (!checkPseudocide()) return;
             if (!checkCanReviveOrAlive()) return;
             RPCEventInvoker.UpdatePlayerVisibility(PlayerControl.LocalPlayer.PlayerId, true);

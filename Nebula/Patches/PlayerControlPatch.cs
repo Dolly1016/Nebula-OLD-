@@ -290,7 +290,7 @@ public class PlayerControlPatch
 
                     if (Game.GameData.data.myData.CanSeeEveryoneInfo || data.RoleInfo == "")
                     {
-                        if (p.Data.IsDead && data.role.CanHaveGhostRole && data.ghostRole != null)
+                        if (data.ShouldBeGhostRole)
                             roleNames = Helpers.cs(data.ghostRole.Color, Language.Language.GetString("role." + data.ghostRole.LocalizeName + ".name"));
                         else
                             roleNames = Helpers.cs(data.role.Color, Language.Language.GetString("role." + data.role.LocalizeName + ".name"));

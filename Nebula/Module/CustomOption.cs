@@ -275,7 +275,7 @@ public class CustomOption
     {
         GameOptionsDataPatch.dirtyFlag = true;
 
-        if (PlayerControl.AllPlayerControls.Count <= 1 || AmongUsClient.Instance?.AmHost == false && PlayerControl.LocalPlayer == null) return;
+        if (PlayerControl.AllPlayerControls.Count <= 1 || AmongUsClient.Instance?.AmHost == false || PlayerControl.LocalPlayer == null) return;
 
         uint count = (uint)CustomOption.AllOptions.Count;
         MessageWriter? messageWriter = null;

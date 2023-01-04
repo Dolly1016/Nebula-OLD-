@@ -14,8 +14,13 @@ public class Guardian : Role
     private CustomOption maxAntennaOption;
     private CustomOption placeCoolDownOption;
     private CustomOption antennaEffectiveRangeOption;
+    private CustomOption alertModeOption;
+    private CustomOption alertIntervalOption;
     private CustomOption showGuardFlashOption;
     private CustomOption canIdentifyDeadBodyOption;
+
+    private PlayerControl? killer;
+    private float killerPingTimer;
 
     public int remainAntennasId { get; private set; }
     public override RelatedRoleData[] RelatedRoleDataInfo { get => new RelatedRoleData[] { new RelatedRoleData(remainAntennasId, "Antennas", 0, 20) }; }
@@ -37,8 +42,11 @@ public class Guardian : Role
         placeCoolDownOption.suffix = "second";
         antennaEffectiveRangeOption = CreateOption(Color.white, "antennaEffectiveRange", 5f, 1.25f, 20f, 1.25f);
         antennaEffectiveRangeOption.suffix = "cross";
-        canIdentifyDeadBodyOption = CreateOption(Color.white, "canIdentifyDeadBody", false); ;
-        showGuardFlashOption = CreateOption(Color.white, "showGuardFlash", false);
+        alertModeOption = CreateOption(Color.white, "alertMode", false);
+        alertIntervalOption = CreateOption(Color.white, "alertInterval", 10f, 5f, 30f, 2.5f).AddPrerequisite(alertModeOption);
+        alertIntervalOption.suffix = "second";
+        canIdentifyDeadBodyOption = CreateOption(Color.white, "canIdentifyDeadBody", false);
+        showGuardFlashOption = CreateOption(Color.white, "showGuardFlash", false).AddInvPrerequisite(alertModeOption);
     }
 
     public override void Initialize(PlayerControl __instance)
@@ -51,6 +59,11 @@ public class Guardian : Role
     public override void FinalizeInGame(PlayerControl __instance)
     {
         if (indicatorsPool != null) indicatorsPool.Destroy();
+        if (guardPlayer != null) RPCEventInvoker.RemoveGuardian(guardPlayer, PlayerControl.LocalPlayer);
+    }
+
+    public override void OnDied()
+    {
         if (guardPlayer != null) RPCEventInvoker.RemoveGuardian(guardPlayer, PlayerControl.LocalPlayer);
     }
 
@@ -152,21 +165,40 @@ public class Guardian : Role
         {
             Patches.PlayerControlPatch.SetPlayerOutline(guardPlayer, RoleColor);
         }
+
+        if (killer != null && !killer.Data.IsDead && !MeetingHud.Instance && !ExileController.Instance)
+        {
+            killerPingTimer -= Time.deltaTime;
+            if (killerPingTimer < 0f)
+            {
+                Helpers.Ping(killer.GetTruePosition(),false);
+                killerPingTimer = alertIntervalOption.getFloat();
+            }
+        }
     }
 
     public override void OnAnyoneGuarded(byte murderId, byte targetId)
     {
         if (guardPlayer == null) return;
-        if (!showGuardFlashOption.getBool()) return;
 
+        
         if (targetId == guardPlayer.PlayerId)
         {
-            Helpers.PlayQuickFlash(RoleColor);
+            if (alertModeOption.getBool())
+            {
+                killer = Helpers.playerById(murderId);
+                killerPingTimer = 0f;
+                RPCEventInvoker.RemoveGuardian(guardPlayer, PlayerControl.LocalPlayer);
+            }
+            else if(showGuardFlashOption.getBool())
+                Helpers.PlayQuickFlash(RoleColor);
         }
     }
 
     public override void ButtonInitialize(HudManager __instance)
     {
+        killer = null;
+
         if (antennaButton != null)
         {
             antennaButton.Destroy();

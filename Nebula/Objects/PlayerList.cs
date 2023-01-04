@@ -2,7 +2,7 @@
 
 public class PlayerList
 {
-    public static PlayerList Instance;
+    public static PlayerList? Instance;
 
     public bool IsOpen { get; private set; }
     GameObject listParent;

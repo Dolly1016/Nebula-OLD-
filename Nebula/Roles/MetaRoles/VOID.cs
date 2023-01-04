@@ -320,7 +320,7 @@ public class VOID : Role
             {
                 string roleNames;
 
-                if (!tuple.Item1.IsAlive && tuple.Item1.role.CanHaveGhostRole && tuple.Item1.ghostRole != null)
+                if (tuple.Item1.ShouldBeGhostRole)
                     roleNames = Helpers.cs(tuple.Item1.ghostRole.Color, Language.Language.GetString("role." + tuple.Item1.ghostRole.LocalizeName + ".name"));
                 else
                     roleNames = Helpers.cs(tuple.Item1.role.Color, Language.Language.GetString("role." + tuple.Item1.role.LocalizeName + ".name"));

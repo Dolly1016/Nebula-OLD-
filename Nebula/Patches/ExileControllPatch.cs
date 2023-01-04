@@ -6,8 +6,15 @@ class ExileControllerPatch
     [HarmonyPatch(typeof(ExileController), nameof(ExileController.Begin))]
     class ExileControllerBeginPatch
     {
-        public static void Prefix(ExileController __instance, [HarmonyArgument(0)] ref GameData.PlayerInfo exiled, [HarmonyArgument(1)] bool tie)
+
+        public static void Postfix(ExileController __instance, [HarmonyArgument(0)] ref GameData.PlayerInfo exiled, [HarmonyArgument(1)] bool tie)
         {
+            if (CustomOptionHolder.meetingOptions.getBool() && CustomOptionHolder.showRoleOfExiled.getBool() && GameManager.Instance.LogicOptions.GetConfirmImpostor())
+            {
+                var role = exiled.GetModData()?.role;
+                if (role != null) __instance.completeString = Language.Language.GetString("game.exile.roleText").Replace("%PLAYER%", exiled.PlayerName).Replace("%ROLE%", Language.Language.GetString("role." + role.LocalizeName + ".name"));
+            }
+
             OnExiled(exiled);
         }
     }

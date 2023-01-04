@@ -6,6 +6,7 @@ public class Arrow
     public SpriteRenderer image;
     public GameObject arrow;
     private Vector3 oldTarget;
+    private bool smallenNearArrow;
 
     private static Sprite sprite;
     public static Sprite getSprite()
@@ -17,13 +18,14 @@ public class Arrow
     }
 
 
-    public Arrow(Color color)
+    public Arrow(Color color,bool smallenNearArrow=true)
     {
         arrow = new GameObject("Arrow");
         arrow.layer = 5;
         image = arrow.AddComponent<SpriteRenderer>();
         image.sprite = getSprite();
         image.color = color;
+        this.smallenNearArrow = smallenNearArrow;
     }
 
     public void Update()
@@ -43,13 +45,20 @@ public class Arrow
         Camera main = Camera.main;
         Vector2 vector = target - main.transform.position;
         float num = vector.magnitude / (main.orthographicSize * perc);
-        image.enabled = ((double)num > 0.3);
+        image.enabled = !smallenNearArrow || (double)num > 0.3;
         Vector2 vector2 = main.WorldToViewportPoint(target);
         if (Between(vector2.x, 0f, 1f) && Between(vector2.y, 0f, 1f))
         {
             arrow.transform.position = target - (Vector3)vector.normalized * 0.6f;
-            float num2 = Mathf.Clamp(num, 0f, 1f);
-            arrow.transform.localScale = new Vector3(num2, num2, num2);
+            if (smallenNearArrow)
+            {
+                float num2 = Mathf.Clamp(num, 0f, 1f);
+                arrow.transform.localScale = new Vector3(num2, num2, num2);
+            }
+            else
+            {
+                arrow.transform.localScale = Vector3.one;
+            }
         }
         else
         {

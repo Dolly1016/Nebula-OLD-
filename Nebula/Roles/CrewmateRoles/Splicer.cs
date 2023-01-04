@@ -105,7 +105,6 @@ public class Splicer : Role
         }, "button.label.warp"
         ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());
         WarpButton.MaxTimer = warpCoolDownOption.getFloat();
-        WarpButton.SetButtonCoolDownOption(true);
     }
     public override void CleanUp()
     {

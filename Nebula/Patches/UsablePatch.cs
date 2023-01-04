@@ -45,6 +45,19 @@ class SabotageButtonRefreshPatch
     }
 }
 
+[HarmonyPatch(typeof(AbilityButton), nameof(AbilityButton.Refresh))]
+class AbilityButtonRefreshPatch
+{
+    static void Postfix(AbilityButton __instance)
+    {
+        if (PlayerControl.LocalPlayer?.Data?.Role?.Role == RoleTypes.CrewmateGhost || PlayerControl.LocalPlayer?.Data?.Role?.Role == RoleTypes.ImpostorGhost)
+        {
+            __instance.SetDisabled();
+        }
+    }
+}
+
+
 [HarmonyPatch(typeof(SabotageButton), nameof(SabotageButton.DoClick))]
 public static class SabotageButtonDoClickPatch
 {
