@@ -29,6 +29,7 @@ This mod is not affiliated with Among Us or Innersloth LLC, and the content cont
 
 | Version | Among Us Version | Download |
 | ---------- | ---------- | ---------- |
+| 2.1 | 2022.12.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/2.1,2022.12.8/Nebula_v2.1.zip)|
 | 2.0.2.1 | 2022.12.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/2.0.2.1,2022.12.8/Nebula_v2.0.2.1.zip)|
 | 2.0.2 | 2022.12.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/2.0.2,2022.12.8/Nebula_v2.0.2.zip)|
 | 2.0.1.1 | 2022.12.8s | [Download](https://github.com/Dolly1016/Nebula/releases/download/2.0.1.1,2022.12.8/Nebula_v2.0.1.1.zip)|
@@ -214,6 +215,9 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
     Better Crew Linkが正常に動作しなくなるようです。
     
 # 言語サポート
+
+ 最新のユーザー言語パックはDiscordより入手していただけます。\
+
 言語パックは自動では更新されませんので、最新版の言語パックをダウンロードして、Languageフォルダ内に入れてお使いください。\
 形式上、言語パックには下位互換があります。\
 また、新しいバージョンに対しても使用できますが、一部翻訳がなされないことがあります。
@@ -234,6 +238,8 @@ MODを使用している旨を分かりやすくご掲載のうえお使いく�
 # 更新履歴
 <details>
   <summary>クリックで展開</summary>
+ 
+ Version 2.1 以降の更新履歴はDiscordよりご確認ください。
  
  **Version 2.0.2.1**
  - ロビーに入れない問題を修正
@@ -1166,21 +1172,22 @@ Sniperの弾の当たり判定やEmpiric,Alienなどの効果範囲を調べる�
 | [Bounty Hunter](#bounty-hunter) | [Agent](#agent) | [Avenger](#avenger) | [Confused](#confused) ||
 | [Camouflager](#camouflager) | [Alien](#alien) | [Empiric](#empiric) | [Drunk](#drunk) ||
 | [Cleaner](#cleaner) | [Bait](#bait) | [Chain Shifter](#chain-shifter) | [Guesser](#guesser) ||
-| [Damned](#damned) | [Busker](#busker) | [Jackal](#jackal) | [Lover](#lover) ||
-| [Disturber](#disturber) | [Comet](#comet) | [Jester](#jester) | [Trilemma](#trilemma) ||
-| [Eraser](#eraser) | [Doctor](#doctor) | [Opportunist](#opportunist) |||
-| [Evil Ace](#evil-ace) | [Guardian](#guardian) | [Sidekick](#sidekick) |||
-| [Evil Guesser](#guesser) | [Mayor](#mayor) | [Vulture](#vulture) |||
-| [Evil Tracker](#tracker) | [Navvy](#navvy) ||||
-| [Evil Trapper](#trapper) | [Necromancer](#necromancer) ||||
-| [Jailer](#jailer) | [Nice Guesser](#guesser) ||||
-| [Marionette](#marionette) | [Nice Tracker](#tracker) ||||
-| [Morphing](#morphing) | [Nice Trapper](#trapper) ||||
-| [Painter](#painter) | [Oracle](#oracle) ||||
-| [Raider](#raider) | [Provocateur](#provocateur) ||||
-| [Reaper](#reaper) | [Psychic](#psychic) ||||
-| [Sniper](#sniper) | [Seer](#seer) ||||
-|| [Sheriff](#sheriff) ||||
+| [Covert](#covert) | [Busker](#busker) | [Jackal](#jackal) | [Lover](#lover) ||
+| [Damned](#damned) | [Comet](#comet) | [Jester](#jester) | [Trilemma](#trilemma) ||
+| [Disturber](#disturber) | [Doctor](#doctor) | [Opportunist](#opportunist) |||
+| [Eraser](#eraser) | [Guardian](#guardian) | [Sidekick](#sidekick) |||
+| [Evil Ace](#evil-ace) | [Mayor](#mayor) | [Vulture](#vulture) |||
+| [Evil Guesser](#guesser) | [Navvy](#navvy) ||||
+| [Evil Tracker](#tracker) | [Necromancer](#necromancer) ||||
+| [Evil Trapper](#trapper) | [Nice Guesser](#guesser) ||||
+| [Executioner](#executioner) | [Nice Tracker](#tracker) ||||
+| [Jailer](#jailer) | [Nice Trapper](#trapper) ||||
+| [Marionette](#marionette) | [Oracle](#oracle) ||||
+| [Morphing](#morphing) | [Provocateur](#provocateur) ||||
+| [Painter](#painter) | [Psychic](#psychic) ||||
+| [Raider](#raider) | [Seer](#seer) ||||
+| [Reaper](#reaper) | [Sheriff](#sheriff) ||||
+| [Sniper](#sniper) | [Splicer](#splicer) ||||
 || [Spy](#spy) ||||
 || [Madmate](#madmate) ||||
 
@@ -1322,6 +1329,21 @@ p5p5next : Damned
 
 -----------------------
 
+## Covert
+ Covertは、仲間がいなくなって初めてキルボタンを得るインポスターです。\
+ 少人数村でのバランス調整にお使いいただけます。
+ 
+ 
+ ### 操作方法
+| 操作キー | アクション |
+|----------|:-------------:|
+
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+
+-----------------------
+
 ## Damned
  DamnedはCrewmateとしてスポーンしますが、一度キルされてもガードされ、\
  二度目のキルをされる前に会議が始まるとインポスターになります。\
@@ -1383,8 +1405,18 @@ p5p5next : Damned
 
 -----------------------
 
+## Executioner
+ Executionerは視線の先のプレイヤーを、壁を隔ててキルできるインポスターです。\
+ ただし、通常のキルを行うことはできません。
+ 
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
+
+-----------------------
+
 ## Jailer
- Jailerは遠隔でアドミンを見ることができるインポスターです。
+ Jailerは遠隔でアドミンを見ることができるインポスターです。\
  アドミン使用中は動くことができません。
  
  ### 操作方法
@@ -1775,6 +1807,16 @@ p5p5next : Damned
 | Can Kill Madmate | Madmateをキルできるかどうか
 | Can Kill Spy | Spyをキルできるかどうか
 | Can Kill Necromancer | Necromancerをキルできるかどうか
+
+-----------------------
+
+## Splicer
+ Splicerは壁を隔ててワープすることができます。\
+ 壁を隔てずにワープすることはできません。
+ 
+ ### オプション
+| オプション名 | 設定内容 |
+|----------|:-------------:|
 
 -----------------------
 
