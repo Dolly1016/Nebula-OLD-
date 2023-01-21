@@ -698,6 +698,7 @@ public class PlayerData
         public static PlayerStatus Punished = new PlayerStatus("punished");
         public static PlayerStatus Misfire = new PlayerStatus("misfire");
         public static PlayerStatus Slapped = new PlayerStatus("slapped");
+        public static PlayerStatus Withered = new PlayerStatus("withered");
 
 
         public string Status { get; private set; }

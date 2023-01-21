@@ -60,6 +60,7 @@ static public class Roles
     public static CrewmateRoles.Madmate Madmate = new CrewmateRoles.Madmate();
 
     public static ImpostorRoles.Impostor Impostor = new ImpostorRoles.Impostor();
+    public static ImpostorRoles.Banshee Banshee = new ImpostorRoles.Banshee();
     public static ImpostorRoles.BountyHunter BountyHunter = new ImpostorRoles.BountyHunter();
     public static ImpostorRoles.Camouflager Camouflager = new ImpostorRoles.Camouflager();
     public static ImpostorRoles.Cleaner Cleaner = new ImpostorRoles.Cleaner();
@@ -133,7 +134,7 @@ static public class Roles
     public static List<Role> AllRoles = new List<Role>()
         {
             VOID,
-            Impostor,BountyHunter,Camouflager,Cleaner,Covert,Damned,Disturber,Eraser,EvilAce,EvilGuesser,EvilTracker,EvilTrapper,Executioner,Jailer,Marionette,Morphing,Ninja,Painter,Raider,Reaper,Sniper,
+            Impostor,Banshee,BountyHunter,Camouflager,Cleaner,Covert,Damned,Disturber,Eraser,EvilAce,EvilGuesser,EvilTracker,EvilTrapper,Executioner,Jailer,Marionette,Morphing,Ninja,Painter,Raider,Reaper,Sniper,
             /*SantaClaus,BlackSanta,*/Arsonist,Avenger,ChainShifter,Empiric,Jackal,Jester,Opportunist,Sidekick,Vulture,
             F_Crewmate,
             F_Guesser,F_Tracker,F_Trapper,

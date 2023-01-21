@@ -36,6 +36,7 @@ public enum CustomRPC
     PlayStaticSound,
     PlayDynamicSound,
     UncheckedMurderPlayer,
+    UncheckedMultiMurderPlayer,
     UncheckedExilePlayer,
     UncheckedCmdReportDeadBody,
     Guard,
@@ -193,6 +194,11 @@ class RPCHandlerPatch
                 break;
             case (byte)CustomRPC.PlayDynamicSound:
                 RPCEvents.PlayDynamicSound(new Vector2(reader.ReadSingle(), reader.ReadSingle()), (Module.AudioAsset)reader.ReadByte(), reader.ReadSingle(), reader.ReadSingle());
+                break;
+            case (byte)CustomRPC.UncheckedMultiMurderPlayer:
+                var args = reader.ReadBytes(4);
+                var targets = reader.ReadBytes(args[3]);
+                RPCEvents.UncheckedMurderPlayer(args[0], args[1], args[2], targets.ToArray());
                 break;
             case (byte)CustomRPC.UncheckedMurderPlayer:
                 RPCEvents.UncheckedMurderPlayer(reader.ReadByte(), reader.ReadByte(), reader.ReadByte(), reader.ReadByte());
@@ -592,6 +598,12 @@ static class RPCEvents
     public static void PlayDynamicSound(Vector2 pos, Module.AudioAsset id, float maxDistance, float minDistance)
     {
         Objects.SoundPlayer.PlaySound(pos, id, maxDistance, minDistance);
+    }
+
+    public static void UncheckedMurderPlayer(byte murdererId, byte statusId, byte showAnimation,byte[] targetsId)
+    {
+        foreach(byte t in targetsId)
+            UncheckedMurderPlayer(murdererId,t,statusId,showAnimation);
     }
 
     public static void UncheckedMurderPlayer(byte murdererId, byte targetId, byte statusId, byte showAnimation, bool cutOverlay = false)
@@ -1847,6 +1859,18 @@ public class RPCEventInvoker
         writer.Write(showAnimation ? Byte.MaxValue : (byte)0);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         RPCEvents.UncheckedMurderPlayer(murdererId, targetId, statusId, showAnimation ? Byte.MaxValue : (byte)0);
+    }
+
+    public static void UncheckedMurderPlayer(byte murdererId, byte[] targets, byte statusId, bool showAnimation)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UncheckedMurderPlayer, Hazel.SendOption.Reliable, -1);
+        writer.Write(murdererId);
+        writer.Write(statusId);
+        writer.Write(showAnimation ? Byte.MaxValue : (byte)0);
+        writer.Write((byte)targets.Length);
+        foreach(byte t in targets)writer.Write(t);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RPCEvents.UncheckedMurderPlayer(murdererId, statusId, showAnimation ? Byte.MaxValue : (byte)0, targets);
     }
 
     public static void Guard(byte murdererId, byte targetId)
