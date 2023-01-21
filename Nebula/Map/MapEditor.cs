@@ -84,12 +84,21 @@ public class MapEditor
         vent.Right = null;
         vent.Center = null;
         vent.Id = ShipStatus.Instance.AllVents.Select(x => x.Id).Max() + 1; // Make sure we have a unique id
+
         var allVentsList = ShipStatus.Instance.AllVents.ToList();
         allVentsList.Add(vent);
         ShipStatus.Instance.AllVents = allVentsList.ToArray();
+
         vent.gameObject.SetActive(true);
         vent.name = ventName;
         vent.gameObject.name = ventName;
+        var console = vent.GetComponent<VentCleaningConsole>();
+        console.Room = room;
+        console.ConsoleId = ShipStatus.Instance.AllVents.Length;
+
+        var allConsolesList = ShipStatus.Instance.AllConsoles.ToList();
+        allConsolesList.Add(console);
+        ShipStatus.Instance.AllConsoles = allConsolesList.ToArray();
 
         Game.GameData.data.VentMap[ventName] = new Game.VentData(vent);
 

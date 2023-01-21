@@ -1,4 +1,6 @@
-﻿using UnityEngine.AddressableAssets;
+﻿using JetBrains.Annotations;
+using Nebula.Module;
+using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace Nebula.Map;
@@ -112,22 +114,29 @@ public class VectorRange
     }
 }
 
-public class SpawnPointData
+public class PointData
 {
-    public Vector2 spawnPoint;
+    public Vector2 point;
     public string name;
-    public Module.CustomOption option;
 
-    public SpawnPointData(string name, Vector2 spawnPoint)
+    public PointData(string name, Vector2 point)
     {
         this.name = name;
-        this.spawnPoint = spawnPoint;
+        this.point = point;
     }
 
-    static string[] mapNames = { "skeld", "mira", "polus", "undefined", "airship" };
+    public static string[] mapNames = { "skeld", "mira", "polus", "undefined", "airship" };
+}
+
+public class SpawnPointData : PointData
+{
+    public Module.CustomOption option;
+
+    public SpawnPointData(string name, Vector2 spawnPoint) :base(name,spawnPoint){ }
+
     public void CreateOption(byte mapId)
     {
-        option = Module.CustomOption.Create(Color.white, "option.spawnMethod.location." + name, true, CustomOptionHolder.spawnMethod, false, true).SetIdentifier("option.spawnMethod.location." + mapNames[mapId] + "." + name);
+        option = Module.CustomOption.Create(Color.white, "locations." + name, true, CustomOptionHolder.spawnMethod, false, true).SetIdentifier("option.spawnMethod.location." + mapNames[mapId] + "." + name);
     }
 }
 
@@ -175,13 +184,19 @@ public class MapData
     //ランダムスポーン位置候補
     public List<SpawnPointData> SpawnPoints;
 
+    public Dictionary<int, CustomOption> LimitedAdmin;
+    public Dictionary<string, int> AdminNameMap;
+    public List<PointData> AdminRooms;
+    public Dictionary<SystemTypes, int> AdminSystemTypeMap;
+    public int ClassicAdminMask;
+
     public List<Vector2> ValidSpawnPoints
     {
         get
         {
             List<Vector2> list = new List<Vector2>();
             foreach (var sPoint in SpawnPoints)
-                if (sPoint.option.getBool()) list.Add(sPoint.spawnPoint);
+                if (sPoint.option.getBool()) list.Add(sPoint.point);
 
             return list;
         }
@@ -191,9 +206,8 @@ public class MapData
     {
         foreach (var point in SpawnPoints)
         {
-            NebulaPlugin.Instance.Logger.Print("1");
             PassiveButton button = Module.MetaScreen.MSDesigner.AddSubButton(obj, new Vector2(2.4f, 0.4f), "Point", point.option.getName(), point.option.getBool() ? Color.yellow : Color.white);
-            button.transform.localPosition = (Vector3)ConvertMinimapPosition(point.spawnPoint) + new Vector3(0f, 0f, -5f);
+            button.transform.localPosition = (Vector3)ConvertMinimapPosition(point.point) + new Vector3(0f, 0f, -5f);
             button.transform.localScale /= (obj.transform.localScale.x / 0.75f);
 
             SpriteRenderer renderer = button.GetComponent<SpriteRenderer>();
@@ -209,6 +223,46 @@ public class MapData
                 reopener();
             }));
 
+        }
+    }
+
+    public void SetUpAdminRoomButton(GameObject obj, Action reopener)
+    {
+        //0番目は外を表すので設定の必要なし
+        int i=1;
+        foreach (var point in AdminRooms)
+        {
+            int index = i;
+
+            int adminCount = 0;
+            foreach (var limitedAdmin in LimitedAdmin)
+            {
+                int key = limitedAdmin.Key;
+                bool enabled = (limitedAdmin.Value.selection & (1 << i)) != 0;
+
+                PassiveButton button = Module.MetaScreen.MSDesigner.AddSubButton(obj, new Vector2(0.4f, 0.4f), "Point", (key + 1).ToString(), enabled ? Color.yellow : Color.white);
+                button.transform.localPosition = (Vector3)ConvertMinimapPosition(point.point) + new Vector3(0f, 0f, -5f);
+                button.transform.localScale /= (obj.transform.localScale.x / 0.75f);
+                button.transform.localPosition += new Vector3((float)adminCount - 0.5f * (float)(LimitedAdmin.Count - 1), 0f, 0f) * 0.34f;
+
+                SpriteRenderer renderer = button.GetComponent<SpriteRenderer>();
+                TMPro.TextMeshPro text = button.transform.GetChild(0).GetComponent<TMPro.TextMeshPro>();
+
+                renderer.size = new Vector2(text.preferredWidth + 0.3f, renderer.size.y);
+                button.GetComponent<BoxCollider2D>().size = renderer.size;
+
+                var option = limitedAdmin.Value;
+                button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
+                {
+                    int selection = option.selection & ~(1<<index);
+                    if(!enabled)selection |= 1 << index;
+                    option.updateSelection(selection);
+                    reopener();
+                }));
+
+                adminCount++;
+            }
+            i++;
         }
     }
 
@@ -276,6 +330,8 @@ public class MapData
             {
                 point.CreateOption((byte)mapData.Value.MapId);
             }
+
+            mapData.Value.CreateOption();
         }
     }
     public static Map.MapData GetCurrentMapData()
@@ -388,6 +444,23 @@ public class MapData
         return r;
     }
 
+    public virtual void CreateOption() { }
+
+    public virtual IEnumerable<Tuple<GameObject, float>> AllAdmins(ShipStatus shipStatus)
+    {
+        yield break;
+    }
+
+    public virtual IEnumerable<Tuple<GameObject, float>> AllVitals(ShipStatus shipStatus)
+    {
+        yield break;
+    }
+
+    public virtual IEnumerable<Tuple<GameObject, float>> AllCameras(ShipStatus shipStatus)
+    {
+        yield break;
+    }
+
     public MapData(int mapId)
     {
         MapId = mapId;
@@ -415,6 +488,12 @@ public class MapData
         RitualMissionPositions = new Dictionary<SystemTypes, List<VectorRange>>();
 
         SpawnPoints = new List<SpawnPointData>();
+
+        LimitedAdmin = new Dictionary<int, CustomOption>();
+        AdminNameMap = new Dictionary<string, int>();
+        AdminRooms = new List<PointData>();
+        AdminSystemTypeMap = new Dictionary<SystemTypes, int>();
+        ClassicAdminMask = 0;
     }
 
     public void LoadAssets(AmongUsClient __instance)
@@ -422,7 +501,8 @@ public class MapData
         if (IsModMap) return;
 
         AssetReference assetReference = __instance.ShipPrefabs.ToArray()[MapId];
-        AsyncOperationHandle<GameObject> asset = assetReference.LoadAsset<GameObject>();
+        if (assetReference.IsValid()) return;
+        AsyncOperationHandle<GameObject> asset = assetReference.LoadAssetAsync<GameObject>();
         asset.WaitForCompletion();
         Assets = assetReference.Asset.Cast<GameObject>().GetComponent<ShipStatus>();
     }
@@ -441,6 +521,7 @@ public class MapData
     {
         return (Vector2)(pos / Assets.MapScale) + (Vector2)Assets.MapPrefab.transform.GetChild(5).localPosition;
     }
+
 
 
     public bool PlayInitialPrespawnMinigame

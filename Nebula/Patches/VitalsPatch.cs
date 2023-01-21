@@ -7,6 +7,7 @@ class VitalsPatch
     static TMPro.TextMeshPro TimeRemaining;
     static TMPro.TextMeshPro OutOfTime;
 
+
     public static void ResetData()
     {
         vitalsTimer = 0f;

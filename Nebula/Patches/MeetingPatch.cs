@@ -1,4 +1,7 @@
-﻿namespace Nebula.Patches;
+﻿using Nebula.Roles.CrewmateRoles;
+using UnityEngine;
+
+namespace Nebula.Patches;
 
 [HarmonyPatch]
 class MeetingHudPatch
@@ -195,9 +198,6 @@ class MeetingHudPatch
             {
                 Ghost.InvestigatorMeetingUI.UpdateMeetingUI(__instance);
             }
-
-            //Skipボタン
-            if (!CustomOptionHolder.canSkip.getBool() && __instance.SkipVoteButton.gameObject.activeSelf) __instance.SkipVoteButton.SetDisabled();
         }
     }
 
@@ -340,6 +340,8 @@ class MeetingHudPatch
                     player.Flag.gameObject.SetActive(false);
                 }
             }
+
+            Game.GameData.data.UtilityTimer.OnMeetingStart(__instance);
         }
     }
 

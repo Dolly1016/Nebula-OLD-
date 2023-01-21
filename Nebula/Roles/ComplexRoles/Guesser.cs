@@ -136,7 +136,7 @@ static public class GuesserSystem
         __instance.playerStates.ToList().ForEach(x => x.gameObject.SetActive(false));
 
         Transform container = UnityEngine.Object.Instantiate(__instance.transform.FindChild("PhoneUI"), __instance.transform);
-        container.transform.localPosition = new Vector3(0, 0, -5f);
+        container.transform.localPosition = new Vector3(0, 0, -50f);
         guesserUI = container.gameObject;
 
         int i = 0;
@@ -172,9 +172,9 @@ static public class GuesserSystem
             Transform buttonMask = UnityEngine.Object.Instantiate(maskTemplate, buttonParent);
             TMPro.TextMeshPro label = UnityEngine.Object.Instantiate(textTemplate, button);
             buttons.Add(button);
-            int row = i / 5, col = i % 5;
-            buttonParent.localPosition = new Vector3(-3.47f + 1.75f * col, 1.5f - 0.45f * row, -5);
-            buttonParent.localScale = new Vector3(0.55f, 0.55f, 1f);
+            int row = i / 6, col = i % 6;
+            buttonParent.localPosition = new Vector3(-3.5f + 1.4f * col, 1.5f - 0.37f * row, -5);
+            buttonParent.localScale = new Vector3(0.5f, 0.5f, 1f);
             label.text = Helpers.cs(role.Color, Language.Language.GetString("role." + role.LocalizeName + ".name"));
             label.alignment = TMPro.TextAlignmentOptions.Center;
             label.transform.localPosition = new Vector3(0, 0, label.transform.localPosition.z);
@@ -206,8 +206,8 @@ static public class GuesserSystem
                     PlayerControl dyingTarget =
                     (
                     actualRole == role ||
-                    actualRole.GetImplicateRoles().Contains(role) ||
-                    actualRole.GetImplicateExtraRoles().Any((role) => focusedTargetData.HasExtraRole(role))
+                    role.GetImplicateRoles().Contains(actualRole) ||
+                    role.GetImplicateExtraRoles().Any((r) => focusedTargetData.HasExtraRole(r))
                     )
                     ? focusedTarget : PlayerControl.LocalPlayer;
 
@@ -233,7 +233,7 @@ static public class GuesserSystem
 
             i++;
         }
-        container.transform.localScale *= 0.75f;
+        container.transform.localScale *= 0.85f;
 
         FastDestroyableSingleton<HatManager>.Instance.GetNamePlateById("nameplate_NoPlate").CoLoadViewData((Il2CppSystem.Action<NamePlateViewData>)((n) =>
         {

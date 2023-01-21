@@ -23,6 +23,6 @@ public static class UnityUdpClientConnectionConnectAsyncPatch
                 break;
         }
         __instance.KeepAliveInterval = (int)(1000 * rate);
-        __instance.DisconnectTimeoutMs = __instance.EndPoint.Port == 22025 ? 0 : 15000;
+        __instance.DisconnectTimeoutMs = (__instance.EndPoint.Port >= 22000 && __instance.EndPoint.Port < 23000) ? 3000 : 15000;
     }
 }

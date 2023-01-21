@@ -8,6 +8,21 @@ class PrespawnPatch
 {
     private static PassiveButton? selected = null;
 
+    [HarmonyPatch(typeof(SpawnInMinigame), nameof(SpawnInMinigame.Close))]
+    public static class PrespawnSpawnClosePatch
+    {
+        public static bool closeForcelyFlag = false;
+        public static bool Prefix(SpawnInMinigame __instance)
+        {
+            if (closeForcelyFlag)
+            {
+                closeForcelyFlag = false;
+                return true;
+            }
+            return !CustomOptionHolder.mapOptions.getBool() || !CustomOptionHolder.synchronizedSpawning.getBool();
+        }
+    }
+
     [HarmonyPatch(typeof(SpawnInMinigame), nameof(SpawnInMinigame.SpawnAt))]
     public static class PrespawnSpawnAtPatch
     {
@@ -78,6 +93,7 @@ class PrespawnPatch
                     {
                         PlayerControl.LocalPlayer.gameObject.SetActive(true);
                         __instance.StopAllCoroutines();
+                        PrespawnSpawnClosePatch.closeForcelyFlag = true;
                         __instance.Close();
                         PlayerControl.LocalPlayer.NetTransform.RpcSnapTo(spawnAt);
                         HudManager.Instance.PlayerCam.SnapToTarget();

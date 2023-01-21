@@ -21,6 +21,7 @@ public static class EmergencyPatch
     }
 
     static bool occurredSabotage = false, occurredKill = false, occurredReport = false;
+    static public bool isSpecialEmergency = false;
     public static int meetingsCount = 0, maxMeetingsCount = 15;
 
     static public float GetPenaltyVotingTime()
@@ -47,6 +48,7 @@ public static class EmergencyPatch
         occurredSabotage = false;
         occurredKill = false;
         occurredReport = false;
+        isSpecialEmergency = false;
         meetingsCount = 0;
         maxMeetingsCount = Game.GameData.data.GameRule.maxMeetingsCount;
     }
@@ -68,6 +70,42 @@ public static class EmergencyPatch
         occurredReport = true;
     }
 
+    private static bool isInSpecialEmergency = false;
+    
+    [HarmonyPatch(typeof(EmergencyMinigame), nameof(EmergencyMinigame.Begin))]
+    class SpecialEmergencyMinigamePatch
+    {
+        static EmergencyMinigame? lastMinigame = null;
+        static void CallMeeting(EmergencyMinigame __instance)
+        {
+            __instance.StatusText.text = DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.EmergencyRequested, new UnhollowerBaseLib.Il2CppReferenceArray<Il2CppSystem.Object>(0));
+            if (Constants.ShouldPlaySfx())
+            {
+                SoundManager.Instance.PlaySound(__instance.ButtonSound, false, 1f, null);
+            }
+            PlayerControl.LocalPlayer.CmdReportDeadBody(null);
+            __instance.ButtonActive = false;
+            VibrationManager.Vibrate(1f, 1f, 0.2f, VibrationManager.VibrationFalloff.None, null, false);
+
+            Helpers.RoleAction(Game.GameData.data.myData.getGlobalData(), (r) => { r.OnCallSpecialMeeting(); });
+        }
+
+        static void Postfix(EmergencyMinigame __instance)
+        {
+            if (lastMinigame != null && lastMinigame.gameObject && lastMinigame.GetInstanceID() == __instance.GetInstanceID()) return;
+            lastMinigame = __instance;
+
+            isInSpecialEmergency = isSpecialEmergency;
+            isSpecialEmergency = false;
+
+            if (isInSpecialEmergency)
+            {
+                var onClickEvent = __instance.DefaultButtonSelected.GetComponent<ButtonBehavior>().OnClick;
+                onClickEvent.RemoveAllListeners();
+                onClickEvent.AddListener((UnityEngine.Events.UnityAction)(()=> { CallMeeting(__instance); }));
+            }
+        }
+    }
 
     [HarmonyPatch(typeof(EmergencyMinigame), nameof(EmergencyMinigame.Update))]
     class EmergencyMinigameUpdatePatch
@@ -77,7 +115,16 @@ public static class EmergencyPatch
             var roleCanCallEmergency = true;
             var statusText = "";
 
-            // Deactivate emergency button for Swapper
+            if (isInSpecialEmergency)
+            {
+                __instance.StatusText.text = "Special Emergency Button";
+                __instance.NumberText.text = string.Empty;
+                __instance.ClosedLid.gameObject.SetActive(false);
+                __instance.OpenLid.gameObject.SetActive(true);
+                __instance.ButtonActive = false;
+                return;
+            }
+
             if (!PlayerControl.LocalPlayer.GetModData().role.CanCallEmergencyMeeting)
             {
                 __instance.StatusText.text = "You can't start an emergency meeting due to your role.";
@@ -125,9 +172,8 @@ public static class EmergencyPatch
             {
                 int localRemaining = PlayerControl.LocalPlayer.RemainingEmergencies;
                 int teamRemaining = Mathf.Max(0, EmergencyPatch.maxMeetingsCount - EmergencyPatch.meetingsCount);
-                int remaining = teamRemaining;
-                __instance.NumberText.text = $"{localRemaining.ToString()} and the ship has {teamRemaining.ToString()}";
-                __instance.ButtonActive = remaining > 0;
+                __instance.NumberText.text = $"{localRemaining.ToString()} (Total: {teamRemaining.ToString()})";
+                __instance.ButtonActive = localRemaining > 0 && teamRemaining > 0;
                 __instance.ClosedLid.gameObject.SetActive(!__instance.ButtonActive);
                 __instance.OpenLid.gameObject.SetActive(__instance.ButtonActive);
                 return;

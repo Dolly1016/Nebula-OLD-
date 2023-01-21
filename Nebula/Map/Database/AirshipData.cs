@@ -1,6 +1,30 @@
 ﻿namespace Nebula.Map.Database;
 public class AirshipData : MapData
 {
+    public override IEnumerable<Tuple<GameObject, float>> AllAdmins(ShipStatus shipStatus)
+    {
+        yield return new(shipStatus.transform.GetChild(1).GetChild(6).gameObject, 0.4f);
+        yield return new(shipStatus.transform.GetChild(13).GetChild(22).gameObject, 0.3f);
+    }
+
+    public override IEnumerable<Tuple<GameObject, float>> AllVitals(ShipStatus shipStatus)
+    {
+        yield return new(shipStatus.transform.GetChild(19).GetChild(5).gameObject, 0.28f);
+    }
+
+    public override IEnumerable<Tuple<GameObject, float>> AllCameras(ShipStatus shipStatus)
+    {
+        yield return new(shipStatus.transform.GetChild(16).GetChild(2).gameObject, 0.4f);
+    }
+
+    public override void CreateOption()
+    {
+        LimitedAdmin.Add(0, Module.CustomOption.Create(Color.white, "option.admin." + PointData.mapNames[MapId] + "-0", 0b1001110, CustomOptionHolder.mapOptions, false, true));
+        LimitedAdmin.Add(1, Module.CustomOption.Create(Color.white, "option.admin." + PointData.mapNames[MapId] + "-1", 0b11101100000000000, CustomOptionHolder.mapOptions, false, true));
+        AdminNameMap.Add("panel_cockpit_map", 0);
+        AdminNameMap.Add("records_admin_map", 1);
+    }
+
     public AirshipData() : base(4)
     {
         SabotageMap[SystemTypes.GapRoom] = new SabotageData(SystemTypes.GapRoom, new Vector3(8f, 8.3f), true, true);
@@ -156,5 +180,48 @@ public class AirshipData : MapData
         SpawnPoints.Add(new SpawnPointData("brig", new Vector2(-0.4439f, 8.5204f)));
         SpawnPoints.Add(new SpawnPointData("vault", new Vector2(-8.789f, 8.049f)));
         SpawnPoints.Add(new SpawnPointData("meetingRoom", new Vector2(11.1469f, 16.0138f)));
+
+        AdminRooms.Add(new PointData("cockpit", new Vector2(-19.5643f, -1.4405f)));
+        AdminSystemTypeMap.Add(SystemTypes.Cockpit,1);
+        AdminRooms.Add(new PointData("armory", new Vector2(-12.141f, -6.3739f)));
+        AdminSystemTypeMap.Add(SystemTypes.Armory, 2);
+        AdminRooms.Add(new PointData("comms", new Vector2(-12.9433f, 1.4259f)));
+        AdminSystemTypeMap.Add(SystemTypes.Comms, 3);
+        AdminRooms.Add(new PointData("engineRoom", new Vector2(0f, 0f)));
+        AdminSystemTypeMap.Add(SystemTypes.Engine, 4);
+        AdminRooms.Add(new PointData("viewingDeck", new Vector2(-13.5882f, -12.5294f)));
+        AdminSystemTypeMap.Add(SystemTypes.ViewingDeck, 5);
+        AdminRooms.Add(new PointData("kitchen", new Vector2(-5.0987f, -11.3393f)));
+        AdminSystemTypeMap.Add(SystemTypes.Kitchen, 6);
+        AdminRooms.Add(new PointData("portrait", new Vector2(1.5f, -12.1f)));
+        AdminSystemTypeMap.Add(SystemTypes.HallOfPortraits, 7);
+        AdminRooms.Add(new PointData("security", new Vector2(7.0693f, -11.6312f)));
+        AdminSystemTypeMap.Add(SystemTypes.Security, 8);
+        AdminRooms.Add(new PointData("electrical", new Vector2(16.3201f, -8.808f)));
+        AdminSystemTypeMap.Add(SystemTypes.Electrical, 9);
+        AdminRooms.Add(new PointData("mainHall", new Vector2(10.6875f, -0.1902f)));
+        AdminSystemTypeMap.Add(SystemTypes.MainHall, 10);
+        AdminRooms.Add(new PointData("shower", new Vector2(21.07f, -0.0723f)));
+        AdminSystemTypeMap.Add(SystemTypes.Showers, 11);
+        AdminRooms.Add(new PointData("ventilation", new Vector2(27.0f, -0.5979f)));
+        AdminSystemTypeMap.Add(SystemTypes.Ventilation, 12);
+        AdminRooms.Add(new PointData("medical", new Vector2(28.4471f, -6.8789f)));
+        AdminSystemTypeMap.Add(SystemTypes.Medical, 13);
+        AdminRooms.Add(new PointData("cargoBay", new Vector2(33.5778f, -1.5979f)));
+        AdminSystemTypeMap.Add(SystemTypes.CargoBay, 14);
+        AdminRooms.Add(new PointData("lounge", new Vector2(29.0702f, 6.459f)));
+        AdminSystemTypeMap.Add(SystemTypes.Lounge, 15);
+        AdminRooms.Add(new PointData("record", new Vector2(19.8717f, 9.1845f)));
+        AdminSystemTypeMap.Add(SystemTypes.Records, 16);
+        AdminRooms.Add(new PointData("gapRoom", new Vector2(9.9727f, 8.6011f)));
+        AdminSystemTypeMap.Add(SystemTypes.GapRoom, 17);
+        AdminRooms.Add(new PointData("meetingRoom", new Vector2(11.1469f, 16.0138f)));
+        AdminSystemTypeMap.Add(SystemTypes.MeetingRoom, 18);
+        AdminRooms.Add(new PointData("brig", new Vector2(-0.4439f, 8.5204f)));
+        AdminSystemTypeMap.Add(SystemTypes.Brig, 19);
+        AdminRooms.Add(new PointData("vault", new Vector2(-8.789f, 8.049f)));
+        AdminSystemTypeMap.Add(SystemTypes.VaultRoom, 20);
+
+        ClassicAdminMask = 0b1000010000000;
     }
 }

@@ -132,8 +132,6 @@ class VentButtonVisibilityPatch
         HudManager hudManager = HudManager.Instance;
 
         var role = data.role;
-        var showFlag = Helpers.ShowButtons;
-
 
         if (__instance.CanMove) Game.GameData.data.myData.VentCoolDownTimer -= Time.deltaTime;
         Game.GameData.data.myData.VentDurationTimer -= Time.deltaTime;
@@ -141,7 +139,7 @@ class VentButtonVisibilityPatch
         if (Game.GameData.data.myData.VentCoolDownTimer < 0f) Game.GameData.data.myData.VentCoolDownTimer = 0f;
         if (Game.GameData.data.myData.VentDurationTimer < 0f) Game.GameData.data.myData.VentDurationTimer = 0f;
 
-        if (role.VentPermission != Roles.VentPermission.CanNotUse && showFlag)
+        if (role.VentPermission != Roles.VentPermission.CanNotUse)
         {
             hudManager.ImpostorVentButton.Show();
 
@@ -171,7 +169,7 @@ class VentButtonVisibilityPatch
         else
             hudManager.ImpostorVentButton.Hide();
 
-        if (role.CanInvokeSabotage && showFlag)
+        if (role.CanInvokeSabotage)
             hudManager.SabotageButton.Show();
         else
             hudManager.SabotageButton.Hide();

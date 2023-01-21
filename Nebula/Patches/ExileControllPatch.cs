@@ -25,7 +25,7 @@ class ExileControllerPatch
     {
         public static void Postfix(ExileController __instance)
         {
-            if(CustomOptionHolder.mapOptions.getBool() && CustomOptionHolder.additionalEmergencyCoolDown.getFloat() > 0f)
+            if(CustomOptionHolder.meetingOptions.getBool() && CustomOptionHolder.additionalEmergencyCoolDown.getFloat() > 0f)
             {
                 int deadPlayers = 0;
                 foreach(var p in PlayerControl.AllPlayerControls)

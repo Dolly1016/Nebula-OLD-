@@ -14,6 +14,11 @@ public class Decoy : TypeWithImage
         obj.Renderer.flipX = Helpers.playerById(obj.OwnerId).cosmetics.FlipX;
     }
 
+    public override void OnDestroy(CustomObject obj)
+    {
+        HudManager.Instance.StartCoroutine(NebulaEffects.CoDisappearEffect(HudManager.Instance, LayerExpansion.GetDefaultLayer(), null, obj.GameObject.transform.position - new Vector3(0, 0, 1f), 1f).WrapToIl2Cpp());
+    }
+
     public override CustomObject.ObjectOrder GetObjectOrder(CustomObject? obj)
     {
         return CustomObject.ObjectOrder.IsOnSameRow;

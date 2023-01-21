@@ -283,7 +283,7 @@ public static class UpdatePatch
         if (MeetingHud.Instance != null) return;
         if (PlayerControl.LocalPlayer.Data.Role.IsImpostor)
         {
-            if (Game.GameData.data.myData.getGlobalData().role.HideKillButtonEvenImpostor || !Helpers.ShowButtons)
+            if (Game.GameData.data.myData.getGlobalData().role.HideKillButtonEvenImpostor)
             {
                 __instance.KillButton.Hide();
             }
@@ -435,5 +435,29 @@ public static class KeyboardJoystickUpdatePatch
                 }
             }
         }
+    }
+}
+
+[HarmonyPatch(typeof(HudManager), nameof(HudManager.SetHudActive))]
+public static class SetHudActivePatch
+{
+    public static bool Prefix(HudManager __instance, [HarmonyArgument(0)]bool isActive)
+    {
+        __instance.UseButton.transform.parent.gameObject.SetActive(isActive);
+        __instance.TaskPanel.gameObject.SetActive(isActive);
+        __instance.roomTracker.gameObject.SetActive(isActive);
+        IVirtualJoystick virtualJoystick = __instance.joystick;
+        if (virtualJoystick != null)
+        {
+            virtualJoystick.ToggleVisuals(isActive);
+        }
+        VirtualJoystick virtualJoystick2 = __instance.joystickR;
+        if (virtualJoystick2 == null)
+        {
+            return false;
+        }
+        virtualJoystick2.ToggleVisuals(isActive);
+
+        return false;
     }
 }

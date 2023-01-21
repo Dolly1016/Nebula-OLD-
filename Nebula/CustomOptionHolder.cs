@@ -142,7 +142,6 @@ public class CustomOptionHolder
     public static CustomOption canUseEmergencyWithoutSabotage;
     public static CustomOption canUseEmergencyWithoutReport;
     public static CustomOption severeEmergencyLock;
-    public static CustomOption canSkip;
     public static CustomOption dealAbstentionAsSelfVote;
     public static CustomOption hideVotedIcon;
     public static CustomOption additionalEmergencyCoolDown;
@@ -161,6 +160,9 @@ public class CustomOptionHolder
     public static CustomOption UnlimitedCameraSkeldOption;
     public static CustomOption UnlimitedCameraPolusOption;
     public static CustomOption UnlimitedCameraAirshipOption;
+    public static CustomOption ShowTimeLeftOnConsolesOption;
+    public static CustomOption ShowTimeLeftOnMeetingOption;
+    public static CustomOption LimitedAdmin;
 
     public static CustomOption? GetUnlimitedCameraOption()
     {
@@ -217,9 +219,13 @@ public class CustomOptionHolder
     public static CustomOption InitialAbilityCoolDownOption;
     public static CustomOption InitialForcefulAbilityCoolDownOption;
     public static CustomOption InitialModestAbilityCoolDownOption;
+    public static CustomOption KillCoolDownProceedIgnoringParent;
+    public static CustomOption KillCoolDownProceedIgnoringLadder;
+    public static CustomOption KillCoolDownProceedIgnoringMovingPlatform;
     public static CustomOption KillCoolDownProceedIgnoringDoorGame;
-    public static CustomOption KillCoolDownProceedIgnoringBlackOutGame;
     public static CustomOption KillCoolDownProceedIgnoringSecurityCamera;
+    public static CustomOption KillCoolDownProceedIgnoringBlackOutGame;
+    public static CustomOption KillCoolDownProceedIgnoringCommReceiver;
 
     public static CustomOption SecretRoleOption;
     public static CustomOption NumOfSecretCrewmateOption;
@@ -228,6 +234,9 @@ public class CustomOptionHolder
     public static CustomOption ChanceOfSecretImpostorOption;
     public static CustomOption RequiredTasksForArousal;
     public static CustomOption RequiredNumOfKillingForArousal;
+
+    public static CustomOption streamersOption;
+    public static CustomOption enforcePreventingSpoilerOption;
 
     public static CustomOption escapeHunterOption;
 
@@ -355,7 +364,6 @@ public class CustomOptionHolder
         canUseEmergencyWithoutSabotage = CustomOption.Create(Color.white, "option.canUseEmergencyWithoutSabotage", false, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
         canUseEmergencyWithoutReport = CustomOption.Create(Color.white, "option.canUseEmergencyWithoutReport", false, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
         severeEmergencyLock = CustomOption.Create(Color.white, "option.severeEmergencyLock", false, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
-        canSkip = CustomOption.Create(Color.white, "option.canSkip", true, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
         dealAbstentionAsSelfVote = CustomOption.Create(Color.white, "option.dealAbstentionAsSelfVote", false, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
         hideVotedIcon = CustomOption.Create(Color.white, "option.hideVotedIcon", false, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
         showRoleOfExiled = CustomOption.Create(Color.white, "option.showRoleOfExiled", false, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
@@ -508,6 +516,53 @@ public class CustomOptionHolder
         UnlimitedCameraSkeldOption = CustomOption.Create(Color.white, "option.devicesOption.unlimitedCameraSkeld", new string[] { "option.display.none", "option.devicesOption.camera.central", "option.devicesOption.camera.east", "option.devicesOption.camera.north", "option.devicesOption.camera.west" }, "option.display.none", DevicesOption).SetGameMode(CustomGameMode.All).AddPrerequisite(CameraAndDoorLogLimitOption);
         UnlimitedCameraPolusOption = CustomOption.Create(Color.white, "option.devicesOption.unlimitedCameraPolus", new string[] { "option.display.none", "option.devicesOption.camera.east", "option.devicesOption.camera.central", "option.devicesOption.camera.northeast", "option.devicesOption.camera.south", "option.devicesOption.camera.southwest", "option.devicesOption.camera.northwest" }, "option.display.none", DevicesOption).SetGameMode(CustomGameMode.All).AddPrerequisite(CameraAndDoorLogLimitOption);
         UnlimitedCameraAirshipOption = CustomOption.Create(Color.white, "option.devicesOption.unlimitedCameraAirship", new string[] { "option.display.none", "option.devicesOption.camera.engineRoom", "option.devicesOption.camera.vault", "option.devicesOption.camera.records", "option.devicesOption.camera.security", "option.devicesOption.camera.cargoBay", "option.devicesOption.camera.meetingRoom" }, "option.display.none", DevicesOption).SetGameMode(CustomGameMode.All).AddPrerequisite(CameraAndDoorLogLimitOption);
+        ShowTimeLeftOnConsolesOption = CustomOption.Create(Color.white, "option.devicesOption.showTimeLeftOnConsoles", false, DevicesOption).SetGameMode(CustomGameMode.All);
+        ShowTimeLeftOnMeetingOption = CustomOption.Create(Color.white, "option.devicesOption.showTimeLeftOnMeeting", false, DevicesOption).SetGameMode(CustomGameMode.All);
+        LimitedAdmin = CustomOption.Create(Color.white, "option.devicesOption.limitedAdmin", false, DevicesOption).SetGameMode(CustomGameMode.All);
+
+        LimitedAdmin.alternativeOptionScreenBuilder = (refresher) =>
+        {
+            MetaScreenContent getSuitableContent()
+            {
+                if (LimitedAdmin.getSelection() == 1)
+                    return new MSButton(1.6f, 0.4f, "Customize", TMPro.FontStyles.Bold, () =>
+                    {
+                        Action<byte> refresher = null;
+                        refresher = (mapId) => MetaDialog.OpenMapDialog(mapId, true, (obj, id) => Map.MapData.MapDatabase[id].SetUpAdminRoomButton(obj, () =>
+                        {
+                            MetaDialog.EraseDialog(1);
+                            refresher(id);
+                        }));
+                        refresher(GameOptionsManager.Instance.CurrentGameOptions.MapId);
+                    });
+                else
+                    return new MSMargin(1.7f);
+            }
+
+            return new MetaScreenContent[][] {
+                    new MetaScreenContent[]
+                    {
+                        new MSMargin(1.9f),
+                       new MSString(3f, LimitedAdmin.getName(), 2f, 0.8f, TMPro.TextAlignmentOptions.MidlineRight, TMPro.FontStyles.Bold),
+                    new MSString(0.2f, ":", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
+                    new MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () =>
+                    {
+                        LimitedAdmin.addSelection(-1);
+                        refresher();
+                    }),
+                    new MSString(1.5f, LimitedAdmin.getString(), 2f, 0.6f, TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
+                    new MSButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () =>
+                    {
+                        LimitedAdmin.addSelection(1);
+                        refresher();
+                    }),
+                    new MSMargin(0.2f),
+                    getSuitableContent(),
+                    new MSMargin(1f)
+                    }
+                };
+        };
+
 
         TasksOption = CustomOption.Create(Color.white, "option.tasksOption", false, null, true, false, "", CustomOptionTab.Settings).SetGameMode(~CustomGameMode.Ritual);
         CustomOption.RegisterTopOption(TasksOption);
@@ -565,19 +620,72 @@ public class CustomOptionHolder
         Roles.GhostRole.LoadAllOptionData();
         Roles.ExtraRole.LoadAllOptionData();
 
-        CoolDownOption = CustomOption.Create(Color.white, "option.coolDownOption", new string[] { "option.empty" }, "option.empty", null, true, false, "", CustomOptionTab.AdvancedSettings);
+        CoolDownOption = CustomOption.Create(Color.white, "option.coolDownOption", new string[] { "option.empty" }, "option.empty", null, true, false, "", CustomOptionTab.AdvancedSettings).SetGameMode(CustomGameMode.All);
         CustomOption.RegisterTopOption(CoolDownOption);
-        InitialKillCoolDownOption = CustomOption.Create(Color.white, "option.initialKillCoolDown", 10f, 5f, 30f, 2.5f, CoolDownOption);
+        InitialKillCoolDownOption = CustomOption.Create(Color.white, "option.initialKillCoolDown", 10f, 5f, 30f, 2.5f, CoolDownOption).SetGameMode(CustomGameMode.All);
         InitialKillCoolDownOption.suffix = "second";
-        InitialAbilityCoolDownOption = CustomOption.Create(Color.white, "option.initialAbilityCoolDown", 15f, 5f, 30f, 2.5f, CoolDownOption);
+        InitialAbilityCoolDownOption = CustomOption.Create(Color.white, "option.initialAbilityCoolDown", 15f, 5f, 30f, 2.5f, CoolDownOption).SetGameMode(CustomGameMode.All);
         InitialAbilityCoolDownOption.suffix = "second";
-        InitialForcefulAbilityCoolDownOption = CustomOption.Create(Color.white, "option.initialForcefulAbilityCoolDown", 20f, 5f, 30f, 2.5f, CoolDownOption);
+        InitialForcefulAbilityCoolDownOption = CustomOption.Create(Color.white, "option.initialForcefulAbilityCoolDown", 20f, 5f, 30f, 2.5f, CoolDownOption).SetGameMode(CustomGameMode.All);
         InitialForcefulAbilityCoolDownOption.suffix = "second";
-        InitialModestAbilityCoolDownOption = CustomOption.Create(Color.white, "option.initialModestAbilityCoolDown", 10f, 5f, 30f, 2.5f, CoolDownOption);
+        InitialModestAbilityCoolDownOption = CustomOption.Create(Color.white, "option.initialModestAbilityCoolDown", 10f, 5f, 30f, 2.5f, CoolDownOption).SetGameMode(CustomGameMode.All);
         InitialModestAbilityCoolDownOption.suffix = "second";
-        KillCoolDownProceedIgnoringDoorGame = CustomOption.Create(Color.white, "option.killCoolDownProceedIgnoringDoorGame", false, CoolDownOption);
-        KillCoolDownProceedIgnoringBlackOutGame = CustomOption.Create(Color.white, "option.killCoolDownProceedIgnoringBlackOutGame", false, CoolDownOption);
-        KillCoolDownProceedIgnoringSecurityCamera = CustomOption.Create(Color.white, "option.killCoolDownProceedIgnoringSecurityCamera", false, CoolDownOption);
+
+        MetaScreenContent[][] AddKillCoolDownProceedIgnoringOptions(Action refresher,params CustomOption[] options)
+        {
+            List<MetaScreenContent[]> result = new();
+            result.Add(new MetaScreenContent[]{
+                 new MSString(5f, Language.Language.GetString("option.killCoolDownProceedIgnoring"), 2f, 0.6f, TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
+                 new MSMargin(2f)
+            });
+
+            List<MetaScreenContent> contents=new();
+            foreach (var option in options)
+            {
+                var o = option;
+                contents.Add(
+                     new MSButton(2f, 0.4f, o.getName(), TMPro.FontStyles.Bold, () =>
+                     {
+                         o.addSelection(1);
+                         refresher();
+                     }, o.getBool() ? Color.yellow : Color.white).EditFontSize(3f,0.3f)
+                    );
+                contents.Add(new MSMargin(0.1f));
+
+                if (contents.Count == 6)
+                {
+                    result.Add(contents.ToArray());
+                    contents.Clear();
+                }
+            }
+            if(contents.Count>0) result.Add(contents.ToArray());
+
+            return result.ToArray();
+        }
+
+        KillCoolDownProceedIgnoringParent = CustomOption.Create(Color.white, "option.killCoolDownProceedIgnoring", new string[] { "option.empty" }, "option.empty", CoolDownOption).SetGameMode(CustomGameMode.All);
+        KillCoolDownProceedIgnoringLadder = CustomOption.Create(Color.white, "option.killCoolDownProceedIgnoringLadder", false, KillCoolDownProceedIgnoringParent).HiddenOnMetaScreen(true).SetGameMode(CustomGameMode.All);
+        KillCoolDownProceedIgnoringMovingPlatform = CustomOption.Create(Color.white, "option.killCoolDownProceedIgnoringMovingPlatform", false, KillCoolDownProceedIgnoringParent).HiddenOnMetaScreen(true).SetGameMode(CustomGameMode.All);
+        KillCoolDownProceedIgnoringDoorGame = CustomOption.Create(Color.white, "option.killCoolDownProceedIgnoringDoorGame", false, KillCoolDownProceedIgnoringParent).HiddenOnMetaScreen(true).SetGameMode(CustomGameMode.All);
+        KillCoolDownProceedIgnoringSecurityCamera = CustomOption.Create(Color.white, "option.killCoolDownProceedIgnoringSecurityCamera", false, KillCoolDownProceedIgnoringParent).HiddenOnMetaScreen(true).SetGameMode(CustomGameMode.All);
+        KillCoolDownProceedIgnoringBlackOutGame = CustomOption.Create(Color.white, "option.killCoolDownProceedIgnoringBlackOutGame", false, KillCoolDownProceedIgnoringParent).HiddenOnMetaScreen(true).SetGameMode(CustomGameMode.All);
+        KillCoolDownProceedIgnoringCommReceiver = CustomOption.Create(Color.white, "option.killCoolDownProceedIgnoringCommReceiver", false, KillCoolDownProceedIgnoringParent).HiddenOnMetaScreen(true).SetGameMode(CustomGameMode.All);
+
+        KillCoolDownProceedIgnoringParent.alternativeOptionScreenBuilder = (refresher) =>
+            AddKillCoolDownProceedIgnoringOptions(refresher,
+            KillCoolDownProceedIgnoringLadder,
+            KillCoolDownProceedIgnoringMovingPlatform,
+            KillCoolDownProceedIgnoringDoorGame,
+            KillCoolDownProceedIgnoringSecurityCamera,
+            KillCoolDownProceedIgnoringBlackOutGame,
+            KillCoolDownProceedIgnoringCommReceiver
+            );
+        
+
+        streamersOption = CustomOption.Create(Color.white, "option.streamersOption", false, null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.All);
+        CustomOption.RegisterTopOption(streamersOption);
+        enforcePreventingSpoilerOption = CustomOption.Create(Color.white, "option.streamersOption.enforcePreventingSpoiler", false, streamersOption).SetGameMode(CustomGameMode.All);
+
 
         exclusiveAssignmentParent = CustomOption.Create(new Color(204f / 255f, 204f / 255f, 0, 1f), "option.exclusiveAssignment", false, null, true, false, "", CustomOptionTab.AdvancedSettings).SetGameMode(CustomGameMode.Standard | CustomGameMode.FreePlay);
         CustomOption.RegisterTopOption(exclusiveAssignmentParent);

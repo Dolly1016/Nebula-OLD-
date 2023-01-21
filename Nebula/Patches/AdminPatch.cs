@@ -1,4 +1,6 @@
-﻿namespace Nebula.Patches;
+﻿using Nebula.Map;
+
+namespace Nebula.Patches;
 
 [Harmony]
 public class AdminPatch
@@ -23,6 +25,8 @@ public class AdminPatch
     public static AdminMode adminMode = AdminMode.Default;
     //背景色を変更するべきかどうか
     public static bool shouldChangeColor = true;
+
+    public static Int32 divMask = Int32.MaxValue;
 
     public static void ResetData()
     {
@@ -66,6 +70,21 @@ public class AdminPatch
     [HarmonyPatch(typeof(MapConsole), nameof(MapConsole.Use))]
     public static class MapConsoleUsePatch
     {
+        public static void Prefix(MapConsole __instance)
+        {
+            var mapData = MapData.GetCurrentMapData();
+            divMask = Int32.MaxValue & ~1;
+
+            if (CustomOptionHolder.DevicesOption.getBool() && CustomOptionHolder.LimitedAdmin.getBool())
+            {
+                int adminId;
+                if (!mapData.AdminNameMap.TryGetValue(__instance.name, out adminId)) adminId = 0;
+
+                if (mapData.LimitedAdmin.TryGetValue(adminId, out var option))
+                    divMask &= option.getSelection();
+            }
+        }
+
         public static void Postfix(MapConsole __instance)
         {
             isStandardAdmin = true;
@@ -78,6 +97,9 @@ public class AdminPatch
     static Dictionary<CounterArea, int> impostorsMap = new Dictionary<CounterArea, int>();
     static Dictionary<CounterArea, int> deadBodiesMap = new Dictionary<CounterArea, int>();
 
+    public static Int32 divMaskByConsole = Int32.MaxValue;
+    public static Int32 divMaskFinally = Int32.MaxValue;
+
     [HarmonyPatch(typeof(MapCountOverlay), nameof(MapCountOverlay.OnEnable))]
     public static class MapCountOverlayOnEnablePatch
     {
@@ -87,7 +109,17 @@ public class AdminPatch
             impostorsMap.Clear();
             deadBodiesMap.Clear();
 
-            if (Roles.Roles.Jailer.IsJailerCountOverlay(__instance))
+            divMaskByConsole = divMask;
+            divMask = Int32.MaxValue;
+
+            if (CustomOptionHolder.mapOptions.getBool() && CustomOptionHolder.useClassicAdmin.getBool())
+                divMaskByConsole &= ~Map.MapData.GetCurrentMapData().ClassicAdminMask;
+            
+
+            divMaskFinally = divMaskByConsole;
+            MapBehaviourExpansion.EnmaskMap(divMaskFinally);
+
+            if (Roles.RoleSystem.ImpAdminSystem.IsJailerCountOverlay(__instance))
             {
                 __instance.timer = 1f;
                 return false;
@@ -161,7 +193,7 @@ public class AdminPatch
 
             //重複防止
             HashSet<byte> detectedPlayers = new HashSet<byte>();
-
+            Map.MapData? currentMapData = (divMaskFinally != Int32.MaxValue) ? Map.MapData.GetCurrentMapData() : null;
 
             for (int i = 0; i < __instance.CountAreas.Length; i++)
             {
@@ -186,6 +218,11 @@ public class AdminPatch
                     {
                         if (!MeetingHud.Instance)
                         {
+
+                            if (divMaskFinally != Int32.MaxValue)
+                                if (currentMapData!.AdminSystemTypeMap.TryGetValue(plainShipRoom.RoomId, out int index) && (divMaskFinally & (1 << index)) == 0) continue;
+                            
+
                             //通常時のアドミン
 
                             int num = plainShipRoom.roomArea.OverlapCollider(filter, __instance.buffer);

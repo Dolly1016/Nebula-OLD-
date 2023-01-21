@@ -249,7 +249,7 @@ public class Assignable
 
     public Module.CustomOption CreateOption(Color color, string name, object[] selections, System.Object defaultValue, bool isGeneral = false)
     {
-        Module.CustomOption option = new Module.CustomOption(color, (isGeneral ? "" : "role." + this.LocalizeName + ".") + name, selections, defaultValue, TopOption, false, false, "", Module.CustomOptionTab.None);
+        Module.CustomOption option = new Module.CustomOption(color, (isGeneral ? "" : "role." + this.LocalizeName + ".") + name, selections, Array.IndexOf(selections, defaultValue), TopOption, false, false, "", Module.CustomOptionTab.None);
         option.GameMode = ValidGamemode | Module.CustomGameMode.FreePlay;
 
         return option;
@@ -387,6 +387,12 @@ public class Assignable
 
     }
 
+    /// <summary>
+    /// 自身が特別な会議ボタンを押した際に呼び出されます。
+    /// </summary>
+    [RoleLocalMethod]
+    public virtual void OnCallSpecialMeeting() {}
+
     /*--------------------------------------------------------------------------------------*/
 
     /// <summary>
@@ -459,6 +465,13 @@ public class Assignable
     /// </summary>
     [RoleLocalMethod]
     public virtual void OnMeetingEnd() { }
+
+    /// <summary>
+    /// タスクオーバーレイが開かれたときに呼び出されます。
+    /// </summary>
+    /// <param name="mapTaskOverlay"></param>
+    /// <param name="iconGenerator"></param>
+    public virtual void OnShowMapTaskOverlay(MapTaskOverlay mapTaskOverlay, Action<Vector2, bool> iconGenerator) { }
 
     /*--------------------------------------------------------------------------------------*/
 

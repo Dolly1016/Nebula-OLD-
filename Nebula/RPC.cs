@@ -90,7 +90,8 @@ public enum CustomRPC
     DecoySwap,
     Paint,
     Poltergeist,
-    InstantiateDeadBody
+    InstantiateDeadBody,
+    EnterRemoteVent
 }
 
 //RPCを受け取ったときのイベント
@@ -361,6 +362,9 @@ class RPCHandlerPatch
             case (byte)CustomRPC.InstantiateDeadBody:
                 RPCEvents.InstantiateDeadBody(reader.ReadByte(), new Vector3(reader.ReadSingle(), reader.ReadSingle()));
                 break;
+            case (byte)CustomRPC.EnterRemoteVent:
+                RPCEvents.EnterRemoteVent(reader.ReadByte(), new Vector2(reader.ReadSingle(), reader.ReadSingle()),reader.ReadInt32());
+                break;
         }
     }
 }
@@ -382,6 +386,7 @@ static class RPCEvents
         Objects.Ghost.Initialize();
         Objects.SoundPlayer.Initialize();
         Patches.LightPatch.Initialize();
+        MapBehaviourExpansion.Initialize();
     }
 
     public static void SetMyColor(byte playerId, byte hue,byte dis,Color mainColor,Color shadowColor)
@@ -539,8 +544,11 @@ static class RPCEvents
         if (hasRole1) extra1 = modData1.GetExtraRoleData(role.id);
         if (hasRole2) extra2 = modData2.GetExtraRoleData(role.id);
 
-        if (hasRole1) SetExtraRole(player2.PlayerId, role, extra1); else ImmediatelyUnsetExtraRole(role, player2.PlayerId);
-        if (hasRole2) SetExtraRole(player1.PlayerId, role, extra2); else ImmediatelyUnsetExtraRole(role, player1.PlayerId);
+        if (hasRole1) ImmediatelyUnsetExtraRole(role, player1.PlayerId);
+        if (hasRole2) ImmediatelyUnsetExtraRole(role, player2.PlayerId);
+
+        if (hasRole1) SetExtraRole(player2.PlayerId, role, extra1); 
+        if (hasRole2) SetExtraRole(player1.PlayerId, role, extra2);
 
     }
 
@@ -1589,6 +1597,45 @@ static class RPCEvents
         deadBody.transform.position = position;
         deadBody.enabled = true;
     }
+
+    static public void EnterRemoteVent(byte playerId, Vector2 pos,int ventId)
+    {
+        Vent v = ShipStatus.Instance.AllVents.FirstOrDefault((v) => v.Id == ventId);
+        if (v == null) return;
+        var p = Helpers.playerById(playerId);
+
+        HudManager.Instance.StartCoroutine(NebulaEffects.CoDisappearEffect(HudManager.Instance,LayerExpansion.GetDefaultLayer(),null,new Vector3(pos.x,pos.y,-1)).WrapToIl2Cpp());
+        HudManager.Instance.StartCoroutine(NebulaEffects.CoGroupOfLeavesEffect(HudManager.Instance, LayerExpansion.GetDefaultLayer(), null, v.transform.position + v.Offset + new Vector3(0, 0, -2)).WrapToIl2Cpp());
+
+
+        //PlayerPhysics.CoEnterVent
+        p.NetTransform.Halt();
+        p.moveable = false;
+        p.inVent = true;
+
+        //Vent.EnterVent (in PlayerPhysics.CoEnterVent)
+        if (p.AmOwner)
+        {
+            Vent.currentVent = v;
+            ConsoleJoystick.SetMode_Vent();
+
+            if (Constants.ShouldPlaySfx())
+            {
+                SoundManager.Instance.StopSound(ShipStatus.Instance.VentEnterSound);
+                SoundManager.Instance.PlaySound(ShipStatus.Instance.VentEnterSound, false, 1f, null).pitch = FloatRange.Next(0.8f, 1.2f);
+            }
+        }
+
+        p.MyPhysics.Animations.PlayIdleAnimation();
+        p.Visible = false;
+        p.transform.position = v.transform.position + v.Offset;
+
+        if (p.AmOwner)
+            VentilationSystem.Update(VentilationSystem.Operation.Enter, v.Id);
+
+        if (p.AmOwner)
+            v.SetButtons(true);
+    }
 }
 
 public class RPCEventInvoker
@@ -2498,5 +2545,16 @@ public class RPCEventInvoker
         writer.Write(position.y);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         RPCEvents.InstantiateDeadBody(targetId, position);
+    }
+
+    static public void EnterRemoteVent(Vector2 pos, Vent vent)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.InstantiateDeadBody, Hazel.SendOption.Reliable, -1);
+        writer.Write(PlayerControl.LocalPlayer.PlayerId);
+        writer.Write(pos.x);
+        writer.Write(pos.y);
+        writer.Write(vent.Id);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RPCEvents.EnterRemoteVent(PlayerControl.LocalPlayer.PlayerId,pos,vent.Id);
     }
 }

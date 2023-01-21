@@ -1,16 +1,24 @@
-﻿namespace Nebula.Roles.CrewmateRoles;
+﻿using UnityEngine;
+
+namespace Nebula.Roles.CrewmateRoles;
 
 public class Mayor : Role
 {
     static public Color RoleColor = new Color(3f / 255f, 79f / 255f, 66f / 255f);
 
     public int votesId { get; private set; }
-    public override RelatedRoleData[] RelatedRoleDataInfo { get => new RelatedRoleData[] { new RelatedRoleData(votesId, "Vote Stock", 0, 20) }; }
+    public int canCallEmergencyId { get;private set; }
+    public override RelatedRoleData[] RelatedRoleDataInfo { get => new RelatedRoleData[] { new RelatedRoleData(votesId, "Vote Stock", 0, 20), new RelatedRoleData(canCallEmergencyId, "Can Call Special Meeting", 0, 1,new string[] { "False","True"}) }; }
 
     private Module.CustomOption voteAssignmentOption;
     private Module.CustomOption minVoteOption;
     private Module.CustomOption maxVoteOption;
     private Module.CustomOption maxVoteStockOption;
+    private Module.CustomOption haveRemoteEmergencyOption;
+
+    private CustomButton emergencyButton;
+
+    private static SpriteLoader emergencySprite = new SpriteLoader("Nebula.Resources.EmergencyButton.png", 115f);
 
     //投じる票数の表示
     private TMPro.TextMeshPro countText;
@@ -129,6 +137,7 @@ public class Mayor : Role
         minVoteOption = CreateOption(Color.white, "minVote", 0f, 0f, 20f, 1f);
         maxVoteOption = CreateOption(Color.white, "maxVote", 5f, 0f, 20f, 1f);
         maxVoteStockOption = CreateOption(Color.white, "maxVoteStock", 5f, 0f, 20f, 1f);
+        haveRemoteEmergencyOption = CreateOption(Color.white, "haveRemoteEmergencyButton", true);
     }
 
     public override void OnRoleRelationSetting()
@@ -136,11 +145,66 @@ public class Mayor : Role
         RelatedRoles.Add(Roles.Opportunist);
     }
 
+    public override void OnCallSpecialMeeting()
+    {
+        Game.GameData.data.myData.getGlobalData().SetRoleData(canCallEmergencyId, 0);
+    }
+
+    public override void ButtonInitialize(HudManager __instance)
+    {
+        RPCEventInvoker.UpdateRoleData(PlayerControl.LocalPlayer.PlayerId, canCallEmergencyId, haveRemoteEmergencyOption.getBool() ? 1 : 0);
+        if (emergencyButton != null)
+        {
+            emergencyButton.Destroy();
+        }
+        emergencyButton = new CustomButton(
+            () =>
+            {
+                Patches.EmergencyPatch.isSpecialEmergency = true;
+
+                var console = Map.MapData.MapDatabase[0].Assets.transform.GetChild(4).GetChild(0).GetChild(4).gameObject.GetComponent<SystemConsole>();
+                Minigame minigame = GameObject.Instantiate<Minigame>(console.MinigamePrefab);
+                minigame.transform.SetParent(Camera.main.transform, false);
+                minigame.transform.localPosition = new Vector3(0f, 0f, -50f);
+                minigame.Begin(null);
+            },
+            () =>
+            {
+                return !PlayerControl.LocalPlayer.Data.IsDead && Game.GameData.data.myData.getGlobalData().GetRoleData(canCallEmergencyId) > 0;
+            },
+            () =>
+            {
+                int remain = Game.GameData.data.myData.getGlobalData().GetRoleData(canCallEmergencyId);
+                return remain == 1 && PlayerControl.LocalPlayer.CanMove;
+            },
+            () => { emergencyButton.Timer = emergencyButton.MaxTimer; },
+            emergencySprite.GetSprite(),
+            Expansion.GridArrangeExpansion.GridArrangeParameter.None,
+            __instance,
+            Module.NebulaInputManager.abilityInput.keyCode,
+            "button.label.emergency"
+        ).SetTimer(CustomOptionHolder.InitialModestAbilityCoolDownOption.getFloat());
+        emergencyButton.UsesText.text = "1";
+        emergencyButton.MaxTimer = 10f;
+    }
+
+    public override void CleanUp()
+    {
+
+        if (emergencyButton != null)
+        {
+            emergencyButton.Destroy();
+            emergencyButton = null;
+        }
+    }
+
+
     public Mayor()
         : base("Mayor", "mayor", RoleColor, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
              Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Crewmate.crewmateEndSet,
              false, VentPermission.CanNotUse, false, false, false)
     {
         votesId = Game.GameData.RegisterRoleDataId("mayor.votes");
+        canCallEmergencyId = Game.GameData.RegisterRoleDataId("mayor.canCallEmergency");
     }
 }

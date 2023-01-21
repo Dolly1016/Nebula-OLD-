@@ -1,18 +1,19 @@
-﻿namespace Nebula.Roles.NeutralRoles;
+﻿using static Il2CppSystem.Globalization.CultureInfo;
+
+namespace Nebula.Roles.NeutralRoles;
 public class Jackal : Role
 {
     static public Color RoleColor = new Color(0f, 162f / 255f, 211f / 255f);
 
     static private CustomButton killButton;
     static private CustomButton sidekickButton;
-    static private SpriteRenderer rockedButtonRenderer;
+    static private SpriteRenderer lockedButtonRenderer;
 
     static public Module.CustomOption CanCreateSidekickOption;
     static public Module.CustomOption NumOfKillingToCreateSidekickOption;
     static public Module.CustomOption KillCoolDownOption;
 
     private SpriteLoader sidekickButtonSprite = new SpriteLoader("Nebula.Resources.SidekickButton.png", 115f);
-    private SpriteLoader lockedButtonSprite = new SpriteLoader("Nebula.Resources.LockedButton.png", 100f);
 
     public override HelpSprite[] helpSprite => new HelpSprite[]
     {
@@ -122,7 +123,7 @@ public class Jackal : Role
                 int goal = (int)NumOfKillingToCreateSidekickOption.getFloat();
                 if (killing >= goal)
                 {
-                    rockedButtonRenderer.gameObject.SetActive(false);
+                    lockedButtonRenderer?.gameObject.SetActive(false);
                     sidekickButton.ShowUsesText(false);
                 }
                 else
@@ -140,7 +141,18 @@ public class Jackal : Role
             "button.label.sidekick"
         );
         sidekickButton.MaxTimer = 20;
-        rockedButtonRenderer = sidekickButton.AddOverlay(lockedButtonSprite.GetSprite(), 0f);
+
+        int killing = PlayerControl.LocalPlayer.GetModData().GetRoleData(killingDataId);
+        int goal = (int)NumOfKillingToCreateSidekickOption.getFloat();
+        if (killing < goal)
+        {
+            lockedButtonRenderer = sidekickButton.AddOverlay(CustomButton.lockedButtonSprite.GetSprite(), 0f);
+        }
+        else
+        {
+            lockedButtonRenderer = null;
+        }
+
         sidekickButton.UsesText.text= NumOfKillingToCreateSidekickOption.getFloat().ToString();
     }
 
@@ -185,12 +197,11 @@ public class Jackal : Role
         }
     }
 
-    public override void FinalizeInGame(PlayerControl __instance)
+    public override void GlobalFinalizeInGame(PlayerControl __instance)
     {
-        base.FinalizeInGame(__instance);
+        base.GlobalFinalizeInGame(__instance);
 
         ChangeSidekickToJackal(__instance.PlayerId);
-
     }
 
     public override void OnDied(byte playerId)

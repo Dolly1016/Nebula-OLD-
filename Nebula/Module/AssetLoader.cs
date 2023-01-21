@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using UnityEngine;
 using Il2CppType = UnhollowerRuntimeLib.Il2CppType;
 
 namespace Nebula.Module;
@@ -20,6 +21,11 @@ public static class AssetLoader
 
     public static AudioClip Executioner;
 
+    public static GameObject SkeldDivMap;
+    public static GameObject MIRADivMap;
+    public static GameObject PolusDivMap;
+    public static GameObject AirshipDivMap;
+
     static public void Load()
     {
         var resourceStream = assembly.GetManifestResourceStream("Nebula.Resources.Assets.nebula_asset");
@@ -38,6 +44,75 @@ public static class AssetLoader
         RaiderThrow = assetBundleBundle.LoadAsset<AudioClip>("RaiderThrow.wav").DontUnload();
 
         Executioner = assetBundleBundle.LoadAsset<AudioClip>("Executioner.wav").DontUnload();
+
+
+        SkeldDivMap = assetBundleBundle.LoadAsset<GameObject>("SkeldDivMap").DontUnload();
+        MIRADivMap = assetBundleBundle.LoadAsset<GameObject>("MIRADivMap").DontUnload();
+        PolusDivMap = assetBundleBundle.LoadAsset<GameObject>("PolusDivMap").DontUnload();
+        AirshipDivMap = assetBundleBundle.LoadAsset<GameObject>("AirshipDivMap").DontUnload();
+    }
+
+    public static Sprite GetMapSprite(byte mapId,Vector2 size,Int32 mask)
+    {
+        GameObject prefab;
+        switch (mapId)
+        {
+            case 0:
+                prefab = SkeldDivMap;
+                break;
+            case 1:
+                prefab = MIRADivMap;
+                break;
+            case 2:
+                prefab = PolusDivMap;
+                break;
+            case 4:
+                prefab = AirshipDivMap;
+                break;
+            default:
+                prefab= null;
+                break;
+        }
+        if (prefab == null) return null;
+        var obj = GameObject.Instantiate(prefab);
+        Camera cam = obj.AddComponent<Camera>();
+        cam.orthographic = true;
+        cam.orthographicSize = size.y/200;
+        cam.transform.localScale = Vector3.one;
+        cam.clearFlags = CameraClearFlags.Nothing;
+        cam.cullingMask = 1 << 30;
+        cam.enabled = true;
+
+        try
+        {
+            int children = obj.transform.childCount;
+            for (int i = 0; i < children; i++)
+            {
+                var c = obj.transform.GetChild(i);
+                c.GetChild(0).gameObject.SetActive((mask & 1) == 0);
+                c.GetChild(1).gameObject.SetActive((mask & 1) == 1);
+                c.transform.localPosition += new Vector3(0, 0, 1);
+                mask >>= 1;
+            }
+        }
+        catch{ }
+
+        RenderTexture rt = new RenderTexture((int)size.x, (int)size.y, 16);
+        rt.Create();
+
+        cam.targetTexture = rt;
+        cam.Render();
+
+        RenderTexture.active = cam.targetTexture;
+        Texture2D texture2D = new Texture2D(rt.width, rt.height, TextureFormat.ARGB32, false, false);
+        texture2D.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
+        texture2D.Apply();
+
+        RenderTexture.active = null;
+        GameObject.Destroy(cam.targetTexture);
+        GameObject.Destroy(obj);
+
+        return Helpers.loadSpriteFromResources(texture2D, 100f, new Rect(0, 0, texture2D.width, texture2D.height));
     }
 
     public static byte[] ReadFully(this Stream input)

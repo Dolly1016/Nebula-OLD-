@@ -590,6 +590,26 @@ class MyWalkPatch
     }
 }
 
+//特別な会議を呼び出せるようにする
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.ReportDeadBody))]
+class ReportDeadBodyPatch
+{
+    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] GameData.PlayerInfo target)
+    {
+        if (AmongUsClient.Instance.IsGameOver || MeetingHud.Instance || __instance.Data.IsDead)
+        {
+            return false;
+        }
+        
+        MeetingRoomManager.Instance.AssignSelf(__instance, target);
+        if (!AmongUsClient.Instance.AmHost) return false;
+        
+        DestroyableSingleton<HudManager>.Instance.OpenMeetingRoom(__instance);
+        __instance.RpcStartMeeting(target);
+
+        return false;
+    }
+}
 
 [HarmonyPatch(typeof(CustomNetworkTransform), nameof(CustomNetworkTransform.FixedUpdate))]
 class WalkMagnitudePatch
@@ -649,6 +669,8 @@ class PlayerIsKillTimerEnabledPatch
 {
     public static void Postfix(PlayerControl __instance, ref bool __result)
     {
+        __instance.ForceKillTimerContinue = false;
+
         __result &= (!MapBehaviour.Instance || !MapBehaviour.Instance.IsOpenStopped);
 
         if (__result)
@@ -657,12 +679,19 @@ class PlayerIsKillTimerEnabledPatch
             {
                 if (CustomOptionHolder.CoolDownOption.getBool())
                 {
-                    if (CustomOptionHolder.KillCoolDownProceedIgnoringBlackOutGame.getBool() && Minigame.Instance.TryCast<SwitchMinigame>())return;
-                    if (CustomOptionHolder.KillCoolDownProceedIgnoringDoorGame.getBool() && Minigame.Instance.TryCast<IDoorMinigame>()!=null) return;
-                    if (CustomOptionHolder.KillCoolDownProceedIgnoringSecurityCamera.getBool() && (Minigame.Instance.TryCast<PlanetSurveillanceMinigame>()|| Minigame.Instance.TryCast<SurveillanceMinigame>())) return;
+                    if (CustomOptionHolder.KillCoolDownProceedIgnoringCommReceiver.getBool() && Minigame.Instance.TryCast<AuthGame>()) return;
+                    if (CustomOptionHolder.KillCoolDownProceedIgnoringBlackOutGame.getBool() && Minigame.Instance.TryCast<SwitchMinigame>()) return;
+                    if (CustomOptionHolder.KillCoolDownProceedIgnoringDoorGame.getBool() && Minigame.Instance.TryCast<IDoorMinigame>() != null) return;
+                    if (CustomOptionHolder.KillCoolDownProceedIgnoringSecurityCamera.getBool() && (Minigame.Instance.TryCast<PlanetSurveillanceMinigame>() || Minigame.Instance.TryCast<SurveillanceMinigame>())) return;
                 }
                 __result = false;
             }
+        }
+
+        if (CustomOptionHolder.CoolDownOption.getBool())
+        {
+            if (__instance.inMovingPlat) __result |= CustomOptionHolder.KillCoolDownProceedIgnoringMovingPlatform.getBool();
+            if (__instance.onLadder) __result |= CustomOptionHolder.KillCoolDownProceedIgnoringLadder.getBool();
         }
     }
 }

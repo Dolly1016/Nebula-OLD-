@@ -3,6 +3,10 @@
 using static GameData;
 using Hazel;
 using AmongUs.Data.Player;
+using Nebula.Map;
+using JetBrains.Annotations;
+using Nebula.Roles.CrewmateRoles;
+using UnityEngine;
 
 namespace Nebula.Game;
 
@@ -167,7 +171,12 @@ public class MyPlayerData
 {
     public PlayerControl? currentTarget { get; set; }
     private PlayerData globalData { get; set; }
-    public bool CanSeeEveryoneInfo { get; set; }
+    private bool canSeeEveryoneInfo;
+    public bool CanSeeEveryoneInfo { get {
+            if (Patches.NebulaOption.configPreventSpoiler.Value) return false;
+            if (CustomOptionHolder.streamersOption.getBool() && CustomOptionHolder.enforcePreventingSpoilerOption.getBool()) return false;
+            return canSeeEveryoneInfo;  
+        } set { canSeeEveryoneInfo = value; } }
     public float VentDurationTimer { get; set; }
     public float VentCoolDownTimer { get; set; }
     public List<TaskInfo> InitialTasks { get; set; }
@@ -1127,15 +1136,114 @@ public class VentData
 
 public class UtilityTimer
 {
-    public float AdminTimer { get; set; }
-    public float VitalsTimer { get; set; }
-    public float CameraTimer { get; set; }
-
-    public UtilityTimer()
+    float adminTimer, vitalsTimer, cameraTimer;
+    public float AdminTimer { get => adminTimer; set {
+            adminTimer = value;
+            if (value < 1000f) foreach (var text in AdminConsoleShowers)if(text) text.text = String.Format("{0:f1}s", adminTimer);
+        } }
+    public float VitalsTimer { get => vitalsTimer; set
+        {
+            vitalsTimer = value;
+            if (value < 1000f) foreach (var text in VitalsConsoleShowers) if (text) text.text = String.Format("{0:f1}s", vitalsTimer);
+        }
+    }
+    public float CameraTimer
     {
+        get => cameraTimer; set
+        {
+            cameraTimer = value;
+            if (value < 1000f) foreach (var text in CameraConsoleShowers) if (text) text.text = String.Format("{0:f1}s", cameraTimer);
+        }
+    }
+
+    public List<TMPro.TextMeshPro> AdminConsoleShowers;
+    public List<TMPro.TextMeshPro> VitalsConsoleShowers;
+    public List<TMPro.TextMeshPro> CameraConsoleShowers;
+
+    public void SearchUpConsoles(ShipStatus shipStatus)
+    {
+        TMPro.TextMeshPro createText(Transform parent,float height)
+        {
+            var result = GameObject.Instantiate(HudManager.Instance.TaskPanel.taskText);
+            result.transform.SetParent(parent);
+            result.transform.localPosition = new Vector3(0, height, -0.5f);
+            result.transform.localScale = new Vector3(1f, 1f, 1f) / ShipStatus.Instance.transform.localScale.y;
+            result.fontSize = result.fontSizeMax = result.fontSizeMin = 1.4f;
+            result.rectTransform.sizeDelta = new Vector2(0f, 0f);
+            result.rectTransform.pivot = new Vector2(0.5f, 0.5f);
+            result.alignment = TMPro.TextAlignmentOptions.Center;
+            result.fontStyle = TMPro.FontStyles.Bold;
+            result.text = "";
+            result.gameObject.layer = LayerExpansion.GetDefaultLayer();
+            return result;
+        }
+
+        var mapData = MapData.GetCurrentMapData();
+        foreach (var c in mapData.AllAdmins(shipStatus)) AdminConsoleShowers.Add(createText(c.Item1.transform,c.Item2));
+        foreach (var c in mapData.AllVitals(shipStatus)) VitalsConsoleShowers.Add(createText(c.Item1.transform, c.Item2));
+        foreach (var c in mapData.AllCameras(shipStatus)) CameraConsoleShowers.Add(createText(c.Item1.transform, c.Item2));
+    }
+
+    
+    public void DetachConsoles()
+    {
+        AdminConsoleShowers.Clear();
+        VitalsConsoleShowers.Clear();
+        CameraConsoleShowers.Clear();
+    }
+
+    public UtilityTimer() {
+        adminTimer = 100f;
+        vitalsTimer = 100f;
+        cameraTimer = 100f;
+        AdminConsoleShowers = new List<TMPro.TextMeshPro>();
+        VitalsConsoleShowers = new List<TMPro.TextMeshPro>();
+        CameraConsoleShowers = new List<TMPro.TextMeshPro>();
+    }
+
+    public void Initialize()
+    {
+        if(CustomOptionHolder.ShowTimeLeftOnConsolesOption.getBool())SearchUpConsoles(ShipStatus.Instance);
         AdminTimer = CustomOptionHolder.AdminLimitOption.getBool() ? CustomOptionHolder.AdminLimitOption.getFloat() : 10000f;
         VitalsTimer = CustomOptionHolder.VitalsLimitOption.getBool() ? CustomOptionHolder.VitalsLimitOption.getFloat() : 10000f;
         CameraTimer = CustomOptionHolder.CameraAndDoorLogLimitOption.getBool() ? CustomOptionHolder.CameraAndDoorLogLimitOption.getFloat() : 10000f;
+    }
+
+    public void OnMeetingStart(MeetingHud meetingHud) {
+        if (CustomOptionHolder.DevicesOption.getBool() && CustomOptionHolder.ShowTimeLeftOnMeetingOption.getBool())
+        {
+            var result = GameObject.Instantiate(HudManager.Instance.TaskPanel.taskText);
+            
+            result.transform.SetParent(meetingHud.transform);
+            result.transform.localPosition = new Vector3(0f, 0f, -10f);
+            result.transform.localScale = new Vector3(1f, 1f, 1f);
+            result.fontSize = result.fontSizeMax = result.fontSizeMin = 1.7f;
+            result.rectTransform.sizeDelta = new Vector2(0f, 0f);
+            result.rectTransform.pivot = new Vector2(0f, 1f);
+            result.alignment = TMPro.TextAlignmentOptions.BottomLeft;
+            result.fontStyle = TMPro.FontStyles.Bold;
+            result.text = "";
+
+            if(adminTimer<1000f)
+                result.text+= String.Format("Admin: {0:f1}s", adminTimer);
+            if (vitalsTimer < 1000f)
+            {
+                if (result.text.Length > 0) result.text += "\n";
+                result.text += String.Format("Vitals: {0:f1}s", vitalsTimer);
+            }
+            if (cameraTimer < 1000f)
+            {
+                if (result.text.Length > 0) result.text += "\n";
+                result.text += String.Format("Camera: {0:f1}s", cameraTimer);
+            }
+            result.gameObject.layer = LayerExpansion.GetUILayer();
+
+            var pos = result.gameObject.AddComponent<AspectPosition>();
+            pos.parentCam = HudManager.Instance.UICamera;
+            pos.Alignment = AspectPosition.EdgeAlignments.LeftBottom;
+            pos.DistanceFromEdge = new Vector3(0.05f,0.05f,-50f);
+            pos.OnEnable();
+        }
     }
 
     /// <summary>
@@ -1324,6 +1432,9 @@ public class GameData
 
     public void LoadMapData()
     {
+        if (CustomOptionHolder.DevicesOption.getBool()) Game.GameData.data.UtilityTimer.Initialize();
+        
+
         foreach (Vent vent in ShipStatus.Instance.AllVents)
         {
             VentMap.Add(vent.gameObject.name, new VentData(vent));

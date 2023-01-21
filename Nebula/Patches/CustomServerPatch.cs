@@ -1,8 +1,21 @@
 ﻿using BepInEx.Configuration;
 using UnityEngine.UI;
 using UnityEngine.Events;
+using Discord;
 
 namespace Nebula.Patches;
+
+[HarmonyPatch(typeof(ServerInfo), nameof(ServerInfo.HttpUrl),MethodType.Getter)]
+public static class HttpConvertPatch
+{
+    public static bool Prefix(ServerInfo __instance,ref string __result)
+    {
+        if (__instance.Port != 22000) return true;
+
+        __result = string.Format("http://{0}:{1}/", __instance.Ip, __instance.Port);
+        return false;
+    }
+}
 
 [HarmonyPatch(typeof(RegionMenu), nameof(RegionMenu.Open))]
 public static class RegionMenuOpenPatch
@@ -29,7 +42,7 @@ public static class RegionMenuOpenPatch
     public static void Initialize()
     {
         SaveIp = NebulaPlugin.Instance.Config.Bind("CustomServer", "Ip", "");
-        SavePort = NebulaPlugin.Instance.Config.Bind("CustomServer", "Port", (ushort)22023);
+        SavePort = NebulaPlugin.Instance.Config.Bind("CustomServer", "Port", (ushort)22000);
 
         defaultRegions = ServerManager.DefaultRegions;
         UpdateRegions();

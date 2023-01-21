@@ -39,6 +39,20 @@ public class Side
     {
         if (GameOptionsManager.Instance.currentGameMode == GameModes.Normal)
         {
+            if (Game.GameData.data != null)
+            {
+                int aliveUnawakened = 0;
+                foreach (var p in Game.GameData.data.AllPlayers.Values)
+                {
+                    if (p.IsAlive && p.role == Roles.Covert && p.GetRoleData(Roles.Covert.canKillId) == 0) aliveUnawakened++;
+                }
+                if (aliveUnawakened == statistics.AliveImpostors && aliveUnawakened>0)
+                {
+                    List<Game.PlayerData> candidate = new List<Game.PlayerData>(Game.GameData.data.AllPlayers.Values.Where((p) => p.role == Roles.Covert));
+                    RPCEventInvoker.UpdateRoleData(candidate[NebulaPlugin.rnd.Next(candidate.Count)].id, Roles.Covert.canKillId, 1);
+                }
+            }
+
             //Sabotage
             if (status.Systems != null)
             {

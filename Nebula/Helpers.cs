@@ -9,6 +9,7 @@ namespace Nebula;
 [HarmonyPatch]
 public static class Helpers
 {
+    /*
     public static bool ShowButtons
     {
         get
@@ -18,6 +19,7 @@ public static class Helpers
                   !ExileController.Instance;
         }
     }
+    */
 
     public static TMPro.TextMeshPro CreateButtonUpperText(this ActionButton button)
     {
@@ -35,6 +37,9 @@ public static class Helpers
         
         if (PlayerControl.LocalPlayer.inVent) return false;
         if (MeetingHud.Instance) return false;
+
+        if (PlayerControl.LocalPlayer.onLadder) return true;
+        if (PlayerControl.LocalPlayer.inMovingPlat) return true;
 
         //情報端末以外ではカウントが進む
         if (MapBehaviour.Instance && MapBehaviour.Instance.IsOpen)
@@ -855,4 +860,9 @@ public static class Helpers
 
         HudManager.Instance.StartCoroutine(GetEnumarator().WrapToIl2Cpp());
     } 
+
+    public static bool IsPlaying(this PlayerControl player,AnimationClip animation)
+    {
+        return player.MyPhysics.Animations.Animator.m_currAnim == animation;
+    }
 }

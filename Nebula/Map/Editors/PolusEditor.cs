@@ -23,30 +23,6 @@ class PolusEditor : MapEditor
                 GameObject.Destroy(obj.transform.GetChild(1).GetComponent<BoxCollider2D>());
                 GameObject.Destroy(obj.transform.GetChild(2).gameObject);
             }
-
-            if (CustomOptionHolder.useClassicAdmin.getBool())
-            {
-                /*
-                PolygonCollider2D collider;
-                List<Vector2> pointsList;
-
-                //Electrical
-                collider =ShipStatus.Instance.FastRooms[SystemTypes.Electrical].gameObject.GetComponent<PolygonCollider2D>();
-                pointsList = new List<Vector2>(collider.points);
-                pointsList.RemoveAt(4);
-                collider.points = pointsList.ToArray();
-
-                //Laboratory
-                collider = ShipStatus.Instance.FastRooms[SystemTypes.Laboratory].gameObject.GetComponent<PolygonCollider2D>();
-                pointsList = new List<Vector2>(collider.points);
-                pointsList.RemoveAt(7);
-                collider.points = pointsList.ToArray();
-                */
-
-                //BoilerRoom
-                ShipStatus.Instance.MapPrefab.countOverlay.transform.FindChild("BoilerRoom").localPosition = new Vector3(100, 0, 0);
-                ShipStatus.Instance.MapPrefab.transform.FindChild("RoomNames").transform.FindChild("BoilerRoom").gameObject.SetActive(false);
-            }
         }
     }
 

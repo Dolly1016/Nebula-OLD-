@@ -145,13 +145,6 @@ public class AirshipEditor : MapEditor
                 pointsList = new List<Vector2>(collider.points);
                 pointsList.RemoveAt(5);
                 collider.points = pointsList.ToArray();
-
-
-                //キッチン・セキュ間通路
-                ShipStatus.Instance.MapPrefab.countOverlay.transform.FindChild("Hall of Portraits").localPosition = new Vector3(100, 0, 0);
-                //ロミジュリ
-                ShipStatus.Instance.MapPrefab.countOverlay.transform.FindChild("Ventilation").localPosition = new Vector3(100, 0, 0);
-
             }
 
             if (CustomOptionHolder.oneWayMeetingRoomOption.getBool())

@@ -6,8 +6,10 @@ public class Madmate : Role
 
 
     private Module.CustomOption CanUseVentsOption;
+    private Module.CustomOption CanMoveInVentOption;
     public Module.CustomOption CanFixSabotageOption;
     private Module.CustomOption HasImpostorVisionOption;
+    private Module.CustomOption IgnoreBlackOutOption;
     private Module.CustomOption CanInvokeSabotageOption;
     private Module.CustomOption InvolveNonImpostorPlayerOnExile;
     private Module.CustomOption CanKnowImpostorsByTasksOption;
@@ -34,10 +36,12 @@ public class Madmate : Role
         SecondoryRoleOption = CreateOption(Color.white, "isSecondaryRole", false);
 
         CanUseVentsOption = CreateOption(Color.white, "canUseVents", true).AddInvPrerequisite(SecondoryRoleOption);
+        CanMoveInVentOption = CreateOption(Color.white, "canMoveInVent", true).AddInvPrerequisite(SecondoryRoleOption).AddPrerequisite(CanUseVentsOption);
         CanInvokeSabotageOption = CreateOption(Color.white, "canInvokeSabotage", true).AddInvPrerequisite(SecondoryRoleOption);
         CanFixSabotageOption = CreateOption(Color.white, "canFixLightsAndComms", true);
 
         HasImpostorVisionOption = CreateOption(Color.white, "hasImpostorVision", false).AddInvPrerequisite(SecondoryRoleOption);
+        IgnoreBlackOutOption = CreateOption(Color.white, "ignoreBlackout", false).AddInvPrerequisite(SecondoryRoleOption);
 
         InvolveNonImpostorPlayerOnExile = CreateOption(Color.white, "involveNonImpostorPlayerOnExile", false).AddInvPrerequisite(SecondoryRoleOption);
 
@@ -179,9 +183,8 @@ public class Madmate : Role
         }
 
         var gameOptions = GameOptionsManager.Instance.CurrentGameOptions;
-        int taskNum =gameOptions.GetInt(Int32OptionNames.NumCommonTasks) +gameOptions.GetInt(Int32OptionNames.NumLongTasks) + gameOptions.GetInt(Int32OptionNames.NumShortTasks);
-
-        while (initialTasks.Count > taskNum && taskNum > 0)
+        
+        while (initialTasks.Count > requireTasks && requireTasks > 0)
         {
             if (initialTasks.Count == 0) break;
             initialTasks.RemoveAt(NebulaPlugin.rnd.Next(initialTasks.Count));
@@ -210,11 +213,12 @@ public class Madmate : Role
 
     public override void GlobalIntroInitialize(PlayerControl __instance)
     {
-        canMoveInVents = CanUseVentsOption.getBool();
+        canMoveInVents = CanMoveInVentOption.getBool();
         VentPermission = CanUseVentsOption.getBool() ? VentPermission.CanUseUnlimittedVent : VentPermission.CanNotUse;
         canInvokeSabotage = CanInvokeSabotageOption.getBool();
         canFixSabotage = CanFixSabotageOption.getBool();
         UseImpostorLightRadius = HasImpostorVisionOption.getBool();
+        IgnoreBlackout = IgnoreBlackOutOption.getBool();
     }
 
     public override bool IsUnsuitable { get { return SecondoryRoleOption.getBool(); } }

@@ -116,6 +116,7 @@ public class Sniper : Role
             "button.label.equip"
         );
         sniperButton.Timer = sniperButton.MaxTimer = 0f;
+        sniperButton.actionButton.transform.SetSiblingIndex(HudManager.Instance.ImpostorVentButton.transform.GetSiblingIndex());
 
         if (killButton != null)
         {

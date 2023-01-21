@@ -147,6 +147,7 @@ public class CustomObject
         public virtual void Update(CustomObject obj) { }
         public virtual void Update(CustomObject obj, int command) { }
         public virtual void Initialize(CustomObject obj) { }
+        public virtual void OnDestroy(CustomObject obj) { }
 
         public virtual bool IsUsable { get => false; }
         public virtual Color UsableColor { get => Color.white; }
@@ -315,6 +316,7 @@ public class CustomObject
         {
             HudManager.Instance.PlayerCam.SetTargetWithLight(PlayerControl.LocalPlayer);
         }
+        ObjectType.OnDestroy(this);
         UnityEngine.Object.Destroy(GameObject);
         Objects.Remove(this.Id);
         GameObject = null;

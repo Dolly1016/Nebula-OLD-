@@ -60,4 +60,5 @@ class SkeldEditor : MapEditor
         foreach (var c in countOverlay.CountAreas) c.YOffset *= -1f;
 
     }
+
 }

@@ -105,6 +105,8 @@ public class CustomButton
     private static Texture2D textureUsesIcon;
     private static Sprite[] spriteCustomUsesIcon = new Sprite[10];
 
+    public static SpriteLoader lockedButtonSprite = new SpriteLoader("Nebula.Resources.LockedButton.png", 100f);
+
     public SpriteRenderer AddOverlay(Sprite sprite,float order)
     {
         return actionButton.AddOverlay(sprite,order);
@@ -477,7 +479,7 @@ public class CustomButton
             OnEffectEnds();
         }
 
-        if (PlayerControl.LocalPlayer.Data == null || !Helpers.ShowButtons || !HasButton())
+        if (PlayerControl.LocalPlayer.Data == null || !HasButton())
         {
             temporaryHide(true);
             return;

@@ -70,6 +70,7 @@ public class Raider : Role
             "button.label.equip"
         );
         axeButton.Timer = axeButton.MaxTimer = 0f;
+        axeButton.actionButton.transform.SetSiblingIndex(HudManager.Instance.ImpostorVentButton.transform.GetSiblingIndex());
 
         if (killButton != null)
         {

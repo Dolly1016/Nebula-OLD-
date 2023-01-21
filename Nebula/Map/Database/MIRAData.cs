@@ -2,6 +2,22 @@
 
 public class MIRAData : MapData
 {
+    public override IEnumerable<Tuple<GameObject, float>> AllAdmins(ShipStatus shipStatus)
+    {
+        yield return new(shipStatus.transform.GetChild(10).GetChild(3).GetChild(0).gameObject,0.5f);
+    }
+
+    public override IEnumerable<Tuple<GameObject, float>> AllCameras(ShipStatus shipStatus)
+    {
+        yield return new(shipStatus.transform.GetChild(13).GetChild(0).GetChild(0).gameObject,0.3f);
+    }
+
+    public override void CreateOption()
+    {
+        LimitedAdmin.Add(0, Module.CustomOption.Create(Color.white, "option.admin." + PointData.mapNames[MapId] + "-0", Int32.MaxValue, CustomOptionHolder.mapOptions, false, true));
+        AdminNameMap.Add("AdminMapConsole", 0);
+    }
+
     public MIRAData() : base(1)
     {
         SabotageMap[SystemTypes.Reactor] = new SabotageData(SystemTypes.Reactor, new Vector3(2.5f, 13f), true, true);
@@ -90,5 +106,32 @@ public class MIRAData : MapData
         SpawnPoints.Add(new SpawnPointData("cafeteria", new Vector2(25.433f, 2.553f)));
         SpawnPoints.Add(new SpawnPointData("storage", new Vector2(19.9159f, 4.718f)));
         SpawnPoints.Add(new SpawnPointData("balcony", new Vector2(26.7091f, -1.9142f)));
+
+        AdminRooms.Add(new PointData("launchpad", new Vector2(-4.4f, 2.1969f)));
+        AdminSystemTypeMap.Add(SystemTypes.Cockpit, 1);
+        AdminRooms.Add(new PointData("medBay", new Vector2(15.8f, -0.4085f)));
+        AdminSystemTypeMap.Add(SystemTypes.Armory, 2);
+        AdminRooms.Add(new PointData("comms", new Vector2(15.8f, 4.0153f)));
+        AdminSystemTypeMap.Add(SystemTypes.Comms, 3);
+        AdminRooms.Add(new PointData("locker", new Vector2(9.0862f, 1.3112f)));
+        AdminSystemTypeMap.Add(SystemTypes.Engine, 4);
+        AdminRooms.Add(new PointData("decontamination", new Vector2(6.1333f, 6.27f)));
+        AdminSystemTypeMap.Add(SystemTypes.ViewingDeck, 5);
+        AdminRooms.Add(new PointData("laboratory", new Vector2(9.9136f, 12.081f)));
+        AdminSystemTypeMap.Add(SystemTypes.Kitchen, 6);
+        AdminRooms.Add(new PointData("reactor", new Vector2(2.4809f, 13.2443f)));
+        AdminSystemTypeMap.Add(SystemTypes.HallOfPortraits, 7);
+        AdminRooms.Add(new PointData("admin", new Vector2(20.9462f, 19.0366f)));
+        AdminSystemTypeMap.Add(SystemTypes.Security, 8);
+        AdminRooms.Add(new PointData("office", new Vector2(15.7004f, 20.0933f)));
+        AdminSystemTypeMap.Add(SystemTypes.Electrical, 9);
+        AdminRooms.Add(new PointData("greenhouse", new Vector2(17.857f, 23.5425f)));
+        AdminSystemTypeMap.Add(SystemTypes.MainHall, 10);
+        AdminRooms.Add(new PointData("storage", new Vector2(19.9159f, 4.018f)));
+        AdminSystemTypeMap.Add(SystemTypes.Showers, 11);
+        AdminRooms.Add(new PointData("cafeteria", new Vector2(25.433f, 2.553f)));
+        AdminSystemTypeMap.Add(SystemTypes.Ventilation, 12);
+        AdminRooms.Add(new PointData("balcony", new Vector2(24.7091f, -1.9142f)));
+        AdminSystemTypeMap.Add(SystemTypes.Medical, 13);
     }
 }

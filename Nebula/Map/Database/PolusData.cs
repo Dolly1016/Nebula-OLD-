@@ -1,6 +1,28 @@
 ﻿namespace Nebula.Map.Database;
 public class PolusData : MapData
 {
+    public override IEnumerable<Tuple<GameObject, float>> AllAdmins(ShipStatus shipStatus)
+    {
+        yield return new(shipStatus.transform.GetChild(10).GetChild(5).GetChild(0).gameObject,0.5f);
+        yield return new(shipStatus.transform.GetChild(10).GetChild(5).GetChild(1).gameObject,0.5f);
+    }
+
+    public override IEnumerable<Tuple<GameObject, float>> AllVitals(ShipStatus shipStatus)
+    {
+        yield return new(shipStatus.transform.GetChild(9).GetChild(6).gameObject,0.28f);
+    }
+
+    public override IEnumerable<Tuple<GameObject, float>> AllCameras(ShipStatus shipStatus)
+    {
+        yield return new(shipStatus.transform.GetChild(4).GetChild(9).gameObject,0.1f);
+    }
+
+    public override void CreateOption()
+    {
+        LimitedAdmin.Add(0, Module.CustomOption.Create(Color.white, "option.admin." + PointData.mapNames[MapId] + "-0", Int32.MaxValue, CustomOptionHolder.mapOptions, false, true));
+        AdminNameMap.Add("panel_map", 0);
+        AdminNameMap.Add("panel_map (1)", 0);
+    }
     public PolusData() : base(2)
     {
         SabotageMap[SystemTypes.Laboratory] = new SabotageData(SystemTypes.Reactor, new Vector3(18f, -6f), true, true);
@@ -121,5 +143,32 @@ public class PolusData : MapData
         SpawnPoints.Add(new SpawnPointData("ejection", new Vector2(32.1547f, -15.7529f)));
         SpawnPoints.Add(new SpawnPointData("abditory", new Vector2(25.7226f, -12.8779f)));
         SpawnPoints.Add(new SpawnPointData("drill", new Vector2(27.5518f, -7.3609f)));
+
+        AdminRooms.Add(new PointData("office", new Vector2(22.5f, -17.6f)));
+        AdminSystemTypeMap.Add(SystemTypes.Office, 1);
+        AdminRooms.Add(new PointData("admin", new Vector2(21.1384f, -22.7731f)));
+        AdminSystemTypeMap.Add(SystemTypes.Admin, 2);
+        AdminRooms.Add(new PointData("specimenRoom", new Vector2(36.5f, -21.2f)));
+        AdminSystemTypeMap.Add(SystemTypes.Specimens, 3);
+        AdminRooms.Add(new PointData("laboratory", new Vector2(34.8f, -8.0f)));
+        AdminSystemTypeMap.Add(SystemTypes.Laboratory, 4);
+        AdminRooms.Add(new PointData("dropship", new Vector2(16.6f, -1.5f)));
+        AdminSystemTypeMap.Add(SystemTypes.Dropship, 5);
+        AdminRooms.Add(new PointData("storage", new Vector2(20.6f, -11.7f)));
+        AdminSystemTypeMap.Add(SystemTypes.Storage, 6);
+        AdminRooms.Add(new PointData("weapons", new Vector2(12.2f, -23.3f)));
+        AdminSystemTypeMap.Add(SystemTypes.Weapons, 7);
+        AdminRooms.Add(new PointData("comms", new Vector2(11.4f, -16.7f)));
+        AdminSystemTypeMap.Add(SystemTypes.Comms, 8);
+        AdminRooms.Add(new PointData("boilerRoom", new Vector2(2.4f, -24.2f)));
+        AdminSystemTypeMap.Add(SystemTypes.BoilerRoom, 9);
+        AdminRooms.Add(new PointData("lifeSupport", new Vector2(2.5f, -17.5f)));
+        AdminSystemTypeMap.Add(SystemTypes.LifeSupp, 10);
+        AdminRooms.Add(new PointData("security", new Vector2(2.4f, -12.0f)));
+        AdminSystemTypeMap.Add(SystemTypes.Security, 11);
+        AdminRooms.Add(new PointData("electrical", new Vector2(7.4f, -9.6f)));
+        AdminSystemTypeMap.Add(SystemTypes.Electrical, 12);
+
+        ClassicAdminMask = 0b1000000000;
     }
 }

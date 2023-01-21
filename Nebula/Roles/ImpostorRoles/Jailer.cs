@@ -1,76 +1,49 @@
 ﻿using Nebula.Patches;
+using Nebula.Roles.RoleSystem;
 
 namespace Nebula.Roles.ImpostorRoles;
 
 public class Jailer : Role
 {
+    public class InheritedJailer : ExtraRole
+    {
+        public override void Assignment(Patches.AssignMap assignMap){}
+
+        public override void ButtonInitialize(HudManager __instance) => ImpAdminSystem.ButtonInitialize(__instance, Roles.Jailer.canMoveWithLookingMapOption.getBool(), Roles.Jailer.ignoreCommSabotageOption.getBool(), Roles.Jailer.canIdentifyImpostorsOption.getBool());
+
+        public override void CleanUp() => ImpAdminSystem.CleanUp();
+
+        public override void OnShowMapTaskOverlay(MapTaskOverlay mapTaskOverlay, Action<Vector2, bool> iconGenerator) => ImpAdminSystem.OnShowMapTaskOverlay(mapTaskOverlay, iconGenerator, Roles.Jailer.canMoveWithLookingMapOption.getBool(), Roles.Jailer.ignoreCommSabotageOption.getBool(), Roles.Jailer.canIdentifyImpostorsOption.getBool());
+
+        public override void OnMapClose(MapBehaviour mapBehaviour) => ImpAdminSystem.OnMapClose(mapBehaviour);
+
+
+        public InheritedJailer() : base("InheritedJailer", "inheritedJailer", Palette.ImpostorRed, 0)
+        {
+            IsHideRole = true;
+        }
+    }
+
     /* オプション */
     private Module.CustomOption? ignoreCommSabotageOption;
     private Module.CustomOption? canMoveWithLookingMapOption;
     private Module.CustomOption? canIdentifyImpostorsOption;
-
-    MapCountOverlay? jailerCountOverlay = null;
-
-    public bool IsJailerCountOverlay(MapCountOverlay overlay) => overlay == jailerCountOverlay;
+    private Module.CustomOption? inheritAbilityOption;
 
     public override void LoadOptionData()
     {
         canMoveWithLookingMapOption = CreateOption(Color.white, "canMoveWithLookingMap", true);
         canIdentifyImpostorsOption = CreateOption(Color.white, "canIdentifyImpostors", true);
         ignoreCommSabotageOption = CreateOption(Color.white, "ignoreCommSabotage", true);
+        inheritAbilityOption = CreateOption(Color.white, "canInheritAbility", false);
     }
 
 
     /* ボタン */
-    static private CustomButton adminButton;
-    public override void ButtonInitialize(HudManager __instance)
-    {
-        jailerCountOverlay = null;
 
-        if (adminButton != null)
-        {
-            adminButton.Destroy();
-        }
-        if (!canMoveWithLookingMapOption.getBool())
-        {
-            adminButton = new CustomButton(
-                () =>
-                {
-                    RoleSystem.HackSystem.showAdminMap(ignoreCommSabotageOption.getBool(), canIdentifyImpostorsOption.getBool() ? AdminPatch.AdminMode.ImpostorsAndDeadBodies : AdminPatch.AdminMode.Default);
-                },
-                () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
-                () => { return PlayerControl.LocalPlayer.CanMove; },
-                () => { },
-                __instance.UseButton.fastUseSettings[ImageNames.AdminMapButton].Image,
-                Expansion.GridArrangeExpansion.GridArrangeParameter.None,
-                __instance,
-                Module.NebulaInputManager.abilityInput.keyCode,
-                "button.label.admin"
-            );
-            adminButton.MaxTimer = 0f;
-            adminButton.Timer = 0f;
-        }
-        else
-        {
-            adminButton = null;
-        }
-    }
-    public override void CleanUp()
-    {
-        if (adminButton != null)
-        {
-            adminButton.Destroy();
-            adminButton = null;
-        }
+    public override void ButtonInitialize(HudManager __instance) => ImpAdminSystem.ButtonInitialize(__instance,canMoveWithLookingMapOption.getBool(),ignoreCommSabotageOption.getBool(),canIdentifyImpostorsOption.getBool());
 
-        if (jailerCountOverlay)
-        {
-            GameObject.Destroy(jailerCountOverlay.gameObject);
-        }
-        jailerCountOverlay = null;
-
-        if (MapBehaviour.Instance) GameObject.Destroy(MapBehaviour.Instance.gameObject);
-    }
+    public override void CleanUp() => ImpAdminSystem.CleanUp();
 
     public override void OnRoleRelationSetting()
     {
@@ -82,41 +55,18 @@ public class Jailer : Role
         RelatedRoles.Add(Roles.Opportunist);
     }
 
-    public override void OnShowMapTaskOverlay(MapTaskOverlay mapTaskOverlay, Action<Vector2, bool> iconGenerator)
+    public override void OnShowMapTaskOverlay(MapTaskOverlay mapTaskOverlay, Action<Vector2, bool> iconGenerator) => ImpAdminSystem.OnShowMapTaskOverlay(mapTaskOverlay,iconGenerator,canMoveWithLookingMapOption.getBool(),ignoreCommSabotageOption.getBool(),canIdentifyImpostorsOption.getBool());
+  
+    public override void OnMapClose(MapBehaviour mapBehaviour)=>ImpAdminSystem.OnMapClose(mapBehaviour);
+
+    public override void OnDied()
     {
-        if (!canMoveWithLookingMapOption.getBool()) return;
+        if (!inheritAbilityOption.getBool()) return;
 
-        if (jailerCountOverlay == null)
-        {
-            jailerCountOverlay = GameObject.Instantiate(MapBehaviour.Instance.countOverlay);
-            jailerCountOverlay.transform.SetParent(MapBehaviour.Instance.transform);
-            jailerCountOverlay.transform.localPosition = MapBehaviour.Instance.countOverlay.transform.localPosition;
-            jailerCountOverlay.transform.localScale = MapBehaviour.Instance.countOverlay.transform.localScale;
-            jailerCountOverlay.gameObject.name = "JailerCountOverlay";
+        var cand = (Game.GameData.data.AllPlayers.Values.Where((d) => d.IsAlive && d.role.side == Side.Impostor && d.role != Roles.Jailer)).ToArray();
+        if (cand.Length == 0) return;
 
-            Transform roomNames;
-            if (GameOptionsManager.Instance.CurrentGameOptions.MapId == 0)
-                roomNames = MapBehaviour.Instance.transform.FindChild("RoomNames (1)");
-            else
-                roomNames = MapBehaviour.Instance.transform.FindChild("RoomNames");
-            Map.MapEditor.MapEditors[GameOptionsManager.Instance.CurrentGameOptions.MapId].MinimapOptimizeForJailer(roomNames, jailerCountOverlay, MapBehaviour.Instance.infectedOverlay);
-        }
-
-        jailerCountOverlay.gameObject.SetActive(true);
-
-        Patches.AdminPatch.adminMode = canIdentifyImpostorsOption.getBool() ? AdminPatch.AdminMode.ImpostorsAndDeadBodies : AdminPatch.AdminMode.Default;
-        Patches.AdminPatch.isAffectedByCommAdmin = !ignoreCommSabotageOption.getBool();
-        Patches.AdminPatch.isStandardAdmin = false;
-        Patches.AdminPatch.shouldChangeColor = false;
-    }
-
-    /// <summary>
-    /// マップを閉じるときに呼び出されます。
-    /// </summary>
-    [RoleLocalMethod]
-    public override void OnMapClose(MapBehaviour mapBehaviour)
-    {
-        if (jailerCountOverlay != null) jailerCountOverlay.gameObject.SetActive(false);
+        RPCEventInvoker.AddExtraRole(Helpers.playerById(cand[NebulaPlugin.rnd.Next(cand.Length)].id), Roles.InheritedJailer, 0);
     }
 
     public Jailer()
@@ -125,6 +75,5 @@ public class Jailer : Role
              Impostor.impostorEndSet,
              true, VentPermission.CanUseUnlimittedVent, true, true, true)
     {
-        adminButton = null;
     }
 }

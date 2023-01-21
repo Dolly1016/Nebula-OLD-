@@ -49,6 +49,19 @@ public class MSString : MetaScreenContent
         this.fontSizeMin = fontSizeMin;
     }
 
+    public MSString EditFontSize(float fontSize,float fontSizeMin)
+    {
+        this.fontSize = fontSize;
+        this.fontSizeMin = fontSizeMin;
+        return this;
+    }
+
+    public MSString SetFontSizeMin(float fontSizeMin)
+    {
+        this.fontSizeMin = fontSizeMin;
+        return this;
+    }
+
     public override void Generate(GameObject obj)
     {
         this.text = GameObject.Instantiate(HudManager.Instance.Dialogue.target);

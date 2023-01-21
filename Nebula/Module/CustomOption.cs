@@ -4,6 +4,7 @@ using Hazel;
 using BepInEx.Configuration;
 using UnhollowerRuntimeLib;
 using AmongUs.GameOptions;
+using UnityEngine;
 
 namespace Nebula.Module;
 
@@ -118,6 +119,12 @@ public class CustomOption
         return this;
     }
 
+    public CustomOption HiddenOnMetaScreen(bool Hidden)
+    {
+        isHiddenOnMetaScreen = Hidden;
+        return this;
+    }
+
     public CustomOption SetGameMode(CustomGameMode gameMode)
     {
         GameMode = gameMode;
@@ -172,7 +179,7 @@ public class CustomOption
 
     }
 
-    public CustomOption(Color color, string name, System.Object[] selections, System.Object defaultValue, CustomOption parent, bool isHeader, bool isHidden, string format, CustomOptionTab tab)
+    public CustomOption(Color color, string name, System.Object[] selections, int defaultValue, CustomOption parent, bool isHeader, bool isHidden, string format, CustomOptionTab tab)
     {
         this.yellowCondition = null;
 
@@ -184,7 +191,7 @@ public class CustomOption
         this.identifierName = name;
         this.format = format;
         this.selections = selections;
-        int index = Array.IndexOf(selections, defaultValue);
+        int index = defaultValue;
         this.defaultSelection = index >= 0 ? index : 0;
         this.parent = parent;
         this.isHeader = isHeader;
@@ -226,7 +233,8 @@ public class CustomOption
     private void bind()
     {
         entry = new IntegerDataEntry(identifierName, optionSaver, defaultSelection);
-        selection = Mathf.Clamp(entry.Value, 0, selections.Length - 1);
+        selection = entry.Value;
+        if (selections.Length > 0) selection = Mathf.Clamp(selection, 0, selections.Length - 1);
     }
 
     public static CustomOption Create(Color color, string name, IEnumerator<object> selections, object defaultValue, CustomOption parent = null, bool isHeader = false, bool isHidden = false, string format = "", CustomOptionTab tab = CustomOptionTab.None)
@@ -236,12 +244,13 @@ public class CustomOption
         {
             objects.Add(selections.Current);
         }
-        return new CustomOption(color, name, objects.ToArray(), defaultValue, parent, isHeader, isHidden, format, tab);
+        var ary = objects.ToArray();
+        return new CustomOption(color, name, ary, Array.IndexOf(ary, defaultValue), parent, isHeader, isHidden, format, tab);
     }
 
     public static CustomOption Create(Color color, string name, string[] selections, string defaultValue, CustomOption parent = null, bool isHeader = false, bool isHidden = false, string format = "", CustomOptionTab tab = CustomOptionTab.None)
     {
-        return new CustomOption(color, name, selections, defaultValue, parent, isHeader, isHidden, format, tab);
+        return new CustomOption(color, name, selections, Array.IndexOf(selections, defaultValue), parent, isHeader, isHidden, format, tab);
     }
 
     public static CustomOption Create(Color color, string name, float defaultValue, float min, float max, float step, CustomOption parent = null, bool isHeader = false, bool isHidden = false, string format = "", CustomOptionTab tab = CustomOptionTab.None)
@@ -249,12 +258,18 @@ public class CustomOption
         List<float> selections = new List<float>();
         for (float s = min; s <= max; s += step)
             selections.Add(s);
-        return new CustomOption(color, name, selections.Cast<object>().ToArray(), defaultValue, parent, isHeader, isHidden, format, tab);
+        var ary = selections.Cast<object>().ToArray();
+        return new CustomOption(color, name, ary, Array.IndexOf(ary, defaultValue), parent, isHeader, isHidden, format, tab);
     }
 
     public static CustomOption Create(Color color, string name, bool defaultValue, CustomOption parent = null, bool isHeader = false, bool isHidden = false, string format = "", CustomOptionTab tab = CustomOptionTab.None)
     {
-        return new CustomOption(color, name, new string[] { "option.switch.off", "option.switch.on" }, defaultValue ? "option.switch.on" : "option.switch.off", parent, isHeader, isHidden, format, tab);
+        return new CustomOption(color, name, new string[] { "option.switch.off", "option.switch.on" }, defaultValue ? 1 : 0, parent, isHeader, isHidden, format, tab);
+    }
+
+    public static CustomOption Create(Color color, string name, int defaultValue, CustomOption parent = null, bool isHeader = false, bool isHidden = false, string format = "", CustomOptionTab tab = CustomOptionTab.None)
+    {
+        return new CustomOption(color, name, new string[] {}, defaultValue, parent, isHeader, isHidden, format, tab);
     }
 
     public static void loadOption(string optionName, int selection)
@@ -307,7 +322,7 @@ public class CustomOption
 
             //ひとつずつオプションを書き込む
             messageWriter?.WritePacked((uint)itr.Current.id);
-            messageWriter?.WritePacked((uint)Convert.ToUInt32(itr.Current.selection));
+            messageWriter?.WritePacked((uint)Convert.ToUInt32(Int32.MaxValue & itr.Current.selection));
             written++;
 
             //メッセージ終端
@@ -427,13 +442,18 @@ public class CustomOption
 
     public virtual void updateSelection(int newSelection)
     {
-        if (newSelection < 0)
-        {
-            selection = selections.Length - 1;
-        }
+        if (selections.Length == 0)
+            selection = newSelection;
         else
         {
-            selection = newSelection % selections.Length;
+            if (newSelection < 0)
+            {
+                selection = selections.Length - 1;
+            }
+            else
+            {
+                selection = newSelection % selections.Length;
+            }
         }
 
 
@@ -493,7 +513,7 @@ public class CustomRoleOption : CustomOption
     }
 
     public CustomRoleOption(string name, Color color, int max = 15) :
-        base(color, name, CustomOptionHolder.rates, "", null, true, false, "", CustomOptionTab.None)
+        base(color, name, CustomOptionHolder.rates, 0, null, true, false, "", CustomOptionTab.None)
     {
         if (max > 1)
             countOption = CustomOption.Create(Color.white, "option.roleNumAssigned", 1f, 1f, 15f, 1f, this, format: "unitPlayers");

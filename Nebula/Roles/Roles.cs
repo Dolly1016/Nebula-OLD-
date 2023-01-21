@@ -63,6 +63,7 @@ static public class Roles
     public static ImpostorRoles.BountyHunter BountyHunter = new ImpostorRoles.BountyHunter();
     public static ImpostorRoles.Camouflager Camouflager = new ImpostorRoles.Camouflager();
     public static ImpostorRoles.Cleaner Cleaner = new ImpostorRoles.Cleaner();
+    public static ImpostorRoles.Covert Covert = new ImpostorRoles.Covert();
     public static ImpostorRoles.Damned Damned = new ImpostorRoles.Damned();
     public static ImpostorRoles.Disturber Disturber = new ImpostorRoles.Disturber();
     public static ImpostorRoles.Eraser Eraser = new ImpostorRoles.Eraser();
@@ -74,6 +75,7 @@ static public class Roles
     public static ImpostorRoles.Jailer Jailer = new ImpostorRoles.Jailer();
     public static ImpostorRoles.Marionette Marionette = new ImpostorRoles.Marionette();
     public static ImpostorRoles.Morphing Morphing = new ImpostorRoles.Morphing();
+    public static ImpostorRoles.Ninja Ninja = new ImpostorRoles.Ninja();
     public static ImpostorRoles.Painter Painter = new ImpostorRoles.Painter();
     public static ImpostorRoles.Raider Raider = new ImpostorRoles.Raider();
     public static ImpostorRoles.Reaper Reaper = new ImpostorRoles.Reaper();
@@ -113,6 +115,7 @@ static public class Roles
     public static ComplexRoles.SecondaryGuesser SecondaryGuesser = new ComplexRoles.SecondaryGuesser();
     public static NeutralRoles.SecondarySidekick SecondarySidekick = new NeutralRoles.SecondarySidekick();
     public static CrewmateRoles.SecondaryMadmate SecondaryMadmate = new CrewmateRoles.SecondaryMadmate();
+    public static ImpostorRoles.Jailer.InheritedJailer InheritedJailer = new ImpostorRoles.Jailer.InheritedJailer();
     public static ExtraRoles.DiamondPossessor DiamondPossessor = new ExtraRoles.DiamondPossessor();
     public static ExtraRoles.Bloody Bloody = new ExtraRoles.Bloody();
     public static ExtraRoles.Confused Confused = new ExtraRoles.Confused();
@@ -130,7 +133,7 @@ static public class Roles
     public static List<Role> AllRoles = new List<Role>()
         {
             VOID,
-            Impostor,BountyHunter,Camouflager,Cleaner,Damned,Disturber,Eraser,EvilAce,EvilGuesser,EvilTracker,EvilTrapper,Executioner,Jailer,Marionette,Morphing,Painter,Raider,Reaper,Sniper,
+            Impostor,BountyHunter,Camouflager,Cleaner,Covert,Damned,Disturber,Eraser,EvilAce,EvilGuesser,EvilTracker,EvilTrapper,Executioner,Jailer,Marionette,Morphing,Ninja,Painter,Raider,Reaper,Sniper,
             /*SantaClaus,BlackSanta,*/Arsonist,Avenger,ChainShifter,Empiric,Jackal,Jester,Opportunist,Sidekick,Vulture,
             F_Crewmate,
             F_Guesser,F_Tracker,F_Trapper,
@@ -146,7 +149,7 @@ static public class Roles
 
     public static List<ExtraRole> AllExtraRoles = new List<ExtraRole>()
         {
-            SecondaryGuesser,SecondarySidekick,SecondaryMadmate,
+            SecondaryGuesser,SecondarySidekick,SecondaryMadmate,InheritedJailer,
             DiamondPossessor,/*TeamSanta,*/
             Bloody,Confused,Drunk,Lover,Trilemma,
             MetaRole,AvengerTarget,

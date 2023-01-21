@@ -167,7 +167,7 @@ class MapTaskOverlayPatch
                 }
             }
 
-            Game.GameData.data.myData.getGlobalData().role.OnShowMapTaskOverlay(__instance, GenerateIcon);
+            Helpers.RoleAction(Game.GameData.data.myData.getGlobalData(), (r) => r.OnShowMapTaskOverlay(__instance, GenerateIcon));
 
         }
 
