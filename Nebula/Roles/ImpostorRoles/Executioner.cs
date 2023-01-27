@@ -19,6 +19,11 @@ public class Executioner : Role
         data.currentTarget= null;
     }
 
+    public override Tuple<string, Action>[] helpButton => new Tuple<string, Action>[]
+   {
+        new Tuple<string, Action>("role.executioner.help.killRange",()=>{new Objects.EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, Palette.White, 5.5f,16f,false,Palette.ImpostorRed);})
+   };
+
     static private CustomButton killButton;
     public override void ButtonInitialize(HudManager __instance)
     {

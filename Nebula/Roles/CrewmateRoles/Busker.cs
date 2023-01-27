@@ -66,6 +66,12 @@ public class Busker : Role
         }
     }
 
+    public override bool CannotSee(PlayerControl __instance)
+    {
+        if (pseudocideFlag) return PlayerControl.LocalPlayer.PlayerId != __instance.PlayerId && __instance.Data.IsDead;
+        return false;
+    }
+
     public override void ButtonInitialize(HudManager __instance)
     {
         base.ButtonInitialize(__instance);

@@ -172,11 +172,24 @@ public class MyPlayerData
     public PlayerControl? currentTarget { get; set; }
     private PlayerData globalData { get; set; }
     private bool canSeeEveryoneInfo;
+    private bool? canControlOtherPlayers = null;
     public bool CanSeeEveryoneInfo { get {
             if (Patches.NebulaOption.configPreventSpoiler.Value) return false;
             if (CustomOptionHolder.streamersOption.getBool() && CustomOptionHolder.enforcePreventingSpoilerOption.getBool()) return false;
             return canSeeEveryoneInfo;  
         } set { canSeeEveryoneInfo = value; } }
+    public bool CanControlOtherPlayers { get {
+            if (!canControlOtherPlayers.HasValue)
+            {
+                if (!ShipStatus.Instance) return false;
+                canControlOtherPlayers = true;
+                foreach(var p in PlayerControl.AllPlayerControls.GetFastEnumerator())
+                {
+                    if (!p.isDummy && !p.AmOwner) { canControlOtherPlayers = false;  break; }
+                }
+            }
+            return canControlOtherPlayers.Value;
+        } }
     public float VentDurationTimer { get; set; }
     public float VentCoolDownTimer { get; set; }
     public List<TaskInfo> InitialTasks { get; set; }
@@ -785,6 +798,18 @@ public class PlayerData
             VisorId = reader.ReadString();
             SkinId = reader.ReadString();
             PetId = reader.ReadString();
+        }
+
+        public PlayerOutfit toPlayerOutfit()
+        {
+            PlayerOutfit result = new PlayerOutfit();
+            result.PlayerName = Name;
+            result.ColorId = ColorId;
+            result.HatId = HatId;
+            result.VisorId = VisorId;
+            result.SkinId = SkinId;
+            result.PetId = PetId;
+            return result;
         }
     }
 

@@ -27,7 +27,7 @@ public class NebulaPlugin : BasePlugin
     public const string PluginVersion = "2.1";
     public const bool IsSnapshot = true;
 
-    public static string PluginVisualVersion = IsSnapshot ? "23.01.21a" : PluginVersion;
+    public static string PluginVisualVersion = IsSnapshot ? "23.01.27a" : PluginVersion;
     public static string PluginStage = IsSnapshot ? "Snapshot" : "";
     
     public const string PluginVersionForFetch = "2.1";
@@ -192,39 +192,18 @@ public static class MetaControlManager
 
             var i = playerControl.PlayerId = (byte)GameData.Instance.GetAvailableId();
 
-            bots.Add(playerControl);
-            AmongUsClient.Instance.Spawn(playerControl, -2, InnerNet.SpawnFlags.None);
             GameData.Instance.AddPlayer(playerControl);
 
             //playerControl.transform.position = PlayerControl.LocalPlayer.transform.position;
             playerControl.GetComponent<DummyBehaviour>().enabled = true;
             playerControl.isDummy = true;
             playerControl.SetName(Patches.RandomNamePatch.GetRandomName());
-            playerControl.SetColor((byte)random.Next(Palette.PlayerColors.Length));
-
-            GameData.Instance.RpcSetTasks(playerControl.PlayerId, new byte[0]);
-        }
-
-        // Spawn dummys
-        if (Input.GetKeyDown(KeyCode.F2))
-        {
-            var playerControl = UnityEngine.Object.Instantiate(AmongUsClient.Instance.PlayerPrefab);
-
-            var i = playerControl.PlayerId = (byte)GameData.Instance.GetAvailableId();
+            playerControl.SetColor((byte)random.Next(15));
 
             bots.Add(playerControl);
-            GameData.Instance.AddPlayer(playerControl);
             AmongUsClient.Instance.Spawn(playerControl, -2, InnerNet.SpawnFlags.None);
 
-            playerControl.transform.position = PlayerControl.LocalPlayer.transform.position;
-            playerControl.GetComponent<DummyBehaviour>().enabled = true;
-            playerControl.isDummy = true;
-            playerControl.SetName(Patches.RandomNamePatch.GetRandomName());
-            playerControl.SetColor((byte)random.Next(Palette.PlayerColors.Length));
-
             GameData.Instance.RpcSetTasks(playerControl.PlayerId, new byte[0]);
-
-            //playerControl.StartCoroutine(playerControl.CoPlayerAppear().WrapToIl2Cpp());
         }
 
         // Suiside

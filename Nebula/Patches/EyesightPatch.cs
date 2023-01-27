@@ -1,4 +1,6 @@
-﻿namespace Nebula.Patches;
+﻿using Hazel;
+
+namespace Nebula.Patches;
 
 public static class BeginHubHelper
 {
@@ -65,6 +67,7 @@ class StartMeetingPatch
         EyesightPatch.ObserverTarget = 0;
         HudManager.Instance.PlayerCam.SetTargetWithLight(PlayerControl.LocalPlayer);
         Objects.PlayerList.Instance.Close();
+        EyesightPatch.SuspendRemoteControl(EyesightPatch.ObserverTarget);
     }
 }
 
@@ -76,6 +79,18 @@ class EyesightPatch
     static private float ObserverModeRate = 1f;
     static public bool ObserverMode = false;
     static public int ObserverTarget = 0;
+
+    public static void SuspendRemoteControl(int lastTarget)
+    {
+        //遠隔操作を終了する
+        if (lastTarget != ObserverTarget && PlayerControl.LocalPlayer.PlayerId != lastTarget && (Game.GameData.data?.myData.CanControlOtherPlayers ?? false))
+        {
+            var p = PlayerControl.AllPlayerControls[lastTarget];
+            p.MyPhysics.SetNormalizedVelocity(Vector2.zero);
+            p.Collider.enabled = true;
+        }
+    }
+
 
     public static void ChangeObserverTarget(bool increamentFlag)
     {
@@ -100,17 +115,30 @@ class EyesightPatch
         }
 
         Objects.PlayerList.Instance.SelectPlayer(PlayerControl.AllPlayerControls[ObserverTarget].PlayerId);
+
+        SuspendRemoteControl(lastTarget);
     }
 
     public static void Postfix(HudManager __instance)
     {
-        if ((Game.GameData.data != null && Game.GameData.data.myData.CanSeeEveryoneInfo) || AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Joined)
+        try
+        {
+            if (Game.GameData.data != null && Game.GameData.data.myData.CanControlOtherPlayers && Objects.PlayerList.Instance!=null && Objects.PlayerList.Instance.IsOpen && ObserverTarget!=0)
+            {
+                var p = PlayerControl.AllPlayerControls[ObserverTarget];
+                p.MyPhysics.SetNormalizedVelocity(__instance.joystick.DeltaL);
+                p.Collider.enabled = !Input.GetKey(Module.NebulaInputManager.metaControlInput.keyCode);
+            }
+        }
+        catch { }
+
+        if ((Game.GameData.data != null && (Game.GameData.data.myData.CanSeeEveryoneInfo)) || AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Joined)
         {
             if (Input.GetKeyDown(Module.NebulaInputManager.observerInput.keyCode)) ObserverMode = !ObserverMode;
 
             if (Input.GetKeyDown(Module.NebulaInputManager.observerShortcutInput.keyCode))
             {
-                if (Game.GameData.data != null && Game.GameData.data.myData.CanSeeEveryoneInfo && Objects.PlayerList.Instance!=null)
+                if (Game.GameData.data != null && Game.GameData.data.myData.CanSeeEveryoneInfo && Objects.PlayerList.Instance != null)
                 {
                     if (!Objects.PlayerList.Instance.IsOpen)
                     {
@@ -126,8 +154,10 @@ class EyesightPatch
                 ObserverMode = !ObserverMode;
 
             }
-
-            if (Game.GameData.data != null && Game.GameData.data.myData.CanSeeEveryoneInfo)
+        }
+        if ((Game.GameData.data != null && (Game.GameData.data.myData.CanControlOtherPlayers || Game.GameData.data.myData.CanSeeEveryoneInfo)) || AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Joined)
+        {
+            if (Game.GameData.data != null && (Game.GameData.data.myData.CanSeeEveryoneInfo || Game.GameData.data.myData.CanControlOtherPlayers))
             {
                 if (Input.GetKeyDown(Module.NebulaInputManager.changeEyesightLeftInput.keyCode))
                 {
@@ -145,6 +175,7 @@ class EyesightPatch
             {
                 __instance.PlayerCam.SetTargetWithLight(PlayerControl.LocalPlayer);
                 Objects.PlayerList.Instance?.Close();
+                SuspendRemoteControl(ObserverTarget);
                 ObserverMode = false;
             }
             if (__instance.PlayerCam.Target != PlayerControl.LocalPlayer && __instance.PlayerCam.Target is PlayerControl && ((PlayerControl)__instance.PlayerCam.Target).Data.IsDead)

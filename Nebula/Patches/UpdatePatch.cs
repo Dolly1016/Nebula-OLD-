@@ -1,4 +1,5 @@
-﻿using Nebula.Objects;
+﻿using Microsoft.CodeAnalysis.FlowAnalysis;
+using Nebula.Objects;
 
 namespace Nebula.Patches;
 
@@ -36,11 +37,18 @@ public static class UpdatePatch
 
     static private bool IsInvisible(PlayerControl player)
     {
-        return
+        bool flag =
             (player == PlayerControl.LocalPlayer && EyesightPatch.ObserverMode)
             || (player.GetModData().Property.UnderTheFloor)
             || (player.inVent && !player.walkingToVent)
             || (!PlayerControl.LocalPlayer.Data.IsDead && player.Data.IsDead);
+
+        if (!flag)
+        {
+            Helpers.RoleAction(PlayerControl.LocalPlayer, (r) => flag |= r.CannotSee(player));
+        }
+
+        return flag;
     }
 
     static private Color rewriteImpostorColor(Game.PlayerData player, Color currentColor, Color impostorColor)
@@ -95,7 +103,11 @@ public static class UpdatePatch
         bool hideFlag;
         foreach (PlayerControl player in PlayerControl.AllPlayerControls.GetFastEnumerator())
         {
-            playerData = Game.GameData.data.playersArray[player.PlayerId];
+            try
+            {
+                playerData = Game.GameData.data.playersArray[player.PlayerId];
+            }
+            catch { continue; }
             if (playerData == null) continue;
 
             /* 表示・非表示を設定する */
@@ -115,6 +127,12 @@ public static class UpdatePatch
 
             Helpers.RoleAction(player, (role) => { role.EditDisplayName(player.PlayerId, ref name, hideFlag); });
             Helpers.RoleAction(PlayerControl.LocalPlayer, (role) => { role.EditOthersDisplayName(player.PlayerId, ref name, hideFlag); });
+
+            {
+                var vec = player.cosmetics.nameText.transform.localPosition;
+                vec.z = -3f;
+                player.cosmetics.nameText.transform.localPosition = vec;
+            }
 
             player.cosmetics.nameText.text = playerData.currentName;
             if (Game.GameData.data.myData.CanSeeEveryoneInfo && playerData.currentName != playerData.name) player.cosmetics.nameText.text += Helpers.cs(new Color(0.65f, 0.65f, 0.65f), $" ({playerData.name})");

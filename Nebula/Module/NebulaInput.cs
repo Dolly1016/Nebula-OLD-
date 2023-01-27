@@ -103,7 +103,7 @@ public class NebulaInputManager
             new KeyCodeData(key, ((char)('A' + key - KeyCode.A)).ToString(), kit, key - KeyCode.A);
         kit = new KeyInputTexture("Nebula.Resources.KeyBindCharacters2.png");
         for (int i = 0; i < 15; i++)
-            new KeyCodeData(KeyCode.F1 + i, "F" + (i + 1), kit, i + (int)KeyCode.F1);
+            new KeyCodeData(KeyCode.F1 + i, "F" + (i + 1), kit, i);
         kit = new KeyInputTexture("Nebula.Resources.KeyBindCharacters3.png");
         new KeyCodeData(KeyCode.RightShift, "RShift", kit, 0);
         new KeyCodeData(KeyCode.LeftShift, "LShift", kit, 1);
@@ -114,7 +114,9 @@ public class NebulaInputManager
         kit = new KeyInputTexture("Nebula.Resources.KeyBindCharacters4.png");
         for (int i = 0; i < 6; i++)
             new KeyCodeData(KeyCode.Mouse1 + i, "Mouse " + (i == 0 ? "Right" : i == 1 ? "Middle" : (i + 1).ToString()), kit, i);
-
+        kit = new KeyInputTexture("Nebula.Resources.KeyBindCharacters5.png");
+        for (int i = 0; i < 10; i++)
+            new KeyCodeData(KeyCode.Alpha0 + i, "0" + (i + 1), kit, i);
 
         abilityInput = new NebulaInput("ability", KeyCode.F);
         secondaryAbilityInput = new NebulaInput("secondaryAbility", KeyCode.G);

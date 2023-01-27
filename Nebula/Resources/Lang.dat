@@ -189,7 +189,6 @@
 "option.killCoolDownProceedIgnoringBlackOutGame": "Black Out Game"
 "option.killCoolDownProceedIgnoringCommReceiver": "Comm. Game"
 
-
 "option.streamersOption" : "Streamers Option"
 "option.streamersOption.enforcePreventingSpoiler" : "Enforce Preventing Spoiler"
 
@@ -293,6 +292,7 @@
 "role.guesser.canShotSeveralTimes" : "Can Shot Several Times In The Same Meeting"
 "role.guesser.isSecondaryRole" : "Assign As Secondary Role"
 "role.guesser.guesserShots" : "Guesser Shots"
+"role.guesser.additionalVotingTime" : "Additional Voting Time"
 "role.guesser.guessesLeft" : "Guesses Left"
 "role.guesser.crewmateRoleCount" : "Max Players (Crewmate)"
 "role.guesser.impostorRoleCount" : "Max Players (Impostor) "
@@ -548,7 +548,13 @@
 "role.psychic.message.killerColor" : "My murder's color is %COLOR%."
 "role.psychic.message.killerRole" : "My murder's role is %ROLE%."
 "role.psychic.message.myRole" : "I am %MYROLE%."
-"role.psychic.message.losing" : "Boo! I'm a ghost."
+
+"role.seer.name" : "Seer"
+"role.seer.short" : "S"
+"role.seer.description" : "You Will See Players Die"
+"role.seer.hint" : "See the Ghost and Moments of Death."
+"role.seer.info" : "You can know the moment of deathes by flash.\nAnd you can see ghosts."
+"role.seer.ghostDuration" : "Ghost's Revelation Duration"
 
 "role.sheriff.name" : "Sheriff"
 "role.sheriff.short" : "S"
@@ -563,13 +569,6 @@
 "role.sheriff.canKillOpportunist" : "Can Kill Opportunist"
 "role.sheriff.canKillChainShifter" : "Can Kill Chain Shifter"
 "role.sheriff.numberOfShots" : "Number Of Shots"
-
-"role.seer.name" : "Seer"
-"role.seer.short" : "S"
-"role.seer.hint" : "See the Ghost and Moments of Death."
-"role.seer.description" : "You Will See Players Die"
-"role.seer.info" : "You can know the moment of deathes by flash.\nAnd you can see ghosts."
-"role.seer.ghostDuration" : "Ghost's Revelation Duration"
 
 "role.splicer.name" : "Splicer"
 "role.splicer.short" : "S"
@@ -612,8 +611,20 @@
 "role.impostor.hint" : "Kill the Crewmates."
 "role.impostor.info" : "You're standard impostor. You have no special abilities."
 
+"role.banshee.name" : "Banshee"
+"role.banshee.short" : "Ba"
+"role.banshee.description" : "The Death Creeps"
+"role.banshee.hint" : "Predict The Death."
+"role.banshee.info" : "You can predict the death. After a meeting, you can kill all the predicated remotely."
+"role.banshee.weepCoolDown" : "Weep Cool Down"
+"role.banshee.weepDuration" : "Weep Duration"
+"role.banshee.killRootTime" : "Kill Root Time"
+"role.banshee.minWeepNoticeRange" : "Min of Weep Notice Range"
+"role.banshee.fuzzinessWeepNotice" : "Fuzziness Weep Notice"
+"role.banshee.help.weepRange" : "Show Weep Range"
+
 "role.bountyHunter.name" : "Bounty Hunter"
-"role.bountyHunter.short" : "B"
+"role.bountyHunter.short" : "BH"
 "role.bountyHunter.description" : "Hunt Your Bounty Down"
 "role.bountyHunter.hint" : "Kill Your Bounty."
 "role.bountyHunter.info" : "You can use very short kill cool down by killing your bounty.\nBut if you kill other players, you'll get long kill cool down."
@@ -699,7 +710,7 @@
 "role.evilTracker.name" : "Evil Tracker"
 "role.evilTracker.short" : "Tk"
 "role.evilTracker.description" : "A Stranger Is Watching"
-"role.evilTracker.hint" : "Monitor Movement of the Suspicious."
+"role.evilTracker.hint" : "Monitor Movement of crewmates."
 "role.evilTracker.info" : "You can track a player.\nIn a meeting, you can know selected player's progress of tasks."
 
 "role.evilTrapper.name" : "Evil Trapper"
@@ -713,6 +724,7 @@
 "role.executioner.description" : "Hello, from Thy Own Spirit"
 "role.executioner.hint" : "Kill Crewmates Far Away."
 "role.executioner.info" : "You can kill crewmates far away.\nYou must orient in the direction the player is."
+"role.executioner.help.killRange" : "Show Kill Range"
 
 "role.jailer.name" : "Jailer"
 "role.jailer.short" : "J"
@@ -748,9 +760,9 @@
 
 "role.ninja.name" : "Ninja"
 "role.ninja.short" : "N"
-"role.ninja.info" : "Kill on the quiet."
-"role.ninja.hint" : "Kill on the Quiet."
 "role.ninja.description" : "Hide and Kill"
+"role.ninja.hint" : "Kill on the Quiet."
+"role.ninja.info" : "Kill on the quiet."
 "role.ninja.help.vent" : "Warp and enter the nearest vent."
 "role.ninja.evasionCoolDown" : "Evasion Cool Down"
 
@@ -959,7 +971,7 @@
 "role.crewmate.secret.description" : "Do Task For Arousal"
 "role.impostor.secret.description" : "Kill For Arousal"
 "role.crewmate.secret.hint" : "Do Task for Arousal."
-"role.impostor.secret.hint" : "Do Task for Arousal."
+"role.impostor.secret.hint" : "Kill for Arousal."
 "role.crewmate.secret.info" : "Your role will be revealed as you complete tasks."
 "role.impostor.secret.info" : "Your role will be revealed as you kill players."
 
@@ -1167,6 +1179,7 @@
 "status.punished" : "Punished"
 "status.misfire" : "Misfire"
 "status.slapped" : "Slapped"
+"status.withered" : "Withered"
 
 "investigators.ui.title" : "What Is The Identity?"
 
@@ -1223,6 +1236,7 @@
 "button.label.track" : "track"
 "button.label.unequip" : "unequip"
 "button.label.warp" : "warp"
+"button.label.weep" : "weep"
 "button.label.vital" : "vitals"
 "button.label.void" : "void"
 

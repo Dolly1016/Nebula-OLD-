@@ -389,9 +389,7 @@ public class CustomButton
                 buttons[i].Update();
             }
             catch (NullReferenceException)
-            {
-                System.Console.WriteLine("[WARNING] NullReferenceException from MeetingEndedUpdate().HasButton(), if theres only one warning its fine");
-            }
+            {}
         }
     }
 

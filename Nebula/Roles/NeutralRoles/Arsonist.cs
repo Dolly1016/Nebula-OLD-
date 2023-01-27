@@ -144,12 +144,11 @@ public class Arsonist : Template.HasAlignedHologram, Template.HasWinTrigger
             douseDurationOption.getFloat(),
             () =>
             {
-                if (Game.GameData.data.myData.currentTarget != null)
+                if (Game.GameData.data.myData.currentTarget != null && !MeetingHud.Instance)
                 {
                     activePlayers.Add(Game.GameData.data.myData.currentTarget.PlayerId);
-                    Game.GameData.data.myData.currentTarget = null;
                 }
-
+                Game.GameData.data.myData.currentTarget = null;
                 CheckIgnite();
             },
             "button.label.douse"

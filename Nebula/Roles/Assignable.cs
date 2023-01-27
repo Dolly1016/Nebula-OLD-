@@ -342,6 +342,14 @@ public class Assignable
     /*--------------------------------------------------------------------------------------*/
 
     /// <summary>
+    /// 特別不可視なプレイヤーに対して真を返してください。
+    /// Assignable側から可視性について言及しない場合、偽を返してください。
+    /// </summary>
+    /// <param name="__instance"></param>
+    /// <returns></returns>
+    public virtual bool CannotSee(PlayerControl __instance) { return false; }
+
+    /// <summary>
     /// プレイヤーが更新されるたびに呼び出されます。
     /// </summary>
     [RoleLocalMethod]

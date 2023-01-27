@@ -272,7 +272,7 @@ public class CustomOption
         return new CustomOption(color, name, new string[] {}, defaultValue, parent, isHeader, isHidden, format, tab);
     }
 
-    public static void loadOption(string optionName, int selection)
+    public static void loadOptionWithoutSync(string optionName, int selection)
     {
         foreach (CustomOption option in CustomOption.AllOptions)
         {
@@ -280,7 +280,7 @@ public class CustomOption
 
             if (option.isProtected) break;
 
-            option.updateSelection(selection);
+            option.selection = selection;
 
             break;
         }

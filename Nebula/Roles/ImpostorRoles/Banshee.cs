@@ -15,8 +15,13 @@ namespace Nebula.Roles.ImpostorRoles
         private CustomButton killButton;
         private SpriteLoader bansheeSprite = new SpriteLoader("Nebula.Resources.BansheeButton.png",100f);
 
+        public SpriteLoader bansheeArrowSprite = new SpriteLoader("Nebula.Resources.BansheeArrow.png", 200f);
+
         private Module.CustomOption weepCoolDownOption;
         private Module.CustomOption weepDurationOption;
+        private Module.CustomOption killRootTimeOption;
+        public Module.CustomOption minWeepNoticeRangeOption;
+        public Module.CustomOption fuzzinessWeepNoticeOption;
 
         public override void LoadOptionData()
         {
@@ -24,7 +29,19 @@ namespace Nebula.Roles.ImpostorRoles
             weepCoolDownOption.suffix = "second";
             weepDurationOption = CreateOption(Color.white, "weepDuration", 2f, 0f, 10f, 0.5f);
             weepDurationOption.suffix = "second";
+            killRootTimeOption = CreateOption(Color.white, "killRootTime", 2f, 0f, 5f, 0.5f);
+            killRootTimeOption.suffix = "second";
+
+            minWeepNoticeRangeOption = CreateOption(Color.white, "minWeepNoticeRange", 7.5f, 5f, 30f, 2.5f);
+            minWeepNoticeRangeOption.suffix = "cross";
+            fuzzinessWeepNoticeOption = CreateOption(Color.white, "fuzzinessWeepNotice", 2.5f, 0f, 5f, 0.5f);
+            fuzzinessWeepNoticeOption.suffix = "cross";
         }
+
+        public override Tuple<string, Action>[] helpButton => new Tuple<string, Action>[]
+   {
+        new Tuple<string, Action>("role.banshee.help.weepRange",()=>{new Objects.EffectCircle(PlayerControl.LocalPlayer.gameObject.transform.position, Palette.White, 1f,16f,false,Palette.ImpostorRed);})
+   };
 
         public override void CleanUp()
         {
@@ -77,7 +94,7 @@ namespace Nebula.Roles.ImpostorRoles
             base.MyPlayerControlUpdate();
 
             Game.MyPlayerData data = Game.GameData.data.myData;
-            data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(1.8f, false, false, bytePlayers);
+            data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(1f, false, false, bytePlayers);
             Patches.PlayerControlPatch.SetPlayerOutline(data.currentTarget, Palette.ImpostorRed);
 
             /*
@@ -101,9 +118,11 @@ namespace Nebula.Roles.ImpostorRoles
                 {
                     List<byte> targets = new List<byte>();
                     foreach (var p in activePlayers) if (!p.Data.IsDead) targets.Add(p.PlayerId);
-                    RPCEventInvoker.UncheckedMurderPlayer(PlayerControl.LocalPlayer.PlayerId,targets.ToArray(),Game.PlayerData.PlayerStatus.Withered.Id,true);
+                    RPCEventInvoker.UncheckedMurderPlayer(PlayerControl.LocalPlayer.PlayerId,targets.ToArray(),Game.PlayerData.PlayerStatus.Withered.Id);
                     activePlayers.Clear();
+                    RPCEventInvoker.EmitSpeedFactor(PlayerControl.LocalPlayer, new Game.SpeedFactor(2,killRootTimeOption.getFloat(), 0f, false));
                     killButton.Timer = killButton.MaxTimer;
+
                 },
                 () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
                 () => { return PlayerControl.LocalPlayer.CanMove && activePlayers.Count>0; },
@@ -148,7 +167,7 @@ namespace Nebula.Roles.ImpostorRoles
                 weepDurationOption.getFloat(),
                 () =>
                 {
-                    if (Game.GameData.data.myData.currentTarget != null)
+                    if (Game.GameData.data.myData.currentTarget != null && !MeetingHud.Instance)
                     {
                         var icon = PlayerIcons[Game.GameData.data.myData.currentTarget.PlayerId];
                         icon.gameObject.SetActive(true);
@@ -159,8 +178,9 @@ namespace Nebula.Roles.ImpostorRoles
                         semiActivePlayers.Add(Game.GameData.data.myData.currentTarget);
                         bytePlayers.Add(Game.GameData.data.myData.currentTarget.PlayerId);
 
-                        Game.GameData.data.myData.currentTarget = null;
+                        RPCEventInvoker.BansheeWeep(PlayerControl.LocalPlayer.transform.position);
                     }
+                    Game.GameData.data.myData.currentTarget = null;
                 },
                 "button.label.weep"
             ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());

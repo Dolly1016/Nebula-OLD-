@@ -33,13 +33,23 @@ public static class Helpers
 
     public static bool ProceedTimer(bool isImpostorKillButton)
     {
+        //クルータスクおよび湧き位置選択
+        if (Minigame.Instance)
+        {
+            if (Minigame.Instance.TryCast<SpawnInMinigame>()) return false;
+            if (Minigame.Instance.MyNormTask) return true;
+            if (Minigame.Instance.TryCast<MultistageMinigame>()) return true;
+            if (Minigame.Instance.TryCast<AutoMultistageMinigame>()) return true;
+        }
+
         if (isImpostorKillButton) return PlayerControl.LocalPlayer.IsKillTimerEnabled;
         
         if (PlayerControl.LocalPlayer.inVent) return false;
         if (MeetingHud.Instance) return false;
+        if (ExileController.Instance) return false;
 
-        if (PlayerControl.LocalPlayer.onLadder) return true;
-        if (PlayerControl.LocalPlayer.inMovingPlat) return true;
+        //if (PlayerControl.LocalPlayer.onLadder) return true;
+        //if (PlayerControl.LocalPlayer.inMovingPlat) return true;
 
         //情報端末以外ではカウントが進む
         if (MapBehaviour.Instance && MapBehaviour.Instance.IsOpen)
@@ -48,12 +58,8 @@ public static class Helpers
         
         if (Minigame.Instance)
         {
-            if (Minigame.Instance.TryCast<SpawnInMinigame>()) return false;
-            if (Minigame.Instance.MyNormTask) return true;
             if (Minigame.Instance.TryCast<DoorCardSwipeGame>()) return true;
             if (Minigame.Instance.TryCast<DoorBreakerGame>()) return true;
-            if (Minigame.Instance.TryCast<MultistageMinigame>()) return true;
-            if (Minigame.Instance.TryCast<AutoMultistageMinigame>()) return true;
         }
 
         return PlayerControl.LocalPlayer.CanMove;
@@ -356,6 +362,13 @@ public static class Helpers
         DeadBody[] deadBodies = new DeadBody[bodies.Count];
         for (int i = 0; i < bodies.Count; i++) deadBodies[i] = bodies[i].GetComponent<DeadBody>();
         return deadBodies;
+    }
+
+    public static float Distance(this Vector2 vector, Vector2 opponent)
+    {
+        float x = vector.x - opponent.x;
+        float y = vector.y - opponent.y;
+        return Mathf.Sqrt(x * x + y * y);
     }
 
     public static float Distance(this Vector3 vector, Vector3 opponent)

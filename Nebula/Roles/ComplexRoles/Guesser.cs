@@ -7,6 +7,7 @@ public class FGuesser : Template.HasBilateralness
     public Module.CustomOption secondoryRoleOption;
     public Module.CustomOption guesserShots;
     public Module.CustomOption canShotSeveralTimesInTheSameMeeting;
+    public Module.CustomOption additionalVotingTime;
 
 
     public Module.CustomOption crewmateRoleCountOption;
@@ -77,6 +78,8 @@ public class FGuesser : Template.HasBilateralness
 
         canShotSeveralTimesInTheSameMeeting = CreateOption(Color.white, "canShotSeveralTimes", false);
         guesserShots = CreateOption(Color.white, "guesserShots", 3f, 1f, 15f, 1f);
+        additionalVotingTime = CreateOption(Color.white, "additionalVotingTime", 10f, 0f, 60f, 5f);
+        additionalVotingTime.suffix = "second";
 
         chanceToSpawnAsSecondarySide.AddInvPrerequisite(secondoryRoleOption);
         definitiveAssignmentOption.AddInvPrerequisite(secondoryRoleOption);
@@ -226,8 +229,7 @@ static public class GuesserSystem
                         __instance.playerStates.ToList().ForEach(x => { if (x.transform.FindChild("ShootButton") != null) UnityEngine.Object.Destroy(x.transform.FindChild("ShootButton").gameObject); });
 
                     // Shoot player and send chat info if activated
-                    RPCEventInvoker.CloseUpKill(PlayerControl.LocalPlayer, dyingTarget,
-                        dyingTarget.PlayerId == PlayerControl.LocalPlayer.PlayerId ? Game.PlayerData.PlayerStatus.Misguessed : Game.PlayerData.PlayerStatus.Guessed);
+                    RPCEventInvoker.Guess(dyingTarget.PlayerId);
                 }
             }));
 

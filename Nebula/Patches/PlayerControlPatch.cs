@@ -679,7 +679,7 @@ class PlayerIsKillTimerEnabledPatch
             {
                 if (CustomOptionHolder.CoolDownOption.getBool())
                 {
-                    if (CustomOptionHolder.KillCoolDownProceedIgnoringCommReceiver.getBool() && Minigame.Instance.TryCast<AuthGame>()) return;
+                    if (CustomOptionHolder.KillCoolDownProceedIgnoringCommReceiver.getBool() && Minigame.Instance.TryCast<TuneRadioMinigame>()) return;
                     if (CustomOptionHolder.KillCoolDownProceedIgnoringBlackOutGame.getBool() && Minigame.Instance.TryCast<SwitchMinigame>()) return;
                     if (CustomOptionHolder.KillCoolDownProceedIgnoringDoorGame.getBool() && Minigame.Instance.TryCast<IDoorMinigame>() != null) return;
                     if (CustomOptionHolder.KillCoolDownProceedIgnoringSecurityCamera.getBool() && (Minigame.Instance.TryCast<PlanetSurveillanceMinigame>() || Minigame.Instance.TryCast<SurveillanceMinigame>())) return;
@@ -693,5 +693,38 @@ class PlayerIsKillTimerEnabledPatch
             if (__instance.inMovingPlat) __result |= CustomOptionHolder.KillCoolDownProceedIgnoringMovingPlatform.getBool();
             if (__instance.onLadder) __result |= CustomOptionHolder.KillCoolDownProceedIgnoringLadder.getBool();
         }
+    }
+}
+
+[HarmonyPatch(typeof(OverlayKillAnimation), nameof(OverlayKillAnimation.Initialize))]
+class OverlayKillAnimationPatch
+{
+    public static bool Prefix(OverlayKillAnimation __instance, [HarmonyArgument(0)] GameData.PlayerInfo kInfo, [HarmonyArgument(1)] GameData.PlayerInfo vInfo)
+    {
+        NebulaPlugin.Instance.Logger.Print("kill0");
+        if (__instance.killerParts)
+        {
+            NebulaPlugin.Instance.Logger.Print("kill1");
+            PlayerControl playerControl = Helpers.playerById(kInfo.PlayerId);
+            GameData.PlayerOutfit currentOutfit = playerControl.GetModData().CurrentOutfit.toPlayerOutfit();
+            __instance.killerParts.SetBodyType(playerControl.BodyType);
+            __instance.killerParts.UpdateFromPlayerOutfit(currentOutfit, PlayerMaterial.MaskType.None, false, false);
+            __instance.killerParts.ToggleName(false);
+            __instance.LoadKillerSkin(currentOutfit);
+            __instance.LoadKillerPet(currentOutfit);
+        }
+        if (vInfo != null && __instance.victimParts)
+        {
+            NebulaPlugin.Instance.Logger.Print("kill2");
+            PlayerControl playerControl2 = Helpers.playerById(vInfo.PlayerId);
+            GameData.PlayerOutfit currentOutfit2 = playerControl2.GetModData().CurrentOutfit.toPlayerOutfit();
+            __instance.victimHat = currentOutfit2.HatId;
+            __instance.victimParts.SetBodyType(playerControl2.BodyType);
+            __instance.victimParts.UpdateFromPlayerOutfit(currentOutfit2, PlayerMaterial.MaskType.None, false, false);
+            __instance.victimParts.ToggleName(false);
+            __instance.LoadVictimSkin(currentOutfit2);
+            __instance.LoadVictimPet(currentOutfit2);
+        }
+        return false;
     }
 }

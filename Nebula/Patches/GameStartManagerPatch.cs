@@ -286,7 +286,6 @@ public class GameStartManagerPatch
                             var i = playerControl.PlayerId = (byte)GameData.Instance.GetAvailableId();
 
                             GameData.Instance.AddPlayer(playerControl);
-                            AmongUsClient.Instance.Spawn(playerControl, -2, InnerNet.SpawnFlags.None);
 
                             playerControl.transform.position = PlayerControl.LocalPlayer.transform.position;
                             playerControl.GetComponent<DummyBehaviour>().enabled = true;
@@ -294,6 +293,7 @@ public class GameStartManagerPatch
                             playerControl.SetName(Patches.RandomNamePatch.GetRandomName());
                             playerControl.SetColor(i);
 
+                            AmongUsClient.Instance.Spawn(playerControl, -2, InnerNet.SpawnFlags.None);
                             GameData.Instance.RpcSetTasks(playerControl.PlayerId, new byte[0]);
 
                             playerControl.StartCoroutine(playerControl.CoPlayerAppear().WrapToIl2Cpp());

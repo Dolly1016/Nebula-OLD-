@@ -76,7 +76,7 @@ public class Morphing : Role
                 }
                 else
                 {
-                    RPCEventInvoker.Morph(morphOutfit);
+                    RPCEventInvoker.Morph(morphOutfit.Clone(morphOutfit.Priority));
                 }
             },
             () => { return !PlayerControl.LocalPlayer.Data.IsDead; },

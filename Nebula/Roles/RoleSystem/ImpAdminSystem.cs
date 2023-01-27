@@ -69,7 +69,7 @@ namespace Nebula.Roles.RoleSystem
 
             if (jailerCountOverlay == null)
             {
-                jailerCountOverlay = GameObject.Instantiate(MapBehaviour.Instance.countOverlay);
+                jailerCountOverlay = GameObject.Instantiate(ShipStatus.Instance.MapPrefab.countOverlay);
                 jailerCountOverlay.transform.SetParent(MapBehaviour.Instance.transform);
                 jailerCountOverlay.transform.localPosition = MapBehaviour.Instance.countOverlay.transform.localPosition;
                 jailerCountOverlay.transform.localScale = MapBehaviour.Instance.countOverlay.transform.localScale;
@@ -85,10 +85,13 @@ namespace Nebula.Roles.RoleSystem
 
             jailerCountOverlay.gameObject.SetActive(true);
 
+            Patches.AdminPatch.divMask = ~1;
             Patches.AdminPatch.adminMode = canIdentifyImpostors ? AdminPatch.AdminMode.ImpostorsAndDeadBodies : AdminPatch.AdminMode.Default;
             Patches.AdminPatch.isAffectedByCommAdmin = !ignoreComm;
             Patches.AdminPatch.isStandardAdmin = false;
             Patches.AdminPatch.shouldChangeColor = false;
+
+            mapTaskOverlay.Hide();
         }
 
         public static void OnMapClose(MapBehaviour mapBehaviour)

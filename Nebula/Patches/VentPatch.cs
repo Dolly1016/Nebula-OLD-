@@ -206,3 +206,23 @@ class CoEnterVentPatch
         __result = Effects.Sequence(new UnhollowerBaseLib.Il2CppReferenceArray<Il2CppSystem.Collections.IEnumerator>(sequence.ToArray()));
     }
 }
+
+//上のパッチが正常に最後まで動かないときがあるようなので保険のため。
+
+[HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.CoExitVent))]
+class CoExitVentPatch
+{
+    static void Postfix(PlayerPhysics __instance)
+    {
+        __instance.myPlayer.Collider.enabled = true;
+    }
+}
+
+[HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.ResetMoveState))]
+class ResetMoveStatePatch
+{
+    static void Postfix(PlayerPhysics __instance)
+    {
+        __instance.myPlayer.Collider.enabled = true;
+    }
+}

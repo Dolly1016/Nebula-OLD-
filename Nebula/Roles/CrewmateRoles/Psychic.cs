@@ -90,7 +90,7 @@ public class Psychic : Role
 
     private float deathMessageInterval;
 
-    private string[] PsychicMessage = new string[] { "elapsedTime", "killerColor", "killerRole", "myRole", "losing" };
+    private string[] PsychicMessage = new string[] { "elapsedTime", "killerColor", "killerRole", "myRole" };
 
     public override void MyPlayerControlUpdate()
     {

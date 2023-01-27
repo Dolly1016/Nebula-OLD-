@@ -80,6 +80,7 @@ public class Sheriff : Role
             Module.NebulaInputManager.modKillInput.keyCode,
             "button.label.kill",ImageNames.AdminMapButton
         ).SetTimer(CustomOptionHolder.InitialKillCoolDownOption.getFloat());
+        killButton.SetButtonCoolDownOption(true);
         killButton.MaxTimer = killCooldownOption.getFloat();
         killButton.UsesText.text = shots.ToString();
         killButton.LabelText.outlineColor = Palette.CrewmateBlue;

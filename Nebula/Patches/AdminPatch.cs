@@ -6,8 +6,8 @@ namespace Nebula.Patches;
 public class AdminPatch
 {
     static float adminTimer = 0f;
-    static TMPro.TextMeshPro OutOfTime;
-    static TMPro.TextMeshPro TimeRemaining;
+    static public TMPro.TextMeshPro OutOfTime;
+    static public TMPro.TextMeshPro TimeRemaining;
     static bool clearedIcons = false;
 
     public enum AdminMode

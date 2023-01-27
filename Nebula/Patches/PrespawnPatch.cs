@@ -312,6 +312,9 @@ class PrespawnPatch
     {
         public static bool Prefix(AirshipStatus __instance, ref Il2CppSystem.Collections.IEnumerator __result)
         {
+            //ダミーの位置を修正
+            foreach (var p in PlayerControl.AllPlayerControls.GetFastEnumerator()) if (p.isDummy) p.transform.position = Vector3.zero;
+
             if (CustomOptionHolder.mapOptions.getBool() && CustomOptionHolder.shuffledElectricalOption.getBool() && AmongUsClient.Instance.AmHost)
             {
                 __instance.Systems[SystemTypes.Decontamination].Cast<ElectricalDoors>().Initialize();

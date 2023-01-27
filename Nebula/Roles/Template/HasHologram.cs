@@ -12,8 +12,9 @@ public class HasHologram : Role
         PlayerIconsTop = new GameObject("PlayerIcons").transform;
         PlayerIconsTop.SetParent(HudManager.Instance.UseButton.transform.parent);
         PlayerIconsTop.localScale = new Vector3(1f, 1f, 1f);
+        PlayerIconsTop.localPosition = new Vector3(0f, 0f, -10f);
         Expansion.GridArrangeExpansion.AddGridArrangeContent(PlayerIconsTop.gameObject,
-            Expansion.GridArrangeExpansion.GridArrangeParameter.LeftSideContent | Expansion.GridArrangeExpansion.GridArrangeParameter.OccupyingLineContent);
+            Expansion.GridArrangeExpansion.GridArrangeParameter.LeftSideContent | Expansion.GridArrangeExpansion.GridArrangeParameter.OccupyingLineContent | Expansion.GridArrangeExpansion.GridArrangeParameter.AlwaysVisible);
 
         int playerCounter = 0;
         if (HudManager.InstanceExists && PlayerControl.LocalPlayer != null)

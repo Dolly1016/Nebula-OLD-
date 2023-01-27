@@ -46,19 +46,19 @@ public static class MapBehaviourExpansion
 
     static public void EnmaskMap(Int32 mask)
     {
+        Sprite? sprite = null;
+        Sprite defaultSprite = ShipStatus.Instance.MapPrefab.transform.GetChild(1).GetComponent<SpriteRenderer>().sprite;
+
         if (mask == Int32.MaxValue)
         {
-            MapBehaviour.Instance.transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = defaultSprite;
-            return;
+            sprite = defaultSprite;
         }
-
-        Sprite sprite;
-        if (!divSprite.TryGetValue(mask, out sprite))
+        else if (!divSprite.TryGetValue(mask, out sprite))
         {
             sprite = AssetLoader.GetMapSprite(GameOptionsManager.Instance.CurrentGameOptions.MapId, defaultSprite.pivot * 2, mask);
             divSprite[mask] = sprite;
         }
-        MapBehaviour.Instance.transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = sprite;
+        if(sprite != null) MapBehaviour.Instance.transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = sprite;
     }
 
     [HarmonyPatch(typeof(MapBehaviour), nameof(MapBehaviour.GenericShow))]
@@ -66,11 +66,7 @@ public static class MapBehaviourExpansion
     {
         static void Postfix(MapBehaviour __instance)
         {
-            if (defaultSprite == null || !defaultSprite)
-                defaultSprite = __instance.transform.GetChild(1).GetComponent<SpriteRenderer>().sprite;
-            else
-                MapBehaviour.Instance.transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = defaultSprite;
-
+            EnmaskMap(Int32.MaxValue);
             __instance.ShowTrackOverlay();
         }
     }

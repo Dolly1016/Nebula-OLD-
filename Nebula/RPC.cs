@@ -1,4 +1,5 @@
-﻿using Hazel;
+﻿using BepInEx.IL2CPP.Utils;
+using Hazel;
 using Nebula.Module;
 using UnityEngine;
 
@@ -83,6 +84,7 @@ public enum CustomRPC
     MorphCancel,
     CreateSidekick,
     DisturberInvoke,
+    BansheeWeep,
     UpdatePlayersIconInfo,
 
     InitializeRitualData,
@@ -92,7 +94,8 @@ public enum CustomRPC
     Paint,
     Poltergeist,
     InstantiateDeadBody,
-    EnterRemoteVent
+    EnterRemoteVent,
+    Guess,
 }
 
 //RPCを受け取ったときのイベント
@@ -196,9 +199,9 @@ class RPCHandlerPatch
                 RPCEvents.PlayDynamicSound(new Vector2(reader.ReadSingle(), reader.ReadSingle()), (Module.AudioAsset)reader.ReadByte(), reader.ReadSingle(), reader.ReadSingle());
                 break;
             case (byte)CustomRPC.UncheckedMultiMurderPlayer:
-                var args = reader.ReadBytes(4);
-                var targets = reader.ReadBytes(args[3]);
-                RPCEvents.UncheckedMurderPlayer(args[0], args[1], args[2], targets.ToArray());
+                var args = reader.ReadBytes(3);
+                var targets = reader.ReadBytes(args[2]);
+                RPCEvents.UncheckedMurderPlayer(args[0], args[1],  targets.ToArray());
                 break;
             case (byte)CustomRPC.UncheckedMurderPlayer:
                 RPCEvents.UncheckedMurderPlayer(reader.ReadByte(), reader.ReadByte(), reader.ReadByte(), reader.ReadByte());
@@ -340,6 +343,9 @@ class RPCHandlerPatch
             case (byte)CustomRPC.DisturberInvoke:
                 RPCEvents.DisturberInvoke(reader.ReadByte(), reader.ReadUInt64(), reader.ReadUInt64());
                 break;
+            case (byte)CustomRPC.BansheeWeep:
+                RPCEvents.BansheeWeep(new Vector2(reader.ReadSingle(), reader.ReadSingle()));
+                break;
             case (byte)CustomRPC.UpdatePlayerVisibility:
                 RPCEvents.UpdatePlayerVisibility(reader.ReadByte(), reader.ReadBoolean());
                 break;
@@ -370,6 +376,9 @@ class RPCHandlerPatch
                 break;
             case (byte)CustomRPC.EnterRemoteVent:
                 RPCEvents.EnterRemoteVent(reader.ReadByte(), new Vector2(reader.ReadSingle(), reader.ReadSingle()),reader.ReadInt32());
+                break;
+            case (byte)CustomRPC.Guess:
+                RPCEvents.Guess(reader.ReadByte(), reader.ReadByte());
                 break;
         }
     }
@@ -600,10 +609,10 @@ static class RPCEvents
         Objects.SoundPlayer.PlaySound(pos, id, maxDistance, minDistance);
     }
 
-    public static void UncheckedMurderPlayer(byte murdererId, byte statusId, byte showAnimation,byte[] targetsId)
+    public static void UncheckedMurderPlayer(byte murdererId, byte statusId,byte[] targetsId)
     {
         foreach(byte t in targetsId)
-            UncheckedMurderPlayer(murdererId,t,statusId,showAnimation);
+            UncheckedMurderPlayer(murdererId,t,statusId,0);
     }
 
     public static void UncheckedMurderPlayer(byte murdererId, byte targetId, byte statusId, byte showAnimation, bool cutOverlay = false)
@@ -1268,12 +1277,15 @@ static class RPCEvents
         {
             case 0:
                 Game.GameData.data.UtilityTimer.AdminTimer -= timer;
+                if (Game.GameData.data.UtilityTimer.AdminTimer < 0f) Game.GameData.data.UtilityTimer.AdminTimer = 0f;
                 break;
             case 1:
                 Game.GameData.data.UtilityTimer.VitalsTimer -= timer;
+                if (Game.GameData.data.UtilityTimer.VitalsTimer < 0f) Game.GameData.data.UtilityTimer.VitalsTimer = 0f;
                 break;
             case 2:
                 Game.GameData.data.UtilityTimer.CameraTimer -= timer;
+                if (Game.GameData.data.UtilityTimer.CameraTimer < 0f) Game.GameData.data.UtilityTimer.CameraTimer = 0f;
                 break;
         }
     }
@@ -1455,6 +1467,36 @@ static class RPCEvents
             }
         }, Roles.Roles.Disturber.ignoreBarriorsOption.getSelection() == 1,
         (ulong)(Roles.Roles.Disturber.ignoreBarriorsOption.getSelection() == 2 ? 1 << playerId : 0));
+    }
+
+    public static void BansheeWeep(Vector2 pos)
+    {
+        //Bansheeを確定させる
+        Game.GameData.data.EstimationAI.Determine(Roles.Roles.Banshee);
+
+        //通知距離を超えていなければ何もしない
+        if (pos.Distance(PlayerControl.LocalPlayer.transform.position) < Roles.Roles.Banshee.minWeepNoticeRangeOption.getFloat())
+            return;
+
+        Objects.Arrow arrow = new Objects.Arrow(Color.white, false);
+        arrow.image.sprite = Roles.Roles.Banshee.bansheeArrowSprite.GetSprite();
+
+        pos += (Vector2)((Vector3.one * Roles.Roles.Banshee.fuzzinessWeepNoticeOption.getFloat()).RotateZ((float)NebulaPlugin.rnd.NextDouble() * 360f));
+
+        FastDestroyableSingleton<HudManager>.Instance.StartCoroutine(Effects.Lerp(4f, new Action<float>((p) =>
+        {
+            arrow.Update(pos);
+            arrow.arrow.transform.eulerAngles = new Vector3(0f, 0f, 0f);
+            if (p > 0.8f)
+            {
+                arrow.image.color = new Color(1f, 1f, 1f, (1f - p) * 5f);
+            }
+            if (p == 1f)
+            {
+                //矢印を消す
+                UnityEngine.Object.Destroy(arrow.arrow);
+            }
+        })));
     }
 
     public static void UpdatePlayerVisibility(byte player, bool flag)
@@ -1640,13 +1682,20 @@ static class RPCEvents
 
         p.MyPhysics.Animations.PlayIdleAnimation();
         p.Visible = false;
-        p.transform.position = v.transform.position + v.Offset;
+        p.transform.position = v.transform.position + v.Offset - (Vector3)p.Collider.offset;
 
         if (p.AmOwner)
             VentilationSystem.Update(VentilationSystem.Operation.Enter, v.Id);
 
         if (p.AmOwner)
             v.SetButtons(true);
+    }
+
+    static public void Guess(byte murderer,byte target)
+    {
+        CloseUpKill(murderer,target,(murderer == target ? Game.PlayerData.PlayerStatus.Misguessed : Game.PlayerData.PlayerStatus.Guessed).Id,true);
+        if (MeetingHud.Instance)MeetingHud.Instance.discussionTimer -= Roles.Roles.F_Guesser.additionalVotingTime.getFloat();
+        
     }
 }
 
@@ -1861,16 +1910,15 @@ public class RPCEventInvoker
         RPCEvents.UncheckedMurderPlayer(murdererId, targetId, statusId, showAnimation ? Byte.MaxValue : (byte)0);
     }
 
-    public static void UncheckedMurderPlayer(byte murdererId, byte[] targets, byte statusId, bool showAnimation)
+    public static void UncheckedMurderPlayer(byte murdererId, byte[] targets, byte statusId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UncheckedMurderPlayer, Hazel.SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.UncheckedMultiMurderPlayer, Hazel.SendOption.Reliable, -1);
         writer.Write(murdererId);
         writer.Write(statusId);
-        writer.Write(showAnimation ? Byte.MaxValue : (byte)0);
         writer.Write((byte)targets.Length);
         foreach(byte t in targets)writer.Write(t);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
-        RPCEvents.UncheckedMurderPlayer(murdererId, statusId, showAnimation ? Byte.MaxValue : (byte)0, targets);
+        RPCEvents.UncheckedMurderPlayer(murdererId, statusId, targets);
     }
 
     public static void Guard(byte murdererId, byte targetId)
@@ -2358,6 +2406,16 @@ public class RPCEventInvoker
         RPCEvents.RaiderThrow(PlayerControl.LocalPlayer.PlayerId, pos, angle);
     }
 
+    public static void BansheeWeep(Vector2 pos)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.BansheeWeep, Hazel.SendOption.Reliable, -1);
+        writer.Write(pos.x);
+        writer.Write(pos.y);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+
+        RPCEvents.BansheeWeep(pos);
+    }
+
     public static void Morph(Game.PlayerData.PlayerOutfitData outfit)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Morph, Hazel.SendOption.Reliable, -1);
@@ -2573,12 +2631,21 @@ public class RPCEventInvoker
 
     static public void EnterRemoteVent(Vector2 pos, Vent vent)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.InstantiateDeadBody, Hazel.SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.EnterRemoteVent, Hazel.SendOption.Reliable, -1);
         writer.Write(PlayerControl.LocalPlayer.PlayerId);
         writer.Write(pos.x);
         writer.Write(pos.y);
         writer.Write(vent.Id);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         RPCEvents.EnterRemoteVent(PlayerControl.LocalPlayer.PlayerId,pos,vent.Id);
+    }
+
+    static public void Guess(byte target)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Guess, Hazel.SendOption.Reliable, -1);
+        writer.Write(PlayerControl.LocalPlayer.PlayerId);
+        writer.Write(target);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RPCEvents.Guess(PlayerControl.LocalPlayer.PlayerId,target);
     }
 }

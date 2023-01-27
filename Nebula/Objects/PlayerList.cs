@@ -88,6 +88,7 @@ public class PlayerList
         if (IsOpen) yield break;
 
         listParent.SetActive(true);
+        IsOpen = true;
 
         while (true)
         {
@@ -105,7 +106,9 @@ public class PlayerList
 
     private IEnumerator CoClose()
     {
-        if (IsOpen) yield break;
+        if (!IsOpen) yield break;
+
+        IsOpen = false;
 
         while (true)
         {

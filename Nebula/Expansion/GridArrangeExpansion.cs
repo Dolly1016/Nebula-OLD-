@@ -19,14 +19,17 @@ static public class GridArrangeExpansion
         LeftSideContent = 0x02,
         OccupyingLineContent = 0x04,
         AlternativeKillButtonContent = 0x08,
-        IgnoredContent = 0x10
+        IgnoredContent = 0x10,
+        AlwaysVisible = 0x20
     }
 
 
     static public void AddGridArrangeContent(GameObject obj, GridArrangeParameter param)
     {
-        if (obj.transform.parent != HudManager.Instance.UseButton.transform.parent)
+        if (obj.transform.parent != HudManager.Instance.UseButton.transform.parent && (int)(param & GridArrangeParameter.AlwaysVisible) == 0)
             obj.transform.SetParent(HudManager.Instance.UseButton.transform.parent);
+        if (obj.transform.parent != alwaysVisible.transform && (int)(param & GridArrangeParameter.AlwaysVisible) != 0)
+            obj.transform.SetParent(alwaysVisible.transform);
 
         if ((int)(param & GridArrangeParameter.BottomContent) != 0)
             bottomContents.Add(obj);
@@ -50,12 +53,19 @@ static public class GridArrangeExpansion
             AlternativeKillButtonContent = HudManager.Instance.KillButton.gameObject;
     }
 
+    static public GameObject alwaysVisible;
+
     static public void OnStartGame()
     {
         bottomContents.Clear();
         leftSideContents.Clear();
         lineContents.Clear();
         AlternativeKillButtonContent = HudManager.Instance.KillButton.gameObject;
+
+        alwaysVisible = new GameObject("AlwaysVisible");
+        alwaysVisible.transform.SetParent(HudManager.Instance.UseButton.transform.parent.parent);
+        alwaysVisible.transform.localPosition = HudManager.Instance.UseButton.transform.parent.localPosition;
+        alwaysVisible.transform.localScale = HudManager.Instance.UseButton.transform.parent.localScale;
     }
 
     [HarmonyPatch(typeof(GridArrange), nameof(GridArrange.CheckCurrentChildren))]
@@ -78,6 +88,14 @@ static public class GridArrangeExpansion
         static public bool Prefix(GridArrange __instance)
         {
             __instance.GetChildsActive();
+            if (alwaysVisible)
+            {
+                foreach (var obj in alwaysVisible.transform)
+                {
+                    Transform transform = obj.Cast<Transform>();
+                    if (transform.gameObject.activeSelf) GridArrange.currentChildren.Insert(0, transform);
+                }
+            }
 
             if (__instance.cells.Count == GridArrange.currentChildren.Count)
             {

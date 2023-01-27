@@ -126,7 +126,7 @@ public class PolusData : MapData
         RegisterObjectPosition("telescope", new Vector2(33.8684f, -5.4713f), SystemTypes.Laboratory, 40f);
         RegisterObjectPosition("drill", new Vector2(27.421f, -6.9823f), SystemTypes.Laboratory, 35f);
         RegisterObjectPosition("reactor", new Vector2(34.7578f, -18.8785f), SystemTypes.Specimens, 50f);
-        RegisterObjectPosition("decontamination", new Vector2(39.8686f, -9.8323f), SystemTypes.Decontamination, 50f);
+        RegisterObjectPosition("decontamination", new Vector2(39.8686f, -9.8323f), SystemTypes.Decontamination, 35f);
 
         SpawnPoints.Add(new SpawnPointData("dropship", new Vector2(16.6f, -1.5f)));
         SpawnPoints.Add(new SpawnPointData("storage", new Vector2(20.6f, -11.7f)));

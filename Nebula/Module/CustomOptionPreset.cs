@@ -141,10 +141,9 @@ public class CustomOptionPreset
             {
                 if (option.isProtected) continue;
 
-                option.updateSelection(option.defaultSelection);
-
-                GameOptionsManager.Instance.CurrentGameOptions.SetRecommendations(PlayerControl.AllPlayerControls.Count, true);
+                option.selection = option.defaultSelection;
             }
+            GameOptionsManager.Instance.CurrentGameOptions.SetRecommendations(PlayerControl.AllPlayerControls.Count, true);
         }
 
         //読み込み
@@ -153,8 +152,10 @@ public class CustomOptionPreset
             if (IsVanillaOption(entry.Key))
                 LoadVanillaOption(entry.Key, entry.Value);
             else
-                CustomOption.loadOption(entry.Key, entry.Value);
+                CustomOption.loadOptionWithoutSync(entry.Key, entry.Value);
         }
+
+        CustomOption.ShareOptionSelections();
     }
 
     public void Output()
