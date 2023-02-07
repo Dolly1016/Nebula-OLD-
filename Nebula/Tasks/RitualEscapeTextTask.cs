@@ -20,8 +20,9 @@ public class RitualEscapeTextTask : NebulaPlayerTask
         sb.AppendLine();
     }
 
-    public override void __NextStep()
+    public override bool __NextStep()
     {
+        return false;
     }
 
 

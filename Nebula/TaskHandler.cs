@@ -32,36 +32,49 @@ public static class TasksHandler
         return Tuple.Create(0, 0);
     }
 
+    public static float TotalTasks { get; private set; }
+    public static float CompletedTasks { get; private set; }
+    public static float TotalAlivesTasks { get; private set; }
+    public static float CompletedAlivesTasks { get; private set; }
 
-        public static bool RecomputeTasks(GameData __instance)
+    public static bool RecomputeTasks(GameData __instance)
+    {
+        __instance.TotalTasks = 0;
+        __instance.CompletedTasks = 0;
+
+        if (Game.GameData.data == null) return false;
+
+        if (!Game.GameModeProperty.GetProperty(Game.GameData.data.GameMode).CountTasks) return false;
+
+        for (int i = 0; i < __instance.AllPlayers.Count; i++)
         {
-            __instance.TotalTasks = 0;
-            __instance.CompletedTasks = 0;
+            GameData.PlayerInfo playerInfo = __instance.AllPlayers[i];
 
-            if (Game.GameData.data == null) return false;
+            //切断されたプレイヤーのタスクは数えない
+            if (Helpers.playerById(playerInfo.PlayerId) == null) continue;
 
-            if (!Game.GameModeProperty.GetProperty(Game.GameData.data.GameMode).CountTasks) return false;
+            if (!Helpers.HasModData(playerInfo.PlayerId)) continue;
 
-            for (int i = 0; i < __instance.AllPlayers.Count; i++)
+            if ((playerInfo.GetModData().Tasks?.Quota ?? 0) == 0) continue;
+
+            bool hasFakeTask = false;
+            Helpers.RoleAction(playerInfo.PlayerId, (role) => { hasFakeTask |= !role.HasCrewmateTask(playerInfo.PlayerId); });
+            if (hasFakeTask) continue;
+
+            var (playerCompleted, playerTotal) = taskInfo(playerInfo);
+            if (playerInfo.GetModData().Tasks.IsInfiniteCrewmateTasks) playerTotal = 9999;
+
+            __instance.TotalTasks += playerTotal;
+            __instance.CompletedTasks += playerCompleted;
+            TotalTasks += playerTotal;
+            CompletedTasks += playerCompleted;
+            if (!playerInfo.IsDead)
             {
-                GameData.PlayerInfo playerInfo = __instance.AllPlayers[i];
-
-                //切断されたプレイヤーのタスクは数えない
-                if (Helpers.playerById(playerInfo.PlayerId) == null) continue;
-
-                if (!Helpers.HasModData(playerInfo.PlayerId)) continue;
-
-                if ((playerInfo.GetModData().Tasks?.Quota ?? 0) == 0) continue;
-
-                bool hasFakeTask = false;
-                Helpers.RoleAction(playerInfo.PlayerId, (role) => { hasFakeTask |= !role.HasCrewmateTask(playerInfo.PlayerId); });
-                if (hasFakeTask) continue;
-
-                var (playerCompleted, playerTotal) = taskInfo(playerInfo);
-                __instance.TotalTasks += playerInfo.GetModData().Tasks.IsInfiniteCrewmateTasks ? 9999 : playerTotal;
-                __instance.CompletedTasks += playerCompleted;
+                TotalAlivesTasks += playerTotal;
+                CompletedAlivesTasks += playerCompleted;
             }
-            return false;
         }
-    
+        return false;
+    }
+
 }

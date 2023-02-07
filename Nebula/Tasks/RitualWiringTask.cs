@@ -213,7 +213,7 @@ public class RitualWiringTask : NebulaPlayerTask
         sb.AppendLine();
     }
 
-    public override void __NextStep()
+    public override bool __NextStep()
     {
         RPCEventInvoker.RitualUpdateTaskProgress((int)Id);
 
@@ -221,6 +221,8 @@ public class RitualWiringTask : NebulaPlayerTask
         {
             SoundManager.Instance.PlaySound(DestroyableSingleton<HudManager>.Instance.TaskUpdateSound, false, 1f);
         }
+
+        return false;
     }
 
 

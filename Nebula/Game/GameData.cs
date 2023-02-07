@@ -1482,6 +1482,8 @@ public class GameData
             Map.MapEditor.AddWirings(mapId);
         }
 
+        foreach (Roles.Role r in Roles.Roles.AllRoles) r.CustomizeMap(mapId);
+
         Rooms = new List<SystemTypes>();
         foreach (SystemTypes type in ShipStatus.Instance.FastRooms.Keys)
         {

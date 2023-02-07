@@ -366,7 +366,7 @@ public class CustomOptionHolder
         severeEmergencyLock = CustomOption.Create(Color.white, "option.severeEmergencyLock", false, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
         dealAbstentionAsSelfVote = CustomOption.Create(Color.white, "option.dealAbstentionAsSelfVote", false, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
         hideVotedIcon = CustomOption.Create(Color.white, "option.hideVotedIcon", false, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
-        showRoleOfExiled = CustomOption.Create(Color.white, "option.showRoleOfExiled", false, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
+        showRoleOfExiled = CustomOption.Create(Color.white, "option.showRoleOfExiled", false, meetingOptions).SetGameMode(~CustomGameMode.Minigame).AddCustomPrerequisite(() => GameOptionsManager.Instance.currentNormalGameOptions.ConfirmImpostor);
 
         additionalEmergencyCoolDown.alternativeOptionScreenBuilder = (refresher) =>
         {

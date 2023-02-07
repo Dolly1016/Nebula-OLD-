@@ -84,7 +84,7 @@ public class VOID : Role
         dialog.AddTopic(new MSString(2f, "Unactivated", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold));
         dialog.AddModifyTopic((r) => !data.HasExtraRole(r), (r) =>
         {
-            RPCEventInvoker.SetExtraRole(p, r, 0);
+            RPCEventInvoker.AddExtraRole(p, r, 0);
             MetaDialog.EraseDialog(2);
             OpenPlayerDialog(p, 0);
             MetaEditModify(p);

@@ -49,6 +49,8 @@ public static class MapBehaviourExpansion
         Sprite? sprite = null;
         Sprite defaultSprite = ShipStatus.Instance.MapPrefab.transform.GetChild(1).GetComponent<SpriteRenderer>().sprite;
 
+        
+
         if (mask == Int32.MaxValue)
         {
             sprite = defaultSprite;
@@ -58,7 +60,10 @@ public static class MapBehaviourExpansion
             sprite = AssetLoader.GetMapSprite(GameOptionsManager.Instance.CurrentGameOptions.MapId, defaultSprite.pivot * 2, mask);
             divSprite[mask] = sprite;
         }
-        if(sprite != null) MapBehaviour.Instance.transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = sprite;
+        if (sprite != null)
+        {
+            MapBehaviour.Instance.transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = sprite;
+        }
     }
 
     [HarmonyPatch(typeof(MapBehaviour), nameof(MapBehaviour.GenericShow))]

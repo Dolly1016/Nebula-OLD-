@@ -172,6 +172,8 @@ public class Vulture : Role, Template.HasWinTrigger
 
     public override void CleanUp()
     {
+        ClearArrows();
+
         if (eatButton != null)
         {
             eatButton.Destroy();

@@ -10,7 +10,7 @@ public static class HttpConvertPatch
 {
     public static bool Prefix(ServerInfo __instance,ref string __result)
     {
-        if (__instance.Port != 22000) return true;
+        if (__instance.Port != 22000 && __instance.Port != 443) return true;
 
         __result = string.Format("http://{0}:{1}/", __instance.Ip, __instance.Port);
         return false;

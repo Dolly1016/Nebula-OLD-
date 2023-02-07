@@ -154,6 +154,8 @@ public abstract class Role : Assignable
         get => true;
     }
 
+    public virtual bool CanKnowImpostors { get => side == Side.Impostor; }
+
     public virtual bool IsSecondaryGenerator { get { return false; } }
 
 
@@ -169,6 +171,15 @@ public abstract class Role : Assignable
 
     /*--------------------------------------------------------------------------------------*/
     /*--------------------------------------------------------------------------------------*/
+
+    /// <summary>
+    /// マップを改変します。
+    /// 出現するか否かに関わらず呼び出されます。
+    /// </summary>
+    [RoleGlobalMethod]
+    public virtual void CustomizeMap(byte mapId)
+    {
+    }
 
     /// <summary>
     /// 誰かの役職が変化したときに呼び出されます。

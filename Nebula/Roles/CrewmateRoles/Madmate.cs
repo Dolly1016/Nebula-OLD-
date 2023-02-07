@@ -210,7 +210,7 @@ public class Madmate : Role
         //ランダムに相手を選んで追放する
         RPCEventInvoker.UncheckedExilePlayer(players[NebulaPlugin.rnd.Next(players.Count)].PlayerId, Game.PlayerData.PlayerStatus.Embroiled.Id);
     }
-
+    public override bool CanFixSabotage => CanFixSabotageOption.getBool();
     public override void GlobalIntroInitialize(PlayerControl __instance)
     {
         canMoveInVents = CanMoveInVentOption.getBool();

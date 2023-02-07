@@ -4,6 +4,7 @@ namespace Nebula;
 
 public static class DevTools
 {
+
     private static FileStream CreateEmptyWav(string filepath)
     {
         var fileStream = new FileStream(filepath, FileMode.Create);

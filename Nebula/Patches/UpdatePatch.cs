@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis.FlowAnalysis;
+﻿using AmongUs.Data;
+using Microsoft.CodeAnalysis.FlowAnalysis;
 using Nebula.Objects;
 
 namespace Nebula.Patches;
@@ -87,7 +88,7 @@ public static class UpdatePatch
         if (Game.GameData.data == null) return;
 
         Color? impostorColor = null;
-        if (PlayerControl.LocalPlayer.Data.Role.IsImpostor)
+        if (Game.GameData.data.myData.getGlobalData().role.CanKnowImpostors)
         {
             impostorColor = Palette.ImpostorRed;
         }
@@ -186,6 +187,7 @@ public static class UpdatePatch
 
 
             player.cosmetics.nameText.enabled = showNameFlag;
+            player.cosmetics.colorBlindText.gameObject.SetActive(showNameFlag && DataManager.Settings.Accessibility.ColorBlindMode);
         }
 
         if (MeetingHud.Instance != null)
@@ -409,6 +411,10 @@ public static class UpdatePatch
                         vent.myRend.material.SetColor("_AddColor", ventColor);
                 }
             }
+
+            bool canReport = true;
+            Helpers.RoleAction(PlayerControl.LocalPlayer.GetModData(), (r) => canReport &= r.CanReport);
+            if (canReport) __instance.ReportButton.Show(); else __instance.ReportButton.Hide();
 
             Events.GlobalEvent.Update();
             Events.LocalEvent.Update();

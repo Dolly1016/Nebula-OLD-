@@ -41,19 +41,29 @@ public class RitualPatch
             if (idx == Byte.MaxValue)
             {
                 var obj = new GameObject();
+                obj.hideFlags |= HideFlags.HideInHierarchy;
                 __result = obj.AddComponent<Tasks.RitualWiringTask>();
                 return false;
             }
             else if (idx == Byte.MaxValue - 1)
             {
                 var obj = new GameObject();
+                obj.hideFlags |= HideFlags.HideInHierarchy;
                 __result = obj.AddComponent<Tasks.RitualEscapeTextTask>();
                 return false;
             }
             else if (idx == Byte.MaxValue - 2)
             {
                 var obj = new GameObject();
+                obj.hideFlags |= HideFlags.HideInHierarchy;
                 __result = obj.AddComponent<Tasks.OpportunistTask>();
+                return false;
+            }
+            else if (idx == Byte.MaxValue - 3)
+            {
+                var obj = new GameObject();
+                obj.hideFlags |= HideFlags.HideInHierarchy;
+                __result = obj.AddComponent<Tasks.SpectreFriedTask>();
                 return false;
             }
             return true;

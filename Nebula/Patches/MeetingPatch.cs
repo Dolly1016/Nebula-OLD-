@@ -398,4 +398,31 @@ class MeetingHudPatch
         Voters.Clear();
         VoteWeight.Clear();
     }
+
+
+    //ミーティングアニメーション
+
+    //ミーティング開始アニメーション
+
+    [HarmonyPatch(typeof(MeetingIntroAnimation), nameof(MeetingIntroAnimation.CoRun))]
+    class MeetingIntroCoRunPatch
+    {
+        public static void Postfix(MeetingIntroAnimation __instance, Il2CppSystem.Collections.IEnumerator __result)
+        {
+            
+        }
+    }
+
+    /*
+    //追放後アニメーション
+
+    [HarmonyPatch(typeof(ExileController), nameof(ExileController.CoRun))]
+    class MeetingOutroPatch
+    {
+        public static void Postfix(MeetingIntroAnimation __instance, Il2CppSystem.Collections.IEnumerator __result)
+        {
+
+        }
+    }
+    */
 }

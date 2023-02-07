@@ -396,6 +396,13 @@ public class PlayerControlPatch
 
     }
 
+    public static void Prefix(PlayerControl __instance)
+    {
+        if (__instance.PlayerId == PlayerControl.LocalPlayer.PlayerId)
+        {
+            ResetPlayerOutlines();
+        }
+    }
 
     public static void Postfix(PlayerControl __instance)
     {
@@ -416,7 +423,6 @@ public class PlayerControlPatch
         {
             Objects.CustomObject.Update();
             UpdateAllPlayersInfo();
-            ResetPlayerOutlines();
             ResetDeadBodyOutlines();
             Helpers.RoleAction(__instance, (role) =>
              {

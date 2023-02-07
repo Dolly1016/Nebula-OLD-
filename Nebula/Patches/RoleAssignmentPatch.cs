@@ -603,6 +603,7 @@ class GhostRoleAssignmentPatch
 
         foreach (var ghostRole in Roles.Roles.AllGhostRoles)
         {
+            if (!ghostRole.IsSpawnable()) continue;
             if (!ghostRole.IsAssignableTo(data)) continue;
 
             int maxCount = (int)ghostRole.RoleCountOption.getFloat();

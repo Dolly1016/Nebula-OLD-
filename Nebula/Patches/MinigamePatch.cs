@@ -10,9 +10,10 @@ public static class ConsoleCanUsePatch
         if (Game.GameData.data.myData.getGlobalData().Property.UnderTheFloor) { __result = float.MaxValue; return false; }
 
         if (!Game.GameData.data.myData.getGlobalData().role.CanFixSabotage)
-        {
             if (__instance.TaskTypes.Any(x => x == TaskTypes.FixLights || x == TaskTypes.FixComms)) return false;
-        }
+        if (!Game.GameData.data.myData.getGlobalData().role.CanFixEmergencySabotage)
+            if (__instance.TaskTypes.Any(x => x == TaskTypes.ResetReactor || x == TaskTypes.RestoreOxy || x == TaskTypes.ResetSeismic || x == TaskTypes.StopCharles)) return false;
+
 
         if (__instance.AllowImpostor) return true;
 

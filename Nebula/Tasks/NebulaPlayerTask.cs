@@ -39,8 +39,7 @@ public class NormalPlayerTaskPatch
             if (__instance.TaskType != TaskTypes.None) return true;
             NebulaPlayerTask t = __instance.GetComponent<NebulaPlayerTask>();
             if (!t) return true;
-            t.__NextStep();
-            return false;
+            return t.__NextStep();
         }
     }
 
@@ -129,7 +128,7 @@ public class NebulaPlayerTask : NormalPlayerTask
 
     public virtual void __AppendTaskText(Il2CppSystem.Text.StringBuilder sb) { }
 
-    public virtual void __NextStep() { }
+    public virtual bool __NextStep() { return true; }
 
 
     public virtual void __Initialize() { }

@@ -50,6 +50,11 @@ public class Assignable
     protected bool canFixSabotage { get; set; }
     public virtual bool CanFixSabotage { get { return canFixSabotage; } }
 
+    protected bool canFixEmergencySabotage { get; set; }
+    public virtual bool CanFixEmergencySabotage { get { return canFixEmergencySabotage; } }
+
+    protected bool canReport { get; set; }
+    public virtual bool CanReport { get { return canReport; } }
 
     public class RelatedExtraRoleData
     {
@@ -782,5 +787,7 @@ public class Assignable
 
 
         this.canFixSabotage = true;
+        this.canFixEmergencySabotage = true;
+        this.canReport = true;
     }
 }

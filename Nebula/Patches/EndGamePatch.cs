@@ -20,8 +20,9 @@ public class EndCondition
     public static EndCondition JackalWin = new EndCondition(17, Roles.NeutralRoles.Jackal.RoleColor, "jackal", 2, Module.CustomGameMode.Standard);
     public static EndCondition ArsonistWin = new EndCondition(18, Roles.NeutralRoles.Arsonist.RoleColor, "arsonist", 1, Module.CustomGameMode.Standard, false, (fpData) => { PlayerControl.AllPlayerControls.ForEach((Action<PlayerControl>)((p) => { if (!p.Data.IsDead && Roles.Roles.Arsonist.Winner != p.PlayerId) { p.MurderPlayer(p); fpData.GetPlayer(p.PlayerId).status = Game.PlayerData.PlayerStatus.Burned; } })); });
     public static EndCondition EmpiricWin = new EndCondition(19, Roles.NeutralRoles.Empiric.RoleColor, "empiric", 1, Module.CustomGameMode.Standard);
-    public static EndCondition VultureWin = new EndCondition(20, Roles.NeutralRoles.Vulture.RoleColor, "vulture", 1, Module.CustomGameMode.Standard);
-    public static EndCondition AvengerWin = new EndCondition(21, Roles.NeutralRoles.Avenger.RoleColor, "avenger", 0, Module.CustomGameMode.Standard);
+    public static EndCondition SpectreWin = new EndCondition(20, Roles.NeutralRoles.Spectre.RoleColor, "spectre", 1, Module.CustomGameMode.Standard);
+    public static EndCondition VultureWin = new EndCondition(21, Roles.NeutralRoles.Vulture.RoleColor, "vulture", 1, Module.CustomGameMode.Standard);
+    public static EndCondition AvengerWin = new EndCondition(22, Roles.NeutralRoles.Avenger.RoleColor, "avenger", 0, Module.CustomGameMode.Standard);
     public static EndCondition LoversWin = new EndCondition(24, Roles.ExtraRoles.Lover.iconColor[0], "lovers", 0, Module.CustomGameMode.Standard);
     public static EndCondition TrilemmaWin = new EndCondition(25, new Color(209f / 255f, 63f / 255f, 138f / 255f), "trilemma", 0, Module.CustomGameMode.Standard);
     //public static EndCondition SantaWin = new EndCondition(26, Roles.NeutralRoles.SantaClaus.RoleColor, "santa", 4, Module.CustomGameMode.Standard);
@@ -58,7 +59,7 @@ public class EndCondition
             CrewmateWinByVote ,CrewmateWinByTask,CrewmateWinDisconnect,
             ImpostorWinByKill,ImpostorWinBySabotage,ImpostorWinByVote,ImpostorWinDisconnect,
             CrewmateWinHnS,ImpostorWinHnS,
-            JesterWin,JackalWin,ArsonistWin,EmpiricWin,VultureWin,/*SantaWin,*/
+            JesterWin,JackalWin,ArsonistWin,EmpiricWin,VultureWin,SpectreWin,/*SantaWin,*/
             LoversWin,TrilemmaWin,AvengerWin,
             NoGame,NobodyWin,NobodySkeldWin,NobodyMiraWin,NobodyPolusWin,NobodyAirshipWin,
             MinigamePlayersWin,MinigameEscapeesWin,MinigameHunterWin,
@@ -694,6 +695,7 @@ public class PlayerStatistics
     public int AliveJackalTrilemma;
     public int AliveImpostorTrilemma;
     public int AliveImpostorsWithSidekick;
+    public int AliveSpectre;
 
     //設定次第で適切な値が入る(独立した陣営として見ない場合常に0)
     public int AliveInLoveImpostors;
@@ -833,6 +835,8 @@ public class PlayerStatistics
                         AliveImpostorsWithSidekick++;
                     }
                 }
+
+                if (data.role == Roles.Roles.Spectre) AliveSpectre++;
 
                 IsValid = true;
             }

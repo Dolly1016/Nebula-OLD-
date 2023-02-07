@@ -1,4 +1,6 @@
-﻿namespace Nebula.Map;
+﻿using Nebula.Expansion;
+
+namespace Nebula.Map;
 public class MapEditor
 {
     //Skeld=0,MIRA=1,Polus=2,AirShip=4
@@ -147,21 +149,6 @@ public class MapEditor
         return c;
     }
 
-    private static Material? highlightMaterial = null;
-
-    private static Material GetHighlightMaterial()
-    {
-        if (highlightMaterial != null) return new Material(highlightMaterial);
-        foreach (var mat in UnityEngine.Resources.FindObjectsOfTypeAll(Material.Il2CppType))
-        {
-            if (mat.name == "HighlightMat")
-            {
-                highlightMaterial = mat.TryCast<Material>();
-                break;
-            }
-        }
-        return new Material(highlightMaterial);
-    }
 
     protected static Console ActivateConsole(string objectName)
     {
@@ -171,44 +158,7 @@ public class MapEditor
 
     protected static Console ActivateConsole(GameObject obj)
     {
-        obj.layer = LayerMask.NameToLayer("ShortObjects");
-        Console console = obj.GetComponent<Console>();
-        PassiveButton button = obj.GetComponent<PassiveButton>();
-        CircleCollider2D collider = obj.GetComponent<CircleCollider2D>();
-        if (!console)
-        {
-            console = obj.AddComponent<Console>();
-            console.checkWalls = true;
-            console.usableDistance = 0.7f;
-            console.TaskTypes = new TaskTypes[0];
-            console.ValidTasks = new UnhollowerBaseLib.Il2CppReferenceArray<TaskSet>(0);
-            var list = ShipStatus.Instance.AllConsoles.ToList();
-            list.Add(console);
-            ShipStatus.Instance.AllConsoles = new UnhollowerBaseLib.Il2CppReferenceArray<Console>(list.ToArray());
-        }
-        if (console.Image == null)
-        {
-            console.Image = obj.GetComponent<SpriteRenderer>();
-
-            console.Image.material = GetHighlightMaterial();
-        }
-        if (!button)
-        {
-            button = obj.AddComponent<PassiveButton>();
-            button.OnMouseOut = new UnityEngine.Events.UnityEvent();
-            button.OnMouseOver = new UnityEngine.Events.UnityEvent();
-            button._CachedZ_k__BackingField = 0.1f;
-            button.CachedZ = 0.1f;
-        }
-
-        if (!collider)
-        {
-            collider = obj.AddComponent<CircleCollider2D>();
-            collider.radius = 0.4f;
-            collider.isTrigger = true;
-        }
-
-        return console;
+        return ConsoleExpansion.Consolize(obj);
     }
 
     protected static void EditConsole(SystemTypes room, string objectName, Action<Console> action)

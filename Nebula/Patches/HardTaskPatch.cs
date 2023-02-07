@@ -349,6 +349,7 @@ public class HardTaskPatch
                                 if (!__instance.latched[0] && canPushButton)
                                 {
                                     progress = 0;
+                                    SoundManager.Instance.StopSound(buttonSound);
                                     SoundManager.Instance.PlaySound(buttonSound, false, 1f, null).pitch = 1f + ((float)NebulaPlugin.rnd.NextDouble() - 0.5f) * 0.1f;
                                 }
                             }));
@@ -372,6 +373,7 @@ public class HardTaskPatch
                                 }
                                 if (matched)
                                 {
+                                    SoundManager.Instance.StopSound(buttonSound);
                                     SoundManager.Instance.PlaySound(buttonSound, false, 1f, null).pitch = 1f + ((float)NebulaPlugin.rnd.NextDouble() - 0.5f) * 0.1f;
                                     for (int i = 0; i < __instance.latched.Count; i++) __instance.latched[i] = true;
                                     foreach (var renderer in allRenderers) renderer.color = Palette.DisabledGrey;
@@ -381,6 +383,7 @@ public class HardTaskPatch
                                 else
                                 {
                                     progress = 0;
+                                    SoundManager.Instance.StopSound(denySound);
                                     SoundManager.Instance.PlaySound(denySound, false, 1f, null);
                                     __instance.StartCoroutine(GetEnumerator().WrapToIl2Cpp());
                                 }

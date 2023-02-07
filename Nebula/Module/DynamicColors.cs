@@ -521,12 +521,12 @@ public static class DynamicColors
     }
 
 
-    [HarmonyPatch(typeof(CosmeticsLayer), nameof(CosmeticsLayer.SetColorBlindColor))]
+    [HarmonyPatch(typeof(CosmeticsLayer), nameof(CosmeticsLayer.GetColorBlindText))]
     private class CosmeticsLayerColorStringPatch
     {
-        public static bool Prefix(CosmeticsLayer __instance, [HarmonyArgument(0)] int color)
+        public static bool Prefix(CosmeticsLayer __instance,ref string __result)
         {
-            if (__instance.colorBlindText == null || !__instance.showColorBlindText) return false;
+            int color = __instance.bodyMatProperties.ColorId;
 
             string colorName;
             if (ColorNameDic.ContainsKey(color))
@@ -543,9 +543,15 @@ public static class DynamicColors
             if (array.Length != 0)
             {
                 array[0] = char.ToUpper(array[0]);
-                for (int i = 1; i < array.Length; i++) array[i] = char.ToLower(array[i]);
+                bool afterSpace = false;
+                for (int i = 1; i < array.Length; i++)
+                {
+                    array[i] = afterSpace ? char.ToUpper(array[i]) : char.ToLower(array[i]);
+                    afterSpace = array[i] == ' ';
+                }
             }
-            __instance.colorBlindText.text = new string(array);
+            
+            __result = new string(array);
 
             return false;
         }

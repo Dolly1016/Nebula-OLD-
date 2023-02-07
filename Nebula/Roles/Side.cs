@@ -1,4 +1,5 @@
 ﻿using Nebula.Patches;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Nebula.Roles;
 
@@ -85,7 +86,7 @@ public class Side
             if (statistics.AliveImpostors > 0 &&
             statistics.AliveJackals == 0 &&
             !Game.GameData.data.AllPlayers.Values.Any((p) => p.IsAlive && p.extraRole.Contains(Roles.SecondarySidekick)) &&
-            statistics.TotalAlive <= (statistics.AliveImpostors - statistics.AliveInLoveImpostors) * 2 &&
+            (statistics.TotalAlive - statistics.AliveSpectre) <= (statistics.AliveImpostors - statistics.AliveInLoveImpostors) * 2 &&
             (statistics.AliveImpostorCouple + statistics.AliveImpostorTrilemma == 0 ||
             statistics.AliveImpostorCouple * 2 + statistics.AliveImpostorTrilemma * 3 >= statistics.AliveCouple * 2 + statistics.AliveTrilemma * 3))
             {
@@ -109,7 +110,7 @@ public class Side
 
     public static Side Jackal = new Side("Jackal", "jackal", IntroDisplayOption.SHOW_ONLY_ME, NeutralRoles.Jackal.RoleColor, (PlayerStatistics statistics, ShipStatus status) =>
     {
-        if ((statistics.AliveJackals - statistics.AliveInLoveJackals) * 2 >= statistics.TotalAlive && statistics.GetAlivePlayers(Impostor) - statistics.AliveImpostorsWithSidekick <= 0 &&
+        if ((statistics.AliveJackals - statistics.AliveInLoveJackals) * 2 >= (statistics.TotalAlive-statistics.AliveSpectre) && statistics.GetAlivePlayers(Impostor) - statistics.AliveImpostorsWithSidekick <= 0 &&
         (statistics.AliveJackalCouple + statistics.AliveJackalTrilemma == 0 ||
         statistics.AliveJackalCouple * 2 + statistics.AliveJackalTrilemma * 3 >= statistics.AliveCouple * 2 + statistics.AliveTrilemma * 3))
         {
@@ -174,6 +175,44 @@ public class Side
 
             if (player.GetRoleData(Roles.Avenger.avengerCheckerId) == 1)
                 return EndCondition.AvengerWin;
+        }
+        return null;
+    });
+
+    public static Side Spectre = new Side("Spectre", "spectre", IntroDisplayOption.STANDARD, NeutralRoles.Spectre.RoleColor, (PlayerStatistics statistics, ShipStatus status) =>
+    {
+        if (Roles.Spectre.canTakeOverTaskWinOption.getBool()) return null;
+
+        bool flag = false;
+        foreach (var player in Game.GameData.data.AllPlayers.Values)
+        {
+            if (!player.IsAlive) continue;
+            if (player.role != Roles.Spectre) continue;
+            if(player.Tasks!=null && player.Tasks?.Completed==player.Tasks?.AllTasks){ flag = true;  break; }
+        }
+        if (!flag) return null;
+
+        if(TasksHandler.TotalAlivesTasks > 0 && TasksHandler.CompletedAlivesTasks == TasksHandler.TotalAlivesTasks)return EndCondition.SpectreWin;
+        return null;
+    }, (EndCondition endCondition, PlayerStatistics statistics, ShipStatus status) =>
+    {
+        if (endCondition.IsNoBodyWinEnd) return null;
+
+        if (endCondition == EndCondition.CrewmateWinByTask && (Roles.Spectre.canTakeOverTaskWinOption.getBool()||TasksHandler.TotalAlivesTasks==0)) return null;
+        if (endCondition == EndCondition.ImpostorWinBySabotage && Roles.Spectre.canTakeOverSabotageWinOption.getBool()) return null;
+        if (endCondition == EndCondition.ArsonistWin) return null;
+        if (endCondition == EndCondition.EmpiricWin) return null;
+        if (endCondition == EndCondition.JesterWin) return null;
+        if (endCondition == EndCondition.LoversWin) return null;
+        if (endCondition == EndCondition.VultureWin) return null;
+        if (endCondition == EndCondition.AvengerWin) return null;
+        if (endCondition == EndCondition.SpectreWin) return null;
+
+        foreach (var player in Game.GameData.data.AllPlayers.Values)
+        {
+            if (!player.IsAlive) continue;
+            if (player.role != Roles.Spectre) continue;
+            if (player.Tasks != null && player.Tasks?.Completed == player.Tasks?.AllTasks) return EndCondition.SpectreWin;
         }
         return null;
     });
@@ -306,7 +345,7 @@ public class Side
     public static List<Side> AllSides = new List<Side>()
         {
             Crewmate, Impostor,
-            Jackal, Jester, Vulture, Empiric, Arsonist, Avenger,ChainShifter,/*SantaClaus,*/
+            Jackal, Jester, Vulture, Empiric, Arsonist, Avenger,ChainShifter,Spectre,/*SantaClaus,*/
             Investigator,
             GamePlayer,
             Extra,VOID,

@@ -21,10 +21,14 @@ public static class AssetLoader
 
     public static AudioClip Executioner;
 
+    public static AudioClip SpectreFried;
+
     public static GameObject SkeldDivMap;
     public static GameObject MIRADivMap;
     public static GameObject PolusDivMap;
     public static GameObject AirshipDivMap;
+
+    public static GameObject SpectreFriedMinigamePrefab;
 
     static public void Load()
     {
@@ -45,11 +49,14 @@ public static class AssetLoader
 
         Executioner = assetBundleBundle.LoadAsset<AudioClip>("Executioner.wav").DontUnload();
 
+        SpectreFried = assetBundleBundle.LoadAsset<AudioClip>("SpectreFriedSE.ogg").DontUnload();
 
         SkeldDivMap = assetBundleBundle.LoadAsset<GameObject>("SkeldDivMap").DontUnload();
         MIRADivMap = assetBundleBundle.LoadAsset<GameObject>("MIRADivMap").DontUnload();
         PolusDivMap = assetBundleBundle.LoadAsset<GameObject>("PolusDivMap").DontUnload();
         AirshipDivMap = assetBundleBundle.LoadAsset<GameObject>("AirshipDivMap").DontUnload();
+
+        SpectreFriedMinigamePrefab = assetBundleBundle.LoadAsset<GameObject>("SpectreFriedMinigame").DontUnload();
     }
 
     public static Sprite GetMapSprite(byte mapId,Vector2 size,Int32 mask)
@@ -95,7 +102,9 @@ public static class AssetLoader
                 mask >>= 1;
             }
         }
-        catch{ }
+        catch{
+        }
+
 
         RenderTexture rt = new RenderTexture((int)size.x, (int)size.y, 16);
         rt.Create();
@@ -111,6 +120,7 @@ public static class AssetLoader
         RenderTexture.active = null;
         GameObject.Destroy(cam.targetTexture);
         GameObject.Destroy(obj);
+
 
         return Helpers.loadSpriteFromResources(texture2D, 100f, new Rect(0, 0, texture2D.width, texture2D.height));
     }
@@ -161,6 +171,9 @@ public static class AssetLoader
 
             case AudioAsset.Executioner:
                 return Executioner;
+
+            case AudioAsset.SpectreFried:
+                return SpectreFried;
         }
 
         return null;
@@ -178,6 +191,7 @@ public enum AudioAsset
     SniperShot,
     SniperEquip,
     RaiderThrow,
-    Executioner
+    Executioner,
+    SpectreFried
 
 }

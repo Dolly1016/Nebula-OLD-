@@ -59,7 +59,7 @@ public class OpportunistTask : NebulaPlayerTask
         sb.AppendLine();
     }
 
-    public override void __NextStep()
+    public override bool __NextStep()
     {
         if (PlayerControl.LocalPlayer)
         {
@@ -80,9 +80,8 @@ public class OpportunistTask : NebulaPlayerTask
             RPCEventInvoker.CompleteTask(PlayerControl.LocalPlayer.PlayerId);
 
             LocationDirty = true;
-
-            return;
         }
+        return false;
     }
 
 

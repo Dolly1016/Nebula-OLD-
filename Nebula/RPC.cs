@@ -2,6 +2,7 @@
 using Hazel;
 using Nebula.Module;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace Nebula;
 
@@ -86,6 +87,7 @@ public enum CustomRPC
     DisturberInvoke,
     BansheeWeep,
     UpdatePlayersIconInfo,
+    SpectreEat,
 
     InitializeRitualData,
     RitualSharePerks,
@@ -351,6 +353,9 @@ class RPCHandlerPatch
                 break;
             case (byte)CustomRPC.UpdatePlayersIconInfo:
                 RPCEvents.UpdatePlayersIconInfo(reader);
+                break;
+            case (byte)CustomRPC.SpectreEat:
+                RPCEvents.SpectreEat(reader.ReadInt32());
                 break;
 
             case (byte)CustomRPC.InitializeRitualData:
@@ -1694,8 +1699,14 @@ static class RPCEvents
     static public void Guess(byte murderer,byte target)
     {
         CloseUpKill(murderer,target,(murderer == target ? Game.PlayerData.PlayerStatus.Misguessed : Game.PlayerData.PlayerStatus.Guessed).Id,true);
-        if (MeetingHud.Instance)MeetingHud.Instance.discussionTimer -= Roles.Roles.F_Guesser.additionalVotingTime.getFloat();
-        
+        if (MeetingHud.Instance)MeetingHud.Instance.discussionTimer -= Roles.Roles.F_Guesser.additionalVotingTime.getFloat();   
+    }
+
+    static public void SpectreEat(int id)
+    {
+        var obj = Roles.Roles.Spectre.FriedConsoles[id];
+        obj.GetComponent<SpriteRenderer>().sprite = Roles.Roles.Spectre.spectreConsoleEatenSprite.GetSprite();
+        obj.name = "NoS-Used";
     }
 }
 
@@ -2203,7 +2214,7 @@ public class RPCEventInvoker
         if (resetTasks) PlayerControl.LocalPlayer.Data.SetLocalTask(tasks);
     }
 
-    public static void RefreshTasks(byte playerId, int newTasks, int addQuota, float longTaskChance)
+    public static void RefreshTasks(byte playerId, int newTasks, int addQuota, float longTaskChance,bool excludeUploadingData=false)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RefreshTasks, Hazel.SendOption.Reliable, -1);
         writer.Write(playerId);
@@ -2230,7 +2241,10 @@ public class RPCEventInvoker
 
         unused = new Il2CppSystem.Collections.Generic.List<NormalPlayerTask>();
         foreach (var t in ShipStatus.Instance.LongTasks)
+        {
+            if (excludeUploadingData && t.TaskType == TaskTypes.UploadData) continue;
             unused.Add(t);
+        }
         Extensions.Shuffle<NormalPlayerTask>(unused.Cast<Il2CppSystem.Collections.Generic.IList<NormalPlayerTask>>(), 0);
         ShipStatus.Instance.AddTasksFromList(ref num, longTasks, tasks, usedTypes, unused);
 
@@ -2238,6 +2252,7 @@ public class RPCEventInvoker
         foreach (var t in ShipStatus.Instance.NormalTasks)
         {
             if (t.TaskType == TaskTypes.PickUpTowels) continue;
+            if (excludeUploadingData && t.TaskType == TaskTypes.UploadData) continue;
             unused.Add(t);
         }
         Extensions.Shuffle<NormalPlayerTask>(unused.Cast<Il2CppSystem.Collections.Generic.IList<NormalPlayerTask>>(), 0);
@@ -2647,5 +2662,13 @@ public class RPCEventInvoker
         writer.Write(target);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         RPCEvents.Guess(PlayerControl.LocalPlayer.PlayerId,target);
+    }
+
+    static public void SpectreEat(int id)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SpectreEat, Hazel.SendOption.Reliable, -1);
+        writer.Write(id);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RPCEvents.SpectreEat(id);
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace Nebula.Roles;
+﻿using Nebula.Roles.NeutralRoles;
+
+namespace Nebula.Roles;
 
 static public class Roles
 {
@@ -86,10 +88,12 @@ static public class Roles
     public static NeutralRoles.Avenger Avenger = new NeutralRoles.Avenger();
     public static NeutralRoles.ChainShifter ChainShifter = new NeutralRoles.ChainShifter();
     public static NeutralRoles.Empiric Empiric = new NeutralRoles.Empiric();
+    public static NeutralRoles.Immoralist Immoralist = new NeutralRoles.Immoralist();
     public static NeutralRoles.Jackal Jackal = new NeutralRoles.Jackal();
     public static NeutralRoles.Sidekick Sidekick = new NeutralRoles.Sidekick();
     public static NeutralRoles.Jester Jester = new NeutralRoles.Jester();
     public static NeutralRoles.Opportunist Opportunist = new NeutralRoles.Opportunist();
+    public static NeutralRoles.Spectre Spectre = new NeutralRoles.Spectre();
     //public static NeutralRoles.SantaClaus SantaClaus = new NeutralRoles.SantaClaus();
     //public static NeutralRoles.BlackSanta BlackSanta = new NeutralRoles.BlackSanta();
     public static NeutralRoles.Vulture Vulture = new NeutralRoles.Vulture();
@@ -121,6 +125,7 @@ static public class Roles
     public static ExtraRoles.Bloody Bloody = new ExtraRoles.Bloody();
     public static ExtraRoles.Confused Confused = new ExtraRoles.Confused();
     public static ExtraRoles.Drunk Drunk = new ExtraRoles.Drunk();
+    public static ExtraRoles.LastImpostor LastImpostor = new ExtraRoles.LastImpostor();
     public static ExtraRoles.Lover Lover = new ExtraRoles.Lover();
     public static ExtraRoles.Trilemma Trilemma = new ExtraRoles.Trilemma();
     public static ExtraRoles.AvengerTarget AvengerTarget = new ExtraRoles.AvengerTarget();
@@ -135,7 +140,7 @@ static public class Roles
         {
             VOID,
             Impostor,Banshee,BountyHunter,Camouflager,Cleaner,Covert,Damned,Disturber,Eraser,EvilAce,EvilGuesser,EvilTracker,EvilTrapper,Executioner,Jailer,Marionette,Morphing,Ninja,Painter,Raider,Reaper,Sniper,
-            /*SantaClaus,BlackSanta,*/Arsonist,Avenger,ChainShifter,Empiric,Jackal,Jester,Opportunist,Sidekick,Vulture,
+            /*SantaClaus,BlackSanta,*/Arsonist,Avenger,ChainShifter,Empiric,Immoralist,Jackal,Jester,Opportunist,Sidekick,Spectre,Vulture,
             F_Crewmate,
             F_Guesser,F_Tracker,F_Trapper,
             Crewmate,CrewmateWithoutTasks,Agent,Alien,Bait,Busker,Comet,DamnedCrew,Doctor,Guardian,Mayor,Navvy,Necromancer,NiceGuesser,NiceTracker,NiceTrapper,Oracle,Provocateur,Psychic,Seer,Sheriff,Splicer,Spy,
@@ -151,7 +156,7 @@ static public class Roles
     public static List<ExtraRole> AllExtraRoles = new List<ExtraRole>()
         {
             SecondaryGuesser,SecondarySidekick,SecondaryMadmate,InheritedJailer,
-            DiamondPossessor,/*TeamSanta,*/
+            DiamondPossessor,LastImpostor,/*TeamSanta,*/
             Bloody,Confused,Drunk,Lover,Trilemma,
             MetaRole,AvengerTarget,
             PerkHolder

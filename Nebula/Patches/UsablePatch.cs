@@ -87,6 +87,18 @@ class CommsMinigameBeginPatch
     }
 }
 
+//コミュを直せない役職からミニゲームをブロックする(MIRA)
+[HarmonyPatch(typeof(AuthGame), nameof(AuthGame.Begin))]
+class AuthGameBeginPatch
+{
+    static void Postfix(AuthGame __instance)
+    {
+        bool cannotFixSabotage = false;
+        Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId, (role) => { cannotFixSabotage |= !role.CanFixSabotage; });
+        if (cannotFixSabotage) __instance.Close();
+    }
+}
+
 //停電を直せない役職からミニゲームをブロックする
 [HarmonyPatch(typeof(SwitchMinigame), nameof(SwitchMinigame.Begin))]
 class LightsMinigameBeginPatch
@@ -95,6 +107,42 @@ class LightsMinigameBeginPatch
     {
         bool cannotFixSabotage = false;
         Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId, (role) => { cannotFixSabotage |= !role.CanFixSabotage; });
+        if (cannotFixSabotage) __instance.Close();
+    }
+}
+
+//リアクターを直せない役職からミニゲームをブロックする
+[HarmonyPatch(typeof(ReactorMinigame), nameof(ReactorMinigame.Begin))]
+class ReactorMinigameBeginPatch
+{
+    static void Postfix(ReactorMinigame __instance)
+    {
+        bool cannotFixSabotage = false;
+        Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId, (role) => { cannotFixSabotage |= !role.CanFixEmergencySabotage; });
+        if (cannotFixSabotage) __instance.Close();
+    }
+}
+
+//ヘリサボを直せない役職からミニゲームをブロックする
+[HarmonyPatch(typeof(AirshipAuthGame), nameof(AirshipAuthGame.Begin))]
+class AirshipAuthGameBeginPatch
+{
+    static void Postfix(AirshipAuthGame __instance)
+    {
+        bool cannotFixSabotage = false;
+        Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId, (role) => { cannotFixSabotage |= !role.CanFixEmergencySabotage; });
+        if (cannotFixSabotage) __instance.Close();
+    }
+}
+
+//O2を直せない役職からミニゲームをブロックする
+[HarmonyPatch(typeof(KeypadGame), nameof(KeypadGame.Begin))]
+class KeypadGameBeginPatch
+{
+    static void Postfix(KeypadGame __instance)
+    {
+        bool cannotFixSabotage = false;
+        Helpers.RoleAction(PlayerControl.LocalPlayer.PlayerId, (role) => { cannotFixSabotage |= !role.CanFixEmergencySabotage; });
         if (cannotFixSabotage) __instance.Close();
     }
 }
