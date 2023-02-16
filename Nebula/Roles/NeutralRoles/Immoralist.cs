@@ -9,11 +9,17 @@ namespace Nebula.Roles.NeutralRoles
     {
         private Module.CustomOption showDeathFlashOption;
         private Module.CustomOption canKnowWhereIsDeadBodiesOption;
+        private Module.CustomOption canFixLightsAndComms;
+        public override bool CanFixSabotage { get { return canFixLightsAndComms.getBool(); } }
+
         public override void LoadOptionData()
         {
             TopOption.AddCustomPrerequisite(() => Roles.Spectre.IsSpawnable() && Roles.Spectre.spawnImmoralistOption.getBool());
             showDeathFlashOption = CreateOption(Color.white, "showDeathFlash", true);
             canKnowWhereIsDeadBodiesOption = CreateOption(Color.white, "canKnowWhereIsDeadBodies", true);
+
+            canFixLightsAndComms = CreateOption(Color.white, "canFixLightsAndComms", false);
+
         }
 
         Dictionary<byte, Arrow> Arrows;

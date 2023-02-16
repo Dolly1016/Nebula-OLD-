@@ -629,8 +629,8 @@
 "role.bountyHunter.hint" : "Kill Your Bounty."
 "role.bountyHunter.info" : "You can use very short kill cool down by killing your bounty.\nBut if you kill other players, you'll get long kill cool down."
 "role.bountyHunter.changingBountyInterval" : "Changing Bounty Interval"
-"role.bountyHunter.killCoolDownMultiplierAfterKillingBounty" : "Kill Cool Down Multiplier After Killing Bounty"
-"role.bountyHunter.killCoolDownMultiplierAfterKillingOthers" : "Kill Cool Down Multiplier After Killing Others"
+"role.bountyHunter.killCoolDownMultiplierAfterKillingBounty" : "Kill C.D. Odds After (Bounty)"
+"role.bountyHunter.killCoolDownMultiplierAfterKillingOthers" : "Kill C.D. Odds After (Others)"
 "role.bountyHunter.showArrowPointingTowardsTheBounty" : "Show Arrow Pointing Towards The Bounty"
 "role.bountyHunter.bountyArrowUpdateInterval" : "Bounty Arrow Update Interval"
 
@@ -697,7 +697,7 @@
 "role.evilAce.description" : "Kill the Crewmates"
 "role.evilAce.hint" : "Kill the Crewmates."
 "role.evilAce.info" : "If you're the last impostor, your kill cooldown will be shorter."
-"role.evilAce.killCoolDown" : "Kill Cool Down Multiplier"
+"role.evilAce.killCoolDown" : "Kill C.D. Odds"
 "role.evilAce.canKnowDeadNonImpostorsRoles" : "Can Know Dead Non-Impostors Roles"
 "role.evilAce.canKnowRolesOnlyMyMurders" : "Can Know Roles Only My Murders"
 
@@ -725,6 +725,7 @@
 "role.executioner.hint" : "Kill Crewmates Far Away."
 "role.executioner.info" : "You can kill crewmates far away.\nYou must orient in the direction the player is."
 "role.executioner.help.killRange" : "Show Kill Range"
+"role.executioner.killCoolDownOddsOnFailed" : "Kill C.D. Odds On Failed"
 
 "role.jailer.name" : "Jailer"
 "role.jailer.short" : "J"
@@ -864,6 +865,7 @@
 "role.immoralist.info" : "Assist Spectre to win."
 "role.immoralist.showDeathFlash" : "Show Death Flash"
 "role.immoralist.canKnowWhereIsDeadBodies" : "Can Know Where Is Dead Bodies"
+"role.immoralist.canFixLightsAndComms" : "Can Fix Lights And Comms"
 
 "role.jackal.name" : "Jackal"
 "role.jackal.short" : "J"
@@ -968,6 +970,8 @@
 "role.spectre.info" : "You must survive to win.\nYou can get charges for hiding by doing tasks."
 "role.spectre.spawnImmoralist" : "Spawn Immoralist"
 "role.spectre.occupyDoubleRoleCount" : "Occupy Double Role Count"
+"role.spectre.spectreTask" : "Spectre Task Mode"
+"role.spectre.spectreTask.eatTheFried" : "The Fried Task"
 "role.spectre.numOfTheFriedRequiredToWin" : "Num Of The Fried Required To Win"
 "role.spectre.clarifyCharge" : "Clarify Charge"
 "role.spectre.clarifyDuration" : "Clarify Duration"
@@ -975,6 +979,7 @@
 "role.spectre.lastImpostorCanGuessSpectre" : "Last Impostor Can Guess Spectre"
 "role.spectre.canTakeOverSabotageWin" : "Can Take Over Sabotage Win"
 "role.spectre.canTakeOverTaskWin" : "Can Take Over Task Win"
+"role.spectre.canFixEmergencySabotage" : "Can Fix Emergency Sabotage"
 "role.spectre.ventCoolDown" : "Vent Cool Down"
 "role.spectre.ventDuration" : "Vent Duration"
 "role.spectre.task.fried" : "Eat The Fried Secretly"

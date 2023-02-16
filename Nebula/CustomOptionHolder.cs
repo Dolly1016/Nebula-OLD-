@@ -477,7 +477,7 @@ public class CustomOptionHolder
                     new MetaScreenContent[]
                     {
                         new MSMargin(1.9f),
-                       new MSString(3f, spawnMethod.getName(), 2f, 0.8f, TMPro.TextAlignmentOptions.MidlineRight, TMPro.FontStyles.Bold),
+                       new CustomOption.MSOptionString(spawnMethod,3f, spawnMethod.getName(), 2f, 0.8f, TMPro.TextAlignmentOptions.MidlineRight, TMPro.FontStyles.Bold),
                     new MSString(0.2f, ":", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
                     new MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () =>
                     {
@@ -543,7 +543,7 @@ public class CustomOptionHolder
                     new MetaScreenContent[]
                     {
                         new MSMargin(1.9f),
-                       new MSString(3f, LimitedAdmin.getName(), 2f, 0.8f, TMPro.TextAlignmentOptions.MidlineRight, TMPro.FontStyles.Bold),
+                      new CustomOption.MSOptionString(LimitedAdmin,3f, LimitedAdmin.getName(), 2f, 0.8f, TMPro.TextAlignmentOptions.MidlineRight, TMPro.FontStyles.Bold),
                     new MSString(0.2f, ":", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
                     new MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () =>
                     {
@@ -635,7 +635,7 @@ public class CustomOptionHolder
         {
             List<MetaScreenContent[]> result = new();
             result.Add(new MetaScreenContent[]{
-                 new MSString(5f, Language.Language.GetString("option.killCoolDownProceedIgnoring"), 2f, 0.6f, TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
+                new CustomOption.MSOptionString("option.killCoolDownProceedIgnoring",5f, Language.Language.GetString("option.killCoolDownProceedIgnoring"), 2f, 0.6f, TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
                  new MSMargin(2f)
             });
 

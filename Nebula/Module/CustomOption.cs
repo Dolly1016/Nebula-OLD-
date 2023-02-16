@@ -5,6 +5,7 @@ using BepInEx.Configuration;
 using UnhollowerRuntimeLib;
 using AmongUs.GameOptions;
 using UnityEngine;
+using static Nebula.Module.CustomOption;
 
 namespace Nebula.Module;
 
@@ -59,6 +60,52 @@ public delegate string CustomOptionDecorator(string original, CustomOption optio
 
 public class CustomOption
 {
+    public class MSOptionString : MSString
+    {
+        string optionName;
+        public MSOptionString(string optionName, float width, string text, TMPro.TextAlignmentOptions alignment, TMPro.FontStyles style):
+            base(width,text,alignment,style)
+        {
+            this.optionName = optionName;
+        }
+
+        public MSOptionString(string optionName, float width, string text, float fontSize, float fontSizeMin, TMPro.TextAlignmentOptions alignment, TMPro.FontStyles style)
+            : base(width, text, fontSize,fontSizeMin,alignment, style)
+        {
+            this.optionName = optionName;
+        }
+
+        public MSOptionString(CustomOption option, float width, string text, TMPro.TextAlignmentOptions alignment, TMPro.FontStyles style) :
+           this(option.name, width, text, alignment, style){}
+
+        public MSOptionString(CustomOption option, float width, string text, float fontSize, float fontSizeMin, TMPro.TextAlignmentOptions alignment, TMPro.FontStyles style)
+            : this(option.name,width, text, fontSize, fontSizeMin, alignment, style){}
+
+        public override void Generate(GameObject obj)
+        {
+            base.Generate(obj);
+
+            var collider = obj.AddComponent<BoxCollider2D>();
+            collider.size = new Vector2(width - 0.1f, 0.36f);
+
+            PassiveButton button = obj.AddComponent<PassiveButton>();
+            button.OnMouseOver = new UnityEngine.Events.UnityEvent();
+            button.OnMouseOut = new UnityEngine.Events.UnityEvent();
+            button.OnClick = new UnityEngine.UI.Button.ButtonClickedEvent();
+
+            button.OnMouseOver.AddListener((UnityEngine.Events.UnityAction)(() => {
+                if (!UnderInfo) return;
+                string str="";
+                if (Language.Language.TryGetString(optionName + ".info", ref str))
+                    UnderInfo.text = str;
+            }));
+            button.OnMouseOut.AddListener((UnityEngine.Events.UnityAction)(() => {
+                if (!UnderInfo) return;
+                UnderInfo.text = "";
+            }));
+        }
+    }
+
     public static DataSaver optionSaver;
 
     public static List<CustomOption> AllOptions = new List<CustomOption>();
@@ -67,7 +114,7 @@ public class CustomOption
     static public CustomOptionTab CurrentTab = Module.CustomOptionTab.Settings;
 
     public int id;
-    public Color color;
+    public UnityEngine.Color color;
     public string identifierName;
     public string name;
     public string format;
@@ -94,6 +141,8 @@ public class CustomOption
 
     static public CustomGameMode CurrentGameMode;
 
+    static public TMPro.TextMeshPro UnderInfo = null;
+
     public List<CustomOption> prerequisiteOptions;
     public List<CustomOption> prerequisiteOptionsInv;
     public List<Func<bool>> prerequisiteOptionsCustom;
@@ -103,7 +152,8 @@ public class CustomOption
     public ScreenBuilder? alternativeOptionScreenBuilder;
 
     public CustomOptionDecorator? NameDecorator { get; set; }
-    public CustomOptionDecorator? ValueDecorator { get; set; }
+    public CustomOptionDecorator? DisplayValueDecorator { get; set; }
+    public CustomOptionDecorator? IntimateValueDecorator { get; set; }
 
     public virtual bool enabled
     {
@@ -227,7 +277,8 @@ public class CustomOption
         this.GameMode = CustomGameMode.Standard;
 
         this.NameDecorator = null;
-        this.ValueDecorator = null;
+        this.DisplayValueDecorator = null;
+        this.IntimateValueDecorator = null;
     }
 
     private void bind()
@@ -415,6 +466,9 @@ public class CustomOption
         {
             text += Language.Language.GetString("option.suffix." + suffix);
         }
+
+        if (IntimateValueDecorator != null)
+            text = IntimateValueDecorator.Invoke(text,this);
 
         return text;
     }
@@ -651,6 +705,7 @@ class GameOptionsMenuStartPatch
             OpenConfigTopOptionScreen(leftTabScreen);
         }), new MSMargin(0.2f),
         new MSString(6f, topOption.getName(), 3f, 3f, TMPro.TextAlignmentOptions.MidlineLeft, TMPro.FontStyles.Bold));
+        designer.CustomUse(-0.2f);
 
         int leftSkip = skip;
         bool canIncrease = false;
@@ -695,7 +750,7 @@ class GameOptionsMenuStartPatch
             else
             {
                 if (!AddTopic(
-                new MSString(3f, option.getName(), 2f, 0.8f, TMPro.TextAlignmentOptions.MidlineRight, TMPro.FontStyles.Bold),
+                new MSOptionString(option,3f, option.getName(), 2f, 0.8f, TMPro.TextAlignmentOptions.MidlineRight, TMPro.FontStyles.Bold),
                 new MSString(0.2f, ":", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
                 new MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () =>
                 {
@@ -731,6 +786,11 @@ class GameOptionsMenuStartPatch
 
 
         designer.AddTopic(new MSString(0.4f, canIncrease ? "∨" : "", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold));
+
+        designer.CustomUse(4.55f - designer.Used);
+        var underStr = new MSMultiString(5f,1.5f, " \n \n ", TMPro.TextAlignmentOptions.Top, TMPro.FontStyles.Bold);
+        designer.AddTopic(underStr);
+        CustomOption.UnderInfo = underStr.text;
 
         skip -= leftSkip;
 
@@ -1283,7 +1343,7 @@ public static class GameOptionStringGenerator
     {
         if (option == null) return "";
         string value = option.getString();
-        if (option.ValueDecorator != null) value = option.ValueDecorator(value, option);
+        if (option.DisplayValueDecorator != null) value = option.DisplayValueDecorator(value, option);
         return $"{option.getName(true)}: {value}";
     }
 

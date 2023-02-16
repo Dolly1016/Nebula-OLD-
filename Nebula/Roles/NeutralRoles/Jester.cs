@@ -39,11 +39,12 @@ public class Jester : Template.Draggable, Template.HasWinTrigger
 
     public override void GlobalIntroInitialize(PlayerControl __instance)
     {
-        canMoveInVents = canUseVentsOption.getBool();
         VentPermission = canUseVentsOption.getBool() ? VentPermission.CanUseLimittedVent : VentPermission.CanNotUse;
-        canInvokeSabotage = canInvokeSabotageOption.getBool();
-        canFixSabotage = canFixSabotageOption.getBool();
     }
+
+    public override bool CanFixSabotage => canFixSabotageOption.getBool();
+    public override bool CanInvokeSabotage => canInvokeSabotageOption.getBool();
+    public override bool CanMoveInVents => canUseVentsOption.getBool();
 
     public override void LoadOptionData()
     {

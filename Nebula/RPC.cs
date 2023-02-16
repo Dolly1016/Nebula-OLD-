@@ -6,6 +6,7 @@ using static UnityEngine.GraphicsBuffer;
 
 namespace Nebula;
 
+
 public enum CustomData
 {
     CurrentTask
@@ -15,7 +16,7 @@ public enum CustomRPC
 {
     // Main Controls
 
-    ResetVaribles = 60,
+    ResetVaribles = 65,
     RequireCustomData,
     SendCustomData,
     SetRandomMap,

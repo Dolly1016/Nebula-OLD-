@@ -1,6 +1,7 @@
 ﻿using JetBrains.Annotations;
 using Nebula.Expansion;
 using Nebula.Map;
+using Nebula.Module;
 using Nebula.Patches;
 using System;
 using System.Collections.Generic;
@@ -14,12 +15,14 @@ public class Spectre : Role
 
     public Module.CustomOption spawnImmoralistOption;
     private Module.CustomOption occupyDoubleRoleCountOption;
+    public Module.CustomOption spectreTaskOption;
     public Module.CustomOption numOfTheFriedRequireToWinOption;
     private Module.CustomOption clarifyChargeOption;
     private Module.CustomOption clarifyDurationOption;
     private Module.CustomOption clarifyCoolDownOption;
     public Module.CustomOption canTakeOverSabotageWinOption;
     public Module.CustomOption canTakeOverTaskWinOption;
+    public Module.CustomOption canFixEmergencySabotageOption;
     public Module.CustomOption lastImpostorCanGuessSpectreOption;
     private Module.CustomOption ventCoolDownOption;
     private Module.CustomOption ventDurationOption;
@@ -33,8 +36,11 @@ public class Spectre : Role
     public SpriteLoader spectreConsoleSprite = new SpriteLoader("Nebula.Resources.SpectreMinigameConsole.png", 100f);
     public SpriteLoader spectreConsoleEatenSprite = new SpriteLoader("Nebula.Resources.SpectreMinigameConsoleUsed.png", 100f);
 
-    static Dictionary<byte, List<FriedTaskData>> friedTaskPos = new Dictionary<byte, List<FriedTaskData>>();
-    public Dictionary<int, GameObject> FriedConsoles = new Dictionary<int, GameObject>();
+    static Dictionary<byte, List<FriedTaskData>> friedTaskPos = new();
+    public Dictionary<byte, Module.CustomOption> friedTaskOption = new();
+    public Dictionary<int, GameObject> FriedConsoles = new();
+
+    public override bool CanFixEmergencySabotage { get { return canFixEmergencySabotageOption.getBool(); } }
 
     class FriedTaskData : PointData
     {
@@ -60,27 +66,32 @@ public class Spectre : Role
     {
         if (!IsSpawnable()) return;
 
+        if (!friedTaskOption.ContainsKey(mapId)) return;
 
         FriedConsoles.Clear();
 
         int i = 0;
 
+        var option = friedTaskOption[mapId];
         foreach(var data in friedTaskPos[mapId])
         {
-            var console = ConsoleExpansion.GenerateConsole(new Vector3(data.point.x, data.point.y, data.z), "NoS-SpectreFried-" + data.name, spectreConsoleSprite.GetSprite());
-            console.usableDistance = data.usableDistance;
-
+            if ((option.selection & (1 << i)) != 0)
             {
-                console.gameObject.layer = LayerExpansion.GetDefaultLayer();
-                var sObj = new GameObject("inShaddow");
-                sObj.transform.SetParent(console.transform);
-                sObj.transform.localPosition = Vector2.zero;
-                sObj.transform.localScale = Vector2.one;
-                sObj.layer = LayerExpansion.GetShadowLayer();
-                sObj.AddComponent<SpriteRenderer>().sprite = spectreConsoleEatenSprite.GetSprite();
+                var console = ConsoleExpansion.GenerateConsole(new Vector3(data.point.x, data.point.y, data.z), "NoS-SpectreFried-" + data.name, spectreConsoleSprite.GetSprite());
+                console.usableDistance = data.usableDistance;
+
+                {
+                    console.gameObject.layer = LayerExpansion.GetDefaultLayer();
+                    var sObj = new GameObject("inShaddow");
+                    sObj.transform.SetParent(console.transform);
+                    sObj.transform.localPosition = Vector2.zero;
+                    sObj.transform.localScale = Vector2.one;
+                    sObj.layer = LayerExpansion.GetShadowLayer();
+                    sObj.AddComponent<SpriteRenderer>().sprite = spectreConsoleEatenSprite.GetSprite();
+                }
+                FriedConsoles.Add(i, console.gameObject);
             }
 
-            FriedConsoles.Add(i,console.gameObject);
             i++;
         }
     }
@@ -168,12 +179,91 @@ public class Spectre : Role
             }
     }
 
+    private Action<byte> getRefresher<T>(Dictionary<byte,CustomOption> optionDic,Dictionary<byte,List<T>> posDic) where T : PointData
+    {
+        Action<byte> refresher = null;
+        refresher = (mapId) => MetaDialog.OpenMapDialog(mapId, true, (obj, id) =>
+        {
+            var mapData = Map.MapData.MapDatabase[id];
+            var option = optionDic[id];
+            int index = 0;
+            foreach (T point in posDic[id])
+            {
+                bool flag = ((option.selection & 1 << index) != 0);
+                PassiveButton button = Module.MetaScreen.MSDesigner.AddSubButton(obj, new Vector2(2.4f, 0.4f), "Point", flag ? "o" : "-", flag ? Color.yellow : Color.white);
+                button.transform.localPosition = (Vector3)mapData.ConvertMinimapPosition(point.point) + new Vector3(0f, 0f, -5f);
+                button.transform.localScale /= (obj.transform.localScale.x / 0.75f);
+
+                SpriteRenderer renderer = button.GetComponent<SpriteRenderer>();
+                TMPro.TextMeshPro text = button.transform.GetChild(0).GetComponent<TMPro.TextMeshPro>();
+
+                renderer.size = new Vector2(text.preferredWidth + 0.3f, renderer.size.y);
+                button.GetComponent<BoxCollider2D>().size = renderer.size;
+
+                int i = index;
+                button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
+                {
+                    int selection = option.selection;
+                    selection ^= 1 << i;
+                    option.updateSelection(selection);
+                    MetaDialog.EraseDialog(1);
+                    refresher(id);
+                }));
+                index++;
+            }
+        });
+            return refresher;
+        }
+
     public override void LoadOptionData()
     {
         spawnImmoralistOption = CreateOption(Color.white, "spawnImmoralist", true);
         occupyDoubleRoleCountOption = CreateOption(Color.white, "occupyDoubleRoleCount", true).AddPrerequisite(spawnImmoralistOption);
 
-        numOfTheFriedRequireToWinOption = CreateOption(Color.white, "numOfTheFriedRequiredToWin", 5f, 1f, 16f, 1f);
+        spectreTaskOption = CreateOption(Color.white, "spectreTask", new string[] { "role.spectre.spectreTask.eatTheFried" });
+        numOfTheFriedRequireToWinOption = CreateOption(Color.white, "numOfTheFriedRequiredToWin", 5f, 1f, 16f, 1f).AddCustomPrerequisite(() => spectreTaskOption.getSelection() == 0);
+        friedTaskOption.Add(0, CreateMetaOption(Color.white, "spectreTask.eatTheFried.skeld", int.MaxValue).HiddenOnDisplay(true).HiddenOnMetaScreen(true));
+        friedTaskOption.Add(1, CreateMetaOption(Color.white, "spectreTask.eatTheFried.mira", int.MaxValue).HiddenOnDisplay(true).HiddenOnMetaScreen(true));
+        friedTaskOption.Add(2, CreateMetaOption(Color.white, "spectreTask.eatTheFried.polus", int.MaxValue).HiddenOnDisplay(true).HiddenOnMetaScreen(true));
+        friedTaskOption.Add(4, CreateMetaOption(Color.white, "spectreTask.eatTheFried.airship", int.MaxValue).HiddenOnDisplay(true).HiddenOnMetaScreen(true));
+
+        spectreTaskOption.alternativeOptionScreenBuilder = (refresher) =>
+        {
+            MetaScreenContent getSuitableContent()
+            {
+                if (spectreTaskOption.getSelection() == 0)
+                    return new MSButton(1.6f, 0.4f, "Customize", TMPro.FontStyles.Bold, () =>
+                    {
+                        Action<byte> refresher = getRefresher(friedTaskOption, friedTaskPos);
+                        refresher(GameOptionsManager.Instance.CurrentGameOptions.MapId);
+                    });
+                else
+                    return new MSMargin(1.7f);
+            }
+
+            return new MetaScreenContent[][] {
+                    new MetaScreenContent[]
+                    {
+                        new MSMargin(1.9f),
+                       new CustomOption.MSOptionString(spectreTaskOption,3f, spectreTaskOption.getName(), 2f, 0.8f, TMPro.TextAlignmentOptions.MidlineRight, TMPro.FontStyles.Bold),
+                    new MSString(0.2f, ":", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
+                    new MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () =>
+                    {
+                        spectreTaskOption.addSelection(-1);
+                        refresher();
+                    }),
+                    new MSString(1.5f, spectreTaskOption.getString(), 2f, 0.6f, TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
+                    new MSButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () =>
+                    {
+                        spectreTaskOption.addSelection(1);
+                        refresher();
+                    }),
+                    new MSMargin(0.2f),
+                    getSuitableContent(),
+                    new MSMargin(1f)
+                    }
+                };
+        };
 
         clarifyChargeOption = CreateOption(Color.white, "clarifyCharge", 1f, 0f, 16f, 1f);
         clarifyDurationOption = CreateOption(Color.white, "clarifyDuration", 10f, 5f, 40f, 2.5f);
@@ -182,6 +272,8 @@ public class Spectre : Role
         clarifyCoolDownOption.suffix = "second";
 
         lastImpostorCanGuessSpectreOption = CreateOption(Color.white, "lastImpostorCanGuessSpectre", true);
+
+        canFixEmergencySabotageOption = CreateOption(Color.white, "canFixEmergencySabotage", false);
 
         canTakeOverSabotageWinOption = CreateOption(Color.white, "canTakeOverSabotageWin", true);
         canTakeOverTaskWinOption = CreateOption(Color.white, "canTakeOverTaskWin", true);
@@ -302,7 +394,6 @@ public class Spectre : Role
         clarifyChargeId = Game.GameData.RegisterRoleDataId("spectre.clarifyCharge");
         FixedRoleCount = true;
         canReport = false;
-        canFixEmergencySabotage = false;
         impostorArrows = new List<Arrow?>();
 
         List<FriedTaskData> points;

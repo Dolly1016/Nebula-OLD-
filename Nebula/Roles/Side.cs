@@ -155,6 +155,15 @@ public class Side
         return null;
     });
 
+    public static Side Paparazzo = new Side("Paparazzo", "paparazzo", IntroDisplayOption.SHOW_ONLY_ME, NeutralRoles.Paparazzo.RoleColor, (PlayerStatistics statistics, ShipStatus side) =>
+    {
+        if (Roles.Paparazzo.WinTrigger)
+        {
+            return EndCondition.PaparazzoWin;
+        }
+        return null;
+    });
+
     public static Side Opportunist = new Side("Opportunist", "opportunist", IntroDisplayOption.SHOW_ONLY_ME, NeutralRoles.Opportunist.RoleColor, (PlayerStatistics statistics, ShipStatus side) =>
     {
         return null;
@@ -345,7 +354,7 @@ public class Side
     public static List<Side> AllSides = new List<Side>()
         {
             Crewmate, Impostor,
-            Jackal, Jester, Vulture, Empiric, Arsonist, Avenger,ChainShifter,Spectre,/*SantaClaus,*/
+            Jackal, Jester, Vulture, Empiric, Arsonist, Paparazzo, Avenger,ChainShifter,Spectre,/*SantaClaus,*/
             Investigator,
             GamePlayer,
             Extra,VOID,

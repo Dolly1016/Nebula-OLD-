@@ -8,8 +8,16 @@ namespace Nebula.Roles.ImpostorRoles;
 
 public class Executioner : Role
 {
+    private Module.CustomOption killCoolDownOddsOnFailedOption;
+
     public override void LoadOptionData()
     {
+        killCoolDownOddsOnFailedOption = CreateOption(Color.white, "killCoolDownOddsOnFailed", 0.5f, 0.125f, 1f, 0.125f);
+        killCoolDownOddsOnFailedOption.suffix = "cross";
+        killCoolDownOddsOnFailedOption.IntimateValueDecorator = (text, option) => {
+            float t = GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown * option.getFloat();
+            return string.Format(text + Helpers.cs(new Color(0.8f, 0.8f, 0.8f), " ({0:0.##}" + Language.Language.GetString("option.suffix.second") + ")"), t);
+        };
     }
 
     public override void MyPlayerControlUpdate()
@@ -25,6 +33,7 @@ public class Executioner : Role
    };
 
     static private CustomButton killButton;
+    private bool killExecuted=false;
     public override void ButtonInitialize(HudManager __instance)
     {
         Game.GameData.data.myData.currentTarget = null;
@@ -36,6 +45,7 @@ public class Executioner : Role
         killButton = new CustomButton(
             () =>
             {
+                killExecuted = false;
                 RPCEventInvoker.EmitSpeedFactor(PlayerControl.LocalPlayer, new Game.SpeedFactor(0, 3f, 0f, false));
                 Objects.SoundPlayer.PlaySound(Module.AudioAsset.Executioner);
                 PlayerControl.LocalPlayer.lightSource.StartCoroutine(RoleSystem.WarpSystem.CoOrient(PlayerControl.LocalPlayer.lightSource, 0.6f, 2.4f,
@@ -50,6 +60,7 @@ public class Executioner : Role
                             RPCEventInvoker.ObjectInstantiate(CustomObject.Type.TeleportEvidence,PlayerControl.LocalPlayer.GetTruePosition());
                             Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, p, Game.PlayerData.PlayerStatus.Dead, false, true);
                         }
+                        killExecuted = (p != null);
                     }).WrapToIl2Cpp());
             },
             () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
@@ -63,6 +74,7 @@ public class Executioner : Role
         3.1f,
         () => {
             killButton.Timer = killButton.MaxTimer;
+            if (!killExecuted) killButton.Timer *= killCoolDownOddsOnFailedOption.getFloat();
         }
         ).SetTimer(CustomOptionHolder.InitialKillCoolDownOption.getFloat());
         killButton.MaxTimer = GameOptionsManager.Instance.CurrentGameOptions.GetFloat(FloatOptionNames.KillCooldown);

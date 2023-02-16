@@ -12,6 +12,15 @@ public class Language
 
     public Dictionary<string, string> languageSet;
 
+    public static bool TryGetString(string key,ref string str)
+    {
+        if (language?.languageSet.ContainsKey(key) ?? false)
+        {
+            str = language.languageSet[key];
+            return true;
+        }
+        return false;
+    }
 
     public static string GetString(string key)
     {

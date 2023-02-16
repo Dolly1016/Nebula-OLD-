@@ -24,8 +24,16 @@ public class BountyHunter : Template.HasHologram
 
         killCoolDownMultiplierAfterKillingBountyOption = CreateOption(Color.white, "killCoolDownMultiplierAfterKillingBounty", 0.25f, 0.125f, 1f, 0.125f);
         killCoolDownMultiplierAfterKillingBountyOption.suffix = "cross";
+        killCoolDownMultiplierAfterKillingBountyOption.IntimateValueDecorator = (text, option) => {
+            float t = GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown * option.getFloat();
+            return string.Format(text + Helpers.cs(new Color(0.8f, 0.8f, 0.8f), " ({0:0.##}" + Language.Language.GetString("option.suffix.second") + ")"), t);
+        };
         killCoolDownMultiplierAfterKillingOthersOption = CreateOption(Color.white, "killCoolDownMultiplierAfterKillingOthers", 2f, 1f, 2.5f, 0.125f);
         killCoolDownMultiplierAfterKillingOthersOption.suffix = "cross";
+        killCoolDownMultiplierAfterKillingOthersOption.IntimateValueDecorator = (text, option) => {
+            float t = GameOptionsManager.Instance.currentNormalGameOptions.KillCooldown * option.getFloat();
+            return string.Format(text + Helpers.cs(new Color(0.8f, 0.8f, 0.8f), " ({0:0.##}" + Language.Language.GetString("option.suffix.second") + ")"), t);
+        };
 
         showArrowPointingTowardsTheBountyOption = CreateOption(Color.white, "showArrowPointingTowardsTheBounty", true);
         bountyArrowUpdateIntervalOption = CreateOption(Color.white, "bountyArrowUpdateInterval", 7.5f, 5f, 25f, 2.5f);

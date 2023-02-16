@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using Nebula.Tasks;
+using System.Reflection;
 using UnityEngine;
 using Il2CppType = UnhollowerRuntimeLib.Il2CppType;
 
@@ -29,6 +30,9 @@ public static class AssetLoader
     public static GameObject AirshipDivMap;
 
     public static GameObject SpectreFriedMinigamePrefab;
+    public static GameObject SpectreRancorMinigamePrefab;
+
+    public static GameObject CameraFinderPrefab;
 
     static public void Load()
     {
@@ -57,6 +61,9 @@ public static class AssetLoader
         AirshipDivMap = assetBundleBundle.LoadAsset<GameObject>("AirshipDivMap").DontUnload();
 
         SpectreFriedMinigamePrefab = assetBundleBundle.LoadAsset<GameObject>("SpectreFriedMinigame").DontUnload();
+        SpectreRancorMinigamePrefab = assetBundleBundle.LoadAsset<GameObject>("SpectreRancorMinigame").DontUnload();
+
+        CameraFinderPrefab = assetBundleBundle.LoadAsset<GameObject>("CameraFinder").DontUnload();
     }
 
     public static Sprite GetMapSprite(byte mapId,Vector2 size,Int32 mask)
@@ -118,7 +125,8 @@ public static class AssetLoader
         texture2D.Apply();
 
         RenderTexture.active = null;
-        GameObject.Destroy(cam.targetTexture);
+        cam.targetTexture = null;
+        GameObject.Destroy(rt);
         GameObject.Destroy(obj);
 
 

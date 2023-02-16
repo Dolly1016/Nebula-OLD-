@@ -92,6 +92,7 @@ static public class Roles
     public static NeutralRoles.Jackal Jackal = new NeutralRoles.Jackal();
     public static NeutralRoles.Sidekick Sidekick = new NeutralRoles.Sidekick();
     public static NeutralRoles.Jester Jester = new NeutralRoles.Jester();
+    public static NeutralRoles.Paparazzo Paparazzo = new NeutralRoles.Paparazzo();
     public static NeutralRoles.Opportunist Opportunist = new NeutralRoles.Opportunist();
     public static NeutralRoles.Spectre Spectre = new NeutralRoles.Spectre();
     //public static NeutralRoles.SantaClaus SantaClaus = new NeutralRoles.SantaClaus();
@@ -140,7 +141,7 @@ static public class Roles
         {
             VOID,
             Impostor,Banshee,BountyHunter,Camouflager,Cleaner,Covert,Damned,Disturber,Eraser,EvilAce,EvilGuesser,EvilTracker,EvilTrapper,Executioner,Jailer,Marionette,Morphing,Ninja,Painter,Raider,Reaper,Sniper,
-            /*SantaClaus,BlackSanta,*/Arsonist,Avenger,ChainShifter,Empiric,Immoralist,Jackal,Jester,Opportunist,Sidekick,Spectre,Vulture,
+            /*SantaClaus,BlackSanta,*/Arsonist,Avenger,ChainShifter,Empiric,Immoralist,Jackal,Jester,Opportunist,Paparazzo,Sidekick,Spectre,Vulture,
             F_Crewmate,
             F_Guesser,F_Tracker,F_Trapper,
             Crewmate,CrewmateWithoutTasks,Agent,Alien,Bait,Busker,Comet,DamnedCrew,Doctor,Guardian,Mayor,Navvy,Necromancer,NiceGuesser,NiceTracker,NiceTrapper,Oracle,Provocateur,Psychic,Seer,Sheriff,Splicer,Spy,

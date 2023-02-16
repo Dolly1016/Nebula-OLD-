@@ -63,7 +63,8 @@ public class RitualPatch
             {
                 var obj = new GameObject();
                 obj.hideFlags |= HideFlags.HideInHierarchy;
-                __result = obj.AddComponent<Tasks.SpectreFriedTask>();
+                //__result = obj.AddComponent<Tasks.SpectreFriedTask>();
+                __result = obj.AddComponent<Tasks.SpectreRancorTask>();
                 return false;
             }
             return true;

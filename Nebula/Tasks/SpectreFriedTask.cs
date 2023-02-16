@@ -21,9 +21,9 @@ namespace Nebula.Tasks
         {
             MyTask = playerTask;
             MyNormTask = playerTask.GetComponent<NormalPlayerTask>();
-            frieds = new GameObject[] { gameObject.transform.GetChild(2).gameObject, gameObject.transform.GetChild(3).gameObject, gameObject.transform.GetChild(4).gameObject };
-            eaten = 0;
-            eatenSubcounter = 0;
+            GameObject[] frieds = new GameObject[] { gameObject.transform.GetChild(2).gameObject, gameObject.transform.GetChild(3).gameObject, gameObject.transform.GetChild(4).gameObject };
+            int eaten = 0;
+            int eatenSubcounter = 0;
 
             foreach (var f in frieds)
             {
@@ -66,9 +66,6 @@ namespace Nebula.Tasks
                 }
             }
         }
-
-        GameObject[] frieds;
-        int eaten,eatenSubcounter;
 
     }
 

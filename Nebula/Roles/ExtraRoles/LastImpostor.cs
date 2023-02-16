@@ -83,7 +83,7 @@ public class LastImpostor : ExtraRole
                     i = (i + 1) % 3;
                 }
             },
-            () => { return alives.Count <= 3 && canGuess && !PlayerControl.LocalPlayer.Data.IsDead; },
+            () => { return alives.Count <= 6 && canGuess && !PlayerControl.LocalPlayer.Data.IsDead; },
             () => { return PlayerControl.LocalPlayer.CanMove; },
             () => { },
             buttonSprite.GetSprite(),

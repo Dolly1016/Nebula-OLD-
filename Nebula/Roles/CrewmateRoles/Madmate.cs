@@ -92,7 +92,7 @@ public class Madmate : Role
             }
             return new Module.MetaScreenContent[][] { contents };
         };
-        CanKnowImpostorsByTasksOption.ValueDecorator = (orig, option) =>
+        CanKnowImpostorsByTasksOption.DisplayValueDecorator = (orig, option) =>
         {
             if (!option.getBool()) return orig;
             for (int i = 0; i < 3; i++)
