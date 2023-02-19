@@ -42,11 +42,12 @@ public static class Helpers
             if (Minigame.Instance.TryCast<AutoMultistageMinigame>()) return true;
         }
 
-        if (isImpostorKillButton) return PlayerControl.LocalPlayer.IsKillTimerEnabled;
-        
         if (PlayerControl.LocalPlayer.inVent) return false;
         if (MeetingHud.Instance) return false;
         if (ExileController.Instance) return false;
+
+        if (isImpostorKillButton) return PlayerControl.LocalPlayer.IsKillTimerEnabled;
+        
 
         //if (PlayerControl.LocalPlayer.onLadder) return true;
         //if (PlayerControl.LocalPlayer.inMovingPlat) return true;
@@ -877,5 +878,23 @@ public static class Helpers
     public static bool IsPlaying(this PlayerControl player,AnimationClip animation)
     {
         return player.MyPhysics.Animations.Animator.m_currAnim == animation;
+    }
+
+    public static PoolablePlayer CopyToPoolablePlayer(this PlayerControl p)
+    {
+        GameData.PlayerInfo data = p.Data;
+        PoolablePlayer player = UnityEngine.Object.Instantiate<PoolablePlayer>(Patches.IntroCutsceneOnDestroyPatch.PlayerPrefab, HudManager.Instance.transform);
+
+        player.cosmetics.ResetCosmetics();
+        player.cosmetics.SetColor(data.DefaultOutfit.ColorId);
+        player.cosmetics.SetBodyColor(data.DefaultOutfit.ColorId);
+        if (data.DefaultOutfit.SkinId != null) player.cosmetics.SetSkin(data.DefaultOutfit.SkinId, data.DefaultOutfit.ColorId);
+        if (data.DefaultOutfit.HatId != null) player.cosmetics.SetHat(data.DefaultOutfit.HatId, data.DefaultOutfit.ColorId);
+        if (data.DefaultOutfit.VisorId != null) player.cosmetics.SetVisor(data.DefaultOutfit.VisorId, data.DefaultOutfit.ColorId);
+        player.cosmetics.SetPetIdle(data.DefaultOutfit.PetId, data.DefaultOutfit.ColorId);
+        player.cosmetics.nameText.text = "";
+        player.SetFlipX(true);
+
+        return player;
     }
 }

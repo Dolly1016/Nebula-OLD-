@@ -13,16 +13,22 @@ namespace Nebula;
 
 public class RemoteProcessBase
 {
-    static public RemoteProcessBase[] AllNebulaProcess = new RemoteProcessBase[] { 
-
-    };
+    static private IEnumerable<RemoteProcessBase> GetNebulaProcess()
+    {
+        yield return Roles.NeutralRoles.Paparazzo.SharePaparazzoImage;
+    }
+    static public List<RemoteProcessBase> AllNebulaProcess = new List<RemoteProcessBase>();
 
     public int Id { get; private set; } = -1;
 
     static public void Load()
     {
         int i = 0;
-        foreach (var p in AllNebulaProcess) p.Id = i++;
+        foreach (var p in GetNebulaProcess())
+        {
+            p.Id = i++;
+            AllNebulaProcess.Add(p);
+        }
     }
 
     public virtual void Receive(MessageReader reader) { }
@@ -31,7 +37,7 @@ public class RemoteProcessBase
 
 public class RemoteProcess<Parameter> : RemoteProcessBase where Parameter : struct 
 {
-    public delegate void Process(in Parameter parameter,bool isCalledByMe);
+    public delegate void Process(Parameter parameter,bool isCalledByMe);
     
     private Action<MessageWriter, Parameter> Sender { get; set; }
     private Func<MessageReader, Parameter> Receiver { get; set; }
@@ -44,7 +50,7 @@ public class RemoteProcess<Parameter> : RemoteProcessBase where Parameter : stru
         Body = process;
     }
 
-    public void Invoke(in Parameter parameter) {
+    public void Invoke(Parameter parameter) {
         if (Id == -1)
         {
             NebulaPlugin.Instance.Logger.Print("[Error] Inactivated process is called.\n Please tell the developper the situation when this error has been occurred.");

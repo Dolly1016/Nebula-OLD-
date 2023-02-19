@@ -49,6 +49,8 @@ public class MapEditor
 
     public static void MapCustomize(int mapId)
     {
+        foreach(var door in ShipStatus.Instance.AllDoors) door.gameObject.layer = LayerExpansion.GetObjectsLayer();
+        
         if (CustomOptionHolder.mapOptions.getBool() && CustomOptionHolder.quietVentsInTheShadow.getBool())
         {
             //ベントを見えなくする

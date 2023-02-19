@@ -707,10 +707,8 @@ class OverlayKillAnimationPatch
 {
     public static bool Prefix(OverlayKillAnimation __instance, [HarmonyArgument(0)] GameData.PlayerInfo kInfo, [HarmonyArgument(1)] GameData.PlayerInfo vInfo)
     {
-        NebulaPlugin.Instance.Logger.Print("kill0");
         if (__instance.killerParts)
         {
-            NebulaPlugin.Instance.Logger.Print("kill1");
             PlayerControl playerControl = Helpers.playerById(kInfo.PlayerId);
             GameData.PlayerOutfit currentOutfit = playerControl.GetModData().CurrentOutfit.toPlayerOutfit();
             __instance.killerParts.SetBodyType(playerControl.BodyType);
@@ -721,7 +719,6 @@ class OverlayKillAnimationPatch
         }
         if (vInfo != null && __instance.victimParts)
         {
-            NebulaPlugin.Instance.Logger.Print("kill2");
             PlayerControl playerControl2 = Helpers.playerById(vInfo.PlayerId);
             GameData.PlayerOutfit currentOutfit2 = playerControl2.GetModData().CurrentOutfit.toPlayerOutfit();
             __instance.victimHat = currentOutfit2.HatId;

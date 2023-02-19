@@ -93,7 +93,8 @@ public static class AssetLoader
         cam.orthographic = true;
         cam.orthographicSize = size.y/200;
         cam.transform.localScale = Vector3.one;
-        cam.clearFlags = CameraClearFlags.Nothing;
+        cam.clearFlags = CameraClearFlags.SolidColor;
+        cam.backgroundColor = Color.clear;
         cam.cullingMask = 1 << 30;
         cam.enabled = true;
 

@@ -10,6 +10,8 @@ public class NormalPlayerTaskPatch
     {
         static public bool Prefix(NormalPlayerTask __instance, [HarmonyArgument(0)] Il2CppSystem.Text.StringBuilder sb)
         {
+            if (!Game.GameData.data.myData.getGlobalData().role.ShowTaskText) return false;
+
             if (__instance.TaskType != TaskTypes.None) return true;
             NebulaPlayerTask t = __instance.GetComponent<NebulaPlayerTask>();
             if (!t) return true;
@@ -17,6 +19,37 @@ public class NormalPlayerTaskPatch
             return false;
         }
     }
+
+    [HarmonyPatch(typeof(WeatherNodeTask), nameof(WeatherNodeTask.AppendTaskText))]
+    class WeatherNodeAppendTaskTextPatch
+    {
+        static public bool Prefix(WeatherNodeTask __instance) => Game.GameData.data.myData.getGlobalData().role.ShowTaskText;   
+    }
+
+    [HarmonyPatch(typeof(UploadDataTask), nameof(UploadDataTask.AppendTaskText))]
+    class UploadDataAppendTaskTextPatch
+    {
+        static public bool Prefix(UploadDataTask __instance) => Game.GameData.data.myData.getGlobalData().role.ShowTaskText;
+    }
+
+    [HarmonyPatch(typeof(TowelTask), nameof(TowelTask.AppendTaskText))]
+    class TowelAppendTaskTextPatch
+    {
+        static public bool Prefix(TowelTask __instance) => Game.GameData.data.myData.getGlobalData().role.ShowTaskText;
+    }
+
+    [HarmonyPatch(typeof(DivertPowerTask), nameof(DivertPowerTask.AppendTaskText))]
+    class DivertPowerAppendTaskTextPatch
+    {
+        static public bool Prefix(DivertPowerTask __instance) => Game.GameData.data.myData.getGlobalData().role.ShowTaskText;
+    }
+
+    [HarmonyPatch(typeof(AirshipUploadTask), nameof(AirshipUploadTask.AppendTaskText))]
+    class AirshipUploadAppendTaskTextPatch
+    {
+        static public bool Prefix(AirshipUploadTask __instance) => Game.GameData.data.myData.getGlobalData().role.ShowTaskText;
+    }
+
 
     [HarmonyPatch(typeof(NormalPlayerTask), nameof(NormalPlayerTask.IsComplete), MethodType.Getter)]
     class ISCompletePatch

@@ -115,6 +115,7 @@ public abstract class Role : Assignable
     public virtual bool CanMoveInVents { get { return canMoveInVents; } }
     protected bool canInvokeSabotage { get; set; }
     public virtual bool CanInvokeSabotage { get { return canInvokeSabotage; } }
+    public virtual bool ShowTaskText { get { return true; } }
     public bool RemoveAllTasksOnDead { get; set; }
     /// <summary>
     /// 停電が効かない場合true
@@ -217,6 +218,9 @@ public abstract class Role : Assignable
     {
         return side != Side.Impostor && !HasFakeTask(playerId);
     }
+
+    [RoleLocalMethod]
+    public virtual string? GetCustomTaskText() => null;
 
     public override bool HasExecutableFakeTask(byte playerId)
     {

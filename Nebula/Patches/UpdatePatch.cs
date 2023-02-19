@@ -188,6 +188,14 @@ public static class UpdatePatch
 
             player.cosmetics.nameText.enabled = showNameFlag;
             player.cosmetics.colorBlindText.gameObject.SetActive(showNameFlag && DataManager.Settings.Accessibility.ColorBlindMode);
+            
+            if (player.cosmetics.colorBlindText.transform.localPosition.z > -2f)
+            {
+                //色の表示をより手前に移動
+                var locPos = player.cosmetics.colorBlindText.transform.localPosition;
+                locPos.z = -2f;
+                player.cosmetics.colorBlindText.transform.localPosition = locPos;
+            }
         }
 
         if (MeetingHud.Instance != null)
@@ -391,6 +399,7 @@ public static class UpdatePatch
             //マウス角度の調整
             Vector3 mouseDirection = Input.mousePosition - new Vector3(Screen.width / 2, Screen.height / 2);
             Game.GameData.data.myData.getGlobalData().MouseAngle = Mathf.Atan2(mouseDirection.y, mouseDirection.x);
+            Game.GameData.data.myData.getGlobalData().MouseDistance = mouseDirection.magnitude / 100f;
 
             //インポスターのキルボタンのパッチ
             if (PlayerControl.LocalPlayer.Data.Role.IsImpostor)

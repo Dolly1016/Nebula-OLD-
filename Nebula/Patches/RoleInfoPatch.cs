@@ -29,10 +29,13 @@ public class CustomOverlays
 
                 var role = (Roles.Assignable)(data.ShouldBeGhostRole ? data.ghostRole! : data.role);
 
-                __instance.taskText.text =
+                var text =
                     Helpers.cs(role.Color, Language.Language.GetString("role." + role.LocalizeName + ".name") + ": " +
                      Language.Language.GetString("role." + role.LocalizeName + ".hint"))
                     + "\n" + __instance.taskText.text;
+                string? append = data.role.GetCustomTaskText();
+                if (append != null) { text += "\n"+append; }
+                __instance.taskText.text = text;
             }
             catch { }
         }

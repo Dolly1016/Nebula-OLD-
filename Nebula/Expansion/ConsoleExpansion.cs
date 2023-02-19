@@ -13,7 +13,7 @@ namespace Nebula.Expansion
 
         private static Material? highlightMaterial = null;
 
-        private static Material GetHighlightMaterial()
+        public static Material GetHighlightMaterial()
         {
             if (highlightMaterial != null) return new Material(highlightMaterial);
             foreach (var mat in UnityEngine.Resources.FindObjectsOfTypeAll(Material.Il2CppType))

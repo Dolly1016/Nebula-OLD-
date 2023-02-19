@@ -838,6 +838,7 @@ public class PlayerData
     public Color TransColor { get; set; }
 
     public float MouseAngle { get; set; }
+    public float MouseDistance { get; set; }
 
     public TaskData? Tasks { get; set; }
 
@@ -890,6 +891,7 @@ public class PlayerData
         this.Tasks = null;
         //this.Tasks = new TaskData(role.side == Roles.Side.Impostor || role.HasFakeTask, role.FakeTaskIsExecutable);
         this.MouseAngle = 0f;
+        this.MouseDistance = 0f;
         this.Status = PlayerStatus.Alive;
         this.RoleInfo = "";
         this.TransColor = Color.white;
@@ -1266,7 +1268,7 @@ public class UtilityTimer
 
             var pos = result.gameObject.AddComponent<AspectPosition>();
             pos.parentCam = HudManager.Instance.UICamera;
-            pos.Alignment = AspectPosition.EdgeAlignments.LeftBottom;
+            pos.Alignment = AspectPosition.EdgeAlignments.LeftTop;
             pos.DistanceFromEdge = new Vector3(0.05f,0.05f,-50f);
             pos.OnEnable();
         }

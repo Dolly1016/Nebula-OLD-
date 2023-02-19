@@ -27,7 +27,7 @@ public class NebulaPlugin : BasePlugin
     public const string PluginVersion = "2.1";
     public const bool IsSnapshot = true;
 
-    public static string PluginVisualVersion = IsSnapshot ? "23.02.11a" : PluginVersion;
+    public static string PluginVisualVersion = IsSnapshot ? "23.02.19d" : PluginVersion;
     public static string PluginStage = IsSnapshot ? "Snapshot" : "";
     
     public const string PluginVersionForFetch = "2.1";
@@ -98,13 +98,15 @@ public class NebulaPlugin : BasePlugin
         //ヘルプを読み込む
         Module.HelpContent.Load();
 
+        //RPC情報を読み込む
+        RemoteProcessBase.Load();
+
         //ゴースト情報を読み込む
         //Ghost.GhostInfo.Load();
         //Ghost.Ghost.Load();
 
         // Harmonyパッチ全てを適用する
         Harmony.PatchAll();
-
     }
 
     public static Sprite GetModStamp()
@@ -124,6 +126,20 @@ public static class AmongUsClientAwakePatch
         {
             map.LoadAssets(__instance);
         }
+        Vector3 pos;
+
+        __instance.PlayerPrefab.cosmetics.zIndexSpacing = 0.00001f;
+        /*
+        var bodyForms = __instance.PlayerPrefab.transform.FindChild("BodyForms");
+        pos = bodyForms.localPosition;
+        pos.z = 0.00002f;
+        bodyForms.localPosition = pos;
+
+        var backLayer = __instance.PlayerPrefab.transform.FindChild("Cosmetics").FindChild("Hat").FindChild("Back");
+        pos = backLayer.localPosition;
+        pos.z = 0.001f;
+        backLayer.localPosition = pos;
+        */
     }
 }
 

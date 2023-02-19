@@ -11,6 +11,7 @@ public class Lover : ExtraRole
     public Module.CustomOption chanceThatOneLoverIsImpostorOption;
     private Module.CustomOption canChangeTrilemmaOption;
     public Module.CustomOption loversAsIndependentSideOption;
+    public Module.CustomOption allowExtraWinningOption;
 
     private PlayerControl trilemmaTarget = null;
 
@@ -203,6 +204,7 @@ public class Lover : ExtraRole
         loversModeOption = CreateOption(Color.white, "mode", new string[] { "role.lover.mode.standard", "role.lover.mode.avenger" });
         chanceThatOneLoverIsImpostorOption = CreateOption(Color.white, "chanceThatOneLoverIsImpostor", CustomOptionHolder.rates);
         loversAsIndependentSideOption = CreateOption(Color.white, "loversAsIndependentSide", false);
+        allowExtraWinningOption = CreateOption(Color.white, "allowExtraWinning", true);
 
         canChangeTrilemmaOption = CreateOption(Color.white, "canChangeTrilemma", true);
         canChangeTrilemmaOption.AddCustomPrerequisite(() => loversModeOption.getSelection() == 0);
@@ -270,6 +272,8 @@ public class Lover : ExtraRole
 
     public override bool CheckAdditionalWin(PlayerControl player, EndCondition condition)
     {
+        if (!allowExtraWinningOption.getBool()) return false;
+
         bool winFlag = false;
         ActionForLover(player, (partner) =>
         {
