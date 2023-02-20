@@ -23,7 +23,7 @@ public class PolusData : MapData
         AdminNameMap.Add("panel_map", 0);
         AdminNameMap.Add("panel_map (1)", 0);
     }
-    public PolusData() : base(2)
+    public PolusData() : base(2,"PolusShip")
     {
         SabotageMap[SystemTypes.Laboratory] = new SabotageData(SystemTypes.Reactor, new Vector3(18f, -6f), true, true);
         SabotageMap[SystemTypes.Electrical] = new SabotageData(SystemTypes.Electrical, new Vector3(10f, -11f), true, false);

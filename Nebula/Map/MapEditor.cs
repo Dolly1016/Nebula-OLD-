@@ -49,7 +49,12 @@ public class MapEditor
 
     public static void MapCustomize(int mapId)
     {
-        foreach(var door in ShipStatus.Instance.AllDoors) door.gameObject.layer = LayerExpansion.GetObjectsLayer();
+        foreach (var door in ShipStatus.Instance.AllDoors)
+        {
+            door.gameObject.layer = LayerExpansion.GetObjectsLayer();
+            if(door.transform.childCount>0 && door.transform.GetChild(0).name == "Shadow")
+                door.transform.GetChild(0).gameObject.layer = LayerExpansion.GetShadowLayer();
+        }
         
         if (CustomOptionHolder.mapOptions.getBool() && CustomOptionHolder.quietVentsInTheShadow.getBool())
         {

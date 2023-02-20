@@ -25,7 +25,7 @@ public class AirshipData : MapData
         AdminNameMap.Add("records_admin_map", 1);
     }
 
-    public AirshipData() : base(4)
+    public AirshipData() : base(4,"Airship")
     {
         SabotageMap[SystemTypes.GapRoom] = new SabotageData(SystemTypes.GapRoom, new Vector3(8f, 8.3f), true, true);
         SabotageMap[SystemTypes.Electrical] = new SabotageData(SystemTypes.Electrical, new Vector3(0f, 0f), false, false);

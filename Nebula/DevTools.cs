@@ -12,6 +12,13 @@ public static class DevTools
         return fileStream;
     }
 
+    public static void SaveTexture(Texture2D texture, string fileName)
+    {
+        byte[] bytes = UnityEngine.ImageConversion.EncodeToPNG(Helpers.CreateReadabeTexture(texture));
+        //保存
+        File.WriteAllBytes(fileName + ".png", bytes);
+    }
+
     public static void SearchAndSaveTextureFromMesh(string objName, string fileName)
     {
         var obj = UnityEngine.GameObject.Find(objName);

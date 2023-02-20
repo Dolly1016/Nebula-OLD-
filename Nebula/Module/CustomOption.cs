@@ -788,7 +788,7 @@ class GameOptionsMenuStartPatch
         designer.AddTopic(new MSString(0.4f, canIncrease ? "∨" : "", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold));
 
         designer.CustomUse(4.55f - designer.Used);
-        var underStr = new MSMultiString(5f,1.5f, " \n \n ", TMPro.TextAlignmentOptions.Top, TMPro.FontStyles.Bold);
+        var underStr = new MSMultiString(8f,1.5f, " \n \n ", TMPro.TextAlignmentOptions.Top, TMPro.FontStyles.Bold);
         designer.AddTopic(underStr);
         CustomOption.UnderInfo = underStr.text;
 

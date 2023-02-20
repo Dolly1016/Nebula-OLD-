@@ -18,7 +18,7 @@ public class MIRAData : MapData
         AdminNameMap.Add("AdminMapConsole", 0);
     }
 
-    public MIRAData() : base(1)
+    public MIRAData() : base(1,"MiraShip")
     {
         SabotageMap[SystemTypes.Reactor] = new SabotageData(SystemTypes.Reactor, new Vector3(2.5f, 13f), true, true);
         SabotageMap[SystemTypes.LifeSupp] = new SabotageData(SystemTypes.LifeSupp, new Vector3(3.7f, -1f), false, true);

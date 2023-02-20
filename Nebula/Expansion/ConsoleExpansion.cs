@@ -91,14 +91,20 @@ namespace Nebula.Expansion
             return console;
         }
 
-        public static Console ConsolizePlayer(this PlayerControl player,string objectName)
+        public static Console ConsolizePlayer(this PlayerControl player,string objectName,Sprite? sprite=null)
         {
             GameObject obj = new GameObject(objectName);
             obj.transform.SetParent(player.transform);
             obj.transform.localPosition = new Vector3(0,0);
-            SpriteRenderer renderer = obj.AddComponent<SpriteRenderer>();
 
-            Console c = Consolize(obj, player.cosmetics.currentBodySprite.BodySprite);
+            SpriteRenderer? renderer = null;
+            if (sprite != null)
+            {
+                obj.AddComponent<SpriteRenderer>();
+                renderer.sprite = sprite;
+            }
+
+            Console c = Consolize(obj, sprite != null ? renderer : player.cosmetics.currentBodySprite.BodySprite);
             return c;
         }
     }

@@ -3,10 +3,53 @@ using System.Text.Json;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
 using System.Reflection;
+using Nebula.Utilities;
 
 namespace Nebula.Language;
 public class Language
 {
+   private static TMPro.TMP_FontAsset? FontJP = null, FontSC = null, FontKR = null;
+        
+    public static void LoadFont()
+    {
+        var fonts = UnityEngine.Object.FindObjectsOfTypeIncludingAssets(TMPro.TMP_FontAsset.Il2CppType);
+        foreach (var font in fonts)
+        {
+            if (font.name == "NotoSansJP-Regular SDF")
+                FontJP = font.CastFast<TMPro.TMP_FontAsset>();
+            if (font.name == "NotoSansSC-Regular SDF")
+                FontSC = font.CastFast<TMPro.TMP_FontAsset>();
+            if (font.name == "NotoSansKR-Regular SDF")
+                FontKR = font.CastFast<TMPro.TMP_FontAsset>();
+        }
+    }
+    private static void SetUpFont(string language)
+    {
+        TMPro.TMP_FontAsset? localFont = null;
+        if (language == "Japanese")
+            localFont = FontJP;
+        else if (language == "Korean")
+            localFont = FontKR;
+        else if (language == "SChinese" || language == "TChinese")
+            localFont = FontSC;
+
+        if (localFont == null) return;
+
+        var fonts = UnityEngine.Object.FindObjectsOfTypeIncludingAssets(TMPro.TMP_FontAsset.Il2CppType);
+        foreach (var font in fonts)
+        {
+            var asset = font.CastFast<TMPro.TMP_FontAsset>();
+            asset.fallbackFontAssetTable.Clear();
+
+            if (font.name == localFont.name) continue;
+
+            asset.fallbackFontAssetTable.Add(localFont);
+            if (localFont != FontJP) asset.fallbackFontAssetTable.Add(FontJP);
+            if (localFont != FontSC) asset.fallbackFontAssetTable.Add(FontSC);
+            if (localFont != FontKR) asset.fallbackFontAssetTable.Add(FontKR);
+        }
+    }
+
     static private Language? language = null;
     static private Dictionary<string, string> defaultLanguageSet = new Dictionary<string, string>();
 
@@ -97,6 +140,7 @@ public class Language
     {
         string lang = GetLanguage((uint)AmongUs.Data.DataManager.Settings.Language.CurrentLanguage);
 
+        SetUpFont(lang);
 
         language = new Language();
 

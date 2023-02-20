@@ -294,7 +294,7 @@ public class Paparazzo : Role, Template.HasWinTrigger
 
     private bool CanSharePicture { get
         {
-            if (PlayerControl.LocalPlayer.Data.IsDead) return;
+            if (PlayerControl.LocalPlayer.Data.IsDead) return false;
             if (!MeetingHud.Instance) return false;
             if (!(shareCount > 0)) return false;
             return (MeetingHud.Instance.state == MeetingHud.VoteStates.Discussion || MeetingHud.Instance.state == MeetingHud.VoteStates.NotVoted || MeetingHud.Instance.state == MeetingHud.VoteStates.Voted);
@@ -486,7 +486,7 @@ public class Paparazzo : Role, Template.HasWinTrigger
         }
     }
 
-    private IEnumerator GetShootEnumerator(GameObject finder,PictureData picture)
+    private IEnumerator GetShootEnumerator(GameObject finder,Vector2 size,PictureData picture)
     {
         GameObject? holder = null;
         if (picture.Players.Length > 0 && picture.Players.Any((p) => !activePlayers.Contains(p.PlayerId)))
@@ -506,7 +506,8 @@ public class Paparazzo : Role, Template.HasWinTrigger
         obj.transform.localEulerAngles= Vector3.zero;
         obj.layer = LayerExpansion.GetUILayer();
         var renderer = obj.AddComponent<SpriteRenderer>();
-        renderer.sprite = Helpers.loadSpriteFromResources(picture.Picture,100f, new Rect(0, 0, picture.Picture.width, picture.Picture.height));
+        Sprite sprite = Helpers.loadSpriteFromResources(picture.Picture, 100f, new Rect(0, 0, picture.Picture.width, picture.Picture.height)); ;
+        renderer.sprite = sprite;
         
 
         finder.transform.SetParent(HudManager.Instance.transform);
@@ -530,7 +531,7 @@ public class Paparazzo : Role, Template.HasWinTrigger
             renderer.material = ConsoleExpansion.GetHighlightMaterial();
             var collider = finder.AddComponent<BoxCollider2D>();
             collider.isTrigger = true;
-            collider.size = new Vector2(picture.Picture.width / 200f, picture.Picture.height / 200f);
+            collider.size = size;
             var button = finder.AddComponent<PassiveButton>();
             button.OnMouseOut = new UnityEngine.Events.UnityEvent();
             button.OnMouseOver = new UnityEngine.Events.UnityEvent();
@@ -555,10 +556,43 @@ public class Paparazzo : Role, Template.HasWinTrigger
                 (UnityEngine.Events.UnityAction)(() => {
                     if (!CanSharePicture || picture.IsShown) return;
 
-                    picture.Share();
-                    UpdatePlayersInfo();
-                    renderer.material.SetColor("_AddColor", Color.green);
-                    shareCount = 0f;
+                    var dialog = MetaDialog.OpenDialog(new Vector2(5f, 3.5f), "");
+
+                    dialog.AddTopic(new MSString(4.2f, Language.Language.GetString("role.paparazzo.sharing.confirm"),2f,1f,TextAlignmentOptions.Center,FontStyles.Normal));
+                    dialog.CustomUse(2.1f);
+                    GameObject pictureObj = new GameObject("Picture");
+                    pictureObj.transform.SetParent(dialog.screen.screen.transform);
+                    pictureObj.transform.localPosition = new Vector3(0, 0.1f, -1f);
+                    pictureObj.transform.localScale = new Vector3(0.55f, 0.55f, 1f);
+                    pictureObj.transform.localEulerAngles = new Vector3(0f, 0f, picture.Angle);
+                    pictureObj.layer = LayerExpansion.GetUILayer();
+                    pictureObj.AddComponent<SpriteRenderer>().sprite = sprite;
+
+                    dialog.AddTopic(
+                        new MSButton(1f, 0.4f, Language.Language.GetString("config.option.yes"), FontStyles.Bold,
+                        () => {
+                            MetaDialog.EraseDialogAll();
+                            if (CanSharePicture && !picture.IsShown)
+                            {
+                                picture.Share();
+                                UpdatePlayersInfo();
+                                renderer.material.SetColor("_AddColor", Color.green);
+                                shareCount = 0f;
+                            }
+                            else
+                            {
+                                var failedDialog = MetaDialog.OpenDialog(new Vector2(4f, 1.5f), "");
+                                failedDialog.AddTopic(new MSString(3.6f, Language.Language.GetString("role.paparazzo.sharing.failed"), 2f, 1f, TextAlignmentOptions.Center, FontStyles.Normal));
+                                failedDialog.CustomUse(0.15f);
+                                failedDialog.AddTopic(
+                                    new MSButton(1f, 0.4f, Language.Language.GetString("config.option.confirm"), FontStyles.Bold,
+                                    () => MetaDialog.EraseDialogAll()));
+                            }
+                        }),
+                        new MSButton(1f, 0.4f, Language.Language.GetString("config.option.no"), FontStyles.Bold,
+                        () => {
+                            MetaDialog.EraseDialogAll();
+                        }));
                 })
             );
 
@@ -622,7 +656,7 @@ public class Paparazzo : Role, Template.HasWinTrigger
                 {
                     var picture = TakePicture(finderObject, new Vector2(3.1f, 1.9f),1);
 
-                    HudManager.Instance.StartCoroutine(GetShootEnumerator(finderObject, picture).WrapToIl2Cpp());
+                    HudManager.Instance.StartCoroutine(GetShootEnumerator(finderObject, new Vector2(3.1f, 1.9f),picture).WrapToIl2Cpp());
                     finderObject = null;
                 }
                 cameraButton.Timer = cameraButton.MaxTimer;

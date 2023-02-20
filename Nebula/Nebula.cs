@@ -27,7 +27,7 @@ public class NebulaPlugin : BasePlugin
     public const string PluginVersion = "2.1";
     public const bool IsSnapshot = true;
 
-    public static string PluginVisualVersion = IsSnapshot ? "23.02.19d" : PluginVersion;
+    public static string PluginVisualVersion = IsSnapshot ? "23.02.20a" : PluginVersion;
     public static string PluginStage = IsSnapshot ? "Snapshot" : "";
     
     public const string PluginVersionForFetch = "2.1";
@@ -53,12 +53,23 @@ public class NebulaPlugin : BasePlugin
         file.Close();
     }
 
+    private void InitialModification()
+    {
+        Constants.ShadowMask = LayerMask.GetMask(new string[]
+           {
+                "Shadow",
+                "IlluminatedBlocking"
+           });
+    }
     override public void Load()
     {
 
         Logger = new Logger.Logger(true);
 
         Instance = this;
+
+        //初期の変更
+        InitialModification();
 
         //CPUAffinityEditorを生成
         InstallCPUAffinityEditor();
@@ -74,10 +85,6 @@ public class NebulaPlugin : BasePlugin
 
         //クライアントオプションを読み込む
         Patches.StartOptionMenuPatch.LoadOption();
-
-        //言語データを読み込む
-        Language.Language.LoadDefaultKey();
-        Language.Language.Load();
 
         //色データを読み込む
         Module.DynamicColors.Load();
@@ -122,6 +129,7 @@ public static class AmongUsClientAwakePatch
     [HarmonyPrefix]
     public static void Postfix(AmongUsClient __instance)
     {
+        //var ships = GameObject.FindObjectsOfTypeIncludingAssets(ShipStatus.Il2CppType);
         foreach (var map in Map.MapData.MapDatabase.Values)
         {
             map.LoadAssets(__instance);
@@ -129,17 +137,12 @@ public static class AmongUsClientAwakePatch
         Vector3 pos;
 
         __instance.PlayerPrefab.cosmetics.zIndexSpacing = 0.00001f;
-        /*
-        var bodyForms = __instance.PlayerPrefab.transform.FindChild("BodyForms");
-        pos = bodyForms.localPosition;
-        pos.z = 0.00002f;
-        bodyForms.localPosition = pos;
 
-        var backLayer = __instance.PlayerPrefab.transform.FindChild("Cosmetics").FindChild("Hat").FindChild("Back");
-        pos = backLayer.localPosition;
-        pos.z = 0.001f;
-        backLayer.localPosition = pos;
-        */
+        //言語データを読み込む
+        Language.Language.LoadFont();
+        Language.Language.LoadDefaultKey();
+        Language.Language.Load();
+
     }
 }
 

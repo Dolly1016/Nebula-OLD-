@@ -146,6 +146,7 @@ public class MapData
 
     public ShipStatus Assets;
     public int MapId { get; }
+    public string ShipName { get; }
 
     public bool IsModMap { get; }
 
@@ -319,7 +320,7 @@ public class MapData
         new Database.MIRAData();
         new Database.PolusData();
         new Database.AirshipData();
-        new MapData(5);
+        //new MapData(5);
     }
 
     public static void CreateOptionData()
@@ -461,9 +462,10 @@ public class MapData
         yield break;
     }
 
-    public MapData(int mapId)
+    public MapData(int mapId,string shipName)
     {
         MapId = mapId;
+        ShipName = shipName;
         MapDatabase[mapId] = this;
 
         IsModMap = mapId >= 5;
@@ -496,15 +498,28 @@ public class MapData
         ClassicAdminMask = 0;
     }
 
+    //public void LoadAssets(UnhollowerBaseLib.Il2CppReferenceArray<UnityEngine.Object> allShips)
     public void LoadAssets(AmongUsClient __instance)
     {
         if (IsModMap) return;
 
+        /*
+        foreach(var ship in allShips)
+        {
+            if (ship.CastFast<ShipStatus>().name == ShipName)
+            {
+                Assets = ship.CastFast<ShipStatus>();
+                break;
+            }
+        }
+        */
+        
         AssetReference assetReference = __instance.ShipPrefabs.ToArray()[MapId];
         if (assetReference.IsValid()) return;
         AsyncOperationHandle<GameObject> asset = assetReference.LoadAssetAsync<GameObject>();
         asset.WaitForCompletion();
         Assets = assetReference.Asset.Cast<GameObject>().GetComponent<ShipStatus>();
+        
     }
 
     public Sprite GetMapSprite()

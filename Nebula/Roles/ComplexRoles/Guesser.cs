@@ -341,6 +341,9 @@ public class SecondaryGuesser : ExtraRole
 
     private void _sub_Assignment(Patches.AssignMap assignMap, List<byte> players, int count)
     {
+        if (!Roles.F_Guesser.IsSpawnable()) return;
+        if (!Roles.F_Guesser.secondoryRoleOption.getBool()) return;
+
         int chance = Roles.F_Guesser.RoleChanceOption.getSelection() + 1;
 
         byte playerId;

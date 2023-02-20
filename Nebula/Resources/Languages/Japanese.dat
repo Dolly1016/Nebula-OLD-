@@ -786,6 +786,7 @@
 "role.raider.help.axeSize" : "斧の当たり判定を確認"
 "role.raider.throwCoolDown" : "斧投げクールダウン"
 "role.raider.axeSize" : "斧の大きさ"
+"role.raider.axeSize.info" : "斧の当たり判定を変更できます。この設定はプレイヤーとの判定に対してのみ有効であり、\n壁に対する当たり判定には影響しません。"
 "role.raider.axeSpeed" : "斧の投げ速度"
 "role.raider.canKillImpostors" : "インポスター陣営への誤射"
 

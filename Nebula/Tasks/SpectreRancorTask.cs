@@ -83,6 +83,8 @@ namespace Nebula.Tasks
     {
 
         static Minigame? NebulaMinigamePrefab = null;
+        Console? deliveryConsole = null;
+        PlayerControl? deliveryPlayer = null;
 
         static SpectreRancorTask()
         {
@@ -131,7 +133,7 @@ namespace Nebula.Tasks
             return true;
         }
 
-
+        
         public override void __Initialize()
         {
 
