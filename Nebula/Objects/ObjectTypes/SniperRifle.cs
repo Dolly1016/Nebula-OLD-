@@ -2,7 +2,7 @@
 
 public class SniperRifle : TypeWithImage
 {
-    public SniperRifle() : base(4, "SniperRifle", "Nebula.Resources.SniperRifle.png")
+    public SniperRifle() : base(4, "SniperRifle", new SpriteLoader("Nebula.Resources.SniperRifle.png",150f))
     {
 
     }

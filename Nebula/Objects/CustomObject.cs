@@ -105,16 +105,16 @@ public class CustomObject
 
         static public Dictionary<byte, Type> AllTypes = new Dictionary<byte, Type>();
 
-        public static ObjectTypes.VisibleTrap AccelTrap = new ObjectTypes.VisibleTrap(0, "AccelTrap", "Nebula.Resources.AccelTrap.png");
-        public static ObjectTypes.VisibleTrap DecelTrap = new ObjectTypes.VisibleTrap(1, "DecelTrap", "Nebula.Resources.DecelTrap.png");
-        public static ObjectTypes.KillTrap KillTrap = new ObjectTypes.KillTrap(2, "KillTrap", "Nebula.Resources.KillTrap.png");
-        public static ObjectTypes.InvisibleTrap CommTrap = new ObjectTypes.InvisibleTrap(3, "CommTrap", "Nebula.Resources.CommTrap.png");
+        public static ObjectTypes.VisibleTrap AccelTrap = new ObjectTypes.VisibleTrap(0, "AccelTrap", new SpriteLoader("Nebula.Resources.AccelTrap.png",150f));
+        public static ObjectTypes.VisibleTrap DecelTrap = new ObjectTypes.VisibleTrap(1, "DecelTrap", new SpriteLoader("Nebula.Resources.DecelTrap.png", 150f));
+        public static ObjectTypes.KillTrap KillTrap = new ObjectTypes.KillTrap(2, "KillTrap", new SpriteLoader("Nebula.Resources.KillTrap.png", 150f));
+        public static ObjectTypes.InvisibleTrap CommTrap = new ObjectTypes.InvisibleTrap(3, "CommTrap", new SpriteLoader("Nebula.Resources.CommTrap.png", 150f));
         public static ObjectTypes.SniperRifle Rifle = new ObjectTypes.SniperRifle();
         public static ObjectTypes.RaidAxe Axe = new ObjectTypes.RaidAxe();
         public static ObjectTypes.ElecPole ElecPole = new ObjectTypes.ElecPole();
-        public static ObjectTypes.ElecPoleGuide ElecPoleGuide = new ObjectTypes.ElecPoleGuide();
+        //ElecPoleGuide 7
         public static ObjectTypes.Decoy Decoy = new ObjectTypes.Decoy();
-        public static ObjectTypes.DelayedObject Antenna = new ObjectTypes.DelayedObject(9, "Antenna", "Nebula.Resources.Antenna.png");
+        public static ObjectTypes.DelayedObject Antenna = new ObjectTypes.DelayedObject(9, "Antenna", new SpriteLoader("Nebula.Resources.Antenna.png", 150f));
         public static ObjectTypes.Diamond Diamond = new ObjectTypes.Diamond();
         public static ObjectTypes.Footprint Footprint = new ObjectTypes.Footprint();
         public static ObjectTypes.TeleportEvidence TeleportEvidence = new ObjectTypes.TeleportEvidence();

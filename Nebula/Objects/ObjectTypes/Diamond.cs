@@ -2,7 +2,7 @@
 
 public class Diamond : TypeWithImage
 {
-    public Diamond() : base(10, "Diamond", "Nebula.Resources.Diamond.png")
+    public Diamond() : base(10, "Diamond", new SpriteLoader("Nebula.Resources.Diamond.png",100f))
     {
 
     }

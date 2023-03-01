@@ -3,7 +3,12 @@ using UnityEngine;
 
 namespace Nebula.Utilities;
 
-public class SpriteLoader
+public interface ISpriteLoader
+{
+    Sprite GetSprite();
+}
+
+public class SpriteLoader : ISpriteLoader
 {
     string address;
     string? textureId = null;
@@ -42,7 +47,7 @@ public class SpriteLoader
     }
 }
 
-public class DividedSpriteLoader
+public class DividedSpriteLoader : ISpriteLoader
 {
     string address;
     float pixelsPerUnit;
@@ -77,4 +82,6 @@ public class DividedSpriteLoader
         }
         return sprites[index];
     }
+
+    public Sprite GetSprite() => GetSprite(0);
 }

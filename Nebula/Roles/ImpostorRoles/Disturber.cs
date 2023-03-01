@@ -23,7 +23,7 @@ public class Disturber : Role
         return elecAnimSubTexture;
     }
 
-    private SpriteLoader placeButtonSprite = new SpriteLoader("Nebula.Resources.ElecPolePlaceButton.png", 115f, "ui.button.disturber.place");
+    private DividedSpriteLoader placeButtonSprite = new SpriteLoader("Nebula.Resources.ElecPolePlaceButton.png", 115f, "ui.button.disturber.place");
 
     public override HelpSprite[] helpSprite => new HelpSprite[]
     {
@@ -174,14 +174,6 @@ public class Disturber : Role
 
     public override void OnMeetingEnd()
     {
-        for (int i = 0; i < 2; i++)
-        {
-            if (PolesGuide[i] != null)
-            {
-                RPCEvents.ObjectDestroy(PolesGuide[i].Id);
-                PolesGuide[i] = null;
-            }
-        }
         if (Poles.Count == (int)countOfBarriorsOption.getFloat())
         {
             elecButton.HasEffect = true;
