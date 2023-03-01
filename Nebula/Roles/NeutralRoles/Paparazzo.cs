@@ -1,23 +1,7 @@
-﻿using Epic.OnlineServices.AntiCheatServer;
-using Hazel;
-using LibCpp2IL;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Mono.Cecil.Cil;
+﻿using LibCpp2IL;
 using Nebula.Expansion;
 using Nebula.Module;
-using Newtonsoft.Json.Bson;
-using Rewired;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using TMPro;
-using UnityEngine;
-using UnityEngine.AI;
-using static Il2CppSystem.Globalization.CultureInfo;
-using static Nebula.MeetingHudExpansion;
-using static Nebula.Module.Information.PlayersIconInformation;
-using static Nebula.Roles.Assignable;
-using static UnityEngine.GraphicsBuffer;
 
 namespace Nebula.Roles.NeutralRoles;
 
@@ -242,6 +226,7 @@ public class Paparazzo : Role, Template.HasWinTrigger
 
     private PictureData TakePicture(GameObject finder,Vector2 size,int roughness)
     {
+        GameObject.Destroy(finder.GetComponent<PassiveButton>());
         var scale = finder.transform.localScale;
         size = size * 100f;
         GameObject camObj = new GameObject();
@@ -436,7 +421,7 @@ public class Paparazzo : Role, Template.HasWinTrigger
     }
 
 
-    SpriteLoader cameraSprite = new SpriteLoader("Nebula.Resources.CameraButton.png", 115f);
+    SpriteLoader cameraSprite = new SpriteLoader("Nebula.Resources.CameraButton.png", 115f, "ui.button.paparazzo.film");
     SpriteLoader hourglassSprite = new SpriteLoader("Nebula.Resources.Hourglass.png", 100f);
 
     public override void GlobalIntroInitialize(PlayerControl __instance)
@@ -529,9 +514,7 @@ public class Paparazzo : Role, Template.HasWinTrigger
         if (holder != null)
         {
             renderer.material = ConsoleExpansion.GetHighlightMaterial();
-            var collider = finder.AddComponent<BoxCollider2D>();
-            collider.isTrigger = true;
-            collider.size = size;
+            
             var button = finder.AddComponent<PassiveButton>();
             button.OnMouseOut = new UnityEngine.Events.UnityEvent();
             button.OnMouseOver = new UnityEngine.Events.UnityEvent();
@@ -643,6 +626,21 @@ public class Paparazzo : Role, Template.HasWinTrigger
 
     }
 
+    private void OnFireFilmButton()
+    {
+        if (cameraButton.Timer > 0f) return;
+        if (!PlayerControl.LocalPlayer.CanMove || PlayerControl.LocalPlayer.Data.IsDead) return;
+
+        if (finderObject)
+        {
+            var picture = TakePicture(finderObject, new Vector2(3.1f, 1.9f), 1);
+
+            HudManager.Instance.StartCoroutine(GetShootEnumerator(finderObject, new Vector2(3.1f, 1.9f), picture).WrapToIl2Cpp());
+            finderObject = null;
+        }
+        cameraButton.Timer = cameraButton.MaxTimer;
+    }
+
     public override void ButtonInitialize(HudManager __instance)
     {
         if (cameraButton != null)
@@ -650,18 +648,7 @@ public class Paparazzo : Role, Template.HasWinTrigger
             cameraButton.Destroy();
         }
         cameraButton = new CustomButton(
-            () =>
-            {
-                if (finderObject)
-                {
-                    var picture = TakePicture(finderObject, new Vector2(3.1f, 1.9f),1);
-
-                    HudManager.Instance.StartCoroutine(GetShootEnumerator(finderObject, new Vector2(3.1f, 1.9f),picture).WrapToIl2Cpp());
-                    finderObject = null;
-                }
-                cameraButton.Timer = cameraButton.MaxTimer;
-                //RPCEventInvoker.WinTrigger(this);
-            },
+            OnFireFilmButton,
             () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
             () => { return PlayerControl.LocalPlayer.CanMove; },
             () =>
@@ -686,6 +673,12 @@ public class Paparazzo : Role, Template.HasWinTrigger
             if (!finderObject)
             {
                 finderObject = GameObject.Instantiate(AssetLoader.CameraFinderPrefab);
+                var collider = finderObject.AddComponent<BoxCollider2D>();
+                collider.isTrigger = true;
+                collider.size = new Vector2(3.1f, 1.9f);
+                var button = finderObject.SetUpButton(OnFireFilmButton);
+
+
                 finderObject.transform.position = PlayerControl.LocalPlayer.transform.position;
                 finderObject.transform.localScale = Vector3.zero;
             }

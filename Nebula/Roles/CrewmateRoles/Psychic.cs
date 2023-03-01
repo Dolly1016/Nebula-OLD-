@@ -13,7 +13,7 @@ public class Psychic : Role
 
     private Sprite mapIconSprite = null;
 
-    private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.SearchButton.png", 115f);
+    private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.SearchButton.png", 115f, "ui.button.psychic.search");
 
     public Sprite getMapIconSprite()
     {

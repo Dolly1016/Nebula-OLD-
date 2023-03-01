@@ -219,7 +219,7 @@ public class CustomMessage
             customMessages.Add(this);
 
             HudManager.Instance.StartCoroutine(Effects.Sequence(
-                new UnhollowerBaseLib.Il2CppReferenceArray<Il2CppSystem.Collections.IEnumerator>(
+                new Il2CppReferenceArray<Il2CppSystem.Collections.IEnumerator>(
                     new Il2CppSystem.Collections.IEnumerator[] {
                         updater.WrapToIl2Cpp(),
                         getDestroyer().WrapToIl2Cpp()

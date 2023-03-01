@@ -88,7 +88,7 @@ public class Draggable : Role
 
     /* 画像 */
 
-    protected SpriteLoader DaDSprite = new SpriteLoader("Nebula.Resources.DragAndDropButton.png", 115f);
+    protected SpriteLoader DaDSprite;
 
     /* 各種変数 */
     public byte deadBodyId;
@@ -142,5 +142,7 @@ public class Draggable : Role
             ignoreBlackout, useImpostorLightRadius)
     {
         dragButton = null;
+
+        DaDSprite = new SpriteLoader("Nebula.Resources.DragAndDropButton.png", 115f, "ui.button." + localizeName + ".dragAndDrop");
     }
 }

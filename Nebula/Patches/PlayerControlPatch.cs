@@ -3,7 +3,7 @@
 [HarmonyPatch(typeof(GameData), nameof(GameData.SetTasks))]
 public class PlayerControlSetTaskPatch
 {
-    public static bool Prefix(GameData __instance, [HarmonyArgument(0)] byte playerId, [HarmonyArgument(1)] UnhollowerBaseLib.Il2CppStructArray<byte> taskTypeIds)
+    public static bool Prefix(GameData __instance, [HarmonyArgument(0)] byte playerId, [HarmonyArgument(1)] Il2CppStructArray<byte> taskTypeIds)
     {
         if (playerId != PlayerControl.LocalPlayer.PlayerId) return true;
 
@@ -665,6 +665,7 @@ class PlayerCanMovePatch
         if (__instance != PlayerControl.LocalPlayer) return;
         if (!__result) return;
 
+        __result &= !TextInputField.ValidField;
         __result &= HudManager.Instance.PlayerCam.Target == PlayerControl.LocalPlayer;
     }
 }
@@ -685,10 +686,14 @@ class PlayerIsKillTimerEnabledPatch
             {
                 if (CustomOptionHolder.CoolDownOption.getBool())
                 {
-                    if (CustomOptionHolder.KillCoolDownProceedIgnoringCommReceiver.getBool() && Minigame.Instance.TryCast<TuneRadioMinigame>()) return;
-                    if (CustomOptionHolder.KillCoolDownProceedIgnoringBlackOutGame.getBool() && Minigame.Instance.TryCast<SwitchMinigame>()) return;
+                    if (CustomOptionHolder.KillCoolDownProceedIgnoringCommReceiver.getBool() && Minigame.Instance.GetIl2CppType() == Il2CppType.Of<TuneRadioMinigame>()) return;
+                    if (CustomOptionHolder.KillCoolDownProceedIgnoringBlackOutGame.getBool() && Minigame.Instance.GetIl2CppType() == Il2CppType.Of<SwitchMinigame>()) return;
                     if (CustomOptionHolder.KillCoolDownProceedIgnoringDoorGame.getBool() && Minigame.Instance.TryCast<IDoorMinigame>() != null) return;
-                    if (CustomOptionHolder.KillCoolDownProceedIgnoringSecurityCamera.getBool() && (Minigame.Instance.TryCast<PlanetSurveillanceMinigame>() || Minigame.Instance.TryCast<SurveillanceMinigame>())) return;
+                    if (CustomOptionHolder.KillCoolDownProceedIgnoringSecurityCamera.getBool() && (Minigame.Instance.GetIl2CppType() == Il2CppType.Of<PlanetSurveillanceMinigame>() || Minigame.Instance.GetIl2CppType() == Il2CppType.Of<SurveillanceMinigame>())) return;
+                    if (CustomOptionHolder.KillCoolDownProceedIgnoringEmergencySabotage.getBool() && (
+                        Minigame.Instance.GetIl2CppType() == Il2CppType.Of<AirshipAuthGame>() ||
+                        Minigame.Instance.GetIl2CppType() == Il2CppType.Of<ReactorMinigame>() ||
+                        Minigame.Instance.GetIl2CppType() == Il2CppType.Of<KeypadGame>() )) return;
                 }
                 __result = false;
             }

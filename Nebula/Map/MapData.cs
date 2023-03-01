@@ -519,7 +519,7 @@ public class MapData
         AsyncOperationHandle<GameObject> asset = assetReference.LoadAssetAsync<GameObject>();
         asset.WaitForCompletion();
         Assets = assetReference.Asset.Cast<GameObject>().GetComponent<ShipStatus>();
-        
+        GameObject.DontDestroyOnLoad(Assets.gameObject);
     }
 
     public Sprite GetMapSprite()

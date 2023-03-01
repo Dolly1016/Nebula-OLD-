@@ -55,10 +55,10 @@ public class Marionette : Role
         }
     }
 
-    private SpriteLoader decoyButtonSprite = new SpriteLoader("Nebula.Resources.DecoyButton.png", 115f);
-    private SpriteLoader swapButtonSprite = new SpriteLoader("Nebula.Resources.DecoySwapButton.png", 115f);
-    private SpriteLoader destroyButtonSprite = new SpriteLoader("Nebula.Resources.DecoyDestroyButton.png", 115f);
-    private SpriteLoader monitorButtonSprite = new SpriteLoader("Nebula.Resources.DecoyMonitorButton.png", 115f);
+    private SpriteLoader decoyButtonSprite = new SpriteLoader("Nebula.Resources.DecoyButton.png", 115f, "ui.button.marionette.decoy");
+    private SpriteLoader swapButtonSprite = new SpriteLoader("Nebula.Resources.DecoySwapButton.png", 115f, "ui.button.marionette.swap");
+    private SpriteLoader destroyButtonSprite = new SpriteLoader("Nebula.Resources.DecoyDestroyButton.png", 115f, "ui.button.marionette.destroy");
+    private SpriteLoader monitorButtonSprite = new SpriteLoader("Nebula.Resources.DecoyMonitorButton.png", 115f, "ui.button.marionette.monitor");
 
     public override HelpSprite[] helpSprite => new HelpSprite[]
     {

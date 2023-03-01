@@ -1,9 +1,14 @@
-﻿namespace Nebula.Roles.Template;
+﻿using LibCpp2IL;
+using Nebula.Module;
+using static Nebula.Module.CustomOption;
+
+namespace Nebula.Roles.Template;
 
 public class HasBilateralness : Role
 {
+    public Module.CustomOption numOfSecondarySide;
     public Module.CustomOption chanceToSpawnAsSecondarySide;
-    public Module.CustomOption definitiveAssignmentOption;
+    public bool AssignedDefinitively => numOfSecondarySide.selection != 0;
 
     protected Role FirstRole = null, SecondaryRole = null;
 
@@ -23,18 +28,10 @@ public class HasBilateralness : Role
         int chance = RoleChanceOption.getSelection() + 1;
         int secondary;
 
-        if (definitiveAssignmentOption.getBool())
+        if (AssignedDefinitively)
         {
             //決定的な割り当て
-            if (result.Length == 1)
-            {
-                //1人の場合確率の高い方を選択
-                secondary = ChanceOfSecondarySide() >= 5 ? 1 : 0;
-            }
-            else
-            {
-                secondary = (int)((float)result.Length * (float)ChanceOfSecondarySide() / 10f + 0.5f);
-            }
+            secondary = (int)numOfSecondarySide.getFloat();
         }
         else
         {
@@ -53,30 +50,93 @@ public class HasBilateralness : Role
 
     public override void LoadOptionData()
     {
-        chanceToSpawnAsSecondarySide = CreateOption(Color.white, "chanceToSpawnAsSecondarySide", CustomOptionHolder.rates);
-        definitiveAssignmentOption = CreateOption(Color.white, "definitiveAssignment", false);
+        numOfSecondarySide = CreateOption(Color.white, "numOfSecondarySide", CustomOptionHolder.GetStringMixedSelections("option.display.random", 0, 15, 1, 15, 1).ToArray(), "option.display.random").HiddenOnDisplay(true).HiddenOnMetaScreen(true);
+        chanceToSpawnAsSecondarySide = CreateOption(Color.white, "chanceToSpawnAsSecondarySide", CustomOptionHolder.ratesWithoutTerminal).AddInvPrerequisite(numOfSecondarySide).HiddenOnDisplay(true).HiddenOnMetaScreen(true);
+
+        RoleCountOption.DisplayValueDecorator = (orig, option) => {
+            if (numOfSecondarySide.selection == 0)
+            {
+                int seconProb=((int)chanceToSpawnAsSecondarySide.getSelection() + 1) * 10;
+                string persentStr = Language.Language.GetString("option.suffix.percent");
+                return orig + " (" + Language.Language.GetString("role." + LocalizeName + ".prefix.primary") + ": " + (100 - seconProb).ToString() + persentStr + ", " + Language.Language.GetString("role." + LocalizeName + ".prefix.secondary") + ": " + seconProb.ToString() + persentStr + ")";
+            }
+            else
+            {
+                int primNum = Mathf.Max((int)RoleCountOption.getFloat() - (int)numOfSecondarySide.getFloat(), 0);
+                int seconNum = Mathf.Min((int)RoleCountOption.getFloat(), (int)numOfSecondarySide.getFloat());
+                return "(" + Language.Language.GetString("role." + LocalizeName + ".prefix.primary") + ": " + primNum.ToString() + ", " + Language.Language.GetString("role." + LocalizeName + ".prefix.secondary") + ": " + seconNum.ToString() + ")";
+            }
+        };
+        TopOption.preOptionScreenBuilder = (refresher) =>
+        {
+            var origOption = GetStandardTopOption(refresher);
+            var countOption = origOption.SubArray(1, 5).ToList();
+            var chanceOption = origOption.SubArray(7, origOption.Length - 7).ToList();
+            chanceOption.Insert(0, new Module.MSMargin(0.2f));
+            chanceOption.Insert(1, 
+                new MSOptionString(RoleChanceOption, 2f, RoleChanceOption.getName(), 2f, 0.8f, TMPro.TextAlignmentOptions.MidlineRight, TMPro.FontStyles.Bold)
+            );
+
+            countOption.Insert(0, new Module.MSMargin(0.6f));
+            countOption.Add(new Module.MSString(0.2f, "(", TMPro.TextAlignmentOptions.MidlineRight, TMPro.FontStyles.Bold));
+            countOption.Add(new Module.MSString(1.3f, numOfSecondarySide.getName(), 2f, 1f, TMPro.TextAlignmentOptions.MidlineRight, TMPro.FontStyles.Bold, true,true));
+            countOption.Add(new MSString(0.2f, ":", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold));
+            countOption.Add(
+                  new Module.MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () => {
+                      if (numOfSecondarySide.selection == 0)
+                          numOfSecondarySide.addSelection(RoleCountOption!.selection + 1);
+                      else
+                          numOfSecondarySide.addSelection(-1);
+                      refresher();
+                  }));
+            countOption.Add(new Module.MSString(0.65f, numOfSecondarySide.getString(), 2f, 0.6f, TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold, true, true));
+            countOption.Add(
+                  new Module.MSButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () => {
+                      if (numOfSecondarySide.selection > RoleCountOption!.selection + 1)
+                          numOfSecondarySide.updateSelection(0);
+                      else
+                          numOfSecondarySide.addSelection(1);
+                      refresher();
+                  })
+                  );
+            countOption.Add(new Module.MSString(0.2f, ")", TMPro.TextAlignmentOptions.MidlineRight, TMPro.FontStyles.Bold));
+
+            if (!AssignedDefinitively)
+            {
+                countOption.InsertRange(countOption.Count - 1,
+                    new Module.MetaScreenContent[] {
+                        new Module.MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () =>
+                            {
+                                chanceToSpawnAsSecondarySide.addSelection(-1);
+                                refresher();
+                            }),
+                        new Module.MSString(0.6f, chanceToSpawnAsSecondarySide.getString(), 2f, 0.6f, TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold, true, true),
+                        new Module.MSButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () =>
+                            {
+                                chanceToSpawnAsSecondarySide.addSelection(1);
+                                refresher();
+                            })
+                    }
+                );
+            }
+            else {
+                countOption.Add(new Module.MSMargin(0.66f + 0.5f + 0.5f));
+            }
+
+            return new Module.MetaScreenContent[][] { countOption.ToArray(), chanceOption.ToArray() };
+        };
     }
 
     public override void SpawnableTest(ref Dictionary<Role, int> DefinitiveRoles, ref HashSet<Role> SpawnableRoles)
     {
         if (!TopOption.getBool()) return;
 
-        if (definitiveAssignmentOption.getBool())
+        if (AssignedDefinitively)
         {
             if (RoleChanceOption.getSelection() == 9)
             {
-                int countF = 0, countS = 0;
-                foreach (var role in GetComplexAllocations())
-                {
-                    if (role.role == FirstRole)
-                        countF++;
-                    else
-                        countS++;
-                }
-                if (countF != 0)
-                    DefinitiveRoles[FirstRole] = countF;
-                if (countS != 0)
-                    DefinitiveRoles[SecondaryRole] = countS;
+                DefinitiveRoles[FirstRole] = Mathf.Max((int)RoleCountOption!.getFloat() - (int)numOfSecondarySide.getFloat(), 0);
+                DefinitiveRoles[SecondaryRole] = Mathf.Min((int)RoleCountOption!.getFloat(), (int)numOfSecondarySide.getFloat());
             }
             else
                 foreach (var role in GetComplexAllocations())
@@ -146,7 +206,7 @@ public class BilateralnessRole : Role
     {
         if (!FRole.TopOption.getBool()) return false;
 
-        if (FRole.definitiveAssignmentOption.getBool())
+        if (FRole.AssignedDefinitively)
         {
             return FRole.GetComplexAllocations().Any(role => role.role == this);
         }

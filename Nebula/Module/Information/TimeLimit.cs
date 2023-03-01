@@ -11,18 +11,18 @@ public class TimeLimit : UpperInformation
 
     private void SetPos(SpriteRenderer[] renderers)
     {
-        renderers[0].transform.localPosition = new Vector3(-0.28f, 0, -400f);
-        renderers[1].transform.localPosition = new Vector3(-0.06f, 0, -400f);
-        renderers[2].transform.localPosition = new Vector3(0.0f, 0, -400f);
-        renderers[3].transform.localPosition = new Vector3(0.25f, 0, -400f);
-        renderers[4].transform.localPosition = new Vector3(0.47f, 0, -400f);
-        renderers[5].transform.localPosition = new Vector3(0.59f, 0, -400f);
+        renderers[0].transform.localPosition = new Vector3(-0.38f, 0, -400f);
+        renderers[1].transform.localPosition = new Vector3(-0.16f, 0, -400f);
+        renderers[2].transform.localPosition = new Vector3(-0.1f, 0, -400f);
+        renderers[3].transform.localPosition = new Vector3(0.15f, 0, -400f);
+        renderers[4].transform.localPosition = new Vector3(0.37f, 0, -400f);
+        renderers[5].transform.localPosition = new Vector3(0.49f, 0, -400f);
     }
 
     public TimeLimit() : base("TimeLimit")
     {
         width = 0f;
-        height = 0.2f;
+        height = 0.4f;
 
         Texture = Helpers.loadTextureFromResources("Nebula.Resources.Timer.png");
 

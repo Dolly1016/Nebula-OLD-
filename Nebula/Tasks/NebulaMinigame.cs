@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using UnhollowerRuntimeLib;
-
+﻿
 namespace Nebula.Tasks;
 
 [HarmonyPatch]
@@ -56,12 +52,4 @@ public class NebulaMinigame : Minigame
     }
 
     public virtual void __Begin(PlayerTask playerTask) { }
-
-    /*
-    public override void Close()
-    {
-        this.CallBase<Minigame>(nameof(Minigame.Close));
-        NebulaPlugin.Instance.Logger.Print("a");
-    }
-    */
 }

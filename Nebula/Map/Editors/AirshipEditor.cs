@@ -116,6 +116,17 @@ public class AirshipEditor : MapEditor
     static private SpriteLoader customMeetingSideSprite = new SpriteLoader("Nebula.Resources.AirshipCustomMeeting.png", 100f);
     static private SpriteLoader customMeetingLadderSprite = new SpriteLoader("Nebula.Resources.AirshipCustomMeetingLadder.png", 100f);
 
+    public override void ModifyMap()
+    {
+        /*
+        var elecDoors = ShipStatus.Instance.Systems[SystemTypes.Decontamination].Cast<ElectricalDoors>();
+        foreach (var d in elecDoors.Doors)
+        {
+            //if(d.transform.childCount==0)d.gameObject.layer = LayerExpansion.GetShadowObjectsLayer();
+        }
+        */
+    }
+
     public override void MapCustomize()
     {
         if (CustomOptionHolder.mapOptions.getBool())
@@ -246,7 +257,7 @@ public class AirshipEditor : MapEditor
                 collider.SetPoints(colliderPosList);
 
                 AirshipStatus airship = ShipStatus.Instance.Cast<AirshipStatus>();
-                airship.Ladders = new UnhollowerBaseLib.Il2CppReferenceArray<Ladder>(airship.GetComponentsInChildren<Ladder>());
+                airship.Ladders = new Il2CppReferenceArray<Ladder>(airship.GetComponentsInChildren<Ladder>());
 
                 originalLadderObj.transform.GetChild(0).gameObject.SetActive(false);
                 originalLadderObj.transform.GetChild(1).gameObject.SetActive(false);

@@ -1,5 +1,4 @@
-﻿using BepInEx.IL2CPP.Utils;
-namespace Nebula.Expansion;
+﻿namespace Nebula.Expansion;
 
 [HarmonyPatch]
 static public class GridArrangeExpansion

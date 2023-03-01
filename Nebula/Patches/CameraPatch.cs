@@ -279,7 +279,7 @@ public class CameraPatch
                 __instance.Dots[__instance.currentCamera].sprite = __instance.DotEnabled;
                 SurvCamera survCamera = __instance.survCameras[__instance.currentCamera];
                 __instance.Camera.transform.position = survCamera.transform.position + __instance.survCameras[__instance.currentCamera].Offset;
-                __instance.LocationName.text = ((survCamera.NewName > StringNames.ExitButton) ? DestroyableSingleton<TranslationController>.Instance.GetString(survCamera.NewName, new UnhollowerBaseLib.Il2CppReferenceArray<Il2CppSystem.Object>(0)) : survCamera.CamName);
+                __instance.LocationName.text = ((survCamera.NewName > StringNames.ExitButton) ? DestroyableSingleton<TranslationController>.Instance.GetString(survCamera.NewName, new Il2CppReferenceArray<Il2CppSystem.Object>(0)) : survCamera.CamName);
                 if (!PlayerTask.PlayerHasTaskOfType<IHudOverrideTask>(PlayerControl.LocalPlayer))
                 {
                     __instance.ViewPort.sharedMaterial = __instance.StaticMaterial;

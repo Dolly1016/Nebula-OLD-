@@ -1,7 +1,6 @@
 ﻿using Nebula.Tasks;
 using System.Reflection;
 using UnityEngine;
-using Il2CppType = UnhollowerRuntimeLib.Il2CppType;
 
 namespace Nebula.Module;
 
@@ -33,6 +32,8 @@ public static class AssetLoader
     public static GameObject SpectreRancorMinigamePrefab;
 
     public static GameObject CameraFinderPrefab;
+    
+    public static GameObject MetaObjectPrefab;
 
     static public void Load()
     {
@@ -64,6 +65,8 @@ public static class AssetLoader
         SpectreRancorMinigamePrefab = assetBundleBundle.LoadAsset<GameObject>("SpectreRancorMinigame").DontUnload();
 
         CameraFinderPrefab = assetBundleBundle.LoadAsset<GameObject>("CameraFinder").DontUnload();
+
+        MetaObjectPrefab = assetBundleBundle.LoadAsset<GameObject>("MetaObjectPrefab").DontUnload();
     }
 
     public static Sprite GetMapSprite(byte mapId,Vector2 size,Int32 mask)

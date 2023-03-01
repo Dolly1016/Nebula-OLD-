@@ -229,7 +229,7 @@ class MeetingHudPatch
     [HarmonyPatch(typeof(MeetingIntroAnimation), nameof(MeetingIntroAnimation.Init))]
     class MeetingIntroAnimationPatch
     {
-        public static void Prefix(MeetingIntroAnimation __instance, [HarmonyArgument(1)] ref UnhollowerBaseLib.Il2CppReferenceArray<GameData.PlayerInfo> deadBodies)
+        public static void Prefix(MeetingIntroAnimation __instance, [HarmonyArgument(1)] ref Il2CppReferenceArray<GameData.PlayerInfo> deadBodies)
         {
             List<GameData.PlayerInfo> dBodies = new List<GameData.PlayerInfo>();
             //既に発見されている死体
@@ -243,7 +243,7 @@ class MeetingHudPatch
                 dBodies.Add(GameData.Instance.GetPlayerById(dBody.ParentId));
                 GameObject.Destroy(dBody.gameObject);
             }
-            deadBodies = new UnhollowerBaseLib.Il2CppReferenceArray<GameData.PlayerInfo>(dBodies.ToArray());
+            deadBodies = new Il2CppReferenceArray<GameData.PlayerInfo>(dBodies.ToArray());
 
             //生死を再確認
             MeetingHud.Instance.RecheckPlayerState();

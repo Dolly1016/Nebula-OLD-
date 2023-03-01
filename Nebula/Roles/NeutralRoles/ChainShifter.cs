@@ -83,7 +83,7 @@ public class ChainShifter : Role
     public byte deadBodyId;
 
     /* 画像 */
-    private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.ChainShiftButton.png", 115f);
+    private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.ChainShiftButton.png", 115f, "ui.button.chainShifter.shift");
 
     public override HelpSprite[] helpSprite => new HelpSprite[]
     {

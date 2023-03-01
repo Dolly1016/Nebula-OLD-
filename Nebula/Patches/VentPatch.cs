@@ -203,7 +203,7 @@ class CoEnterVentPatch
         {
             __instance.myPlayer.Collider.enabled = true;
         })));
-        __result = Effects.Sequence(new UnhollowerBaseLib.Il2CppReferenceArray<Il2CppSystem.Collections.IEnumerator>(sequence.ToArray()));
+        __result = Effects.Sequence(new Il2CppReferenceArray<Il2CppSystem.Collections.IEnumerator>(sequence.ToArray()));
     }
 }
 

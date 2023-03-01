@@ -12,8 +12,8 @@ public class Busker : Role
     private Module.CustomOption buskCoolDownOption;
     private Module.CustomOption buskDurationOption;
 
-    private SpriteLoader pseudocideButtonSprite = new SpriteLoader("Nebula.Resources.BuskPseudocideButton.png", 115f);
-    private SpriteLoader reviveButtonSprite = new SpriteLoader("Nebula.Resources.BuskReviveButton.png", 115f);
+    private SpriteLoader pseudocideButtonSprite = new SpriteLoader("Nebula.Resources.BuskPseudocideButton.png", 115f, "ui.button.busker.pseudocide");
+    private SpriteLoader reviveButtonSprite = new SpriteLoader("Nebula.Resources.BuskReviveButton.png", 115f, "ui.button.busker.revive");
 
     public override HelpSprite[] helpSprite => new HelpSprite[]
     {

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFrameworks>net6.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <ApplicationIcon />
     <Win32Resource />
@@ -43,19 +43,17 @@
 
   <ItemGroup>
     <Reference Include="..\..\Among Us\BepInEx\core\*.dll" />
-    <Reference Include="..\..\Among Us\BepInEx\unhollowed\*.dll" />
+    <Reference Include="..\..\Among Us\BepInEx\interop\*.dll" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.4.0" />
-    <PackageReference Include="System.Text.Json" Version="6.0.1" />
   </ItemGroup>
 
-    <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
-        <Message Text="Second occurrence" />
-    <Copy SourceFiles="bin\Release\netstandard2.1\Nebula.dll" DestinationFolder="$(AmongUsPlugins)\" />
-    <Copy SourceFiles="bin\Release\netstandard2.1\Nebula.dll" DestinationFolder="$(AmongUsRelease)\" />
-    <Copy SourceFiles="bin\Release\netstandard2.1\Nebula.dll" DestinationFolder="$(AmongUsRelease)\Nebula\BepInEx\plugins\" />
-    </Target>
+  <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
+    <Message Text="Second occurrence" />
+    <Copy SourceFiles="bin\Release\net6.0\Nebula.dll" DestinationFolder="$(AmongUsPlugins)\" />
+    <Copy SourceFiles="bin\Release\net6.0\Nebula.dll" DestinationFolder="$(AmongUsRelease)\" />
+    <Copy SourceFiles="bin\Release\net6.0\Nebula.dll" DestinationFolder="$(AmongUsRelease)\Nebula\BepInEx\plugins\" />
+  </Target>
 
 </Project>

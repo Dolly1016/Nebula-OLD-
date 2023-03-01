@@ -82,7 +82,6 @@ public class FGuesser : Template.HasBilateralness
         additionalVotingTime.suffix = "second";
 
         chanceToSpawnAsSecondarySide.AddInvPrerequisite(secondoryRoleOption);
-        definitiveAssignmentOption.AddInvPrerequisite(secondoryRoleOption);
         RoleCountOption.AddInvPrerequisite(secondoryRoleOption);
 
         crewmateRoleCountOption = CreateOption(Color.white, "crewmateRoleCount", 1f, 0f, 15f, 1f);
@@ -341,7 +340,7 @@ public class SecondaryGuesser : ExtraRole
 
     private void _sub_Assignment(Patches.AssignMap assignMap, List<byte> players, int count)
     {
-        if (!Roles.F_Guesser.IsSpawnable()) return;
+        if (!Roles.F_Guesser.TopOption.getBool()) return;
         if (!Roles.F_Guesser.secondoryRoleOption.getBool()) return;
 
         int chance = Roles.F_Guesser.RoleChanceOption.getSelection() + 1;

@@ -51,7 +51,7 @@ public class Cleaner : Role
 
 
     /* 画像 */
-    private SpriteLoader cleanButtonSprite = new SpriteLoader("Nebula.Resources.CleanButton.png", 115f);
+    private SpriteLoader cleanButtonSprite = new SpriteLoader("Nebula.Resources.CleanButton.png", 115f, "ui.button.spectre.clean");
 
     public override HelpSprite[] helpSprite => new HelpSprite[]
     {

@@ -1,17 +1,14 @@
-﻿using Nebula.Module;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using UnhollowerRuntimeLib;
+﻿using Nebula.Expansion;
+using Nebula.Module;
 
 namespace Nebula.Tasks
 {
-    public class SpectreRancorMinigame : NebulaMinigame
+    public class SpectreRancorLetterMinigame : NebulaMinigame
     {
 
-        static SpectreRancorMinigame()
+        static SpectreRancorLetterMinigame()
         {
-            ClassInjector.RegisterTypeInIl2Cpp<SpectreRancorMinigame>();
+            ClassInjector.RegisterTypeInIl2Cpp<SpectreRancorLetterMinigame>();
         }
 
         public override void __Begin(PlayerTask playerTask)
@@ -83,12 +80,29 @@ namespace Nebula.Tasks
     {
 
         static Minigame? NebulaMinigamePrefab = null;
+
         Console? deliveryConsole = null;
         PlayerControl? deliveryPlayer = null;
 
         static SpectreRancorTask()
         {
             ClassInjector.RegisterTypeInIl2Cpp<SpectreRancorTask>();
+        }
+
+        public void UpdateDeliveryConsole()
+        {
+            var candidates = PlayerControl.AllPlayerControls.GetFastEnumerator().Where(p => p.PlayerId != PlayerControl.LocalPlayer.PlayerId && !p.Data.IsDead).ToArray();
+            if (candidates.Length == 0) return;
+            deliveryPlayer = candidates[NebulaPlugin.rnd.Next(candidates.Length)];
+            deliveryConsole = ConsoleExpansion.ConsolizePlayer<AutoTaskConsole>(deliveryPlayer,"DeliveryConsole");
+        }
+
+        public void OnMeetingEnd()
+        {
+            if (taskStep % 3 != 1) return;
+            if (!deliveryPlayer || !deliveryPlayer.Data.IsDead) return;
+            UpdateDeliveryConsole();
+            
         }
 
         public override void __AppendTaskText(Il2CppSystem.Text.StringBuilder sb)
@@ -115,9 +129,9 @@ namespace Nebula.Tasks
             if (!this.IsComplete)
             {
                 sb.Append(" (");
-                sb.Append(this.taskStep);
+                sb.Append(this.taskStep / 3);
                 sb.Append("/");
-                sb.Append(this.MaxStep);
+                sb.Append(this.MaxStep / 3);
                 sb.Append(")");
             }
 
@@ -126,20 +140,42 @@ namespace Nebula.Tasks
                 sb.Append("</color>");
             }
             sb.AppendLine();
+
+            if (!this.IsComplete)
+            {
+                string phaseDetail = "";
+                switch (taskStep % 3)
+                {
+                    case 0:
+                        phaseDetail = Language.Language.GetString("role.spectre.task.rancor.phase.letter");
+                        break;
+                    case 1:
+                        phaseDetail = Language.Language.GetString("role.spectre.task.rancor.phase.delivery").Replace("%PLAYER%", deliveryPlayer ? deliveryPlayer.name : "[ERROR]");
+                        break;
+                    case 2:
+                        phaseDetail = Language.Language.GetString("role.spectre.task.rancor.phase.statue");
+                        break;
+                }
+                sb.Append("    " + Language.Language.GetString("role.spectre.task.rancor.phase").Replace("%PHASE%", ((taskStep % 3) + 1).ToString()).Replace("%DETAIL%", phaseDetail));
+                sb.AppendLine();
+            }
         }
 
         public override bool __NextStep()
         {
+            int nextStep = (taskStep + 1) % 3;
+            if (nextStep == 1)
+                UpdateDeliveryConsole();
+            
             return true;
         }
 
         
         public override void __Initialize()
         {
-
             taskStep = 0;
+            MaxStep = 3 * 2;
 
-            MaxStep = (int)Roles.Roles.Spectre.numOfTheFriedRequireToWinOption.getFloat();
             if (Roles.Roles.Spectre.FriedConsoles.Count < MaxStep) MaxStep = Roles.Roles.Spectre.FriedConsoles.Count;
 
             LocationDirty = true;
@@ -147,7 +183,7 @@ namespace Nebula.Tasks
 
             if (NebulaMinigamePrefab == null)
             {
-                NebulaMinigamePrefab = AssetLoader.SpectreRancorMinigamePrefab.gameObject.AddComponent<SpectreRancorMinigame>();
+                NebulaMinigamePrefab = AssetLoader.SpectreRancorMinigamePrefab.gameObject.AddComponent<SpectreRancorLetterMinigame>();
 
             }
             MinigamePrefab = NebulaMinigamePrefab;
@@ -156,8 +192,15 @@ namespace Nebula.Tasks
         public override bool __ValidConsole(Console console)
         {
             if (PlayerControl.LocalPlayer.Data.IsDead) return false;
-            return console.gameObject.name.StartsWith("NoS-SpectreFried");
-            //return console.gameObject.name.StartsWith("NoS-SpectreRancorLetter");
+            switch (taskStep % 3) {
+                case 0:
+                    return console.gameObject.name.StartsWith("NoS-SpectreFried");
+                case 1:
+                    return deliveryConsole ? (console.GetInstanceID() == deliveryConsole.GetInstanceID()) : false;
+                case 2:
+                    return console.gameObject.name.StartsWith("NoS-SpectreFried");
+            }
+            return false;
         }
 
         public override bool __IsCompleted()

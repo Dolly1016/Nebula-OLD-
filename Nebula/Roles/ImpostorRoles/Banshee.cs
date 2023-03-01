@@ -13,7 +13,7 @@ namespace Nebula.Roles.ImpostorRoles
 
         private CustomButton bansheeButton;
         private CustomButton killButton;
-        private SpriteLoader bansheeSprite = new SpriteLoader("Nebula.Resources.BansheeButton.png",100f);
+        private SpriteLoader bansheeSprite = new SpriteLoader("Nebula.Resources.BansheeButton.png",100f, "ui.button.banshee.weep");
 
         public SpriteLoader bansheeArrowSprite = new SpriteLoader("Nebula.Resources.BansheeArrow.png", 200f);
 
@@ -94,7 +94,7 @@ namespace Nebula.Roles.ImpostorRoles
             base.MyPlayerControlUpdate();
 
             Game.MyPlayerData data = Game.GameData.data.myData;
-            data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(1f, false, false, bytePlayers);
+            data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(1f, true, false, bytePlayers);
             Patches.PlayerControlPatch.SetPlayerOutline(data.currentTarget, Palette.ImpostorRed);
 
             /*

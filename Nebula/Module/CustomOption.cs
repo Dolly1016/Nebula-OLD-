@@ -2,10 +2,10 @@
 using System.Reflection;
 using Hazel;
 using BepInEx.Configuration;
-using UnhollowerRuntimeLib;
 using AmongUs.GameOptions;
 using UnityEngine;
 using static Nebula.Module.CustomOption;
+using JetBrains.Annotations;
 
 namespace Nebula.Module;
 
@@ -533,6 +533,38 @@ public class CustomOption
             parent.children.Add(this);
         }
     }
+
+    public MetaScreenContent[] GetSelecterContents(Action refresher,float width = 1.5f)
+    {
+        return new MetaScreenContent[]
+       {
+                new MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () =>
+                {
+                    this.addSelection(-1);
+                    refresher();
+                }),
+                new MSString(width, this.getString(), 2f, 0.6f, TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold, true, true),
+                new MSButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () =>
+                {
+                    this.addSelection(1);
+                    refresher();
+                }),
+       };
+    }
+
+    public MetaScreenContent[] GetStandardOptionContents(Action refresher)
+    {
+        var selecter = GetSelecterContents(refresher);
+        return new MetaScreenContent[]
+        {
+            new MSOptionString(this,3f, this.getName(), 2f, 0.8f, TMPro.TextAlignmentOptions.MidlineRight, TMPro.FontStyles.Bold),
+                new MSString(0.2f, ":", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
+                selecter[0],
+                selecter[1],
+                selecter[2],
+                new MSMargin(1f),
+        };
+    }
 }
 
 public class CustomRoleOption : CustomOption
@@ -749,22 +781,7 @@ class GameOptionsMenuStartPatch
             }
             else
             {
-                if (!AddTopic(
-                new MSOptionString(option,3f, option.getName(), 2f, 0.8f, TMPro.TextAlignmentOptions.MidlineRight, TMPro.FontStyles.Bold),
-                new MSString(0.2f, ":", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
-                new MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () =>
-                {
-                    option.addSelection(-1);
-                    refresher();
-                }),
-                new MSString(1.5f, option.getString(), 2f, 0.6f, TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
-                new MSButton(0.4f, 0.4f, ">>", TMPro.FontStyles.Bold, () =>
-                {
-                    option.addSelection(1);
-                    refresher();
-                }),
-                new MSMargin(1f)
-                )) return false;
+                if (!AddTopic(option.GetStandardOptionContents(refresher))) return false;
             }
 
             if (option.postOptionScreenBuilder != null)

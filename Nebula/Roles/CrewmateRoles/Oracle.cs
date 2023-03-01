@@ -15,7 +15,7 @@ public class Oracle : Role
 
     private Dictionary<byte, List<Role>> divineResult = new Dictionary<byte, List<Role>>();
 
-    private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.OracleButton.png", 115f);
+    private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.OracleButton.png", 115f, "ui.button.oracle.oracle");
     public override HelpSprite[] helpSprite => new HelpSprite[]
     {
             new HelpSprite(buttonSprite,"role.oracle.help.oracle", 0.3f)

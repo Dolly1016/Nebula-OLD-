@@ -124,7 +124,7 @@ public class RitualCrewmate : RitualRole
             {
                 var pos = PlayerControl.LocalPlayer.transform.position;
                 __instance.StartCoroutine(GetDisappearEnumerator().WrapToIl2Cpp());
-                var enumerator = Effects.Sequence(new UnhollowerBaseLib.Il2CppReferenceArray<Il2CppSystem.Collections.IEnumerator>(
+                var enumerator = Effects.Sequence(new Il2CppReferenceArray<Il2CppSystem.Collections.IEnumerator>(
                     new Il2CppSystem.Collections.IEnumerator[] {
                             Effects.Wait(0.8f),
                             Effects.Action((Il2CppSystem.Action)(()=>{

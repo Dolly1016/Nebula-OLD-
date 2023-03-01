@@ -22,7 +22,7 @@ public class Splicer : Role
         warpMaxDistanceOption.suffix = "cross";
     }
 
-    private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.WarpButton.png", 115f);
+    private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.WarpButton.png", 115f, "ui.button.splicer.warp");
 
     public override HelpSprite[] helpSprite => new HelpSprite[]
     {

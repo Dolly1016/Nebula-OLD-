@@ -272,8 +272,6 @@ public class Lover : ExtraRole
 
     public override bool CheckAdditionalWin(PlayerControl player, EndCondition condition)
     {
-        if (!allowExtraWinningOption.getBool()) return false;
-
         bool winFlag = false;
         ActionForLover(player, (partner) =>
         {
@@ -284,6 +282,9 @@ public class Lover : ExtraRole
                 winFlag = true;
                 return;
             }
+
+            if (!allowExtraWinningOption.getBool()) return;
+
             if (partner.GetModData().role.CheckWin(partner, condition))
             {
                 winFlag = true;
@@ -304,7 +305,7 @@ public class Lover : ExtraRole
 
     private CustomButton involveButton;
 
-    private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.InvolveButton.png", 115f);
+    private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.InvolveButton.png", 115f, "ui.button.lover.involve");
     public override HelpSprite[] helpSprite => new HelpSprite[]
     {
             new HelpSprite(buttonSprite,"role.lover.help.involve",0.3f)

@@ -119,7 +119,7 @@ public class Raider : Role
 
     /* 画像 */
     private SpriteLoader axeGuideSprite = new SpriteLoader("Nebula.Resources.RaiderAxeGuide.png", 100f);
-    private SpriteLoader axeButtonSprite = new SpriteLoader("Nebula.Resources.AxeButton.png", 115f);
+    private SpriteLoader axeButtonSprite = new SpriteLoader("Nebula.Resources.AxeButton.png", 115f, "ui.button.raider.equip");
 
     public override HelpSprite[] helpSprite => new HelpSprite[]
     {

@@ -1,8 +1,4 @@
 ﻿using BepInEx.Configuration;
-using Nebula.Patches;
-using Rewired.Utils.Platforms.Windows;
-using UnhollowerBaseLib;
-using UnityEngine;
 using UnityEngine.UI;
 using static Nebula.Module.DynamicColors;
 using static UnityEngine.UI.StencilMaterial;

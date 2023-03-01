@@ -29,7 +29,7 @@ public class Agent : Template.ExemptTasks
         madmateKillCoolDownOption.suffix = "second";
     }
 
-    private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.AgentButton.png", 115f);
+    private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.AgentButton.png", 115f, "ui.button.agent.agent");
 
     public override HelpSprite[] helpSprite => new HelpSprite[]
     {

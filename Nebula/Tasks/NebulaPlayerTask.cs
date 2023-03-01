@@ -1,4 +1,4 @@
-﻿using UnhollowerRuntimeLib;
+﻿
 
 namespace Nebula.Tasks;
 
@@ -85,7 +85,7 @@ public class NormalPlayerTaskPatch
             NebulaPlayerTask t = __instance.GetComponent<NebulaPlayerTask>();
             if (!t) return true;
             t.__Initialize();
-            t.VanilaStructData = new UnhollowerBaseLib.Il2CppStructArray<byte>(8);
+            t.VanilaStructData = new Il2CppStructArray<byte>(8);
             __instance.Data = t.VanilaStructData;
             return false;
         }
@@ -181,5 +181,5 @@ public class NebulaPlayerTask : NormalPlayerTask
 
 
     public byte[] NebulaData;
-    public UnhollowerBaseLib.Il2CppStructArray<byte> VanilaStructData;
+    public Il2CppStructArray<byte> VanilaStructData;
 }

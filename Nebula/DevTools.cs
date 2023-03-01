@@ -43,7 +43,7 @@ public static class DevTools
 
     public static void SearchAndSaveTextureFromSprite(string objName, string fileName)
     {
-        foreach (var sprite in UnityEngine.Object.FindObjectsOfTypeAll(Sprite.Il2CppType))
+        foreach (var sprite in UnityEngine.Object.FindObjectsOfTypeAll(Il2CppType.Of<Sprite>()))
         {
             if (sprite.name != objName) continue;
 
@@ -57,7 +57,7 @@ public static class DevTools
 
     public static void SaveAllSound(string directory)
     {
-        foreach (var audio in UnityEngine.Object.FindObjectsOfTypeIncludingAssets(AudioClip.Il2CppType))
+        foreach (var audio in UnityEngine.Object.FindObjectsOfTypeIncludingAssets(Il2CppType.Of<AudioClip>()))
         {
             var filepath = directory + "/" + audio.name + ".wav";
 

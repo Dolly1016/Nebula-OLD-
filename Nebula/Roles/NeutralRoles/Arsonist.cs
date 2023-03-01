@@ -37,8 +37,8 @@ public class Arsonist : Template.HasAlignedHologram, Template.HasWinTrigger
     }
 
 
-    SpriteLoader douseSprite = new SpriteLoader("Nebula.Resources.DouseButton.png", 115f);
-    SpriteLoader igniteSprite = new SpriteLoader("Nebula.Resources.IgniteButton.png", 115f);
+    SpriteLoader douseSprite = new SpriteLoader("Nebula.Resources.DouseButton.png", 115f, "ui.button.arsonist.douse");
+    SpriteLoader igniteSprite = new SpriteLoader("Nebula.Resources.IgniteButton.png", 115f, "ui.button.arsonist.ignite");
 
     static private bool canIgnite = false;
 

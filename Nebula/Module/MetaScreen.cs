@@ -1,4 +1,6 @@
-﻿namespace Nebula.Module;
+﻿using Steamworks;
+
+namespace Nebula.Module;
 
 public class MetaScreenContent
 {
@@ -30,9 +32,11 @@ public class MSString : MetaScreenContent
     protected TMPro.TextAlignmentOptions alignment { get; }
     protected TMPro.FontStyles style { get; }
     public TMPro.TextMeshPro? text { get; protected set; }
-    public override Vector2 GetSize() => new Vector2(width + 0.06f, 0.5f);
+    public override Vector2 GetSize() => new Vector2(width + (omitMargin ? 0f : 0.06f), 0.5f);
     protected float fontSize = 3f;
     protected float fontSizeMin = 2f;
+    private bool dontAllowWrapping = false;
+    private bool omitMargin = false;
 
     public MSString(float width, string text, TMPro.TextAlignmentOptions alignment, TMPro.FontStyles style)
     {
@@ -42,11 +46,13 @@ public class MSString : MetaScreenContent
         this.style = style;
     }
 
-    public MSString(float width, string text, float fontSize, float fontSizeMin, TMPro.TextAlignmentOptions alignment, TMPro.FontStyles style)
+    public MSString(float width, string text, float fontSize, float fontSizeMin, TMPro.TextAlignmentOptions alignment, TMPro.FontStyles style,bool dontAllowWrapping=false,bool omitMargin=false)
         : this(width, text, alignment, style)
     {
         this.fontSize = fontSize;
         this.fontSizeMin = fontSizeMin;
+        this.dontAllowWrapping = dontAllowWrapping;
+        this.omitMargin = omitMargin;
     }
 
     public MSString EditFontSize(float fontSize,float fontSizeMin)
@@ -71,11 +77,12 @@ public class MSString : MetaScreenContent
 
         text.alignment = alignment;
         text.fontStyle = style;
-        text.rectTransform.sizeDelta = new Vector2(width - 0.2f, 0.36f);
+        text.rectTransform.sizeDelta = new Vector2(width - (omitMargin ? 0f : 0.2f), 0.36f);
         text.rectTransform.pivot = new Vector2(0.5f, 0.5f);
         text.text = rawText;
         text.fontSize = text.fontSizeMax = fontSize;
         text.fontSizeMin = fontSizeMin;
+        if (dontAllowWrapping) text.enableWordWrapping = false;
     }
 }
 
@@ -201,16 +208,92 @@ public class MSButton : MSString
     }
 }
 
+public class MSTextInput : MetaScreenContent
+{
+    private float width;
+    private float height;
+    public override Vector2 GetSize() => new Vector2(width + 0.3f, height + 0.3f);
+    private TMPro.TextAlignmentOptions alignmentOptions;
+    private TMPro.FontStyles fontStyles;
+    public TextInputField TextInputField;
+    public MSTextInput(float width, float height, TMPro.TextAlignmentOptions alignment, TMPro.FontStyles style) 
+    {
+        this.width = width;
+        this.height = height;
+        this.alignmentOptions = alignment;
+        this.fontStyles = style;
+    }
+
+    public override void Generate(GameObject obj)
+    {
+        TextInputField = obj.AddComponent<TextInputField>();
+        TextInputField.SetTextProperty(new Vector2(width,height),1.5f,alignmentOptions,fontStyles);
+    }
+}
+
+public class MSRadioButton : MSString
+{
+    public Action<bool>? FlagUpdateAction = null;
+    private bool flag;
+    public bool Flag { get { return flag; } set { flag = value; OnFlagChanged(); } }
+    private void OnFlagChanged()
+    {
+        RadioButton.text = Flag ? "◉" : "○";
+        if (FlagUpdateAction != null) FlagUpdateAction.Invoke(flag);
+    }
+    public override Vector2 GetSize() => new Vector2(width + 0.36f, 0.5f);
+
+    private TMPro.TextMeshPro RadioButton;
+    
+    public MSRadioButton(bool flag,float width, string text,float fontSize,float fontSizeMin, TMPro.TextAlignmentOptions alignment, TMPro.FontStyles style):
+        base(width,text,fontSize,fontSizeMin,alignment,style)
+    {
+        this.flag = flag;
+    }
+
+
+    public override void Generate(GameObject obj)
+    {
+        base.Generate(obj);
+
+        text.transform.localPosition += new Vector3(0.15f,0f);
+
+        RadioButton = GameObject.Instantiate(HudManager.Instance.Dialogue.target);
+        RadioButton.transform.SetParent(obj.transform);
+        RadioButton.transform.localScale = new Vector3(1f, 1f, 1f);
+        RadioButton.transform.localPosition = new Vector3(0.08f - width / 2f, 0f, -1f);
+
+        RadioButton.alignment = TMPro.TextAlignmentOptions.Center;
+        RadioButton.fontStyle = TMPro.FontStyles.Bold;
+        RadioButton.rectTransform.sizeDelta = new Vector2(0.4f, 0.4f);
+        RadioButton.rectTransform.pivot = new Vector2(0.5f, 0.5f);
+        RadioButton.fontSize = RadioButton.fontSizeMax = RadioButton.fontSizeMin = fontSize;
+        OnFlagChanged();
+
+        PassiveButton button = RadioButton.gameObject.AddComponent<PassiveButton>();
+        button.OnMouseOut = new UnityEngine.Events.UnityEvent();
+        button.OnMouseOver = new UnityEngine.Events.UnityEvent();
+        button.OnClick.RemoveAllListeners();
+        button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => {
+            Flag = !Flag;
+            OnFlagChanged();
+        }));
+
+        BoxCollider2D collider = RadioButton.gameObject.AddComponent<BoxCollider2D>();
+        collider.size = new Vector2(0.25f, 0.25f);
+    }
+}
+
 public class MetaScreen
 {
     static private Sprite? buttonSprite = null;
     static private AudioClip? audioHover = null;
     static private AudioClip? audioSelect = null;
     static private SpriteLoader playerMask = new SpriteLoader("Nebula.Resources.PlayerMask.png", 100f);
-    static protected Sprite? getButtonBackSprite()
+    static public Sprite GetButtonBackSprite()
     {
         if (buttonSprite == null) buttonSprite = Helpers.getSpriteFromAssets("buttonClick");
-        return buttonSprite;
+        return buttonSprite!;
     }
 
     static public AudioClip? getHoverClip()
@@ -269,7 +352,7 @@ public class MetaScreen
             text.transform.localScale = new Vector3(1f, 1f, 1f);
             text.transform.localPosition = new Vector3(0f, 0f, -1f);
 
-            renderer.sprite = MetaScreen.getButtonBackSprite();
+            renderer.sprite = MetaScreen.GetButtonBackSprite();
             renderer.drawMode = SpriteDrawMode.Tiled;
             renderer.size = size;
             renderer.color = normalColor;

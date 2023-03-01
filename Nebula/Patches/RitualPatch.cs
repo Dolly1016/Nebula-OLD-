@@ -3,7 +3,7 @@
 [HarmonyPatch]
 public class RitualPatch
 {
-    static public void SetTasks(GameData gameData, GameData.PlayerInfo playerById, UnhollowerBaseLib.Il2CppStructArray<byte> taskTypeIds)
+    static public void SetTasks(GameData gameData, GameData.PlayerInfo playerById, Il2CppStructArray<byte> taskTypeIds)
     {
         var ritualTasks = new Il2CppSystem.Collections.Generic.List<GameData.TaskInfo>(3);
 
@@ -63,21 +63,28 @@ public class RitualPatch
             {
                 var obj = new GameObject();
                 obj.hideFlags |= HideFlags.HideInHierarchy;
-                __result = obj.AddComponent<Tasks.SpectreFriedTask>();
-                //__result = obj.AddComponent<Tasks.SpectreRancorTask>();
+                switch (Roles.Roles.Spectre.spectreTaskOption.getSelection())
+                {
+                    case 0:
+                        __result = obj.AddComponent<Tasks.SpectreFriedTask>();
+                        break;
+                    case 1:
+                        __result = obj.AddComponent<Tasks.SpectreRancorTask>();
+                        break;
+                }
                 return false;
             }
             return true;
         }
     }
 
-    [HarmonyPatch(typeof(HudManager), nameof(HudManager.SetHudActive))]
+    [HarmonyPatch(typeof(HudManager), nameof(HudManager.SetHudActive),typeof(bool))]
     class HideReportButtonPatch
     {
         public static void Postfix(HudManager __instance, [HarmonyArgument(0)] bool isActive)
         {
             if (!isActive) return;
-
+            
             if (Game.GameData.data.GameMode == Module.CustomGameMode.Ritual)
             {
                 __instance.ReportButton.ToggleVisible(false);

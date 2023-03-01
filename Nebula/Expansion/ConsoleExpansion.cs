@@ -1,5 +1,6 @@
 ﻿using Il2CppSystem.Net;
 using Il2CppSystem.Security.AccessControl;
+using JetBrains.Annotations;
 using MS.Internal.Xml.XPath;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace Nebula.Expansion
         public static Material GetHighlightMaterial()
         {
             if (highlightMaterial != null) return new Material(highlightMaterial);
-            foreach (var mat in UnityEngine.Resources.FindObjectsOfTypeAll(Material.Il2CppType))
+            foreach (var mat in UnityEngine.Resources.FindObjectsOfTypeAll(Il2CppType.Of<Material>()))
             {
                 if (mat.name == "HighlightMat")
                 {
@@ -27,15 +28,15 @@ namespace Nebula.Expansion
             return new Material(highlightMaterial);
         }
 
-        public static Console GenerateConsole(Vector3 pos,string name,Sprite sprite)
+        public static Console GenerateConsole<C>(Vector3 pos,string name,Sprite sprite) where C : Console
         {
             var obj = new GameObject(name);
             obj.transform.position = pos;
             obj.AddComponent<SpriteRenderer>().sprite=sprite;
-            return Consolize(obj);
+            return Consolize<C>(obj);
         }
 
-        public static Console Consolize(GameObject obj,SpriteRenderer? renderer = null)
+        public static Console Consolize<C>(GameObject obj,SpriteRenderer? renderer = null) where C : Console
         {
             obj.layer = LayerMask.NameToLayer("ShortObjects");
             Console console = obj.GetComponent<Console>();
@@ -43,14 +44,14 @@ namespace Nebula.Expansion
             Collider2D collider = obj.GetComponent<Collider2D>();
             if (!console)
             {
-                console = obj.AddComponent<Console>();
+                console = obj.AddComponent<C>();
                 console.checkWalls = true;
                 console.usableDistance = 0.7f;
                 console.TaskTypes = new TaskTypes[0];
-                console.ValidTasks = new UnhollowerBaseLib.Il2CppReferenceArray<TaskSet>(0);
+                console.ValidTasks = new Il2CppReferenceArray<TaskSet>(0);
                 var list = ShipStatus.Instance.AllConsoles.ToList();
                 list.Add(console);
-                ShipStatus.Instance.AllConsoles = new UnhollowerBaseLib.Il2CppReferenceArray<Console>(list.ToArray());
+                ShipStatus.Instance.AllConsoles = new Il2CppReferenceArray<Console>(list.ToArray());
             }
             if (console.Image == null)
             {
@@ -87,11 +88,11 @@ namespace Nebula.Expansion
         {
             var list = console.TaskTypes.ToList();
             list.Add(taskType);
-            console.TaskTypes = new UnhollowerBaseLib.Il2CppStructArray<TaskTypes>(list.ToArray());
+            console.TaskTypes = new Il2CppStructArray<TaskTypes>(list.ToArray());
             return console;
         }
 
-        public static Console ConsolizePlayer(this PlayerControl player,string objectName,Sprite? sprite=null)
+        public static Console ConsolizePlayer<C>(this PlayerControl player,string objectName,Sprite? sprite=null) where C :Console
         {
             GameObject obj = new GameObject(objectName);
             obj.transform.SetParent(player.transform);
@@ -104,7 +105,7 @@ namespace Nebula.Expansion
                 renderer.sprite = sprite;
             }
 
-            Console c = Consolize(obj, sprite != null ? renderer : player.cosmetics.currentBodySprite.BodySprite);
+            Console c = Consolize<C>(obj, sprite != null ? renderer : player.cosmetics.currentBodySprite.BodySprite);
             return c;
         }
     }

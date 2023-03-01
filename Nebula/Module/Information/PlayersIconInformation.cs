@@ -20,9 +20,9 @@ public class PlayersIconInformation : UpperInformation
     TMPro.TextMeshPro subText;
 
     public byte relatedPlayerId { get; private set; }
-    public Roles.Role relatedRole { get; private set; }
+    public Roles.Assignable relatedRole { get; private set; }
 
-    public PlayersIconInformation(string subtext, byte relatedPlayerId, Roles.Role relatedRole) : base("PlayersIconInfo")
+    public PlayersIconInformation(string subtext, byte relatedPlayerId, Roles.Assignable relatedRole) : base("PlayersIconInfo")
     {
         height = 0.24f;
 

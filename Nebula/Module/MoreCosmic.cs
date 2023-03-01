@@ -590,7 +590,7 @@ public class CustomParts
                 {
                     var lastArray = __instance.allHats;
                     int newCosmics = CosmicLoader.hatdetails.Count;
-                    var newArray = new UnhollowerBaseLib.Il2CppReferenceArray<HatData>(lastArray.Count + newCosmics);
+                    var newArray = new Il2CppReferenceArray<HatData>(lastArray.Count + newCosmics);
 
                     int lastCount = lastArray.Count;
                     for (int i = 0; i < lastCount; i++) newArray[i] = lastArray[i];
@@ -631,7 +631,7 @@ public class CustomParts
                 {
                     var lastArray = __instance.allNamePlates;
                     int newCosmics = CosmicLoader.namePlatedetails.Count;
-                    var newArray = new UnhollowerBaseLib.Il2CppReferenceArray<NamePlateData>(lastArray.Count + newCosmics);
+                    var newArray = new Il2CppReferenceArray<NamePlateData>(lastArray.Count + newCosmics);
 
                     int lastCount = lastArray.Count;
                     for (int i = 0; i < lastCount; i++) newArray[i] = lastArray[i];
@@ -671,7 +671,7 @@ public class CustomParts
                 {
                     var lastArray = __instance.allVisors;
                     int newCosmics = CosmicLoader.visordetails.Count;
-                    var newArray = new UnhollowerBaseLib.Il2CppReferenceArray<VisorData>(lastArray.Count + newCosmics);
+                    var newArray = new Il2CppReferenceArray<VisorData>(lastArray.Count + newCosmics);
 
                     int lastCount = lastArray.Count;
                     for (int i = 0; i < lastCount; i++) newArray[i] = lastArray[i];

@@ -34,7 +34,7 @@ public class Alien : Role
 
     static public Color RoleColor = new Color(187f / 255f, 109f / 255f, 178f / 255f);
 
-    private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.EMIButton.png", 115f);
+    private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.EMIButton.png", 115f, "ui.button.alien.emi");
 
     public override HelpSprite[] helpSprite => new HelpSprite[]
     {

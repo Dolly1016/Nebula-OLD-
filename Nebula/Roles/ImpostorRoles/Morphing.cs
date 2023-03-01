@@ -35,8 +35,8 @@ public class Morphing : Role
     private Game.PlayerData.PlayerOutfitData morphOutfit;
     private Objects.Arrow? arrow;
 
-    private SpriteLoader sampleButtonSprite = new SpriteLoader("Nebula.Resources.SampleButton.png", 115f);
-    private SpriteLoader morphButtonSprite = new SpriteLoader("Nebula.Resources.MorphButton.png", 115f);
+    private SpriteLoader sampleButtonSprite = new SpriteLoader("Nebula.Resources.SampleButton.png", 115f, "ui.button.morphing.sample");
+    private SpriteLoader morphButtonSprite = new SpriteLoader("Nebula.Resources.MorphButton.png", 115f, "ui.button.morphing.morph");
 
     public override HelpSprite[] helpSprite => new HelpSprite[]
     {

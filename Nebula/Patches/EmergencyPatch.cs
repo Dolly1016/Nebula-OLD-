@@ -78,7 +78,7 @@ public static class EmergencyPatch
         static EmergencyMinigame? lastMinigame = null;
         static void CallMeeting(EmergencyMinigame __instance)
         {
-            __instance.StatusText.text = DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.EmergencyRequested, new UnhollowerBaseLib.Il2CppReferenceArray<Il2CppSystem.Object>(0));
+            __instance.StatusText.text = DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.EmergencyRequested, new Il2CppReferenceArray<Il2CppSystem.Object>(0));
             if (Constants.ShouldPlaySfx())
             {
                 SoundManager.Instance.PlaySound(__instance.ButtonSound, false, 1f, null);

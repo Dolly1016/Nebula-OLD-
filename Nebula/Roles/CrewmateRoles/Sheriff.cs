@@ -14,8 +14,8 @@ public class Sheriff : Role
     private Module.CustomOption canKillOpportunistOption;
     private Module.CustomOption canKillChainShifterOption;
     private Module.CustomOption numberOfShotsOption;
-    
-    private SpriteLoader killButtonSprite = new SpriteLoader("Nebula.Resources.SheriffKillButton.png", 100f);
+
+    private SpriteLoader killButtonSprite = new SpriteLoader("Nebula.Resources.SheriffKillButton.png", 100f, "ui.button.sheriff.kill");
 
 
     int shots;

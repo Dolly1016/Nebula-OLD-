@@ -22,8 +22,8 @@ public class Navvy : Role
     private Module.CustomOption ventCoolDownOption;
     private Module.CustomOption ventDurationOption;
 
-    private SpriteLoader sealButtonSprite = new SpriteLoader("Nebula.Resources.CloseVentButton.png", 115f);
-    private SpriteLoader repairButtonSprite = new SpriteLoader("Nebula.Resources.RepairButton.png", 115f);
+    private SpriteLoader sealButtonSprite = new SpriteLoader("Nebula.Resources.CloseVentButton.png", 115f, "ui.button.navvy.seal");
+    private SpriteLoader repairButtonSprite = new SpriteLoader("Nebula.Resources.RepairButton.png", 115f, "ui.button.navvy.repair");
 
     public override HelpSprite[] helpSprite => new HelpSprite[]
     {

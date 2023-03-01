@@ -144,8 +144,8 @@ public class Guardian : Role
         __instance.GetModData().SetRoleData(remainAntennasId, (int)maxAntennaOption.getFloat());
     }
 
-    private static SpriteLoader placeButtonSprite = new SpriteLoader("Nebula.Resources.AntennaButton.png", 115f);
-    private static SpriteLoader guardButtonSprite = new SpriteLoader("Nebula.Resources.GuardButton.png", 115f);
+    private static SpriteLoader placeButtonSprite = new SpriteLoader("Nebula.Resources.AntennaButton.png", 115f, "ui.button.guardian.place");
+    private static SpriteLoader guardButtonSprite = new SpriteLoader("Nebula.Resources.GuardButton.png", 115f, "ui.button.guardian.guard");
 
     public override HelpSprite[] helpSprite => new HelpSprite[]
     {

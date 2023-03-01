@@ -1,8 +1,25 @@
 ﻿using AmongUs.Data;
-using Microsoft.CodeAnalysis.FlowAnalysis;
 using Nebula.Objects;
 
 namespace Nebula.Patches;
+
+[HarmonyPatch(typeof (HudManager),nameof(HudManager.Start))]
+public static class CameraLayerPatch
+{
+    static void Postfix(HudManager __instance)
+    {
+        Camera.main.cullingMask |= 1 << LayerExpansion.GetShadowObjectsLayer();
+    }
+}
+
+[HarmonyPatch(typeof(ShadowCamera), nameof(ShadowCamera.OnEnable))]
+public static class ShadowCameraLayerPatch
+{
+    static void Postfix(ShadowCamera __instance)
+    {
+        __instance.GetComponent<Camera>().cullingMask |= 1 << LayerExpansion.GetShadowObjectsLayer();
+    }
+}
 
 [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
 public static class UpdatePatch
@@ -471,7 +488,7 @@ public static class KeyboardJoystickUpdatePatch
     }
 }
 
-[HarmonyPatch(typeof(HudManager), nameof(HudManager.SetHudActive))]
+[HarmonyPatch(typeof(HudManager), nameof(HudManager.SetHudActive), typeof(bool))]
 public static class SetHudActivePatch
 {
     public static bool Prefix(HudManager __instance, [HarmonyArgument(0)]bool isActive)

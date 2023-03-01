@@ -14,7 +14,7 @@ public class Comet : Role
 
     private float lightLevel = 1f;
 
-    private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.BoostButton.png", 115f);
+    private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.BoostButton.png", 115f, "ui.button.comet.blaze");
 
     public override HelpSprite[] helpSprite => new HelpSprite[]
     {

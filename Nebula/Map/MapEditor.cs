@@ -49,13 +49,6 @@ public class MapEditor
 
     public static void MapCustomize(int mapId)
     {
-        foreach (var door in ShipStatus.Instance.AllDoors)
-        {
-            door.gameObject.layer = LayerExpansion.GetObjectsLayer();
-            if(door.transform.childCount>0 && door.transform.GetChild(0).name == "Shadow")
-                door.transform.GetChild(0).gameObject.layer = LayerExpansion.GetShadowLayer();
-        }
-        
         if (CustomOptionHolder.mapOptions.getBool() && CustomOptionHolder.quietVentsInTheShadow.getBool())
         {
             //ベントを見えなくする
@@ -82,6 +75,22 @@ public class MapEditor
         if (!MapEditors.ContainsKey(mapId)) return;
 
         MapEditors[mapId].ModifySabotage();
+    }
+
+    public static void ModifyMap(int mapId)
+    {
+        /*
+        foreach (var door in ShipStatus.Instance.AllDoors)
+        {
+            door.gameObject.layer = LayerExpansion.GetObjectsLayer();
+            if (door.transform.childCount > 0 && door.transform.GetChild(0).name == "Shadow")
+                door.transform.GetChild(0).gameObject.layer = LayerExpansion.GetShadowLayer();
+        }
+        */
+
+        if (!MapEditors.ContainsKey(mapId)) return;
+
+        MapEditors[mapId].ModifyMap();
     }
 
     protected static Vent CreateVent(SystemTypes room, string ventName, Vector2 position)
@@ -165,7 +174,7 @@ public class MapEditor
 
     protected static Console ActivateConsole(GameObject obj)
     {
-        return ConsoleExpansion.Consolize(obj);
+        return ConsoleExpansion.Consolize<Console>(obj);
     }
 
     protected static void EditConsole(SystemTypes room, string objectName, Action<Console> action)
@@ -204,6 +213,8 @@ public class MapEditor
     /// 個別の設定をこの中で行います。
     /// </summary>
     public virtual void MapCustomize() { }
+
+    public virtual void ModifyMap() { }
 
     public virtual void MinimapOptimizeForJailer(Transform romeNames, MapCountOverlay countOverlay, InfectedOverlay infectedOverlay) { }
     public MapEditor(int mapId)

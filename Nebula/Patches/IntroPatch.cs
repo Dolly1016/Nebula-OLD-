@@ -9,7 +9,7 @@ public class CoStartPatch
         {
             RPCEventInvoker.RitualSharePerks(PlayerControl.LocalPlayer.PlayerId, new int[] { 0, 0, 0, 0 });
 
-            var enumerators = new UnhollowerBaseLib.Il2CppReferenceArray<Il2CppSystem.Collections.IEnumerator>(3);
+            var enumerators = new Il2CppReferenceArray<Il2CppSystem.Collections.IEnumerator>(3);
             enumerators[0] = Game.SynchronizeData.GetStaticAlignEnumeratorIl2Cpp(Game.SynchronizeTag.RitualInitialize, true, true);
             enumerators[1] = Effects.Action((Il2CppSystem.Action)(() => Game.GameData.data.RitualData.SpawnAllPlayers()));
             enumerators[2] = __result;
@@ -128,7 +128,7 @@ class IntroCutsceneOnDestroyPatch
 
         //ボタンのガイドを表示
         var keyboardMap = Rewired.ReInput.mapping.GetKeyboardMapInstance(0, 0);
-        UnhollowerBaseLib.Il2CppReferenceArray<Rewired.ActionElementMap> actionArray;
+        Il2CppReferenceArray<Rewired.ActionElementMap> actionArray;
         Rewired.ActionElementMap actionMap;
 
         //マップ

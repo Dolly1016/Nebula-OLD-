@@ -83,6 +83,7 @@
 "option.display.percentage.100" : "100%"
 "option.display.infinity" : "∞"
 "option.display.none" : "<color=#606060ff>なし</color>"
+"option.display.random" : "ランダム"
 "option.switch.on" : "On"
 "option.switch.off" : "Off"
 
@@ -120,7 +121,8 @@
 "option.canUseEmergencyWithoutSabotage" : "サボタージュが起きるまで緊急会議ロック"
 "option.canUseEmergencyWithoutReport" : "レポートが発生するまで緊急会議ロック"
 "option.severeEmergencyLock" : "AND条件による緊急会議ロック"
-"option.dealAbstentionAsSelfVote" : "白票の自投票化"
+"option.severeEmergencyLock.info" : "上の緊急会議ロックに一つでも引っかかる場合に\nロックを有効化します。"
+"option.dealAbstentionAsSelfVote" : "無投票の自投票化"
 "option.hideVotedIcon" : "投票状態の秘匿"
 "option.showRoleOfExiled": "追放者の役職開示"
 

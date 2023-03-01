@@ -1,5 +1,4 @@
-﻿global using BepInEx.IL2CPP.Utils.Collections;
-global using UnityEngine;
+﻿global using UnityEngine;
 global using System.Collections;
 global using System.Collections.Generic;
 global using System.Linq;
@@ -7,11 +6,20 @@ global using HarmonyLib;
 global using Nebula.Objects;
 global using Nebula.Utilities;
 global using AmongUs.GameOptions;
+global using Nebula.Components;
+global using Il2CppInterop.Runtime.Injection;
+global using BepInEx.Unity.IL2CPP.Utils.Collections;
 
-using BepInEx.IL2CPP;
+global using Il2CppInterop.Runtime;
+global using Il2CppInterop.Runtime.InteropTypes;
+global using Il2CppInterop.Runtime.InteropTypes.Fields;
+global using Il2CppInterop.Runtime.InteropTypes.Arrays;
+
 using BepInEx;
 using System.Text;
 using System.Reflection;
+using BepInEx.Unity.IL2CPP;
+
 
 namespace Nebula;
 
@@ -21,13 +29,13 @@ public class NebulaPlugin : BasePlugin
 {
     public static Module.Random rnd = new Module.Random();
 
-    public const string AmongUsVersion = "2022.12.8";
+    public const string AmongUsVersion = "2023.2.28";
     public const string PluginGuid = "jp.dreamingpig.amongus.nebula";
     public const string PluginName = "TheNebula";
-    public const string PluginVersion = "2.1";
+    public const string PluginVersion = "2.1.1";
     public const bool IsSnapshot = true;
 
-    public static string PluginVisualVersion = IsSnapshot ? "23.02.20a" : PluginVersion;
+    public static string PluginVisualVersion = IsSnapshot ? "23.03.01a" : PluginVersion;
     public static string PluginStage = IsSnapshot ? "Snapshot" : "";
     
     public const string PluginVersionForFetch = "2.1";
@@ -43,6 +51,7 @@ public class NebulaPlugin : BasePlugin
 
     private void InstallCPUAffinityEditor()
     {
+       
         Assembly assembly = Assembly.GetExecutingAssembly();
         Stream stream = assembly.GetManifestResourceStream("Nebula.Resources.CPUAffinityEditor.exe");
         var file = File.Create("CPUAffinityEditor.exe");
@@ -55,11 +64,14 @@ public class NebulaPlugin : BasePlugin
 
     private void InitialModification()
     {
+        /*
         Constants.ShadowMask = LayerMask.GetMask(new string[]
            {
                 "Shadow",
                 "IlluminatedBlocking"
-           });
+           }) | (1 << LayerExpansion.GetShadowObjectsLayer());
+        Physics.IgnoreLayerCollision(LayerExpansion.GetShadowObjectsLayer(), LayerMask.NameToLayer("Ghost"), true);
+        */
     }
     override public void Load()
     {
@@ -126,15 +138,16 @@ public class NebulaPlugin : BasePlugin
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.Awake))]
 public static class AmongUsClientAwakePatch
 {
-    [HarmonyPrefix]
+    public static bool IsFirstFlag = true;
     public static void Postfix(AmongUsClient __instance)
     {
-        //var ships = GameObject.FindObjectsOfTypeIncludingAssets(ShipStatus.Il2CppType);
+        if (!IsFirstFlag) return;
+        IsFirstFlag = false;
+
         foreach (var map in Map.MapData.MapDatabase.Values)
         {
             map.LoadAssets(__instance);
         }
-        Vector3 pos;
 
         __instance.PlayerPrefab.cosmetics.zIndexSpacing = 0.00001f;
 
@@ -142,6 +155,9 @@ public static class AmongUsClientAwakePatch
         Language.Language.LoadFont();
         Language.Language.LoadDefaultKey();
         Language.Language.Load();
+
+        //テクスチャデータを読み込む
+        Module.TexturePack.Load();
 
     }
 }

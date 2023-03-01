@@ -13,7 +13,7 @@ public class Jackal : Role
     static public Module.CustomOption NumOfKillingToCreateSidekickOption;
     static public Module.CustomOption KillCoolDownOption;
 
-    private SpriteLoader sidekickButtonSprite = new SpriteLoader("Nebula.Resources.SidekickButton.png", 115f);
+    private SpriteLoader sidekickButtonSprite = new SpriteLoader("Nebula.Resources.SidekickButton.png", 115f, "ui.button.jackal.sidekick");
 
     public override HelpSprite[] helpSprite => new HelpSprite[]
     {

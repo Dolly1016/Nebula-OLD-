@@ -18,7 +18,7 @@ public class Mayor : Role
 
     private CustomButton emergencyButton;
 
-    private static SpriteLoader emergencySprite = new SpriteLoader("Nebula.Resources.EmergencyButton.png", 115f);
+    private static SpriteLoader emergencySprite = new SpriteLoader("Nebula.Resources.EmergencyButton.png", 115f, "ui.button.mayor.emergency");
 
     //投じる票数の表示
     private TMPro.TextMeshPro countText;
@@ -61,8 +61,6 @@ public class Mayor : Role
         }
         else
         {
-            if (numOfVote < (byte)minVoteOption.getFloat())
-                numOfVote = (byte)minVoteOption.getFloat();
 
             if (!PlayerControl.LocalPlayer.Data.IsDead)
             {

@@ -1,7 +1,4 @@
-﻿using UnhollowerRuntimeLib;
-using UnhollowerBaseLib.Attributes;
-
-namespace Nebula.Objects;
+﻿namespace Nebula.Objects;
 
 public class CustomObjectBehaviour : MonoBehaviour
 {
@@ -19,12 +16,14 @@ public class CustomObjectBehaviour : MonoBehaviour
     }
 }
 
-[Il2CppImplementsAttribute(typeof(IUsable))]
 public class UsableCustomObjectBehaviour : MonoBehaviour
 {
     static UsableCustomObjectBehaviour()
     {
-        ClassInjector.RegisterTypeInIl2Cpp<UsableCustomObjectBehaviour>();
+        ClassInjector.RegisterTypeInIl2Cpp<UsableCustomObjectBehaviour>(new RegisterTypeOptions()
+        {
+            Interfaces= new[] { typeof(IUsable) }
+        });
     }
 
     public float UsableDistance { get => 0.8f; }

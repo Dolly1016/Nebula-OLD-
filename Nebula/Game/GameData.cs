@@ -568,7 +568,7 @@ public class PlayerProperty
             underTheFloor = true;
         })));
 
-        var refArray = new UnhollowerBaseLib.Il2CppReferenceArray<Il2CppSystem.Collections.IEnumerator>(sequence.ToArray());
+        var refArray = new Il2CppReferenceArray<Il2CppSystem.Collections.IEnumerator>(sequence.ToArray());
         player.MyPhysics.StopAllCoroutines();
         player.MyPhysics.StartCoroutine(Effects.Sequence(refArray));
     }
@@ -603,7 +603,7 @@ public class PlayerProperty
             player.moveable = true;
         })));
 
-        var refArray = new UnhollowerBaseLib.Il2CppReferenceArray<Il2CppSystem.Collections.IEnumerator>(sequence.ToArray());
+        var refArray = new Il2CppReferenceArray<Il2CppSystem.Collections.IEnumerator>(sequence.ToArray());
         player.MyPhysics.StopAllCoroutines();
         player.MyPhysics.StartCoroutine(Effects.Sequence(refArray));
     }
@@ -1248,7 +1248,7 @@ public class UtilityTimer
             result.fontSize = result.fontSizeMax = result.fontSizeMin = 1.7f;
             result.rectTransform.sizeDelta = new Vector2(0f, 0f);
             result.rectTransform.pivot = new Vector2(0f, 1f);
-            result.alignment = TMPro.TextAlignmentOptions.BottomLeft;
+            result.alignment = TMPro.TextAlignmentOptions.TopLeft;
             result.fontStyle = TMPro.FontStyles.Bold;
             result.text = "";
 
@@ -1495,10 +1495,8 @@ public class GameData
 
     public void ModifyShipStatus()
     {
-        if (CustomOptionHolder.mapOptions.getBool())
-        {
-            Map.MapEditor.ModifySabotage(GameOptionsManager.Instance.CurrentGameOptions.MapId);
-        }
+        Map.MapEditor.ModifyMap(GameOptionsManager.Instance.CurrentGameOptions.MapId);
+        Map.MapEditor.ModifySabotage(GameOptionsManager.Instance.CurrentGameOptions.MapId);
     }
 
     public PlayerData? GetPlayerData(byte playerId)

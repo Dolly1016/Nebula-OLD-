@@ -425,7 +425,7 @@ public class VOID : Role
                 {
                     dialog.AddButton(1.6f, "SkipMeeting", Helpers.cs(Palette.ImpostorRed, "Skip Meeting")).OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
                     {
-                        MeetingHud.Instance.RpcVotingComplete(new UnhollowerBaseLib.Il2CppStructArray<MeetingHud.VoterState>(0), null, true);
+                        MeetingHud.Instance.RpcVotingComplete(new Il2CppStructArray<MeetingHud.VoterState>(0), null, true);
                         MetaDialog.EraseDialog((MetaDialog)dialog.screen);
                     }));
                 }

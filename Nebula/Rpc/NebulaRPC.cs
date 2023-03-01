@@ -1,5 +1,4 @@
 ﻿using Hazel;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Nebula.Module;
 using Nebula.Roles.NeutralRoles;
 using System;

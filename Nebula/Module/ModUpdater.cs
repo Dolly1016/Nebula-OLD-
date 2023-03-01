@@ -10,6 +10,7 @@ using Nebula.Patches;
 
 namespace Nebula.Module;
 
+/*
 [HarmonyPatch(typeof(AnnouncementPopUp), nameof(AnnouncementPopUp.UpdateAnnounceText))]
 public static class AnnouncementPatch
 {
@@ -143,6 +144,7 @@ public static class AnnouncementPatch
         return false;
     }
 }
+*/
 
 [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start))]
 public class ModUpdaterButton

@@ -1,4 +1,5 @@
 ﻿using Nebula.Map;
+using Sentry;
 
 namespace Nebula.Patches;
 
@@ -182,9 +183,8 @@ public class AdminPatch
                 __instance.isSab = true;
                 if (shouldChangeColor) __instance.BackgroundColor.SetColor(Palette.DisabledGrey);
                 __instance.SabotageText.gameObject.SetActive(shouldChangeColor);
-                return;
             }
-            if (!isAffectedByCommAdmin || (__instance.isSab && !PlayerTask.PlayerHasTaskOfType<IHudOverrideTask>(PlayerControl.LocalPlayer)))
+            else if (!isAffectedByCommAdmin || (__instance.isSab && !PlayerTask.PlayerHasTaskOfType<IHudOverrideTask>(PlayerControl.LocalPlayer)))
             {
                 __instance.isSab = false;
                 if (shouldChangeColor) __instance.BackgroundColor.SetColor(Color.green);
@@ -201,103 +201,102 @@ public class AdminPatch
                 int impostors = 0;
                 int deadBodies = 0;
 
-                if (!PlayerTask.PlayerHasTaskOfType<IHudOverrideTask>(PlayerControl.LocalPlayer))
+                if (__instance.isSab)
                 {
-                    PlainShipRoom plainShipRoom;
-                    try
-                    {
-                        plainShipRoom = ShipStatus.Instance.FastRooms[counterArea.RoomType];
-                    }
-                    catch
-                    {
-                        counterArea.UpdateCount(0);
-                        continue;
-                    }
+                    counterArea.UpdateCount(0);
+                    continue;
+                }
 
-                    if (plainShipRoom != null && plainShipRoom.roomArea)
+                PlainShipRoom plainShipRoom;
+                try
+                {
+                    plainShipRoom = ShipStatus.Instance.FastRooms[counterArea.RoomType];
+                }
+                catch
+                {
+                    counterArea.UpdateCount(0);
+                    continue;
+                }
+
+                if (plainShipRoom != null && plainShipRoom.roomArea)
+                {
+                    if (!MeetingHud.Instance)
                     {
-                        if (!MeetingHud.Instance)
+
+                        if (divMaskFinally != Int32.MaxValue)
+                            if (currentMapData!.AdminSystemTypeMap.TryGetValue(plainShipRoom.RoomId, out int index) && (divMaskFinally & (1 << index)) == 0) continue;
+
+
+                        //通常時のアドミン
+
+                        int num = plainShipRoom.roomArea.OverlapCollider(filter, __instance.buffer);
+                        int num2 = num;
+                        for (int j = 0; j < num; j++)
                         {
-
-                            if (divMaskFinally != Int32.MaxValue)
-                                if (currentMapData!.AdminSystemTypeMap.TryGetValue(plainShipRoom.RoomId, out int index) && (divMaskFinally & (1 << index)) == 0) continue;
-                            
-
-                            //通常時のアドミン
-
-                            int num = plainShipRoom.roomArea.OverlapCollider(filter, __instance.buffer);
-                            int num2 = num;
-                            for (int j = 0; j < num; j++)
+                            Collider2D collider2D = __instance.buffer[j];
+                            if (!(collider2D.tag == "DeadBody"))
                             {
-                                Collider2D collider2D = __instance.buffer[j];
-                                if (!(collider2D.tag == "DeadBody"))
+                                PlayerControl component = collider2D.GetComponent<PlayerControl>();
+                                if (!component || component.Data == null || component.Data.Disconnected || component.Data.IsDead || detectedPlayers.Contains(component.PlayerId))
                                 {
-                                    PlayerControl component = collider2D.GetComponent<PlayerControl>();
-                                    if (!component || component.Data == null || component.Data.Disconnected || component.Data.IsDead || detectedPlayers.Contains(component.PlayerId))
-                                    {
-                                        num2--;
-                                    }
-                                    else
-                                    {
-                                        if (adminMode == AdminMode.ImpostorsAndDeadBodies && (component.Data.Role.IsImpostor || component.GetModData().role.DeceiveImpostorInNameDisplay))
-                                            impostors++;
-                                        detectedPlayers.Add(component.PlayerId);
-                                    }
+                                    num2--;
                                 }
                                 else
                                 {
-                                    DeadBody component = collider2D.GetComponent<DeadBody>();
-                                    if (detectedPlayers.Contains(component.ParentId))
-                                    {
-                                        num2--;
-                                    }
-                                    else
-                                    {
-                                        if (adminMode == AdminMode.ImpostorsAndDeadBodies)
-                                            deadBodies++;
-                                        else if (!__instance.includeDeadBodies)
-                                            num2--;
-                                        
-                                        detectedPlayers.Add(component.ParentId);
-                                    }
+                                    if (adminMode == AdminMode.ImpostorsAndDeadBodies && (component.Data.Role.IsImpostor || component.GetModData().role.DeceiveImpostorInNameDisplay))
+                                        impostors++;
+                                    detectedPlayers.Add(component.PlayerId);
                                 }
                             }
-
-                            counterArea.UpdateCount(num2);
-                        }
-                        else
-                        {
-                            //会議中のアドミン
-
-                            int num = 0;
-                            foreach (var data in Game.GameData.data.AllPlayers)
+                            else
                             {
-                                if (data.Value.preMeetingPosition == null || detectedPlayers.Contains(data.Value.id)) continue;
+                                DeadBody component = collider2D.GetComponent<DeadBody>();
+                                if (detectedPlayers.Contains(component.ParentId))
+                                {
+                                    num2--;
+                                }
+                                else
+                                {
+                                    if (adminMode == AdminMode.ImpostorsAndDeadBodies)
+                                        deadBodies++;
+                                    else if (!__instance.includeDeadBodies)
+                                        num2--;
 
-                                if (!plainShipRoom.roomArea.OverlapPoint(data.Value.preMeetingPosition.Value)) continue;
-
-                                num++;
-                                if (data.Value.role.category == Roles.RoleCategory.Impostor || data.Value.role.DeceiveImpostorInNameDisplay) impostors++;
+                                    detectedPlayers.Add(component.ParentId);
+                                }
                             }
-
-                            counterArea.UpdateCount(num);
-                            counterArea.UpdateCount(num);
                         }
 
-                        int lastImpostors = 0;
-                        int lastDeadBodies = 0;
-                        if (adminMode != AdminMode.PlayerColors && (!impostorsMap.TryGetValue(counterArea, out lastImpostors) || lastImpostors != impostors || !deadBodiesMap.TryGetValue(counterArea, out lastDeadBodies) || lastDeadBodies != deadBodies))
-                        {
-                            impostorsMap[counterArea] = impostors;
-                            deadBodiesMap[counterArea] = deadBodies;
-                            //インポスター人数変更
-                            updateImpostors(counterArea, impostors, deadBodies);
-                        }
+                        counterArea.UpdateCount(num2);
                     }
-                }
-                else
-                {
-                    counterArea.UpdateCount(0);
+                    else
+                    {
+                        //会議中のアドミン
+
+                        int num = 0;
+                        foreach (var data in Game.GameData.data.AllPlayers)
+                        {
+                            if (data.Value.preMeetingPosition == null || detectedPlayers.Contains(data.Value.id)) continue;
+
+                            if (!plainShipRoom.roomArea.OverlapPoint(data.Value.preMeetingPosition.Value)) continue;
+
+                            num++;
+                            if (data.Value.role.category == Roles.RoleCategory.Impostor || data.Value.role.DeceiveImpostorInNameDisplay) impostors++;
+                        }
+
+                        counterArea.UpdateCount(num);
+                        counterArea.UpdateCount(num);
+                    }
+
+                    int lastImpostors = 0;
+                    int lastDeadBodies = 0;
+                    if (adminMode != AdminMode.PlayerColors && (!impostorsMap.TryGetValue(counterArea, out lastImpostors) || lastImpostors != impostors || !deadBodiesMap.TryGetValue(counterArea, out lastDeadBodies) || lastDeadBodies != deadBodies))
+                    {
+                        impostorsMap[counterArea] = impostors;
+                        deadBodiesMap[counterArea] = deadBodies;
+                        //インポスター人数変更
+                        updateImpostors(counterArea, impostors, deadBodies);
+                    }
                 }
             }
         }

@@ -3,6 +3,7 @@ using Nebula.Expansion;
 using Nebula.Map;
 using Nebula.Module;
 using Nebula.Patches;
+using Nebula.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -31,10 +32,49 @@ public class Spectre : Role
 
     int clarifyChargeId;
 
-    private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.SpectreButton.png", 115f);
+    private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.SpectreButton.png", 115f, "ui.button.spectre.clarify");
 
-    public SpriteLoader spectreConsoleSprite = new SpriteLoader("Nebula.Resources.SpectreMinigameConsole.png", 100f);
-    public SpriteLoader spectreConsoleEatenSprite = new SpriteLoader("Nebula.Resources.SpectreMinigameConsoleUsed.png", 100f);
+    public SpriteLoader spectreFriedConsoleSprite = new SpriteLoader("Nebula.Resources.SpectreMinigameConsole.png", 100f);
+    public SpriteLoader spectreFriedConsoleEatenSprite = new SpriteLoader("Nebula.Resources.SpectreMinigameConsoleUsed.png", 100f);
+
+    public SpriteLoader spectreRancorConsoleSprite = new SpriteLoader("Nebula.Resources.SpectreMinigameConsoleStatue.png", 100f);
+    public SpriteLoader spectreRancorConsoleBrokenSprite = new SpriteLoader("Nebula.Resources.SpectreMinigameConsoleStatueBroken.png", 100f);
+
+    public SpriteLoader GetConsoleUnusedSprite()
+    {
+        switch (spectreTaskOption.getSelection())
+        {
+            case 0:
+                return spectreFriedConsoleSprite;
+            case 1:
+                return spectreRancorConsoleSprite;
+        }
+        return spectreFriedConsoleSprite;
+    }
+
+    public SpriteLoader GetConsoleUsedSprite()
+    {
+        switch (spectreTaskOption.getSelection())
+        {
+            case 0:
+                return spectreFriedConsoleEatenSprite;
+            case 1:
+                return spectreRancorConsoleBrokenSprite;
+        }
+        return spectreFriedConsoleEatenSprite;
+    }
+
+    public SpriteLoader GetConsoleInShadowSprite()
+    {
+        switch (spectreTaskOption.getSelection())
+        {
+            case 0:
+                return spectreFriedConsoleEatenSprite;
+            case 1:
+                return spectreRancorConsoleSprite;
+        }
+        return spectreFriedConsoleEatenSprite;
+    }
 
     static Dictionary<byte, List<FriedTaskData>> friedTaskPos = new();
     public Dictionary<byte, Module.CustomOption> friedTaskOption = new();
@@ -77,7 +117,7 @@ public class Spectre : Role
         {
             if ((option.selection & (1 << i)) != 0)
             {
-                var console = ConsoleExpansion.GenerateConsole(new Vector3(data.point.x, data.point.y, data.z), "NoS-SpectreFried-" + data.name, spectreConsoleSprite.GetSprite());
+                var console = ConsoleExpansion.GenerateConsole<Console>(new Vector3(data.point.x, data.point.y, data.z), "NoS-SpectreFried-" + data.name, GetConsoleUnusedSprite().GetSprite());
                 console.usableDistance = data.usableDistance;
 
                 {
@@ -87,7 +127,7 @@ public class Spectre : Role
                     sObj.transform.localPosition = Vector2.zero;
                     sObj.transform.localScale = Vector2.one;
                     sObj.layer = LayerExpansion.GetShadowLayer();
-                    sObj.AddComponent<SpriteRenderer>().sprite = spectreConsoleEatenSprite.GetSprite();
+                    sObj.AddComponent<SpriteRenderer>().sprite = GetConsoleInShadowSprite().GetSprite();
                 }
                 FriedConsoles.Add(i, console.gameObject);
             }
@@ -220,7 +260,7 @@ public class Spectre : Role
         spawnImmoralistOption = CreateOption(Color.white, "spawnImmoralist", true);
         occupyDoubleRoleCountOption = CreateOption(Color.white, "occupyDoubleRoleCount", true).AddPrerequisite(spawnImmoralistOption);
 
-        spectreTaskOption = CreateOption(Color.white, "spectreTask", new string[] { "role.spectre.spectreTask.eatTheFried" });
+        spectreTaskOption = CreateOption(Color.white, "spectreTask", new string[] { "role.spectre.spectreTask.eatTheFried"/*, "role.spectre.spectreTask.deliveryRancor"*/ });
         numOfTheFriedRequireToWinOption = CreateOption(Color.white, "numOfTheFriedRequiredToWin", 5f, 1f, 16f, 1f).AddCustomPrerequisite(() => spectreTaskOption.getSelection() == 0);
         friedTaskOption.Add(0, CreateMetaOption(Color.white, "spectreTask.eatTheFried.skeld", int.MaxValue).HiddenOnDisplay(true).HiddenOnMetaScreen(true));
         friedTaskOption.Add(1, CreateMetaOption(Color.white, "spectreTask.eatTheFried.mira", int.MaxValue).HiddenOnDisplay(true).HiddenOnMetaScreen(true));
@@ -310,38 +350,21 @@ public class Spectre : Role
 
     public override bool CanKnowImpostors { get => true; }
 
-    /*
-    public override void OnSetTasks(ref List<GameData.TaskInfo> initialTasks, ref List<GameData.TaskInfo>? actualTasks)
-    {
-        initialTasks.Clear();
-        int tasks = (int)clarifyChargeOption.getFloat();
-
-        var unused = new Il2CppSystem.Collections.Generic.List<NormalPlayerTask>();
-        foreach (var t in ShipStatus.Instance.NormalTasks)
-        {
-            if (t.TaskType == TaskTypes.PickUpTowels) continue;
-            if (t.TaskType == TaskTypes.UploadData) continue;
-            unused.Add(t);
-        }
-        Extensions.Shuffle<NormalPlayerTask>(unused.Cast<Il2CppSystem.Collections.Generic.IList<NormalPlayerTask>>(), 0);
-
-        for (int i = 0; i < tasks; i++) initialTasks.Add(new GameData.TaskInfo((byte)unused[i].Index, (uint)i));
-    }
-    */
-
     public override void OnSetTasks(ref List<GameData.TaskInfo> initialTasks, ref List<GameData.TaskInfo>? actualTasks)
     {
         initialTasks.Clear();
         initialTasks.Add(new GameData.TaskInfo(byte.MaxValue - 3, 0));   
     }
 
-    /*
-    public override void OnTaskComplete()
+    public override void OnMeetingEnd()
     {
-        RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, clarifyChargeId, 1);
-        spectreButton.UsesText.text = Game.GameData.data.myData.getGlobalData().GetRoleData(clarifyChargeId).ToString();
+        foreach(var task in PlayerControl.LocalPlayer.myTasks.GetFastEnumerator())
+        {
+            var rancor = task.CastFast<SpectreRancorTask>();
+            if (rancor)
+                rancor.OnMeetingEnd();
+        }
     }
-    */
 
     public override void MyPlayerControlUpdate()
     {

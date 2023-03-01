@@ -5,11 +5,12 @@ C:\Users\kawam\source\repos\Dolly1016\Nebula\CPUAffinityEditor\obj\Release\CPUAf
 C:\Users\kawam\source\repos\Dolly1016\Nebula\CPUAffinityEditor\obj\Release\CPUAffinityEditor.csproj.CoreCompileInputs.cache
 C:\Users\kawam\source\repos\Dolly1016\Nebula\CPUAffinityEditor\obj\Release\CPUAffinityEditor.exe
 C:\Users\kawam\source\repos\Dolly1016\Nebula\CPUAffinityEditor\obj\Release\CPUAffinityEditor.pdb
+C:\Users\kawam\source\repos\Dolly1016\Nebula\CPUAffinityEditor\obj\Release\CPUAffinityEditor.csproj.SuggestedBindingRedirects.cache
 D:\AmongUsModding\Nebula\CPUAffinityEditor\bin\Release\CPUAffinityEditor.exe.config
 D:\AmongUsModding\Nebula\CPUAffinityEditor\bin\Release\CPUAffinityEditor.exe
 D:\AmongUsModding\Nebula\CPUAffinityEditor\bin\Release\CPUAffinityEditor.pdb
-D:\AmongUsModding\Nebula\CPUAffinityEditor\obj\Release\CPUAffinityEditor.csprojAssemblyReference.cache
+D:\AmongUsModding\Nebula\CPUAffinityEditor\obj\Release\CPUAffinityEditor.csproj.AssemblyReference.cache
+D:\AmongUsModding\Nebula\CPUAffinityEditor\obj\Release\CPUAffinityEditor.csproj.SuggestedBindingRedirects.cache
 D:\AmongUsModding\Nebula\CPUAffinityEditor\obj\Release\CPUAffinityEditor.csproj.CoreCompileInputs.cache
 D:\AmongUsModding\Nebula\CPUAffinityEditor\obj\Release\CPUAffinityEditor.exe
 D:\AmongUsModding\Nebula\CPUAffinityEditor\obj\Release\CPUAffinityEditor.pdb
-C:\Users\kawam\source\repos\Dolly1016\Nebula\CPUAffinityEditor\obj\Release\CPUAffinityEditor.csproj.SuggestedBindingRedirects.cache

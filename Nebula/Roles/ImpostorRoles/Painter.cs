@@ -11,8 +11,8 @@ public class Painter : Role
     private Game.PlayerData.PlayerOutfitData? paintOutfit;
     private Game.PlayerData.PlayerOutfitData? myOutfit;
 
-    private SpriteLoader sampleButtonSprite = new SpriteLoader("Nebula.Resources.SampleButton.png", 115f);
-    private SpriteLoader paintButtonSprite = new SpriteLoader("Nebula.Resources.MorphButton.png", 115f);
+    private SpriteLoader sampleButtonSprite = new SpriteLoader("Nebula.Resources.SampleButton.png", 115f, "ui.button.ninja.sample");
+    private SpriteLoader paintButtonSprite = new SpriteLoader("Nebula.Resources.MorphButton.png", 115f, "ui.button.ninja.paint");
     public override HelpSprite[] helpSprite => new HelpSprite[]
     {
             new HelpSprite(sampleButtonSprite,"role.painter.help.sample",0.3f),

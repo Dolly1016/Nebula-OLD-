@@ -41,7 +41,7 @@ public class PerksTabPacth
             TabButton[] tabButtons = new TabButton[__instance.Tabs.Count + 1];
             __instance.Tabs.CopyTo(tabButtons, 0);
             tabButtons[tabButtons.Length - 1] = tab;
-            __instance.Tabs = new UnhollowerBaseLib.Il2CppReferenceArray<TabButton>(tabButtons);
+            __instance.Tabs = new Il2CppReferenceArray<TabButton>(tabButtons);
 
             UpdatePerksTabPatch.Postfix(__instance);
         }

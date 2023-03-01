@@ -1,5 +1,4 @@
-﻿using BepInEx.IL2CPP.Utils;
-using Hazel;
+﻿using Hazel;
 using Nebula.Module;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
@@ -356,7 +355,7 @@ class RPCHandlerPatch
                 RPCEvents.UpdatePlayersIconInfo(reader);
                 break;
             case (byte)CustomRPC.SpectreEat:
-                RPCEvents.SpectreEat(reader.ReadInt32());
+                RPCEvents.SpectrReform(reader.ReadInt32());
                 break;
 
             case (byte)CustomRPC.InitializeRitualData:
@@ -1703,10 +1702,10 @@ static class RPCEvents
         if (MeetingHud.Instance)MeetingHud.Instance.discussionTimer -= Roles.Roles.F_Guesser.additionalVotingTime.getFloat();   
     }
 
-    static public void SpectreEat(int id)
+    static public void SpectrReform(int id)
     {
         var obj = Roles.Roles.Spectre.FriedConsoles[id];
-        obj.GetComponent<SpriteRenderer>().sprite = Roles.Roles.Spectre.spectreConsoleEatenSprite.GetSprite();
+        obj.GetComponent<SpriteRenderer>().sprite = Roles.Roles.Spectre.GetConsoleUsedSprite().GetSprite();
         obj.name = "NoS-Used";
     }
 }
@@ -2665,11 +2664,11 @@ public class RPCEventInvoker
         RPCEvents.Guess(PlayerControl.LocalPlayer.PlayerId,target);
     }
 
-    static public void SpectreEat(int id)
+    static public void SpectreReform(int id)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SpectreEat, Hazel.SendOption.Reliable, -1);
         writer.Write(id);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
-        RPCEvents.SpectreEat(id);
+        RPCEvents.SpectrReform(id);
     }
 }

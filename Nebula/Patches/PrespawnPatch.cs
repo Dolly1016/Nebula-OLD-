@@ -141,7 +141,7 @@ class PrespawnPatch
                 }));
                 passiveButton.GetComponent<SpriteAnim>().Stop();
                 passiveButton.GetComponent<SpriteRenderer>().sprite = pt.Image;
-                passiveButton.GetComponentInChildren<TextMeshPro>().text = DestroyableSingleton<TranslationController>.Instance.GetString(pt.Name, new UnhollowerBaseLib.Il2CppReferenceArray<Il2CppSystem.Object>(0));
+                passiveButton.GetComponentInChildren<TextMeshPro>().text = DestroyableSingleton<TranslationController>.Instance.GetString(pt.Name, new Il2CppReferenceArray<Il2CppSystem.Object>(0));
                 ButtonAnimRolloverHandler component = passiveButton.GetComponent<ButtonAnimRolloverHandler>();
                 component.StaticOutImage = pt.Image;
                 component.RolloverAnim = pt.Rollover;

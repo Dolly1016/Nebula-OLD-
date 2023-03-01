@@ -12,7 +12,7 @@ namespace Nebula.Roles.ImpostorRoles
 
         private Module.CustomOption hideCoolDownOption;
 
-        private SpriteLoader ninjaButtonSprite = new SpriteLoader("Nebula.Resources.NinjaVentButton.png", 115f);
+        private SpriteLoader ninjaButtonSprite = new SpriteLoader("Nebula.Resources.NinjaVentButton.png", 115f, "ui.button.ninja.evasion");
         public override HelpSprite[] helpSprite => new HelpSprite[]
         {
             new HelpSprite(ninjaButtonSprite,"role.ninja.help.vent",0.3f)

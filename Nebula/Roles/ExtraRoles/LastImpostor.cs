@@ -10,7 +10,7 @@ public class LastImpostor : ExtraRole
 {
     private CustomButton GuessSpectreButton;
 
-    private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.SpectreGuessButton.png", 115f);
+    private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.SpectreGuessButton.png", 115f, "ui.button.lastImpostor.guess");
 
     public override void Assignment(Patches.AssignMap assignMap)
     {

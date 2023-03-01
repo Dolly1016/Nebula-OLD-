@@ -14,7 +14,7 @@ public class Eraser : Role
     public override RelatedRoleData[] RelatedRoleDataInfo { get => new RelatedRoleData[] { new RelatedRoleData(eraseCountId, "Erased Roles", 0, 20) }; }
 
 
-    private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.EraseButton.png", 115f);
+    private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.EraseButton.png", 115f, "ui.button.eraser.erase");
 
     public override HelpSprite[] helpSprite => new HelpSprite[]
     {

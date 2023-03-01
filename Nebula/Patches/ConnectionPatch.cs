@@ -1,5 +1,4 @@
-﻿using UnhollowerBaseLib;
-using Hazel.Udp;
+﻿using Hazel.Udp;
 
 namespace Nebula.Patches;
 

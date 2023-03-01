@@ -62,7 +62,7 @@ class ExileControllerPatch
                 UnityEngine.Object.Destroy(__instance.gameObject);
             })));
 
-            var refArray = new UnhollowerBaseLib.Il2CppReferenceArray<Il2CppSystem.Collections.IEnumerator>(sequence.ToArray());
+            var refArray = new Il2CppReferenceArray<Il2CppSystem.Collections.IEnumerator>(sequence.ToArray());
             HudManager.Instance.StartCoroutine(Effects.Sequence(refArray));
 
 

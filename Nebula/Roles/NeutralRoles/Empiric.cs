@@ -45,7 +45,7 @@ public class Empiric : Template.HasAlignedHologram, Template.HasWinTrigger
         ventDurationOption.suffix = "second";
     }
 
-    SpriteLoader infectSprite = new SpriteLoader("Nebula.Resources.InfectButton.png", 115f);
+    SpriteLoader infectSprite = new SpriteLoader("Nebula.Resources.InfectButton.png", 115f, "ui.button.empiric.infect");
 
     public override HelpSprite[] helpSprite => new HelpSprite[]
     {

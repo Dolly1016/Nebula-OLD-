@@ -23,7 +23,7 @@ public class Disturber : Role
         return elecAnimSubTexture;
     }
 
-    private SpriteLoader placeButtonSprite = new SpriteLoader("Nebula.Resources.ElecPolePlaceButton.png", 115f);
+    private SpriteLoader placeButtonSprite = new SpriteLoader("Nebula.Resources.ElecPolePlaceButton.png", 115f, "ui.button.disturber.place");
 
     public override HelpSprite[] helpSprite => new HelpSprite[]
     {

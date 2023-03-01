@@ -368,7 +368,6 @@ public class CustomButton
             try
             {
                 buttons[i].OnMeetingEnds();
-                buttons[i].Update();
 
                 buttons[i].actionButton.cooldownTimerText.color = Palette.DisabledClear;
             }
@@ -386,7 +385,6 @@ public class CustomButton
             try
             {
                 buttons[i].Timer = buttons[i].MaxTimer;
-                buttons[i].Update();
             }
             catch (NullReferenceException)
             {}

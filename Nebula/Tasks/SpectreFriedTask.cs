@@ -1,10 +1,5 @@
 ﻿using InnerNet;
 using Nebula.Module;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using UnhollowerRuntimeLib;
-using UnityEngine;
 using static Nebula.Tasks.OpportunistTask;
 
 namespace Nebula.Tasks
@@ -59,7 +54,7 @@ namespace Nebula.Tasks
                                 MyNormTask.NextStep();
                                 Close();
                                 var pair = Roles.Roles.Spectre.FriedConsoles.FirstOrDefault(pair => pair.Value.name == Console.gameObject.name);
-                                RPCEventInvoker.SpectreEat(pair.Key);
+                                RPCEventInvoker.SpectreReform(pair.Key);
                             }
                         }
                     }));

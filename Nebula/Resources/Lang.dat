@@ -84,6 +84,7 @@
 "option.display.percentage.100" : "100%"
 "option.display.infinity" : "∞"
 "option.display.none" : "<color=#606060ff>None</color>"
+"option.display.random" : "Random"
 "option.switch.on" : "<color=#ffffd6ff>On</color>"
 "option.switch.off" : "<color=#606060ff>Off</color>"
 
@@ -189,6 +190,7 @@
 "option.killCoolDownProceedIgnoringSecurityCamera": "Security Cam."
 "option.killCoolDownProceedIgnoringBlackOutGame": "Black Out Game"
 "option.killCoolDownProceedIgnoringCommReceiver": "Comm. Game"
+"option.killCoolDownProceedIgnoringEmergencySabotage" : "EMG Sabotage"
 
 "option.streamersOption" : "Streamers Option"
 "option.streamersOption.enforcePreventingSpoiler" : "Enforce Preventing Spoiler"
@@ -269,6 +271,9 @@
 
 "game.exile.roleText" : "%PLAYER% was %ROLE%."
 
+"metaObject.canSeeInShadow" : "Permanent"
+"metaObject.canSeeOnlyInShadow" : "Shadowy"
+
 "role.void.name" : "VOID"
 "role.void.short" : "V"
 "role.void.description" : "Very Optimized and Intelligent Dominator"
@@ -286,10 +291,11 @@
 "role.crewmate.chanceOfDamned" : "Chance Of Damned"
 
 "role.guesser.name" : "Guesser"
+"role.guesser.prefix.primary" : "Nice"
+"role.guesser.prefix.secondary" : "Evil"
 "role.guesser.info" : "You can guess other alive players.\nIf your guess is correct, guessed player will die."
 "role.guesser.help.guess" : "In a meeting, you can guess anyone's role."
-"role.guesser.chanceToSpawnAsSecondarySide" : "Chance to Spawn as Impostor"
-"role.guesser.definitiveAssignment" : "Definitive Assignment"
+"role.guesser.numOfSecondarySide" : "Including Impostors"
 "role.guesser.canShotSeveralTimes" : "Can Shot Several Times In The Same Meeting"
 "role.guesser.isSecondaryRole" : "Assign As Secondary Role"
 "role.guesser.guesserShots" : "Guesser Shots"
@@ -301,10 +307,11 @@
 "role.secondaryGuesser.description" : "and You Can Guess Anyone"
 
 "role.tracker.name" : "Tracker"
+"role.tracker.prefix.primary" : "Nice"
+"role.tracker.prefix.secondary" : "Evil"
 "role.tracker.help.track" : "Track selected player."
 "role.tracker.help.meeting" : "Can know progress of selected players' task."
-"role.tracker.chanceToSpawnAsSecondarySide" : "Chance to Spawn as Impostor"
-"role.tracker.definitiveAssignment" : "Definitive Assignment"
+"role.tracker.numOfSecondarySide" : "Including Impostors"
 "role.tracker.canChangeTrackingTarget" : "Can Change Tracking Target"
 "role.tracker.changeTargetCoolDown" : "Change Target Cool Down"
 "role.tracker.canUseMeetingActionOption" : "Can Use Meeting Action"
@@ -313,12 +320,13 @@
 "role.tracker.evilTrackerCanKnowImpostorsKill" : "Evil Tracker Can Know Impostors Kill"
 
 "role.trapper.name" : "Trapper"
+"role.trapper.prefix.primary" : "Nice"
+"role.trapper.prefix.secondary" : "Evil"
 "role.trapper.help.accel" : "Accelerate the player on the trap."
 "role.trapper.help.decel" : "Decelerate the player on the trap."
 "role.trapper.help.kill" : "Kill the player on the trap with your kill cool down."
 "role.trapper.help.comm" : "Notice color of the player on the trap."
-"role.trapper.chanceToSpawnAsSecondarySide" : "Chance to Spawn as Impostor"
-"role.trapper.definitiveAssignment" : "Definitive Assignment"
+"role.trapper.numOfSecondarySide" : "Including Impostors"
 "role.trapper.maxTraps" : "Max Traps"
 "role.trapper.placeCoolDown" : "Place Cool Down"
 "role.trapper.accelSpeed" : "Accel Speed"
@@ -1001,6 +1009,11 @@
 "role.spectre.ventCoolDown" : "Vent Cool Down"
 "role.spectre.ventDuration" : "Vent Duration"
 "role.spectre.task.fried" : "Eat The Fried Secretly"
+"role.spectre.task.rancor" : "Delivery Grudge Messages"
+"role.spectre.task.rancor.phase" : "Phase %PHASE%: %DETAIL%"
+"role.spectre.task.rancor.phase.letter" : "Get a Letter"
+"role.spectre.task.rancor.phase.delivery" : "Delivery the Grudge to %PLAYER%"
+"role.spectre.task.rancor.phase.statue" : "Store Power in Statues"
 
 "role.vulture.name" : "Vulture"
 "role.vulture.short" : "V"
@@ -1060,6 +1073,7 @@
 "role.lover.mode.avenger" : "Avenger"
 "role.lover.chanceThatOneLoverIsImpostor" : "Chance That One Lover Is Impostor"
 "role.lover.loversAsIndependentSide" : "Lovers As Independent Side"
+"role.lover.allowExtraWinning" : "Allow Extra Winning"
 "role.lover.canChangeTrilemma" : "Can Change Trilemma"
 "role.lover.additionalEndText" : " <color=#ffffffff>with</color> <color=#fb02beff>Lovers</color>"
 

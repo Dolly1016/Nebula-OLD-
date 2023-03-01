@@ -1,6 +1,4 @@
-﻿using UnhollowerRuntimeLib;
-
-namespace Nebula.Tasks;
+﻿namespace Nebula.Tasks;
 
 [HarmonyPatch]
 public class RitualWiringMinigamePatch
@@ -88,7 +86,7 @@ public class RitualWiringMinigamePatch
                 t.ExistingConsoles &= mask;
 
                 __instance.Console.ConsoleId = 1;
-                __instance.Console.TaskTypes = new UnhollowerBaseLib.Il2CppStructArray<TaskTypes>(0);
+                __instance.Console.TaskTypes = new Il2CppStructArray<TaskTypes>(0);
                 HudManager.Instance.StartCoroutine(GetEnumrator(__instance.Console.GetComponent<SpriteRenderer>()).WrapToIl2Cpp());
                 __instance.MyNormTask.NextStep();
                 __instance.Close();
@@ -263,7 +261,7 @@ public class RitualWiringTask : NebulaPlayerTask
         return NebulaData[1] <= NebulaData[2];
     }
 
-    public void SetRooms(UnhollowerBaseLib.Il2CppStructArray<SystemTypes> rooms, int showRooms = 0)
+    public void SetRooms(Il2CppStructArray<SystemTypes> rooms, int showRooms = 0)
     {
         ValidRooms = new List<SystemTypes>(rooms);
         ShowRooms = showRooms;

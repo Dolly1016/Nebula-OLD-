@@ -17,7 +17,7 @@ public class Jester : Template.Draggable, Template.HasWinTrigger
 
     private Objects.CustomButton blankButton;
 
-    private SpriteLoader blankButtonSprite = new SpriteLoader("Nebula.Resources.SnipeButton.png", 115f);
+    private SpriteLoader blankButtonSprite = new SpriteLoader("Nebula.Resources.SnipeButton.png", 115f, "ui.button.jester.blank");
     public override HelpSprite[] helpSprite => new HelpSprite[]
     {
             new HelpSprite(DaDSprite,"role.jester.help.dragAndDrop",0.3f),

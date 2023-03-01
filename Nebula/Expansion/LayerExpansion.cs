@@ -44,4 +44,10 @@ static public class LayerExpansion
         if (shadowLayer == null) shadowLayer = LayerMask.NameToLayer("Shadow");
         return shadowLayer.Value;
     }
+
+    static public int GetShadowObjectsLayer()
+    {
+        return 30;
+    }
+
 }

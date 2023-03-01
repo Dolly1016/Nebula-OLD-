@@ -12,7 +12,7 @@ public class Language
         
     public static void LoadFont()
     {
-        var fonts = UnityEngine.Object.FindObjectsOfTypeIncludingAssets(TMPro.TMP_FontAsset.Il2CppType);
+        var fonts = UnityEngine.Object.FindObjectsOfTypeIncludingAssets(Il2CppType.Of<TMPro.TMP_FontAsset>());
         foreach (var font in fonts)
         {
             if (font.name == "NotoSansJP-Regular SDF")
@@ -35,7 +35,7 @@ public class Language
 
         if (localFont == null) return;
 
-        var fonts = UnityEngine.Object.FindObjectsOfTypeIncludingAssets(TMPro.TMP_FontAsset.Il2CppType);
+        var fonts = UnityEngine.Object.FindObjectsOfTypeIncludingAssets(Il2CppType.Of<TMPro.TMP_FontAsset>());
         foreach (var font in fonts)
         {
             var asset = font.CastFast<TMPro.TMP_FontAsset>();
@@ -47,6 +47,7 @@ public class Language
             if (localFont != FontJP) asset.fallbackFontAssetTable.Add(FontJP);
             if (localFont != FontSC) asset.fallbackFontAssetTable.Add(FontSC);
             if (localFont != FontKR) asset.fallbackFontAssetTable.Add(FontKR);
+
         }
     }
 
@@ -81,8 +82,8 @@ public class Language
 
     public static void AddDefaultKey(string key, string format)
     {
-        defaultLanguageSet.Add(key, format);
-        if (!CheckValidKey(key)) language.languageSet.Add(key, format);
+        defaultLanguageSet[key] = format;
+        if (!CheckValidKey(key)) language.languageSet[key] = format;
     }
 
 

@@ -1,4 +1,6 @@
 ﻿using AmongUs.GameOptions;
+using Cpp2IL.Core;
+using Cpp2IL.Core.Extensions;
 using Nebula.Module;
 
 namespace Nebula;
@@ -60,9 +62,8 @@ public class CustomOptionHolder
     public static string[] rates = new string[] {
             "option.display.percentage.0" , "option.display.percentage.10", "option.display.percentage.20", "option.display.percentage.30", "option.display.percentage.40",
             "option.display.percentage.50", "option.display.percentage.60", "option.display.percentage.70", "option.display.percentage.80", "option.display.percentage.90", "option.display.percentage.100" };
-    public static string[] ratesWithoutZero = new string[] {
-            "option.display.percentage.10", "option.display.percentage.20", "option.display.percentage.30", "option.display.percentage.40",
-            "option.display.percentage.50", "option.display.percentage.60", "option.display.percentage.70", "option.display.percentage.80", "option.display.percentage.90", "option.display.percentage.100" };
+    public static string[] ratesWithoutZero = rates.SubArray(1,10);
+    public static string[] ratesWithoutTerminal = rates.SubArray(1, 9);
     public static string[] ratesSecondary = new string[] {
             "option.display.percentage.andSoForth", "option.display.percentage.10", "option.display.percentage.20", "option.display.percentage.30", "option.display.percentage.40",
             "option.display.percentage.50", "option.display.percentage.60", "option.display.percentage.70", "option.display.percentage.80", "option.display.percentage.90" };
@@ -226,6 +227,7 @@ public class CustomOptionHolder
     public static CustomOption KillCoolDownProceedIgnoringSecurityCamera;
     public static CustomOption KillCoolDownProceedIgnoringBlackOutGame;
     public static CustomOption KillCoolDownProceedIgnoringCommReceiver;
+    public static CustomOption KillCoolDownProceedIgnoringEmergencySabotage;
 
     public static CustomOption SecretRoleOption;
     public static CustomOption NumOfSecretCrewmateOption;
@@ -670,6 +672,7 @@ public class CustomOptionHolder
         KillCoolDownProceedIgnoringSecurityCamera = CustomOption.Create(Color.white, "option.killCoolDownProceedIgnoringSecurityCamera", false, KillCoolDownProceedIgnoringParent).HiddenOnMetaScreen(true).SetGameMode(CustomGameMode.All);
         KillCoolDownProceedIgnoringBlackOutGame = CustomOption.Create(Color.white, "option.killCoolDownProceedIgnoringBlackOutGame", false, KillCoolDownProceedIgnoringParent).HiddenOnMetaScreen(true).SetGameMode(CustomGameMode.All);
         KillCoolDownProceedIgnoringCommReceiver = CustomOption.Create(Color.white, "option.killCoolDownProceedIgnoringCommReceiver", false, KillCoolDownProceedIgnoringParent).HiddenOnMetaScreen(true).SetGameMode(CustomGameMode.All);
+        KillCoolDownProceedIgnoringEmergencySabotage = CustomOption.Create(Color.white, "option.killCoolDownProceedIgnoringEmergencySabotage", false, KillCoolDownProceedIgnoringParent).HiddenOnMetaScreen(true).SetGameMode(CustomGameMode.All);
 
         KillCoolDownProceedIgnoringParent.alternativeOptionScreenBuilder = (refresher) =>
             AddKillCoolDownProceedIgnoringOptions(refresher,
@@ -678,7 +681,8 @@ public class CustomOptionHolder
             KillCoolDownProceedIgnoringDoorGame,
             KillCoolDownProceedIgnoringSecurityCamera,
             KillCoolDownProceedIgnoringBlackOutGame,
-            KillCoolDownProceedIgnoringCommReceiver
+            KillCoolDownProceedIgnoringCommReceiver,
+            KillCoolDownProceedIgnoringEmergencySabotage
             );
         
 

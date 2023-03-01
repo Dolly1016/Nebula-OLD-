@@ -2,9 +2,8 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using Il2CppInterop.Runtime.Runtime;
 using Mono.Cecil;
-using UnhollowerBaseLib;
-using UnhollowerBaseLib.Runtime;
 
 using FieldInfo = Il2CppSystem.Reflection.FieldInfo;
 using Object = Il2CppSystem.Object;

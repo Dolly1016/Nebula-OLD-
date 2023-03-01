@@ -1,6 +1,4 @@
-﻿using UnhollowerBaseLib;
-
-namespace Nebula.Map;
+﻿namespace Nebula.Map;
 
 public class SpawnCandidate
 {
@@ -53,7 +51,7 @@ public class SpawnCandidate
     {
         if (AudioClipName == null) return null;
 
-        if (audioClips == null) audioClips = UnityEngine.Object.FindObjectsOfTypeAll(AudioClip.Il2CppType);
+        if (audioClips == null) audioClips = UnityEngine.Object.FindObjectsOfTypeAll(Il2CppType.Of<AudioClip>());
 
         if (AudioClip != null) return AudioClip;
 

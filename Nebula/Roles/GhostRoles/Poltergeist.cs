@@ -52,7 +52,7 @@ public class Poltergeist : GhostRole
     }
 
     CustomButton poltergeistButton;
-    SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.PoltergeistButton.png", 115f);
+    SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.PoltergeistButton.png", 115f, "ui.button.poltergeist.poltergeist");
 
     public override HelpSprite[] helpSprite => new HelpSprite[]
      {

@@ -14,7 +14,7 @@ public static class UpperInformationManager
 
     public static void Update()
     {
-        float y = 2.75f;
+        float y = 2.8f;
         foreach (var i in AllInformations)
         {
             bool active = i.Update();
@@ -81,4 +81,5 @@ public class UpperInformation
     }
 
     public virtual bool Update() { return false; }
+
 }

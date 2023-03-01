@@ -7,7 +7,7 @@ public class Camouflager : Role
     private Module.CustomOption camouflageCoolDownOption;
     private Module.CustomOption camouflageDurationOption;
 
-    private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.CamoButton.png", 115f);
+    private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.CamoButton.png", 115f, "ui.button.camoflager.camo");
     public override HelpSprite[] helpSprite => new HelpSprite[]
     {
             new HelpSprite(buttonSprite,"role.camouflager.help.camo",0.3f)

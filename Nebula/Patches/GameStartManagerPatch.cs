@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using Hazel;
-using UnhollowerBaseLib;
 
 namespace Nebula.Patches;
 

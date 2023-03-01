@@ -5,7 +5,7 @@ public class MetaDialog : MetaScreen
 
     static public List<MetaDialog> dialogOrder = new List<MetaDialog>();
     static public MetaDialog? activeDialogue { get => dialogOrder.Count == 0 ? null : dialogOrder[dialogOrder.Count - 1]; }
-
+    static public bool AnyDialogShown => dialogOrder.Count != 0;
     static public void Update()
     {
         for (int i = 0; i < dialogOrder.Count; i++)
@@ -76,18 +76,26 @@ public class MetaDialog : MetaScreen
 
 
 
-
-
-    static public MSDesigner OpenDialog(Vector2 size, string title)
+    static public MSDesigner GenerateIndependentDialog(Vector2 size,string title,string objName,Transform parent,float offsetZ,bool withBackground)
     {
         DialogueBox dialogue = GameObject.Instantiate(HudManager.Instance.Dialogue);
-        dialogue.name = "Dialogue" + dialogOrder.Count;
-        dialogue.transform.SetParent(activeDialogue?.dialog.transform ?? HudManager.Instance.transform);
+        dialogue.name = objName;
+        dialogue.transform.SetParent(parent);
+
         SpriteRenderer renderer = dialogue.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>();
         SpriteRenderer closeButton = dialogue.gameObject.transform.GetChild(1).GetComponent<SpriteRenderer>();
         GameObject fullScreen = renderer.transform.GetChild(0).gameObject;
-        fullScreen.GetComponent<PassiveButton>().OnClick = new UnityEngine.UI.Button.ButtonClickedEvent();
-        fullScreen.GetComponent<SpriteRenderer>().color = new Color(0f, 0f, 0f, 0.35f);
+        if (withBackground)
+        {
+            fullScreen.GetComponent<PassiveButton>().OnClick = new UnityEngine.UI.Button.ButtonClickedEvent();
+            fullScreen.GetComponent<SpriteRenderer>().color = new Color(0f, 0f, 0f, 0.35f);
+        }
+        else
+        {
+            fullScreen.GetComponent<PassiveButton>().enabled = false;
+            fullScreen.GetComponent<SpriteRenderer>().color = new Color(0f, 0f, 0f, 0f);
+        }
+
         renderer.gameObject.AddComponent<BoxCollider2D>().size = size;
         renderer.color = new Color(1f, 1f, 1f, 0.8f);
         renderer.size = size;
@@ -97,12 +105,20 @@ public class MetaDialog : MetaScreen
         dialogue.transform.localPosition = new Vector3(0f, 0f, -50f);
         if (dialogue.transform.parent == HudManager.Instance.transform) dialogue.transform.localPosition += new Vector3(0, 0, -500f);
         var metaDialog = new MetaDialog(dialogue);
-        dialogOrder.Add(metaDialog);
 
         dialogue.target.rectTransform.sizeDelta = size * 1.66f - new Vector2(0.7f, 0.7f);
         dialogue.Show(title);
 
         return new MSDesigner(metaDialog, size, title.Length > 0 ? dialogue.target.GetPreferredHeight() + 0.1f : 0.2f);
+    }
+
+    static public MSDesigner OpenDialog(Vector2 size, string title)
+    {
+        Transform parent = activeDialogue?.dialog.transform ?? HudManager.Instance.transform;
+        float offsetZ = parent == HudManager.Instance.transform ? -500f : 0f;
+        var result = GenerateIndependentDialog(size, title, "Dialogue" + dialogOrder.Count, parent, offsetZ,true);
+        dialogOrder.Add((MetaDialog)result.screen);
+        return result;
     }
 
     static public MSDesigner OpenMapDialog(byte mapId, bool canChangeMap, Action<GameObject, byte>? mapDecorator)

@@ -31,6 +31,11 @@ public class Logger
         }
     }
 
+    public void Print(string prefix,string message)
+    {
+        Print("[" + prefix + "] " + message);
+    }
+
     public void Print(string message)
     {
         if (!ValidFlag) return;

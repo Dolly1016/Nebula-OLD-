@@ -239,7 +239,7 @@ public static class StartOptionMenuPatch
         button.onState = on;
         Color color = on ? new Color(0f, 1f, 0.16470589f, 1f) : Color.white;
         button.Background.color = color;
-        button.Text.text = text + ": " + DestroyableSingleton<TranslationController>.Instance.GetString(button.onState ? StringNames.SettingsOn : StringNames.SettingsOff, new UnhollowerBaseLib.Il2CppReferenceArray<Il2CppSystem.Object>(0));
+        button.Text.text = text + ": " + DestroyableSingleton<TranslationController>.Instance.GetString(button.onState ? StringNames.SettingsOn : StringNames.SettingsOff, new Il2CppReferenceArray<Il2CppSystem.Object>(0));
         if (button.Rollover)
         {
             button.Rollover.ChangeOutColor(color);
@@ -623,7 +623,7 @@ public static class StartOptionMenuPatch
         else if (tabs.Count == 5)
             for (int i = 0; i < 4; i++) tabs[i].transform.localPosition = new Vector3(1.62f * ((float)i - 1.5f), y, z);
 
-        __instance.Tabs = new UnhollowerBaseLib.Il2CppReferenceArray<TabGroup>(tabs.ToArray());
+        __instance.Tabs = new Il2CppReferenceArray<TabGroup>(tabs.ToArray());
 
 
     }

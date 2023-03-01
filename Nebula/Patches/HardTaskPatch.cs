@@ -186,7 +186,7 @@ public class HardTaskPatch
     [HarmonyPatch(typeof(NormalPlayerTask), nameof(NormalPlayerTask.PickRandomConsoles))]
     public static class RandomTaskPatch
     {
-        static public void Postfix(NormalPlayerTask __instance, [HarmonyArgument(0)] TaskTypes taskType, [HarmonyArgument(1)] ref UnhollowerBaseLib.Il2CppStructArray<byte> consoleIds)
+        static public void Postfix(NormalPlayerTask __instance, [HarmonyArgument(0)] TaskTypes taskType, [HarmonyArgument(1)] ref Il2CppStructArray<byte> consoleIds)
         {
             if (!CustomOptionHolder.TasksOption.getBool() || !CustomOptionHolder.RandomizedWiringOption.getBool()) return;
 
@@ -196,7 +196,7 @@ public class HardTaskPatch
 
         }
 
-        static public bool Prefix(NormalPlayerTask __instance, ref Il2CppSystem.Collections.Generic.List<Console> __result, [HarmonyArgument(0)] TaskTypes taskType, [HarmonyArgument(1)] ref UnhollowerBaseLib.Il2CppStructArray<byte> consoleIds)
+        static public bool Prefix(NormalPlayerTask __instance, ref Il2CppSystem.Collections.Generic.List<Console> __result, [HarmonyArgument(0)] TaskTypes taskType, [HarmonyArgument(1)] ref Il2CppStructArray<byte> consoleIds)
         {
             if (!CustomOptionHolder.TasksOption.getBool()) return true;
 

@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
-using UnhollowerBaseLib;
 using Hazel;
 using System.Text;
 using Nebula.Patches;
+using System.IO.Compression;
 
 namespace Nebula;
 
@@ -92,7 +92,7 @@ public static class Helpers
 
     public static Sprite? getSpriteFromAssets(string name)
     {
-        foreach (var sprite in UnityEngine.Object.FindObjectsOfTypeIncludingAssets(Sprite.Il2CppType))
+        foreach (var sprite in UnityEngine.Object.FindObjectsOfTypeIncludingAssets(Il2CppType.Of<Sprite>()))
         {
             if (sprite.name != name) continue;
 
@@ -127,6 +127,7 @@ public static class Helpers
             Stream stream = assembly.GetManifestResourceStream(path);
             var byteArray = new byte[stream.Length];
             var read = stream.Read(byteArray, 0, (int)stream.Length);
+            stream.Close();
             return Encoding.Unicode.GetString(byteArray);
         }
         catch
@@ -144,6 +145,29 @@ public static class Helpers
             {
                 Texture2D texture = new Texture2D(2, 2, TextureFormat.ARGB32, true);
                 byte[] byteTexture = File.ReadAllBytes(path);
+                LoadImage(texture, byteTexture, false);
+                return texture;
+            }
+        }
+        catch
+        {
+            System.Console.WriteLine("Error loading texture from disk: " + path);
+        }
+        return null;
+    }
+
+    public static Texture2D loadTextureFromZip(ZipArchive zip,string path)
+    {
+        try
+        {
+            var entry = zip.GetEntry(path);
+            if (entry!=null)
+            {
+                Texture2D texture = new Texture2D(2, 2, TextureFormat.ARGB32, true);
+                Stream stream = entry.Open();
+                byte[] byteTexture = new byte[entry.Length];
+                stream.Read(byteTexture,0, byteTexture.Length);
+                stream.Close();
                 LoadImage(texture, byteTexture, false);
                 return texture;
             }
@@ -808,7 +832,7 @@ public static class Helpers
 
     public static AudioClip? FindSound(string sound)
     {
-        foreach (var audio in UnityEngine.Object.FindObjectsOfTypeIncludingAssets(AudioClip.Il2CppType))
+        foreach (var audio in UnityEngine.Object.FindObjectsOfTypeIncludingAssets(Il2CppType.Of<AudioClip>()))
         {
             if (audio.name == sound) return audio.Cast<AudioClip>();
         }
@@ -896,5 +920,15 @@ public static class Helpers
         player.SetFlipX(true);
 
         return player;
+    }
+
+    public static float GetNormalizeRate()
+    {
+        return 3f / ((float)Screen.height / 200f);
+    }
+
+    public static float GetDefaultNormalizeRate()
+    {
+        return 3f / (720f / 200f);
     }
 }

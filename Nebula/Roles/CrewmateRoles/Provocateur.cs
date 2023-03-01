@@ -11,7 +11,7 @@ public class Provocateur : Role
     private Module.CustomOption embroilCoolDownAdditionOption;
     private Module.CustomOption embroilDurationOption;
 
-    private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.EmbroilButton.png", 115f);
+    private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.EmbroilButton.png", 115f, "ui.button.provocateur.embroil");
     public override HelpSprite[] helpSprite => new HelpSprite[]
     {
             new HelpSprite(buttonSprite,"role.provocateur.help.embroil",0.3f)

@@ -174,7 +174,7 @@ public class Sniper : Role
     }
 
     /* 画像 */
-    private SpriteLoader snipeButtonSprite = new SpriteLoader("Nebula.Resources.SnipeButton.png", 115f);
+    private SpriteLoader snipeButtonSprite = new SpriteLoader("Nebula.Resources.SnipeButton.png", 115f, "ui.button.sniper.equip");
 
     public override HelpSprite[] helpSprite => new HelpSprite[]
     {

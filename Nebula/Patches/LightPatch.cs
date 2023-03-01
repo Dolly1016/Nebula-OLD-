@@ -105,8 +105,8 @@ class LightPatch
     [HarmonyPatch(typeof(LightSourceGpuRenderer), nameof(LightSourceGpuRenderer.GPUShadows))]
     public static class LightSourceGpuRendererPatch
     {
-        static UnhollowerBaseLib.Il2CppReferenceArray<Collider2D> origArray;
-        static UnhollowerBaseLib.Il2CppReferenceArray<Collider2D> zeroArray = new(0);
+        static Il2CppReferenceArray<Collider2D> origArray;
+        static Il2CppReferenceArray<Collider2D> zeroArray = new(0);
 
         public static void Prefix(LightSourceGpuRenderer __instance)
         {
@@ -126,8 +126,8 @@ class LightPatch
     [HarmonyPatch(typeof(LightSourceRaycastRenderer), nameof(LightSourceRaycastRenderer.RaycastShadows))]
     public static class LightSourceRaycastRendererPatch
     {
-        static UnhollowerBaseLib.Il2CppReferenceArray<Collider2D> origArray;
-        static UnhollowerBaseLib.Il2CppReferenceArray<Collider2D> zeroArray = new(0);
+        static Il2CppReferenceArray<Collider2D> origArray;
+        static Il2CppReferenceArray<Collider2D> zeroArray = new(0);
 
         public static void Prefix(LightSourceRaycastRenderer __instance)
         {
