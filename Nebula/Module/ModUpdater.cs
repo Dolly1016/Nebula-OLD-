@@ -49,6 +49,11 @@ public class ModNewsHistory
     {
         IEnumerator GetEnumerator()
         {
+            while (AnnouncementPopUp.UpdateState == AnnouncementPopUp.AnnounceState.Fetching) yield return null;
+            if (AnnouncementPopUp.UpdateState > AnnouncementPopUp.AnnounceState.Fetching && DataManager.Player.Announcements.AllAnnouncements.Count > 0) yield break;
+            
+            AnnouncementPopUp.UpdateState = AnnouncementPopUp.AnnounceState.Fetching;
+
             AllModNews.Clear();
 
             var lang = Language.Language.GetLanguage((uint)DataManager.Settings.Language.CurrentLanguage);
@@ -56,7 +61,6 @@ public class ModNewsHistory
             HttpClient http = new HttpClient();
             http.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue { NoCache = true };
             var task = http.GetAsync(new System.Uri($"https://raw.githubusercontent.com/Dolly1016/Nebula/master/Announcement_{lang}.json"), HttpCompletionOption.ResponseContentRead);
-            task.Start();
             while (!task.IsCompleted) yield return null;
             var response = task.Result;
 
@@ -64,7 +68,7 @@ public class ModNewsHistory
             if (response.StatusCode != HttpStatusCode.OK) yield break;
             if (response.Content == null) yield break;
             string json = response.Content.ReadAsStringAsync().Result;
-            JObject jObj = JObject.Parse(json);
+            JToken jObj = JObject.Parse(json)["News"];
             for (JToken current = jObj.First; current != null; current = current.Next)
             {
                 try
@@ -82,6 +86,8 @@ public class ModNewsHistory
                 }
                 catch { }
             }
+
+            AnnouncementPopUp.UpdateState = AnnouncementPopUp.AnnounceState.NotStarted;
         }
 
         __result = Effects.Sequence(GetEnumerator().WrapToIl2Cpp(),__result);
