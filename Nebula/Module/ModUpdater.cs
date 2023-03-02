@@ -11,6 +11,7 @@ using AmongUs.Data;
 using Assets.InnerNet;
 using AmongUs.Data.Player;
 using System.Linq;
+using Epic.OnlineServices.Presence;
 
 namespace Nebula.Module;
 
@@ -34,6 +35,8 @@ public class ModNews
         result.ShortTitle = ShortTitle;
         result.Text = Text;
         result.Language = (uint)DataManager.Settings.Language.CurrentLanguage;
+        result.Date = Date;
+        result.Id = "ModNews";
 
         return result;
     }
@@ -97,22 +100,27 @@ public class ModNewsHistory
         __result = Effects.Sequence(GetEnumerator().WrapToIl2Cpp(),__result);
     }
 
+    public static int Compare(DateTime t1, DateTime t2)
+    {
+        long ticks1 = t1.Ticks;
+        long ticks2 = t2.Ticks;
+        if (ticks1 > ticks2) return 1;
+        if (ticks1 < ticks2) return -1;
+        return 0;
+    }
+
     [HarmonyPatch(typeof(PlayerAnnouncementData), nameof(PlayerAnnouncementData.SetAnnouncements)), HarmonyPrefix]
     public static bool SetModAnnouncements(PlayerAnnouncementData __instance, [HarmonyArgument(0)] Il2CppReferenceArray<Announcement> aRange)
     {
-        List<Announcement> announcement = aRange.ToList();
+        List<Announcement> list = new();
+        foreach (var a in aRange) list.Add(a);
+        foreach (var m in AllModNews) list.Add(m.ToAnnouncement());
+        list.Sort((a1, a2) => { return DateTime.Compare(DateTime.Parse(a1.Date), DateTime.Parse(a2.Date)); });
+
         __instance.allAnnouncements = new Il2CppSystem.Collections.Generic.List<Announcement>();
-        foreach (var a in aRange) __instance.allAnnouncements.Add(a);
-        foreach (var m in AllModNews)
-        {
-            try
-            {
-                __instance.allAnnouncements.Insert(__instance.allAnnouncements.FindIndex((Il2CppSystem.Predicate<Announcement>)((a) => a.Number == m.BeforeNumber)), m.ToAnnouncement());
-            }
-            catch {
-                NebulaPlugin.Instance.Logger.Print("ModNews", "Failed to insert news.");
-            }
-        }
+        foreach (var a in list) __instance.allAnnouncements.Add(a);
+
+
         __instance.HandleChange();
         __instance.OnAddAnnouncement?.Invoke();
 
