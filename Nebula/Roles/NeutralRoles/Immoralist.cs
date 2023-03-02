@@ -24,6 +24,8 @@ namespace Nebula.Roles.NeutralRoles
 
         Dictionary<byte, Arrow> Arrows;
 
+        SpriteLoader arrowSprite = new SpriteLoader("role.immoralist.arrow");
+
         public override void MyPlayerControlUpdate()
         {
             if (PlayerControl.LocalPlayer.Data.IsDead)
@@ -56,7 +58,7 @@ namespace Nebula.Roles.NeutralRoles
             {
                 if (!Arrows.ContainsKey(body.ParentId))
                 {
-                    Arrows[body.ParentId] = new Arrow(Color.blue);
+                    Arrows[body.ParentId] = new Arrow(Color.blue,true,arrowSprite.GetSprite());
                     Arrows[body.ParentId].arrow.SetActive(true);
                 }
                 Arrows[body.ParentId].Update(body.transform.position);

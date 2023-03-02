@@ -63,6 +63,11 @@ namespace Nebula.Module
         public override bool Parse(string str) { return bool.Parse(str); }
         public BooleanDataEntry(string name, DataSaver saver, bool defaultValue) : base(name, saver, defaultValue) { }
     }
+    public class NewsHistoryDataEntry : DataEntry<bool>
+    {
+        public override bool Parse(string str) { return bool.Parse(str); }
+        public NewsHistoryDataEntry(string name, DataSaver saver, bool defaultValue) : base(name, saver, defaultValue) { }
+    }
 
     public class DataSaver 
     {

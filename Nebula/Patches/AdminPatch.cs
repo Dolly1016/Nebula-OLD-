@@ -276,6 +276,7 @@ public class AdminPatch
                         int num = 0;
                         foreach (var data in Game.GameData.data.AllPlayers)
                         {
+                            if (!data.Value.IsAlive) continue;
                             if (data.Value.preMeetingPosition == null || detectedPlayers.Contains(data.Value.id)) continue;
 
                             if (!plainShipRoom.roomArea.OverlapPoint(data.Value.preMeetingPosition.Value)) continue;

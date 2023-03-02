@@ -8,7 +8,9 @@ public class Arrow
     private Vector3 oldTarget;
     private bool smallenNearArrow;
 
-    private static Sprite sprite;
+    
+    static private Sprite sprite;
+    
     public static Sprite getSprite()
     {
 
@@ -18,12 +20,12 @@ public class Arrow
     }
 
 
-    public Arrow(Color color,bool smallenNearArrow=true)
+    public Arrow(Color color,bool smallenNearArrow=true,Sprite? sprite=null)
     {
         arrow = new GameObject("Arrow");
         arrow.layer = 5;
         image = arrow.AddComponent<SpriteRenderer>();
-        image.sprite = getSprite();
+        image.sprite = sprite != null ? sprite : getSprite();
         image.color = color;
         this.smallenNearArrow = smallenNearArrow;
     }

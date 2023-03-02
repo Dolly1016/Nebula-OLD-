@@ -84,7 +84,6 @@ public enum CustomRPC
     Morph,
     MorphCancel,
     CreateSidekick,
-    DisturberInvoke,
     BansheeWeep,
     UpdatePlayersIconInfo,
     SpectreEat,
@@ -341,9 +340,6 @@ class RPCHandlerPatch
                 break;
             case (byte)CustomRPC.CreateSidekick:
                 RPCEvents.CreateSidekick(reader.ReadByte(), reader.ReadByte());
-                break;
-            case (byte)CustomRPC.DisturberInvoke:
-                RPCEvents.DisturberInvoke(reader.ReadByte(), reader.ReadUInt64(), reader.ReadUInt64());
                 break;
             case (byte)CustomRPC.BansheeWeep:
                 RPCEvents.BansheeWeep(new Vector2(reader.ReadSingle(), reader.ReadSingle()));
@@ -1410,70 +1406,6 @@ static class RPCEvents
         }
     }
 
-    public static void DisturberInvoke(byte playerId, ulong objectId1, ulong objectId2)
-    {
-        Vector2 pos1 = (Vector2)Objects.CustomObject.Objects[objectId1].GameObject.transform.position + new Vector2(0, -0.3f);
-        Vector2 pos2 = (Vector2)Objects.CustomObject.Objects[objectId2].GameObject.transform.position + new Vector2(0, -0.3f);
-        Vector2 pos1Upper = pos1 + new Vector2(0, 0.5f);
-        Vector2 pos2Upper = pos2 + new Vector2(0, 0.5f);
-        Vector2 center = (pos1 + pos2) / 2f;
-
-        bool vertical = Mathf.Abs(pos1.x - pos2.x) < 0.8f;
-
-        var obj = new GameObject("ElecBarrior");
-        var MeshFilter = obj.AddComponent<MeshFilter>();
-        var MeshRenderer = obj.AddComponent<MeshRenderer>();
-        var Collider = obj.AddComponent<EdgeCollider2D>();
-        
-        obj.transform.localPosition = new Vector3(center.x, center.y, center.y / 1000f);
-
-        var mesh = new Mesh();
-        var vertextList = new Il2CppSystem.Collections.Generic.List<Vector3>();
-        var uvList = new Il2CppSystem.Collections.Generic.List<Vector2>();
-
-        vertextList.Add(pos1Upper - center + new Vector2(vertical ? 0.22f : 0f, 0.2f));
-        vertextList.Add(pos2Upper - center + new Vector2(vertical ? 0.22f : 0f, 0.2f));
-        vertextList.Add(pos1 - center + new Vector2(vertical ? -0.22f : 0f, vertical ? 0.7f : 0.2f));
-        vertextList.Add(pos2 - center + new Vector2(vertical ? -0.22f : 0f, vertical ? 0.7f : 0.2f));
-
-        uvList.Add(new Vector2(0, 0));
-        uvList.Add(new Vector2(1f / 3f, 0));
-        uvList.Add(new Vector2(0, 1));
-        uvList.Add(new Vector2(1f / 3f, 1));
-
-        mesh.SetVertices(vertextList);
-        mesh.SetUVs(0, uvList);
-        mesh.SetIndices(new int[6] { 0, 2, 1, 1, 2, 3 }, MeshTopology.Triangles, 0);
-        
-        Collider.points = new Vector2[5] { pos1 - center, pos1Upper - center, pos2Upper - center, pos2 - center, pos1 - center };
-        Collider.edgeRadius = 0.2f;
-
-        MeshRenderer.material = new Material(FastDestroyableSingleton<HudManager>.Instance.MapButton.HeldButtonSprite.material);
-        MeshRenderer.material.mainTexture = vertical ? Roles.Roles.Disturber.getElecAnimSubTexture() : Roles.Roles.Disturber.getElecAnimTexture();
-
-        MeshFilter.mesh = mesh;
-
-        float timer = 0.1f;
-        int num = 0;
-        new Objects.DynamicCollider(Collider, Roles.Roles.Disturber.disturbDurationOption.getFloat(), false, (c) =>
-        {
-            timer -= Time.deltaTime;
-
-            if (timer < 0f)
-            {
-                timer = 0.1f;
-                num = (num + 1) % 3;
-
-                uvList[0] = new Vector2((float)num / 3f, 0);
-                uvList[1] = new Vector2((float)(num + 1) / 3f, 0);
-                uvList[2] = new Vector2((float)num / 3f, 1);
-                uvList[3] = new Vector2((float)(num + 1) / 3f, 1);
-                mesh.SetUVs(0, uvList);
-            }
-        }, Roles.Roles.Disturber.ignoreBarriorsOption.getSelection() == 1,
-        (ulong)(Roles.Roles.Disturber.ignoreBarriorsOption.getSelection() == 2 ? 1 << playerId : 0));
-    }
-
     public static void BansheeWeep(Vector2 pos)
     {
         //Bansheeを確定させる
@@ -2455,16 +2387,6 @@ public class RPCEventInvoker
         writer.Write(jackalId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         RPCEvents.CreateSidekick(targetId, jackalId);
-    }
-
-    public static void DisturberInvoke(ulong objectId1, ulong objectId2)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.DisturberInvoke, Hazel.SendOption.Reliable, -1);
-        writer.Write(PlayerControl.LocalPlayer.PlayerId);
-        writer.Write(objectId1);
-        writer.Write(objectId2);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-        RPCEvents.DisturberInvoke(PlayerControl.LocalPlayer.PlayerId, objectId1, objectId2);
     }
 
     public static void GlobalEvent(Events.GlobalEvent.Type type, float duration, ulong option = 0)

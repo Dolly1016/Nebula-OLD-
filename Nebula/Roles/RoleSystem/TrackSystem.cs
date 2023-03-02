@@ -35,7 +35,7 @@ static public class TrackSystem
         return result;
     }
 
-    static public void DeadBodySearch_MyControlUpdate(bool showFlag, Dictionary<byte, Objects.Arrow> arrows)
+    static public void DeadBodySearch_MyControlUpdate(bool showFlag, Dictionary<byte, Objects.Arrow> arrows,SpriteLoader arrowSprite)
     {
         if (!showFlag)
         {
@@ -79,7 +79,7 @@ static public class TrackSystem
             {
                 if (!arrows.ContainsKey(body.ParentId))
                 {
-                    arrows.Add(body.ParentId, new Objects.Arrow(Color.blue));
+                    arrows.Add(body.ParentId, new Objects.Arrow(Color.blue,true,arrowSprite.GetSprite()));
                 }
             }
 
@@ -90,7 +90,7 @@ static public class TrackSystem
         }
     }
 
-    static public void PlayerTrack_MyControlUpdate(ref Objects.Arrow? arrow, PlayerControl? target, Color color)
+    static public void PlayerTrack_MyControlUpdate(ref Objects.Arrow? arrow, PlayerControl? target, Color color,SpriteLoader arrowSprite)
     {
         if (target == null || target.Data.IsDead)
         {
@@ -102,12 +102,12 @@ static public class TrackSystem
             return;
         }
 
-        if (arrow == null) arrow = new Objects.Arrow(color);
+        if (arrow == null) arrow = new Objects.Arrow(color,true,arrowSprite.GetSprite());
 
         arrow.Update(target.transform.position);
     }
 
-    static public void PlayerTrack_MyControlUpdate(ref Objects.Arrow? arrow, Game.PlayerObject? target, Color color)
+    static public void PlayerTrack_MyControlUpdate(ref Objects.Arrow? arrow, Game.PlayerObject? target, Color color,SpriteLoader arrowSprite)
     {
         if (target == null || target.control == null)
         {
@@ -143,13 +143,13 @@ static public class TrackSystem
                 return;
             }
 
-            if (arrow == null) arrow = new Objects.Arrow(color);
+            if (arrow == null) arrow = new Objects.Arrow(color,true,arrowSprite.GetSprite());
 
             arrow.Update(target.deadBody.transform.position);
         }
         else
         {
-            if (arrow == null) arrow = new Objects.Arrow(color);
+            if (arrow == null) arrow = new Objects.Arrow(color,true,arrowSprite.GetSprite());
 
             arrow.Update(target.control.transform.position);
         }

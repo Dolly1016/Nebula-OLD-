@@ -23,6 +23,7 @@ public class FTrapper : Template.HasBilateralness
     public static SpriteLoader decelButtonSprite = new SpriteLoader("Nebula.Resources.DecelTrapButton.png", 115f);
     public static SpriteLoader killButtonSprite = new SpriteLoader("Nebula.Resources.KillTrapButton.png", 115f);
     public static SpriteLoader commButtonSprite = new SpriteLoader("Nebula.Resources.CommTrapButton.png", 115f);
+    public static SpriteLoader commArrowSprite = new SpriteLoader("role.trapper.arrow");
 
     public override void LoadOptionData()
     {
@@ -175,7 +176,7 @@ public class Trapper : Template.BilateralnessRole
 
                         if (player.transform.position.Distance(obj.GameObject.transform.position) < 1.125f / 2f)
                         {
-                            Arrow arrow = new Arrow(Palette.PlayerColors[player.CurrentOutfit.ColorId]);
+                            Arrow arrow = new Arrow(Palette.PlayerColors[player.CurrentOutfit.ColorId],true, FTrapper.commArrowSprite.GetSprite());
                             arrow.arrow.SetActive(true);
                             arrow.Update(obj.GameObject.transform.position);
                             detectedPlayers.Add(player.PlayerId);

@@ -265,6 +265,8 @@ public class Paparazzo : Role, Template.HasWinTrigger
 
         CheckWin();
 
+        Objects.SoundPlayer.PlaySound(Module.AudioAsset.Paparazzo);
+
         return pictureData;
     }
 

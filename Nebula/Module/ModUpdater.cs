@@ -7,146 +7,245 @@ using Newtonsoft.Json.Linq;
 using Twitch;
 using System.Text.RegularExpressions;
 using Nebula.Patches;
+using AmongUs.Data;
+using Assets.InnerNet;
+using AmongUs.Data.Player;
+using System.Linq;
 
 namespace Nebula.Module;
 
-/*
-[HarmonyPatch(typeof(AnnouncementPopUp), nameof(AnnouncementPopUp.UpdateAnnounceText))]
-public static class AnnouncementPatch
+
+public class ModNews
 {
-    private static bool ShownFlag = false;
-    private static ConfigEntry<int> AnnounceVersion = null;
-    private static string Announcement = "";
+    public int Number;
+    public int BeforeNumber;
+    public string Title;
+    public string SubTitle;
+    public string ShortTitle;
+    public string Text;
+    public string Date;
 
-    private static string FormatRoleString(Match match, string str, string key, string defaultString)
+    public Announcement ToAnnouncement()
     {
-        foreach (var role in Roles.Roles.AllRoles)
-        {
-            if (role.Name.ToUpper() == key)
-            {
-                str = str.Replace(match.Value, Helpers.cs(role.Color, Language.Language.GetString("role." + role.LocalizeName + ".name")));
-                return str;
-            }
-        }
-        foreach (var role in Roles.Roles.AllExtraRoles)
-        {
-            if (role.Name.ToUpper() == key)
-            {
-                str = str.Replace(match.Value, Helpers.cs(role.Color, Language.Language.GetString("role." + role.LocalizeName + ".name")));
-                return str;
-            }
-        }
+        var result = new Announcement();
+        result.Number = Number;
+        result.Title = Title;
+        result.SubTitle = SubTitle;
+        result.ShortTitle = ShortTitle;
+        result.Text = Text;
+        result.Language = (uint)DataManager.Settings.Language.CurrentLanguage;
 
-        str = str.Replace(match.Value, defaultString);
-        return str;
+        return result;
     }
+}
 
-    private static string FormatString(string str)
+[HarmonyPatch]
+public class ModNewsHistory
+{
+    public static List<ModNews> AllModNews=new List<ModNews>();
+
+    [HarmonyPatch(typeof(AnnouncementPopUp), nameof(AnnouncementPopUp.Init)), HarmonyPostfix]
+    public static void Initialize(ref Il2CppSystem.Collections.IEnumerator __result)
     {
-        Regex regex;
-
-        //旧式の変換
-        foreach (var role in Roles.Roles.AllRoles)
+        IEnumerator GetEnumerator()
         {
-            str = str.Replace("%ROLE:" + role.Name.ToUpper() + "%", Helpers.cs(role.Color, Language.Language.GetString("role." + role.LocalizeName + ".name")));
-        }
-        foreach (var role in Roles.Roles.AllExtraRoles)
-        {
-            str = str.Replace("%ROLE:" + role.Name.ToUpper() + "%", Helpers.cs(role.Color, Language.Language.GetString("role." + role.LocalizeName + ".name")));
-        }
+            AllModNews.Clear();
 
-        regex = new Regex("%ROLE:[A-Z]+\\([a-zA-Z0-9 ]+\\)%");
-        foreach (Match match in regex.Matches(str))
-        {
-            var split = match.Value.Split(':', '(', ')');
-            str = FormatRoleString(match, str, split[1], split[2]);
-        }
+            var lang = Language.Language.GetLanguage((uint)DataManager.Settings.Language.CurrentLanguage);
 
-        str = str.Replace("%/COLOR%", "</color>");
-
-        regex = new Regex("%OPTION\\([a-zA-Z\\.0-9]+\\)\\,\\([a-zA-Z\\.0-9 ]+\\)%");
-        foreach (Match match in regex.Matches(str))
-        {
-            var split = match.Value.Split('(', ')');
-
-            str = str.Replace(match.Value,
-                Language.Language.CheckValidKey(split[1]) ?
-                Language.Language.GetString(split[1]) : split[3]);
-        }
-
-        return str;
-    }
-
-    public static bool LoadAnnouncement()
-    {
-        if (AnnounceVersion == null)
-        {
-            AnnounceVersion = NebulaPlugin.Instance.Config.Bind("Announce", "Version", (int)0);
-        }
-
-        HttpClient http = new HttpClient();
-        http.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue { NoCache = true };
-        var response = http.GetAsync(new System.Uri($"https://raw.githubusercontent.com/Dolly1016/Nebula/master/announcement.json"), HttpCompletionOption.ResponseContentRead).Result;
+            HttpClient http = new HttpClient();
+            http.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue { NoCache = true };
+            var task = http.GetAsync(new System.Uri($"https://raw.githubusercontent.com/Dolly1016/Nebula/master/Announcement_{lang}.json"), HttpCompletionOption.ResponseContentRead);
+            task.Start();
+            while (!task.IsCompleted) yield return null;
+            var response = task.Result;
 
 
-        try
-        {
-            if (response.StatusCode != HttpStatusCode.OK) return false;
-            if (response.Content == null) return false;
+            if (response.StatusCode != HttpStatusCode.OK) yield break;
+            if (response.Content == null) yield break;
             string json = response.Content.ReadAsStringAsync().Result;
             JObject jObj = JObject.Parse(json);
-            JToken? version = jObj["Version"];
-            if (version == null) return false;
-            int Version = int.Parse(version.ToString());
-
-            //既にみたことがあれば出さない
-            if (AnnounceVersion.Value == Version)
+            for (JToken current = jObj.First; current != null; current = current.Next)
             {
-                ShownFlag = true;
-            }
-            //更新する
-            AnnounceVersion.Value = Version;
+                try
+                {
+                    var news = new ModNews();
+                    news.Number = int.Parse(current["Number"].ToString());
+                    news.BeforeNumber = int.Parse(current["Before"].ToString());
+                    news.Title = current["Title"].ToString();
+                    news.SubTitle = current["Subtitle"].ToString();
+                    news.ShortTitle = current["Short"].ToString();
+                    news.Text = current["Body"].ToString();
+                    news.Date = current["Date"].ToString();
 
-            string lang = Language.Language.GetLanguage((uint)AmongUs.Data.DataManager.Settings.Language.CurrentLanguage);
-            if (jObj[lang] != null)
-                Announcement = jObj[lang].ToString();
-            else if (jObj["English"] != null)
-                Announcement = jObj["English"].ToString();
-            else if (jObj["Japanese"] != null)
-                Announcement = jObj["Japanese"].ToString();
-            else
-            {
-                Announcement = "-Invalid Announcement-";
-                return false;
+                    AllModNews.Add(news);
+                }
+                catch { }
             }
-            Announcement = FormatString(Announcement);
         }
-        catch (System.Exception ex)
-        {
-        }
-        return !ShownFlag;
+
+        __result = Effects.Sequence(GetEnumerator().WrapToIl2Cpp(),__result);
     }
 
-    public static bool Prefix(AnnouncementPopUp __instance)
+    [HarmonyPatch(typeof(PlayerAnnouncementData), nameof(PlayerAnnouncementData.SetAnnouncements)), HarmonyPrefix]
+    public static bool SetModAnnouncements(PlayerAnnouncementData __instance, [HarmonyArgument(0)] Il2CppReferenceArray<Announcement> aRange)
     {
-        if (!ShownFlag)
+        List<Announcement> announcement = aRange.ToList();
+        __instance.allAnnouncements = new Il2CppSystem.Collections.Generic.List<Announcement>();
+        foreach (var a in aRange) __instance.allAnnouncements.Add(a);
+        foreach (var m in AllModNews)
         {
-            if (LoadAnnouncement())
+            try
             {
-                AnnouncementPopUp.UpdateState = AnnouncementPopUp.AnnounceState.Success;
-                ShownFlag = true;
+                __instance.allAnnouncements.Insert(__instance.allAnnouncements.FindIndex((Il2CppSystem.Predicate<Announcement>)((a) => a.Number == m.BeforeNumber)), m.ToAnnouncement());
             }
+            catch { }
         }
-        else { LoadAnnouncement(); }
-
-        __instance.AnnounceTextMeshPro.text = Announcement;
+        __instance.HandleChange();
+        __instance.OnAddAnnouncement?.Invoke();
 
         return false;
     }
 }
-*/
 
-[HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start))]
+
+/*
+    [HarmonyPatch(typeof(AnnouncementPopUp), nameof(AnnouncementPopUp.UpdateAnnounceText))]
+    public static class AnnouncementPatch
+    {
+        private static bool ShownFlag = false;
+        private static ConfigEntry<int> AnnounceVersion = null;
+        private static string Announcement = "";
+
+        private static string FormatRoleString(Match match, string str, string key, string defaultString)
+        {
+            foreach (var role in Roles.Roles.AllRoles)
+            {
+                if (role.Name.ToUpper() == key)
+                {
+                    str = str.Replace(match.Value, Helpers.cs(role.Color, Language.Language.GetString("role." + role.LocalizeName + ".name")));
+                    return str;
+                }
+            }
+            foreach (var role in Roles.Roles.AllExtraRoles)
+            {
+                if (role.Name.ToUpper() == key)
+                {
+                    str = str.Replace(match.Value, Helpers.cs(role.Color, Language.Language.GetString("role." + role.LocalizeName + ".name")));
+                    return str;
+                }
+            }
+
+            str = str.Replace(match.Value, defaultString);
+            return str;
+        }
+
+        private static string FormatString(string str)
+        {
+            Regex regex;
+
+            //旧式の変換
+            foreach (var role in Roles.Roles.AllRoles)
+            {
+                str = str.Replace("%ROLE:" + role.Name.ToUpper() + "%", Helpers.cs(role.Color, Language.Language.GetString("role." + role.LocalizeName + ".name")));
+            }
+            foreach (var role in Roles.Roles.AllExtraRoles)
+            {
+                str = str.Replace("%ROLE:" + role.Name.ToUpper() + "%", Helpers.cs(role.Color, Language.Language.GetString("role." + role.LocalizeName + ".name")));
+            }
+
+            regex = new Regex("%ROLE:[A-Z]+\\([a-zA-Z0-9 ]+\\)%");
+            foreach (Match match in regex.Matches(str))
+            {
+                var split = match.Value.Split(':', '(', ')');
+                str = FormatRoleString(match, str, split[1], split[2]);
+            }
+
+            str = str.Replace("%/COLOR%", "</color>");
+
+            regex = new Regex("%OPTION\\([a-zA-Z\\.0-9]+\\)\\,\\([a-zA-Z\\.0-9 ]+\\)%");
+            foreach (Match match in regex.Matches(str))
+            {
+                var split = match.Value.Split('(', ')');
+
+                str = str.Replace(match.Value,
+                    Language.Language.CheckValidKey(split[1]) ?
+                    Language.Language.GetString(split[1]) : split[3]);
+            }
+
+            return str;
+        }
+
+        public static bool LoadAnnouncement()
+        {
+            if (AnnounceVersion == null)
+            {
+                AnnounceVersion = NebulaPlugin.Instance.Config.Bind("Announce", "Version", (int)0);
+            }
+
+            HttpClient http = new HttpClient();
+            http.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue { NoCache = true };
+            var response = http.GetAsync(new System.Uri($"https://raw.githubusercontent.com/Dolly1016/Nebula/master/announcement.json"), HttpCompletionOption.ResponseContentRead).Result;
+
+
+            try
+            {
+                if (response.StatusCode != HttpStatusCode.OK) return false;
+                if (response.Content == null) return false;
+                string json = response.Content.ReadAsStringAsync().Result;
+                JObject jObj = JObject.Parse(json);
+                JToken? version = jObj["Version"];
+                if (version == null) return false;
+                int Version = int.Parse(version.ToString());
+
+                //既にみたことがあれば出さない
+                if (AnnounceVersion.Value == Version)
+                {
+                    ShownFlag = true;
+                }
+                //更新する
+                AnnounceVersion.Value = Version;
+
+                string lang = Language.Language.GetLanguage((uint)AmongUs.Data.DataManager.Settings.Language.CurrentLanguage);
+                if (jObj[lang] != null)
+                    Announcement = jObj[lang].ToString();
+                else if (jObj["English"] != null)
+                    Announcement = jObj["English"].ToString();
+                else if (jObj["Japanese"] != null)
+                    Announcement = jObj["Japanese"].ToString();
+                else
+                {
+                    Announcement = "-Invalid Announcement-";
+                    return false;
+                }
+                Announcement = FormatString(Announcement);
+            }
+            catch (System.Exception ex)
+            {
+            }
+            return !ShownFlag;
+        }
+
+        public static bool Prefix(AnnouncementPopUp __instance)
+        {
+            if (!ShownFlag)
+            {
+                if (LoadAnnouncement())
+                {
+                    AnnouncementPopUp.UpdateState = AnnouncementPopUp.AnnounceState.Success;
+                    ShownFlag = true;
+                }
+            }
+            else { LoadAnnouncement(); }
+
+            __instance.AnnounceTextMeshPro.text = Announcement;
+
+            return false;
+        }
+    }
+    */
+
+    [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start))]
 public class ModUpdaterButton
 {
     private static GameObject GenerateButton(GameObject template, Color color, string text, System.Action? action, bool mirror, ref int buttons)

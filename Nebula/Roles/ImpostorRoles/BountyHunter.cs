@@ -123,6 +123,8 @@ public class BountyHunter : Template.HasHologram
         catch { }
     }
 
+    SpriteLoader arrowSprite = new SpriteLoader("role.bountyHunter.arrow");
+
     public override void MyPlayerControlUpdate()
     {
         Game.MyPlayerData data = Game.GameData.data.myData;
@@ -142,7 +144,7 @@ public class BountyHunter : Template.HasHologram
 
         if (Arrow == null)
         {
-            Arrow = new Arrow(Palette.ImpostorRed);
+            Arrow = new Arrow(Palette.ImpostorRed,true,arrowSprite.GetSprite());
             Arrow.arrow.SetActive(true);
             noticeInterval = 0f;
         }

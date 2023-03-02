@@ -32,14 +32,14 @@ public class NebulaPlugin : BasePlugin
     public const string AmongUsVersion = "2023.2.28";
     public const string PluginGuid = "jp.dreamingpig.amongus.nebula";
     public const string PluginName = "TheNebula";
-    public const string PluginVersion = "2.1.1";
-    public const bool IsSnapshot = true;
+    public const string PluginVersion = "2.2.1";
+    public const bool IsSnapshot = false;
 
     public static string PluginVisualVersion = IsSnapshot ? "23.03.01a" : PluginVersion;
     public static string PluginStage = IsSnapshot ? "Snapshot" : "";
     
-    public const string PluginVersionForFetch = "2.1";
-    public byte[] PluginVersionData = new byte[] { 2, 1, 0, 0 };
+    public const string PluginVersionForFetch = "2.2.1";
+    public byte[] PluginVersionData = new byte[] { 2, 2, 1, 0 };
 
     public static NebulaPlugin Instance;
 

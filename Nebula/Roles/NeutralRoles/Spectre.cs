@@ -366,6 +366,7 @@ public class Spectre : Role
         }
     }
 
+    SpriteLoader arrowSprite = new SpriteLoader("role.spectre.arrow");
     public override void MyPlayerControlUpdate()
     {
         int i = 0;
@@ -376,7 +377,7 @@ public class Spectre : Role
                 if (impostorArrows.Count >= i) impostorArrows.Add(null);
 
                 var arrow = impostorArrows[i];
-                RoleSystem.TrackSystem.PlayerTrack_MyControlUpdate(ref arrow, p, Palette.ImpostorRed);
+                RoleSystem.TrackSystem.PlayerTrack_MyControlUpdate(ref arrow, p, Palette.ImpostorRed,arrowSprite);
                 impostorArrows[i] = arrow;
 
                 i++;

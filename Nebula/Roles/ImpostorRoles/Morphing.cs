@@ -108,13 +108,14 @@ public class Morphing : Role
         });
     }
 
+    SpriteLoader arrowSprite = new SpriteLoader("role.morphing.arrow");
     public override void MyPlayerControlUpdate()
     {
         Game.MyPlayerData data = Game.GameData.data.myData;
         data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(1f);
         Patches.PlayerControlPatch.SetPlayerOutline(data.currentTarget, Color.yellow);
 
-        RoleSystem.TrackSystem.PlayerTrack_MyControlUpdate(ref arrow, morphTarget, Color.red);
+        RoleSystem.TrackSystem.PlayerTrack_MyControlUpdate(ref arrow, morphTarget, Color.red, arrowSprite);
     }
 
     public override void OnMeetingEnd()

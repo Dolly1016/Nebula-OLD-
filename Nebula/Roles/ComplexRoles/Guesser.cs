@@ -37,6 +37,8 @@ public class FGuesser : Template.HasBilateralness
 
     public override void LoadOptionData()
     {
+        base.LoadOptionData();
+
         TopOption.tab = Module.CustomOptionTab.CrewmateRoles | Module.CustomOptionTab.ImpostorRoles | Module.CustomOptionTab.Modifiers;
         TopOption.SetYellowCondition((tab) =>
         {
@@ -73,8 +75,6 @@ public class FGuesser : Template.HasBilateralness
         };
 
         secondoryRoleOption = CreateOption(Color.white, "isSecondaryRole", false);
-
-        base.LoadOptionData();
 
         canShotSeveralTimesInTheSameMeeting = CreateOption(Color.white, "canShotSeveralTimes", false);
         guesserShots = CreateOption(Color.white, "guesserShots", 3f, 1f, 15f, 1f);
@@ -137,7 +137,7 @@ static public class GuesserSystem
         if (guesserUI != null || !(__instance.state == MeetingHud.VoteStates.Voted || __instance.state == MeetingHud.VoteStates.NotVoted)) return;
         __instance.playerStates.ToList().ForEach(x => x.gameObject.SetActive(false));
 
-        Transform container = UnityEngine.Object.Instantiate(__instance.transform.FindChild("PhoneUI"), __instance.transform);
+        Transform container = UnityEngine.Object.Instantiate(__instance.transform.FindChild("MeetingContents/PhoneUI"), __instance.transform);
         container.transform.localPosition = new Vector3(0, 0, -50f);
         guesserUI = container.gameObject;
 

@@ -144,6 +144,7 @@ class ExileControllerPatch
 
         Objects.CustomButton.OnMeetingEnd();
         Objects.CustomObject.OnMeetingEnd();
+        Expansion.GridArrangeExpansion.OnMeetingEnd();
     }
 
     static void WrapUpPrefix(ExileController __instance)

@@ -145,6 +145,7 @@ public class CustomObject
 
         public virtual void Update(CustomObject obj) { }
         public virtual void Update(CustomObject obj, int command) { }
+        public virtual void OnMeetingEnd(CustomObject obj) { }
         public virtual void Initialize(CustomObject obj) { }
         public virtual void OnDestroy(CustomObject obj) { }
 
@@ -152,6 +153,7 @@ public class CustomObject
         public virtual Color UsableColor { get => Color.white; }
         public virtual bool CanUse(CustomObject obj, PlayerControl player) { return true; }
         public virtual void Use(CustomObject obj) { }
+        
 
         public Type(byte id, string objectName)
         {
@@ -191,6 +193,7 @@ public class CustomObject
         foreach (CustomObject obj in Objects.Values)
         {
             obj.PassedMeetings++;
+            obj.ObjectType.OnMeetingEnd(obj);
         }
     }
 
@@ -206,7 +209,7 @@ public class CustomObject
         switch (type.GetObjectOrder(null))
         {
             case ObjectOrder.IsBack:
-                pos += new Vector3(0, 0, 0.001f);
+                pos += new Vector3(0, 0, 0.0006f);
                 break;
             case ObjectOrder.IsFront:
                 pos += new Vector3(0, 0, -1f);

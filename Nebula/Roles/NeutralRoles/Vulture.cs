@@ -81,6 +81,8 @@ public class Vulture : Role, Template.HasWinTrigger
             new HelpSprite(eatButtonSprite,"role.vulture.help.eat",0.3f)
     };
 
+    SpriteLoader arrowSprite = new SpriteLoader("role.vulture.arrow");
+
     public override void MyPlayerControlUpdate()
     {
         if (PlayerControl.LocalPlayer.Data.IsDead) return;
@@ -128,7 +130,7 @@ public class Vulture : Role, Template.HasWinTrigger
             {
                 if (!Arrows.ContainsKey(body.ParentId))
                 {
-                    Arrows[body.ParentId] = new Arrow(Color.blue);
+                    Arrows[body.ParentId] = new Arrow(Color.blue,true,arrowSprite.GetSprite());
                     Arrows[body.ParentId].arrow.SetActive(true);
                 }
                 Arrows[body.ParentId].Update(body.transform.position);

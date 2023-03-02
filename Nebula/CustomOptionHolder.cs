@@ -368,7 +368,17 @@ public class CustomOptionHolder
         severeEmergencyLock = CustomOption.Create(Color.white, "option.severeEmergencyLock", false, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
         dealAbstentionAsSelfVote = CustomOption.Create(Color.white, "option.dealAbstentionAsSelfVote", false, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
         hideVotedIcon = CustomOption.Create(Color.white, "option.hideVotedIcon", false, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
-        showRoleOfExiled = CustomOption.Create(Color.white, "option.showRoleOfExiled", false, meetingOptions).SetGameMode(~CustomGameMode.Minigame).AddCustomPrerequisite(() => GameOptionsManager.Instance.currentNormalGameOptions.ConfirmImpostor);
+        showRoleOfExiled = CustomOption.Create(Color.white, "option.showRoleOfExiled", false, meetingOptions).SetGameMode(~CustomGameMode.Minigame).AddCustomPrerequisite(() =>
+        {
+            try
+            {
+                return GameOptionsManager.Instance.currentNormalGameOptions.ConfirmImpostor;
+            }
+            catch
+            {
+                return false;
+            }
+        });
 
         additionalEmergencyCoolDown.alternativeOptionScreenBuilder = (refresher) =>
         {
@@ -379,7 +389,7 @@ public class CustomOptionHolder
                     new MetaScreenContent[]
                     {
                         new MSMargin(1.9f),
-                       new MSString(3f, additionalEmergencyCoolDown.getName(), 2f, 0.8f, TMPro.TextAlignmentOptions.MidlineRight, TMPro.FontStyles.Bold),
+                       new CustomOption.MSOptionString(additionalEmergencyCoolDown,3f, additionalEmergencyCoolDown.getName(), 2f, 0.8f, TMPro.TextAlignmentOptions.MidlineRight, TMPro.FontStyles.Bold),
                     new MSString(0.2f, ":", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
                     new MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () =>
                     {
@@ -393,7 +403,7 @@ public class CustomOptionHolder
                         refresher();
                     }),
                     new MSMargin(0.2f),
-                    new MSString(1.2f, additionalEmergencyCoolDownCondition.getName(), 2f, 0.8f, TMPro.TextAlignmentOptions.MidlineRight, TMPro.FontStyles.Bold),
+                    new CustomOption.MSOptionString(additionalEmergencyCoolDownCondition,1.2f, additionalEmergencyCoolDownCondition.getName(), 2f, 0.8f, TMPro.TextAlignmentOptions.MidlineRight, TMPro.FontStyles.Bold),
                     new MSString(0.2f, ":", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
                     new MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () =>
                     {
@@ -417,7 +427,7 @@ public class CustomOptionHolder
                     new MetaScreenContent[]
                     {
                         new MSMargin(1.9f),
-                       new MSString(3f, additionalEmergencyCoolDown.getName(), 2f, 0.8f, TMPro.TextAlignmentOptions.MidlineRight, TMPro.FontStyles.Bold),
+                       new CustomOption.MSOptionString(additionalEmergencyCoolDown,3f, additionalEmergencyCoolDown.getName(), 2f, 0.8f, TMPro.TextAlignmentOptions.MidlineRight, TMPro.FontStyles.Bold),
                     new MSString(0.2f, ":", TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold),
                     new MSButton(0.4f, 0.4f, "<<", TMPro.FontStyles.Bold, () =>
                     {

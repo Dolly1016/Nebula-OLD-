@@ -10,7 +10,7 @@ public interface ISpriteLoader
 
 public class SpriteLoader : ISpriteLoader
 {
-    string address;
+    string? address;
     string? textureId = null;
     Module.CustomTextureAsset? textureAsset = null;
     float pixelsPerUnit;
@@ -29,6 +29,13 @@ public class SpriteLoader : ISpriteLoader
         this.pixelsPerUnit = pixelsPerUnit;
     }
 
+    public SpriteLoader(string textureId)
+    {
+        this.address = null;
+        this.textureId = textureId;
+        this.pixelsPerUnit = 100f;
+    }
+
     public SpriteLoader(Sprite sprite)
     {
         this.sprite = sprite;
@@ -40,7 +47,7 @@ public class SpriteLoader : ISpriteLoader
         {
             if (textureId != null && (textureAsset != null || TexturePack.LoadAsset(textureId, null, ref textureAsset)))
                 sprite = textureAsset.staticSprite;
-            else
+            else if(address!=null)
                 sprite = Helpers.loadSpriteFromResources(address, pixelsPerUnit);
         }
         return sprite;
