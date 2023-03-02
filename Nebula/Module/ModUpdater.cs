@@ -71,6 +71,8 @@ public class ModNewsHistory
             JToken jObj = JObject.Parse(json)["News"];
             for (JToken current = jObj.First; current != null; current = current.Next)
             {
+                if (!current.HasValues) continue;
+
                 try
                 {
                     var news = new ModNews();
@@ -84,7 +86,9 @@ public class ModNewsHistory
 
                     AllModNews.Add(news);
                 }
-                catch { }
+                catch {
+                    NebulaPlugin.Instance.Logger.Print("ModNews","Failed to load news.");
+                }
             }
 
             AnnouncementPopUp.UpdateState = AnnouncementPopUp.AnnounceState.NotStarted;
@@ -105,7 +109,9 @@ public class ModNewsHistory
             {
                 __instance.allAnnouncements.Insert(__instance.allAnnouncements.FindIndex((Il2CppSystem.Predicate<Announcement>)((a) => a.Number == m.BeforeNumber)), m.ToAnnouncement());
             }
-            catch { }
+            catch {
+                NebulaPlugin.Instance.Logger.Print("ModNews", "Failed to insert news.");
+            }
         }
         __instance.HandleChange();
         __instance.OnAddAnnouncement?.Invoke();
