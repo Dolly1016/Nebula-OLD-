@@ -1098,6 +1098,8 @@ public class PlayerData
         Status = status;
 
         if (ShouldBeGhostRole) AddRoleHistory();
+
+        HudManager.Instance.AbilityButton.gameObject.SetActive(false);
     }
 
     public void Die(PlayerStatus status)

@@ -108,6 +108,7 @@ public class PerkHolder : ExtraRole
 
     PerkDisplay[] MyPerkDisplay;
     GameObject PerkDisplayHolder;
+    List<Objects.CustomButton> CustomButtonList=new List<CustomButton>();
     
 
 
@@ -135,7 +136,7 @@ public class PerkHolder : ExtraRole
             MyPerkDisplay[i].transform.localScale = Vector3.one * 0.3f;
             MyPerkDisplay[i].SetPerk(PerkData.MyPerkData.GetPerk(i));
 
-            PerkData.MyPerkData.MyPerks[i].Display = MyPerkDisplay[i];
+            if(PerkData.MyPerkData.MyPerks[i]!=null) PerkData.MyPerkData.MyPerks[i].Display = MyPerkDisplay[i];
         }
     }
 
@@ -152,6 +153,26 @@ public class PerkHolder : ExtraRole
     public override void MyUpdate()
     {
         PerkData.MyPerkData.PerkAction((p) => p.Perk.MyUpdate(p));
+    }
+
+    public override void CleanUp()
+    {
+        foreach(var button in CustomButtonList)
+        {
+            button.Destroy();
+        }
+        CustomButtonList.Clear();
+    }
+
+    public override void ButtonInitialize(HudManager __instance)
+    {
+        PerkData.MyPerkData.PerkAction((p) => p.Perk.ButtonInitialize(p, (b)=>RegisterButton(b)));
+    }
+
+    private void RegisterButton(Objects.CustomButton button)
+    {
+        button.SetHotKey(KeyCode.Alpha1 + CustomButtonList.Count);
+        CustomButtonList.Add(button);
     }
 
     public PerkHolder() : base("PerkHolder", "perkHolder", Palette.White, 0)

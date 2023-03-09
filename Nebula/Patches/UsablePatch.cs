@@ -48,12 +48,20 @@ class SabotageButtonRefreshPatch
 [HarmonyPatch(typeof(AbilityButton), nameof(AbilityButton.Refresh))]
 class AbilityButtonRefreshPatch
 {
-    static void Postfix(AbilityButton __instance)
+    static bool Prefix(AbilityButton __instance)
     {
-        if (PlayerControl.LocalPlayer?.Data?.Role?.Role == RoleTypes.CrewmateGhost || PlayerControl.LocalPlayer?.Data?.Role?.Role == RoleTypes.ImpostorGhost)
-        {
-            __instance.SetDisabled();
-        }
+        __instance.gameObject.SetActive(false);
+        return false;
+    }
+}
+
+[HarmonyPatch(typeof(RoleBehaviour), nameof(RoleBehaviour.InitializeAbilityButton))]
+class BlockInitializeAbilityButtonPatch
+{
+    static bool Prefix(RoleBehaviour __instance)
+    {
+        HudManager.Instance.AbilityButton.gameObject.SetActive(false);
+        return false;
     }
 }
 

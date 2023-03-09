@@ -238,7 +238,7 @@ public class CustomObject
 
         Data = new int[0];
 
-        PassedMeetings = 0;
+        PassedMeetings = Game.HnSModificator.IsHnSGame ? 1 : 0;
 
         ObjectType.Initialize(this);
 

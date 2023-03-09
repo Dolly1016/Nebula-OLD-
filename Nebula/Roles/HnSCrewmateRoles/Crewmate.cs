@@ -9,8 +9,12 @@ public class Crewmate : Role
     protected TMPro.TextMeshPro ventButtonUsesString;
     protected GameObject ventButtonUsesObject;
     protected int leftCanUseVent=0;
-
+    public int leftReviveId;
     public override bool ShowInHelpWindow => false;
+
+    static private CustomButton reviveButton = null;
+
+    private SpriteLoader reviveButtonSprite = new SpriteLoader("Nebula.Resources.ReviveButton.png", 115f, "ui.button.crewmate.revive");
 
     public override void ButtonInitialize(HudManager __instance)
     {
@@ -24,6 +28,56 @@ public class Crewmate : Role
         ventButtonUsesString.text = leftCanUseVent.ToString();
         ventButton.gameObject.GetComponent<SpriteRenderer>().sprite = RoleManager.Instance.AllRoles.First(r=>r.Role==RoleTypes.Engineer).Ability.Image;
         ventButton.transform.GetChild(1).GetComponent<TMPro.TextMeshPro>().outlineColor = Palette.CrewmateBlue;
+
+        if (reviveButton != null)
+        {
+            reviveButton.Destroy();
+        }
+        reviveButton = new CustomButton(
+            () => { },
+            () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
+            () =>
+            {
+                if (reviveButton.isEffectActive && deadBodyId == byte.MaxValue)
+                {
+                    reviveButton.Timer = 0f;
+                    reviveButton.isEffectActive = false;
+                }
+                return PlayerControl.LocalPlayer.CanMove && deadBodyId!=byte.MaxValue;
+            },
+            () =>
+            {
+                reviveButton.Timer = reviveButton.MaxTimer;
+                reviveButton.isEffectActive = false;
+            },
+            reviveButtonSprite.GetSprite(),
+            Expansion.GridArrangeExpansion.GridArrangeParameter.None,
+            __instance,
+            Module.NebulaInputManager.abilityInput.keyCode,
+            true,
+            10f,
+            () =>
+            {
+                if (deadBodyId == byte.MaxValue) return;
+
+                RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, leftReviveId, -1);
+                RPCEventInvoker.RevivePlayer(Helpers.playerById(deadBodyId));
+            },
+            "button.label.revive",
+            ImageNames.VitalsButton
+        ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());
+        reviveButton.MaxTimer = 20f;
+
+        RPCEventInvoker.UpdateRoleData(PlayerControl.LocalPlayer.PlayerId, leftReviveId, 1);
+    }
+
+    public override void OnUpdateRoleData(int dataId, int newData)
+    {
+        if (dataId == leftReviveId)
+        {
+            if (newData <= 0) newData = 0;
+            reviveButton.UsesText.text = newData.ToString();
+        }
     }
 
     public override void FinalizeInGame(PlayerControl __instance)
@@ -47,6 +101,34 @@ public class Crewmate : Role
             ventButtonUsesString.text = leftCanUseVent.ToString();
     }
 
+    private byte deadBodyId = byte.MaxValue;
+
+    public override void MyPlayerControlUpdate()
+    {
+        base.MyPlayerControlUpdate();
+
+        DeadBody body = Patches.PlayerControlPatch.SetMyDeadTarget();
+        if (body)
+        {
+            deadBodyId = body.ParentId;
+        }
+        else
+        {
+            deadBodyId = byte.MaxValue;
+        }
+        Patches.PlayerControlPatch.SetDeadBodyOutline(body, Color.yellow);
+    }
+
+    public override void CleanUp()
+    {
+        base.CleanUp();
+
+        if (reviveButton != null)
+        {
+            reviveButton.Destroy();
+            reviveButton = null;
+        }
+    }
     public Crewmate()
             : base("Crewmate", "crewmate", Palette.CrewmateBlue, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
                  CrewmateRoles.Crewmate.crewmateSideSet, CrewmateRoles.Crewmate.crewmateSideSet, CrewmateRoles.Crewmate.crewmateEndSet,
@@ -57,5 +139,7 @@ public class Crewmate : Role
         HideInExclusiveAssignmentOption = true;
 
         VentColor = Palette.CrewmateBlue;
+
+        leftReviveId = Game.GameData.RegisterRoleDataId("crewmate.revive");
     }
 }

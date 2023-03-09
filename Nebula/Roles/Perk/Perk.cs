@@ -201,6 +201,8 @@ public class Perk
 
     public virtual void MyUpdate(PerkHolder.PerkInstance perkData) { }
 
+    public virtual void ButtonInitialize(PerkInstance perkData,Action<Objects.CustomButton> buttonRegister) { }
+
     public int Id { get; private set; }
     public Perk(int id,string localizedName,bool isCrewmatePerk,int frontSpriteId,int backSpriteId,Color backSpriteColor)
     {
@@ -245,9 +247,10 @@ public class Perks
     public static CrewmatePerks.Intuition Intuition = new CrewmatePerks.Intuition(0);
     public static CrewmatePerks.Tenacity Tenacity = new CrewmatePerks.Tenacity(1);
     public static CrewmatePerks.Patience Patience = new CrewmatePerks.Patience(2);
-    public static CrewmatePerks.SheriffGlance SheriffGlance = new CrewmatePerks.SheriffGlance(3);
-    public static CrewmatePerks.GeniusInStorage GeniusInStorage = new CrewmatePerks.GeniusInStorage(4);
-    public static CrewmatePerks.TSPResolver TSPResolver = new CrewmatePerks.TSPResolver(5);
+    public static CrewmatePerks.Sprint Sprint = new CrewmatePerks.Sprint(3);
+    public static CrewmatePerks.SheriffGlance SheriffGlance = new CrewmatePerks.SheriffGlance(4);
+    public static CrewmatePerks.GeniusInStorage GeniusInStorage = new CrewmatePerks.GeniusInStorage(5);
+    public static CrewmatePerks.TSPResolver TSPResolver = new CrewmatePerks.TSPResolver(6);
 
     public static ImpostorPerks.Agitation Agitation = new ImpostorPerks.Agitation(1024);
     public static ImpostorPerks.Creeper Creeper = new ImpostorPerks.Creeper(1025);

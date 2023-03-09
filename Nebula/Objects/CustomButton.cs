@@ -279,6 +279,12 @@ public class CustomButton
         aidHotkey = key;
     }
 
+    public void SetHotKey(KeyCode key)
+    {
+        hotkey = key;
+        SetHotKeyGuide();
+    }
+
     private void SetHotKeyGuide()
     {
         SetKeyGuide(hotkey, new Vector2(0.48f, 0.48f), false);

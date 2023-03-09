@@ -488,11 +488,18 @@ public static class KeyboardJoystickUpdatePatch
     }
 }
 
-[HarmonyPatch(typeof(HudManager), nameof(HudManager.SetHudActive), typeof(bool))]
+[HarmonyPatch(typeof(HudManager), nameof(HudManager.SetHudActive), typeof(PlayerControl),typeof(RoleBehaviour), typeof(bool))]
 public static class SetHudActivePatch
 {
-    public static bool Prefix(HudManager __instance, [HarmonyArgument(0)]bool isActive)
+    public static bool Prefix(HudManager __instance, [HarmonyArgument(2)]bool isActive)
     {
+        if (AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Started)
+        {
+            __instance.ImpostorVentButton.gameObject.SetActive(false);
+            __instance.ReportButton.gameObject.SetActive(false);
+        }
+
+        __instance.AbilityButton.gameObject.SetActive(false);
         __instance.UseButton.transform.parent.gameObject.SetActive(isActive);
         __instance.TaskPanel.gameObject.SetActive(isActive);
         __instance.roomTracker.gameObject.SetActive(isActive);
@@ -502,11 +509,11 @@ public static class SetHudActivePatch
             virtualJoystick.ToggleVisuals(isActive);
         }
         VirtualJoystick virtualJoystick2 = __instance.joystickR;
-        if (virtualJoystick2 == null)
+        if (virtualJoystick2 != null)
         {
-            return false;
+            virtualJoystick2.ToggleVisuals(isActive);
         }
-        virtualJoystick2.ToggleVisuals(isActive);
+       
 
         return false;
     }
