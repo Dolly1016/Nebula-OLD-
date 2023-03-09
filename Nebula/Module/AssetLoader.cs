@@ -23,6 +23,8 @@ public static class AssetLoader
 
     public static AudioClip SpectreFried;
 
+    public static AudioClip Paparazzo;
+
     public static GameObject SkeldDivMap;
     public static GameObject MIRADivMap;
     public static GameObject PolusDivMap;
@@ -67,6 +69,8 @@ public static class AssetLoader
         CameraFinderPrefab = assetBundleBundle.LoadAsset<GameObject>("CameraFinder").DontUnload();
 
         MetaObjectPrefab = assetBundleBundle.LoadAsset<GameObject>("MetaObjectPrefab").DontUnload();
+
+        Paparazzo = assetBundleBundle.LoadAsset<AudioClip>("Camera").DontUnload();
     }
 
     public static Sprite GetMapSprite(byte mapId,Vector2 size,Int32 mask)
@@ -186,6 +190,9 @@ public static class AssetLoader
 
             case AudioAsset.SpectreFried:
                 return SpectreFried;
+
+            case AudioAsset.Paparazzo:
+                return Paparazzo;
         }
 
         return null;
@@ -204,6 +211,7 @@ public enum AudioAsset
     SniperEquip,
     RaiderThrow,
     Executioner,
-    SpectreFried
+    SpectreFried,
+    Paparazzo
 
 }

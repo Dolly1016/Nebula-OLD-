@@ -193,11 +193,6 @@ class MeetingHudPatch
             {
                 role.MeetingUpdate(__instance, meetingInfoText);
             });
-
-            if (Game.GameData.data.GameMode == Module.CustomGameMode.Investigators)
-            {
-                Ghost.InvestigatorMeetingUI.UpdateMeetingUI(__instance);
-            }
         }
     }
 
@@ -305,9 +300,6 @@ class MeetingHudPatch
             Events.LocalEvent.OnMeeting();
             Events.Schedule.OnPreMeeting();
 
-            if (Game.GameData.data.GameMode == Module.CustomGameMode.Investigators)
-                Ghost.InvestigatorMeetingUI.FormMeetingUI(__instance);
-
 
             EmergencyPatch.MeetingUpdate();
 
@@ -342,21 +334,6 @@ class MeetingHudPatch
             }
 
             Game.GameData.data.UtilityTimer.OnMeetingStart(__instance);
-        }
-    }
-
-
-    [HarmonyPatch(typeof(PlayerVoteArea), nameof(PlayerVoteArea.Select))]
-    class SelectedPlayerVoteAreaPatch
-    {
-        static bool Prefix(PlayerVoteArea __instance)
-        {
-            if (Game.GameData.data.GetPlayerData(__instance.TargetPlayerId) != null)
-            {
-                return Game.GameData.data.GameMode != Module.CustomGameMode.Investigators;
-            }
-            //Skipは常に有効
-            return true;
         }
     }
 

@@ -1,4 +1,5 @@
 ﻿using Hazel;
+using Nebula.Game;
 using Nebula.Module;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
@@ -84,14 +85,10 @@ public enum CustomRPC
     Morph,
     MorphCancel,
     CreateSidekick,
-    DisturberInvoke,
     BansheeWeep,
     UpdatePlayersIconInfo,
     SpectreEat,
 
-    InitializeRitualData,
-    RitualSharePerks,
-    RitualUpdate,
     DecoySwap,
     Paint,
     Poltergeist,
@@ -140,10 +137,10 @@ class RPCHandlerPatch
                 RPCEvents.VersionHandshake(version, new Guid(reader.ReadBytes(16)), clientId);
                 break;
             case (byte)CustomRPC.SetMyColor:
-                RPCEvents.SetMyColor(reader.ReadByte(), reader.ReadByte(), reader.ReadByte(), new Color(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), 1f), new Color(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), 1f));
+                RPCEvents.SetMyColor(reader.ReadByte(), reader.ReadByte(), reader.ReadByte(), reader.ReadByte(), reader.ReadByte(), new Color(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), 1f), new Color(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), 1f));
                 break;
             case (byte)CustomRPC.ShareColor:
-                RPCEvents.ShareColor(reader.ReadByte(), new Color(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), 1f), reader.ReadSingle(), reader.ReadByte(), reader.ReadByte(), new Color(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), 1f), reader.ReadSingle(), reader.ReadByte(), reader.ReadByte());
+                RPCEvents.ShareColor(reader.ReadByte(), reader.ReadByte(), reader.ReadByte(), new Color(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), 1f), reader.ReadSingle(), reader.ReadByte(), reader.ReadByte(), new Color(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), 1f), reader.ReadSingle(), reader.ReadByte(), reader.ReadByte());
                 break;
             case (byte)CustomRPC.Synchronize:
                 RPCEvents.Synchronize(reader.ReadByte(), reader.ReadInt32());
@@ -342,9 +339,6 @@ class RPCHandlerPatch
             case (byte)CustomRPC.CreateSidekick:
                 RPCEvents.CreateSidekick(reader.ReadByte(), reader.ReadByte());
                 break;
-            case (byte)CustomRPC.DisturberInvoke:
-                RPCEvents.DisturberInvoke(reader.ReadByte(), reader.ReadUInt64(), reader.ReadUInt64());
-                break;
             case (byte)CustomRPC.BansheeWeep:
                 RPCEvents.BansheeWeep(new Vector2(reader.ReadSingle(), reader.ReadSingle()));
                 break;
@@ -358,15 +352,6 @@ class RPCHandlerPatch
                 RPCEvents.SpectrReform(reader.ReadInt32());
                 break;
 
-            case (byte)CustomRPC.InitializeRitualData:
-                RPCEvents.InitializeRitualData(reader);
-                break;
-            case (byte)CustomRPC.RitualSharePerks:
-                RPCEvents.RitualSharePerks(reader.ReadByte(), new int[] { reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32() });
-                break;
-            case (byte)CustomRPC.RitualUpdate:
-                RPCEvents.RitualUpdate(reader);
-                break;
             case (byte)CustomRPC.DecoySwap:
                 RPCEvents.DecoySwap(Helpers.playerById(reader.ReadByte()), Objects.CustomObject.GetObject(reader.ReadUInt64()), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
                 break;
@@ -409,14 +394,14 @@ static class RPCEvents
         MapBehaviourExpansion.Initialize();
     }
 
-    public static void SetMyColor(byte playerId, byte hue,byte dis,Color mainColor,Color shadowColor)
+    public static void SetMyColor(byte playerId, byte hue,byte dis, byte posHue, byte posDis, Color mainColor,Color shadowColor)
     {
-        DynamicColors.SetOthersColor(hue, dis, mainColor, shadowColor, playerId);
+        DynamicColors.SetOthersColor(hue, dis, posHue, posDis, mainColor, shadowColor, playerId);
     }
 
-    public static void ShareColor(byte shadowType,Color mainOriginalColor,float mainLum,byte mainHue,byte mainDis, Color shadowOriginalColor, float shadowLum, byte shadowHue, byte shadowDis)
+    public static void ShareColor(byte shadowType, byte mainPosHue, byte mainPosDis, Color mainOriginalColor,float mainLum,byte mainHue,byte mainDis, Color shadowOriginalColor, float shadowLum, byte shadowHue, byte shadowDis)
     {
-        DynamicColors.ReceiveSharedColor(shadowType,mainOriginalColor,mainLum,mainHue,mainDis,shadowOriginalColor,shadowLum,shadowHue,shadowDis);
+        DynamicColors.ReceiveSharedColor(shadowType, mainPosHue, mainPosDis,mainOriginalColor, mainLum,mainHue,mainDis,shadowOriginalColor,shadowLum,shadowHue,shadowDis);
     }
 
     public static void SynchronizeTimer(float timer)
@@ -983,6 +968,8 @@ static class RPCEvents
         }
 
         Game.GameData.data.myData.getGlobalData().role.onRevived(playerId);
+
+        if (HnSModificator.IsHnSGame) HudManager.Instance.CrewmatesKilled.OnCrewmateKilled();
     }
 
     public static void EmitSpeedFactor(byte playerId, Game.SpeedFactor speedFactor)
@@ -1410,70 +1397,6 @@ static class RPCEvents
         }
     }
 
-    public static void DisturberInvoke(byte playerId, ulong objectId1, ulong objectId2)
-    {
-        Vector2 pos1 = (Vector2)Objects.CustomObject.Objects[objectId1].GameObject.transform.position + new Vector2(0, -0.3f);
-        Vector2 pos2 = (Vector2)Objects.CustomObject.Objects[objectId2].GameObject.transform.position + new Vector2(0, -0.3f);
-        Vector2 pos1Upper = pos1 + new Vector2(0, 0.5f);
-        Vector2 pos2Upper = pos2 + new Vector2(0, 0.5f);
-        Vector2 center = (pos1 + pos2) / 2f;
-
-        bool vertical = Mathf.Abs(pos1.x - pos2.x) < 0.8f;
-
-        var obj = new GameObject("ElecBarrior");
-        var MeshFilter = obj.AddComponent<MeshFilter>();
-        var MeshRenderer = obj.AddComponent<MeshRenderer>();
-        var Collider = obj.AddComponent<EdgeCollider2D>();
-        
-        obj.transform.localPosition = new Vector3(center.x, center.y, center.y / 1000f);
-
-        var mesh = new Mesh();
-        var vertextList = new Il2CppSystem.Collections.Generic.List<Vector3>();
-        var uvList = new Il2CppSystem.Collections.Generic.List<Vector2>();
-
-        vertextList.Add(pos1Upper - center + new Vector2(vertical ? 0.22f : 0f, 0.2f));
-        vertextList.Add(pos2Upper - center + new Vector2(vertical ? 0.22f : 0f, 0.2f));
-        vertextList.Add(pos1 - center + new Vector2(vertical ? -0.22f : 0f, vertical ? 0.7f : 0.2f));
-        vertextList.Add(pos2 - center + new Vector2(vertical ? -0.22f : 0f, vertical ? 0.7f : 0.2f));
-
-        uvList.Add(new Vector2(0, 0));
-        uvList.Add(new Vector2(1f / 3f, 0));
-        uvList.Add(new Vector2(0, 1));
-        uvList.Add(new Vector2(1f / 3f, 1));
-
-        mesh.SetVertices(vertextList);
-        mesh.SetUVs(0, uvList);
-        mesh.SetIndices(new int[6] { 0, 2, 1, 1, 2, 3 }, MeshTopology.Triangles, 0);
-        
-        Collider.points = new Vector2[5] { pos1 - center, pos1Upper - center, pos2Upper - center, pos2 - center, pos1 - center };
-        Collider.edgeRadius = 0.2f;
-
-        MeshRenderer.material = new Material(FastDestroyableSingleton<HudManager>.Instance.MapButton.HeldButtonSprite.material);
-        MeshRenderer.material.mainTexture = vertical ? Roles.Roles.Disturber.getElecAnimSubTexture() : Roles.Roles.Disturber.getElecAnimTexture();
-
-        MeshFilter.mesh = mesh;
-
-        float timer = 0.1f;
-        int num = 0;
-        new Objects.DynamicCollider(Collider, Roles.Roles.Disturber.disturbDurationOption.getFloat(), false, (c) =>
-        {
-            timer -= Time.deltaTime;
-
-            if (timer < 0f)
-            {
-                timer = 0.1f;
-                num = (num + 1) % 3;
-
-                uvList[0] = new Vector2((float)num / 3f, 0);
-                uvList[1] = new Vector2((float)(num + 1) / 3f, 0);
-                uvList[2] = new Vector2((float)num / 3f, 1);
-                uvList[3] = new Vector2((float)(num + 1) / 3f, 1);
-                mesh.SetUVs(0, uvList);
-            }
-        }, Roles.Roles.Disturber.ignoreBarriorsOption.getSelection() == 1,
-        (ulong)(Roles.Roles.Disturber.ignoreBarriorsOption.getSelection() == 2 ? 1 << playerId : 0));
-    }
-
     public static void BansheeWeep(Vector2 pos)
     {
         //Bansheeを確定させる
@@ -1515,50 +1438,6 @@ static class RPCEvents
          {
              role.EditCoolDown(coolDownType, time);
          });
-    }
-
-    private static IEnumerator GetRitualSharePerksEnumerator(byte playerId, int[] perks)
-    {
-        while (Game.GameData.data == null) yield return null;
-        Game.GameData.data.RitualData.RegisterPlayerData(playerId, perks);
-        Game.GameData.data.RitualData.CheckAndSynchronize(AmongUsClient.Instance.AmHost);
-    }
-
-    public static void RitualSharePerks(byte playerId, int[] perks)
-    {
-        HudManager.Instance.StartCoroutine(GetRitualSharePerksEnumerator(playerId, perks).WrapToIl2Cpp());
-    }
-
-    public static void RitualUpdateTaskProgress(int taskNum)
-    {
-        PlayerControl.LocalPlayer.myTasks[taskNum].CastFast<Tasks.NebulaPlayerTask>().NebulaData[2]++;
-    }
-
-    public static void RitualUpdate(MessageReader reader)
-    {
-        switch (reader.ReadInt32())
-        {
-            case 0:
-                RitualUpdateTaskProgress(reader.ReadInt32());
-                break;
-
-        }
-    }
-
-    public static void InitializeRitualData(MessageReader reader)
-    {
-        int n = reader.ReadInt32();
-        for (int i = 0; i < n; i++)
-        {
-            Game.GameData.data.RitualData.AddTaskData(Game.RitualData.TaskData.Deserialize(reader));
-        }
-        Game.GameData.data.RitualData.CheckAndSynchronize(AmongUsClient.Instance.AmHost);
-
-        n = reader.ReadInt32();
-        for (int i = 0; i < n; i++)
-        {
-            Game.GameData.data.RitualData.RegisterPlayerSpawnData(reader.ReadByte(), new Vector2(reader.ReadSingle(), reader.ReadSingle()));
-        }
     }
 
     public static void DecoySwap(PlayerControl player, Objects.CustomObject? decoy, float playerX, float playerY, float decoyX, float decoyY)
@@ -1816,28 +1695,14 @@ public class RPCEventInvoker
         //自分自身はもう割り当て済みなので何もしない
     }
 
-    public static void InitializeRitualData(List<Game.RitualData.TaskData> taskDataList, Dictionary<byte, Game.RitualData.RitualPlayerData> playerData)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.InitializeRitualData, Hazel.SendOption.Reliable, -1);
-        writer.Write(taskDataList.Count);
-        foreach (var t in taskDataList) t.Serialize(writer);
-
-        writer.Write(playerData.Count);
-        foreach (var d in playerData)
-        {
-            writer.Write(d.Key);
-            writer.Write(d.Value.SpawnPos.x);
-            writer.Write(d.Value.SpawnPos.y);
-        }
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
-
     public static void SetMyColor()
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetMyColor, Hazel.SendOption.Reliable, -1);
         writer.Write(PlayerControl.LocalPlayer.PlayerId);
         writer.Write(DynamicColors.MyColor.GetMainHue());
         writer.Write(DynamicColors.MyColor.GetMainDistance());
+        writer.Write(DynamicColors.MyColor.GetMainPosHue());
+        writer.Write(DynamicColors.MyColor.GetMainPosDistance());
         var color = DynamicColors.MyColor.GetMainColor();
         writer.Write(color.r);
         writer.Write(color.g);
@@ -1847,13 +1712,15 @@ public class RPCEventInvoker
         writer.Write(color.g);
         writer.Write(color.b);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
-        RPCEvents.SetMyColor(PlayerControl.LocalPlayer.PlayerId, DynamicColors.MyColor.GetMainHue(), DynamicColors.MyColor.GetMainDistance(), DynamicColors.MyColor.GetMainColor(), DynamicColors.MyColor.GetShadowColor());
+        RPCEvents.SetMyColor(PlayerControl.LocalPlayer.PlayerId,DynamicColors.MyColor.GetMainHue(), DynamicColors.MyColor.GetMainDistance(), DynamicColors.MyColor.GetMainPosHue(), DynamicColors.MyColor.GetMainPosDistance(), DynamicColors.MyColor.GetMainColor(), DynamicColors.MyColor.GetShadowColor());
     }
 
     public static void ShareColor(DynamicColors.CustomColor customColor) 
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ShareColor, Hazel.SendOption.Reliable, -1);
         writer.Write(customColor.GetShadowType());
+        writer.Write(customColor.GetMainPosHue());
+        writer.Write(customColor.GetMainPosDistance());
         var color = customColor.GetMainOriginalColor();
         writer.Write(color.r);
         writer.Write(color.g);
@@ -1869,7 +1736,7 @@ public class RPCEventInvoker
         writer.Write(customColor.GetShadowHue());
         writer.Write(customColor.GetShadowDistance());
         AmongUsClient.Instance.FinishRpcImmediately(writer);
-        RPCEvents.ShareColor(customColor.GetShadowType(), customColor.GetMainOriginalColor(), customColor.GetMainLuminosity(), customColor.GetMainHue(), customColor.GetMainDistance(), customColor.GetShadowColor(),customColor.GetShadowLuminosity(),customColor.GetShadowHue(),customColor.GetShadowDistance());
+        RPCEvents.ShareColor(customColor.GetShadowType(), customColor.GetMainPosHue(), customColor.GetMainPosDistance(),customColor.GetMainOriginalColor(), customColor.GetMainLuminosity(), customColor.GetMainHue(), customColor.GetMainDistance(), customColor.GetShadowColor(),customColor.GetShadowLuminosity(),customColor.GetShadowHue(),customColor.GetShadowDistance());
     }
 
     public static void WinTrigger(Roles.Role role)
@@ -2457,16 +2324,6 @@ public class RPCEventInvoker
         RPCEvents.CreateSidekick(targetId, jackalId);
     }
 
-    public static void DisturberInvoke(ulong objectId1, ulong objectId2)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.DisturberInvoke, Hazel.SendOption.Reliable, -1);
-        writer.Write(PlayerControl.LocalPlayer.PlayerId);
-        writer.Write(objectId1);
-        writer.Write(objectId2);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-        RPCEvents.DisturberInvoke(PlayerControl.LocalPlayer.PlayerId, objectId1, objectId2);
-    }
-
     public static void GlobalEvent(Events.GlobalEvent.Type type, float duration, ulong option = 0)
     {
         MessageWriter camouflageWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.GlobalEvent, Hazel.SendOption.Reliable, -1);
@@ -2511,27 +2368,6 @@ public class RPCEventInvoker
         messageWriter.Write(time);
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
         RPCEvents.EditCoolDown(coolDownType, time);
-    }
-
-    public static void RitualSharePerks(byte playerId, int[] perks)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RitualSharePerks, Hazel.SendOption.Reliable, -1);
-        writer.Write(playerId);
-        for (int i = 0; i < 4; i++)
-        {
-            writer.Write(perks[i]);
-        }
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-        RPCEvents.RitualSharePerks(playerId, perks);
-    }
-
-    public static void RitualUpdateTaskProgress(int taskNum)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RitualUpdate, Hazel.SendOption.Reliable, -1);
-        writer.Write((int)0);
-        writer.Write(taskNum);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-        RPCEvents.RitualUpdateTaskProgress(taskNum);
     }
 
     public static void DecoySwap(Objects.CustomObject decoy)

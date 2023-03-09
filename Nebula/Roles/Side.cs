@@ -250,22 +250,6 @@ public class Side
 
     public static Side GamePlayer = new Side("GamePlayer", "gamePlayer", IntroDisplayOption.SHOW_ONLY_ME, Palette.CrewmateBlue, (PlayerStatistics statistics, ShipStatus status) =>
     {
-        if (Game.GameData.data.GameMode == Module.CustomGameMode.Minigame)
-        {
-            if (GameData.Instance.TotalTasks <= GameData.Instance.CompletedTasks && GameData.Instance.CompletedTasks > 0)
-            {
-                return EndCondition.MinigameEscapeesWin;
-            }
-            if (statistics.TotalAlive == 1)
-            {
-                return EndCondition.MinigameHunterWin;
-            }
-        }
-        return null;
-    });
-
-    public static Side Investigator = new Side("Investigator", "investigator", IntroDisplayOption.SHOW_ALL, Palette.CrewmateBlue, (PlayerStatistics statistics, ShipStatus status) =>
-    {
         return null;
     });
 
@@ -281,34 +265,18 @@ public class Side
         {
             if (Game.GameData.data.Timer < 1f)
             {
-                if (Game.GameData.data.GameMode == Module.CustomGameMode.Minigame)
+                switch (GameOptionsManager.Instance.CurrentGameOptions.MapId)
                 {
-                    return EndCondition.MinigameEscapeesWin;
+                    case 0:
+                    case 3:
+                        return EndCondition.NobodySkeldWin;
+                    case 1:
+                        return EndCondition.NobodyMiraWin;
+                    case 2:
+                        return EndCondition.NobodyPolusWin;
+                    case 4:
+                        return EndCondition.NobodyAirshipWin;
                 }
-                else
-                {
-                    switch (GameOptionsManager.Instance.CurrentGameOptions.MapId)
-                    {
-                        case 0:
-                        case 3:
-                            return EndCondition.NobodySkeldWin;
-                        case 1:
-                            return EndCondition.NobodyMiraWin;
-                        case 2:
-                            return EndCondition.NobodyPolusWin;
-                        case 4:
-                            return EndCondition.NobodyAirshipWin;
-                    }
-                }
-            }
-        }
-
-            //Hostのゴーストがnullの場合
-            if ((int)(Game.GameData.data.GameMode & Module.CustomGameMode.Investigators) != 0)
-        {
-            if (Game.GameData.data.Ghost == null)
-            {
-                return EndCondition.HostDisconnected;
             }
         }
 
@@ -337,15 +305,6 @@ public class Side
         return null;
     });
 
-    public static Side Killer = new Side("Killer", "killer", IntroDisplayOption.STANDARD, Palette.ImpostorRed, (PlayerStatistics statistics, ShipStatus status) =>
-    {
-        if (statistics.TotalAlive == 1 && statistics.GetAlivePlayers(Killer) == 1)
-        {
-
-        }
-        return null;
-    });
-
     public static Side VOID = new Side("VOID", "void", IntroDisplayOption.SHOW_ONLY_ME, MetaRoles.VOID.RoleColor, (PlayerStatistics statistics, ShipStatus status) =>
     {
         return null;
@@ -355,10 +314,9 @@ public class Side
         {
             Crewmate, Impostor,
             Jackal, Jester, Vulture, Empiric, Arsonist, Paparazzo, Avenger,ChainShifter,Spectre,/*SantaClaus,*/
-            Investigator,
             GamePlayer,
             Extra,VOID,
-            RitualCrewmate,Killer
+            RitualCrewmate
         };
 
     public IntroDisplayOption ShowOption { get; }

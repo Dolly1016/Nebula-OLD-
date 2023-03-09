@@ -1,4 +1,5 @@
 ﻿using Hazel;
+using Nebula.Module;
 
 namespace Nebula.Roles;
 
@@ -92,7 +93,15 @@ public class Assignable
     /// <summary>
     /// ヘルプ画面で表示するかどうか設定します。
     /// </summary>
-    public virtual bool ShowInHelpWindow { get => true; }
+    public virtual bool ShowInHelpWindow
+    {
+        get
+        {
+            if (MetaDialog.HelpSearchFilter.OnlyCurrentGameMode && ((ValidGamemode & CustomOptionHolder.GetCustomGameMode()) == 0) && CustomOptionHolder.GetCustomGameMode() != CustomGameMode.FreePlay) return false;
+            if (MetaDialog.HelpSearchFilter.OnlySpawnable && !IsSpawnable()) return false;
+            return true;
+        }
+    }
 
     /// <summary>
     /// ヘルプ画面で使用するロールを返します。　nullの場合自身の所持するロールとして表示しません

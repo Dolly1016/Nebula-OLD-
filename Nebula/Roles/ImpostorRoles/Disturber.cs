@@ -6,12 +6,14 @@ public class Disturber : Role
 
     private CustomButton elecButton;
 
+
     private SpriteLoader placeButtonSprite = new SpriteLoader("Nebula.Resources.ElecPolePlaceButton.png", 115f, "ui.button.disturber.place");
 
     public override HelpSprite[] helpSprite => new HelpSprite[]
     {
             new HelpSprite(placeButtonSprite,"role.disturber.help.disturb",0.3f)
     };
+
 
     private Module.CustomOption disturbCoolDownOption;
     public Module.CustomOption disturbDurationOption;
@@ -25,7 +27,9 @@ public class Disturber : Role
         disturbDurationOption = CreateOption(Color.white, "disturbDuration", 10f, 5f, 60f, 2.5f);
         disturbDurationOption.suffix = "second";
 
-        countOfBoltsOption = CreateOption(Color.white, "countOfBolts", 2f, 1f, 10f, 1f);
+
+        countOfBoltsOption = CreateOption(Color.white, "countOfBolts", 5f, 1f, 30f, 1f);
+
     }
 
     public override void ButtonInitialize(HudManager __instance)
@@ -37,18 +41,16 @@ public class Disturber : Role
         elecButton = new CustomButton(
             () =>
             {
-                /*
                 if (elecButton.HasEffect)
                 {
-                    foreach (var pole in Poles)
-                        RPCEventInvoker.DisturberInvoke(pole[0].Id, pole[1].Id);
-                    RPCEventInvoker.GlobalEvent(Events.GlobalEvent.Type.BlackOut, disturbDurationOption.getFloat() + 2f, (ulong)(disturbBlackOutRateOption.getFloat() * 100f));
+                    foreach (var pole in Poles) RPCEventInvoker.ObjectUpdate(pole, 0);
+                    //RPCEventInvoker.GlobalEvent(Events.GlobalEvent.Type.BlackOut, disturbDurationOption.getFloat() + 2f, (ulong)(disturbBlackOutRateOption.getFloat() * 100f));
                 }
-                else
+                else if (Poles.Count < (int)countOfBoltsOption.getFloat())
                 {
-                    PlaceOnClick();
+                    Poles.Add(RPCEventInvoker.ObjectInstantiate(Objects.CustomObject.Type.ElecPole, PlayerControl.LocalPlayer.transform.position));
+                    elecButton.UsesText.text = ((int)countOfBoltsOption.getFloat() - Poles.Count).ToString();
                 }
-                */
             },
             () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
             () => { return (elecButton.HasEffect ? !Helpers.SabotageIsActive() : Poles.Count < (int)countOfBoltsOption.getFloat()) && PlayerControl.LocalPlayer.CanMove; },
@@ -60,15 +62,16 @@ public class Disturber : Role
             Expansion.GridArrangeExpansion.GridArrangeParameter.None,
             __instance,
             Module.NebulaInputManager.abilityInput.keyCode,
-            true,
+            false,
             disturbDurationOption.getFloat(),
-            () => { },
+            () => {
+                foreach (var pole in Poles) RPCEventInvoker.ObjectUpdate(pole, 1);
+            },
             "button.label.place"
         ).SetTimer(CustomOptionHolder.InitialModestAbilityCoolDownOption.getFloat());
         elecButton.UsesText.text = ((int)countOfBoltsOption.getFloat()).ToString();
         elecButton.SetUsesIcon(1);
         elecButton.MaxTimer = 10f;
-        elecButton.HasEffect = false;
     }
 
     public override void Initialize(PlayerControl __instance)
@@ -88,6 +91,7 @@ public class Disturber : Role
             elecButton.HasEffect = true;
             elecButton.SetLabel("button.label.disturb");
             elecButton.MaxTimer = elecButton.Timer = disturbCoolDownOption.getFloat();
+            elecButton.ShowUsesText(false);
         }
     }
 
@@ -110,6 +114,7 @@ public class Disturber : Role
                  Impostor.impostorSideSet, Impostor.impostorSideSet, Impostor.impostorEndSet,
                  true, VentPermission.CanUseUnlimittedVent, true, true, true)
     {
+        elecButton = null;
         Poles = new List<CustomObject>();
     }
 }

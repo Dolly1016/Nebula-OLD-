@@ -1,8 +1,10 @@
-﻿namespace Nebula.Objects.ObjectTypes;
+﻿using UnityEngine;
+
+namespace Nebula.Objects.ObjectTypes;
 
 public class VisibleTrap : DelayedObject
 {
-    public VisibleTrap(byte id, string objectName, string spriteAddress) : base(id, objectName, spriteAddress)
+    public VisibleTrap(byte id, string objectName, ISpriteLoader sprite) : base(id, objectName, sprite)
     {
     }
 
@@ -20,7 +22,7 @@ public class VisibleTrap : DelayedObject
 
 public class InvisibleTrap : DelayedObjectPredicate
 {
-    public InvisibleTrap(byte id, string objectName, string spriteAddress) : base(id, objectName, spriteAddress, (obj) =>
+    public InvisibleTrap(byte id, string objectName, ISpriteLoader sprite) : base(id, objectName, sprite, (obj) =>
     {
         if (obj.OwnerId == PlayerControl.LocalPlayer.PlayerId) return true;
         var r = Game.GameData.data.myData.getGlobalData().role;
@@ -43,7 +45,7 @@ public class KillTrap : InvisibleTrap
         return BrokenSprite;
     }
 
-    public KillTrap(byte id, string objectName, string spriteAddress) : base(id, objectName, spriteAddress)
+    public KillTrap(byte id, string objectName, ISpriteLoader sprite) : base(id, objectName, sprite)
     {
     }
 

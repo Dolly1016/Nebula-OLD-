@@ -1,4 +1,5 @@
-﻿using Nebula.Patches;
+﻿using Il2CppSystem.Data;
+using Nebula.Patches;
 
 namespace Nebula.Roles.ExtraRoles;
 
@@ -105,7 +106,7 @@ public class Lover : ExtraRole
             {
                 if (loversModeOption.getSelection() == 1)
                 {
-                    if (murderId != PlayerControl.LocalPlayer.PlayerId)
+                    if (murderId != PlayerControl.LocalPlayer.PlayerId && murderId != player.PlayerId)
                     {
                         RPCEventInvoker.ImmediatelyChangeRole(player, Roles.Avenger);
                         RPCEventInvoker.SetExtraRole(Helpers.playerById(murderId), Roles.AvengerTarget, Game.GameData.data.myData.getGlobalData().GetExtraRoleData(this));
@@ -128,7 +129,7 @@ public class Lover : ExtraRole
             if (loversModeOption.getSelection() == 1)
             {
                 byte murder = Game.GameData.data.deadPlayers[PlayerControl.LocalPlayer.PlayerId].MurderId;
-                if (murder != byte.MaxValue && murder != PlayerControl.LocalPlayer.PlayerId)
+                if (murder != byte.MaxValue && murder != PlayerControl.LocalPlayer.PlayerId && murder != player.PlayerId)
                 {
                     RPCEventInvoker.ImmediatelyChangeRole(player, Roles.Avenger);
                     RPCEventInvoker.AddExtraRole(Helpers.playerById(murder), Roles.AvengerTarget, Game.GameData.data.myData.getGlobalData().GetExtraRoleData(this));

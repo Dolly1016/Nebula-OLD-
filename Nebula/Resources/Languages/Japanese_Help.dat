@@ -1,0 +1,61 @@
+"option.maxNumberOfMeetings.info" : "ゲームを通して全体として押せるボタンの回数を設定します。"
+"option.deathPenaltyForDiscussionTime.info" : "犠牲者が出るたびに投票時間を減少させます。"
+"option.additionalEmergencyCoolDown.info" : "指定しただけの犠牲者が上がるまで、ボタンのクールダウンを引き延ばします。"
+"option.additionalEmergencyCoolDownCondition.info" : "指定人数を下回っている間、追加クールダウンが適用されます。"
+"option.severeEmergencyLock.info" : "上の緊急会議ロックに一つでも該当する場合に\nロックを有効化します。"
+"option.dealAbstentionAsSelfVote.info" : "投票を行わなかった場合、自投票をしたものとして計上します。"
+"option.hideVotedIcon.info" : "投票を終えたプレイヤーのそばに現れるアイコンを非表示にします。"
+"option.showRoleOfExiled.info" : "追放されたプレイヤーの役職が何であったか、追放時に開示されます。"
+
+"option.additionalVents.info" : "マップ上に新たなベントが追加されます。\n新たなベントは他のベントとは繋がっていません。"
+"option.additionalWirings.info" : "エアシップにて配線タスクをこなせる場所を4カ所追加します。\n詳細はヘルプよりご確認ください。"
+"option.synchronizedSpawning.info" : "全生存者がスポーン位置を決定してから同時にスポーンします。"
+"option.useClassicAdmin.info" : "ポーラスのボイラールームや、エアシップのベンチレーションなどが\nアドミンの表示から除外されます。"
+"option.quietVentsInTheShadow.info" : "影の中にあるベントの開閉が視認できなくなります。"
+
+"option.randomizedWiring.info" : "配線タスクの場所が完全にランダムになります。"
+"option.meistersManifolds.info" : "3,4個のボタンの数字が見えなくなってしまいます。"
+"option.meistersO2Filter.info" : "片づける葉っぱの数が増えます。"
+"option.meistersFuelEngines.info" : "タンクの容量が従来の半分になり、\nクリアまでの往復回数が2倍になります。"
+"option.dangerousDownloadSpot.info" : "昇降機のダウンロードタスクが梯子の下に移動します。"
+"option.useVanillaSafeTask.info" : "金庫タスクをダイヤル式の従来のものに戻します。"
+
+"role.crewmate.isGuessable.info" : "ゲッサーによってクルーメイトとして\n相手を推察することができるか設定できます。"
+"role.crewmate.chanceOfDamned.info" : "呪われしものが出現する確率を設定します。\n最大人数に達するまで、各クルーメイトに対して指定確率で呪われしものを割り当てます。"
+
+"role.guesser.isSecondaryRole.info" : "追加役職として割り当てると、ゲッサーは他の役職と同時に付与されます。"
+
+"role.agent.exemptTasks.info" : "指定した数だけ初期タスクの数を減らします。"
+
+"role.guardian.alertMode.info" : "アラートモードでは、ガードは1回しか効果を発揮しない代わりに、\nガードされたプレイヤーをキルしようとしたプレイヤーの位置が警告されるようになります。"
+
+"role.madmate.involveNonImpostorPlayerOnExile.info" : "追放されたときに、インポスター以外の生存者を巻き添えにします。"
+"role.madmate.canKnowImpostorsByTasks.info" : "タスクをこなすことによってインポスターが誰か知ることができます。"
+
+"role.banshee.minWeepNoticeRange.info" : "指定距離より遠くにいるプレイヤーに叫喚の通知が届きます。"
+"role.banshee.fuzzinessWeepNotice.info" : "叫喚通知の方向が少しずれるようになります。"
+
+"role.jailer.canInheritAbility.info" : "ジェイラーが死亡したとき、相方のインポスターに\nアドミン能力を引き継ぎます。"
+
+"role.raider.axeSize.info" : "斧の当たり判定を変更できます。この設定はプレイヤーとの判定に対してのみ有効であり、\n壁に対する当たり判定には影響しません。"
+
+"role.sniper.showAimAssist.info" : "銃を構えると、全プレイヤーや死体の方向が表示されるようになります。"
+"role.sniper.aimAssistDelay.info" : "銃を構えてからエイムアシストが表示されるまでの遅延時間を設定できます。"
+"role.sniper.aimAssistDuration.info" : "エイムアシストが表示される時間長を設定できます。"
+
+"role.empiric.coastingPhase.info" : "会議終了後に感染の進行を止める時間猶予を設定できます。"
+
+"role.sidekick.takeOverOriginalRole.info" : "サイドキックが元の役職を保持するか否か設定できます。"
+
+"role.paparazzo.winConditionSubject.info" : "勝利のために写す必要のあるプレイヤーの人数(重複なし)を設定できます。"
+"role.paparazzo.winConditionDisclosed.info" : "勝利のためには写真を開示する必要があります。開示された写真に\n写されている必要のあるプレイヤーの人数(合計、重複なし)を設定できます。"
+
+"role.spectre.lastImpostorCanGuessSpectre.info" : "ラストインポスターがタスクフェーズにて妖狐を推察できるようになります。\n正しく妖狐が推察されると妖狐はその場で息絶えます。"
+
+"role.immoralist.canKnowWhereIsDeadBodies.info" : "死体の位置を指す矢印を見ることができるようになります。"
+
+"role.lover.loversAsIndependentSide.info" : "ラバーズのインポスターやジャッカルが人外としてカウントされなくなります。\nゲームの終了条件に影響を及ぼします。"
+"role.lover.allowExtraWinning.info" : "自身が勝利し、かつ生存している場合に相方も勝利できるようになります。"
+
+"role.avenger.avengerNoticeIntervalOption.info" : "アヴェンジャーがキラーの位置を知ることができるようになります。"
+"role.avenger.murderCanKnowAvenger.info" : "キラーがアヴェンジャーの位置を知ることができるようになります。"

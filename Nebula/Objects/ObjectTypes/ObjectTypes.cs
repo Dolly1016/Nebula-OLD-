@@ -2,21 +2,16 @@
 
 public class TypeWithImage : CustomObject.Type
 {
+    protected ISpriteLoader Sprite;
 
-    private Sprite Sprite;
-    private string SpriteAddress;
-    private float PixelsPerUnit;
     public Sprite GetSprite()
     {
-        if (Sprite) return Sprite;
-        Sprite = Helpers.loadSpriteFromResources(SpriteAddress, PixelsPerUnit);
-        return Sprite;
+        return Sprite.GetSprite();
     }
 
-    public TypeWithImage(byte id, string objectName, string spriteAddress,float pixelsPerUnit =150f) : base(id, objectName)
+    public TypeWithImage(byte id, string objectName, ISpriteLoader sprite) : base(id, objectName)
     {
-        SpriteAddress = spriteAddress;
-        PixelsPerUnit= pixelsPerUnit;
+        Sprite = sprite;
     }
 
     public override void Initialize(CustomObject obj)
@@ -27,7 +22,7 @@ public class TypeWithImage : CustomObject.Type
 
 public class DelayedObject : TypeWithImage
 {
-    public DelayedObject(byte id, string objectName, string spriteAddress) : base(id, objectName, spriteAddress)
+    public DelayedObject(byte id, string objectName,ISpriteLoader sprite) : base(id, objectName,sprite)
     {
     }
 
@@ -56,7 +51,7 @@ public class DelayedObject : TypeWithImage
 public class DelayedObjectPredicate : TypeWithImage
 {
     protected Predicate<CustomObject> MyPredicate { get; private set; }
-    public DelayedObjectPredicate(byte id, string objectName, string spriteAddress, Predicate<CustomObject> predicate) : base(id, objectName, spriteAddress)
+    public DelayedObjectPredicate(byte id, string objectName, ISpriteLoader sprite, Predicate<CustomObject> predicate) : base(id, objectName, sprite)
     {
         MyPredicate = predicate;
     }

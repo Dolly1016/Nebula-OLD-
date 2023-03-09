@@ -144,6 +144,7 @@ class ExileControllerPatch
 
         Objects.CustomButton.OnMeetingEnd();
         Objects.CustomObject.OnMeetingEnd();
+        Expansion.GridArrangeExpansion.OnMeetingEnd();
     }
 
     static void WrapUpPrefix(ExileController __instance)
@@ -158,11 +159,6 @@ class ExileControllerPatch
         Game.GameData.data.UtilityTimer.OnMeetingEnd();
 
         Helpers.RoleAction(Game.GameData.data.myData.getGlobalData(), (r) => r.OnMeetingEnd());
-
-        if (Game.GameData.data.GameMode == Module.CustomGameMode.Investigators)
-        {
-            Ghost.InvestigatorMeetingUI.EndMeeting();
-        }
 
         //死体はすべて消去される
         foreach (Game.DeadPlayerData deadPlayerData in Game.GameData.data.deadPlayers.Values)

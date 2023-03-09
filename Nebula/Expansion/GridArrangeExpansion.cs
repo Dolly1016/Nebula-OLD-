@@ -67,6 +67,13 @@ static public class GridArrangeExpansion
         alwaysVisible.transform.localScale = HudManager.Instance.UseButton.transform.parent.localScale;
     }
 
+    private static bool ForcelyRefreshFlag=false;
+
+    static public void OnMeetingEnd()
+    {
+        ForcelyRefreshFlag = true;
+    }
+
     [HarmonyPatch(typeof(GridArrange), nameof(GridArrange.CheckCurrentChildren))]
     class CheckCurrentChildrenPatch
     {
@@ -114,8 +121,9 @@ static public class GridArrangeExpansion
 
             //直前に存在していたボタン
             List<int> lastContents = new List<int>();
-            foreach(var t in __instance.cells) if(t) lastContents.Add(t.gameObject.GetInstanceID());
-            
+            if (ForcelyRefreshFlag) foreach(var t in __instance.cells) if(t) lastContents.Add(t.gameObject.GetInstanceID());
+            ForcelyRefreshFlag = false;
+
             //cellsを更新
             __instance.cells.Clear();
             foreach (Transform transform in GridArrange.currentChildren)

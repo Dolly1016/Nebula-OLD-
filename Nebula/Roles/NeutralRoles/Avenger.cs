@@ -55,6 +55,7 @@ public class Avenger : Role
     }
 
 
+    public SpriteLoader arrowSprite = new SpriteLoader("role.avenger.arrow");
 
     public override void MyPlayerControlUpdate()
     {
@@ -72,7 +73,7 @@ public class Avenger : Role
                         {
                             if (Arrow == null)
                             {
-                                Arrow = new Arrow(Color);
+                                Arrow = new Arrow(Color,true,arrowSprite.GetSprite());
                                 Arrow.arrow.SetActive(true);
                                 noticeInterval = 0f;
                             }

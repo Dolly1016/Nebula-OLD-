@@ -92,9 +92,11 @@ public class Psychic : Role
 
     private string[] PsychicMessage = new string[] { "elapsedTime", "killerColor", "killerRole", "myRole" };
 
+    SpriteLoader arrowSprite = new SpriteLoader("role.psychic.arrow");
+
     public override void MyPlayerControlUpdate()
     {
-        RoleSystem.TrackSystem.DeadBodySearch_MyControlUpdate(searchButton.isEffectActive && !PlayerControl.LocalPlayer.Data.IsDead, Arrows);
+        RoleSystem.TrackSystem.DeadBodySearch_MyControlUpdate(searchButton.isEffectActive && !PlayerControl.LocalPlayer.Data.IsDead, Arrows,arrowSprite);
 
         deathMessageInterval -= Time.deltaTime;
         if (deathMessageInterval > 0) return;

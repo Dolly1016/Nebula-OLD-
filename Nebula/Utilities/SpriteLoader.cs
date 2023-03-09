@@ -3,9 +3,14 @@ using UnityEngine;
 
 namespace Nebula.Utilities;
 
-public class SpriteLoader
+public interface ISpriteLoader
 {
-    string address;
+    Sprite GetSprite();
+}
+
+public class SpriteLoader : ISpriteLoader
+{
+    string? address;
     string? textureId = null;
     Module.CustomTextureAsset? textureAsset = null;
     float pixelsPerUnit;
@@ -24,6 +29,13 @@ public class SpriteLoader
         this.pixelsPerUnit = pixelsPerUnit;
     }
 
+    public SpriteLoader(string textureId)
+    {
+        this.address = null;
+        this.textureId = textureId;
+        this.pixelsPerUnit = 100f;
+    }
+
     public SpriteLoader(Sprite sprite)
     {
         this.sprite = sprite;
@@ -35,14 +47,14 @@ public class SpriteLoader
         {
             if (textureId != null && (textureAsset != null || TexturePack.LoadAsset(textureId, null, ref textureAsset)))
                 sprite = textureAsset.staticSprite;
-            else
+            else if(address!=null)
                 sprite = Helpers.loadSpriteFromResources(address, pixelsPerUnit);
         }
         return sprite;
     }
 }
 
-public class DividedSpriteLoader
+public class DividedSpriteLoader : ISpriteLoader
 {
     string address;
     float pixelsPerUnit;
@@ -77,4 +89,6 @@ public class DividedSpriteLoader
         }
         return sprites[index];
     }
+
+    public Sprite GetSprite() => GetSprite(0);
 }

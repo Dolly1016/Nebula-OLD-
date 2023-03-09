@@ -25,7 +25,7 @@ public class PlayerObject
 public enum SynchronizeTag
 {
     PreSpawnMinigame,
-    RitualInitialize
+    HnSInitialize
 }
 public class SynchronizeData
 {
@@ -1336,9 +1336,6 @@ public class GameData
     //当たり判定
     public Objects.ColliderManager ColliderManager;
 
-    //Ritualモード
-    public RitualData RitualData;
-
     public bool IsCanceled;
 
     public GameData()
@@ -1373,7 +1370,7 @@ public class GameData
 
         IsCanceled = false;
 
-        RitualData = new RitualData();
+        Roles.Perk.PerkHolder.PerkData.InitializePerkData();
     }
 
     //データを消去します。

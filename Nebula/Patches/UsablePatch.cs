@@ -182,3 +182,16 @@ class MovingPlatformBehaviourSetSidePatch
         return !(CustomOptionHolder.mapOptions.getBool() && CustomOptionHolder.oneWayMeetingRoomOption.getBool());
     }
 }
+
+
+[HarmonyPatch(typeof(SystemConsole), nameof(SystemConsole.Start))]
+class SystemConsoleStartPatch
+{
+    static bool Prefix(SystemConsole __instance)
+    {
+        if (__instance.FreeplayOnly && Game.GameData.data.GameMode!=Module.CustomGameMode.FreePlay)
+            UnityEngine.Object.Destroy(__instance.gameObject);
+        
+        return false;
+    }
+}

@@ -31,6 +31,7 @@
     <EmbeddedResource Include="Resources\*.png" />
     <EmbeddedResource Include="Resources\Help\*.png" />
     <EmbeddedResource Include="Resources\Ghost\*.png" />
+	<EmbeddedResource Include="Resources\Perks\*.png" />
     <EmbeddedResource Include="Resources\Locations\*.png" />
     <EmbeddedResource Include="Resources\Languages\*.dat" />
     <EmbeddedResource Include="Resources\Lang.dat" />
@@ -44,9 +45,6 @@
   <ItemGroup>
     <Reference Include="..\..\Among Us\BepInEx\core\*.dll" />
     <Reference Include="..\..\Among Us\BepInEx\interop\*.dll" />
-  </ItemGroup>
-
-  <ItemGroup>
   </ItemGroup>
 
   <Target Name="CopyCustomContent" AfterTargets="AfterBuild">

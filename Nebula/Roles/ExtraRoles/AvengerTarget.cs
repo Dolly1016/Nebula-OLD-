@@ -43,7 +43,7 @@ public class AvengerTarget : ExtraRole
                     {
                         if (Arrow == null)
                         {
-                            Arrow = new Arrow(TargetColor);
+                            Arrow = new Arrow(TargetColor,true,Roles.Avenger.arrowSprite.GetSprite());
                             Arrow.arrow.SetActive(true);
                             noticeInterval = 0f;
                         }

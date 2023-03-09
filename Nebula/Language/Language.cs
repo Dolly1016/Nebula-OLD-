@@ -148,8 +148,8 @@ public class Language
         language.deserialize(GetDefaultColorStream());
         language.deserialize(GetDefaultLanguageStream());
 
-        var builtinLang = GetBuiltinLanguageStream(lang);
-        if (builtinLang != null) language.deserialize(builtinLang);
+        language.deserialize(GetBuiltinLanguageStream(lang));
+        language.deserialize(GetBuiltinLanguageStream(lang + "_Help"));
 
         language.deserialize(@"language\" + lang + "_Color.dat");
         language.deserialize(@"language\" + lang + ".dat");
@@ -239,8 +239,9 @@ public class Language
         }
     }
 
-    public bool deserialize(Stream stream)
+    public bool deserialize(Stream? stream)
     {
+        if (stream == null) return false;
         using (StreamReader sr = new StreamReader(
                 stream, Encoding.GetEncoding("utf-8")))
         {

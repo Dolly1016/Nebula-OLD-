@@ -8,6 +8,7 @@ public class FGuesser : Template.HasBilateralness
     public Module.CustomOption guesserShots;
     public Module.CustomOption canShotSeveralTimesInTheSameMeeting;
     public Module.CustomOption additionalVotingTime;
+    public Module.CustomOption spawnableRoleFilter;
 
 
     public Module.CustomOption crewmateRoleCountOption;
@@ -37,6 +38,8 @@ public class FGuesser : Template.HasBilateralness
 
     public override void LoadOptionData()
     {
+        base.LoadOptionData();
+
         TopOption.tab = Module.CustomOptionTab.CrewmateRoles | Module.CustomOptionTab.ImpostorRoles | Module.CustomOptionTab.Modifiers;
         TopOption.SetYellowCondition((tab) =>
         {
@@ -74,8 +77,7 @@ public class FGuesser : Template.HasBilateralness
 
         secondoryRoleOption = CreateOption(Color.white, "isSecondaryRole", false);
 
-        base.LoadOptionData();
-
+        spawnableRoleFilter = CreateOption(Color.white, "spawnableRoleFilter", false);
         canShotSeveralTimesInTheSameMeeting = CreateOption(Color.white, "canShotSeveralTimes", false);
         guesserShots = CreateOption(Color.white, "guesserShots", 3f, 1f, 15f, 1f);
         additionalVotingTime = CreateOption(Color.white, "additionalVotingTime", 10f, 0f, 60f, 5f);
@@ -137,7 +139,7 @@ static public class GuesserSystem
         if (guesserUI != null || !(__instance.state == MeetingHud.VoteStates.Voted || __instance.state == MeetingHud.VoteStates.NotVoted)) return;
         __instance.playerStates.ToList().ForEach(x => x.gameObject.SetActive(false));
 
-        Transform container = UnityEngine.Object.Instantiate(__instance.transform.FindChild("PhoneUI"), __instance.transform);
+        Transform container = UnityEngine.Object.Instantiate(__instance.transform.FindChild("MeetingContents/PhoneUI"), __instance.transform);
         container.transform.localPosition = new Vector3(0, 0, -50f);
         guesserUI = container.gameObject;
 
@@ -168,6 +170,8 @@ static public class GuesserSystem
         {
             //撃てないロールを除外する
             if (!role.IsGuessableRole || role.category == RoleCategory.Complex || (int)(role.ValidGamemode & Game.GameData.data.GameMode) == 0) continue;
+            if (Roles.F_Guesser.spawnableRoleFilter.getBool() && !role.IsSpawnable()) continue;
+
             Transform buttonParent = (new GameObject()).transform;
             buttonParent.SetParent(container);
             Transform button = UnityEngine.Object.Instantiate(buttonTemplate, buttonParent);

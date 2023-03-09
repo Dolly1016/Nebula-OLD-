@@ -7,144 +7,379 @@ using Newtonsoft.Json.Linq;
 using Twitch;
 using System.Text.RegularExpressions;
 using Nebula.Patches;
+using AmongUs.Data;
+using Assets.InnerNet;
+using AmongUs.Data.Player;
+using Iced.Intel;
 
 namespace Nebula.Module;
 
-/*
-[HarmonyPatch(typeof(AnnouncementPopUp), nameof(AnnouncementPopUp.UpdateAnnounceText))]
-public static class AnnouncementPatch
+
+public class ModNews
 {
-    private static bool ShownFlag = false;
-    private static ConfigEntry<int> AnnounceVersion = null;
-    private static string Announcement = "";
+    public int Number;
+    public string Title;
+    public string SubTitle;
+    public string ShortTitle;
+    public string Text;
+    public string Date;
 
-    private static string FormatRoleString(Match match, string str, string key, string defaultString)
+    public Announcement ToAnnouncement()
+    {
+        var result = new Announcement();
+        result.Number = Number;
+        result.Title = Title;
+        result.SubTitle = SubTitle;
+        result.ShortTitle = ShortTitle;
+        result.Text = Text;
+        result.Language = (uint)DataManager.Settings.Language.CurrentLanguage;
+        result.Date = Date;
+        result.Id = "ModNews";
+
+        return result;
+    }
+}
+
+[HarmonyPatch]
+public class ModNewsHistory
+{
+    public static List<ModNews> AllModNews = new List<ModNews>();
+
+    private static Regex RoleRegex = new Regex("%ROLE:[A-Z]+\\([^)]+\\)%");
+    private static Regex OptionRegex = new Regex("%LANG\\([a-zA-Z\\.0-9]+\\)\\,\\([^)]+\\)%");
+
+    private static void FormatRoleString(Match match, ref string str, string key, string defaultString)
     {
         foreach (var role in Roles.Roles.AllRoles)
         {
             if (role.Name.ToUpper() == key)
             {
-                str = str.Replace(match.Value, Helpers.cs(role.Color, Language.Language.GetString("role." + role.LocalizeName + ".name")));
-                return str;
+                str = str.Replace(match.Value, Helpers.csWithoutAlpha(role.Color, Language.Language.GetString("role." + role.LocalizeName + ".name")));
             }
         }
         foreach (var role in Roles.Roles.AllExtraRoles)
         {
             if (role.Name.ToUpper() == key)
             {
-                str = str.Replace(match.Value, Helpers.cs(role.Color, Language.Language.GetString("role." + role.LocalizeName + ".name")));
-                return str;
+                str = str.Replace(match.Value, Helpers.csWithoutAlpha(role.Color, Language.Language.GetString("role." + role.LocalizeName + ".name")));
             }
         }
-
         str = str.Replace(match.Value, defaultString);
-        return str;
     }
 
-    private static string FormatString(string str)
+
+    [HarmonyPatch(typeof(AnnouncementPopUp), nameof(AnnouncementPopUp.Init)), HarmonyPostfix]
+    public static void Initialize(ref Il2CppSystem.Collections.IEnumerator __result)
     {
-        Regex regex;
-
-        //旧式の変換
-        foreach (var role in Roles.Roles.AllRoles)
+        IEnumerator GetEnumerator()
         {
-            str = str.Replace("%ROLE:" + role.Name.ToUpper() + "%", Helpers.cs(role.Color, Language.Language.GetString("role." + role.LocalizeName + ".name")));
-        }
-        foreach (var role in Roles.Roles.AllExtraRoles)
-        {
-            str = str.Replace("%ROLE:" + role.Name.ToUpper() + "%", Helpers.cs(role.Color, Language.Language.GetString("role." + role.LocalizeName + ".name")));
-        }
+            while (AnnouncementPopUp.UpdateState == AnnouncementPopUp.AnnounceState.Fetching) yield return null;
+            if (AnnouncementPopUp.UpdateState > AnnouncementPopUp.AnnounceState.Fetching) yield break;
+            AnnouncementPopUp.UpdateState = AnnouncementPopUp.AnnounceState.Fetching;
+            AllModNews.Clear();
 
-        regex = new Regex("%ROLE:[A-Z]+\\([a-zA-Z0-9 ]+\\)%");
-        foreach (Match match in regex.Matches(str))
-        {
-            var split = match.Value.Split(':', '(', ')');
-            str = FormatRoleString(match, str, split[1], split[2]);
-        }
+            var lang = Language.Language.GetLanguage((uint)DataManager.Settings.Language.CurrentLanguage);
 
-        str = str.Replace("%/COLOR%", "</color>");
-
-        regex = new Regex("%OPTION\\([a-zA-Z\\.0-9]+\\)\\,\\([a-zA-Z\\.0-9 ]+\\)%");
-        foreach (Match match in regex.Matches(str))
-        {
-            var split = match.Value.Split('(', ')');
-
-            str = str.Replace(match.Value,
-                Language.Language.CheckValidKey(split[1]) ?
-                Language.Language.GetString(split[1]) : split[3]);
-        }
-
-        return str;
-    }
-
-    public static bool LoadAnnouncement()
-    {
-        if (AnnounceVersion == null)
-        {
-            AnnounceVersion = NebulaPlugin.Instance.Config.Bind("Announce", "Version", (int)0);
-        }
-
-        HttpClient http = new HttpClient();
-        http.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue { NoCache = true };
-        var response = http.GetAsync(new System.Uri($"https://raw.githubusercontent.com/Dolly1016/Nebula/master/announcement.json"), HttpCompletionOption.ResponseContentRead).Result;
+            HttpClient http = new HttpClient();
+            http.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue { NoCache = true };
+            var task = http.GetAsync(new System.Uri($"https://raw.githubusercontent.com/Dolly1016/Nebula/master/Announcement_{lang}.json"), HttpCompletionOption.ResponseContentRead);
+            while (!task.IsCompleted) yield return null;
+            var response = task.Result;
 
 
-        try
-        {
-            if (response.StatusCode != HttpStatusCode.OK) return false;
-            if (response.Content == null) return false;
+            if (response.StatusCode != HttpStatusCode.OK || response.Content == null)
+            {
+                AnnouncementPopUp.UpdateState = AnnouncementPopUp.AnnounceState.NotStarted;
+                yield break;
+            }
+
             string json = response.Content.ReadAsStringAsync().Result;
-            JObject jObj = JObject.Parse(json);
-            JToken? version = jObj["Version"];
-            if (version == null) return false;
-            int Version = int.Parse(version.ToString());
-
-            //既にみたことがあれば出さない
-            if (AnnounceVersion.Value == Version)
+            JToken jObj = JObject.Parse(json)["News"];
+            for (JToken current = jObj.First; current != null; current = current.Next)
             {
-                ShownFlag = true;
-            }
-            //更新する
-            AnnounceVersion.Value = Version;
+                if (!current.HasValues) continue;
 
-            string lang = Language.Language.GetLanguage((uint)AmongUs.Data.DataManager.Settings.Language.CurrentLanguage);
-            if (jObj[lang] != null)
-                Announcement = jObj[lang].ToString();
-            else if (jObj["English"] != null)
-                Announcement = jObj["English"].ToString();
-            else if (jObj["Japanese"] != null)
-                Announcement = jObj["Japanese"].ToString();
-            else
-            {
-                Announcement = "-Invalid Announcement-";
-                return false;
+                try
+                {
+                    var news = new ModNews();
+                    news.Number = int.Parse(current["Number"].ToString());
+                    news.Title = current["Title"].ToString();
+                    news.SubTitle = current["Subtitle"].ToString();
+                    news.ShortTitle = current["Short"].ToString();
+                    news.Text = current["Body"].ToString();
+                    news.Date = current["Date"].ToString();
+
+                    foreach (Match match in RoleRegex.Matches(news.Text))
+                    {
+                        var split = match.Value.Split(':', '(', ')');
+                        FormatRoleString(match, ref news.Text, split[1], split[2]);
+                    }
+
+                    foreach (Match match in OptionRegex.Matches(news.Text))
+                    {
+                        var split = match.Value.Split('(', ')');
+
+                        news.Text = news.Text.Replace(match.Value,
+                            Language.Language.CheckValidKey(split[1]) ?
+                            Language.Language.GetString(split[1]) : split[3]);
+                    }
+
+
+                    AllModNews.Add(news);
+                }
+                catch
+                {
+                    NebulaPlugin.Instance.Logger.Print("ModNews", "Failed to load news.");
+                }
             }
-            Announcement = FormatString(Announcement);
+
+            AnnouncementPopUp.UpdateState = AnnouncementPopUp.AnnounceState.NotStarted;
         }
-        catch (System.Exception ex)
-        {
-        }
-        return !ShownFlag;
+
+        __result = Effects.Sequence(GetEnumerator().WrapToIl2Cpp(), __result);
     }
 
-    public static bool Prefix(AnnouncementPopUp __instance)
+    public static int Compare(DateTime t1, DateTime t2)
     {
-        if (!ShownFlag)
+        long ticks1 = t1.Ticks;
+        long ticks2 = t2.Ticks;
+        if (ticks1 > ticks2) return 1;
+        if (ticks1 < ticks2) return -1;
+        return 0;
+    }
+
+    [HarmonyPatch(typeof(PlayerAnnouncementData), nameof(PlayerAnnouncementData.SetAnnouncements)), HarmonyPrefix]
+    public static bool SetModAnnouncements(PlayerAnnouncementData __instance, [HarmonyArgument(0)] Il2CppReferenceArray<Announcement> aRange)
+    {
+        DateTime ParseDateTime(Announcement a)
         {
-            if (LoadAnnouncement())
+            try
             {
-                AnnouncementPopUp.UpdateState = AnnouncementPopUp.AnnounceState.Success;
-                ShownFlag = true;
+                return DateTime.Parse(a.Date);
+            }
+            catch
+            {
+                return new DateTime(2000, 1, 1);
             }
         }
-        else { LoadAnnouncement(); }
 
-        __instance.AnnounceTextMeshPro.text = Announcement;
+        List<Announcement> list = new();
+        foreach (var a in aRange) list.Add(a);
+        foreach (var m in AllModNews) list.Add(m.ToAnnouncement());
+        list.Sort((a1, a2) => { return DateTime.Compare(ParseDateTime(a2), ParseDateTime(a1)); });
+
+        __instance.allAnnouncements = new Il2CppSystem.Collections.Generic.List<Announcement>();
+        foreach (var a in list) __instance.allAnnouncements.Add(a);
+
+
+        __instance.HandleChange();
+        __instance.OnAddAnnouncement?.Invoke();
+
+        return false;
+    }
+
+    static SpriteLoader ModLabel = new SpriteLoader("Nebula.Resources.NebulaNewsIcon.png", 100f);
+
+    [HarmonyPatch(typeof(AnnouncementPanel), nameof(AnnouncementPanel.SetUp)), HarmonyPostfix]
+    public static void SetUpPanel(AnnouncementPanel __instance, [HarmonyArgument(0)] Announcement announcement)
+    {
+        if (announcement.Number < 100000) return;
+        var obj = new GameObject("ModLabel");
+        obj.layer = LayerExpansion.GetUILayer();
+        obj.transform.SetParent(__instance.transform);
+        obj.transform.localPosition=new Vector3(-0.8f,0.13f,0.5f);
+        obj.transform.localScale = new Vector3(0.9f,0.9f,0.9f);
+        var renderer = obj.AddComponent<SpriteRenderer>();
+        renderer.sprite = ModLabel.GetSprite();
+        renderer.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+    }
+}
+
+[HarmonyPatch(typeof(SelectableHyperLinkHelper),nameof(SelectableHyperLinkHelper.DecomposeHyperlinkText))]
+public static class HyperLinkHelperPatch
+{
+    static bool Prefix([HarmonyArgument(0)]string textToDecompose, [HarmonyArgument(1)] Il2CppSystem.Collections.Generic.List<ITextPart> textConstituents, [HarmonyArgument(2)] Il2CppSystem.Collections.Generic.List<ITextPart> selectableHyperLinks)
+    {
+        if (string.IsNullOrEmpty(textToDecompose))
+        {
+            return false;
+        }
+        selectableHyperLinks.Clear();
+        textConstituents.Clear();
+        while (textToDecompose.Length > 0)
+        {
+            string text;
+            string text2;
+            SelectableHyperLinkHelper.GetFirstUrl(textToDecompose, out text, out text2);
+            if (!string.IsNullOrEmpty(text))
+            {
+                ITextPart item = (new TextPart(text)).CastFast<ITextPart>();
+                textConstituents.Add(item);
+            }
+            int padding = 1;
+            if (!string.IsNullOrEmpty(text2))
+            {
+                
+                SelectableHyperLink component = UnityEngine.Object.Instantiate<GameObject>(Resources.Load("SelectableHyperlink").CastFast<GameObject>()).GetComponent<SelectableHyperLink>();
+                try
+                {
+                    component.LinkText = text2;
+                    var textPart = component.CastFast<ITextPart>();
+                    selectableHyperLinks.Add(textPart);
+                    textConstituents.Add(textPart);
+                }
+                catch
+                {
+                    ITextPart item = (new TextPart(text2)).CastFast<ITextPart>();
+                    textConstituents.Add(item);
+                    UnityEngine.Object.Destroy(component.gameObject);
+                    padding = 0;
+                }
+            }
+            int startIndex = Math.Min(textToDecompose.Length, text.Length + text2.Length + padding);
+            textToDecompose = textToDecompose.Substring(startIndex);
+        }
 
         return false;
     }
 }
-*/
+
+
+/*
+    [HarmonyPatch(typeof(AnnouncementPopUp), nameof(AnnouncementPopUp.UpdateAnnounceText))]
+    public static class AnnouncementPatch
+    {
+        private static bool ShownFlag = false;
+        private static ConfigEntry<int> AnnounceVersion = null;
+        private static string Announcement = "";
+
+        private static string FormatRoleString(Match match, string str, string key, string defaultString)
+        {
+            foreach (var role in Roles.Roles.AllRoles)
+            {
+                if (role.Name.ToUpper() == key)
+                {
+                    str = str.Replace(match.Value, Helpers.cs(role.Color, Language.Language.GetString("role." + role.LocalizeName + ".name")));
+                    return str;
+                }
+            }
+            foreach (var role in Roles.Roles.AllExtraRoles)
+            {
+                if (role.Name.ToUpper() == key)
+                {
+                    str = str.Replace(match.Value, Helpers.cs(role.Color, Language.Language.GetString("role." + role.LocalizeName + ".name")));
+                    return str;
+                }
+            }
+
+            str = str.Replace(match.Value, defaultString);
+            return str;
+        }
+
+        private static string FormatString(string str)
+        {
+            Regex regex;
+
+            //旧式の変換
+            foreach (var role in Roles.Roles.AllRoles)
+            {
+                str = str.Replace("%ROLE:" + role.Name.ToUpper() + "%", Helpers.cs(role.Color, Language.Language.GetString("role." + role.LocalizeName + ".name")));
+            }
+            foreach (var role in Roles.Roles.AllExtraRoles)
+            {
+                str = str.Replace("%ROLE:" + role.Name.ToUpper() + "%", Helpers.cs(role.Color, Language.Language.GetString("role." + role.LocalizeName + ".name")));
+            }
+
+            regex = new Regex("%ROLE:[A-Z]+\\([^)]+\\)%");
+            foreach (Match match in regex.Matches(str))
+            {
+                var split = match.Value.Split(':', '(', ')');
+                str = FormatRoleString(match, str, split[1], split[2]);
+            }
+
+            str = str.Replace("%/COLOR%", "</color>");
+
+            regex = new Regex("%OPTION\\([a-zA-Z\\.0-9]+\\)\\,\\([^)]+\\)%");
+            foreach (Match match in regex.Matches(str))
+            {
+                var split = match.Value.Split('(', ')');
+
+                str = str.Replace(match.Value,
+                    Language.Language.CheckValidKey(split[1]) ?
+                    Language.Language.GetString(split[1]) : split[3]);
+            }
+
+            return str;
+        }
+
+        public static bool LoadAnnouncement()
+        {
+            if (AnnounceVersion == null)
+            {
+                AnnounceVersion = NebulaPlugin.Instance.Config.Bind("Announce", "Version", (int)0);
+            }
+
+            HttpClient http = new HttpClient();
+            http.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue { NoCache = true };
+            var response = http.GetAsync(new System.Uri($"https://raw.githubusercontent.com/Dolly1016/Nebula/master/announcement.json"), HttpCompletionOption.ResponseContentRead).Result;
+
+
+            try
+            {
+                if (response.StatusCode != HttpStatusCode.OK) return false;
+                if (response.Content == null) return false;
+                string json = response.Content.ReadAsStringAsync().Result;
+                JObject jObj = JObject.Parse(json);
+                JToken? version = jObj["Version"];
+                if (version == null) return false;
+                int Version = int.Parse(version.ToString());
+
+                //既にみたことがあれば出さない
+                if (AnnounceVersion.Value == Version)
+                {
+                    ShownFlag = true;
+                }
+                //更新する
+                AnnounceVersion.Value = Version;
+
+                string lang = Language.Language.GetLanguage((uint)AmongUs.Data.DataManager.Settings.Language.CurrentLanguage);
+                if (jObj[lang] != null)
+                    Announcement = jObj[lang].ToString();
+                else if (jObj["English"] != null)
+                    Announcement = jObj["English"].ToString();
+                else if (jObj["Japanese"] != null)
+                    Announcement = jObj["Japanese"].ToString();
+                else
+                {
+                    Announcement = "-Invalid Announcement-";
+                    return false;
+                }
+                Announcement = FormatString(Announcement);
+            }
+            catch (System.Exception ex)
+            {
+            }
+            return !ShownFlag;
+        }
+
+        public static bool Prefix(AnnouncementPopUp __instance)
+        {
+            if (!ShownFlag)
+            {
+                if (LoadAnnouncement())
+                {
+                    AnnouncementPopUp.UpdateState = AnnouncementPopUp.AnnounceState.Success;
+                    ShownFlag = true;
+                }
+            }
+            else { LoadAnnouncement(); }
+
+            __instance.AnnounceTextMeshPro.text = Announcement;
+
+            return false;
+        }
+    }
+    */
 
 [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start))]
 public class ModUpdaterButton

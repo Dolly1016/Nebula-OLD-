@@ -192,6 +192,9 @@
 "option.killCoolDownProceedIgnoringCommReceiver": "Comm. Game"
 "option.killCoolDownProceedIgnoringEmergencySabotage" : "EMG Sabotage"
 
+"option.hideAndSeekOption" : "HnS Option"
+"option.hideAndSeekOption.validPerks" : "Valid Perks"
+
 "option.streamersOption" : "Streamers Option"
 "option.streamersOption.enforcePreventingSpoiler" : "Enforce Preventing Spoiler"
 
@@ -296,6 +299,7 @@
 "role.guesser.info" : "You can guess other alive players.\nIf your guess is correct, guessed player will die."
 "role.guesser.help.guess" : "In a meeting, you can guess anyone's role."
 "role.guesser.numOfSecondarySide" : "Including Impostors"
+"role.guesser.spawnableRoleFilter" : "Spawnable Role Filter"
 "role.guesser.canShotSeveralTimes" : "Can Shot Several Times In The Same Meeting"
 "role.guesser.isSecondaryRole" : "Assign As Secondary Role"
 "role.guesser.guesserShots" : "Guesser Shots"
@@ -676,18 +680,12 @@
 "role.disturber.name" : "Disturber"
 "role.disturber.short" : "Di"
 "role.disturber.description" : "Let's Disturb"
-"role.disturber.hint" : "Disturb by Barriors and Black Out."
-"role.disturber.info" : "You can use Elec Barrior to prevent players from freely moving."
-"role.disturber.help.disturb" : "Place pole / Disturb and black out." 
+"role.disturber.hint" : "Disturb by Bolts."
+"role.disturber.info" : "You can use bolts to prevent players from freely moving."
+"role.disturber.help.disturb" : "Place bolts / Disturb." 
 "role.disturber.disturbCoolDown" : "Disturb Cool Down"
 "role.disturber.disturbDuration" : "Disturb Duration"
-"role.disturber.disturbBlackOutRate" : "Disturb Black Out Rate"
-"role.disturber.countOfBarriors" : "Count Of Barriors"
-"role.disturber.maxPoleDistance" : "Max Pole Distance"
-"role.disturber.ignoreBarriors" : "Ignore Barriors"
-"role.disturber.ignoreBarriors.constant" : "Constant"
-"role.disturber.ignoreBarriors.impostors" : "Impostors"
-"role.disturber.ignoreBarriors.onlyMyself" : "Only Myself"
+"role.disturber.countOfBolts" : "Count Of Bolts"
 
 "role.eraser.name" : "Eraser"
 "role.eraser.short" : "E"
@@ -867,15 +865,6 @@
 "role.empiric.ventCoolDown" : "Vent Cool Down"
 "role.empiric.ventDuration" : "Vent Duration"
 
-"role.immoralist.name" : "Immoralist"
-"role.immoralist.short" : "I"
-"role.immoralist.description" : "Even If Costs My Life"
-"role.immoralist.hint" : "Assist Spectre."
-"role.immoralist.info" : "Assist Spectre to win."
-"role.immoralist.showDeathFlash" : "Show Death Flash"
-"role.immoralist.canKnowWhereIsDeadBodies" : "Can Know Where Is Dead Bodies"
-"role.immoralist.canFixLightsAndComms" : "Can Fix Lights And Comms"
-
 "role.jackal.name" : "Jackal"
 "role.jackal.short" : "J"
 "role.jackal.description" : "Kill all Crewmates and <color=#ff1919ff>Impostors</color> to Win"
@@ -910,6 +899,8 @@
 "role.jester.ventDuration" : "Vent Duration"
 "role.jester.canDragBodies" : "Can Drag Dead Bodies"
 "role.jester.canFireBlankShots" : "Can Fire Blank Shots"
+"role.jester.isGuessable" : "Is Guessable"
+"role.jester.isGuessable.niceOnly" : "Nice Only"
 
 "role.opportunist.name" : "Opportunist"
 "role.opportunist.short" : "O"
@@ -965,6 +956,7 @@
 "role.paparazzo.taskTextDisclosed" : "Disclosed %CD%/%GD%"
 "role.paparazzo.sharing.confirm" : "Are you sure you want to share?"
 "role.paparazzo.sharing.failed" : "The Time to share is over."
+"role.paparazzo.isGuessable" : "Is Guessable"
 
 "role.teamSanta.name" : "Team Santa"
 "role.teamSanta.info" : "You were welcomed into Team Santa.\nWork together for victory."
@@ -1014,6 +1006,15 @@
 "role.spectre.task.rancor.phase.letter" : "Get a Letter"
 "role.spectre.task.rancor.phase.delivery" : "Delivery the Grudge to %PLAYER%"
 "role.spectre.task.rancor.phase.statue" : "Store Power in Statues"
+
+"role.immoralist.name" : "Immoralist"
+"role.immoralist.short" : "I"
+"role.immoralist.description" : "Even If Costs My Life"
+"role.immoralist.hint" : "Assist Spectre."
+"role.immoralist.info" : "Assist Spectre to win."
+"role.immoralist.showDeathFlash" : "Show Death Flash"
+"role.immoralist.canKnowWhereIsDeadBodies" : "Can Know Where Is Dead Bodies"
+"role.immoralist.canFixLightsAndComms" : "Can Fix Lights And Comms"
 
 "role.vulture.name" : "Vulture"
 "role.vulture.short" : "V"
@@ -1180,6 +1181,50 @@
 "roles.category.lover" : "Lover"
 "roles.category.jackal" : "Jackal"
 "roles.category.vulture" : "Vulture"
+
+"perks.perk" : "PERK"
+
+"perks.unselected.name" : "Unselected"
+"perks.unselected.flavor" : "You can invoke perk power..."
+
+"perks.unequip.name" : "Unequip"
+"perks.unequip.flavor" : "Unequip the perk."
+
+"perks.intuition.name" : "Intuition"
+"perks.intuition.flavor" : "The threat area is extended by $PROP0$%.\nIt only affects you."
+
+"perks.tenacity.name" : "Tenacity"
+"perks.tenacity.flavor" : "The threat area is extended by $PROP0$%\neach time a crewmate is killed. It only affects you."
+
+"perks.patience.name" : "Patience"
+"perks.patience.flavor" : "You know how to act stealthily. On the final stage,\nthe seeker cannot know where you are by ping.\nThis ability cannot activate continuously."
+
+"perks.sheriffGlance.name" : "Sheriff's Glance"
+"perks.sheriffGlance.flavor" : "When glancing at the seeker, you alert crewmates.\nThis ability has $PROP0$sec cool time."
+
+"perks.geniusInStorage.name" : "Genius In Storage"
+"perks.geniusInStorage.flavor" : "While you are in Storage or Cargo Bay,\nThe time limit advances by $PROP0$sec.\nThis ability has $PROP1$sec cool time."
+
+"perks.tspResolver.name" : "TSP Resolver"
+"perks.tspResolver.flavor" : "You gain $PROP0$% speed acceleration for $PROP1$sec\nwhen you complete tasks."
+
+"perks.agitation.name" : "Agitation"
+"perks.agitation.flavor" : "You gain $PROP0$% speed acceleration for $PROP1$sec\nevery time you kill."
+
+"perks.creeper.name" : "The Creeper"
+"perks.creeper.flavor" : "You narrow the threat area by $PROP0$%."
+
+"perks.insatiable.name" : "Insatiable"
+"perks.insatiable.flavor" : "Murderous intent does not subside.\nWhen you kill someone,\nit will tell you where the furthest target is. "
+
+"perks.willNotMissYou.name" : "Will Not Miss You"
+"perks.willNotMissYou.flavor" : "Failed kill penalty is reduced by $PROP0$%."
+
+"perks.limitlessAlarm.name" : "Limitless Alarm"
+"perks.limitlessAlarm.flavor" : "You gain $PROP0$sec shorter ping interval."
+
+"perks.derelictCorpse.name" : "Derelict Corpse"
+"perks.derelictCorpse.flavor" : "You gain $PROP1$% wider kill range\nif there is any corpse $PROP0$m away."
 
 "game.message.countDown" : "Starting in %COUNT%s"
 "game.message.start" : "Game Start!"
@@ -1359,6 +1404,26 @@
 "locations.brig" : "Brig"
 "locations.vault" : "Vault"
 "locations.meetingRoom" : "Meeting Room"
+
+"help.assignable.filter.gameMode" : "Game Mode"
+"help.assignable.filter.spawnable" : "Spawnable"
+"help.assignable.filter.crewmate" : "Crewmate"
+"help.assignable.filter.impostor" : "Impostor"
+"help.assignable.filter.neutral" : "Neutral"
+
+"help.header.myRoles" : "My Roles"
+"help.header.roles" : "Roles"
+"help.header.ghostRoles" : "Ghost Roles"
+"help.header.modifiers" : "Modifiers"
+"help.header.options" : "Options"
+"help.header.help" : "Help"
+
+"help.index.myRoles" : "My Roles"
+"help.index.roles" : "Roles"
+"help.index.ghostRoles" : "Ghost"
+"help.index.modifiers" : "Modifiers"
+"help.index.options" : "Options"
+"help.index.help" : "Help"
 
 "help.contents" : "Contents"
 "help.contents.general" : "General"

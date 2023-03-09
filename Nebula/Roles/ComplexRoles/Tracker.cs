@@ -56,6 +56,7 @@ public class Tracker : Template.BilateralnessRole
     private SpriteRenderer? targetIndicator;
     private byte taskTrackTarget;
     private List<Tuple<Vector2, bool>>? tasks;
+    SpriteLoader arrowSprite;
 
     //インポスターはModで操作するFakeTaskは所持していない
     public Tracker(string name, string localizeName, bool isImpostor)
@@ -71,6 +72,8 @@ public class Tracker : Template.BilateralnessRole
     {
         IsHideRole = true;
         impostorArrows = new List<Arrow?>();
+
+        arrowSprite = new SpriteLoader("role."+localizeName+".arrow");
     }
 
     public override Assignable AssignableOnHelp => Roles.F_Tracker;
@@ -129,6 +132,7 @@ public class Tracker : Template.BilateralnessRole
         }
     }
 
+
     public override void MyPlayerControlUpdate()
     {
         Game.MyPlayerData data = Game.GameData.data.myData;
@@ -137,7 +141,7 @@ public class Tracker : Template.BilateralnessRole
 
         if (!Roles.F_Tracker.evilTrackerCanTrackImpostorsOption.getBool()) return;
 
-        RoleSystem.TrackSystem.PlayerTrack_MyControlUpdate(ref arrow, trackTarget, Roles.F_Tracker.Color);
+        RoleSystem.TrackSystem.PlayerTrack_MyControlUpdate(ref arrow, trackTarget, Roles.F_Tracker.Color,arrowSprite);
 
         int i = 0;
         if (category == RoleCategory.Impostor)
@@ -149,7 +153,7 @@ public class Tracker : Template.BilateralnessRole
                     if (impostorArrows.Count >= i) impostorArrows.Add(null);
 
                     var arrow = impostorArrows[i];
-                    RoleSystem.TrackSystem.PlayerTrack_MyControlUpdate(ref arrow, p, Palette.ImpostorRed);
+                    RoleSystem.TrackSystem.PlayerTrack_MyControlUpdate(ref arrow, p, Palette.ImpostorRed,arrowSprite);
                     impostorArrows[i] = arrow;
 
                     i++;
@@ -297,7 +301,10 @@ public class Tracker : Template.BilateralnessRole
         {
             if (!trackTarget.control.Data.IsDead)
             {
-                pos = trackTarget.control.transform.position;
+                if (MeetingHud.Instance)                
+                    pos = trackTarget.control.GetModData().preMeetingPosition;
+                else
+                    pos = trackTarget.control.transform.position;
             }
             else if (trackTarget.deadBody)
             {

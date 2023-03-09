@@ -272,11 +272,82 @@ public class MetaDialog : MetaScreen
         return designer;
     }
 
+    public static class HelpSearchFilter
+    {
+        public static bool OnlyCurrentGameMode = true;
+        public static bool OnlySpawnable = true;
+        public static bool OnlyImpostor = false;
+        public static bool OnlyCrewmate = false;
+        public static bool OnlyNeutral = false;
+
+        public static bool ShouldShowCategory(Roles.RoleCategory category)
+        {
+            if(OnlyImpostor || OnlyCrewmate || OnlyNeutral)
+            {
+                if (OnlyImpostor && category == Roles.RoleCategory.Impostor) return true;
+                if (OnlyCrewmate && category == Roles.RoleCategory.Crewmate) return true;
+                if (OnlyNeutral && category == Roles.RoleCategory.Neutral) return true;
+                return false;
+            }
+            return true;
+        }
+
+        public static void AddFilterTopic(MSDesigner designer,Action refresher,bool ShowSideFilter)
+        {
+            List<MetaScreenContent> contents = new();
+            contents.Add(new MSButton(1.6f, 0.4f, Language.Language.GetString("help.assignable.filter.gameMode"), TMPro.FontStyles.Bold, () =>
+            {
+                OnlyCurrentGameMode = !OnlyCurrentGameMode;
+                refresher();
+            }, OnlyCurrentGameMode ? Color.yellow : Color.gray));
+            contents.Add(new MSButton(1.6f, 0.4f, Language.Language.GetString("help.assignable.filter.spawnable"), TMPro.FontStyles.Bold, () =>
+            {
+                OnlySpawnable = !OnlySpawnable;
+                refresher();
+            }, OnlySpawnable ? Color.yellow : Color.gray));
+            if (ShowSideFilter)
+            {
+                contents.Add(new MSButton(1.6f, 0.4f, Language.Language.GetString("help.assignable.filter.crewmate"), TMPro.FontStyles.Bold, () =>
+                {
+                    OnlyCrewmate = !OnlyCrewmate;
+                    if (OnlyCrewmate)
+                    {
+                        OnlyImpostor = false;
+                        OnlyNeutral = false;
+                    }
+                    refresher();
+                }, OnlyCrewmate ? Color.yellow : Color.gray));
+                contents.Add(new MSButton(1.6f, 0.4f, Language.Language.GetString("help.assignable.filter.impostor"), TMPro.FontStyles.Bold, () =>
+                {
+                    OnlyImpostor = !OnlyImpostor;
+                    if (OnlyImpostor)
+                    {
+                        OnlyCrewmate = false;
+                        OnlyNeutral = false;
+                    }
+                    refresher();
+                }, OnlyImpostor ? Color.yellow : Color.gray));
+                contents.Add(new MSButton(1.6f, 0.4f, Language.Language.GetString("help.assignable.filter.neutral"), TMPro.FontStyles.Bold, () =>
+                {
+                    OnlyNeutral = !OnlyNeutral;
+                    if (OnlyNeutral)
+                    {
+                        OnlyCrewmate = false;
+                        OnlyImpostor = false;
+                    }
+                    refresher();
+                }, OnlyNeutral ? Color.yellow : Color.gray));
+            }
+            designer.AddTopic(contents.ToArray());
+            designer.CustomUse(0.2f);
+        }
+    }
+
     static public MSDesigner OpenHelpDialog(int tab, int arg, List<string>? options = null)
     {
         var designer = MetaDialog.OpenDialog(new Vector2(9f, 5.5f), "");
 
-        var rolesTab = new MSButton(1.2f, 0.4f, "Roles", TMPro.FontStyles.Bold, () =>
+        var rolesTab = new MSButton(1.2f, 0.4f, Language.Language.GetString("help.index.roles"), TMPro.FontStyles.Bold, () =>
         {
             if (tab != 1)
             {
@@ -285,7 +356,7 @@ public class MetaDialog : MetaScreen
             }
         });
 
-        var ghostRolesTab = new MSButton(1.2f, 0.4f, "Ghost", TMPro.FontStyles.Bold, () =>
+        var ghostRolesTab = new MSButton(1.2f, 0.4f, Language.Language.GetString("help.index.ghostRoles"), TMPro.FontStyles.Bold, () =>
         {
             if (tab != 2)
             {
@@ -294,7 +365,7 @@ public class MetaDialog : MetaScreen
             }
         });
 
-        var modifiesTab = new MSButton(1.2f, 0.4f, "Modifies", TMPro.FontStyles.Bold, () =>
+        var modifiesTab = new MSButton(1.2f, 0.4f, Language.Language.GetString("help.index.modifiers"), TMPro.FontStyles.Bold, () =>
         {
             if (tab != 3)
             {
@@ -303,7 +374,7 @@ public class MetaDialog : MetaScreen
             }
         });
 
-        var optionsTab = new MSButton(1.2f, 0.4f, "Options", TMPro.FontStyles.Bold, () =>
+        var optionsTab = new MSButton(1.2f, 0.4f, Language.Language.GetString("help.index.options"), TMPro.FontStyles.Bold, () =>
         {
             if (tab != 4)
             {
@@ -312,7 +383,7 @@ public class MetaDialog : MetaScreen
             }
         });
 
-        var helpTab = new MSButton(1.2f, 0.4f, "Help", TMPro.FontStyles.Bold, () =>
+        var helpTab = new MSButton(1.2f, 0.4f, Language.Language.GetString("help.index.help"), TMPro.FontStyles.Bold, () =>
         {
             if (tab != 5)
             {
@@ -323,7 +394,7 @@ public class MetaDialog : MetaScreen
 
         if (AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started)
         {
-            var myTab = new MSButton(1.2f, 0.4f, "My Role", TMPro.FontStyles.Bold, () =>
+            var myTab = new MSButton(1.2f, 0.4f, Language.Language.GetString("help.index.myRoles"), TMPro.FontStyles.Bold, () =>
             {
                 if (tab != 0)
                 {
@@ -341,7 +412,7 @@ public class MetaDialog : MetaScreen
         }
 
         //見出し
-        designer.AddTopic(new MSString(4f, new string[] { "My Roles", "Roles", "Ghost Roles", "Modifiers", "All Options", "Help" }[tab], TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold));
+        designer.AddTopic(new MSString(4f, new string[] { Language.Language.GetString("help.header.myRoles"), Language.Language.GetString("help.header.roles"), Language.Language.GetString("help.header.ghostRoles"), Language.Language.GetString("help.header.modifiers"), Language.Language.GetString("help.header.options"), Language.Language.GetString("help.header.help") }[tab], TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Bold));
 
         switch (tab)
         {
@@ -395,21 +466,36 @@ public class MetaDialog : MetaScreen
 
                 break;
             case 1:
-                designer.AddRolesTopic((r) => r.category != Roles.RoleCategory.Complex && r.ShowInHelpWindow, (r) => OpenAssignableHelpDialog(r), 5, 7, arg, (p) =>
+                HelpSearchFilter.AddFilterTopic(designer, () =>
+                {
+                    MetaDialog.EraseDialog(1);
+                    OpenHelpDialog(tab, arg, options);
+                }, true);
+                designer.AddRolesTopic((r) => r.category != Roles.RoleCategory.Complex && r.ShowInHelpWindow, (r) => OpenAssignableHelpDialog(r), 5, 6, arg, (p) =>
                 {
                     MetaDialog.EraseDialog(1);
                     OpenHelpDialog(tab, arg + p, options);
                 });
                 break;
             case 2:
-                designer.AddGhostRoleTopic((r) => r.ShowInHelpWindow, (r) => OpenAssignableHelpDialog(r), 5, 7, arg, (p) =>
+                HelpSearchFilter.AddFilterTopic(designer, () =>
+                {
+                    MetaDialog.EraseDialog(1);
+                    OpenHelpDialog(tab, arg, options);
+                }, false);
+                designer.AddGhostRoleTopic((r) => r.ShowInHelpWindow, (r) => OpenAssignableHelpDialog(r), 5, 6, arg, (p) =>
                 {
                     MetaDialog.EraseDialog(1);
                     OpenHelpDialog(tab, arg + p, options);
                 });
                 break;
             case 3:
-                designer.AddModifyTopic((r) => r.ShowInHelpWindow, (r) => OpenAssignableHelpDialog(r), 5, 7, arg, (p) =>
+                HelpSearchFilter.AddFilterTopic(designer, () =>
+                {
+                    MetaDialog.EraseDialog(1);
+                    OpenHelpDialog(tab, arg, options);
+                }, false);
+                designer.AddModifyTopic((r) => r.ShowInHelpWindow, (r) => OpenAssignableHelpDialog(r), 5, 6, arg, (p) =>
                 {
                     MetaDialog.EraseDialog(1);
                     OpenHelpDialog(tab, arg + p, options);

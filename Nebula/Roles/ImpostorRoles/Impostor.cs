@@ -15,4 +15,6 @@ public class Impostor : Role
     {
         ValidGamemode = Module.CustomGameMode.Standard;
     }
+
+    public override bool IsSpawnable() => true;
 }

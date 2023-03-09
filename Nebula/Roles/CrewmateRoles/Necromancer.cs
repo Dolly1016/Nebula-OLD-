@@ -222,11 +222,13 @@ public class Necromancer : Template.Draggable
         }
     }
 
+    SpriteLoader arrowSprite = new SpriteLoader("role.necromancer.arrow");
+
     private void SpawnArrow(SystemTypes roomType)
     {
         CleanArrow();
 
-        reviveArrow = new Arrow(Color.cyan);
+        reviveArrow = new Arrow(Color.cyan,true,arrowSprite.GetSprite());
         reviveArrow.arrow.SetActive(true);
         reviveArrow.Update(ShipStatus.Instance.FastRooms[roomType].roomArea.transform.position);
         targetRoom = roomType;

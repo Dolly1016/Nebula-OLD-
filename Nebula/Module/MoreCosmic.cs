@@ -1,6 +1,8 @@
-﻿using System.Net;
+﻿using System.Linq;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
+using LibCpp2IL;
 using Newtonsoft.Json.Linq;
 
 namespace Nebula.Module;
@@ -480,7 +482,8 @@ public class CustomParts
         {
             ScriptableObject.Destroy(hat.hatViewData.viewData);
             ScriptableObject.Destroy(hat);
-            throw e;
+            NebulaPlugin.Instance.Logger.Print("MoreCosmic",ch.Name.Value+ " is informal.");
+            return null;
         }
     }
 
@@ -520,7 +523,8 @@ public class CustomParts
         {
             ScriptableObject.Destroy(np.viewData.viewData);
             ScriptableObject.Destroy(np);
-            throw e;
+            NebulaPlugin.Instance.Logger.Print("MoreCosmic", ch.Name.Value + " is informal.");
+            return null;
         }
     }
 
@@ -569,7 +573,8 @@ public class CustomParts
         {
             ScriptableObject.Destroy(vd.viewData.viewData);
             ScriptableObject.Destroy(vd);
-            throw e;
+            NebulaPlugin.Instance.Logger.Print("MoreCosmic", ch.Name.Value + " is informal.");
+            return null;
         }
     }
 
@@ -591,11 +596,22 @@ public class CustomParts
                     var lastArray = __instance.allHats;
                     int newCosmics = CosmicLoader.hatdetails.Count;
                     var newArray = new Il2CppReferenceArray<HatData>(lastArray.Count + newCosmics);
-
+                    int newCount = lastArray.Count;
                     int lastCount = lastArray.Count;
+
                     for (int i = 0; i < lastCount; i++) newArray[i] = lastArray[i];
-                    for (int i = 0; i < newCosmics; i++) newArray[i + lastCount] = CreateHatData(CosmicLoader.hatdetails[i], true);
+                    for (int i = 0; i < newCosmics; i++)
+                    {
+                        var data = CreateHatData(CosmicLoader.hatdetails[i], true);
+                        if (data != null)
+                        {
+                            newArray[newCount] = data;
+                            newCount++;
+                        }
+                    }
                     CosmicLoader.hatdetails.RemoveRange(0, newCosmics);
+
+                    if (newArray.Count > newCount) newArray = new(newArray.ToArray().SubArray(0, newCount));
 
                     __instance.allHats = newArray;
                 }
@@ -632,11 +648,22 @@ public class CustomParts
                     var lastArray = __instance.allNamePlates;
                     int newCosmics = CosmicLoader.namePlatedetails.Count;
                     var newArray = new Il2CppReferenceArray<NamePlateData>(lastArray.Count + newCosmics);
-
+                    int newCount = lastArray.Count;
                     int lastCount = lastArray.Count;
+
                     for (int i = 0; i < lastCount; i++) newArray[i] = lastArray[i];
-                    for (int i = 0; i < newCosmics; i++) newArray[i + lastCount] = CreateNamePlateData(CosmicLoader.namePlatedetails[i], true);
+                    for (int i = 0; i < newCosmics; i++)
+                    {
+                        var data = CreateNamePlateData(CosmicLoader.namePlatedetails[i], true);
+                        if (data != null)
+                        {
+                            newArray[newCount] = data;
+                            newCount++;
+                        }
+                    }
                     CosmicLoader.namePlatedetails.RemoveRange(0, newCosmics);
+
+                    if (newArray.Count > newCount) newArray = new(newArray.ToArray().SubArray(0, newCount));
 
                     __instance.allNamePlates = newArray;
                 }
@@ -672,11 +699,22 @@ public class CustomParts
                     var lastArray = __instance.allVisors;
                     int newCosmics = CosmicLoader.visordetails.Count;
                     var newArray = new Il2CppReferenceArray<VisorData>(lastArray.Count + newCosmics);
-
+                    int newCount = lastArray.Count;
                     int lastCount = lastArray.Count;
+                    
                     for (int i = 0; i < lastCount; i++) newArray[i] = lastArray[i];
-                    for (int i = 0; i < newCosmics; i++) newArray[i + lastCount] = CreateVisorData(CosmicLoader.visordetails[i], true);
+                    for (int i = 0; i < newCosmics; i++)
+                    {
+                        var data =  CreateVisorData(CosmicLoader.visordetails[i], true);
+                        if (data != null)
+                        {
+                            newArray[newCount] = data;
+                            newCount++;
+                        }
+                    }
                     CosmicLoader.visordetails.RemoveRange(0, newCosmics);
+
+                    if (newArray.Count > newCount) newArray = new(newArray.ToArray().SubArray(0, newCount));
 
                     __instance.allVisors = newArray;
                 }
@@ -1236,36 +1274,42 @@ public class CosmicLoader
         catch { }
     }
 
+    public static bool cosmicLoad = false;
     public static void LaunchCosmicFetcher()
     {
+        if (cosmicLoad) return;
+
         if (running)
             return;
         running = true;
-        cosmicFetchTask = LaunchCosmicFetcherAsync();
-    }
+        cosmicLoad = true;
 
-    private static async Task LaunchCosmicFetcherAsync()
-    {
         System.IO.Directory.CreateDirectory("MoreCosmic");
         System.IO.Directory.CreateDirectory("MoreCosmic/hats");
         System.IO.Directory.CreateDirectory("MoreCosmic/namePlates");
         System.IO.Directory.CreateDirectory("MoreCosmic/visors");
+
+        //cosmicFetchTask = LaunchCosmicFetcherAsync();
+    }
+
+    private static async Task LaunchCosmicFetcherAsync()
+    {
+        
 
         List<string> repos = new List<string>(cosmicRepos);
         GetUserCosmicRepos(ref repos);
 
         foreach (string repo in repos)
         {
-            string json;
-            HttpStatusCode result;
+            string? json;
             HttpClient? http = null;
 
             if (repo.StartsWith("https://"))
-                result = FetchOnlineItems(repo, out json, ref http);
+                json = await FetchOnlineItems(repo, http);
             else
-                result = FetchOfflineItems(repo, out json);
+                json = FetchOfflineItems(repo);
 
-            if (result != HttpStatusCode.OK) continue;
+            if (json == null) continue;
 
             try
             {
@@ -1288,29 +1332,27 @@ public class CosmicLoader
                     NebulaPlugin.Instance.Logger.Print($"[Failed]Load MoreCosmic Visors {repo}\n");
 
             }
-            catch (System.Exception e)
+            catch 
             {
-                NebulaPlugin.Instance.Logger.Print($"[Failed]Load MoreCosmic {repo}\n" + e.Message);
+                NebulaPlugin.Instance.Logger.Print($"[Failed]Load MoreCosmic {repo}");
             }
         }
         running = false;
     }
 
-    public static HttpStatusCode FetchOnlineItems(string repo, out string json, ref HttpClient? http)
+    public static async Task<string?> FetchOnlineItems(string repo, HttpClient? http)
     {
-        json = "";
+        string? json = "";
 
         http = new HttpClient();
         http.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue { NoCache = true };
-        var responseTask = http.GetAsync(new System.Uri($"{repo}/Contents.json"), HttpCompletionOption.ResponseContentRead);
-        responseTask.Wait();
-        var response = responseTask.Result;
+        var response = await http.GetAsync(new System.Uri($"{repo}/Contents.json"), HttpCompletionOption.ResponseContentRead);
 
-        if (response.StatusCode != HttpStatusCode.OK) return response.StatusCode;
+        if (response.StatusCode != HttpStatusCode.OK) return null;
         if (response.Content == null)
         {
             NebulaPlugin.Instance.Logger.Print("Server returned no data: " + response.StatusCode.ToString());
-            return HttpStatusCode.ExpectationFailed;
+            return null;
         }
 
         try
@@ -1323,21 +1365,19 @@ public class CosmicLoader
         {
             NebulaPlugin.Instance.Logger.Print("[MoreCosmic]" + ex);
         }
-        return HttpStatusCode.OK;
+        return json;
 
     }
 
-    public static HttpStatusCode FetchOfflineItems(string repo, out string json)
+    public static string? FetchOfflineItems(string repo)
     {
         try
         {
-            json = File.ReadAllText($"{repo}/Contents.json");
-            return HttpStatusCode.OK;
+            return File.ReadAllText($"{repo}/Contents.json");
         }
         catch (System.Exception e)
         {
-            json = "";
-            return HttpStatusCode.NotFound;
+            return null;
         }
     }
 
@@ -1381,9 +1421,9 @@ public class CosmicLoader
 
             cosmics.AddRange(cosList);
         }
-        catch (System.Exception ex)
+        catch
         {
-            System.Console.WriteLine(ex);
+            
         }
         return HttpStatusCode.OK;
     }

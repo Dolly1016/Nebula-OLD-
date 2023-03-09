@@ -3,6 +3,7 @@ using Hazel;
 using System.Text;
 using Nebula.Patches;
 using System.IO.Compression;
+using TMPro;
 
 namespace Nebula;
 
@@ -249,6 +250,11 @@ public static class Helpers
     public static string cs(Color c, string s)
     {
         return string.Format("<color=#{0:X2}{1:X2}{2:X2}{3:X2}>{4}</color>", ToByte(c.r), ToByte(c.g), ToByte(c.b), ToByte(c.a), s);
+    }
+
+    public static string csWithoutAlpha(Color c, string s)
+    {
+        return string.Format("<color=#{0:X2}{1:X2}{2:X2}>{3}</color>", ToByte(c.r), ToByte(c.g), ToByte(c.b), s);
     }
 
     private static byte ToByte(float f)
@@ -870,7 +876,7 @@ public static class Helpers
     }
 
     public static void Ping(Vector2 pos,bool smallenNearPing) => Ping(new Vector2[] { pos }, smallenNearPing);
-    public static void Ping(Vector2[] pos, bool smallenNearPing)
+    public static void Ping(Vector2[] pos, bool smallenNearPing,Action<PingBehaviour>? enabledAction=null)
     {
         if (!HudManager.InstanceExists) return;
 
@@ -885,7 +891,13 @@ public static class Helpers
             ping.AmSeeker = smallenNearPing;
             ping.UpdatePosition();
             ping.gameObject.SetActive(true);
-            ping.SetImageEnabled(true);
+            if(enabledAction == null)
+                ping.SetImageEnabled(true);
+            else
+            {
+                if (ping.image != null) ping.image.enabled = true;
+                enabledAction.Invoke(ping);
+            }
             pings[i++] = ping;
         }
 
@@ -930,5 +942,22 @@ public static class Helpers
     public static float GetDefaultNormalizeRate()
     {
         return 3f / (720f / 200f);
+    }
+
+    public static TextMeshPro GenerateText(Transform parent, string text,float fontSize, Vector2 size, TextAlignmentOptions alignment,FontStyles fontStyle)
+    {
+        var tmp = GameObject.Instantiate(HudManager.Instance.Dialogue.target);
+        tmp.transform.SetParent(parent);
+        tmp.transform.localScale = new Vector3(1f, 1f, 1f);
+        tmp.transform.localPosition = new Vector3(0f, 0f, 0f);
+
+        tmp.alignment = alignment;
+        tmp.fontStyle = fontStyle;
+        tmp.rectTransform.sizeDelta = size;
+        tmp.rectTransform.pivot = new Vector2(0.5f, 0.5f);
+        tmp.text = text;
+        tmp.fontSize = tmp.fontSizeMax = tmp.fontSizeMin = fontSize;
+
+        return tmp;
     }
 }
