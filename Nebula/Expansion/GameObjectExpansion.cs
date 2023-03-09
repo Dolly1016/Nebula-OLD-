@@ -12,7 +12,7 @@ public static class GameObjectExpansion
         button.OnMouseOut = new UnityEngine.Events.UnityEvent();
         button.OnMouseOver = new UnityEngine.Events.UnityEvent();
         button.OnClick.RemoveAllListeners();
-        button.OnClick.AddListener(onClicked);
+        if (onClicked != null) button.OnClick.AddListener(onClicked);
         return button;
     }
 }

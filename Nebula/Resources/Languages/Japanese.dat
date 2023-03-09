@@ -203,9 +203,9 @@
 "option.devicesOption.restrictModeOption" : "制限モード"
 "option.devicesOption.perDiscussion" : "会議ごとにリセット"
 "option.devicesOption.perGame" : "試合全体で制限"
-"option.devicesOption.Admin" : "アドミン"
-"option.devicesOption.Vitals" : "バイタル"
-"option.devicesOption.CameraAndDoorLog" : "カメラと通行ログ"
+"option.devicesOption.admin" : "アドミン"
+"option.devicesOption.vitals" : "バイタル"
+"option.devicesOption.cameraAndDoorLog" : "カメラと通行ログ"
 "option.devicesOption.unlimitedCameraSkeld" : "制限対象外カメラ (スケルド)"
 "option.devicesOption.unlimitedCameraPolus" : "制限対象外カメラ (ポーラス)"
 "option.devicesOption.unlimitedCameraAirship" : "制限対象外カメラ (エアシップ)"
@@ -1174,6 +1174,50 @@
 "roles.category.lover" : "ラバーズ"
 "roles.category.jackal" : "ジャッカル"
 "roles.category.vulture" : "ヴァルチャー"
+
+"perks.perk" : "パーク"
+
+"perks.unselected.name" : "未選択"
+"perks.unselected.flavor" : "パークの力を呼び起こそう。"
+
+"perks.unequip.name" : "はずす"
+"perks.unequip.flavor" : "装着されているパークを外します。"
+
+"perks.intuition.name" : "第六感"
+"perks.intuition.flavor" : "シーカーの脅威範囲を$PROP0$%広げる。\nこの効果は自分にのみ適用される。"
+
+"perks.tenacity.name" : "不撓不屈"
+"perks.tenacity.flavor" : "仲間が死ぬたびにシーカーの脅威範囲を$PROP0$%広げる。\nこの効果は自分にのみ適用される。"
+
+"perks.patience.name" : "不動如山"
+"perks.patience.flavor" : "あなたは隠密行動の術を心得ている。\n最終盤面で、シーカーはあなたの位置を知ることができない。\nこの効果は連続して発動されない。"
+
+"perks.sheriffGlance.name" : "保安官の一瞥"
+"perks.sheriffGlance.flavor" : "シーカーの気配に気づいたとき、あなたは仲間に警告する。\nこの能力は$PROP0$秒のクールダウンを持つ。"
+
+"perks.geniusInStorage.name" : "保管庫に潜む賢才"
+"perks.geniusInStorage.flavor" : "貨物室および保管庫にいる間、制限時間を$PROP0$秒ずつ進める。\nこの能力は$PROP1$秒のクールダウンを持つ。"
+
+"perks.tspResolver.name" : "巡回セールスマンの究極解"
+"perks.tspResolver.flavor" : "タスクをこなすたびに、あなたは$PROP1$秒の間\n$PROP0$%の加速を得る。"
+
+"perks.agitation.name" : "血戯え"
+"perks.agitation.flavor" : "キルをするたびに、あなたは$PROP1$秒の間\n$PROP0$%の加速を得る。"
+
+"perks.creeper.name" : "忍び寄る怪異"
+"perks.creeper.flavor" : "脅威範囲を$PROP0$%だけ狭める。\n効果は常に発動する。"
+
+"perks.insatiable.name" : "飽き足らぬ殺意"
+"perks.insatiable.flavor" : "殺意は治まらない。\nキルをすると、一番遠くにいる生存者の位置を知ることができる。"
+
+"perks.willNotMissYou.name" : "執念"
+"perks.willNotMissYou.flavor" : "キル失敗時の減速ペナルティの強度を$PROP0$%軽減する。"
+
+"perks.limitlessAlarm.name" : "鳴りやまぬ警鐘"
+"perks.limitlessAlarm.flavor" : "最終盤面における通知の間隔を$PROP0$秒だけ短縮する。"
+
+"perks.derelictCorpse.name" : "永久凍土に眠る屍"
+"perks.derelictCorpse.flavor" : "$PROP0$m以上離れたところに死体があるとき、\nキル範囲が$PROP1$%だけ広くなる。"
 
 "game.message.countDown" : "ゲーム開始まであと %COUNT%秒"
 "game.message.start" : "ゲーム開始！"

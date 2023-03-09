@@ -68,7 +68,7 @@ public class CustomOptionHolder
             "option.display.percentage.andSoForth", "option.display.percentage.10", "option.display.percentage.20", "option.display.percentage.30", "option.display.percentage.40",
             "option.display.percentage.50", "option.display.percentage.60", "option.display.percentage.70", "option.display.percentage.80", "option.display.percentage.90" };
     public static string[] presets = new string[] { "option.display.preset.1", "option.display.preset.2", "option.display.preset.3", "option.display.preset.4", "option.display.preset.5" };
-    public static string[] gamemodesNormal = new string[] { "gamemode.standard", "gamemode.minigame", "gamemode.ritual", "gamemode.investigators", "gamemode.freePlay" };
+    public static string[] gamemodesNormal = new string[] { "gamemode.standard", "gamemode.freePlay" };
     public static string[] gamemodesHnS = new string[] { "gamemode.standard"};
 
     private static byte ToByte(float f)
@@ -240,8 +240,8 @@ public class CustomOptionHolder
     public static CustomOption streamersOption;
     public static CustomOption enforcePreventingSpoilerOption;
 
-    public static CustomOption escapeHunterOption;
-
+    public static CustomOption HnSOption;
+    public static CustomOption ValidPerksOption;
 
     public static void AddExclusiveAssignment(ref List<ExclusiveAssignment> exclusiveAssignments)
     {
@@ -344,31 +344,22 @@ public class CustomOptionHolder
         CustomOption.RegisterTopOption(SoloFreePlayOption);
         CountOfDummiesOption = CustomOption.Create(Color.white, "option.countOfDummies", 0, 0, 14, 1, SoloFreePlayOption).SetGameMode(CustomGameMode.All);
 
-        RitualOption = CustomOption.Create(Color.white, "option.ritualOption", new string[] { "option.empty" }, "option.empty", null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.Ritual);
-        CustomOption.RegisterTopOption(RitualOption);
-        NumOfMissionsOption = CustomOption.Create(Color.white, "option.numOfMissions", 3, 1, 8, 1, RitualOption, false, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.Ritual);
-        LengthOfMissionOption = CustomOption.Create(Color.white, "option.lengthOfMission", 10, 4, 20, 1, RitualOption, false, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.Ritual);
-        RitualKillCoolDownOption = CustomOption.Create(Color.white, "option.killCoolDown", 15f, 7.5f, 30f, 2.5f, RitualOption, false, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.Ritual);
-        RitualKillFailedPenaltyOption = CustomOption.Create(Color.white, "option.killFailedPenalty", 3f, 0f, 20f, 0.5f, RitualOption, false, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.Ritual);
-        RitualSearchCoolDownOption = CustomOption.Create(Color.white, "option.searchCoolDown", 10f, 2.5f, 30f, 2.5f, RitualOption, false, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.Ritual);
-        RitualSearchableDistanceOption = CustomOption.Create(Color.white, "option.searchableDistance", 2.5f, 1.25f, 10f, 1.25f, RitualOption, false, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.Ritual);
-
-        meetingOptions = CustomOption.Create(Color.white, "option.meetingOptions", false, null, true, false, "", CustomOptionTab.Settings).SetGameMode(~(CustomGameMode.Minigame | CustomGameMode.Ritual));
+        meetingOptions = CustomOption.Create(Color.white, "option.meetingOptions", false, null, true, false, "", CustomOptionTab.Settings).SetGameMode(~(CustomGameMode.AllHnS));
         CustomOption.RegisterTopOption(meetingOptions);
-        maxNumberOfMeetings = CustomOption.Create(Color.white, "option.maxNumberOfMeetings", 10, 0, 15, 1, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
-        deathPenaltyForDiscussionTime = CustomOption.Create(Color.white, "option.deathPenaltyForDiscussionTime", 5f, 0f, 30f, 1f, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
+        maxNumberOfMeetings = CustomOption.Create(Color.white, "option.maxNumberOfMeetings", 10, 0, 15, 1, meetingOptions);
+        deathPenaltyForDiscussionTime = CustomOption.Create(Color.white, "option.deathPenaltyForDiscussionTime", 5f, 0f, 30f, 1f, meetingOptions);
         deathPenaltyForDiscussionTime.suffix = "second";
-        additionalEmergencyCoolDown = CustomOption.Create(Color.white, "option.additionalEmergencyCoolDown", 10f, 0f, 60f, 5f, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
+        additionalEmergencyCoolDown = CustomOption.Create(Color.white, "option.additionalEmergencyCoolDown", 10f, 0f, 60f, 5f, meetingOptions);
         additionalEmergencyCoolDown.suffix = "second";
-        additionalEmergencyCoolDownCondition = CustomOption.Create(Color.white, "option.additionalEmergencyCoolDownCondition", 2f, 0f, 15f, 1f, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
+        additionalEmergencyCoolDownCondition = CustomOption.Create(Color.white, "option.additionalEmergencyCoolDownCondition", 2f, 0f, 15f, 1f, meetingOptions);
         additionalEmergencyCoolDownCondition.isHidden = true;
-        canUseEmergencyWithoutDeath = CustomOption.Create(Color.white, "option.canUseEmergencyWithoutDeath", false, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
-        canUseEmergencyWithoutSabotage = CustomOption.Create(Color.white, "option.canUseEmergencyWithoutSabotage", false, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
-        canUseEmergencyWithoutReport = CustomOption.Create(Color.white, "option.canUseEmergencyWithoutReport", false, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
-        severeEmergencyLock = CustomOption.Create(Color.white, "option.severeEmergencyLock", false, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
-        dealAbstentionAsSelfVote = CustomOption.Create(Color.white, "option.dealAbstentionAsSelfVote", false, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
-        hideVotedIcon = CustomOption.Create(Color.white, "option.hideVotedIcon", false, meetingOptions).SetGameMode(~CustomGameMode.Minigame);
-        showRoleOfExiled = CustomOption.Create(Color.white, "option.showRoleOfExiled", false, meetingOptions).SetGameMode(~CustomGameMode.Minigame).AddCustomPrerequisite(() =>
+        canUseEmergencyWithoutDeath = CustomOption.Create(Color.white, "option.canUseEmergencyWithoutDeath", false, meetingOptions);
+        canUseEmergencyWithoutSabotage = CustomOption.Create(Color.white, "option.canUseEmergencyWithoutSabotage", false, meetingOptions);
+        canUseEmergencyWithoutReport = CustomOption.Create(Color.white, "option.canUseEmergencyWithoutReport", false, meetingOptions);
+        severeEmergencyLock = CustomOption.Create(Color.white, "option.severeEmergencyLock", false, meetingOptions);
+        dealAbstentionAsSelfVote = CustomOption.Create(Color.white, "option.dealAbstentionAsSelfVote", false, meetingOptions);
+        hideVotedIcon = CustomOption.Create(Color.white, "option.hideVotedIcon", false, meetingOptions);
+        showRoleOfExiled = CustomOption.Create(Color.white, "option.showRoleOfExiled", false, meetingOptions).AddCustomPrerequisite(() =>
         {
             try
             {
@@ -453,10 +444,10 @@ public class CustomOptionHolder
         exceptMIRA = CustomOption.Create(Color.white, "option.exceptMIRA", false, dynamicMap).SetGameMode(CustomGameMode.All);
         exceptPolus = CustomOption.Create(Color.white, "option.exceptPolus", false, dynamicMap).SetGameMode(CustomGameMode.All);
         exceptAirship = CustomOption.Create(Color.white, "option.exceptAirship", false, dynamicMap).SetGameMode(CustomGameMode.All);
-        additionalVents = CustomOption.Create(Color.white, "option.additionalVents", false, mapOptions).SetGameMode(~CustomGameMode.Minigame);
-        spawnMethod = CustomOption.Create(Color.white, "option.spawnMethod", new string[] { "option.spawnMethod.default", "option.spawnMethod.selectable", "option.spawnMethod.random" }, "option.spawnMethod.default", mapOptions).SetGameMode(~(CustomGameMode.Minigame | CustomGameMode.Ritual));
+        additionalVents = CustomOption.Create(Color.white, "option.additionalVents", false, mapOptions);
+        spawnMethod = CustomOption.Create(Color.white, "option.spawnMethod", new string[] { "option.spawnMethod.default", "option.spawnMethod.selectable", "option.spawnMethod.random" }, "option.spawnMethod.default", mapOptions);
         respawnNearbyFinalPosition = CustomOption.Create(Color.white, "option.respawnNearbyFinalPosition", false, mapOptions).SetGameMode(CustomGameMode.All).AddCustomPrerequisite(() => spawnMethod.getSelection() == 2);
-        synchronizedSpawning = CustomOption.Create(Color.white, "option.synchronizedSpawning", false, mapOptions).SetGameMode(~(CustomGameMode.Minigame | CustomGameMode.Ritual));
+        synchronizedSpawning = CustomOption.Create(Color.white, "option.synchronizedSpawning", false, mapOptions);
         optimizedMaps = CustomOption.Create(Color.white, "option.optimizedMaps", true, mapOptions).SetGameMode(CustomGameMode.All);
         invalidatePrimaryAdmin = CustomOption.Create(Color.white, "option.invalidatePrimaryAdmin", new string[] { "option.switch.off", "option.invalidatePrimaryAdmin.onlyAirship", "option.switch.on" }, "option.switch.off", mapOptions).SetGameMode(CustomGameMode.All);
         invalidateSecondaryAdmin = CustomOption.Create(Color.white, "option.invalidateSecondaryAdmin", true, mapOptions).SetGameMode(CustomGameMode.All);
@@ -509,7 +500,7 @@ public class CustomOptionHolder
                 };
         };
 
-        limiterOptions = CustomOption.Create(Color.white, "option.limitOptions", false, null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.All);
+        limiterOptions = CustomOption.Create(Color.white, "option.limitOptions", false, null, true, false, "", CustomOptionTab.Settings).SetGameMode(~CustomGameMode.AllHnS);
         CustomOption.RegisterTopOption(limiterOptions);
         timeLimitOption = CustomOption.Create(Color.white, "option.timeLimitOption", 20f, 1f, 80f, 1f, limiterOptions).SetGameMode(CustomGameMode.All);
         timeLimitSecondOption = CustomOption.Create(Color.white, "option.timeLimitSecondOption", 0f, 0f, 55f, 5f, limiterOptions).SetGameMode(CustomGameMode.All);
@@ -576,7 +567,7 @@ public class CustomOptionHolder
         };
 
 
-        TasksOption = CustomOption.Create(Color.white, "option.tasksOption", false, null, true, false, "", CustomOptionTab.Settings).SetGameMode(~CustomGameMode.Ritual);
+        TasksOption = CustomOption.Create(Color.white, "option.tasksOption", false, null, true, false, "", CustomOptionTab.Settings);
         CustomOption.RegisterTopOption(TasksOption);
         additionalWirings = CustomOption.Create(Color.white, "option.additionalWirings", false, TasksOption).SetGameMode(CustomGameMode.All);
         RandomizedWiringOption = CustomOption.Create(Color.white, "option.randomizedWiring", false, TasksOption).SetGameMode(CustomGameMode.All);
@@ -587,7 +578,7 @@ public class CustomOptionHolder
         DangerousDownloadSpotOption = CustomOption.Create(Color.white, "option.dangerousDownloadSpot", false, TasksOption).SetGameMode(CustomGameMode.All);
         UseVanillaSafeTaskOption = CustomOption.Create(Color.white, "option.useVanillaSafeTask", true, TasksOption).SetGameMode(CustomGameMode.All);
 
-        SabotageOption = CustomOption.Create(Color.white, "option.sabotageOption", false, null, true, false, "", CustomOptionTab.Settings).SetGameMode(~(CustomGameMode.Ritual | CustomGameMode.Minigame));
+        SabotageOption = CustomOption.Create(Color.white, "option.sabotageOption", false, null, true, false, "", CustomOptionTab.Settings).SetGameMode(~(CustomGameMode.AllHnS));
         CustomOption.RegisterTopOption(SabotageOption);
         SabotageCoolDownOption = CustomOption.Create(Color.white, "option.sabotageCoolDown", 30f, 5f, 60f, 5f, SabotageOption).SetGameMode(CustomGameMode.All);
         SabotageCoolDownOption.suffix = "second";
@@ -618,14 +609,6 @@ public class CustomOptionHolder
 
         advanceRoleOptions = CustomOption.Create(Color.white, "option.advanceRoleOptions", false, null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.Standard);
         CustomOption.RegisterTopOption(advanceRoleOptions);
-
-        List<string> hunters = new List<string>();
-        foreach (Roles.Role role in Roles.Roles.AllRoles)
-        {
-            if (role.ValidGamemode == CustomGameMode.Minigame && role.winReasons.Contains(Patches.EndCondition.MinigameHunterWin))
-                hunters.Add("role." + role.LocalizeName + ".name");
-        }
-        escapeHunterOption = CustomOption.Create(Color.white, "option.escapeHunter", hunters.ToArray(), hunters[0], null, true, false, "", CustomOptionTab.EscapeRoles).SetGameMode(CustomGameMode.Minigame);
 
         //ロールのオプションを読み込む
         Roles.Role.LoadAllOptionData();
@@ -696,10 +679,13 @@ public class CustomOptionHolder
             );
         
 
-        streamersOption = CustomOption.Create(Color.white, "option.streamersOption", false, null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.All);
+        streamersOption = CustomOption.Create(Color.white, "option.streamersOption", false, null, true, false, "", CustomOptionTab.Settings).SetGameMode(~CustomGameMode.AllHnS);
         CustomOption.RegisterTopOption(streamersOption);
         enforcePreventingSpoilerOption = CustomOption.Create(Color.white, "option.streamersOption.enforcePreventingSpoiler", false, streamersOption).SetGameMode(CustomGameMode.All);
 
+        HnSOption = CustomOption.Create(Color.white, "option.hideAndSeekOption", new string[] { "option.empty" }, "option.empty", null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.StandardHnS);
+        CustomOption.RegisterTopOption(HnSOption);
+        ValidPerksOption = CustomOption.Create(Color.white, "option.hideAndSeekOption.validPerks", 3,0,5,1, HnSOption, false, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.StandardHnS);
 
         exclusiveAssignmentParent = CustomOption.Create(new Color(204f / 255f, 204f / 255f, 0, 1f), "option.exclusiveAssignment", false, null, true, false, "", CustomOptionTab.AdvancedSettings).SetGameMode(CustomGameMode.Standard | CustomGameMode.FreePlay);
         CustomOption.RegisterTopOption(exclusiveAssignmentParent);

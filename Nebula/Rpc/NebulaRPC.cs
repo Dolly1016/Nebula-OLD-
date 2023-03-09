@@ -15,7 +15,11 @@ public class RemoteProcessBase
     static private IEnumerable<RemoteProcessBase> GetNebulaProcess()
     {
         yield return Roles.NeutralRoles.Paparazzo.SharePaparazzoImage;
+        yield return Game.HnSModificator.ProceedTimer;
+        yield return Roles.Perk.PerkHolder.SharePerks;
+        yield return Roles.Perk.CrewmatePerks.SheriffGlance.SheriffGlanceEvent;
     }
+
     static public List<RemoteProcessBase> AllNebulaProcess = new List<RemoteProcessBase>();
 
     public int Id { get; private set; } = -1;

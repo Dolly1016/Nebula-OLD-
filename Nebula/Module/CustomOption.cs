@@ -13,12 +13,11 @@ namespace Nebula.Module;
 public enum CustomGameMode
 {
     Standard = 0x0001,
-    Minigame = 0x0002,
-    Ritual = 0x0004,
-    Investigators = 0x0008,
     FreePlay = 0x0010,
     StandardHnS = 0x0100,
-    All = int.MaxValue
+    All = int.MaxValue,
+    AllHnS = 0x0100
+        
 }
 
 [Flags]
@@ -40,8 +39,8 @@ public static class CustomGameModes
 {
     static public List<CustomGameMode> AllGameModes = new List<CustomGameMode>()
         {
-            CustomGameMode.Standard,CustomGameMode.Minigame,CustomGameMode.Ritual,CustomGameMode.Investigators,
-            CustomGameMode.FreePlay,CustomGameMode.Standard,CustomGameMode.Standard,CustomGameMode.Standard,
+            CustomGameMode.Standard,CustomGameMode.FreePlay,CustomGameMode.Standard,CustomGameMode.Standard,
+            CustomGameMode.Standard,CustomGameMode.Standard,CustomGameMode.Standard,CustomGameMode.Standard,
             CustomGameMode.StandardHnS,
         };
 
@@ -932,12 +931,6 @@ class GameOptionsMenuStartPatch
                     designer.screen.Close();
                     OpenConfigTopOptionScreen(leftTabScreen);
                 }
-                else if ((myOption.tab & CustomOptionTab.EscapeRoles) != 0)
-                {
-                    CustomOptionHolder.escapeHunterOption.addSelection(1);
-                    designer.screen.Close();
-                    OpenConfigTopOptionScreen(leftTabScreen);
-                }
             }, (myOption.selections.Length == 2 && myOption.getSelection() == 0) ? Palette.DisabledGrey : ((myOption.yellowCondition != null && myOption.yellowCondition(CustomOption.CurrentTab) ? Color.yellow : Color.white))));
             options.Add(option);
 
@@ -1201,20 +1194,19 @@ class GameOptionsMenuStartPatch
         }
 
 
-        var killCoolOption = __instance.Children.FirstOrDefault(x => x.name == "KillCooldown").TryCast<NumberOption>();
+        var killCoolOption = __instance.Children.FirstOrDefault(x => x.name == "KillCooldown")?.TryCast<NumberOption>();
         if (killCoolOption != null) killCoolOption.ValidRange = new FloatRange(2.5f, 60f);
 
-
-        var commonTasksOption = __instance.Children.FirstOrDefault(x => x.name == "NumCommonTasks").TryCast<NumberOption>();
+        var commonTasksOption = __instance.Children.FirstOrDefault(x => x.name == "NumCommonTasks")?.TryCast<NumberOption>();
         if (commonTasksOption != null) commonTasksOption.ValidRange = new FloatRange(0f, 4f);
 
-        var shortTasksOption = __instance.Children.FirstOrDefault(x => x.name == "NumShortTasks").TryCast<NumberOption>();
+        var shortTasksOption = __instance.Children.FirstOrDefault(x => x.name == "NumShortTasks")?.TryCast<NumberOption>();
         if (shortTasksOption != null) shortTasksOption.ValidRange = new FloatRange(0f, 23f);
 
-        var longTasksOption = __instance.Children.FirstOrDefault(x => x.name == "NumLongTasks").TryCast<NumberOption>();
+        var longTasksOption = __instance.Children.FirstOrDefault(x => x.name == "NumLongTasks")?.TryCast<NumberOption>();
         if (longTasksOption != null) longTasksOption.ValidRange = new FloatRange(0f, 15f);
 
-        var impostorsOption = __instance.Children.FirstOrDefault(x => x.name == "NumImpostors").TryCast<NumberOption>();
+        var impostorsOption = __instance.Children.FirstOrDefault(x => x.name == "NumImpostors")?.TryCast<NumberOption>();
         if (impostorsOption != null) impostorsOption.ValidRange = new FloatRange(0f, 5f);
 
     }

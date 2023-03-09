@@ -1,5 +1,6 @@
 ﻿namespace Nebula.Patches;
 
+
 [HarmonyPatch(typeof(GameData), nameof(GameData.SetTasks))]
 public class PlayerControlSetTaskPatch
 {
@@ -9,13 +10,6 @@ public class PlayerControlSetTaskPatch
 
         GameData.PlayerInfo playerById = __instance.GetPlayerById(playerId);
         if (playerById == null || playerById.Disconnected || !playerById.Object) return false;
-
-        //Ritualモード
-        if (Game.GameData.data.GameMode == Module.CustomGameMode.Ritual)
-        {
-            RitualPatch.SetTasks(__instance, playerById, taskTypeIds);
-            return false;
-        }
 
 
         var initialTasks = new List<GameData.TaskInfo>();
@@ -65,9 +59,29 @@ public class PlayerControlSetAlphaPatch
     }
 }
 
+[HarmonyPatch]
+public class PlayerControlGetUsableComponentsPatch
+{
+    static System.Reflection.MethodBase TargetMethod()
+    {
+        string genericMethodName = nameof(GameObject.GetComponents)!;
+        System.Reflection.MethodBase getComponentsMethod = typeof(GameObject).GetMethods().First((m) => m.Name == genericMethodName && m.IsGenericMethodDefinition && m.GetParameters().Length == 0).MakeGenericMethod(typeof(IUsable));
+        return getComponentsMethod;
+    }
+
+    static public void Postfix(ref Il2CppArrayBase<IUsable> __result)
+    {
+        if (__result.Count > 0)
+        {
+            __result = new Il2CppReferenceArray<IUsable>(__result.Reverse().ToArray());
+        }
+    }
+}
+
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixedUpdate))]
 public class PlayerControlPatch
 {
+   
     static private bool CheckTargetable(Vector2 position, Vector2 myPosition, ref float distanceCondition)
     {
         Vector2 vector = (Vector2)position - myPosition;

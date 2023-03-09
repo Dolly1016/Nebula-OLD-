@@ -8,7 +8,7 @@ public class Crewmate : Role
     public static HashSet<EndCondition> crewmateEndSet =
         new HashSet<EndCondition>() { EndCondition.CrewmateWinByTask, EndCondition.CrewmateWinByVote, EndCondition.CrewmateWinDisconnect, EndCondition.CrewmateWinHnS };
 
-
+    public override bool IsSpawnable() => true;
     public override bool CanHaveExtraAssignable(ExtraAssignable extraRole)
     {
         return Roles.F_Crewmate.CanHaveExtraAssignable(extraRole);

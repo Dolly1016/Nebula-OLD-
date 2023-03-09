@@ -128,7 +128,7 @@ public class BountyHunter : Template.HasHologram
     public override void MyPlayerControlUpdate()
     {
         Game.MyPlayerData data = Game.GameData.data.myData;
-        data.currentTarget = Patches.PlayerControlPatch.SetMyTarget();
+        data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(true);
         Patches.PlayerControlPatch.SetPlayerOutline(data.currentTarget, Palette.ImpostorRed);
 
         bountyDuration -= Time.deltaTime;

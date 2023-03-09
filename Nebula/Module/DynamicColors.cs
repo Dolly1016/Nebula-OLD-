@@ -1,7 +1,10 @@
 ﻿using BepInEx.Configuration;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
+using System.Linq;
 using static Nebula.Module.DynamicColors;
 using static UnityEngine.UI.StencilMaterial;
+using Newtonsoft.Json.Bson;
 
 namespace Nebula.Module;
 
@@ -10,6 +13,10 @@ public static class DynamicColors
 {
     static private SpriteLoader ShareIconSprite = new SpriteLoader("Nebula.Resources.ShareIcon.png", 100f);
     static private SpriteLoader PaletteSprite = new SpriteLoader("Nebula.Resources.Palette.png", 100f);
+    static private SpriteLoader PaletteDisabledSprite = new SpriteLoader("Nebula.Resources.PaletteDisabled.png", 100f);
+    static private SpriteLoader PaletteDisabledFrameSprite = new SpriteLoader("Nebula.Resources.PaletteDisabledFrame.png", 100f);
+    static private SpriteLoader MaskSprite = new SpriteLoader("Nebula.Resources.PaletteDisabledMask.png", 100f);
+    static private SpriteLoader MaskCircleSprite = new SpriteLoader("Nebula.Resources.PaletteDisabledCircleMask.png", 100f);
     static private SpriteLoader LPaletteSprite = new SpriteLoader("Nebula.Resources.PaletteBrightness.png", 100f);
     static private SpriteLoader BaseButtonSprite = new SpriteLoader("Nebula.Resources.ColorHalfButton.png", 100f);
     static private SpriteLoader ButtonSprite = new SpriteLoader("Nebula.Resources.ColorFullBase.png", 100f);
@@ -142,6 +149,8 @@ public static class DynamicColors
         private CustomOriginalColor mainColor;
         private CustomOriginalColor shadowColor;
         private ConfigEntry<byte> EntryS;
+        private ConfigEntry<byte> EntryPH;
+        private ConfigEntry<byte> EntryPD;
 
         public CustomColor(string saveCategory,float initialMul=0.6f)
         {
@@ -151,6 +160,9 @@ public static class DynamicColors
             //陰タイプ
             EntryS = NebulaPlugin.Instance.Config.Bind(saveCategory, "S", (byte)0);
             if (EntryS.Value > 3) EntryS.Value = 0;
+
+            EntryPD = NebulaPlugin.Instance.Config.Bind(saveCategory, "PD", (byte)14);
+            EntryPH = NebulaPlugin.Instance.Config.Bind(saveCategory, "PH", (byte)63);
         }
 
         public void SetMainColor(Color originalColor, float luminosity, byte h, byte d)
@@ -168,8 +180,15 @@ public static class DynamicColors
             EntryS.Value = type;
         }
 
-        public void Set(Color originalColor, float l, byte h, byte d, Color shadowColor, float sl, byte sh, byte sd, byte shadowType)
+        public void SetMainPosInfo(byte ph, byte pd)
         {
+            EntryPH.Value = ph;
+            EntryPD.Value = pd;
+        }
+
+        public void Set(Color originalColor, byte ph,byte pd,float l, byte h, byte d, Color shadowColor, float sl, byte sh, byte sd, byte shadowType)
+        {
+            SetMainPosInfo(ph,pd);
             SetMainColor(originalColor, l, h, d);
             SetShadowColor(shadowColor, sl, sh, sd);
             SetShadowType(shadowType);
@@ -180,6 +199,8 @@ public static class DynamicColors
             mainColor.Transcribe(source.mainColor);
             shadowColor.Transcribe(source.shadowColor);
             EntryS.Value = source.EntryS.Value;
+            EntryPD.Value = source.EntryPD.Value;
+            EntryPH.Value = source.EntryPH.Value;
         }
 
         public void Simulate(Color? mainOriginalColor,float? mL,Color? shadowOriginalColor,float? sL,ref byte? h,ref byte? d,out Color mainColor,out Color shadowColor)
@@ -208,6 +229,8 @@ public static class DynamicColors
         public byte GetMainDistance() { return mainColor.GetDistance(); }
         public byte GetShadowDistance() { return shadowColor.GetDistance(); }
 
+        public byte GetMainPosDistance() { return EntryPD.Value; }
+        public byte GetMainPosHue() { return EntryPH.Value; }
     }
 
     public class CustomShadow
@@ -283,8 +306,18 @@ public static class DynamicColors
         //CustomColorの形式で保持していない場合
         Color mainColor, shadowColor;
         Color mainOrigColor, shadowOrigColor;
-        byte h, d, sh, sd;
+        byte h, d, sh, sd, ph, pd;
         float l,sl;
+
+        public void SetPosInfo(byte posHue,byte posDistance)
+        {
+            if (customColor != null) customColor.SetMainPosInfo(posHue,posDistance);
+            else
+            {
+                ph = posHue;
+                pd = posDistance;
+            }
+        }
 
         private void SetUp(PlayerTab __instance, GameObject layer, Vector3 position, System.Action? onClick)
         {
@@ -340,7 +373,7 @@ public static class DynamicColors
                 {
                     Palette.PlayerColors[AmongUs.Data.DataManager.Player.Customization.Color] = mainColor;
                     Palette.ShadowColors[AmongUs.Data.DataManager.Player.Customization.Color] = shadowColor;
-                    MyColor.Set(mainOrigColor, l, h, d, shadowOrigColor, sl, sh, sd, 2);
+                    MyColor.Set(mainOrigColor, ph, pd, l, h, d, shadowOrigColor, sl, sh, sd, 2);
                 }
 
                 PlayerCustomizationMenu.Instance.PreviewArea.cosmetics.SetColor(AmongUs.Data.DataManager.Player.Customization.Color);
@@ -435,6 +468,7 @@ public static class DynamicColors
     static private ColorButton[] SaveVariations = null;
     static private SaveButton[] WriteSaveVariations = null;
     static private ColorButton[] SharedVariations = null;
+    static private Dictionary<byte, GameObject> OtherPlayersArea = new();
 
     static private GameObject DynamicLayer = null;
     static private GameObject LegacyLayer = null;
@@ -487,10 +521,13 @@ public static class DynamicColors
 
     //他人の色名を覚えておく
     static public Dictionary<int, Tuple<byte, byte>> ColorNameDic = new();
+    //他人の色座標を覚えておく
+    static public Dictionary<int, Tuple<byte, byte>> ColorPosDic = new();
 
-    static public void SetOthersColor(byte hue, byte dis, Color color, Color shadowColor, byte playerId)
+    static public void SetOthersColor(byte hue, byte dis, byte posHue,byte posDis,Color color, Color shadowColor, byte playerId)
     {
         ColorNameDic[(int)playerId] = new Tuple<byte, byte>(hue, dis);
+        ColorPosDic[(int)playerId] = new Tuple<byte, byte>(posHue, posDis);
         Palette.PlayerColors[playerId] = color;
         Palette.ShadowColors[playerId] = shadowColor;
         var p = Helpers.playerById(playerId);
@@ -556,6 +593,8 @@ public static class DynamicColors
     static private GameObject PaletteObject = null;
     static private SpriteRenderer PaletteRenderer = null;
     static private CircleCollider2D PaletteCollider = null;
+
+    
 
     static private GameObject LPaletteObject = null;
     static private SpriteRenderer LPaletteRenderer = null;
@@ -639,7 +678,59 @@ public static class DynamicColors
 
                     PlayerCustomizationMenu.Instance.PreviewArea.cosmetics.SetColor(32);
                 }
-                
+
+                if (AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.NotJoined)
+                {
+                    foreach (var key in OtherPlayersArea.Keys.Where((b) => !PlayerControl.AllPlayerControls.Find((Il2CppSystem.Predicate<PlayerControl>)((p) => p.PlayerId == b))))
+                    {
+                        GameObject.Destroy(OtherPlayersArea[key]);
+                        OtherPlayersArea.Remove(key);
+                    }
+                    foreach (var p in PlayerControl.AllPlayerControls.GetFastEnumerator())
+                    {
+                        if (OtherPlayersArea.ContainsKey(p.PlayerId)) continue;
+                        if (PlayerControl.LocalPlayer.PlayerId == p.PlayerId) continue;
+                        var obj = new GameObject("Mask");
+                        obj.transform.SetParent(PaletteObject.transform);
+                        obj.transform.localPosition = Vector3.zero;
+                        OtherPlayersArea[p.PlayerId] = obj;
+
+                        SpriteMask mask;
+
+                        var AreaObj = new GameObject("AreaMask");
+                        AreaObj.layer = LayerExpansion.GetUILayer();
+                        AreaObj.transform.SetParent(obj.transform);
+                        AreaObj.transform.localPosition = Vector3.zero;
+
+                        mask = AreaObj.AddComponent<SpriteMask>();
+                        mask.backSortingOrder = 9;
+                        mask.backSortingOrder = 10;
+                        mask.sprite = MaskSprite.GetSprite();
+
+                        var circleObj = new GameObject("CircleMask");
+                        circleObj.layer = LayerExpansion.GetUILayer();
+                        circleObj.transform.SetParent(obj.transform);
+                        circleObj.transform.localPosition = Vector3.zero;
+
+                        mask = circleObj.AddComponent<SpriteMask>();
+                        mask.backSortingOrder = 9;
+                        mask.backSortingOrder = 10;
+                        mask.sprite = MaskCircleSprite.GetSprite();
+                    }
+                    foreach (var entry in OtherPlayersArea)
+                    {
+                        if (ColorPosDic.TryGetValue(entry.Key, out var tuple))
+                        {
+                            float p = (0.04f + (float)tuple.Item2 / 24f * 1.6f);
+                            var t = entry.Value.transform;
+                            t.eulerAngles = new Vector3(0, 0, (float)tuple.Item1 / 64f * 360f);
+
+                            t.GetChild(0).localScale = new Vector3(p > 1f ? Mathf.Pow(Mathf.Clamp(p, 1f, 5f), 2.7f) : (p * 0.7f + 0.3f), 0.1f + Mathf.Pow(p, 1.3f), 1f);
+                            t.GetChild(1).localScale = Vector3.one * (p > 1f ? 1f / Mathf.Clamp(p, 1f, 10f) : Mathf.Clamp(p, 0.4f, 1f));
+                            t.GetChild(1).localPosition = Vector3.up * (p - 0.02f) * 1.35f;
+                        }
+                    }
+                }
             }
 
             BrightnessRenderer.sprite = BrightnessSprite[IsLightColor(Palette.PlayerColors[32]) ? 0 : 1].GetSprite();
@@ -674,7 +765,29 @@ public static class DynamicColors
                 PaletteObject.transform.SetParent(ModLayer.transform);
                 PaletteRenderer = PaletteObject.AddComponent<SpriteRenderer>();
                 PaletteCollider = PaletteObject.AddComponent<CircleCollider2D>();
+                PaletteObject.AddComponent<SortingGroup>();
                 var PalettePassiveButton = PaletteObject.AddComponent<PassiveButton>();
+
+                var PaletteDisabled = new GameObject("DynamicPaletteDisabled");
+                PaletteDisabled.layer = LayerExpansion.GetUILayer();
+                PaletteDisabled.transform.SetParent(PaletteObject.transform);
+                PaletteDisabled.transform.localScale = Vector3.one;
+                PaletteDisabled.transform.localPosition = Vector3.zero;
+                var PDRenderer = PaletteDisabled.AddComponent<SpriteRenderer>();
+                PDRenderer.sortingOrder = 10;
+                PDRenderer.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+                PDRenderer.sprite = PaletteDisabledSprite.GetSprite();
+                var PaletteDisabledFrame = new GameObject("DynamicPaletteDisabledFrame");
+                PaletteDisabledFrame.layer = LayerExpansion.GetUILayer();
+                PaletteDisabledFrame.transform.SetParent(PaletteObject.transform);
+                PaletteDisabledFrame.transform.localScale = Vector3.one;
+                PaletteDisabledFrame.transform.localPosition = Vector3.zero;
+                var DFRenderer = PaletteDisabledFrame.AddComponent<SpriteRenderer>();
+                DFRenderer.sortingOrder = 20;
+                DFRenderer.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+                //DFRenderer.sprite = PaletteDisabledFrameSprite.GetSprite();
+
+                OtherPlayersArea.Clear();
 
                 LPaletteObject = new GameObject("LuminosityPalette");
                 LPaletteObject.transform.SetParent(ModLayer.transform);
@@ -746,6 +859,24 @@ public static class DynamicColors
                         new ColorButton(__instance, VanillaLayer, new Vector3(0.2f + (float)(i % 6) * 0.8f, 1.3f - 0.5f * (float)(i / 6), -75f),
                         null, VanillaColor[i].Item1, VanillaColor[i].Item2, VanillaColor[i].Item1, VanillaColor[i].Item2, 100, (byte)i, 1f, 100, (byte)0, 1f);
                 }
+                VanillaVariations[0].SetPosInfo(63, 14);
+                VanillaVariations[1].SetPosInfo(42, 14);
+                VanillaVariations[2].SetPosInfo(24, 18);
+                VanillaVariations[3].SetPosInfo(57, 2);
+                VanillaVariations[4].SetPosInfo(5, 6);
+                VanillaVariations[5].SetPosInfo(10, 3);
+                VanillaVariations[6].SetPosInfo(42, 23);
+                VanillaVariations[7].SetPosInfo(0, 0);
+                VanillaVariations[8].SetPosInfo(47, 18);
+                VanillaVariations[9].SetPosInfo(5, 17);
+                VanillaVariations[10].SetPosInfo(29, 11);
+                VanillaVariations[11].SetPosInfo(19, 4);
+                VanillaVariations[12].SetPosInfo(61, 19);
+                VanillaVariations[13].SetPosInfo(62, 1);
+                VanillaVariations[14].SetPosInfo(4, 1);
+                VanillaVariations[15].SetPosInfo(35, 22);
+                VanillaVariations[16].SetPosInfo(6, 22);
+                VanillaVariations[17].SetPosInfo(0, 3);
 
                 SharedVariations = new ColorButton[6];
                 for (int i = 0; i < SharedVariations.Length; i++)
@@ -780,12 +911,16 @@ public static class DynamicColors
                     {
                         MyColor.SetMainColor(c!.Value, MyColor.GetMainLuminosity(), h!.Value, d!.Value);
                         MyColor.SetShadowColor(CustomShadow.allShadows[MyColor.GetShadowType()]!.GetShadowColor(MyColor.GetMainColor(), MyColor.GetShadowColor()), 1f,0,0);
+                        MyColor.SetMainPosInfo(h!.Value,d!.Value);
                     }
                     else
                     {
-                        if(EditMainColorFlag)
+                        if (EditMainColorFlag)
+                        {
                             MyColor.SetMainColor(c!.Value, MyColor.GetMainLuminosity(), h!.Value, d!.Value);
-                        else 
+                            MyColor.SetMainPosInfo(h!.Value,d!.Value);
+                        }
+                        else
                             MyColor.SetShadowColor(c!.Value, MyColor.GetShadowLuminosity(), h!.Value, d!.Value);
                     }
 
@@ -951,13 +1086,13 @@ public static class DynamicColors
         }
     }
 
-    static public void ReceiveSharedColor(byte shadowType,Color mainColor,float mainLum, byte mainHue,byte mainDis,Color shadowColor,float shadowLum,byte shadowHue,byte shadowDis)
+    static public void ReceiveSharedColor(byte shadowType,byte mainPosHue,byte mainPosDis,Color mainColor,float mainLum, byte mainHue,byte mainDis,Color shadowColor,float shadowLum,byte shadowHue,byte shadowDis)
     {
         for(int i = 5; i >= 1; i--)
         {
             SharedColor[i].Transcribe(SharedColor[i - 1]);
         }
-        SharedColor[0].Set(mainColor, mainLum, mainHue, mainDis, shadowColor, shadowLum, shadowHue, shadowDis, shadowType);
+        SharedColor[0].Set(mainColor, mainPosHue,mainPosDis,mainLum, mainHue, mainDis, shadowColor, shadowLum, shadowHue, shadowDis, shadowType);
 
         if (PlayerCustomizationMenu.Instance)
         {

@@ -2,7 +2,7 @@
 
 namespace Nebula.Roles.MinigameRoles.Hunters;
 
-public class Hadar : Hunter
+public class Hadar : Role
 {
     private SpriteRenderer FS_PlayersSensor = null;
 
@@ -182,10 +182,10 @@ public class Hadar : Hunter
 
     public Hadar()
             : base("Hadar", "hadar", Palette.ImpostorRed, RoleCategory.Crewmate, Side.GamePlayer, Side.GamePlayer,
-                 Player.minigameSideSet, Player.minigameSideSet, new HashSet<EndCondition>() { EndCondition.MinigameHunterWin },
+                 Player.minigameSideSet, Player.minigameSideSet, ImpostorRoles.Impostor.impostorEndSet,
                  true, VentPermission.CanNotUse, false, false, true)
     {
-        ValidGamemode = Module.CustomGameMode.Minigame;
+        ValidGamemode = Module.CustomGameMode.StandardHnS;
         CanCallEmergencyMeeting = false;
 
         ventButton = null;

@@ -39,7 +39,7 @@ public static class VentCanUsePatch
         if (__instance.GetVentData() != null && __instance.GetVentData().Sealed)
         {
             canUse = couldUse = false;
-            __result = num;
+            __result = num;// - 0.0001f;
             return false;
         }
 
@@ -57,7 +57,7 @@ public static class VentCanUsePatch
 
             if (@object.MyPhysics.Animations.Animator.m_currAnim == @object.MyPhysics.Animations.group.EnterVentAnim && @object.MyPhysics.Animations.Animator.Playing) canUse = false;
         }
-        __result = num;
+        __result = num;// - 0.0001f;
 
         return false;
     }

@@ -1,4 +1,5 @@
-﻿using Nebula.Patches;
+﻿using Nebula.Module;
+using Nebula.Patches;
 using Nebula.Roles.CrewmateRoles;
 
 namespace Nebula.Roles;
@@ -449,6 +450,19 @@ public abstract class Role : Assignable
         {
             if (!role.CreateOptionFollowingRelatedRole)
                 role.CreateRoleOption();
+        }
+    }
+
+    /// <summary>
+    /// ヘルプ画面でゲームに登場しうる役職として表示するかどうか設定します。
+    /// </summary>
+    public override bool ShowInHelpWindow
+    {
+        get
+        {
+            if (!base.ShowInHelpWindow) return false;
+            if (!MetaDialog.HelpSearchFilter.ShouldShowCategory(category)) return false;
+            return true;            
         }
     }
 

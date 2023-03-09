@@ -22,6 +22,11 @@ namespace Nebula.Roles.NeutralRoles
 
         }
 
+        public override bool IsSpawnable()
+        {
+            return Roles.Spectre.IsSpawnable() && Roles.Spectre.spawnImmoralistOption.getBool();
+        }
+
         Dictionary<byte, Arrow> Arrows;
 
         SpriteLoader arrowSprite = new SpriteLoader("role.immoralist.arrow");

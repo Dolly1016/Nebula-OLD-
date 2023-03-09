@@ -1,4 +1,5 @@
 ﻿using Nebula.Roles.NeutralRoles;
+using Nebula.Roles.Perk;
 
 namespace Nebula.Roles;
 
@@ -101,14 +102,8 @@ static public class Roles
 
     public static MinigameRoles.Player Player = new MinigameRoles.Player();
 
-    public static MinigameRoles.Escapees.Biela Biela = new MinigameRoles.Escapees.Biela();
-    public static MinigameRoles.Escapees.Halley Halley = new MinigameRoles.Escapees.Halley();
 
     public static MinigameRoles.Hunters.Hadar Hadar = new MinigameRoles.Hunters.Hadar();
-    public static MinigameRoles.Hunters.Polis Polis = new MinigameRoles.Hunters.Polis();
-
-    public static RitualRoles.RitualCrewmate RitualCrewmate = new RitualRoles.RitualCrewmate();
-    public static RitualRoles.RitualKiller RitualKiller = new RitualRoles.RitualKiller();
 
     public static HnSCrewmateRoles.Crewmate HnSCrewmate = new HnSCrewmateRoles.Crewmate();
     public static HnSImpostorRoles.Impostor HnSImpostor = new HnSImpostorRoles.Impostor();
@@ -132,7 +127,7 @@ static public class Roles
     public static ExtraRoles.AvengerTarget AvengerTarget = new ExtraRoles.AvengerTarget();
    // public static ExtraRoles.TeamSanta TeamSanta = new ExtraRoles.TeamSanta();
     public static MetaRoles.MetaRole MetaRole = new MetaRoles.MetaRole();
-    public static RitualRoles.PerkHolder PerkHolder = new RitualRoles.PerkHolder();
+    public static PerkHolder PerkHolder = new Perk.PerkHolder();
 
     public static GhostRoles.Poltergeist Poltergeist = new GhostRoles.Poltergeist();
 
@@ -147,9 +142,7 @@ static public class Roles
             Crewmate,CrewmateWithoutTasks,Agent,Alien,Bait,Busker,Comet,DamnedCrew,Doctor,Guardian,Mayor,Navvy,Necromancer,NiceGuesser,NiceTracker,NiceTrapper,Oracle,Provocateur,Psychic,Seer,Sheriff,Splicer,Spy,
             Madmate,
             Player,
-            Halley,Biela,
-            Polis,Hadar,
-            RitualCrewmate,RitualKiller,
+            Hadar,
             HnSCrewmate,
             HnSImpostor
         };

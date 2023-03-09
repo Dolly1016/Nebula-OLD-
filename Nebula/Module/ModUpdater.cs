@@ -10,8 +10,7 @@ using Nebula.Patches;
 using AmongUs.Data;
 using Assets.InnerNet;
 using AmongUs.Data.Player;
-using System.Linq;
-using Epic.OnlineServices.Presence;
+using Iced.Intel;
 
 namespace Nebula.Module;
 
@@ -19,7 +18,6 @@ namespace Nebula.Module;
 public class ModNews
 {
     public int Number;
-    public int BeforeNumber;
     public string Title;
     public string SubTitle;
     public string ShortTitle;
@@ -45,7 +43,30 @@ public class ModNews
 [HarmonyPatch]
 public class ModNewsHistory
 {
-    public static List<ModNews> AllModNews=new List<ModNews>();
+    public static List<ModNews> AllModNews = new List<ModNews>();
+
+    private static Regex RoleRegex = new Regex("%ROLE:[A-Z]+\\([^)]+\\)%");
+    private static Regex OptionRegex = new Regex("%LANG\\([a-zA-Z\\.0-9]+\\)\\,\\([^)]+\\)%");
+
+    private static void FormatRoleString(Match match, ref string str, string key, string defaultString)
+    {
+        foreach (var role in Roles.Roles.AllRoles)
+        {
+            if (role.Name.ToUpper() == key)
+            {
+                str = str.Replace(match.Value, Helpers.csWithoutAlpha(role.Color, Language.Language.GetString("role." + role.LocalizeName + ".name")));
+            }
+        }
+        foreach (var role in Roles.Roles.AllExtraRoles)
+        {
+            if (role.Name.ToUpper() == key)
+            {
+                str = str.Replace(match.Value, Helpers.csWithoutAlpha(role.Color, Language.Language.GetString("role." + role.LocalizeName + ".name")));
+            }
+        }
+        str = str.Replace(match.Value, defaultString);
+    }
+
 
     [HarmonyPatch(typeof(AnnouncementPopUp), nameof(AnnouncementPopUp.Init)), HarmonyPostfix]
     public static void Initialize(ref Il2CppSystem.Collections.IEnumerator __result)
@@ -53,10 +74,8 @@ public class ModNewsHistory
         IEnumerator GetEnumerator()
         {
             while (AnnouncementPopUp.UpdateState == AnnouncementPopUp.AnnounceState.Fetching) yield return null;
-            if (AnnouncementPopUp.UpdateState > AnnouncementPopUp.AnnounceState.Fetching && DataManager.Player.Announcements.AllAnnouncements.Count > 0) yield break;
-            
+            if (AnnouncementPopUp.UpdateState > AnnouncementPopUp.AnnounceState.Fetching) yield break;
             AnnouncementPopUp.UpdateState = AnnouncementPopUp.AnnounceState.Fetching;
-
             AllModNews.Clear();
 
             var lang = Language.Language.GetLanguage((uint)DataManager.Settings.Language.CurrentLanguage);
@@ -68,8 +87,12 @@ public class ModNewsHistory
             var response = task.Result;
 
 
-            if (response.StatusCode != HttpStatusCode.OK) yield break;
-            if (response.Content == null) yield break;
+            if (response.StatusCode != HttpStatusCode.OK || response.Content == null)
+            {
+                AnnouncementPopUp.UpdateState = AnnouncementPopUp.AnnounceState.NotStarted;
+                yield break;
+            }
+
             string json = response.Content.ReadAsStringAsync().Result;
             JToken jObj = JObject.Parse(json)["News"];
             for (JToken current = jObj.First; current != null; current = current.Next)
@@ -80,24 +103,40 @@ public class ModNewsHistory
                 {
                     var news = new ModNews();
                     news.Number = int.Parse(current["Number"].ToString());
-                    news.BeforeNumber = int.Parse(current["Before"].ToString());
                     news.Title = current["Title"].ToString();
                     news.SubTitle = current["Subtitle"].ToString();
                     news.ShortTitle = current["Short"].ToString();
                     news.Text = current["Body"].ToString();
                     news.Date = current["Date"].ToString();
 
+                    foreach (Match match in RoleRegex.Matches(news.Text))
+                    {
+                        var split = match.Value.Split(':', '(', ')');
+                        FormatRoleString(match, ref news.Text, split[1], split[2]);
+                    }
+
+                    foreach (Match match in OptionRegex.Matches(news.Text))
+                    {
+                        var split = match.Value.Split('(', ')');
+
+                        news.Text = news.Text.Replace(match.Value,
+                            Language.Language.CheckValidKey(split[1]) ?
+                            Language.Language.GetString(split[1]) : split[3]);
+                    }
+
+
                     AllModNews.Add(news);
                 }
-                catch {
-                    NebulaPlugin.Instance.Logger.Print("ModNews","Failed to load news.");
+                catch
+                {
+                    NebulaPlugin.Instance.Logger.Print("ModNews", "Failed to load news.");
                 }
             }
 
             AnnouncementPopUp.UpdateState = AnnouncementPopUp.AnnounceState.NotStarted;
         }
 
-        __result = Effects.Sequence(GetEnumerator().WrapToIl2Cpp(),__result);
+        __result = Effects.Sequence(GetEnumerator().WrapToIl2Cpp(), __result);
     }
 
     public static int Compare(DateTime t1, DateTime t2)
@@ -112,10 +151,22 @@ public class ModNewsHistory
     [HarmonyPatch(typeof(PlayerAnnouncementData), nameof(PlayerAnnouncementData.SetAnnouncements)), HarmonyPrefix]
     public static bool SetModAnnouncements(PlayerAnnouncementData __instance, [HarmonyArgument(0)] Il2CppReferenceArray<Announcement> aRange)
     {
+        DateTime ParseDateTime(Announcement a)
+        {
+            try
+            {
+                return DateTime.Parse(a.Date);
+            }
+            catch
+            {
+                return new DateTime(2000, 1, 1);
+            }
+        }
+
         List<Announcement> list = new();
         foreach (var a in aRange) list.Add(a);
         foreach (var m in AllModNews) list.Add(m.ToAnnouncement());
-        list.Sort((a1, a2) => { return DateTime.Compare(DateTime.Parse(a1.Date), DateTime.Parse(a2.Date)); });
+        list.Sort((a1, a2) => { return DateTime.Compare(ParseDateTime(a2), ParseDateTime(a1)); });
 
         __instance.allAnnouncements = new Il2CppSystem.Collections.Generic.List<Announcement>();
         foreach (var a in list) __instance.allAnnouncements.Add(a);
@@ -123,6 +174,71 @@ public class ModNewsHistory
 
         __instance.HandleChange();
         __instance.OnAddAnnouncement?.Invoke();
+
+        return false;
+    }
+
+    static SpriteLoader ModLabel = new SpriteLoader("Nebula.Resources.NebulaNewsIcon.png", 100f);
+
+    [HarmonyPatch(typeof(AnnouncementPanel), nameof(AnnouncementPanel.SetUp)), HarmonyPostfix]
+    public static void SetUpPanel(AnnouncementPanel __instance, [HarmonyArgument(0)] Announcement announcement)
+    {
+        if (announcement.Number < 100000) return;
+        var obj = new GameObject("ModLabel");
+        obj.layer = LayerExpansion.GetUILayer();
+        obj.transform.SetParent(__instance.transform);
+        obj.transform.localPosition=new Vector3(-0.8f,0.13f,0.5f);
+        obj.transform.localScale = new Vector3(0.9f,0.9f,0.9f);
+        var renderer = obj.AddComponent<SpriteRenderer>();
+        renderer.sprite = ModLabel.GetSprite();
+        renderer.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+    }
+}
+
+[HarmonyPatch(typeof(SelectableHyperLinkHelper),nameof(SelectableHyperLinkHelper.DecomposeHyperlinkText))]
+public static class HyperLinkHelperPatch
+{
+    static bool Prefix([HarmonyArgument(0)]string textToDecompose, [HarmonyArgument(1)] Il2CppSystem.Collections.Generic.List<ITextPart> textConstituents, [HarmonyArgument(2)] Il2CppSystem.Collections.Generic.List<ITextPart> selectableHyperLinks)
+    {
+        if (string.IsNullOrEmpty(textToDecompose))
+        {
+            return false;
+        }
+        selectableHyperLinks.Clear();
+        textConstituents.Clear();
+        while (textToDecompose.Length > 0)
+        {
+            string text;
+            string text2;
+            SelectableHyperLinkHelper.GetFirstUrl(textToDecompose, out text, out text2);
+            if (!string.IsNullOrEmpty(text))
+            {
+                ITextPart item = (new TextPart(text)).CastFast<ITextPart>();
+                textConstituents.Add(item);
+            }
+            int padding = 1;
+            if (!string.IsNullOrEmpty(text2))
+            {
+                
+                SelectableHyperLink component = UnityEngine.Object.Instantiate<GameObject>(Resources.Load("SelectableHyperlink").CastFast<GameObject>()).GetComponent<SelectableHyperLink>();
+                try
+                {
+                    component.LinkText = text2;
+                    var textPart = component.CastFast<ITextPart>();
+                    selectableHyperLinks.Add(textPart);
+                    textConstituents.Add(textPart);
+                }
+                catch
+                {
+                    ITextPart item = (new TextPart(text2)).CastFast<ITextPart>();
+                    textConstituents.Add(item);
+                    UnityEngine.Object.Destroy(component.gameObject);
+                    padding = 0;
+                }
+            }
+            int startIndex = Math.Min(textToDecompose.Length, text.Length + text2.Length + padding);
+            textToDecompose = textToDecompose.Substring(startIndex);
+        }
 
         return false;
     }
@@ -174,7 +290,7 @@ public class ModNewsHistory
                 str = str.Replace("%ROLE:" + role.Name.ToUpper() + "%", Helpers.cs(role.Color, Language.Language.GetString("role." + role.LocalizeName + ".name")));
             }
 
-            regex = new Regex("%ROLE:[A-Z]+\\([a-zA-Z0-9 ]+\\)%");
+            regex = new Regex("%ROLE:[A-Z]+\\([^)]+\\)%");
             foreach (Match match in regex.Matches(str))
             {
                 var split = match.Value.Split(':', '(', ')');
@@ -183,7 +299,7 @@ public class ModNewsHistory
 
             str = str.Replace("%/COLOR%", "</color>");
 
-            regex = new Regex("%OPTION\\([a-zA-Z\\.0-9]+\\)\\,\\([a-zA-Z\\.0-9 ]+\\)%");
+            regex = new Regex("%OPTION\\([a-zA-Z\\.0-9]+\\)\\,\\([^)]+\\)%");
             foreach (Match match in regex.Matches(str))
             {
                 var split = match.Value.Split('(', ')');
@@ -265,7 +381,7 @@ public class ModNewsHistory
     }
     */
 
-    [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start))]
+[HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start))]
 public class ModUpdaterButton
 {
     private static GameObject GenerateButton(GameObject template, Color color, string text, System.Action? action, bool mirror, ref int buttons)

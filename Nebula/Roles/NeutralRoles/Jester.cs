@@ -14,6 +14,15 @@ public class Jester : Template.Draggable, Template.HasWinTrigger
     private Module.CustomOption canFixSabotageOption;
     private Module.CustomOption canDragBodiesOption;
     private Module.CustomOption canFireBlankShotsOption;
+    private Module.CustomOption isGuessableOption;
+
+    public override bool IsGuessableRole { get {
+            if (Game.GameData.data.myData.getGlobalData().role.side == Side.Crewmate)
+                return isGuessableOption.getSelection() > 0;
+            else
+                return isGuessableOption.getSelection() == 2;
+        }
+    }
 
     private Objects.CustomButton blankButton;
 
@@ -51,6 +60,8 @@ public class Jester : Template.Draggable, Template.HasWinTrigger
         canUseVentsOption = CreateOption(Color.white, "canUseVents", true);
         canInvokeSabotageOption = CreateOption(Color.white, "canInvokeSabotage", true);
         canFixSabotageOption = CreateOption(Color.white, "canFixLightsAndComms", true);
+
+        isGuessableOption = CreateOption(Color.white, "isGuessable", new string[] { "option.switch.off", "role.jester.isGuessable.niceOnly", "option.switch.on" }, (object)"option.switch.on");
 
         ventCoolDownOption = CreateOption(Color.white, "ventCoolDown", 20f, 5f, 60f, 2.5f);
         ventCoolDownOption.suffix = "second";
