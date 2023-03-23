@@ -43,7 +43,7 @@ public class SynchronizeData
         dic[tag] |= (ulong)1 << playerId;
     }
 
-    private IEnumerator GetAlignEnumerator(SynchronizeTag tag, bool withGhost, bool withSurvivor = true)
+    private IEnumerator GetAlignEnumerator(SynchronizeTag tag, bool withGhost, bool withSurvivor = true, bool withBot = true)
     {
         while (!Align(tag, withGhost, withSurvivor))
         {
@@ -51,12 +51,12 @@ public class SynchronizeData
         }
     }
 
-    public Il2CppSystem.Collections.IEnumerator GetAlignEnumeratorIl2Cpp(SynchronizeTag tag, bool withGhost, bool withSurvivor = true)
+    public Il2CppSystem.Collections.IEnumerator GetAlignEnumeratorIl2Cpp(SynchronizeTag tag, bool withGhost, bool withSurvivor = true, bool withBot = true)
     {
         return GetAlignEnumerator(tag, withGhost, withSurvivor).WrapToIl2Cpp();
     }
 
-    static private IEnumerator GetStaticAlignEnumerator(SynchronizeTag tag, bool withGhost, bool withSurvivor = true)
+    static private IEnumerator GetStaticAlignEnumerator(SynchronizeTag tag, bool withGhost, bool withSurvivor = true, bool withBot = true)
     {
         while (Game.GameData.data == null)
         {
@@ -65,12 +65,12 @@ public class SynchronizeData
         yield return Game.GameData.data.SynchronizeData.GetAlignEnumerator(tag, withGhost, withSurvivor);
     }
 
-    static public Il2CppSystem.Collections.IEnumerator GetStaticAlignEnumeratorIl2Cpp(SynchronizeTag tag, bool withGhost, bool withSurvivor = true)
+    static public Il2CppSystem.Collections.IEnumerator GetStaticAlignEnumeratorIl2Cpp(SynchronizeTag tag, bool withGhost, bool withSurvivor = true, bool withBot = true)
     {
         return GetStaticAlignEnumerator(tag, withGhost, withSurvivor).WrapToIl2Cpp();
     }
 
-    public bool Align(SynchronizeTag tag, bool withGhost, bool withSurvivor = true)
+    public bool Align(SynchronizeTag tag, bool withGhost, bool withSurvivor = true,bool withBot=true)
     {
         bool result = true;
 
@@ -79,7 +79,8 @@ public class SynchronizeData
 
         foreach (PlayerControl pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
         {
-            if (pc.Data.IsDead ? withGhost : withSurvivor)
+            if (!withBot && pc.isDummy) continue;
+            if ((withGhost&& withSurvivor) || pc.Data.IsDead ? withGhost : withSurvivor)
                 result &= ((value & ((ulong)1 << pc.PlayerId)) != 0);
         }
 
@@ -379,6 +380,7 @@ public class PlayerAttribute
     public static Dictionary<byte, PlayerAttribute> AllAttributes = new Dictionary<byte, PlayerAttribute>();
 
     public static PlayerAttribute Invisible = new PlayerAttribute(0);
+    public static PlayerAttribute CannotKill = new PlayerAttribute(1);
 
     public byte Id { get; private set; }
 
@@ -548,24 +550,23 @@ public class PlayerProperty
             if (player.AmOwner)
                 player.MyPhysics.inputHandler.enabled = true;
             player.cosmetics.skin.SetEnterVent(player.cosmetics.FlipX);
-            player.MyPhysics.Animations.StartCoroutine(player.MyPhysics.Animations.CoPlayEnterVentAnimation());
             player.moveable = false;
-
-            if (player.PlayerId == PlayerControl.LocalPlayer.PlayerId && player.GetModData().role == Roles.Roles.Hadar)
-            {
-                Objects.SoundPlayer.PlaySound(Module.AudioAsset.HadarDive);
-            }
         })));
-        sequence.Add(Effects.Wait(player.MyPhysics.Animations.group.EnterVentAnim.length));
+        sequence.Add(player.MyPhysics.Animations.CoPlayEnterVentAnimation());
         sequence.Add(Effects.Action(new System.Action(() =>
         {
-            if (player.AmOwner)
-                player.MyPhysics.inputHandler.enabled = false;
             player.MyPhysics.myPlayer.Visible = false;
             player.cosmetics.skin.SetIdle(player.cosmetics.FlipX);
             player.MyPhysics.Animations.PlayIdleAnimation();
             player.moveable = true;
             underTheFloor = true;
+
+            player.currentRoleAnimations.ForEach((Action<RoleEffectAnimation>)((an) =>
+            {
+                an.ToggleRenderer(false);
+            }));
+            if (player.AmOwner)
+                player.MyPhysics.inputHandler.enabled = false;
         })));
 
         var refArray = new Il2CppReferenceArray<Il2CppSystem.Collections.IEnumerator>(sequence.ToArray());
@@ -582,25 +583,26 @@ public class PlayerProperty
             player.MyPhysics.body.velocity = Vector2.zero;
             if (player.AmOwner)
                 player.MyPhysics.inputHandler.enabled = true;
-            player.cosmetics.skin.SetExitVent(player.cosmetics.FlipX);
-            player.MyPhysics.Animations.StartCoroutine(player.MyPhysics.Animations.CoPlayExitVentAnimation());
             player.moveable = false;
             player.MyPhysics.myPlayer.Visible = true;
+            player.cosmetics.AnimateSkinExitVent();
+            
             underTheFloor = false;
 
-            if (player.PlayerId == PlayerControl.LocalPlayer.PlayerId && player.GetModData().role == Roles.Roles.Hadar)
-            {
-                Objects.SoundPlayer.PlaySound(Module.AudioAsset.HadarReappear);
-            }
         })));
-        sequence.Add(Effects.Wait(player.MyPhysics.Animations.group.ExitVentAnim.length));
+        sequence.Add(player.MyPhysics.Animations.CoPlayExitVentAnimation());
         sequence.Add(Effects.Action(new System.Action(() =>
         {
-            if (player.AmOwner)
-                player.MyPhysics.inputHandler.enabled = false;
-            player.cosmetics.skin.SetIdle(player.cosmetics.FlipX);
+            player.cosmetics.AnimateSkinIdle();
             player.MyPhysics.Animations.PlayIdleAnimation();
             player.moveable = true;
+            player.currentRoleAnimations.ForEach((Action<RoleEffectAnimation>)((an) =>
+            {
+                an.ToggleRenderer(true);
+            }));
+            if (player.AmOwner)
+                player.MyPhysics.inputHandler.enabled = false;
+            
         })));
 
         var refArray = new Il2CppReferenceArray<Il2CppSystem.Collections.IEnumerator>(sequence.ToArray());

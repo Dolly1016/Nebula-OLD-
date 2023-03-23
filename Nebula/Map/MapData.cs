@@ -184,6 +184,7 @@ public class MapData
     public Dictionary<SystemTypes, List<VectorRange>> RitualMissionPositions;
     //ランダムスポーン位置候補
     public List<SpawnPointData> SpawnPoints;
+    public CustomOption SelectiveSpawnPointOption;
 
     public Dictionary<int, CustomOption> LimitedAdmin;
     public Dictionary<string, int> AdminNameMap;
@@ -199,6 +200,22 @@ public class MapData
             foreach (var sPoint in SpawnPoints)
                 if (sPoint.option.getBool()) list.Add(sPoint.point);
 
+            return list;
+        }
+    }
+
+    public List<SpawnCandidate> ValidSpawnCandidates
+    {
+        get
+        {
+            List<SpawnCandidate> list = new List<SpawnCandidate>();
+            int i = 0;
+            int selection = SelectiveSpawnPointOption.selection;
+            foreach (var c in SpawnCandidates)
+            {
+                if ((selection & (1 << i)) != 0) list.Add(c);
+                i++;
+            }
             return list;
         }
     }
@@ -224,6 +241,36 @@ public class MapData
                 reopener();
             }));
 
+        }
+    }
+
+    public void SetUpSelectiveSpawnPointButton(GameObject obj, Action reopener)
+    {
+        CustomOption option = SelectiveSpawnPointOption;
+        int i = 0;
+        foreach (var point in SpawnCandidates)
+        {
+            bool enabled = (option.selection & (1 << i)) != 0;
+
+            PassiveButton button = Module.MetaScreen.MSDesigner.AddSubButton(obj, new Vector2(2.4f, 0.4f), "Point", Language.Language.GetString("locations." + point.LocationKey), enabled ? Color.yellow : Color.white);
+            button.transform.localPosition = (Vector3)ConvertMinimapPosition(point.SpawnLocation) + new Vector3(0f, 0f, -5f);
+            button.transform.localScale /= (obj.transform.localScale.x / 0.75f);
+
+            SpriteRenderer renderer = button.GetComponent<SpriteRenderer>();
+            TMPro.TextMeshPro text = button.transform.GetChild(0).GetComponent<TMPro.TextMeshPro>();
+
+            renderer.size = new Vector2(text.preferredWidth + 0.3f, renderer.size.y);
+            button.GetComponent<BoxCollider2D>().size = renderer.size;
+
+            int index = i;
+            button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
+            {
+                int selection = option.selection & ~(1 << index);
+                if (!enabled) selection |= 1 << index;
+                option.updateSelection(selection);
+                reopener();
+            }));
+            i++;
         }
     }
 
@@ -282,7 +329,7 @@ public class MapData
                 }
                 break;
             case 1:
-                foreach (var point in SpawnCandidates)
+                foreach (var point in ValidSpawnCandidates)
                 {
                     var text = Module.MetaScreen.MSDesigner.AddSubText(obj, 0.4f, 2f, "★", TMPro.FontStyles.Bold, TMPro.TextAlignmentOptions.Center);
                     text.color = Color.yellow;
@@ -332,6 +379,7 @@ public class MapData
                 point.CreateOption((byte)mapData.Value.MapId);
             }
 
+            mapData.Value.SelectiveSpawnPointOption = Module.CustomOption.Create(Color.white, "option.selectiveSpawn." + PointData.mapNames[mapData.Value.MapId], Int32.MaxValue, CustomOptionHolder.mapOptions, false, true);
             mapData.Value.CreateOption();
         }
     }
@@ -543,9 +591,9 @@ public class MapData
     {
         get
         {
-            if (HasDefaultPrespawnMinigame) return true;
+            //if (HasDefaultPrespawnMinigame) return true;
 
-            return (SpawnCandidates.Count >= 3 && !SpawnOriginalPositionAtFirst && CustomOptionHolder.mapOptions.getBool() && CustomOptionHolder.spawnMethod.getSelection() == 1);
+            return (ValidSpawnCandidates.Count >= 3 && !SpawnOriginalPositionAtFirst && CustomOptionHolder.mapOptions.getBool() && CustomOptionHolder.spawnMethod.getSelection() == 1);
         }
     }
 }

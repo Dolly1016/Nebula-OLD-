@@ -92,6 +92,23 @@ public class MIRAData : MapData
 
         MapScale = 36f;
 
+        SpawnCandidates.Add(new SpawnCandidate("admin", new Vector2(19.4462f, 19.0366f), "assets/SpawnCandidates/Mira/Admin.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("balcony", new Vector2(26.7091f, -1.9142f), "assets/SpawnCandidates/Mira/Balcony.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("cafeteria", new Vector2(25.433f, 2.553f), "assets/SpawnCandidates/Mira/Cafeteria.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("comms", new Vector2(14.4909f, 4.0153f), "assets/SpawnCandidates/Mira/Comms.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("decontamination", new Vector2(6.1333f, 6.27f), "assets/SpawnCandidates/Mira/Decontermination.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("greenhouse", new Vector2(17.857f, 23.5425f), "assets/SpawnCandidates/Mira/Greenhouse.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("laboratory", new Vector2(9.0136f, 12.081f), "assets/SpawnCandidates/Mira/Laboratory.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("launchpad", new Vector2(-4.4f, 2.1969f), "assets/SpawnCandidates/Mira/Launchpad.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("locker", new Vector2(9.0862f, 1.3112f), "assets/SpawnCandidates/Mira/LockerRoom.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("medBay", new Vector2(15.3094f, -0.4085f), "assets/SpawnCandidates/Mira/MedBay.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("office", new Vector2(14.7004f, 20.0933f), "assets/SpawnCandidates/Mira/Office.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("reactor", new Vector2(2.4809f, 13.2443f), "assets/SpawnCandidates/Mira/Reactor.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("rendezvous", new Vector2(17.8176f, 11.3095f), "assets/SpawnCandidates/Mira/Rendezvous.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("storage", new Vector2(19.9159f, 4.718f), "assets/SpawnCandidates/Mira/Storage.png", null, 115f));
+
+        SpawnOriginalPositionAtFirst = true;
+
         SpawnPoints.Add(new SpawnPointData("launchpad", new Vector2(-4.4f, 2.1969f)));
         SpawnPoints.Add(new SpawnPointData("medBay", new Vector2(15.3094f, -0.4085f)));
         SpawnPoints.Add(new SpawnPointData("comms", new Vector2(14.4909f, 4.0153f)));

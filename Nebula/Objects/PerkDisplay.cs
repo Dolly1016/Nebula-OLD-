@@ -16,7 +16,7 @@ public class PerkDisplay : MonoBehaviour
     static PerkDisplay()
     {
         PerkBackSprite = new SpriteLoader[9];
-        PerkFrontSprite = new SpriteLoader[36];
+        PerkFrontSprite = new SpriteLoader[41];
 
         for (int i = 0; i < PerkBackSprite.Length; i++) PerkBackSprite[i] = new SpriteLoader("Nebula.Resources.Perks.Back"+i+".png",100f);
         for (int i = 0; i < PerkFrontSprite.Length; i++) PerkFrontSprite[i] = new SpriteLoader("Nebula.Resources.Perks.Front" + i + ".png", 100f);
@@ -26,16 +26,20 @@ public class PerkDisplay : MonoBehaviour
 
     private static SpriteLoader BackSprite = new("Nebula.Resources.Perks.FrameBack.png",100f);
     private static SpriteLoader FrameSprite = new("Nebula.Resources.Perks.Frame.png", 100f);
+    private static SpriteLoader FrameRoleSprite = new("Nebula.Resources.Perks.RoleFrame.png", 100f);
+    private static SpriteLoader FrameRoleGemSprite = new("Nebula.Resources.Perks.RoleGem.png", 100f);
     private static SpriteLoader HighlightSprite = new("Nebula.Resources.Perks.Highlight.png", 100f);
     private static SpriteLoader[] PerkBackSprite;
     private static SpriteLoader[] PerkFrontSprite;
 
-    public SpriteRenderer Frame,PerkBack,PerkFront,Background;
+    public SpriteRenderer Frame,FrameSub,PerkBack,PerkFront,Background;
     private SpriteRenderer? highlight = null;
     private bool hasButtonMaterial = false;
 
     public void SetCool(float percentage)
     {
+        percentage = Mathf.Clamp01(percentage);
+
         if (!hasButtonMaterial)
         {
             PerkBack.material = new Material(HudManager.Instance.KillButton.graphic.material);
@@ -85,6 +89,15 @@ public class PerkDisplay : MonoBehaviour
         Frame.sprite = FrameSprite.GetSprite();
         Frame.color = Color.white.RGBMultiplied(0.3f);
 
+        var frameSub = new GameObject("FrameSub");
+        frameSub.layer = LayerExpansion.GetUILayer();
+        frameSub.transform.SetParent(gameObject.transform);
+        frameSub.transform.localPosition = new Vector3(0, 0, -0.95f);
+        frameSub.transform.localScale = Vector3.one;
+        FrameSub = frameSub.AddComponent<SpriteRenderer>();
+        FrameSub.sprite = null;
+        FrameSub.color = Color.white.RGBMultiplied(0.3f);
+
         var backObj = new GameObject("Back");
         backObj.layer = LayerExpansion.GetUILayer();
         backObj.transform.SetParent(gameObject.transform);
@@ -109,7 +122,27 @@ public class PerkDisplay : MonoBehaviour
         PerkFront = perkFObj.AddComponent<SpriteRenderer>();
     }
 
-    public void SetPerk(Roles.Perk.Perk? perk)
+    public void SetType(bool isNormal = true,Color? gemColor=null)
+    {
+        if (isNormal)
+        {
+            Frame.sprite = FrameSprite.GetSprite();
+            Frame.color = Color.white.RGBMultiplied(0.3f);
+
+            FrameSub.sprite = null;
+            FrameSub.color = Color.white.RGBMultiplied(0.3f);
+        }
+        else
+        {
+            Frame.sprite = FrameRoleSprite.GetSprite();
+            Frame.color = Color.white.RGBMultiplied(0.3f);
+
+            FrameSub.sprite = FrameRoleGemSprite.GetSprite();
+            FrameSub.color = gemColor ?? Color.red;
+        }
+    }
+
+    public void SetPerk(Roles.Perk.DisplayPerk? perk)
     {
         if (perk == null) Inactivate();
         else SetPerk(perk.VisualFrontSpriteId, perk.VisualBackSpriteId, perk.VisualBackSpriteColor);

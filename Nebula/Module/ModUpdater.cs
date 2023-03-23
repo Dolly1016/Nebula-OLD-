@@ -82,7 +82,8 @@ public class ModNewsHistory
 
             HttpClient http = new HttpClient();
             http.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue { NoCache = true };
-            var task = http.GetAsync(new System.Uri($"https://raw.githubusercontent.com/Dolly1016/Nebula/master/Announcement_{lang}.json"), HttpCompletionOption.ResponseContentRead);
+            var uri = $"https://raw.githubusercontent.com/Dolly1016/Nebula/master/Announcement_{lang}.json";
+            var task = http.GetAsync(new System.Uri(uri), HttpCompletionOption.ResponseContentRead);
             while (!task.IsCompleted) yield return null;
             var response = task.Result;
 

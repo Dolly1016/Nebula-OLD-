@@ -59,6 +59,7 @@ static public class GridArrangeExpansion
         bottomContents.Clear();
         leftSideContents.Clear();
         lineContents.Clear();
+
         AlternativeKillButtonContent = HudManager.Instance.KillButton.gameObject;
 
         alwaysVisible = new GameObject("AlwaysVisible");

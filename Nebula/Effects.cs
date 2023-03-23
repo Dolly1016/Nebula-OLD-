@@ -93,4 +93,13 @@ public static class NebulaEffects
         yield return Effects.Wait(0.5f);
         GameObject.Destroy(obj);
     }
+
+    public static IEnumerator CoWait(IEnumerator coroutine, Action waitAction)
+    {
+        while (coroutine.MoveNext())
+        {
+            waitAction.Invoke();
+            yield return null;
+        }
+    }
 }

@@ -1,4 +1,5 @@
-﻿using Steamworks;
+﻿using Nebula.Expansion;
+using Steamworks;
 
 namespace Nebula.Module;
 
@@ -11,6 +12,7 @@ public class MetaScreenContent
     }
 
     public virtual void Generate(GameObject obj) { }
+    public Action<GameObject>? PostBuilder = null;
 }
 
 public class MSMargin : MetaScreenContent
@@ -70,7 +72,7 @@ public class MSString : MetaScreenContent
 
     public override void Generate(GameObject obj)
     {
-        this.text = GameObject.Instantiate(HudManager.Instance.Dialogue.target);
+        this.text = GameObject.Instantiate(RuntimePrefabs.TextPrefab/*HudManager.Instance.Dialogue.target*/);
         text.transform.SetParent(obj.transform);
         text.transform.localScale = new Vector3(1f, 1f, 1f);
         text.transform.localPosition = new Vector3(0f, 0f, -1f);
@@ -82,6 +84,7 @@ public class MSString : MetaScreenContent
         text.text = rawText;
         text.fontSize = text.fontSizeMax = fontSize;
         text.fontSizeMin = fontSizeMin;
+        text.m_fontSizeBase = 3f;
         if (dontAllowWrapping) text.enableWordWrapping = false;
     }
 }
@@ -107,7 +110,7 @@ public class MSTextArea : MetaScreenContent
 
     public override void Generate(GameObject obj)
     {
-        this.text = GameObject.Instantiate(HudManager.Instance.Dialogue.target);
+        this.text = GameObject.Instantiate(RuntimePrefabs.TextPrefab/*HudManager.Instance.Dialogue.target*/);
         text.transform.SetParent(obj.transform);
         text.transform.localScale = new Vector3(1f, 1f, 1f);
         text.transform.localPosition = new Vector3(0f, 0f, -1f);
@@ -119,6 +122,7 @@ public class MSTextArea : MetaScreenContent
         text.text = rawText;
         text.fontSize = text.fontSizeMax = fontSize;
         text.fontSizeMin = fontSize / 2;
+        text.m_fontSizeBase = 3f;
     }
 }
 
@@ -143,7 +147,7 @@ public class MSMultiString : MetaScreenContent
 
     public override void Generate(GameObject obj)
     {
-        this.text = GameObject.Instantiate(HudManager.Instance.Dialogue.target);
+        this.text = GameObject.Instantiate(RuntimePrefabs.TextPrefab/*HudManager.Instance.Dialogue.target*/);
         text.transform.SetParent(obj.transform);
         text.transform.localScale = new Vector3(1f, 1f, 1f);
         text.transform.localPosition = new Vector3(0f, 0f, -1f);
@@ -153,7 +157,8 @@ public class MSMultiString : MetaScreenContent
         text.rectTransform.sizeDelta = GetSize() - new Vector2(0.206f, 0.1f);
         text.rectTransform.pivot = new Vector2(0.5f, 0.5f);
         text.text = rawText;
-        text.fontSize = text.fontSizeMax = text.fontSizeMax = fontSize;
+        text.fontSize = text.fontSizeMax = text.fontSizeMin = fontSize;
+        text.m_fontSizeBase = 3f;
     }
 }
 
@@ -203,7 +208,6 @@ public class MSButton : MSString
         var text = button.transform.GetChild(0).GetComponent<TMPro.TextMeshPro>();
         text.alignment = TMPro.TextAlignmentOptions.Center;
         text.fontStyle = style;
-        text.fontSize /= 2f;
         this.text = text;
     }
 }
@@ -215,6 +219,7 @@ public class MSTextInput : MetaScreenContent
     public override Vector2 GetSize() => new Vector2(width + 0.3f, height + 0.3f);
     private TMPro.TextAlignmentOptions alignmentOptions;
     private TMPro.FontStyles fontStyles;
+    public float FontSize;
     public TextInputField TextInputField;
     public MSTextInput(float width, float height, TMPro.TextAlignmentOptions alignment, TMPro.FontStyles style) 
     {
@@ -222,12 +227,13 @@ public class MSTextInput : MetaScreenContent
         this.height = height;
         this.alignmentOptions = alignment;
         this.fontStyles = style;
+        this.FontSize = 1.5f;
     }
 
     public override void Generate(GameObject obj)
     {
         TextInputField = obj.AddComponent<TextInputField>();
-        TextInputField.SetTextProperty(new Vector2(width,height),1.5f,alignmentOptions,fontStyles);
+        TextInputField.SetTextProperty(new Vector2(width,height), FontSize, alignmentOptions,fontStyles);
     }
 }
 
@@ -258,7 +264,7 @@ public class MSRadioButton : MSString
 
         text.transform.localPosition += new Vector3(0.15f,0f);
 
-        RadioButton = GameObject.Instantiate(HudManager.Instance.Dialogue.target);
+        RadioButton = GameObject.Instantiate(RuntimePrefabs.TextPrefab/*HudManager.Instance.Dialogue.target*/);
         RadioButton.transform.SetParent(obj.transform);
         RadioButton.transform.localScale = new Vector3(1f, 1f, 1f);
         RadioButton.transform.localPosition = new Vector3(0.08f - width / 2f, 0f, -1f);
@@ -268,6 +274,7 @@ public class MSRadioButton : MSString
         RadioButton.rectTransform.sizeDelta = new Vector2(0.4f, 0.4f);
         RadioButton.rectTransform.pivot = new Vector2(0.5f, 0.5f);
         RadioButton.fontSize = RadioButton.fontSizeMax = RadioButton.fontSizeMin = fontSize;
+        RadioButton.m_fontSizeBase = 3f;
         OnFlagChanged();
 
         PassiveButton button = RadioButton.gameObject.AddComponent<PassiveButton>();
@@ -277,6 +284,14 @@ public class MSRadioButton : MSString
         button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => {
             Flag = !Flag;
             OnFlagChanged();
+            SoundManager.Instance.PlaySound(MetaDialog.getSelectClip(), false, 0.8f);
+        }));
+        button.OnMouseOver.AddListener((UnityEngine.Events.UnityAction)(() => {
+            RadioButton.color = Palette.AcceptedGreen;
+            SoundManager.Instance.PlaySound(MetaDialog.getHoverClip(), false, 0.8f);
+        }));
+        button.OnMouseOut.AddListener((UnityEngine.Events.UnityAction)(() => {
+            RadioButton.color = Color.white;
         }));
 
         BoxCollider2D collider = RadioButton.gameObject.AddComponent<BoxCollider2D>();
@@ -338,6 +353,27 @@ public class MetaScreen
             center = new Vector2(origin.x + size.x * 0.5f, origin.y - size.y * 0.5f);
         }
 
+        static private SpriteLoader PseudoBackgroundSprite = new SpriteLoader("Nebula.Resources.ColorFullBase.png", 100f);
+        public PassiveButton MakeIntoPseudoScreen()
+        {
+            var renderer = screen.screen.AddComponent<SpriteRenderer>();
+            renderer.sprite = MetaScreen.GetButtonBackSprite();
+            renderer.drawMode = SpriteDrawMode.Tiled;
+            renderer.size = size + new Vector2(0.08f, 0.08f);
+
+            var collider2D = screen.screen.AddComponent<BoxCollider2D>();
+            collider2D.size = new Vector2(100f,100f);
+
+            var back = new GameObject("Background").AddComponent<SpriteRenderer>();
+            back.sprite = PseudoBackgroundSprite.GetSprite();
+            back.color = new Color(0, 0, 0, 0.5f);
+            back.transform.SetParent(renderer.transform);
+            back.transform.localScale = new Vector2(100f, 100f);
+            back.transform.localPosition = new Vector3(0f, 0f, 1f);
+
+            return screen.screen.SetUpButton(null);
+        }
+
         static public PassiveButton SetUpButton(GameObject obj, Vector2 size, string display, Color? color = null)
         {
             Color normalColor = (color == null) ? Color.white : color.Value;
@@ -347,7 +383,8 @@ public class MetaScreen
             var renderer = obj.AddComponent<SpriteRenderer>();
             var collider = obj.AddComponent<BoxCollider2D>();
 
-            var text = GameObject.Instantiate(HudManager.Instance.Dialogue.target);
+            var text = GameObject.Instantiate(RuntimePrefabs.TextPrefab/*HudManager.Instance.Dialogue.target*/);
+            //var text = GameObject.Instantiate(HudManager.Instance.Dialogue.target);
             text.transform.SetParent(obj.transform);
             text.transform.localScale = new Vector3(1f, 1f, 1f);
             text.transform.localPosition = new Vector3(0f, 0f, -1f);
@@ -358,10 +395,15 @@ public class MetaScreen
             renderer.color = normalColor;
 
             text.alignment = TMPro.TextAlignmentOptions.Center;
-            text.rectTransform.sizeDelta = new Vector2(size.x - 0.15f, 0.2f);
-            text.rectTransform.pivot = new Vector2(0.5f, 0.5f);
             text.text = display;
-            text.fontSize = text.fontSizeMax = text.fontSizeMax = 2f;
+            text.fontSizeMax = 2f;
+            text.fontSizeMin = 1f;
+            text.m_fontSizeBase = 3f;
+            text.fontSize = 2f;
+            text.enableAutoSizing = true;
+
+            text.rectTransform.sizeDelta = new Vector2(size.x - 0.15f, size.y - 0.12f);
+            text.rectTransform.pivot = new Vector2(0.5f, 0.5f);
 
             collider.size = size;
 
@@ -403,7 +445,7 @@ public class MetaScreen
 
         static public TMPro.TextMeshPro AddSubText(GameObject obj, float width, float fontsize, string display, TMPro.FontStyles style, TMPro.TextAlignmentOptions alignment)
         {
-            TMPro.TextMeshPro text = GameObject.Instantiate(HudManager.Instance.Dialogue.target);
+            TMPro.TextMeshPro text = GameObject.Instantiate(RuntimePrefabs.TextPrefab/*HudManager.Instance.Dialogue.target*/);
             text.transform.SetParent(obj.transform);
             text.transform.localPosition = new Vector3(0, 0, -5f);
             text.text = display;
@@ -412,7 +454,9 @@ public class MetaScreen
             text.rectTransform.sizeDelta = new Vector2(width, 0.4f);
             text.rectTransform.pivot = new Vector2(0.5f, 0.5f);
             text.text = display;
-            text.fontSize = text.fontSizeMax = text.fontSizeMax = fontsize;
+            text.fontSize = text.fontSizeMax = fontsize;
+            text.fontSizeMin = 2f;
+            text.m_fontSizeBase = 3f;
 
             return text;
         }
@@ -493,6 +537,7 @@ public class MetaScreen
                 w += vec.x;
 
                 c.Generate(obj);
+                c.PostBuilder?.Invoke(obj);
             }
 
             used += maxHeight;

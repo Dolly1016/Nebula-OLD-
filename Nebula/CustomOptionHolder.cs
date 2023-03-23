@@ -2,6 +2,7 @@
 using Cpp2IL.Core;
 using Cpp2IL.Core.Extensions;
 using Nebula.Module;
+using TMPro;
 
 namespace Nebula;
 
@@ -69,7 +70,7 @@ public class CustomOptionHolder
             "option.display.percentage.50", "option.display.percentage.60", "option.display.percentage.70", "option.display.percentage.80", "option.display.percentage.90" };
     public static string[] presets = new string[] { "option.display.preset.1", "option.display.preset.2", "option.display.preset.3", "option.display.preset.4", "option.display.preset.5" };
     public static string[] gamemodesNormal = new string[] { "gamemode.standard", "gamemode.freePlay" };
-    public static string[] gamemodesHnS = new string[] { "gamemode.standard"};
+    public static string[] gamemodesHnS = new string[] { "gamemode.standard", "gamemode.freePlay" };
 
     private static byte ToByte(float f)
     {
@@ -242,6 +243,7 @@ public class CustomOptionHolder
 
     public static CustomOption HnSOption;
     public static CustomOption ValidPerksOption;
+    public static CustomOption MustDoTasksToWinOption;
 
     public static void AddExclusiveAssignment(ref List<ExclusiveAssignment> exclusiveAssignments)
     {
@@ -444,10 +446,10 @@ public class CustomOptionHolder
         exceptMIRA = CustomOption.Create(Color.white, "option.exceptMIRA", false, dynamicMap).SetGameMode(CustomGameMode.All);
         exceptPolus = CustomOption.Create(Color.white, "option.exceptPolus", false, dynamicMap).SetGameMode(CustomGameMode.All);
         exceptAirship = CustomOption.Create(Color.white, "option.exceptAirship", false, dynamicMap).SetGameMode(CustomGameMode.All);
-        additionalVents = CustomOption.Create(Color.white, "option.additionalVents", false, mapOptions);
-        spawnMethod = CustomOption.Create(Color.white, "option.spawnMethod", new string[] { "option.spawnMethod.default", "option.spawnMethod.selectable", "option.spawnMethod.random" }, "option.spawnMethod.default", mapOptions);
+        additionalVents = CustomOption.Create(Color.white, "option.additionalVents", false, mapOptions).SetGameMode(CustomGameMode.All);
+        spawnMethod = CustomOption.Create(Color.white, "option.spawnMethod", new string[] { "option.spawnMethod.default", "option.spawnMethod.selectable", "option.spawnMethod.random" }, "option.spawnMethod.default", mapOptions).SetGameMode(CustomGameMode.All);
         respawnNearbyFinalPosition = CustomOption.Create(Color.white, "option.respawnNearbyFinalPosition", false, mapOptions).SetGameMode(CustomGameMode.All).AddCustomPrerequisite(() => spawnMethod.getSelection() == 2);
-        synchronizedSpawning = CustomOption.Create(Color.white, "option.synchronizedSpawning", false, mapOptions);
+        synchronizedSpawning = CustomOption.Create(Color.white, "option.synchronizedSpawning", false, mapOptions).SetGameMode(CustomGameMode.All);
         optimizedMaps = CustomOption.Create(Color.white, "option.optimizedMaps", true, mapOptions).SetGameMode(CustomGameMode.All);
         invalidatePrimaryAdmin = CustomOption.Create(Color.white, "option.invalidatePrimaryAdmin", new string[] { "option.switch.off", "option.invalidatePrimaryAdmin.onlyAirship", "option.switch.on" }, "option.switch.off", mapOptions).SetGameMode(CustomGameMode.All);
         invalidateSecondaryAdmin = CustomOption.Create(Color.white, "option.invalidateSecondaryAdmin", true, mapOptions).SetGameMode(CustomGameMode.All);
@@ -461,17 +463,33 @@ public class CustomOptionHolder
         {
             MetaScreenContent getSuitableContent()
             {
-                if (spawnMethod.getSelection() == 2)
+                if (spawnMethod.getSelection() is 1 or 2)
+                {
+                    int selection = spawnMethod.getSelection();
                     return new MSButton(1.6f, 0.4f, "Customize", TMPro.FontStyles.Bold, () =>
                     {
                         Action<byte> refresher = null;
-                        refresher = (mapId) => MetaDialog.OpenMapDialog(mapId, true, (obj, id) => Map.MapData.MapDatabase[id].SetUpSpawnPointButton(obj, () =>
-                              {
-                                  MetaDialog.EraseDialog(1);
-                                  refresher(id);
-                              }));
+                        if (selection == 1)
+                        {
+                            refresher = (mapId) => MetaDialog.OpenMapDialog(mapId, true, (obj, id) =>
+                            Map.MapData.MapDatabase[id].SetUpSelectiveSpawnPointButton(obj, () =>
+                            {
+                                MetaDialog.EraseDialog(1);
+                                refresher(id);
+                            }));
+                        }
+                        if (selection == 2)
+                        {
+                            refresher = (mapId) => MetaDialog.OpenMapDialog(mapId, true, (obj, id) =>
+                            Map.MapData.MapDatabase[id].SetUpSpawnPointButton(obj, () =>
+                                  {
+                                      MetaDialog.EraseDialog(1);
+                                      refresher(id);
+                                  }));
+                        }
                         refresher(GameOptionsManager.Instance.CurrentGameOptions.MapId);
                     });
+                }
                 else
                     return new MSMargin(1.7f);
             }
@@ -683,9 +701,10 @@ public class CustomOptionHolder
         CustomOption.RegisterTopOption(streamersOption);
         enforcePreventingSpoilerOption = CustomOption.Create(Color.white, "option.streamersOption.enforcePreventingSpoiler", false, streamersOption).SetGameMode(CustomGameMode.All);
 
-        HnSOption = CustomOption.Create(Color.white, "option.hideAndSeekOption", new string[] { "option.empty" }, "option.empty", null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.StandardHnS);
+        HnSOption = CustomOption.Create(Color.white, "option.hideAndSeekOption", new string[] { "option.empty" }, "option.empty", null, true, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.AllHnS);
         CustomOption.RegisterTopOption(HnSOption);
-        ValidPerksOption = CustomOption.Create(Color.white, "option.hideAndSeekOption.validPerks", 3,0,5,1, HnSOption, false, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.StandardHnS);
+        ValidPerksOption = CustomOption.Create(Color.white, "option.hideAndSeekOption.validPerks", 3,0,5,1, HnSOption, false, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.AllHnS);
+        MustDoTasksToWinOption = CustomOption.Create(Color.white, "option.hideAndSeekOption.mustDoTasksToWin", false, HnSOption, false, false, "", CustomOptionTab.Settings).SetGameMode(CustomGameMode.AllHnS);
 
         exclusiveAssignmentParent = CustomOption.Create(new Color(204f / 255f, 204f / 255f, 0, 1f), "option.exclusiveAssignment", false, null, true, false, "", CustomOptionTab.AdvancedSettings).SetGameMode(CustomGameMode.Standard | CustomGameMode.FreePlay);
         CustomOption.RegisterTopOption(exclusiveAssignmentParent);

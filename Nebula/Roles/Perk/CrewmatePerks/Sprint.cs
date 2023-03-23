@@ -44,6 +44,6 @@ public class Sprint : Perk
 
     public Sprint(int id) : base(id, "sprint", true, 0, 6, new Color(0.3f,0.45f,0.7f))
     {
-        ImportantProperties = new float[] { 50f,5f, 20f };
+        ImportantProperties = new float[] { 50f, 2f, 40f };
     }
 }

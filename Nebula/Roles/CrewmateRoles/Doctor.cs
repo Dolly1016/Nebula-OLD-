@@ -91,7 +91,7 @@ public class Doctor : Role
         }
     }
 
-    public override void OnTaskComplete()
+    public override void OnTaskComplete(PlayerTask? task)
     {
         gadgetTimer += chargesPerTasksOption.getFloat();
         if (gadgetTimer > maxMobileGadgetChargesOption.getFloat()) gadgetTimer = maxMobileGadgetChargesOption.getFloat();

@@ -12,6 +12,32 @@ public static class DevTools
         return fileStream;
     }
 
+    public static void SaveRelatedSprite(Texture2D texture, string folderName)
+    {
+        var sprites = UnityEngine.Object.FindObjectsOfTypeIncludingAssets(Il2CppType.Of<Sprite>()).Where((obj) =>
+        {
+            return obj.CastFast<Sprite>().texture == texture;
+        });
+
+        int margin = 10;
+        var readable = Helpers.CreateReadabeTexture(texture, margin);
+
+        foreach (var obj in sprites)
+        {
+            var sprite = obj.CastFast<Sprite>();
+            var spriteTex = new Texture2D((int)sprite.rect.width, (int)sprite.rect.height);
+            var pixels = readable.GetPixels((int)sprite.rect.x + margin,
+                                                    (int)sprite.rect.y + margin,
+                                                    (int)sprite.rect.width,
+                                                    (int)sprite.rect.height);
+            spriteTex.SetPixels(pixels);
+            spriteTex.Apply();
+            byte[] bytes = UnityEngine.ImageConversion.EncodeToPNG(spriteTex);
+            if (!Directory.Exists(folderName)) Directory.CreateDirectory(folderName);
+            File.WriteAllBytes(folderName + "/" + sprite.name + ".png", bytes);
+        }
+    }
+
     public static void SaveTexture(Texture2D texture, string fileName)
     {
         byte[] bytes = UnityEngine.ImageConversion.EncodeToPNG(Helpers.CreateReadabeTexture(texture));

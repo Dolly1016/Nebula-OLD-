@@ -1,4 +1,6 @@
-﻿namespace Nebula.Roles.ImpostorRoles;
+﻿using UnityEngine;
+
+namespace Nebula.Roles.ImpostorRoles;
 
 public class Raider : Role
 {
@@ -30,8 +32,27 @@ public class Raider : Role
     static private CustomButton axeButton;
     static private CustomButton killButton;
 
-    public CustomObject? lastAxe = null;
-    public CustomObject? thrownAxe = null;
+    private CustomObject? lastAxe = null;
+    private CustomObject? thrownAxe = null;
+
+    public static void BeatenAroundAxe(Vector3 axePos, float killDistance, bool canKillImpostor)
+    {
+        foreach (var p in PlayerControl.AllPlayerControls)
+        {
+            if (p.Data.IsDead) continue;
+            if (p == PlayerControl.LocalPlayer) continue;
+            if (!canKillImpostor && p.Data.Role.Role == RoleTypes.Impostor) continue;
+
+            if (p.transform.position.Distance(axePos) < killDistance)
+            {
+                Vector2 vec = ((Vector2)p.transform.position) - (Vector2)axePos;
+                if (!PhysicsHelpers.AnyNonTriggersBetween(p.transform.position, vec.normalized, vec.magnitude, Constants.ShipAndAllObjectsMask))
+                {
+                    var res = Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, p, Game.PlayerData.PlayerStatus.Beaten, false, false);
+                }
+            }
+        }
+    }
 
     public override void ButtonInitialize(HudManager __instance)
     {
@@ -218,21 +239,8 @@ public class Raider : Role
                 {
                     Vector3 pos = thrownAxe.GameObject.transform.position;
                     float d = 0.4f * axeSizeOption.getFloat();
-                    foreach (var p in PlayerControl.AllPlayerControls)
-                    {
-                        if (p.Data.IsDead) continue;
-                        if (p == PlayerControl.LocalPlayer) continue;
-                        if (!canKillImpostorsOption.getBool() && p.Data.Role.Role == RoleTypes.Impostor) continue;
 
-                        if (p.transform.position.Distance(pos) < d)
-                        {
-                            Vector2 vec = ((Vector2)p.transform.position) - (Vector2)pos;
-                            if (!PhysicsHelpers.AnyNonTriggersBetween(p.transform.position, vec.normalized, vec.magnitude, Constants.ShipAndAllObjectsMask))
-                            {
-                                var res = Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, p, Game.PlayerData.PlayerStatus.Beaten, false, false);
-                            }
-                        }
-                    }
+                    BeatenAroundAxe(thrownAxe.GameObject.transform.position, 0.4f * axeSizeOption.getFloat(), canKillImpostorsOption.getBool());
                 }
             }
         }

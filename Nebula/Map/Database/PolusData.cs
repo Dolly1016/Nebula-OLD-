@@ -108,14 +108,20 @@ public class PolusData : MapData
         MapScale = 32f;
 
         //スポーン候補
-        SpawnCandidates.Add(new SpawnCandidate("Dropship", new Vector2(16.6f, -1.5f), "Nebula.Resources.Locations.Dropship.png", "rollover_brig"));
-        SpawnCandidates.Add(new SpawnCandidate("Storage", new Vector2(20.6f, -11.7f), "Nebula.Resources.Locations.Storage.png", "panel_O2Drop"));
-        SpawnCandidates.Add(new SpawnCandidate("Laboratory", new Vector2(34.8f, -6.0f), "Nebula.Resources.Locations.Laboratory.png", null));
-        SpawnCandidates.Add(new SpawnCandidate("Specimens", new Vector2(36.5f, -21.2f), "Nebula.Resources.Locations.Specimens.png", null));
-        SpawnCandidates.Add(new SpawnCandidate("Office", new Vector2(19.5f, -17.6f), "Nebula.Resources.Locations.Office.png", null));
-        SpawnCandidates.Add(new SpawnCandidate("Weapons", new Vector2(12.2f, -23.3f), "Nebula.Resources.Locations.Weapons.png", "panel_weaponfire"));
-        SpawnCandidates.Add(new SpawnCandidate("LifeSupport", new Vector2(3.5f, -21.5f), "Nebula.Resources.Locations.LifeSupport.png", null));
-        SpawnCandidates.Add(new SpawnCandidate("Electrical", new Vector2(7.4f, -9.6f), "Nebula.Resources.Locations.Electrical.png", "AMB_Electricshock1"));
+        SpawnCandidates.Add(new SpawnCandidate("dropship", new Vector2(16.6f, -1.5f), "assets/SpawnCandidates/Polus/Dropship.png", "rollover_brig"));
+        SpawnCandidates.Add(new SpawnCandidate("storage", new Vector2(20.6f, -11.7f), "assets/SpawnCandidates/Polus/Storage.png", "panel_O2Drop"));
+        SpawnCandidates.Add(new SpawnCandidate("laboratory", new Vector2(34.8f, -6.0f), "assets/SpawnCandidates/Polus/Laboratory.png", null));
+        SpawnCandidates.Add(new SpawnCandidate("specimen", new Vector2(36.5f, -21.2f), "assets/SpawnCandidates/Polus/Specimens.png", null));
+        SpawnCandidates.Add(new SpawnCandidate("office", new Vector2(19.5f, -17.6f), "assets/SpawnCandidates/Polus/Office.png", null));
+        SpawnCandidates.Add(new SpawnCandidate("weapons", new Vector2(12.2f, -23.3f), "assets/SpawnCandidates/Polus/Weapons.png", "panel_weaponfire"));
+        SpawnCandidates.Add(new SpawnCandidate("lifeSupport", new Vector2(3.5f, -21.5f), "assets/SpawnCandidates/Polus/LifeSupport.png", null));
+        SpawnCandidates.Add(new SpawnCandidate("electrical", new Vector2(7.4f, -9.6f), "assets/SpawnCandidates/Polus/Electrical.png", "AMB_Electricshock1"));
+        SpawnCandidates.Add(new SpawnCandidate("abditory", new Vector2(25.7226f, -12.8779f), "assets/SpawnCandidates/Polus/Abditory.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("admin", new Vector2(21.1384f, -22.7731f), "assets/SpawnCandidates/Polus/Admin.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("drill", new Vector2(27.5518f, -7.3609f), "assets/SpawnCandidates/Polus/Drill.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("ejection", new Vector2(32.1547f, -15.7529f), "assets/SpawnCandidates/Polus/Ejection.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("security", new Vector2(3.0694f, -11.9939f), "assets/SpawnCandidates/Polus/Security.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("snowdrift", new Vector2(12.918f, -13.0296f), "assets/SpawnCandidates/Polus/Snowdrift.png", null, 115f));
 
         SpawnOriginalPositionAtFirst = true;
 

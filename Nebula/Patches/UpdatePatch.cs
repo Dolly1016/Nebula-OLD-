@@ -1,5 +1,6 @@
 ﻿using AmongUs.Data;
 using Nebula.Objects;
+using Nebula.Roles;
 
 namespace Nebula.Patches;
 
@@ -479,7 +480,7 @@ public static class KeyboardJoystickUpdatePatch
             }
             if (Game.GameData.data != null && Helpers.HasModData(PlayerControl.LocalPlayer.PlayerId))
             {
-                if (!PlayerControl.LocalPlayer.Data.Role.IsImpostor && Game.GameData.data.myData.getGlobalData().role.VentPermission != Roles.VentPermission.CanNotUse && KeyboardJoystick.player.GetButtonDown(50))
+                if (!PlayerControl.LocalPlayer.Data.Role.IsImpostor && Game.GameData.data.myData.getGlobalData().role.VentPermission < Roles.VentPermission.CanUseInUnusualWays && KeyboardJoystick.player.GetButtonDown(50))
                 {
                     DestroyableSingleton<HudManager>.Instance.ImpostorVentButton.DoClick();
                 }
@@ -488,21 +489,36 @@ public static class KeyboardJoystickUpdatePatch
     }
 }
 
-[HarmonyPatch(typeof(HudManager), nameof(HudManager.SetHudActive), typeof(PlayerControl),typeof(RoleBehaviour), typeof(bool))]
+[HarmonyPatch]
 public static class SetHudActivePatch
 {
-    public static bool Prefix(HudManager __instance, [HarmonyArgument(2)]bool isActive)
+    [HarmonyPatch(typeof(HudManager), nameof(HudManager.SetHudActive), typeof(PlayerControl), typeof(RoleBehaviour), typeof(bool)), HarmonyPrefix]
+    public static bool Prefix(HudManager __instance, bool isActive)
     {
         if (AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Started)
         {
             __instance.ImpostorVentButton.gameObject.SetActive(false);
             __instance.ReportButton.gameObject.SetActive(false);
+            __instance.KillButton.ToggleVisible(false);
+        }
+        else
+        {
+            if (isActive)
+            {
+                try { UpdatePatch.UpdateImpostorKillButton(__instance); }
+                catch { }
+            }
+            else
+            {
+                __instance.KillButton.ToggleVisible(false);
+            }
         }
 
         __instance.AbilityButton.gameObject.SetActive(false);
         __instance.UseButton.transform.parent.gameObject.SetActive(isActive);
         __instance.TaskPanel.gameObject.SetActive(isActive);
         __instance.roomTracker.gameObject.SetActive(isActive);
+        
         IVirtualJoystick virtualJoystick = __instance.joystick;
         if (virtualJoystick != null)
         {
@@ -513,7 +529,7 @@ public static class SetHudActivePatch
         {
             virtualJoystick2.ToggleVisuals(isActive);
         }
-       
+
 
         return false;
     }

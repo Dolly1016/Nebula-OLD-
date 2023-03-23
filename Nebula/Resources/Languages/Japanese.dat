@@ -1093,51 +1093,11 @@
 "role.avengerTarget.name" : "[警告] アヴェンジャーに狙われている"
 "role.avengerTarget.info" : "あなたは誰かの想い人を殺した。\n心せよ。遺された者は、虎視眈々と逆襲の時を狙っていることだろう。"
 
-"role.investigator.name" : "インヴェスティゲーター"
-"role.investigator.short" : "イ"
-"role.investigator.description" : "正体を見極めろ"
-
-"role.gambler.name" : "ギャンブラー"
-"role.gambler.short" : "ギ"
-"role.gambler.description" : "今宵の祝杯を掴め"
-
 "role.player.name" : "プレイヤー"
 "role.player.short" : "プ"
 "role.player.description" : "ゲームは間もなく始まる"
 "role.player.info" : "ゲームプレイヤー"
 "role.player.hint" : "You're Game Player."
-
-"role.halley.name" : "ハレー"
-"role.halley.short" : "ハ"
-"role.halley.hint" : "You're Game Player."
-
-"role.biela.name" : "ビエラ"
-"role.biela.short" : "ビ"
-"role.biela.hint" : "You're Game Player."
-
-"option.escapeHunter" : "ハンター"
-
-"role.polis.name" : "ポリス"
-"role.polis.short" : "ポ"
-"role.polis.hint" : "逃走者を逮捕せよ。"
-"role.polis.arrestCoolDown" : "逮捕クールダウン"
-
-"role.hadar.name" : "ハダル"
-"role.hadar.short" : "ハ"
-"role.hadar.hint" : "逃走者を恐怖に陥れよ。"
-"role.hadar.damageRadius" : "ダメージ有効距離"
-"role.hadar.damageLevel" : "ダメージ強度"
-"role.hadar.reappearance" : "再出現クールダウン"
-
-"role.ritualCrewmate.name" : "クルーメイト"
-"role.ritualCrewmate.short" : "ク"
-"role.ritualCrewmate.description" : "儀式から脱出せよ"
-"role.ritualCrewmate.info" : ""
-
-"role.killer.name" : "キラー"
-"role.killer.short" : "キ"
-"role.killer.description" : "供物を捧げよ"
-"role.killer.info" : ""
 
 "role.metaRole.name" : "フリープレイ"
 "role.metaRole.info" : "様々な役職を試すことができます。\nまた、2点間の距離を測ることができます。\n\n - 1 : 現在位置を距離計測の基点にする\n - 2 : 役職を変更する\n - 3 : 自殺する\n - 4 : 復活する"
@@ -1149,6 +1109,26 @@
 "role.poltergeist.help.poltergeist" : "死体を引き寄せます。"
 "role.poltergeist.poltergeistCoolDown" : "引き寄せクールダウン"
 "role.poltergeist.hasCrewmateTask" : "タスクを放棄せず受け持つ"
+
+"role.hider.name" : "ハイダー"
+"role.hider.hint" : "隠れて最後まで生き残れ"
+"role.hider.description" : "隠れて最後まで生き残れ"
+
+"role.cleanerHnS.name" : "クリーナー"
+"role.cleanerHnS.hint" : "死体を消し去ろう"
+"role.cleanerHnS.description" : "死体を消し去ろう"
+
+"role.hadarHnS.name" : "ハダル"
+"role.hadarHnS.hint" : "地中から急襲せよ"
+"role.hadarHnS.description" : "地中から急襲せよ"
+
+"role.raiderHnS.name" : "レイダー"
+"role.raiderHnS.hint" : "斧を投げてキルしよう"
+"role.raiderHnS.description" : "斧を投げてキルしよう"
+
+"role.reaperHnS.name" : "リーパー"
+"role.reaperHnS.hint" : "死体を引きずって動かそう"
+"role.reaperHnS.description" : "死体を引きずって動かそう"
 
 "side.crewmate.name" : "クルーメイト"
 "side.impostor.name" : "インポスター"
@@ -1189,11 +1169,29 @@
 "perks.tenacity.name" : "不撓不屈"
 "perks.tenacity.flavor" : "仲間が死ぬたびにシーカーの脅威範囲を$PROP0$%広げる。\nこの効果は自分にのみ適用される。"
 
+"perks.lifeline.name" : "戦場のライフライン"
+"perks.lifeline.flavor" : "あなたは他人を復活させる能力を追加で$PROP0$チャージ獲得し、\n復活に要する時間を$PROP1$%だけ縮める。"
+
+"perks.cooperativeness.name" : "協調"
+"perks.cooperativeness.flavor" : "味方が$PROP0$mの範囲内に一人でもいるとき、\nタスクの貢献度が$PROP1$%増加する。"
+
 "perks.patience.name" : "不動如山"
-"perks.patience.flavor" : "あなたは隠密行動の術を心得ている。\n最終盤面で、シーカーはあなたの位置を知ることができない。\nこの効果は連続して発動されない。"
+"perks.patience.flavor" : "あなたは隠密行動の術を心得ている。\n最終盤面で、シーカーへの位置の通知を1回おきに無効化する。"
+
+"perks.sprint.name" : "全力疾走"
+"perks.sprint.flavor" : "$PROP1$秒間、$PROP0$%加速するボタン能力を得る。\nこの能力は$PROP2$秒のクールダウンを持つ。"
+
+"perks.tempest.name" : "吹き荒ぶ青嵐"
+"perks.tempest.flavor" : "あなたはマップ中に1つ加速トラップを設置できる。\nトラップは踏んだプレイヤーに$PROP1$秒間$PROP2$%の加速をもたらす。\n設置には$PROP0$秒の時間を要する。"
+
+"perks.mayday.name" : "メーデー"
+"perks.mayday.flavor" : "あなたは、送信したデータに救難信号を潜ませた。\n本社は助けに応え、$PROP1$秒おきに最大$PROP0$回、シーカーの位置を通知する。"
 
 "perks.sheriffGlance.name" : "保安官の一瞥"
 "perks.sheriffGlance.flavor" : "シーカーの気配に気づいたとき、あなたは仲間に警告する。\nこの能力は$PROP0$秒のクールダウンを持つ。"
+
+"perks.theWounded.name" : "手負いの兵"
+"perks.theWounded.flavor" : "復活すると、タスクの貢献度が$PROP0$%上昇し、\n$PROP1$%だけ復活に要する時間が短くなる。"
 
 "perks.geniusInStorage.name" : "保管庫に潜む賢才"
 "perks.geniusInStorage.flavor" : "貨物室および保管庫にいる間、制限時間を$PROP0$秒ずつ進める。\nこの能力は$PROP1$秒のクールダウンを持つ。"
@@ -1207,11 +1205,29 @@
 "perks.creeper.name" : "忍び寄る怪異"
 "perks.creeper.flavor" : "脅威範囲を$PROP0$%だけ狭める。\n効果は常に発動する。"
 
+"perks.bruteSabotage.name" : "剛腕サボタージュ"
+"perks.bruteSabotage.flavor" : "あなたは並外れた腕っぷしで扉を閉ざすことを覚えた。\n扉に対して能力を発動することで$PROP0$秒かけて扉を閉ざす。\n閉ざされた扉は$PROP0$秒後に再び開く。この能力は$PROP2$秒のクールダウンを持つ。"
+
 "perks.insatiable.name" : "飽き足らぬ殺意"
 "perks.insatiable.flavor" : "殺意は治まらない。\nキルをすると、一番遠くにいる生存者の位置を知ることができる。"
 
 "perks.willNotMissYou.name" : "執念"
 "perks.willNotMissYou.flavor" : "キル失敗時の減速ペナルティの強度を$PROP0$%軽減する。"
+
+"perks.itWasCrewmate.name" : "手に残る記憶"
+"perks.itWasCrewmate.flavor" : "あなたはかつての記憶を呼び起こし、タスクとの親和性を極限まで高めた。\nタスクをこなしたプレイヤーの位置を知ることができる。"
+
+"perks.debilitating.name" : "削弱の計略"
+"perks.debilitating.flavor" : "あなたは死への怯えとより深く共鳴し、最も動きの少ないプレイヤーの\n位置が見えるようになる。この能力は$PROP0$秒のクールダウンを持ち、\n全生存者が活動的であれば効果は発揮されない。"
+
+"perks.ditherInDarkness.name" : "冥闇の呪"
+"perks.ditherInDarkness.flavor" : "ゲーム開始から$PROP0$秒間、タスクの位置が見えなくなる。"
+
+"perks.amnesia.name" : "忘失"
+"perks.amnesia.flavor" : "キルが起こると、ハイダーは$PROP0$秒間タスクの位置が分からなくなる。\nこの能力は$PROP1$秒のクールダウンを持つ。"
+
+"perks.murderersFame.name" : "一夜大尽"
+"perks.murderersFame.flavor" : "連続キルを決めると、$PROP0$秒間自身の脅威範囲を極限までに広げる。\n前回のキルから$PROP1$秒以内のキルを連続キルとみなす。"
 
 "perks.limitlessAlarm.name" : "鳴りやまぬ警鐘"
 "perks.limitlessAlarm.flavor" : "最終盤面における通知の間隔を$PROP0$秒だけ短縮する。"
@@ -1219,19 +1235,29 @@
 "perks.derelictCorpse.name" : "永久凍土に眠る屍"
 "perks.derelictCorpse.flavor" : "$PROP0$m以上離れたところに死体があるとき、\nキル範囲が$PROP1$%だけ広くなる。"
 
+"perks.role.random.name" : "ランダム"
+"perks.role.random.flavor" : "あなたはランダムなシーカーを選択します。"
+
+"perks.role.cleaner.name" : "クリーナー"
+"perks.role.cleaner.flavor" : "特殊能力「$ABILITY$」\n死体を消し去ることができる。"
+"perks.role.cleaner.ability" : "依拠不明の残恨"
+
+"perks.role.hadar.name" : "ハダル"
+"perks.role.hadar.flavor" : "特殊能力「$ABILITY$」\n脅威範囲を隠しながら地中を移動することができる。\n地中にいる間や、地上に飛び出した直後はキルができない。"
+"perks.role.hadar.ability" : "潜在する恐怖"
+
+"perks.role.raider.name" : "レイダー"
+"perks.role.raider.flavor" : "特殊能力「$ABILITY$」\n斧を投げてキルを重ねる。あなたは$PROP0$%のキルクールを与えられ、\n全てのキルで$PROP1$%のキルペナルティを受ける。"
+"perks.role.raider.ability" : "血塗られた闘斧"
+
+"perks.role.reaper.name" : "リーパー"
+"perks.role.reaper.flavor" : "特殊能力「$ABILITY$」\n死体を引きずることができる。"
+"perks.role.reaper.ability" : "火車行脚"
+
 "game.message.countDown" : "ゲーム開始まであと %COUNT%秒"
 "game.message.start" : "ゲーム開始！"
 
 "game.message.observerGuide" : "[%OBSERVER%]:視野拡大  [%LEFT%][%RIGHT%]:視点変更 [Esc]:自身の視点に戻る"
-
-"game.spawnLocation.Dropship" : "ドロップシップ"
-"game.spawnLocation.Electrical" : "エレクトリカル"
-"game.spawnLocation.Laboratory" : "ラボラトリー"
-"game.spawnLocation.LifeSupport" : "O2"
-"game.spawnLocation.Office" : "オフィス"
-"game.spawnLocation.Specimens" : "スペシメンルーム"
-"game.spawnLocation.Storage" : "ストレージ"
-"game.spawnLocation.Weapons" : "ウェポンズ"
 
 "game.minigame.waitSpawning": "他プレイヤーの選択待ち"
 
@@ -1298,12 +1324,14 @@
 "button.label.capture" : "回収"
 "button.label.blank" : "空砲"
 "button.label.blaze" : "加速"
+"button.label.boost" : "加速"
 "button.label.busker.pseudocide" : "偽装死"
 "button.label.busker.revive" : "復活"
 "button.label.camouflage" : "カモ"
 "button.label.chainShift" : "シフト"
 "button.label.clarify" : "透明化"
 "button.label.clean" : "消去"
+"button.label.close" : "閉鎖"
 "button.label.decoy" : "デコイ"
 "button.label.destroy" : "撤収"
 "button.label.disturb" : "妨害"
@@ -1397,6 +1425,52 @@
 "locations.brig" : "宿舎前通路"
 "locations.vault" : "金庫室"
 "locations.meetingRoom" : "ミーティングルーム"
+
+"designers.ui.drag" : "ドラッグ&ドロップで画像を選択"
+"designers.dialog.exportSuccessfully" : "正常に出力されました。"
+"designers.external" : "外部Mod向けに出力"
+"designers.external.theOtherRoles" : "The Other Roles"
+"designers.external.superNewRoles" : "SuperNewRoles"
+"designers.external.extremeRoles" : "Extreme Roles"
+"designers.category.hat" : "ハット"
+"designers.category.visor" : "バイザー"
+"designers.category.nameplate" : "ネームプレート"
+"designers.button.addCosmetics" : "新規作成"
+"designers.button.save" : "保存"
+"designers.button.export" : "エクスポート"
+"designers.dialog.confirmErase" : "削除してもよろしいですか？"
+"designers.state.idle" : "通常"
+"designers.state.walk" : "移動"
+"designers.state.climbUp" : "はしご(上り)"
+"designers.state.climbDown" : "はしご(下り)"
+"designers.state.flip" : "反転"
+"designers.options.bounce" : "移動時のはずみ"
+"designers.options.adaptive" : "プレイヤーカラー"
+"designers.options.behind" : "背面に表示"
+"designers.options.isSkinny" : "スキニー"
+"designers.options.hideHands" : "手の非表示"
+"designers.options.behindHat" : "最背面表示"
+"designers.parts.idle" : "通常"
+"designers.parts.idleFlip" : "通常 (左向き)"
+"designers.parts.back" : "通常背面"
+"designers.parts.backFlip" : "通常背面 (左向き)"
+"designers.parts.move" : "移動"
+"designers.parts.moveFlip" : "移動 (左向き)"
+"designers.parts.moveBack" : "移動背面"
+"designers.parts.moveBackFlip" : "移動背面 (左向き)"
+"designers.parts.climb" : "はしご"
+"designers.parts.climbFlip" : "はしご (左向き)"
+"designers.parts.image" : "画像"
+"designers.label.name" : "コスチューム名"
+"designers.label.author" : "作者名"
+"designers.label.package" : "パッケージID"
+"designers.label.fps" : "FPS"
+"designers.label.id" : "パッケージID"
+"designers.label.format" : "表示名"
+"designers.label.priority" : "優先度 (0～100)"
+"designers.requiredField" : "必須フィールドです"
+"designers.packages" : "パッケージ"
+"designers.packages.empty" : "(未使用)"
 
 "help.contents" : "もくじ"
 "help.contents.general" : "一般"

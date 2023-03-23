@@ -400,7 +400,7 @@ public class Assignable
     /// タスクを完了すると呼び出されます。
     /// </summary>
     [RoleLocalMethod]
-    public virtual void OnTaskComplete() { }
+    public virtual void OnTaskComplete(PlayerTask? task) { }
 
     public virtual void EditCoolDown(CoolDownType type, float count)
     {

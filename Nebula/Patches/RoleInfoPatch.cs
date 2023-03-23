@@ -8,7 +8,7 @@ public class CustomOverlays
     {
         public static void Postfix(KeyboardJoystick __instance)
         {
-            if (Input.GetKeyDown(Module.NebulaInputManager.helpInput.keyCode) && Module.MetaDialog.dialogOrder.Count == 0)
+            if (!Components.TextInputField.ValidField && Input.GetKeyDown(Module.NebulaInputManager.helpInput.keyCode) && Module.MetaDialog.dialogOrder.Count == 0)
             {
                 Module.MetaDialog.OpenHelpDialog(0, 0);
             }

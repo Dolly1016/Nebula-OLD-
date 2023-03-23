@@ -8,6 +8,8 @@ public class GeniusInStorage : Perk
 
     public override void MyUpdate(PerkHolder.PerkInstance perkData)
     {
+        if (PlayerControl.LocalPlayer.Data.IsDead) return;
+
         var rooms = ShipStatus.Instance.FastRooms;
         PlainShipRoom? shipRoom = null;
 
@@ -19,7 +21,8 @@ public class GeniusInStorage : Perk
             HnSModificator.ProceedTimer.Invoke(new HnSModificator.HnSTaskBonusMessage() { 
                 TimeDeduction= IP(0, PerkPropertyType.Second),
                 IsFinishTaskBonus=false,
-                CanProceedFinalTimer=true
+                CanProceedFinalTimer=true,
+                ContributorId = PlayerControl.LocalPlayer.PlayerId
             });
             perkData.DataAry[0] = IP(1, PerkPropertyType.Second);
         }

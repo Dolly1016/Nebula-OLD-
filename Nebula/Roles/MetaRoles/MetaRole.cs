@@ -256,7 +256,7 @@ public class MetaButtons : Module.Information.UpperInformation
                             r != Roles.DamnedCrew &&
                             r != Roles.CrewmateWithoutTasks &&
                             r != Roles.HnSCrewmate &&
-                            r != Roles.HnSImpostor
+                            r != Roles.HnSReaper
                         , 0, 60, (r) =>
                         {
                             RPCEventInvoker.ImmediatelyChangeRole(PlayerControl.LocalPlayer, r);

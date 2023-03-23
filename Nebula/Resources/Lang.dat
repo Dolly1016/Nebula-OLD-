@@ -194,6 +194,7 @@
 
 "option.hideAndSeekOption" : "HnS Option"
 "option.hideAndSeekOption.validPerks" : "Valid Perks"
+"option.hideAndSeekOption.mustDoTasksToWin" : "Must Do Tasks To Win"
 
 "option.streamersOption" : "Streamers Option"
 "option.streamersOption.enforcePreventingSpoiler" : "Enforce Preventing Spoiler"
@@ -1100,51 +1101,11 @@
 "role.avengerTarget.name" : "[CAUTION] You're being targeted by Avenger."
 "role.avengerTarget.info" : "You killed one of lovers.\nThe other of them may take the chance to kill you."
 
-"role.investigator.name" : "Investigator"
-"role.investigator.short" : "I"
-"role.investigator.description" : "Find Out What It Is"
-
-"role.gambler.name" : "Gambler"
-"role.gambler.short" : "G"
-"role.gambler.description" : "Find Out What It Is"
-
 "role.player.name" : "Player"
 "role.player.short" : "P"
 "role.player.hint" : "You're Game Player."
 "role.player.description" : "The Game Is About To Start"
 "role.player.info" : "You're game player."
-
-"role.halley.name" : "Halley"
-"role.halley.short" : "H"
-"role.halley.hint" : "You're Game Player."
-
-"role.biela.name" : "Biela"
-"role.biela.short" : "B"
-"role.biela.hint" : "You're Game Player."
-
-"option.escapeHunter" : "Hunter"
-
-"role.polis.name" : "Polis"
-"role.polis.short" : "P"
-"role.polis.hint" : "Arrest Escapees."
-"role.polis.arrestCoolDown" : "Arrest Cool Down"
-
-"role.hadar.name" : "Hadar"
-"role.hadar.short" : "H"
-"role.hadar.hint" : "Frighten Escapees."
-"role.hadar.damageRadius" : "Damage Radius"
-"role.hadar.damageLevel" : "Damage Level"
-"role.hadar.reappearance" : "Reappear Cool Down"
-
-"role.ritualCrewmate.name" : "Crewmate"
-"role.ritualCrewmate.short" : "C"
-"role.ritualCrewmate.description" : "Get Out Of The Ritual"
-"role.ritualCrewmate.info" : ""
-
-"role.killer.name" : "Killer"
-"role.killer.short" : "K"
-"role.killer.description" : "Exterminate Crewmates"
-"role.killer.info" : ""
 
 "role.metaRole.name" : "Free Play"
 "role.metaRole.info" : "You can measure the distance.\n\n - 1 : Set origin at the current position\n - 2 : Open roles menu\n - ESC : Close roles menu"
@@ -1156,6 +1117,28 @@
 "role.poltergeist.help.poltergeist" : "Reel dead body."
 "role.poltergeist.poltergeistCoolDown" : "Poltergeist Cool Down"
 "role.poltergeist.hasCrewmateTask" : "Has Crewmate Task"
+
+"role.hider.name" : "Hider"
+"role.hider.hint" : "Hide and Survive."
+"role.hider.description" : "Hide and Survive."
+
+"role.seeker.name" : "Seeker"
+
+"role.cleanerHnS.name" : "Cleaner"
+"role.cleanerHnS.hint" : "You Can Erase Dead Bodies."
+"role.cleanerHnS.description" : "You Can Erase Dead Bodies."
+
+"role.hadarHnS.name" : "Hadar"
+"role.hadarHnS.hint" : "Raid from Underground."
+"role.hadarHnS.description" : "Raid from Underground."
+
+"role.raiderHnS.name" : "Raider"
+"role.raiderHnS.hint" : "You Can Throw Axes."
+"role.raiderHnS.description" : "You Can Throw Axes."
+
+"role.reaperHnS.name" : "Reaper"
+"role.reaperHnS.hint" : "You Can Drag Dead Bodies."
+"role.reaperHnS.description" : "You Can Drag Dead Bodies."
 
 "side.crewmate.name" : "Crewmate"
 "side.impostor.name" : "Impostor"
@@ -1182,6 +1165,8 @@
 "roles.category.jackal" : "Jackal"
 "roles.category.vulture" : "Vulture"
 
+"task.hudOverride.name" : "You cannot know where are tasks..."
+
 "perks.perk" : "PERK"
 
 "perks.unselected.name" : "Unselected"
@@ -1196,11 +1181,29 @@
 "perks.tenacity.name" : "Tenacity"
 "perks.tenacity.flavor" : "The threat area is extended by $PROP0$%\neach time a crewmate is killed. It only affects you."
 
+"perks.lifeline.name" : "Lifeline"
+"perks.lifeline.flavor" : "You get $PROP0$ charge to revive, and $PROP1$% higher resurrection efficiency."
+
+"perks.cooperativeness.name" : "Cooperativeness"
+"perks.cooperativeness.flavor" : "You get $PROP1$% more task contribution\nwhen your allies are within $PROP0$m range."
+
 "perks.patience.name" : "Patience"
 "perks.patience.flavor" : "You know how to act stealthily. On the final stage,\nthe seeker cannot know where you are by ping.\nThis ability cannot activate continuously."
 
+"perks.sprint.name" : "Sprint"
+"perks.sprint.flavor" : "You have button to afford $PROP0$% acceleration for $PROP1$sec.\nThis ability has $PROP2$sec cool time."
+
+"perks.tempest.name" : "Tempest"
+"perks.tempest.flavor" : "You can place an acceleration trap.\nThis trap afford $PROP2$% acceleration for $PROP1$ sec.\nTrap creation takes $PROP0$sec."
+
+"perks.mayday.name" : "Mayday"
+"perks.mayday.flavor" : "You hid a mayday call in the data you sent.\nHiders can know where is the seeker\n every $PROP1$ sec upto $PROP0$ times."
+
 "perks.sheriffGlance.name" : "Sheriff's Glance"
 "perks.sheriffGlance.flavor" : "When glancing at the seeker, you alert crewmates.\nThis ability has $PROP0$sec cool time."
+
+"perks.theWounded.name" : "The Wounded"
+"perks.theWounded.flavor" : "Once revived, you get $PROP0$% more task contribution\nand $PROP1$% higher resurrection efficiency."
 
 "perks.geniusInStorage.name" : "Genius In Storage"
 "perks.geniusInStorage.flavor" : "While you are in Storage or Cargo Bay,\nThe time limit advances by $PROP0$sec.\nThis ability has $PROP1$sec cool time."
@@ -1214,11 +1217,29 @@
 "perks.creeper.name" : "The Creeper"
 "perks.creeper.flavor" : "You narrow the threat area by $PROP0$%."
 
+"perks.bruteSabotage.name" : "Brute Sabotage"
+"perks.bruteSabotage.flavor" : "You close the door with that strong arm.\nIt takes $PROP1$sec to close, and the closed door reopens after $PROP0$sec.\nThis ability has $PROP2$sec cool time."
+
 "perks.insatiable.name" : "Insatiable"
 "perks.insatiable.flavor" : "Murderous intent does not subside.\nWhen you kill someone,\nit will tell you where the furthest target is. "
 
 "perks.willNotMissYou.name" : "Will Not Miss You"
 "perks.willNotMissYou.flavor" : "Failed kill penalty is reduced by $PROP0$%."
+
+"perks.itWasCrewmate.name" : "It Was Crewmate"
+"perks.itWasCrewmate.flavor" : "You recall the memories to maximized your affinity with the task.\nYou can where hider that finished a task is."
+
+"perks.debilitating.name" : "Debilitating"
+"perks.debilitating.flavor" : "You can know where is the most inactive player.\nIf everyone is enough active, it will dud.\nThis ability has $PROP0$sec cool time."
+
+"perks.ditherInDarkness.name" : "Dither In Darkness"
+"perks.ditherInDarkness.flavor" : "For $PROP0$sec from the start of the game,\nhiders cannot see tasks."
+
+"perks.amnesia.name" : "Amnesia"
+"perks.amnesia.flavor" : "When you kill anyone, hiders cannot see tasks for $PROP0$sec.\nThis ability has $PROP1$sec cool time."
+
+"perks.murderersFame.name" : "Murderer's Fame"
+"perks.murderersFame.flavor" : "Your kill streak will cover the map with threat area for $PROP0$ sec.\nKills within $PROP1$sec count as streak."
 
 "perks.limitlessAlarm.name" : "Limitless Alarm"
 "perks.limitlessAlarm.flavor" : "You gain $PROP0$sec shorter ping interval."
@@ -1226,19 +1247,29 @@
 "perks.derelictCorpse.name" : "Derelict Corpse"
 "perks.derelictCorpse.flavor" : "You gain $PROP1$% wider kill range\nif there is any corpse $PROP0$m away."
 
+"perks.role.random.name" : "Random"
+"perks.role.random.flavor" : "A seeker will be selected randomly."
+
+"perks.role.cleaner.name" : "Cleaner"
+"perks.role.cleaner.flavor" : "Ability: $ABILITY$\nYou can clean dead bodies."
+"perks.role.cleaner.ability" : "Unlettered Memorial"
+
+"perks.role.hadar.name" : "Hadar"
+"perks.role.hadar.flavor" : "Ability: $ABILITY$\nYou hide your own threat range and raid from underground.\nWhile you hide, you cannot kill."
+"perks.role.hadar.ability" : "Variable Menace"
+
+"perks.role.raider.name" : "Raider"
+"perks.role.raider.flavor" : "Ability: $ABILITY$\nYou can throw axe.\nYou have $PROP0$% kill cool time and receive $PROP1$% kill penalty every kill."
+"perks.role.raider.ability" : "Cursed Axe"
+
+"perks.role.reaper.name" : "Reaper"
+"perks.role.reaper.flavor" : "Ability: $ABILITY$\nYou can drag dead bodies."
+"perks.role.reaper.ability" : "Bloody Trail"
+
 "game.message.countDown" : "Starting in %COUNT%s"
 "game.message.start" : "Game Start!"
 
 "game.message.observerGuide" : "[%OBSERVER%]:Overlooking  [%LEFT%][%RIGHT%]:Change Eyesight [Esc]:Come Back to My Eyesight"
-
-"game.spawnLocation.Dropship" : "Dropship"
-"game.spawnLocation.Electrical" : "Electrical"
-"game.spawnLocation.Laboratory" : "Laboratory"
-"game.spawnLocation.LifeSupport" : "O2"
-"game.spawnLocation.Office" : "Office"
-"game.spawnLocation.Specimens" : "Specimens"
-"game.spawnLocation.Storage" : "Storage"
-"game.spawnLocation.Weapons" : "Weapons"
 
 "game.minigame.waitSpawning": "Wait for other players..."
 
@@ -1305,12 +1336,14 @@
 "button.label.capture" : "capture"
 "button.label.blank" : "blank"
 "button.label.blaze" : "blaze"
+"button.label.boost" : "boost"
 "button.label.busker.pseudocide" : "pseudocide"
 "button.label.busker.revive" : "revive"
 "button.label.camouflage" : "camo"
 "button.label.chainShift" : "shift"
 "button.label.clarify" : "clarify"
 "button.label.clean" : "clean"
+"button.label.close" : "close"
 "button.label.decoy" : "decoy"
 "button.label.destroy" : "destroy"
 "button.label.disturb" : "disturb"
@@ -1391,9 +1424,9 @@
 "locations.cargoBay" : "Cargo Bay"
 "locations.toilet" : "Toilet"
 "locations.lounge" : "Lounge"
-"locations.record" : "Record"
+"locations.record" : "Records"
 "locations.gapRoom" : "Gap Room"
-"locations.shower" : "Shower"
+"locations.shower" : "Showers"
 "locations.mainHall" : "Main Hall"
 "locations.medical" : "Medical"
 "locations.kitchen" : "Kitchen"
@@ -1404,6 +1437,52 @@
 "locations.brig" : "Brig"
 "locations.vault" : "Vault"
 "locations.meetingRoom" : "Meeting Room"
+
+"designers.ui.drag" : "Please Drop An Image..."
+"designers.dialog.exportSuccessfully" : "Exported Succesfully."
+"designers.external" : "Export for Other Mods"
+"designers.external.theOtherRoles" : "The Other Roles"
+"designers.external.superNewRoles" : "SuperNewRoles"
+"designers.external.extremeRoles" : "Extreme Roles"
+"designers.category.hat" : "Hats"
+"designers.category.visor" : "Visors"
+"designers.category.nameplate" : "Nameplates"
+"designers.button.addCosmetics" : "Add Cosmetics"
+"designers.button.save" : "Save"
+"designers.button.export" : "Export"
+"designers.dialog.confirmErase" : "Do you want to delete?"
+"designers.state.idle" : "Idle"
+"designers.state.walk" : "Walk"
+"designers.state.climbUp" : "Climb Up"
+"designers.state.climbDown" : "Climb Down"
+"designers.state.flip" : "Flip"
+"designers.options.bounce" : "Bounce"
+"designers.options.adaptive" : "Adaptive"
+"designers.options.behind" : "Behind"
+"designers.options.isSkinny" : "Skinny"
+"designers.options.hideHands" : "Hide Hands"
+"designers.options.behindHat" : "Behind Hat"
+"designers.parts.idle" : "Idle"
+"designers.parts.idleFlip" : "Idle (Flip)"
+"designers.parts.back" : "Idle Back"
+"designers.parts.backFlip" : "Idle Back (Flip)"
+"designers.parts.move" : "Move"
+"designers.parts.moveFlip" : "Move (Flip)"
+"designers.parts.moveBack" : "Move Back"
+"designers.parts.moveBackFlip" : "Move Back (Flip)"
+"designers.parts.climb" : "Climb"
+"designers.parts.climbFlip" : "Climb (Flip)"
+"designers.parts.image" : "Image"
+"designers.label.name" : "Name"
+"designers.label.author" : "Author"
+"designers.label.package" : "Package"
+"designers.label.fps" : "FPS"
+"designers.label.id" : "ID"
+"designers.label.format" : "Format"
+"designers.label.priority" : "Priority"
+"designers.requiredField" : "Required Field"
+"designers.packages" : "Packages"
+"designers.packages.empty" : "(empty)"
 
 "help.assignable.filter.gameMode" : "Game Mode"
 "help.assignable.filter.spawnable" : "Spawnable"

@@ -197,7 +197,7 @@ public class Side
         {
             if (!player.IsAlive) continue;
             if (player.role != Roles.Spectre) continue;
-            if(player.Tasks!=null && player.Tasks?.Completed==player.Tasks?.AllTasks){ flag = true;  break; }
+            if(player.Tasks==null || player.Tasks?.Completed==player.Tasks?.AllTasks){ flag = true;  break; }
         }
         if (!flag) return null;
 

@@ -138,12 +138,12 @@ public class Paparazzo : Role, Template.HasWinTrigger
             if (bytes.Length == 0) return;
 
             int sent = 0;
-            int division = (int)((bytes.Length - 1) / 4098) + 1;
+            int division = (int)((bytes.Length - 1) / 512) + 1;
             int i = 0;
             while (sent < bytes.Length)
             {
                 int length = bytes.Length - sent;
-                if (length > 4098) length = 4098;
+                if (length > 512) length = 512;
                 var subBytes = bytes.SubArray(sent,length);
 
                 SharePaparazzoImage.Invoke(new PaparazzoImageMessage

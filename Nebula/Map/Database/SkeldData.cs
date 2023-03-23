@@ -72,6 +72,36 @@ public class SkeldData : MapData
 
         MapScale = 32f;
 
+        SpawnCandidates.Add(new SpawnCandidate("admin", new Vector2(2.9753f, -7.4595f), "assets/SpawnCandidates/Skeld/Admin.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("cafeteria", new Vector2(-0.8721f, 3.6115f), "assets/SpawnCandidates/Skeld/Cafeteria.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("comms", new Vector2(4.5986f, -15.618f), "assets/SpawnCandidates/Skeld/Comms.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("electrical", new Vector2(-7.6091f, -8.7664f), "assets/SpawnCandidates/Skeld/Electrical.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("lifeSupport", new Vector2(6.5236f, -3.5375f), "assets/SpawnCandidates/Skeld/LifeSupport.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("lowerEngine", new Vector2(-17.1282f, -13.2787f), "assets/SpawnCandidates/Skeld/LowerEngine.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("medBay", new Vector2(-8.6636f, -4.4547f), "assets/SpawnCandidates/Skeld/MedBay.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("navigation", new Vector2(16.6989f, -4.7736f), "assets/SpawnCandidates/Skeld/Navigation.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("reactor", new Vector2(-20.9127f, -5.5454f), "assets/SpawnCandidates/Skeld/Reactor.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("security", new Vector2(-13.2544f, -4.1371f), "assets/SpawnCandidates/Skeld/Security.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("shields", new Vector2(9.1997f, -12.3562f), "assets/SpawnCandidates/Skeld/Shields.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("storage", new Vector2(-2.3901f, -15.1296f), "assets/SpawnCandidates/Skeld/Storage.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("upperEngine", new Vector2(-17.6972f, -0.9157f), "assets/SpawnCandidates/Skeld/UpperEngine.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("weapons", new Vector2(9.5354f, 1.3911f), "assets/SpawnCandidates/Skeld/Weapons.png", null, 115f));
+
+        SpawnPoints.Add(new SpawnPointData("cafeteria", new Vector2(-0.8721f, 3.6115f)));
+        SpawnPoints.Add(new SpawnPointData("weapons", new Vector2(9.5354f, 1.3911f)));
+        SpawnPoints.Add(new SpawnPointData("lifeSupport", new Vector2(6.5236f, -3.5375f)));
+        SpawnPoints.Add(new SpawnPointData("navigation", new Vector2(16.6989f, -4.7736f)));
+        SpawnPoints.Add(new SpawnPointData("shields", new Vector2(9.1997f, -12.3562f)));
+        SpawnPoints.Add(new SpawnPointData("comms", new Vector2(4.5986f, -15.618f)));
+        SpawnPoints.Add(new SpawnPointData("admin", new Vector2(2.9753f, -7.4595f)));
+        SpawnPoints.Add(new SpawnPointData("storage", new Vector2(-2.3901f, -15.1296f)));
+        SpawnPoints.Add(new SpawnPointData("electrical", new Vector2(-7.6091f, -8.7664f)));
+        SpawnPoints.Add(new SpawnPointData("lowerEngine", new Vector2(-17.1282f, -13.2787f)));
+        SpawnPoints.Add(new SpawnPointData("security", new Vector2(-13.2544f, -4.1371f)));
+        SpawnPoints.Add(new SpawnPointData("reactor", new Vector2(-20.9127f, -5.5454f)));
+        SpawnPoints.Add(new SpawnPointData("upperEngine", new Vector2(-17.6972f, -0.9157f)));
+        SpawnPoints.Add(new SpawnPointData("medBay", new Vector2(-8.6636f, -4.4547f)));
+
         RegisterObjectPosition("weaponsConsole", new Vector2(9.0876f, 1.812f), SystemTypes.Weapons, 40f);
         RegisterObjectPosition("steering", new Vector2(18.732f, -4.728f), SystemTypes.Nav, 25f, 0.8f);
         RegisterObjectPosition("receivingDevice", new Vector2(4.2024f, -17.1156f), SystemTypes.Comms, 50f, 1f);
@@ -207,21 +237,6 @@ public class SkeldData : MapData
                 new RitualSpawnCandidate(new Vector2(-9.4f,-3.9f),0.3f),
                 new RitualSpawnCandidate(new Vector2(-8.0f,-4.4f),0.3f)
             }));
-
-        SpawnPoints.Add(new SpawnPointData("cafeteria", new Vector2(-0.8721f, 3.6115f)));
-        SpawnPoints.Add(new SpawnPointData("weapons", new Vector2(9.5354f, 1.3911f)));
-        SpawnPoints.Add(new SpawnPointData("lifeSupport", new Vector2(6.5236f, -3.5375f)));
-        SpawnPoints.Add(new SpawnPointData("navigation", new Vector2(16.6989f, -4.7736f)));
-        SpawnPoints.Add(new SpawnPointData("shields", new Vector2(9.1997f, -12.3562f)));
-        SpawnPoints.Add(new SpawnPointData("comms", new Vector2(4.5986f, -15.618f)));
-        SpawnPoints.Add(new SpawnPointData("admin", new Vector2(2.9753f, -7.4595f)));
-        SpawnPoints.Add(new SpawnPointData("storage", new Vector2(-2.3901f, -15.1296f)));
-        SpawnPoints.Add(new SpawnPointData("electrical", new Vector2(-7.6091f, -8.7664f)));
-        SpawnPoints.Add(new SpawnPointData("lowerEngine", new Vector2(-17.1282f, -13.2787f)));
-        SpawnPoints.Add(new SpawnPointData("security", new Vector2(-13.2544f, -4.1371f)));
-        SpawnPoints.Add(new SpawnPointData("reactor", new Vector2(-20.9127f, -5.5454f)));
-        SpawnPoints.Add(new SpawnPointData("upperEngine", new Vector2(-17.6972f, -0.9157f)));
-        SpawnPoints.Add(new SpawnPointData("medBay", new Vector2(-8.6636f, -4.4547f)));
 
         AdminRooms.Add(new PointData("medBay", new Vector2(-8.6636f, -4.4547f)));
         AdminSystemTypeMap.Add(SystemTypes.MedBay, 1);

@@ -25,8 +25,8 @@ public class Cleaner : Role
 
                 RPCEventInvoker.CleanDeadBody(targetId);
 
-                    //キル・クリーンボタンのクールダウンは同期する
-                    cleanButton.Timer = cleanButton.MaxTimer;
+                //キル・クリーンボタンのクールダウンは同期する
+                cleanButton.Timer = cleanButton.MaxTimer;
                 PlayerControl.LocalPlayer.killTimer = GameOptionsManager.Instance.CurrentGameOptions.GetFloat(FloatOptionNames.KillCooldown);
             },
             () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
@@ -51,7 +51,7 @@ public class Cleaner : Role
 
 
     /* 画像 */
-    private SpriteLoader cleanButtonSprite = new SpriteLoader("Nebula.Resources.CleanButton.png", 115f, "ui.button.spectre.clean");
+    private SpriteLoader cleanButtonSprite = new SpriteLoader("Nebula.Resources.CleanButton.png", 115f, "ui.button.cleaner.clean");
 
     public override HelpSprite[] helpSprite => new HelpSprite[]
     {

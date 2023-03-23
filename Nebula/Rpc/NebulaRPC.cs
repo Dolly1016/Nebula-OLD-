@@ -17,7 +17,11 @@ public class RemoteProcessBase
         yield return Roles.NeutralRoles.Paparazzo.SharePaparazzoImage;
         yield return Game.HnSModificator.ProceedTimer;
         yield return Roles.Perk.PerkHolder.SharePerks;
-        yield return Roles.Perk.CrewmatePerks.SheriffGlance.SheriffGlanceEvent;
+        yield return Roles.Perk.PerkHolder.ShareIntegerPerkData;
+        yield return Roles.Perk.PerkHolder.ShareFloatPerkData;
+        yield return Game.HnSModificator.NoticeSeekerEvent;
+        yield return Tasks.TimedTask.TimedTaskEvent;
+        yield return Roles.Perk.ImpostorPerks.BruteSabotage.DoorSabotageEvent;
     }
 
     static public List<RemoteProcessBase> AllNebulaProcess = new List<RemoteProcessBase>();
@@ -38,7 +42,7 @@ public class RemoteProcessBase
 }
 
 
-public class RemoteProcess<Parameter> : RemoteProcessBase where Parameter : struct 
+public class RemoteProcess<Parameter> : RemoteProcessBase 
 {
     public delegate void Process(Parameter parameter,bool isCalledByMe);
     
@@ -65,6 +69,10 @@ public class RemoteProcess<Parameter> : RemoteProcessBase where Parameter : stru
         Sender(writer,parameter);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         Body.Invoke(parameter,true);
+    }
+
+    public void LocalInvoke(Parameter parameter) {
+        Body.Invoke(parameter, true);
     }
 
     public override void Receive(MessageReader reader)

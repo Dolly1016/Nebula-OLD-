@@ -30,7 +30,13 @@ public class NebulaOption
     static public Module.BooleanDataEntry configSnapshot;
     static public Module.BooleanDataEntry configOutputHash;
     static public Module.BooleanDataEntry configGameControl;
+    static public Module.IntegerDataEntry configGameControlArgument;
     static public Module.BooleanDataEntry configPreventSpoiler;
+
+    static public bool GetGameControlArgument(int index)
+    {
+        return (NebulaOption.configGameControlArgument.Value & (1 << index)) != 0;
+    }
 
     static public string GetPicturePath(NebulaPictureDest dest)
     {
@@ -219,6 +225,7 @@ public static class StartOptionMenuPatch
         NebulaOption.configOutputHash = new Module.BooleanDataEntry("outputHash", NebulaOption.configSaver, false);
         NebulaOption.configGameControl = new Module.BooleanDataEntry("gameControl", NebulaOption.configSaver, false);
         NebulaOption.configPreventSpoiler = new Module.BooleanDataEntry("preventSpoiler", NebulaOption.configSaver, false);
+        NebulaOption.configGameControlArgument = new Module.IntegerDataEntry("gameControlArgument", NebulaOption.configSaver, 0x0);
         NebulaOption.ReflectProcessorAffinity();
         NebulaOption.ReflectProcessorPriority();
     }

@@ -83,7 +83,7 @@ public class Language
     public static void AddDefaultKey(string key, string format)
     {
         defaultLanguageSet[key] = format;
-        if (!CheckValidKey(key)) language.languageSet[key] = format;
+        if (language != null) language.languageSet[key] = format;
     }
 
 

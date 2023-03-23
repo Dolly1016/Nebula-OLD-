@@ -7,6 +7,7 @@ public class GameModeProperty
     public bool RequireGhosts { private set; get; }
     public bool RequireStartCountDown { private set; get; }
     public int MinPlayers { private set; get; }
+    public int? MaxPlayers { private set; get; }
     public bool CountTasks { private set; get; }
     public Module.CustomOptionTab Tabs { private set; get; }
 
@@ -15,6 +16,12 @@ public class GameModeProperty
 
     public System.Action OnCountFinished { private set; get; }
 
+    public GameModeProperty(Module.CustomGameMode RelatedMode, IntRange ValidPlayers, bool RequireImpostors, bool RequireGhosts, bool CountTasks, System.Action? RequireStartCountDown, Roles.Role DefaultCrewmate, Roles.Role DefaultImpostor, Module.CustomOptionTab Tabs)
+        : this(RelatedMode, ValidPlayers.min, RequireImpostors, RequireGhosts, CountTasks, RequireStartCountDown, DefaultCrewmate, DefaultImpostor, Tabs)
+    {
+        MaxPlayers = ValidPlayers.max;
+    }
+
     public GameModeProperty(Module.CustomGameMode RelatedMode, int MinPlayers, bool RequireImpostors, bool RequireGhosts, bool CountTasks, System.Action? RequireStartCountDown, Roles.Role DefaultCrewmate, Roles.Role DefaultImpostor, Module.CustomOptionTab Tabs)
     {
         this.RelatedGameMode = RelatedMode;
@@ -22,6 +29,7 @@ public class GameModeProperty
         this.RequireGhosts = RequireGhosts;
         this.CountTasks = CountTasks;
         this.MinPlayers = MinPlayers;
+        this.MaxPlayers = null;
         this.Tabs = Tabs;
         if (RequireStartCountDown == null)
         {
@@ -44,6 +52,7 @@ public class GameModeProperty
     static public GameModeProperty StandardMode;
     static public GameModeProperty FreePlayMode;
     static public GameModeProperty StandardHnSMode;
+    static public GameModeProperty FreePlayHnSMode;
 
     static public void Load()
     {
@@ -51,8 +60,10 @@ public class GameModeProperty
             Module.CustomOptionTab.Settings | Module.CustomOptionTab.CrewmateRoles | Module.CustomOptionTab.ImpostorRoles | Module.CustomOptionTab.NeutralRoles | Module.CustomOptionTab.GhostRoles | Module.CustomOptionTab.Modifiers | Module.CustomOptionTab.AdvancedSettings);
         FreePlayMode = new GameModeProperty(Module.CustomGameMode.FreePlay, 0, false, false, false, null, Roles.Roles.Player, Roles.Roles.Impostor,
             Module.CustomOptionTab.Settings | Module.CustomOptionTab.CrewmateRoles | Module.CustomOptionTab.ImpostorRoles | Module.CustomOptionTab.NeutralRoles | Module.CustomOptionTab.GhostRoles | Module.CustomOptionTab.Modifiers | Module.CustomOptionTab.AdvancedSettings | Module.CustomOptionTab.EscapeRoles);
-        StandardHnSMode = new GameModeProperty(Module.CustomGameMode.StandardHnS, 4, true, false, false, null, Roles.Roles.HnSCrewmate, Roles.Roles.HnSImpostor,
+        StandardHnSMode = new GameModeProperty(Module.CustomGameMode.StandardHnS, 4, true, false, false, null, Roles.Roles.HnSCrewmate, Roles.Roles.HnSReaper,
             Module.CustomOptionTab.Settings | Module.CustomOptionTab.CrewmateRoles | Module.CustomOptionTab.ImpostorRoles | Module.CustomOptionTab.AdvancedSettings);
+        FreePlayHnSMode = new GameModeProperty(Module.CustomGameMode.FreePlayHnS, new IntRange(0, 1), false, false, false, null, Roles.Roles.HnSCrewmate, Roles.Roles.HnSReaper,
+            Module.CustomOptionTab.Settings | Module.CustomOptionTab.AdvancedSettings);
     }
 
     static public GameModeProperty GetProperty(Module.CustomGameMode gameMode)

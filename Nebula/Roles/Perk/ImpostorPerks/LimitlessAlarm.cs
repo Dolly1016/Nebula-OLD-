@@ -18,7 +18,7 @@ public class LimitlessAlarm : Perk
 
     public LimitlessAlarm(int id) : base(id, "limitlessAlarm", false, 34, 6, new Color(0.3f, 0.1f, 0.1f))
     {
-        ImportantProperties = new float[] { 1f };
+        ImportantProperties = new float[] { 2.5f };
     }
 }
 

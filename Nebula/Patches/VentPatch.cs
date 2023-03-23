@@ -85,7 +85,7 @@ public static class VentUsePatch
 
         __instance.CanUse(PlayerControl.LocalPlayer.Data, out canUse, out couldUse);
 
-        if (Game.GameData.data.playersArray[PlayerControl.LocalPlayer.PlayerId].role.VentPermission != Roles.VentPermission.CanNotUse)
+        if (Game.GameData.data.playersArray[PlayerControl.LocalPlayer.PlayerId].role.VentPermission < Roles.VentPermission.CanUseInUnusualWays)
             canUse &= !HudManager.Instance.ImpostorVentButton.isCoolingDown;
 
         canMoveInVents = Game.GameData.data.playersArray[PlayerControl.LocalPlayer.PlayerId].role.CanMoveInVents;
@@ -139,7 +139,7 @@ class VentButtonVisibilityPatch
         if (Game.GameData.data.myData.VentCoolDownTimer < 0f) Game.GameData.data.myData.VentCoolDownTimer = 0f;
         if (Game.GameData.data.myData.VentDurationTimer < 0f) Game.GameData.data.myData.VentDurationTimer = 0f;
 
-        if (role.VentPermission != Roles.VentPermission.CanNotUse)
+        if (role.VentPermission < Roles.VentPermission.CanUseInUnusualWays)
         {
             hudManager.ImpostorVentButton.Show();
 

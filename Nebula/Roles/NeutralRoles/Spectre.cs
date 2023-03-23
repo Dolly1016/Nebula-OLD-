@@ -1,5 +1,6 @@
 ﻿using JetBrains.Annotations;
 using Nebula.Expansion;
+using Nebula.Game;
 using Nebula.Map;
 using Nebula.Module;
 using Nebula.Patches;
@@ -44,9 +45,9 @@ public class Spectre : Role
     {
         switch (spectreTaskOption.getSelection())
         {
-            case 0:
-                return spectreFriedConsoleSprite;
             case 1:
+                return spectreFriedConsoleSprite;
+            case 2:
                 return spectreRancorConsoleSprite;
         }
         return spectreFriedConsoleSprite;
@@ -56,9 +57,9 @@ public class Spectre : Role
     {
         switch (spectreTaskOption.getSelection())
         {
-            case 0:
-                return spectreFriedConsoleEatenSprite;
             case 1:
+                return spectreFriedConsoleEatenSprite;
+            case 2:
                 return spectreRancorConsoleBrokenSprite;
         }
         return spectreFriedConsoleEatenSprite;
@@ -68,9 +69,9 @@ public class Spectre : Role
     {
         switch (spectreTaskOption.getSelection())
         {
-            case 0:
-                return spectreFriedConsoleEatenSprite;
             case 1:
+                return spectreFriedConsoleEatenSprite;
+            case 2:
                 return spectreRancorConsoleSprite;
         }
         return spectreFriedConsoleEatenSprite;
@@ -104,6 +105,8 @@ public class Spectre : Role
 
     public override void CustomizeMap(byte mapId)
     {
+        if (HnSModificator.IsHnSGame) return;
+
         if (!IsSpawnable()) return;
 
         if (!friedTaskOption.ContainsKey(mapId)) return;
@@ -260,8 +263,8 @@ public class Spectre : Role
         spawnImmoralistOption = CreateOption(Color.white, "spawnImmoralist", true);
         occupyDoubleRoleCountOption = CreateOption(Color.white, "occupyDoubleRoleCount", true).AddPrerequisite(spawnImmoralistOption);
 
-        spectreTaskOption = CreateOption(Color.white, "spectreTask", new string[] { "role.spectre.spectreTask.eatTheFried"/*, "role.spectre.spectreTask.deliveryRancor"*/ });
-        numOfTheFriedRequireToWinOption = CreateOption(Color.white, "numOfTheFriedRequiredToWin", 5f, 1f, 16f, 1f).AddCustomPrerequisite(() => spectreTaskOption.getSelection() == 0);
+        spectreTaskOption = CreateOption(Color.white, "spectreTask", new string[] { "option.switch.off","role.spectre.spectreTask.eatTheFried"/*, "role.spectre.spectreTask.deliveryRancor"*/ },(object)"role.spectre.spectreTask.eatTheFried");
+        numOfTheFriedRequireToWinOption = CreateOption(Color.white, "numOfTheFriedRequiredToWin", 5f, 1f, 16f, 1f).AddCustomPrerequisite(() => spectreTaskOption.getSelection() == 1);
         friedTaskOption.Add(0, CreateMetaOption(Color.white, "spectreTask.eatTheFried.skeld", int.MaxValue).HiddenOnDisplay(true).HiddenOnMetaScreen(true));
         friedTaskOption.Add(1, CreateMetaOption(Color.white, "spectreTask.eatTheFried.mira", int.MaxValue).HiddenOnDisplay(true).HiddenOnMetaScreen(true));
         friedTaskOption.Add(2, CreateMetaOption(Color.white, "spectreTask.eatTheFried.polus", int.MaxValue).HiddenOnDisplay(true).HiddenOnMetaScreen(true));
@@ -271,7 +274,7 @@ public class Spectre : Role
         {
             MetaScreenContent getSuitableContent()
             {
-                if (spectreTaskOption.getSelection() == 0)
+                if (spectreTaskOption.getSelection() == 1)
                     return new MSButton(1.6f, 0.4f, "Customize", TMPro.FontStyles.Bold, () =>
                     {
                         Action<byte> refresher = getRefresher(friedTaskOption, friedTaskPos);
@@ -353,14 +356,14 @@ public class Spectre : Role
     public override void OnSetTasks(ref List<GameData.TaskInfo> initialTasks, ref List<GameData.TaskInfo>? actualTasks)
     {
         initialTasks.Clear();
-        initialTasks.Add(new GameData.TaskInfo(byte.MaxValue - 3, 0));   
+        if (spectreTaskOption.getSelection() != 0) initialTasks.Add(new GameData.TaskInfo(byte.MaxValue - 3, 0));
     }
 
     public override void OnMeetingEnd()
     {
         foreach(var task in PlayerControl.LocalPlayer.myTasks.GetFastEnumerator())
         {
-            var rancor = task.CastFast<SpectreRancorTask>();
+            var rancor = task.TryCast<SpectreRancorTask>();
             if (rancor)
                 rancor.OnMeetingEnd();
         }

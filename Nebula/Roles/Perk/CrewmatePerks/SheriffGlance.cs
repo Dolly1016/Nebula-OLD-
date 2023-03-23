@@ -8,22 +8,6 @@ namespace Nebula.Roles.Perk.CrewmatePerks;
 
 public class SheriffGlance : Perk
 {
-    public static RemoteProcess<int> SheriffGlanceEvent = new RemoteProcess<int>(
-            (writer, message) =>
-            {
-            },
-            (reader) =>
-            {
-                return 0;
-            },
-            (message, isCalledByMe) =>
-            {
-                Helpers.Ping(new Vector2[] { Game.HnSModificator.Seeker.GetTruePosition() }, false, (p) =>
-                {
-                    SoundManager.Instance.PlaySound(p.soundOnEnable, false, 0.75f, null).pitch = 0.4f;
-                });
-            }
-            );
 
     public override bool IsAvailable => true;
 
@@ -36,13 +20,15 @@ public class SheriffGlance : Perk
     public override void MyUpdate(PerkInstance perkData)
     {
         float threthold = Game.HnSModificator.HideAndSeekManager.LogicDangerLevel.scaryMusicDistance;
-        
+
+        if (PlayerControl.LocalPlayer.Data.IsDead) return;
+
         float dis = PlayerControl.LocalPlayer.GetTruePosition().Distance(Game.HnSModificator.Seeker.GetTruePosition());
         dis *= dis;
 
         if (dis < threthold && perkData.IntegerAry[0] == 0 && !(perkData.DataAry[0]>0f))
         {
-            SheriffGlanceEvent.Invoke(0);
+            Game.HnSModificator.NoticeSeekerEvent.Invoke(0);
             perkData.DataAry[0] = IP(0, PerkPropertyType.Second);
         }
 

@@ -1,4 +1,7 @@
-﻿namespace Nebula.Patches;
+﻿using Nebula.Module;
+using UnityEngine.Events;
+
+namespace Nebula.Patches;
 
 [HarmonyPatch]
 public static class CredentialsPatch
@@ -11,7 +14,13 @@ public static class CredentialsPatch
             var amongUsLogo = GameObject.Find("bannerLogo_AmongUs");
             if (amongUsLogo == null) return;
 
+            RuntimePrefabs.TextPrefab = UnityEngine.Object.Instantiate<TMPro.TextMeshPro>(__instance.text);
+            RuntimePrefabs.TextPrefab.text = "";
+            RuntimePrefabs.TextPrefab.gameObject.hideFlags= HideFlags.HideAndDontSave;
+            GameObject.DontDestroyOnLoad(RuntimePrefabs.TextPrefab.gameObject);
+
             var credentials = UnityEngine.Object.Instantiate<TMPro.TextMeshPro>(__instance.text);
+
             credentials.transform.position = new Vector3(0, -0.6f, 0);
 
             if (Nebula.NebulaPlugin.PluginStage != null)
@@ -73,6 +82,7 @@ public static class CredentialsPatch
     [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start))]
     private static class LogoPatch
     {
+        static SpriteLoader DesignerToolButtonSprite = new SpriteLoader("Nebula.Resources.DesignerToolButton.png",100f);
         static void Postfix(MainMenuManager __instance)
         {
             var amongUsLogo = GameObject.Find("bannerLogo_AmongUs");
@@ -91,6 +101,17 @@ public static class CredentialsPatch
             GameObject.Find("PlayLocalButton").transform.position = new Vector3(-1.025f, -1.5f, 0f);
             GameObject.Find("HowToPlayButton").active = false;
             GameObject.Find("FreePlayButton").active = false;
+
+            var bottomButtons = GameObject.Find("BottomButtons");
+            var buttonObj = GameObject.Instantiate(bottomButtons.transform.GetChild(0).gameObject, bottomButtons.transform);
+            buttonObj.name="DesignerToolButton";
+
+            buttonObj.GetComponent<SpriteRenderer>().sprite = DesignerToolButtonSprite.GetSprite();
+            var button = buttonObj.GetComponent<PassiveButton>();
+            button.OnClick = new UnityEngine.UI.Button.ButtonClickedEvent();
+            button.OnClick.AddListener((UnityAction)(() => CustomDesignerMainMenu.Open(__instance)));
+
+            bottomButtons.GetComponent<DotAligner>().Start();
         }
     }
 }

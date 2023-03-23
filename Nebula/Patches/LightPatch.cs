@@ -1,4 +1,6 @@
-﻿namespace Nebula.Patches;
+﻿using JetBrains.Annotations;
+
+namespace Nebula.Patches;
 
 [HarmonyPatch]
 class LightPatch
@@ -7,6 +9,13 @@ class LightPatch
     {
         PlayerRadius = 0.5f;
         ClairvoyanceFlag = false;
+        FlashlightEnabled = null;
+    }
+
+    public static void SetFlashLight(bool? useFlashLight)
+    {
+        FlashlightEnabled = useFlashLight;
+        PlayerControl.LocalPlayer.AdjustLighting();
     }
 
     [HarmonyPatch(typeof(OneWayShadows), nameof(OneWayShadows.IsIgnored))]
@@ -76,10 +85,13 @@ class LightPatch
             if (PlayerControl.LocalPlayer != __instance)return false;
             
             float num = 0f;
-            bool flashFlag = false ;
+            bool flashFlag=false;
+            if (FlashlightEnabled.HasValue) flashFlag = FlashlightEnabled.Value;
+            else if (__instance.IsFlashlightEnabled()) flashFlag = true;
+            else if (__instance.lightSource.useFlashlight) flashFlag = true;
+            
             if (__instance.IsFlashlightEnabled())
             {
-                flashFlag = true;
                 if (__instance.Data.Role.IsImpostor)
                     GameOptionsManager.Instance.CurrentGameOptions.TryGetFloat(FloatOptionNames.ImpostorFlashlightSize, out num);
                 else
@@ -88,7 +100,6 @@ class LightPatch
             else if (__instance.lightSource.useFlashlight)
             {
                 num = __instance.lightSource.flashlightSize;
-                flashFlag = true;
             }
 
             __instance.SetFlashlightInputMethod();
@@ -99,6 +110,7 @@ class LightPatch
     }
 
     public static bool ClairvoyanceFlag = false;
+    public static bool? FlashlightEnabled = false;
 
     //影貫通
 

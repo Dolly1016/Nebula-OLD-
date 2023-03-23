@@ -1,6 +1,4 @@
-﻿using Il2CppSystem.Runtime.CompilerServices;
-
-namespace Nebula.Roles.Perk.CrewmatePerks;
+﻿namespace Nebula.Roles.Perk.CrewmatePerks;
 
 public class Tenacity : Perk
 {

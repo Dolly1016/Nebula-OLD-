@@ -121,11 +121,11 @@ public class Secret : AllSideRole, ExtraAssignable
         RPCEventInvoker.ImmediatelyChangeRole(PlayerControl.LocalPlayer, role, exRoles.ToArray());
     }
 
-    public override void OnTaskComplete()
+    public override void OnTaskComplete(PlayerTask? task)
     {
-        var task = Game.GameData.data.myData.getGlobalData().Tasks;
+        var taskData = Game.GameData.data.myData.getGlobalData().Tasks;
 
-        if (task.Completed >= task.Quota)
+        if (taskData.Completed >= taskData.Quota)
         {
             RevealRole();
         }

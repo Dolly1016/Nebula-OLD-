@@ -4,9 +4,24 @@ using UnityEngine;
 
 namespace Nebula.Module;
 
+public class NebulaAssetBundle
+{
+    public AssetBundle assetBundle { get; private set; }
+
+    public NebulaAssetBundle(AssetBundle assetBundle)
+    {
+        this.assetBundle = assetBundle;
+    }
+
+    
+}
+
 public static class AssetLoader
 {
     private static readonly Assembly assembly = Assembly.GetExecutingAssembly();
+
+    public static NebulaAssetBundle NebulaMainAsset;
+
     public static AudioClip HadarDive;
     public static AudioClip HadarReappear;
     public static AudioClip HadarFear;
@@ -41,6 +56,7 @@ public static class AssetLoader
     {
         var resourceStream = assembly.GetManifestResourceStream("Nebula.Resources.Assets.nebula_asset");
         var assetBundleBundle = AssetBundle.LoadFromMemory(resourceStream.ReadFully());
+        NebulaMainAsset = new(assetBundleBundle);
 
         HadarDive = assetBundleBundle.LoadAsset<AudioClip>("HadarDive.wav").DontUnload();
         HadarReappear = assetBundleBundle.LoadAsset<AudioClip>("HadarReappear.wav").DontUnload();

@@ -8,6 +8,98 @@ public interface ISpriteLoader
     Sprite GetSprite();
 }
 
+public interface IOptionalSpriteLoader : ISpriteLoader
+{
+    bool HasSprite();
+}
+
+public class CustumizableSpriteLoader : ISpriteLoader
+{
+    ISpriteLoader originalLoader;
+    IOptionalSpriteLoader optionalLoader;
+
+    public Sprite GetSprite()
+    {
+        if (optionalLoader.HasSprite()) return optionalLoader.GetSprite();
+        return originalLoader.GetSprite();
+    }
+
+    public CustumizableSpriteLoader(ISpriteLoader original,IOptionalSpriteLoader optional)
+    {
+        originalLoader = original;
+        optionalLoader = optional;
+    }
+}
+
+public class AssetSpriteLoader : ISpriteLoader
+{
+    NebulaAssetBundle assetBundle;
+    Texture2D? texture = null;
+    Sprite sprite = null;
+    string address;
+    float pixelsPerUnit;
+
+    public AssetSpriteLoader(NebulaAssetBundle assetBundle,string address,float pixelsPerUnit)
+    {
+        this.assetBundle = assetBundle;
+        this.address = address;
+        this.pixelsPerUnit = pixelsPerUnit;
+    }
+
+    public Sprite GetSprite()
+    {
+        if (texture == null)
+        {
+            texture = assetBundle.assetBundle.LoadAsset<Texture2D>(address);
+            if (texture == null) return null;
+        }
+        if (!sprite) sprite = Helpers.loadSpriteFromTexture(texture,pixelsPerUnit);
+        return sprite;
+    }
+}
+
+public class ResourceSpriteLoader : ISpriteLoader
+{
+    Sprite sprite = null;
+    string address;
+    float pixelsPerUnit;
+
+    public ResourceSpriteLoader(string address, float pixelsPerUnit)
+    {
+        this.address = address;
+        this.pixelsPerUnit = pixelsPerUnit;
+    }
+
+    public Sprite GetSprite()
+    {
+        if (!sprite)
+            sprite = Helpers.loadSpriteFromResources(address, pixelsPerUnit);
+        return sprite;
+    }
+}
+
+public class UserSpriteLoader : ISpriteLoader
+{
+    string? textureId = null;
+    Module.CustomTextureAsset? textureAsset = null;
+    float pixelsPerUnit;
+    Sprite sprite;
+
+    public UserSpriteLoader(string textureId, float pixelsPerUnit = 100f)
+    {
+        this.textureId = textureId;
+        this.pixelsPerUnit = pixelsPerUnit;
+    }
+
+    public Sprite GetSprite()
+    {
+        if (!sprite && ((textureId != null && (textureAsset != null || TexturePack.LoadAsset(textureId, null, ref textureAsset)))))
+            sprite = textureAsset.staticSprite;
+        return sprite;
+    }
+}
+
+
 public class SpriteLoader : ISpriteLoader
 {
     string? address;

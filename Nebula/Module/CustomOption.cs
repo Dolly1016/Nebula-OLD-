@@ -13,10 +13,11 @@ namespace Nebula.Module;
 public enum CustomGameMode
 {
     Standard = 0x0001,
-    FreePlay = 0x0010,
-    StandardHnS = 0x0100,
+    FreePlay = 0x0002,
+    StandardHnS = 0x0010,
+    FreePlayHnS = 0x0020,
     All = int.MaxValue,
-    AllHnS = 0x0100
+    AllHnS = 0x0030
         
 }
 
@@ -41,7 +42,7 @@ public static class CustomGameModes
         {
             CustomGameMode.Standard,CustomGameMode.FreePlay,CustomGameMode.Standard,CustomGameMode.Standard,
             CustomGameMode.Standard,CustomGameMode.Standard,CustomGameMode.Standard,CustomGameMode.Standard,
-            CustomGameMode.StandardHnS,
+            CustomGameMode.StandardHnS,CustomGameMode.FreePlayHnS
         };
 
     static public CustomGameMode GetGameMode(int GameModeIndex)

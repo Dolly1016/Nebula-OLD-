@@ -1,4 +1,5 @@
-﻿using LibCpp2IL;
+﻿using Iced.Intel;
+using LibCpp2IL;
 using Nebula.Expansion;
 using Nebula.Objects;
 
@@ -10,13 +11,14 @@ public class PerkHolder : ExtraRole
     {
         public byte playerId;
         public int[] perks;
+        public int choicedSeekerRole;
     }
-
 
     public static RemoteProcess<SharePerkMessage> SharePerks = new RemoteProcess<SharePerkMessage>(
             (writer, message) =>
             {
                 writer.Write(message.playerId);
+                writer.Write(message.choicedSeekerRole);
                 writer.Write(message.perks.Length);
                 for (int i = 0; i < message.perks.Length; i++) writer.Write(message.perks[i]);
             },
@@ -25,6 +27,8 @@ public class PerkHolder : ExtraRole
                 SharePerkMessage message = new SharePerkMessage();
                 
                 message.playerId = reader.ReadByte();
+
+                message.choicedSeekerRole = reader.ReadInt32();
 
                 int length = Mathf.Min(reader.ReadInt32(), (int)CustomOptionHolder.ValidPerksOption.getFloat());
                 message.perks = new int[length];
@@ -37,6 +41,66 @@ public class PerkHolder : ExtraRole
                 if (message.perks.Length > (int)CustomOptionHolder.ValidPerksOption.getFloat()) message.perks = message.perks.SubArray(0, (int)CustomOptionHolder.ValidPerksOption.getFloat());
 
                 PerkData.AllPerkData[message.playerId] = new PerkData(message.playerId,message.perks);
+
+                if (Helpers.playerById(message.playerId).Data.Role.IsImpostor)
+                {
+                    //希望の役職にかえておく
+                    Game.GameData.data.GetPlayerData(message.playerId).role = Role.GetRoleById((byte)message.choicedSeekerRole);
+                }
+            }
+            );
+
+    public struct PerkDataMessage<T>
+    {
+        public T value;
+        public int dataIndex;
+        public int perkIndex;
+        public byte playerId;
+    }
+
+    public static RemoteProcess<PerkDataMessage<float>> ShareFloatPerkData = new RemoteProcess<PerkDataMessage<float>>(
+            (writer, message) =>
+            {
+                writer.Write(message.playerId);
+                writer.Write(message.perkIndex);
+                writer.Write(message.dataIndex);
+                writer.Write(message.value);
+            },
+            (reader) =>
+            {
+                PerkDataMessage<float> message = new PerkDataMessage<float>();
+                message.playerId = reader.ReadByte();
+                message.perkIndex = reader.ReadInt32();
+                message.dataIndex = reader.ReadInt32();
+                message.value = reader.ReadSingle();
+                return message;
+            },
+            (message, isCalledByMe) =>
+            {
+                PerkData.AllPerkData[(byte)message.playerId].MyPerks[message.perkIndex].DataAry[message.dataIndex] = message.value;
+            }
+            );
+
+    public static RemoteProcess<PerkDataMessage<int>> ShareIntegerPerkData = new RemoteProcess<PerkDataMessage<int>>(
+            (writer, message) =>
+            {
+                writer.Write(message.playerId);
+                writer.Write(message.perkIndex);
+                writer.Write(message.dataIndex);
+                writer.Write(message.value);
+            },
+            (reader) =>
+            {
+                PerkDataMessage<int> message = new PerkDataMessage<int>();
+                message.playerId = reader.ReadByte();
+                message.perkIndex = reader.ReadInt32();
+                message.dataIndex = reader.ReadInt32();
+                message.value = reader.ReadInt32();
+                return message;
+            },
+            (message, isCalledByMe) =>
+            {
+                PerkData.AllPerkData[(byte)message.playerId].MyPerks[message.perkIndex].IntegerAry[message.dataIndex] = message.value;
             }
             );
 
@@ -46,10 +110,14 @@ public class PerkHolder : ExtraRole
         public float[]? DataAry;
         public int[]? IntegerAry;
         public PerkDisplay? Display;
+        public byte PlayerId { get; private set; }
+        public int Index { get; private set; }
 
-        public PerkInstance(Perk perk,PerkDisplay? display=null)
+        public PerkInstance(byte playerId,int dataIndex,Perk perk,PerkDisplay? display=null)
         {
             this.Perk = perk;
+            PlayerId = playerId;
+            Index = dataIndex;
             DataAry = null;
             IntegerAry = null;
             this.Display = display;
@@ -80,7 +148,7 @@ public class PerkHolder : ExtraRole
             for (int i = 0; i < perks.Length; i++) {
                 Perk? p = null;
                 Perks.AllPerks.TryGetValue(perks[i], out p);
-                MyPerks[i] = p != null ? new PerkInstance(p) : null;
+                MyPerks[i] = p != null ? new PerkInstance(playerId, i, p) : null;
 
                 if (MyPerks[i] != null)
                 {
@@ -114,7 +182,7 @@ public class PerkHolder : ExtraRole
 
     public override void Assignment(Patches.AssignMap assignMap)
     {
-        if (Game.GameData.data.GameMode != Module.CustomGameMode.StandardHnS) return;
+        if ((Game.GameData.data.GameMode & Module.CustomGameMode.AllHnS) == 0) return;
 
         foreach (var p in PlayerControl.AllPlayerControls.GetFastEnumerator())
         {
@@ -140,9 +208,9 @@ public class PerkHolder : ExtraRole
         }
     }
 
-    public override void OnTaskComplete()
+    public override void OnTaskComplete(PlayerTask? task)
     {
-        PerkData.MyPerkData.PerkAction((p)=>p.Perk.OnTaskComplete(p));
+        PerkData.MyPerkData.PerkAction((p)=>p.Perk.OnTaskComplete(p,task));
     }
 
     public override void OnAnyoneDied(byte playerId)
@@ -150,9 +218,28 @@ public class PerkHolder : ExtraRole
         PerkData.MyPerkData.PerkAction((p) => p.Perk.OneAnyoneDied(p, playerId));
     }
 
+    public override void OnAnyoneMurdered(byte murderId, byte targetId)
+    {
+        if (PlayerControl.LocalPlayer.PlayerId == murderId)
+        {
+            PerkData.MyPerkData.PerkAction((p) => p.Perk.OnKillPlayer(p, targetId));
+        }
+    }
+
+    public override void onRevived(byte playerId)
+    {
+        if (playerId == PlayerControl.LocalPlayer.PlayerId) PerkData.MyPerkData.PerkAction((p) => p.Perk.OnRevived(p));
+    }
+
     public override void MyUpdate()
     {
         PerkData.MyPerkData.PerkAction((p) => p.Perk.MyUpdate(p));
+        PerkData.GeneralPerkAction((p, id) => p.Perk.GlobalUpdate(p));
+    }
+
+    public override void MyPlayerControlUpdate()
+    {
+        PerkData.MyPerkData.PerkAction((p) => p.Perk.MyControlUpdate(p));
     }
 
     public override void CleanUp()
@@ -177,7 +264,7 @@ public class PerkHolder : ExtraRole
 
     public PerkHolder() : base("PerkHolder", "perkHolder", Palette.White, 0)
     {
-        ValidGamemode = Module.CustomGameMode.StandardHnS;
+        ValidGamemode = Module.CustomGameMode.AllHnS;
         IsHideRole = true;
     }
 }

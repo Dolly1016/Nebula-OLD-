@@ -4,7 +4,7 @@ public class TSPResolver : Perk
 {
     public override bool IsAvailable => true;
 
-    public override void OnTaskComplete(PerkHolder.PerkInstance perkData) {
+    public override void OnTaskComplete(PerkHolder.PerkInstance perkData, PlayerTask? task) {
         RPCEventInvoker.EmitSpeedFactor(PlayerControl.LocalPlayer, new Game.SpeedFactor(0, IP(1, PerkPropertyType.Second), 1 + IP(0, PerkPropertyType.Percentage), false));
         HudManager.Instance.StartCoroutine(CoProceedDisplayTimer(perkData.Display, IP(1, PerkPropertyType.Second)).WrapToIl2Cpp());
     }

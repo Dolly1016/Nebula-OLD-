@@ -85,6 +85,7 @@ public class GameStartManagerPatch
         }
     }
 
+
     [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.Update))]
     public class GameStartManagerUpdatePatch
     {
@@ -133,7 +134,10 @@ public class GameStartManagerPatch
                 // Host update with version handshake infos
                 if (AmongUsClient.Instance.AmHost)
                 {
-                    __instance.MinPlayers = Game.GameModeProperty.GetProperty(CustomOptionHolder.GetCustomGameMode()).MinPlayers;
+                    
+                    int minPlayers= Game.GameModeProperty.GetProperty(CustomOptionHolder.GetCustomGameMode()).MinPlayers;
+                    int maxPlayers = Game.GameModeProperty.GetProperty(CustomOptionHolder.GetCustomGameMode()).MaxPlayers ?? 15;
+                    __instance.MinPlayers = minPlayers;
 
                     bool blockStart = false;
                     string message = "";
@@ -167,7 +171,7 @@ public class GameStartManagerPatch
                     }
                     else
                     {
-                        __instance.StartButton.color = __instance.startLabelText.color = ((__instance.LastPlayerCount >= __instance.MinPlayers) ? Palette.EnabledColor : Palette.DisabledClear);
+                        __instance.StartButton.color = __instance.startLabelText.color = ((__instance.LastPlayerCount >= minPlayers && __instance.LastPlayerCount <= maxPlayers) ? Palette.EnabledColor : Palette.DisabledClear);
                         __instance.GameStartText.transform.localPosition = __instance.StartButton.transform.localPosition;
                     }
                 }
@@ -234,6 +238,8 @@ public class GameStartManagerPatch
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
                 RPCEvents.ResetVaribles();
 
+                if (PlayerControl.AllPlayerControls.Count > (Game.GameModeProperty.GetProperty(CustomOptionHolder.GetCustomGameMode()).MaxPlayers ?? 15)) continueStart = false;
+
                 foreach (InnerNet.ClientData client in AmongUsClient.Instance.allClients)
                 {
                     if (client.Character == null) continue;
@@ -274,11 +280,14 @@ public class GameStartManagerPatch
                     RPCEventInvoker.SetRandomMap(possibleMaps[NebulaPlugin.rnd.Next(possibleMaps.Count)]);
                 }
 
-                if (CustomOptionHolder.GetCustomGameMode() == Module.CustomGameMode.FreePlay)
+                if (CustomOptionHolder.GetCustomGameMode() is Module.CustomGameMode.FreePlay or Module.CustomGameMode.FreePlayHnS)
                 {
                     if (PlayerControl.AllPlayerControls.Count == 1)
                     {
-                        int num = (int)CustomOptionHolder.CountOfDummiesOption.getFloat();
+                        int num = 6;
+                        if (CustomOptionHolder.GetCustomGameMode() is Module.CustomGameMode.FreePlay)
+                            num = (int)CustomOptionHolder.CountOfDummiesOption.getFloat();
+                        
                         for (int n = 0; n < num; n++)
                         {
                             var playerControl = UnityEngine.Object.Instantiate(AmongUsClient.Instance.PlayerPrefab);
@@ -295,7 +304,7 @@ public class GameStartManagerPatch
                             AmongUsClient.Instance.Spawn(playerControl, -2, InnerNet.SpawnFlags.None);
                             GameData.Instance.RpcSetTasks(playerControl.PlayerId, new byte[0]);
 
-                            playerControl.StartCoroutine(playerControl.CoPlayerAppear().WrapToIl2Cpp());
+                            //playerControl.StartCoroutine(playerControl.CoPlayerAppear().WrapToIl2Cpp());
                         }
                     }
                 }

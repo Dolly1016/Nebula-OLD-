@@ -19,6 +19,7 @@ public enum VentPermission
 {
     CanUseUnlimittedVent,
     CanUseLimittedVent,
+    CanUseInUnusualWays,
     CanNotUse
 }
 

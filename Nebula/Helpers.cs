@@ -4,6 +4,8 @@ using System.Text;
 using Nebula.Patches;
 using System.IO.Compression;
 using TMPro;
+using Nebula.Module;
+using UnityEngine;
 
 namespace Nebula;
 
@@ -65,6 +67,11 @@ public static class Helpers
         }
 
         return PlayerControl.LocalPlayer.CanMove;
+    }
+
+    public static Sprite loadSpriteFromTexture(Texture2D texture, float pixelsPerUnit)
+    {
+        return Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), pixelsPerUnit);
     }
 
     public static Sprite loadSpriteFromResources(Texture2D texture, float pixelsPerUnit, Rect textureRect)
@@ -676,7 +683,7 @@ public static class Helpers
         }
     }
 
-    static public Texture2D CreateReadabeTexture(Texture texture)
+    static public Texture2D CreateReadabeTexture(Texture texture,int margin=0)
     {
         RenderTexture renderTexture = RenderTexture.GetTemporary(
                     texture.width,
@@ -688,8 +695,8 @@ public static class Helpers
         Graphics.Blit(texture, renderTexture);
         RenderTexture previous = RenderTexture.active;
         RenderTexture.active = renderTexture;
-        Texture2D readableTextur2D = new Texture2D(texture.width, texture.height);
-        readableTextur2D.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), 0, 0);
+        Texture2D readableTextur2D = new Texture2D(texture.width + margin * 2, texture.height + margin * 2);
+        readableTextur2D.ReadPixels(new Rect(0, 0, renderTexture.width, renderTexture.height), margin, margin);
         readableTextur2D.Apply();
         RenderTexture.active = previous;
         RenderTexture.ReleaseTemporary(renderTexture);
@@ -760,18 +767,6 @@ public static class Helpers
             }
         }
         return result;
-    }
-
-    public static IEnumerator CoPlayerAppear(this PlayerControl player)
-    {
-        for (int i = 0; i < 2; i++)
-        {
-            yield return null;
-        }
-        player.transform.FindChild("Sprite").gameObject.SetActive(true);
-        player.NetTransform.enabled = true;
-        player.MyPhysics.enabled = true;
-        //player.StartCoroutine(player.MyPhysics.CoSpawnPlayer(LobbyBehaviour.Instance));
     }
 
     public static void SetTargetWithLight(this FollowerCamera camera, MonoBehaviour target)
@@ -959,5 +954,32 @@ public static class Helpers
         tmp.fontSize = tmp.fontSizeMax = tmp.fontSizeMin = fontSize;
 
         return tmp;
+    }
+
+    static public Behaviour DoTransitionFade<Behaviour>(this TransitionFade transitionFade,string objName,float z) where Behaviour : MonoBehaviour
+    {
+        var obj = new GameObject(objName);
+        obj.transform.localPosition = new Vector3(0, 0, z);
+        Behaviour behaviour = obj.AddComponent<Behaviour>();
+        obj.SetActive(false);
+
+        transitionFade.DoTransitionFade(null, obj, null);
+
+        return behaviour;
+    }
+
+    static public void DoTransitionFade(this TransitionFade transitionFade, GameObject transitionFrom) 
+    {
+        DestroyableSingleton<TransitionFade>.Instance.DoTransitionFade(transitionFrom, null, (Il2CppSystem.Action)(() => { GameObject.Destroy(transitionFrom); }));
+    }
+
+    static public string ToUnicodeEscapeSequence(string unescaped)
+    {
+        string result = "";
+        foreach(char c in unescaped)
+        {
+            result += "\\u"+((int)c).ToString("x4");
+        }
+        return result;
     }
 }

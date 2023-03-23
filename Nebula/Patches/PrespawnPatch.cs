@@ -1,5 +1,6 @@
 ﻿using TMPro;
 using PowerTools;
+using UnityEngine.Playables;
 
 namespace Nebula.Patches;
 
@@ -89,7 +90,7 @@ class PrespawnPatch
 
                     if (__instance.amClosing != Minigame.CloseState.None) return;
 
-                    if (Game.GameData.data.SynchronizeData.Align(Game.SynchronizeTag.PreSpawnMinigame, false) || p == 1f)
+                    if (Game.GameData.data.SynchronizeData.Align(Game.SynchronizeTag.PreSpawnMinigame, false,true,false) || p == 1f)
                     {
                         PlayerControl.LocalPlayer.gameObject.SetActive(true);
                         __instance.StopAllCoroutines();
@@ -184,7 +185,7 @@ class PrespawnPatch
 
             if (Map.MapData.GetCurrentMapData().SpawnOriginalPositionAtFirst && !ExileController.Instance) return false;
 
-            var spawnCandidates = Map.MapData.GetCurrentMapData().SpawnCandidates;
+            var spawnCandidates = Map.MapData.GetCurrentMapData().ValidSpawnCandidates;
             if (spawnCandidates.Count < 3) return false;
 
             return true;
@@ -193,6 +194,11 @@ class PrespawnPatch
         public static bool ShouldSpawnRandomly()
         {
             return CustomOptionHolder.mapOptions.getBool() && CustomOptionHolder.spawnMethod.getSelection() == 2 && Map.MapData.GetCurrentMapData().ValidSpawnPoints.Count > 0;
+        }
+
+        public static bool ShouldSpawnWithAbnormalWay()
+        {
+            return CustomOptionHolder.mapOptions.getBool() && ((CustomOptionHolder.spawnMethod.getSelection() == 2 && Map.MapData.GetCurrentMapData().ValidSpawnPoints.Count > 0) || (CustomOptionHolder.spawnMethod.getSelection() == 1 && Map.MapData.GetCurrentMapData().ValidSpawnCandidates.Count >= 3));
         }
 
         public static IEnumerator GetEmptyEnumerator()
@@ -205,7 +211,7 @@ class PrespawnPatch
             if (RequireCustomSpawnGame())
             {
 
-                var spawnCandidates = Map.MapData.GetCurrentMapData().SpawnCandidates;
+                var spawnCandidates = Map.MapData.GetCurrentMapData().ValidSpawnCandidates;
                 if (spawnCandidates.Count < 3) return;
 
                 SpawnInMinigame spawnInMinigame = UnityEngine.Object.Instantiate<SpawnInMinigame>(Map.MapData.MapDatabase[4].Assets.gameObject.GetComponent<AirshipStatus>().SpawnInGame);
@@ -240,17 +246,17 @@ class PrespawnPatch
                     int index = randomArray[i];
 
                     spawnCandidates[index].ReloadTexture();
-
+                    
                     passiveButton.OnClick.RemoveAllListeners();
                     passiveButton.OnClick.AddListener(new System.Action(() =>
                     {
                         PrespawnSpawnAtPatch.SpawnAt(spawnInMinigame, spawnCandidates[index].SpawnLocation);
                     }));
                     passiveButton.OnMouseOver.AddListener(new System.Action(() => HudManager.Instance.StartCoroutine(spawnCandidates[index].GetEnumerator(passiveButton.GetComponent<SpriteRenderer>()))));
-
+                    
                     passiveButton.GetComponent<SpriteAnim>().Stop();
                     passiveButton.GetComponent<SpriteRenderer>().sprite = spawnCandidates[index].GetSprite();
-                    passiveButton.GetComponentInChildren<TextMeshPro>().text = Language.Language.GetString("game.spawnLocation." + spawnCandidates[index].LocationKey);
+                    passiveButton.GetComponentInChildren<TextMeshPro>().text = Language.Language.GetString("locations." + spawnCandidates[index].LocationKey);
                     ButtonAnimRolloverHandler component = passiveButton.GetComponent<ButtonAnimRolloverHandler>();
                     component.StaticOutImage = spawnCandidates[index].GetSprite();
                     component.RolloverAnim = new AnimationClip();
@@ -320,7 +326,7 @@ class PrespawnPatch
                 __instance.Systems[SystemTypes.Decontamination].Cast<ElectricalDoors>().Initialize();
             }
 
-            if (PrespawnStepPatch.ShouldSpawnRandomly())
+            if (PrespawnStepPatch.ShouldSpawnWithAbnormalWay())
             {
                 PrespawnStepPatch.Postfix(__instance, ref __result);
                 return false;

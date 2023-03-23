@@ -5,7 +5,6 @@ namespace Nebula.Tasks
 {
     public class SpectreRancorLetterMinigame : NebulaMinigame
     {
-
         static SpectreRancorLetterMinigame()
         {
             ClassInjector.RegisterTypeInIl2Cpp<SpectreRancorLetterMinigame>();
@@ -13,6 +12,7 @@ namespace Nebula.Tasks
 
         public override void __Begin(PlayerTask playerTask)
         {
+
             MyTask = playerTask;
             MyNormTask = playerTask.GetComponent<NormalPlayerTask>();
 

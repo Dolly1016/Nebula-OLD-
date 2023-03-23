@@ -22,10 +22,10 @@ public class RitualPatch
                 obj.hideFlags |= HideFlags.HideInHierarchy;
                 switch (Roles.Roles.Spectre.spectreTaskOption.getSelection())
                 {
-                    case 0:
+                    case 1:
                         __result = obj.AddComponent<Tasks.SpectreFriedTask>();
                         break;
-                    case 1:
+                    case 2:
                         __result = obj.AddComponent<Tasks.SpectreRancorTask>();
                         break;
                 }

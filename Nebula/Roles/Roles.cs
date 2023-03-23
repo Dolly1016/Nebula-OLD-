@@ -106,7 +106,11 @@ static public class Roles
     public static MinigameRoles.Hunters.Hadar Hadar = new MinigameRoles.Hunters.Hadar();
 
     public static HnSCrewmateRoles.Crewmate HnSCrewmate = new HnSCrewmateRoles.Crewmate();
-    public static HnSImpostorRoles.Impostor HnSImpostor = new HnSImpostorRoles.Impostor();
+
+    public static HnSImpostorRoles.HnSCleaner HnSCleaner = new HnSImpostorRoles.HnSCleaner();
+    public static HnSImpostorRoles.HnSHadar HnSHadar = new HnSImpostorRoles.HnSHadar();
+    public static HnSImpostorRoles.HnSRaider HnSRaider = new HnSImpostorRoles.HnSRaider();
+    public static HnSImpostorRoles.HnSReaper HnSReaper = new HnSImpostorRoles.HnSReaper();
 
     public static ComplexRoles.FCrewmate F_Crewmate = new ComplexRoles.FCrewmate();
     public static ComplexRoles.FGuesser F_Guesser = new ComplexRoles.FGuesser();
@@ -144,7 +148,7 @@ static public class Roles
             Player,
             Hadar,
             HnSCrewmate,
-            HnSImpostor
+            HnSCleaner,HnSHadar,HnSRaider,HnSReaper
         };
 
     public static List<ExtraRole> AllExtraRoles = new List<ExtraRole>()

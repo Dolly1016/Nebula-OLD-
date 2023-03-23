@@ -142,6 +142,26 @@ public class AirshipData : MapData
         MapScale = 30f;
         HasDefaultPrespawnMinigame = true;
 
+        SpawnCandidates.Add(new SpawnCandidate("brig", "assets/SpawnCandidates/Airship/Brig.png", 0, 140));
+        SpawnCandidates.Add(new SpawnCandidate("engineRoom", "assets/SpawnCandidates/Airship/Engine.png", 1,180));
+        SpawnCandidates.Add(new SpawnCandidate("mainHall", "assets/SpawnCandidates/Airship/Hallway.png", 2, 226));
+        SpawnCandidates.Add(new SpawnCandidate("kitchen", "assets/SpawnCandidates/Airship/Kitchen.png", 3, 140));
+        SpawnCandidates.Add(new SpawnCandidate("record", "assets/SpawnCandidates/Airship/Record.png", 4,173));
+        SpawnCandidates.Add(new SpawnCandidate("cargoBay", "assets/SpawnCandidates/Airship/Storage.png", 5, 188));
+        SpawnCandidates.Add(new SpawnCandidate("armory", new Vector2(-10.141f, -6.3739f), "assets/SpawnCandidates/Airship/Armory.png", null,115f));
+        SpawnCandidates.Add(new SpawnCandidate("cockpit", new Vector2(-23.5643f, -1.4405f), "assets/SpawnCandidates/Airship/Cockpit.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("comms", new Vector2(-12.9433f, 1.4259f), "assets/SpawnCandidates/Airship/Comm.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("electrical", new Vector2(16.3201f, -8.808f), "assets/SpawnCandidates/Airship/Electrical.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("gapRoom", new Vector2(11.9727f, 8.6011f), "assets/SpawnCandidates/Airship/GapRoom.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("lounge", new Vector2(24.8702f, 6.459f), "assets/SpawnCandidates/Airship/Lounge.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("medical", new Vector2(28.4471f, -5.8789f), "assets/SpawnCandidates/Airship/Medical.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("meetingRoom", new Vector2(11.1469f, 16.0138f), "assets/SpawnCandidates/Airship/MeetingRoom.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("security", new Vector2(7.0693f, -11.6312f), "assets/SpawnCandidates/Airship/Security.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("shower", new Vector2(24.0106f, 2.0266f), "assets/SpawnCandidates/Airship/Shower.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("toilet", new Vector2(32.3184f, 7.0118f), "assets/SpawnCandidates/Airship/Toilet.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("vault", new Vector2(-8.789f, 8.049f), "assets/SpawnCandidates/Airship/Vault.png", null, 115f));
+        SpawnCandidates.Add(new SpawnCandidate("viewingDeck", new Vector2(-13.9798f, -15.8316f), "assets/SpawnCandidates/Airship/ViewingDeck.png", null, 115f));
+
         RegisterObjectPosition("ruby", new Vector2(-8.8515f, 9.0895f), SystemTypes.VaultRoom, 40f);
         RegisterObjectPosition("crane", new Vector2(1.3844f, 0.379f), SystemTypes.Engine, 40f, 1.2f);
         RegisterObjectPosition("steering", new Vector2(-19.677f, -0.791f), SystemTypes.Cockpit, 30f, 1f);

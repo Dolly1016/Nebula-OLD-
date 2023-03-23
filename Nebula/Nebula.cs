@@ -19,9 +19,18 @@ using BepInEx;
 using System.Text;
 using System.Reflection;
 using BepInEx.Unity.IL2CPP;
-
+using Nebula.Patches;
+using UnityEngine.SceneManagement;
+using Il2CppSystem.Xml;
+using Nebula.Module;
 
 namespace Nebula;
+
+public static class RuntimePrefabs
+{
+    public static TMPro.TextMeshPro? TextPrefab = null;
+    public static PlayerDisplay? PlayerDisplayPrefab = null;
+}
 
 [BepInPlugin(PluginGuid, PluginName, PluginVersion)]
 [BepInProcess("Among Us.exe")]
@@ -35,7 +44,7 @@ public class NebulaPlugin : BasePlugin
     public const string PluginVersion = "2.2.2";
     public const bool IsSnapshot = true;
 
-    public static string PluginVisualVersion = IsSnapshot ? "23.03.06a" : PluginVersion;
+    public static string PluginVisualVersion = IsSnapshot ? "23.03.21a" : PluginVersion;
     public static string PluginStage = IsSnapshot ? "Snapshot" : "";
     
     public const string PluginVersionForFetch = "2.2.2";
@@ -125,6 +134,12 @@ public class NebulaPlugin : BasePlugin
 
         // Harmonyパッチ全てを適用する
         Harmony.PatchAll();
+
+
+        SceneManager.sceneLoaded += (Action<Scene,LoadSceneMode>)((scene,loadMode) =>
+        {
+            new GameObject("NebulaManager").AddComponent<NebulaManager>();
+        });
     }
 
     public static Sprite GetModStamp()
@@ -147,6 +162,7 @@ public static class AmongUsClientAwakePatch
         {
             map.LoadAssets(__instance);
         }
+        NebulaEvents.OnMapAssetLoaded();
 
         __instance.PlayerPrefab.cosmetics.zIndexSpacing = 0.00001f;
 
@@ -168,92 +184,5 @@ public static class AmBannedPatch
     public static void Postfix(out bool __result)
     {
         __result = false;
-    }
-}
-
-
-// メタコントローラ
-[HarmonyPatch(typeof(KeyboardJoystick), nameof(KeyboardJoystick.Update))]
-public static class MetaControlManager
-{
-    private static readonly System.Random random = new System.Random((int)DateTime.Now.Ticks);
-    private static List<PlayerControl> bots = new List<PlayerControl>();
-
-
-    public static void SaveTexture(Texture2D texture, string fileName)
-    {
-        byte[] bytes = UnityEngine.ImageConversion.EncodeToPNG(Helpers.CreateReadabeTexture(texture));
-        //保存
-        File.WriteAllBytes(fileName + ".png", bytes);
-    }
-
-    static public IEnumerator CaptureAndSave()
-    {
-        yield return new WaitForEndOfFrame();
-        Texture2D tex = ScreenCapture.CaptureScreenshotAsTexture();
-
-        File.WriteAllBytes(Patches.NebulaOption.CreateDirAndGetPictureFilePath(out string displayPath), tex.EncodeToPNG());
-    }
-
-    public static void Postfix(KeyboardJoystick __instance)
-    {
-        //スクリーンショット
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            if (AmongUsClient.Instance)
-            {
-                AmongUsClient.Instance.StartCoroutine(CaptureAndSave().WrapToIl2Cpp());
-            }
-        }
-
-        /* ホスト専用コマンド */
-        if (AmongUsClient.Instance.AmHost && AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started)
-        {
-            //ゲーム強制終了
-            if (Input.GetKey(Module.NebulaInputManager.metaControlInput.keyCode) && Input.GetKey(Module.NebulaInputManager.noGameInput.keyCode))
-            {
-                Game.GameData.data.IsCanceled = true;
-            }
-        }
-
-        /* 以下デバッグモード専用 */
-        if (!Patches.NebulaOption.configGameControl.Value) return;
-
-        // Spawn dummys
-        if (Input.GetKeyDown(KeyCode.F1))
-        {
-            var playerControl = UnityEngine.Object.Instantiate(AmongUsClient.Instance.PlayerPrefab);
-
-            var i = playerControl.PlayerId = (byte)GameData.Instance.GetAvailableId();
-
-            GameData.Instance.AddPlayer(playerControl);
-
-            //playerControl.transform.position = PlayerControl.LocalPlayer.transform.position;
-            playerControl.GetComponent<DummyBehaviour>().enabled = true;
-            playerControl.isDummy = true;
-            playerControl.SetName(Patches.RandomNamePatch.GetRandomName());
-            playerControl.SetColor((byte)random.Next(15));
-
-            bots.Add(playerControl);
-            AmongUsClient.Instance.Spawn(playerControl, -2, InnerNet.SpawnFlags.None);
-
-            GameData.Instance.RpcSetTasks(playerControl.PlayerId, new byte[0]);
-        }
-
-        // Suiside
-        if (Input.GetKeyDown(KeyCode.F9))
-        {
-            Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, PlayerControl.LocalPlayer, Game.PlayerData.PlayerStatus.Suicide, false, false);
-        }
-
-        // Kill nearest player
-        if (Input.GetKeyDown(KeyCode.F10))
-        {
-            PlayerControl target = Patches.PlayerControlPatch.SetMyTarget();
-            if (target == null) return;
-
-            Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, target, Game.PlayerData.PlayerStatus.Dead, false, false);
-
-        }
     }
 }

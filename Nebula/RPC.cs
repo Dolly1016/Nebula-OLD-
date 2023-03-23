@@ -1,6 +1,7 @@
 ﻿using Hazel;
 using Nebula.Game;
 using Nebula.Module;
+using Nebula.Roles;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
@@ -174,6 +175,7 @@ class RPCHandlerPatch
                 {
                     RPCEvents.SetExtraRole(reader.ReadByte(), Roles.ExtraRole.GetRoleById(reader.ReadByte()), reader.ReadUInt64());
                 }
+                RPCEvents.AfterSetRole();
                 break;
             case (byte)CustomRPC.SetExtraRole:
                 RPCEvents.SetExtraRole(reader.ReadByte(), Roles.ExtraRole.GetRoleById(reader.ReadByte()), reader.ReadUInt64());
@@ -458,6 +460,25 @@ static class RPCEvents
 
         role.ReflectRoleEyesight(Helpers.playerById(playerId).Data.Role);
         Game.GameData.data.RegisterPlayer(playerId, role, roleDataId, roleData);
+    }
+
+
+    public static void AfterSetRole()
+    {
+        foreach (var p in PlayerControl.AllPlayerControls.GetFastEnumerator())
+        {
+            p.roleAssigned = true;
+            p.RemainingEmergencies = GameManager.Instance.LogicOptions.GetNumEmergencyMeetings();
+            p.Data.Role.SpawnTaskHeader(p);
+            p.MyPhysics.SetBodyType(p.BodyType);
+            PlayerNameColor.Set(p);
+        }
+        DestroyableSingleton<HudManager>.Instance.MapButton.gameObject.SetActive(true);
+        DestroyableSingleton<HudManager>.Instance.ReportButton.gameObject.SetActive(true);
+        DestroyableSingleton<HudManager>.Instance.UseButton.gameObject.SetActive(true);
+
+        DestroyableSingleton<HudManager>.Instance.StartCoroutine(DestroyableSingleton<HudManager>.Instance.CoShowIntro());
+        DestroyableSingleton<HudManager>.Instance.HideGameLoader();
     }
 
     /// <summary>
@@ -925,10 +946,11 @@ static class RPCEvents
 
     public static void RevivePlayer(byte playerId, Vector2 pos, bool changeStatus, bool gushOnRevive)
     {
-        if (Game.GameData.data.GameMode == CustomGameMode.Standard)
+        if (Game.GameData.data.GameMode != CustomGameMode.FreePlay)
         {
             //NecromancerやBuskerを確定させる
-            Game.GameData.data.EstimationAI.Determine(changeStatus ? (Roles.Role)Roles.Roles.Necromancer : (Roles.Role)Roles.Roles.Busker);
+            if (Game.GameData.data.GameMode == CustomGameMode.Standard)
+                Game.GameData.data.EstimationAI.Determine(changeStatus ? (Roles.Role)Roles.Roles.Necromancer : (Roles.Role)Roles.Roles.Busker);
 
             foreach (DeadBody body in Helpers.AllDeadBodies())
             {
@@ -967,7 +989,7 @@ static class RPCEvents
             data.Property.UnderTheFloor = false;
         }
 
-        Game.GameData.data.myData.getGlobalData().role.onRevived(playerId);
+        Helpers.RoleAction(Game.GameData.data.myData.getGlobalData(),(r)=>r.onRevived(playerId));
 
         if (HnSModificator.IsHnSGame) HudManager.Instance.CrewmatesKilled.OnCrewmateKilled();
     }
@@ -1692,7 +1714,10 @@ public class RPCEventInvoker
         WriteRolesData(writer, assignMap);
 
         AmongUsClient.Instance.FinishRpcImmediately(writer);
-        //自分自身はもう割り当て済みなので何もしない
+
+        //自分自身はもう割り当て済みなので割り当てはしない
+
+        RPCEvents.AfterSetRole();
     }
 
     public static void SetMyColor()

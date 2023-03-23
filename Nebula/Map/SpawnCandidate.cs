@@ -1,4 +1,6 @@
-﻿namespace Nebula.Map;
+﻿using Nebula.Module;
+
+namespace Nebula.Map;
 
 public class SpawnCandidate
 {
@@ -11,18 +13,20 @@ public class SpawnCandidate
     public string LocationKey;
     public AudioClip? AudioClip;
     public string? AudioClipName;
+    public int spriteWidth = 200;
+    public float pixelsPerUnit = 100f;
 
     public Texture2D GetTexture()
     {
         if (Texture) return Texture;
-        Texture = Helpers.loadTextureFromResources(TextureAddress);
+        Texture = AssetLoader.NebulaMainAsset.assetBundle.LoadAsset<Texture2D>(TextureAddress);
         ReloadSprites();
         return Texture;
     }
 
     public void ReloadTexture()
     {
-        if (!Texture) Texture = Helpers.loadTextureFromResources(TextureAddress);
+        if (!Texture) Texture = AssetLoader.NebulaMainAsset.assetBundle.LoadAsset<Texture2D>(TextureAddress);
         ReloadSprites();
     }
 
@@ -32,11 +36,11 @@ public class SpawnCandidate
         {
             if (sprite) UnityEngine.Object.Destroy(sprite);
         }
-        Sprites = new Sprite[Texture.width / 200];
+        Sprites = new Sprite[Texture.width / spriteWidth];
 
         for (int i = 0; i < Sprites.Length; i++)
         {
-            Sprites[i] = Helpers.loadSpriteFromResources(Texture, 100f, new Rect((float)(i * 200), 0f, 200f, -200f), new Vector2(0.5f, 1f));
+            Sprites[i] = Helpers.loadSpriteFromResources(Texture, pixelsPerUnit, new Rect((float)(i * spriteWidth), 0f, spriteWidth, Texture.height), new Vector2(0.5f, 0f));
         }
     }
 
@@ -49,13 +53,13 @@ public class SpawnCandidate
 
     public AudioClip? GetAudioClip()
     {
+        if(AudioClip) return AudioClip;
+
         if (AudioClipName == null) return null;
 
         if (audioClips == null) audioClips = UnityEngine.Object.FindObjectsOfTypeAll(Il2CppType.Of<AudioClip>());
 
-        if (AudioClip != null) return AudioClip;
-
-        AudioClip = (audioClips.FirstOrDefault<UnityEngine.Object>((audio) => audio && audio.name == AudioClipName)).TryCast<AudioClip>();
+        if (AudioClip == null) AudioClip = (audioClips.FirstOrDefault<UnityEngine.Object>((audio) => audio && audio.name == AudioClipName)).TryCast<AudioClip>();
         return AudioClip;
     }
 
@@ -70,7 +74,7 @@ public class SpawnCandidate
         }));
     }
 
-    public SpawnCandidate(string locationKey, Vector2 location, string textureAddress, string? audioClip)
+    public SpawnCandidate(string locationKey, Vector2 location, string textureAddress, string? audioClip, float pixelsPerUnit = 100f,int spriteWidth = 200)
     {
         SpawnLocation = location;
         LocationKey = locationKey;
@@ -79,5 +83,24 @@ public class SpawnCandidate
 
         AudioClip = null;
         AudioClipName = audioClip;
+
+        this.spriteWidth = spriteWidth;
+        this.pixelsPerUnit = pixelsPerUnit;
+    }
+
+    public SpawnCandidate(string locationKey, string textureAddress, int origIndex,int spriteWidth=200)
+    {
+        LocationKey = locationKey;
+        TextureAddress = textureAddress;
+        this.spriteWidth = spriteWidth;
+        Sprites = new Sprite[0];
+
+        NebulaEvents.OnMapAssetLoaded += () =>
+        {
+            var loc = MapData.MapDatabase[4].Assets.CastFast<AirshipStatus>().SpawnInGame.Locations[origIndex];
+            SpawnLocation = loc.Location;
+
+            AudioClip = loc.RolloverSfx;
+        };
     }
 }

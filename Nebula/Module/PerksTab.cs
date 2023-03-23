@@ -1,6 +1,7 @@
 ﻿using JetBrains.Annotations;
 using Nebula.Roles.Perk;
 using TMPro;
+using UnityEngine;
 
 namespace Nebula.Module;
 
@@ -11,10 +12,9 @@ public class PerksTab : InventoryTab
         ClassInjector.RegisterTypeInIl2Cpp<PerksTab>();
     }
 
-    private void OpenPerkDialog(int index)
+    private void OpenPerkDialog<P>(bool isCrewmate,Action<P?> adaptor,Predicate<P> duplicateChecker, IEnumerable<P> allPerks) where P : DisplayPerk
     {
-        bool isCrewmatePerkSlot = !Perk.IsSeekerPerkSlot(index);
-        var designer = MetaDialog.OpenDialog(new Vector2(8f, 4f),"");
+        var designer = MetaDialog.OpenDialog(new Vector2(8f, 4f), "");
         var parent = designer.screen.screen.transform;
 
         int x = 11, y = 3;
@@ -47,7 +47,7 @@ public class PerksTab : InventoryTab
         var emptyButton = emptyDisplay.SetUpButton(Color.yellow);
         emptyButton.OnClick.AddListener((Action)(() =>
         {
-            Perk.SetEquipedPerk(index % 5, isCrewmatePerkSlot, null);
+            adaptor.Invoke(null);
             UpdatePerk();
             MetaDialog.EraseDialogAll();
         }));
@@ -58,11 +58,11 @@ public class PerksTab : InventoryTab
         }));
 
         int unavailables = 0;
-        foreach (var p in Roles.Perk.Perks.AllPerks.Values)
+        foreach (var p in allPerks)
         {
-            if (isCrewmatePerkSlot != p.IsCrewmatePerk) continue;
+            if (isCrewmate != p.IsCrewmatePerk) continue;
 
-            if (!p.IsAvailable)
+            if (p is IReleasable releasable && !releasable.IsAvailable)
             {
                 unavailables++;
                 continue;
@@ -75,24 +75,20 @@ public class PerksTab : InventoryTab
             var perk = p;
             var button = display.SetUpButton(Color.yellow);
 
-            bool isDuplicated = false;
-            for (int i = 0; i < 5; i++) if (p == Perk.GetEquipedPerk(i, isCrewmatePerkSlot)) { isDuplicated = true;break; }
-
-            if (isDuplicated)
+            if (duplicateChecker.Invoke(p))
             {
                 display.Highlight.color = Color.white;
                 display.Highlight.gameObject.SetActive(true);
                 button.OnMouseOut.RemoveAllListeners();
             }
-            else
+
+            button.OnClick.AddListener((Action)(() =>
             {
-                button.OnClick.AddListener((Action)(() =>
-                {
-                    Perk.SetEquipedPerk(index % 5, isCrewmatePerkSlot, perk);
-                    UpdatePerk();
-                    MetaDialog.EraseDialogAll();
-                }));
-            }
+                adaptor.Invoke(perk);
+                UpdatePerk();
+                MetaDialog.EraseDialogAll();
+            }));
+        
 
             button.OnMouseOver.AddListener((Action)(() =>
             {
@@ -104,7 +100,12 @@ public class PerksTab : InventoryTab
         for (; num < x * y && unavailables > 0; unavailables--) GenerateDisplay();
     }
 
-    PerkDisplay[] PerkDisplays;
+    private static SpriteLoader PerkMaskSprite = new("Nebula.Resources.Perks.PerkMask.png", 100f);
+
+    PerkDisplay[] AbilityPerkDisplays;
+    GameObject[] InvalidPerkMask;
+    PerkDisplay RolePerkDisplay;
+
     TextMeshPro PerkNameText;
     TextMeshPro PerkFlavor;
 
@@ -125,19 +126,31 @@ public class PerksTab : InventoryTab
         PerkFlavor = Helpers.GenerateText(transform, "", 2f, new Vector2(7f, 1.5f), TextAlignmentOptions.Top, FontStyles.Normal);
         PerkFlavor.transform.localPosition = new Vector3(0f, -1.05f, -10f);
 
-        PerkDisplays = new PerkDisplay[10];
+        AbilityPerkDisplays = new PerkDisplay[10];
+        InvalidPerkMask = new GameObject[10];
+
+        PassiveButton button;
 
         for (int i = 0; i < 10; i++){
             var obj = new GameObject("Perk");
             obj.transform.SetParent(gameObject.transform);
             obj.transform.localPosition = new Vector3(0.9f * (float)(i % 5 - 2), (i < 5 ? 0.9f : -2.3f) + (i % 2 == 1 ? 0f : 0.56f), 0f);
             obj.transform.localScale = Vector3.one * 0.75f;
-            PerkDisplays[i] = obj.AddComponent<PerkDisplay>();
-            var button = PerkDisplays[i].SetUpButton(Color.yellow);
+            AbilityPerkDisplays[i] = obj.AddComponent<PerkDisplay>();
+            button = AbilityPerkDisplays[i].SetUpButton(Color.yellow);
             int index = i;
-            button.OnClick.AddListener((Action)(()=> OpenPerkDialog(index)));
+            button.OnClick.AddListener((Action)(() => OpenPerkDialog<Perk>(index < 5, (p) => {
+                PerkSaver.UnequipAbilityPerk(p);
+                PerkSaver.SetEquipedAbilityPerk(index % 5, index < 5, p);
+            }, 
+            (p)=>
+            {
+                for (int i = 0; i < 5; i++) if (p == PerkSaver.GetEquipedAbilityPerk(i, index < 5)) return true;
+                return false;
+            }, Perks.AllPerks.Values)));
+
             button.OnMouseOver.AddListener((Action)(() => {
-                Perk? p = Perk.GetEquipedPerk(index);
+                Perk? p = PerkSaver.GetEquipedAbilityPerk(index % 5, index < 5);
                 if (p == null)
                 {
                     PerkNameText.text = Language.Language.GetString("perks.unselected.name");
@@ -148,7 +161,39 @@ public class PerksTab : InventoryTab
                     PerkFlavor.text = p.DisplayFlavor;
                 }
             }));
+
+            
+            var maskObj = InvalidPerkMask[i] = new GameObject("Mask");
+            maskObj.layer = LayerExpansion.GetUILayer();
+            maskObj.transform.SetParent(obj.transform);
+            maskObj.transform.localScale = Vector3.one;
+            maskObj.transform.localPosition = new Vector3(0, 0, -20f);
+            var maskRenderer = maskObj.AddComponent<SpriteRenderer>();
+            maskRenderer.sprite = PerkMaskSprite.GetSprite();
+            maskRenderer.color = new Color(1f, 0f, 0f, 0.4f);
         }
+
+        var roleObj = new GameObject("RolePerk");
+        roleObj.transform.SetParent(gameObject.transform);
+        roleObj.transform.localPosition = new Vector3(-3.1f, -2.02f, 0f);
+        roleObj.transform.localScale = Vector3.one * 0.9f;
+        RolePerkDisplay = roleObj.AddComponent<PerkDisplay>();
+        button = RolePerkDisplay.SetUpButton(Color.yellow);
+        button.OnClick.AddListener((Action)(() => OpenPerkDialog<RolePerk>(false,(p)=> PerkSaver.SetEquipedRolePerk(0,false,p),(p)=>PerkSaver.GetEquipedRolePerk(0,false)==p,Perks.AllRolePerks.Values)));
+        button.OnMouseOver.AddListener((Action)(() => {
+            RolePerk? p = PerkSaver.GetEquipedRolePerk(0, false);
+            if (p == null)
+            {
+                PerkNameText.text = Language.Language.GetString("perks.role.random.name");
+                PerkFlavor.text = Language.Language.GetString("perks.role.random.flavor");
+            }
+            else
+            {
+                PerkNameText.text = p.DisplayName;
+                PerkFlavor.text = p.DisplayFlavor;
+            }
+        }));
+        RolePerkDisplay.SetType(false, Palette.ImpostorRed);
 
         UpdatePerk();
     }
@@ -160,9 +205,19 @@ public class PerksTab : InventoryTab
         PlayerCustomizationMenu.Instance.PreviewArea.transform.parent.gameObject.SetActive(true);
     }
 
+    public void Update()
+    {
+        int perks = (int)CustomOptionHolder.ValidPerksOption.getFloat();
+        for (int i = 0; i < 10; i++)
+        {
+            InvalidPerkMask[i].SetActive((i % 5) >= perks);
+        }
+    }
+
     public void UpdatePerk()
     {
-        for (int i = 0; i < 10; i++) PerkDisplays[i].SetPerk(Perk.GetEquipedPerk(i));
+        for (int i = 0; i < 10; i++) AbilityPerkDisplays[i].SetPerk(PerkSaver.GetEquipedAbilityPerk(i % 5, i < 5));
+        RolePerkDisplay.SetPerk(PerkSaver.GetEquipedRolePerk(0, false));
     }
 }
 
@@ -229,7 +284,7 @@ public class PerksTabPacth
     {
         public static void Postfix(PlayerCustomizationMenu __instance)
         {
-            bool perksTabValid = CustomOption.CurrentGameMode == CustomGameMode.StandardHnS;
+            bool perksTabValid = (CustomOption.CurrentGameMode & CustomGameMode.AllHnS) != 0;
             if (PerksHeader.activeSelf != perksTabValid)
             {
                 PerksHeader.SetActive(perksTabValid);

@@ -1,4 +1,6 @@
-﻿namespace Nebula.Objects.ObjectTypes;
+﻿using Nebula.Game;
+
+namespace Nebula.Objects.ObjectTypes;
 
 public class RaidAxe : TypeWithImage
 {
@@ -104,7 +106,11 @@ public class RaidAxe : TypeWithImage
                 float angle = (float)obj.Data[1] / (float)ANGLE_DIVIDE;
                 Vector2 vec = new Vector2(Mathf.Cos(angle / 180f * Mathf.PI), Mathf.Sin(angle / 180f * Mathf.PI));
                 float d;
-                float c = Roles.Roles.Raider.axeSpeedOption.getFloat() * 4f * Time.deltaTime;
+                float c = 0f;
+                if (HnSModificator.IsHnSGame)
+                    c = 4f * Time.deltaTime;
+                else
+                    c = Roles.Roles.Raider.axeSpeedOption.getFloat() * 4f * Time.deltaTime;
                 if (Helpers.AnyNonTriggersBetween(obj.GameObject.transform.position, vec, c, Constants.ShipAndAllObjectsMask, out d))
                 {
                     obj.GameObject.transform.position += (Vector3)(vec * d);

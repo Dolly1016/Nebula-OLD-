@@ -109,6 +109,7 @@ public class Agent : Template.ExemptTasks
             UnityEngine.Object.Destroy(ventButtonUsesObject);
         }
     }
+
     public override void FinalizeInGame(PlayerControl __instance) 
     { 
         if (HudManager.InstanceExists)
@@ -119,7 +120,7 @@ public class Agent : Template.ExemptTasks
         }
     }
 
-    public override void OnTaskComplete()
+    public override void OnTaskComplete(PlayerTask? task)
     {
         if (!PlayerControl.LocalPlayer.IsMadmate()) return;
 
