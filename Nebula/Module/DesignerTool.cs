@@ -377,11 +377,10 @@ public static class DesignersSaver
         }
 
         if (translationDic.Count == 0) return;
-        Directory.CreateDirectory("GlobalCosmicExR/CreatorMode");
-        stream = new StreamWriter(File.Create("GlobalCosmicExR/CreatorMode/translation.csv"));
-        stream.WriteLine("TransKey,English,Latam,Brazilian,Portuguese,Korean,Russian,Dutch,Filipino,French,German,Italian,Japanese,Spanish,SChinese,TChinese,Irish");
-        foreach (var entry in translationDic) stream.WriteLine($"{entry.Key},,,,,,,,,,,,{entry.Value},,,,,");
-        stream.Close();
+        using (var stream = CreatorMode.CreateTranslationWriter(globalExportFolder))
+        {
+            foreach (var entry in translationDic) stream.WriteLine($"{entry.Key},,,,,,,,,,,,{entry.Value},,,,,");
+        }
 
         //ネームプレートは作れないのでひとまずスルー
         /*
