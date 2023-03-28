@@ -51,6 +51,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\ExtremeSkins.Core\ExtremeSkins.Core\Config.cs" Link="ExtremeSkins.Core\Config.cs" />
     <Compile Include="..\ExtremeSkins.Core\ExtremeSkins.Core\CreatorMode.cs" Link="ExtremeSkins.Core\CreatorMode.cs" />
     <Compile Include="..\ExtremeSkins.Core\ExtremeSkins.Core\InfoBase.cs" Link="ExtremeSkins.Core\InfoBase.cs" />
     <Compile Include="..\ExtremeSkins.Core\ExtremeSkins.Core\ExtremeHats\HatInfo.cs" Link="ExtremeSkins.Core\ExtremeHats\HatInfo.cs" />
