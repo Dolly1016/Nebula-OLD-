@@ -1,6 +1,7 @@
 ﻿using Nebula.Expansion;
 using ExtremeSkins.Core;
 using ExtremeSkins.Core.ExtremeHats;
+using ExtremeSkins.Core.ExtremeVisor;
 using System.Security.Cryptography;
 using System.Text;
 using UnityEngine.Events;
@@ -10,6 +11,7 @@ using static Nebula.Module.CustomParts;
 using static Rewired.Controller;
 
 using ExHData = ExtremeSkins.Core.ExtremeHats.DataStructure;
+using ExVData = ExtremeSkins.Core.ExtremeVisor.DataStructure;
 
 namespace Nebula.Module;
 
@@ -325,13 +327,13 @@ public static class DesignersSaver
             translationDic[name] = hat.Name.Value;
             translationDic[authorName] = hat.Author.Value;
 
-            string exportFolder = Path.Combine(globalExportFolder, ExHData.FolderName, name);
+            string exportHatFolder = Path.Combine(globalExportFolder, ExHData.FolderName, name);
 
-            CopyFile(hatCategory, hat.I_Main, Path.Combine(exportFolder, ExHData.FrontImageName));
-            if (hat.I_Flip) CopyFile(hatCategory, hat.I_Flip, Path.Combine(exportFolder, ExHData.FrontFlipImageName));
-            if (hat.I_Back) CopyFile(hatCategory, hat.I_Back, Path.Combine(exportFolder, ExHData.BackImageName));
-            if (hat.I_BackFlip) CopyFile(hatCategory, hat.I_BackFlip, Path.Combine(exportFolder, ExHData.BackFlipImageName));
-            if (hat.I_Climb) CopyFile(hatCategory, hat.I_Climb, Path.Combine(exportFolder, ExHData.ClimbImageName));
+            CopyFile(hatCategory, hat.I_Main, Path.Combine(exportHatFolder, ExHData.FrontImageName));
+            if (hat.I_Flip) CopyFile(hatCategory, hat.I_Flip, Path.Combine(exportHatFolder, ExHData.FrontFlipImageName));
+            if (hat.I_Back) CopyFile(hatCategory, hat.I_Back, Path.Combine(exportHatFolder, ExHData.BackImageName));
+            if (hat.I_BackFlip) CopyFile(hatCategory, hat.I_BackFlip, Path.Combine(exportHatFolder, ExHData.BackFlipImageName));
+            if (hat.I_Climb) CopyFile(hatCategory, hat.I_Climb, Path.Combine(exportHatFolder, ExHData.ClimbImageName));
 
             HatInfo hatInfo = new(
                 Name: name,
@@ -343,34 +345,35 @@ public static class DesignersSaver
                 Back: hat.I_Back,
                 BackFlip: hat.I_BackFlip
             );
-            InfoBase.ExportToJson(hatInfo, exportFolder);
+            InfoBase.ExportToJson(hatInfo, exportHatFolder);
         }
 
+        const string visorCategory = "visors";
         var visors = CustomParts.CustomVisorRegistry.Values.Where((c) => c.IsLocal).ToArray();
         foreach (var visor in visors)
         {
             //メイン画像が無いあるいはアニメーションバイザーの場合はスルー
             if (!visor.I_Main) continue;
             if (visor.Contents().Any((v) => v is CustomVImage image && image.Length > 1)) continue;
-            json = new();
-            var content = json.RootContent;
+
             string name = ConvertName(visor.Author.Value + visor.Name.Value);
             string authorName = ConvertName(visor.Author.Value);
             translationDic[name] = visor.Name.Value;
             translationDic[authorName] = visor.Author.Value;
 
-            content.AddContent("LeftIdle", new JsonBooleanContent(visor.I_Flip));
-            content.AddContent("Shader", new JsonBooleanContent(visor.Adaptive.Value));
-            content.AddContent("BehindHat", new JsonBooleanContent(visor.BehindHat.Value));
-            content.AddContent("ComitHash", new JsonStringContent(""));
-            content.AddContent("Name", new JsonStringContent(visor.Name.Value));
-            content.AddContent("Author", new JsonStringContent(visor.Author.Value));
-            CopyFile("visors", visor.I_Main, "GlobalCosmicExR/ExtremeVisor/" + name + "/idle.png");
-            if (visor.I_Flip) CopyFile("visors", visor.I_Flip, "GlobalCosmicExR/ExtremeVisor/" + name + "/flip_idle.png");
+            string exportVisorFolder = Path.Combine(globalExportFolder, ExHData.FolderName, name);
 
-            stream = new StreamWriter(File.Create("GlobalCosmicExR/ExtremeVisor/" + name + "/info.json"));
-            stream.Write(json.Generate());
-            stream.Close();
+            CopyFile(visorCategory, visor.I_Main, Path.Combine(exportVisorFolder, ExVData.IdleImageName));
+            if (visor.I_Flip) CopyFile(visorCategory, visor.I_Flip, Path.Combine(exportVisorFolder, ExVData.FlipIdleImageName));
+
+            VisorInfo visorInfo = new(
+                Name: visor.Name.Value,
+                Author: visor.Name.Value,
+                LeftIdle: visor.I_Flip,
+                Shader: visor.Adaptive.Value,
+                BehindHat: visor.BehindHat.Value
+            );
+            InfoBase.ExportToJson(visorInfo, exportVisorFolder);
         }
 
         if (translationDic.Count == 0) return;
