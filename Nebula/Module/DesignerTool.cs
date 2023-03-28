@@ -1,4 +1,6 @@
 ﻿using Nebula.Expansion;
+using ExtremeSkins.Core;
+using ExtremeSkins.Core.ExtremeHats;
 using System.Security.Cryptography;
 using System.Text;
 using UnityEngine.Events;
@@ -6,6 +8,8 @@ using static Nebula.Game.PlayerData;
 using static Nebula.Module.CustomDesignerSublist;
 using static Nebula.Module.CustomParts;
 using static Rewired.Controller;
+
+using ExHData = ExtremeSkins.Core.ExtremeHats.DataStructure;
 
 namespace Nebula.Module;
 
@@ -306,43 +310,40 @@ public static class DesignersSaver
 
         Dictionary<string, string> translationDic = new();
 
-        RegenerateDirectory("GlobalCosmicExR");
+        const string globalExportFolder = "GlobalCosmicExR";
+        RegenerateDirectory(globalExportFolder);
 
-        //MD5 md5 = MD5.Create();
-        JsonGenerator json;
-        StreamWriter stream;
-
+        const string hatCategory = "hats";
         var hats = CustomParts.CustomHatRegistry.Values.Where((c) => c.IsLocal).ToArray();
         foreach (var hat in hats)
         {
             //メイン画像が無いあるいはアニメーションハットの場合はスルー
             if (!hat.I_Main) continue;
             if (hat.Contents().Any((v) => v is CustomVImage image && image.Length > 1)) continue;
-            json = new();
-            var content = json.RootContent;
             string name = ConvertName(hat.Author.Value + hat.Name.Value);
             string authorName = ConvertName(hat.Author.Value);
             translationDic[name] = hat.Name.Value;
             translationDic[authorName] = hat.Author.Value;
 
-            content.AddContent("Bound", new JsonBooleanContent(hat.Bounce.Value));
-            content.AddContent("Shader", new JsonBooleanContent(hat.Adaptive.Value));
-            content.AddContent("Climb", new JsonBooleanContent(hat.I_Climb));
-            content.AddContent("FrontFlip", new JsonBooleanContent(hat.I_Flip));
-            content.AddContent("Back", new JsonBooleanContent(hat.I_Back));
-            content.AddContent("BackFlip", new JsonBooleanContent(hat.I_BackFlip));
-            content.AddContent("comitHash", new JsonStringContent(""));
-            content.AddContent("Name", new JsonStringContent(name));
-            content.AddContent("Author", new JsonStringContent(authorName));
-            CopyFile("hats", hat.I_Main, "GlobalCosmicExR/ExtremeHat/" + name + "/front.png");
-            if (hat.I_Flip) CopyFile("hats", hat.I_Flip, "GlobalCosmicExR/ExtremeHat/" + name + "/front_flip.png");
-            if (hat.I_Back) CopyFile("hats", hat.I_Back, "GlobalCosmicExR/ExtremeHat/" + name + "/back.png");
-            if (hat.I_BackFlip) CopyFile("hats", hat.I_BackFlip, "GlobalCosmicExR/ExtremeHat/" + name + "/back_flip.png");
-            if (hat.I_Climb) CopyFile("hats", hat.I_Climb, "GlobalCosmicExR/ExtremeHat/" + name + "/climb.png");
+            string exportFolder = Path.Combine(globalExportFolder, ExHData.FolderName, name);
 
-            stream = new StreamWriter(File.Create("GlobalCosmicExR/ExtremeHat/" + name + "/info.json"));
-            stream.Write(json.Generate());
-            stream.Close();
+            CopyFile(hatCategory, hat.I_Main, Path.Combine(exportFolder, ExHData.FrontImageName));
+            if (hat.I_Flip) CopyFile(hatCategory, hat.I_Flip, Path.Combine(exportFolder, ExHData.FrontFlipImageName));
+            if (hat.I_Back) CopyFile(hatCategory, hat.I_Back, Path.Combine(exportFolder, ExHData.BackImageName));
+            if (hat.I_BackFlip) CopyFile(hatCategory, hat.I_BackFlip, Path.Combine(exportFolder, ExHData.BackFlipImageName));
+            if (hat.I_Climb) CopyFile(hatCategory, hat.I_Climb, Path.Combine(exportFolder, ExHData.ClimbImageName));
+
+            HatInfo hatInfo = new(
+                Name: name,
+                Author: authorName,
+                Bound: hat.Bounce.Value,
+                Shader: hat.Adaptive.Value,
+                Climb: hat.I_Climb,
+                FrontFlip: hat.I_Flip,
+                Back: hat.I_Back,
+                BackFlip: hat.I_BackFlip
+            );
+            InfoBase.ExportToJson(hatInfo, exportFolder);
         }
 
         var visors = CustomParts.CustomVisorRegistry.Values.Where((c) => c.IsLocal).ToArray();
