@@ -46,6 +46,16 @@
     <Reference Include="..\..\Among Us\BepInEx\interop\*.dll" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="..\ExtremeSkins.Core\ExtremeSkins.Core\Config.cs" Link="ExtremeSkins.Core\Config.cs" />
+    <Compile Include="..\ExtremeSkins.Core\ExtremeSkins.Core\CreatorMode.cs" Link="ExtremeSkins.Core\CreatorMode.cs" />
+    <Compile Include="..\ExtremeSkins.Core\ExtremeSkins.Core\InfoBase.cs" Link="ExtremeSkins.Core\InfoBase.cs" />
+    <Compile Include="..\ExtremeSkins.Core\ExtremeSkins.Core\ExtremeHats\HatInfo.cs" Link="ExtremeSkins.Core\ExtremeHats\HatInfo.cs" />
+    <Compile Include="..\ExtremeSkins.Core\ExtremeSkins.Core\ExtremeHats\DataStructure.cs" Link="ExtremeSkins.Core\ExtremeHats\DataStructure.cs" />
+    <Compile Include="..\ExtremeSkins.Core\ExtremeSkins.Core\ExtremeVisor\VisorInfo.cs" Link="ExtremeSkins.Core\ExtremeVisor\VisorInfo.cs" />
+    <Compile Include="..\ExtremeSkins.Core\ExtremeSkins.Core\ExtremeVisor\DataStructure.cs" Link="ExtremeSkins.Core\ExtremeVisor\DataStructure.cs" />
+  </ItemGroup>
+
   <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
     <Message Text="Second occurrence" />
     <Copy SourceFiles="bin\Release\net6.0\Nebula.dll" DestinationFolder="$(AmongUsPlugins)\" />
