@@ -9,17 +9,12 @@ using static Nebula.Roles.NeutralRoles.Paparazzo;
 
 namespace Nebula.Game;
 
+[NebulaRPCHolder]
 public class HnSModificator
 {
-    public static RemoteProcess<int> NoticeSeekerEvent = new RemoteProcess<int>(
-           (writer, message) =>
-           {
-           },
-           (reader) =>
-           {
-               return 0;
-           },
-           (message, isCalledByMe) =>
+    public static RemoteProcess NoticeSeekerEvent = new RemoteProcess(
+        "PingSeeker",
+           (isCalledByMe) =>
            {
                if (PlayerControl.LocalPlayer.Data.Role.IsImpostor) return;
 
@@ -50,6 +45,7 @@ public class HnSModificator
     }
 
     public static RemoteProcess<HnSTaskBonusMessage> ProceedTimer = new RemoteProcess<HnSTaskBonusMessage>(
+        "HnSTaskBonus",
             (writer, message) =>
             {
                 writer.Write(message.CanProceedFinalTimer);
@@ -81,7 +77,7 @@ public class HnSModificator
                 }
 
 
-                if (manager.LogicFlowHnS.TimerBar != null) manager.LogicFlowHnS.TimerBar.StartChunkCoroutine();
+                if (manager.LogicFlowHnS.timerBar != null) manager.LogicFlowHnS.timerBar.StartChunkCoroutine();
 
                 if (manager.LogicFlowHnS.IsFinalCountdown)
                     manager.LogicFlowHnS.AdjustFinalEscapeTimer(message.TimeDeduction);

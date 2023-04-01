@@ -101,6 +101,7 @@ public class HnSReaper : Template.Draggable
         HideInExclusiveAssignmentOption = true;
         canInvokeSabotage = false;
         HideKillButtonEvenImpostor = true;
+        canReport = false;
     }
 }
 

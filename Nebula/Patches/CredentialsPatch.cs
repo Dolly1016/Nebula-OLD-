@@ -15,6 +15,7 @@ public static class CredentialsPatch
             if (amongUsLogo == null) return;
 
             RuntimePrefabs.TextPrefab = UnityEngine.Object.Instantiate<TMPro.TextMeshPro>(__instance.text);
+            RuntimePrefabs.TextPrefab.enableAutoSizing = true;
             RuntimePrefabs.TextPrefab.text = "";
             RuntimePrefabs.TextPrefab.gameObject.hideFlags= HideFlags.HideAndDontSave;
             GameObject.DontDestroyOnLoad(RuntimePrefabs.TextPrefab.gameObject);

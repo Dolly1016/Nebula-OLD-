@@ -10,7 +10,6 @@ using Nebula.Patches;
 using AmongUs.Data;
 using Assets.InnerNet;
 using AmongUs.Data.Player;
-using Iced.Intel;
 
 namespace Nebula.Module;
 
@@ -82,8 +81,18 @@ public class ModNewsHistory
 
             HttpClient http = new HttpClient();
             http.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue { NoCache = true };
-            var uri = $"https://raw.githubusercontent.com/Dolly1016/Nebula/master/Announcement_{lang}.json";
-            var task = http.GetAsync(new System.Uri(uri), HttpCompletionOption.ResponseContentRead);
+            System.Uri uri;
+            try
+            {
+                uri = new($"https://raw.githubusercontent.com/Dolly1016/Nebula/master/Announcement_{lang}.json");
+            }
+            catch
+            {
+                AnnouncementPopUp.UpdateState = AnnouncementPopUp.AnnounceState.NotStarted;
+                yield break;
+            }
+
+            var task = http.GetAsync(uri, HttpCompletionOption.ResponseContentRead);
             while (!task.IsCompleted) yield return null;
             var response = task.Result;
 
@@ -133,7 +142,6 @@ public class ModNewsHistory
                     NebulaPlugin.Instance.Logger.Print("ModNews", "Failed to load news.");
                 }
             }
-
             AnnouncementPopUp.UpdateState = AnnouncementPopUp.AnnounceState.NotStarted;
         }
 
@@ -385,6 +393,7 @@ public static class HyperLinkHelperPatch
 [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start))]
 public class ModUpdaterButton
 {
+
     private static GameObject GenerateButton(GameObject template, Color color, string text, System.Action? action, bool mirror, ref int buttons)
     {
         buttons++;
@@ -435,11 +444,12 @@ public class ModUpdaterButton
             else message = "title.button.getStableNebula";
             updateButtons.Add(GenerateButton(template, Color.white, message, !ModUpdater.hasUnprocessableUpdate ? (System.Action)onClickUpdateButton : null, false, ref buttons));
 
-            void onClickUpdateButton()
-            {
-                ModUpdater.ExecuteUpdate(ModUpdater.updateURI);
-                foreach (var b in updateButtons) b.SetActive(false);
-            }
+        }
+
+        void onClickUpdateButton()
+        {
+            ModUpdater.ExecuteUpdate(ModUpdater.updateURI);
+            foreach (var b in updateButtons) b.SetActive(false);
         }
 
         //最新版(あるいは後続のスナップショット)を所持している場合のみスナップショットを利用可能
@@ -470,6 +480,7 @@ public class ModUpdaterButton
 
 public class ModUpdater
 {
+
     public static bool running = false;
     public static bool hasUpdate = false;
     public static bool hasUnprocessableUpdate = false;
@@ -527,9 +538,10 @@ public class ModUpdater
     {
         try
         {
+            HttpClient http = new HttpClient();
+
             //安定版の確認
 
-            HttpClient http = new HttpClient();
             //http.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue { NoCache = true };
             http.DefaultRequestHeaders.Add("User-Agent", "Nebula Updater");
 
@@ -586,7 +598,6 @@ public class ModUpdater
             }
 
             //スナップショットの確認
-            http = new HttpClient();
             http.DefaultRequestHeaders.Add("User-Agent", "Nebula Updater");
 
             response = await http.GetAsync(new System.Uri("https://api.github.com/repos/Dolly1016/Nebula/releases/tags/snapshot"), HttpCompletionOption.ResponseContentRead);
@@ -615,6 +626,7 @@ public class ModUpdater
                 hasNewestSnapshot = true;
             }
 
+            http.Dispose();
         }
         catch (System.Exception ex)
         {
@@ -629,31 +641,34 @@ public class ModUpdater
     {
         try
         {
-            HttpClient http = new HttpClient();
-            http.DefaultRequestHeaders.Add("User-Agent", "Nebula Updater");
-            var response = await http.GetAsync(new System.Uri(updateURI), HttpCompletionOption.ResponseContentRead);
-            if (response.StatusCode != HttpStatusCode.OK || response.Content == null)
+            using (HttpClient http = new HttpClient())
             {
-                System.Console.WriteLine("Server returned no data: " + response.StatusCode.ToString());
-                return false;
-            }
-            string codeBase = Assembly.GetExecutingAssembly().CodeBase;
-            System.UriBuilder uri = new System.UriBuilder(codeBase);
-            string fullname = System.Uri.UnescapeDataString(uri.Path);
-            if (File.Exists(fullname + ".old")) // Clear old file in case it wasnt;
-                File.Delete(fullname + ".old");
 
-            File.Move(fullname, fullname + ".old"); // rename current executable to old
-
-            using (var responseStream = await response.Content.ReadAsStreamAsync())
-            {
-                using (var fileStream = File.Create(fullname))
-                { // probably want to have proper name here
-                    responseStream.CopyTo(fileStream);
+                http.DefaultRequestHeaders.Add("User-Agent", "Nebula Updater");
+                var response = await http.GetAsync(new System.Uri(updateURI), HttpCompletionOption.ResponseContentRead);
+                if (response.StatusCode != HttpStatusCode.OK || response.Content == null)
+                {
+                    System.Console.WriteLine("Server returned no data: " + response.StatusCode.ToString());
+                    return false;
                 }
+                string codeBase = Assembly.GetExecutingAssembly().CodeBase;
+                System.UriBuilder uri = new System.UriBuilder(codeBase);
+                string fullname = System.Uri.UnescapeDataString(uri.Path);
+                if (File.Exists(fullname + ".old")) // Clear old file in case it wasnt;
+                    File.Delete(fullname + ".old");
+
+                File.Move(fullname, fullname + ".old"); // rename current executable to old
+
+                using (var responseStream = await response.Content.ReadAsStreamAsync())
+                {
+                    using (var fileStream = File.Create(fullname))
+                    { // probably want to have proper name here
+                        responseStream.CopyTo(fileStream);
+                    }
+                }
+                showPopup(Language.Language.GetString("update.restart"));
+                return true;
             }
-            showPopup(Language.Language.GetString("update.restart"));
-            return true;
         }
         catch (System.Exception ex)
         {

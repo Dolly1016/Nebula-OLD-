@@ -28,6 +28,7 @@ public class TextInputField : MonoBehaviour
         Text.transform.SetParent(gameObject.transform);
         Text.transform.localScale = new Vector3(1f, 1f, 1f);
         Text.transform.localPosition = new Vector3(0f, 0f, -1f);
+        Text.enableAutoSizing = false;
 
         Text.alignment = alignmentOptions;
         Text.fontStyle = fontStyle;
@@ -36,6 +37,7 @@ public class TextInputField : MonoBehaviour
         Text.text = "";
         Text.fontSize = Text.fontSizeMax = Text.fontSizeMin = fontSize;
         Text.outlineWidth = 0f;
+        Text.outlineColor = Color.clear;
 
         if (!Pipe) Pipe = GameObject.Instantiate(RuntimePrefabs.TextPrefab);
         Pipe.transform.SetParent(gameObject.transform);
@@ -46,6 +48,8 @@ public class TextInputField : MonoBehaviour
         Pipe.text = "";
         Pipe.fontSize = Text.fontSizeMax = Text.fontSizeMin = fontSize;
         Pipe.outlineWidth = 0f;
+        Pipe.outlineColor = Color.clear;
+        Pipe.enableAutoSizing = false;
 
         ReflectTextProperty();
     }
@@ -87,18 +91,22 @@ public class TextInputField : MonoBehaviour
 
     public void AcceptText(string text)
     {
+        if (text.Length == 0) return;
+
+        string result = InputText;
         foreach (var c in text)
         {
             if (c == '\b')
             {
-                if (Cursor > 0 && InputText.Length > 0)
+                if (Cursor > 0 && result.Length > 0)
                 {
-                    InputText = InputText.Remove(Cursor - 1, 1);
+                    result = result.Remove(Cursor - 1, 1);
                     Cursor--;
                 }
             }
             else if (c == '\n' || c == '\r')
             {
+                if (DecisionAction != null) DecisionAction(InputText);
                 LoseFocus();
                 break;
             }
@@ -106,13 +114,15 @@ public class TextInputField : MonoBehaviour
                 continue;
             else
             {
-                if (Cursor < InputText.Length)
-                    InputText = InputText.Insert(Cursor, c.ToString());
+                if (Cursor < result.Length)
+                    result = result.Insert(Cursor, c.ToString());
                 else
-                    InputText += c;
+                    result += c;
                 Cursor++;
             }
         }
+        SetText(result);
+
         ResetPipe();
     }
 
@@ -127,10 +137,13 @@ public class TextInputField : MonoBehaviour
                 Text.text = Helpers.cs(Color.white * 0.6f, HintText);
             else
                 Text.text = InputText;
+
+            if (CandidatesShower) CandidatesShower.gameObject.SetActive(false);
             return;
         }
 
-        if (Input.GetMouseButtonDown(0)) LoseFocus();
+        if (!(lastFocusTime > 0f) && Input.GetMouseButtonUp(0)) LoseFocus();
+        if (lastFocusTime > 0f) lastFocusTime -= Time.deltaTime;
 
         if (AllowPaste && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetKeyDown(KeyCode.V))
         {
@@ -161,11 +174,12 @@ public class TextInputField : MonoBehaviour
             CaretFlag = !CaretFlag;
         }
 
+        Pipe.text = CaretFlag ? "|" : "";
+
         string firstHalf = (Cursor > 0 ? InputText.Substring(0, Cursor) : "") + Input.compositionString;
         string latterHalf= InputText.Substring(Cursor);
         if (InputText.Length > 0) {
             Text.text = firstHalf + latterHalf;
-            Pipe.text = CaretFlag ? "|" : "";
             Text.ForceMeshUpdate();
             float x = 0f;
             if (firstHalf.Length > 0)
@@ -173,13 +187,24 @@ public class TextInputField : MonoBehaviour
             else
                 x = Text.textInfo.characterInfo[0].bottomLeft.x;
             Pipe.transform.localPosition = new Vector3(x, 0f, -1.5f);
-            
         }
         else
         {
-            Text.text = firstHalf + latterHalf + (CaretFlag ? "|" : "");
-            Pipe.text = "";
+            Text.text = firstHalf + latterHalf;
+            Pipe.transform.localPosition = new Vector3(-Text.rectTransform.sizeDelta.x / 2f, 0f, -1.5f);
         }
+
+        if (Cursor >= CandidateIndex)
+        {
+            if (CandidatesShower)
+            {
+                CandidatesShower.gameObject.SetActive(true);
+                CandidatesShower.Offset = new(CandidateIndex > 0 ? Text.textInfo.characterInfo[CandidateIndex - 1].bottomRight.x : -Text.rectTransform.sizeDelta.x / 2f, 0f);
+            }
+        }
+        else if (CandidatesShower)
+            CandidatesShower.gameObject.SetActive(false);
+
     }
 
     public void LoseFocus()
@@ -187,14 +212,23 @@ public class TextInputField : MonoBehaviour
         if (ValidField != this) return;
         Input.imeCompositionMode = IMECompositionMode.Off;
         ValidField = null;
-        if (DecisionAction != null) DecisionAction.Invoke(InputText);
+        if (LoseFocusAction != null) LoseFocusAction.Invoke(InputText);
+
+        if(CandidatesShower != null) CandidatesShower.gameObject.SetActive(false);
+        
     }
 
     public void GetFocus()
     {
+        if (ValidField) ValidField!.LoseFocus();
         ValidField = this;
+
         if(UseIME) Input.imeCompositionMode = IMECompositionMode.On;
         Cursor= InputText.Length;
+
+        lastFocusTime = 0.5f;
+
+        OnSetText();
     }
 
     public void OnDisable()
@@ -202,22 +236,68 @@ public class TextInputField : MonoBehaviour
         LoseFocus();
     }
 
-    public TMPro.TextMeshPro Text;
-    public TMPro.TextMeshPro Pipe;
+    private TMPro.TextMeshPro Text;
+    private TMPro.TextMeshPro Pipe;
     public SpriteRenderer Background;
     public BoxCollider2D Collider;
     public PassiveButton Button;
-    public string InputText = "";
+    public string InputText { get; private set; } = "";
     public string? HintText = null;
     private float CaretTimer = 0f;
     private bool CaretFlag = false;
     public bool UseIME = false;
+    public float lastFocusTime = 0f;
+
+    public ICandidateSuggester? Suggester = null;
+    private int CandidateIndex = -1;
+
+    public void SetTextByCandidate(string text)
+    {
+        if(CandidateIndex>=0)SetText(InputText.Substring(0, CandidateIndex) + text);
+    }
+
+    public void SetText(string text)
+    {
+        if (InputText == text) return;
+
+        InputText = text;
+        OnSetText();
+    }
+
+    private void OnSetText()
+    {
+        if (ValidField != this) return;
+
+        if (Suggester != null)
+        {
+            Suggester.GetCandidate(InputText, out var candidates, out CandidateIndex);
+
+            if (CandidatesShower == null)
+            {
+                CandidatesShower = new GameObject("Candidates").AddComponent<TextCandidates>();
+                CandidatesShower.SetField(this);
+                CandidatesShower.Offset = Vector2.zero;
+            }
+            CandidatesShower.gameObject.SetActive(true);
+            CandidatesShower.UpdateCandidates(candidates);
+        }
+        else
+        {
+            CandidateIndex = -1;
+        }
+    }
+
+
+
+    public TextCandidates CandidatesShower;
+
     public int Cursor { get; private set; } = 0;
 
     public bool AllowPaste = true;
     public Predicate<char>? AllowCharacters = null;
 
     public Action<string>? DecisionAction = null;
+    public Action<string>? LoseFocusAction = null;
 
     public static TextInputField? ValidField = null;
     

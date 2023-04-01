@@ -34,12 +34,11 @@ public class CustumizableSpriteLoader : ISpriteLoader
 public class AssetSpriteLoader : ISpriteLoader
 {
     NebulaAssetBundle assetBundle;
-    Texture2D? texture = null;
     Sprite sprite = null;
     string address;
     float pixelsPerUnit;
 
-    public AssetSpriteLoader(NebulaAssetBundle assetBundle,string address,float pixelsPerUnit)
+    public AssetSpriteLoader(NebulaAssetBundle assetBundle,string address,float pixelsPerUnit=100f)
     {
         this.assetBundle = assetBundle;
         this.address = address;
@@ -48,12 +47,17 @@ public class AssetSpriteLoader : ISpriteLoader
 
     public Sprite GetSprite()
     {
-        if (texture == null)
+        if (!sprite)
         {
-            texture = assetBundle.assetBundle.LoadAsset<Texture2D>(address);
-            if (texture == null) return null;
+            if (address.EndsWith(".png"))
+            {
+                sprite = Helpers.loadSpriteFromTexture(assetBundle.assetBundle.LoadAsset<Texture2D>(address), pixelsPerUnit);
+            }
+            else
+            {
+                sprite = assetBundle.assetBundle.LoadAsset<Sprite>(address);
+            }
         }
-        if (!sprite) sprite = Helpers.loadSpriteFromTexture(texture,pixelsPerUnit);
         return sprite;
     }
 }

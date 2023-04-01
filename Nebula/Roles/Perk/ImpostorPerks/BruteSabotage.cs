@@ -8,10 +8,12 @@ using static UnityEngine.GraphicsBuffer;
 
 namespace Nebula.Roles.Perk.ImpostorPerks;
 
+[NebulaRPCHolder]
 public class BruteSabotage : Perk
 {
     public static RemoteProcess<Tuple<Vector2,float>> DoorSabotageEvent = new RemoteProcess<Tuple<Vector2, float>>(
-           (writer, message) =>
+        "DoorSabotage",   
+        (writer, message) =>
            {
                writer.Write(message.Item1.x);
                writer.Write(message.Item1.y);
@@ -88,6 +90,7 @@ public class BruteSabotage : Perk
         button = new CustomButton(
             () =>
             {
+                PlayerControl.LocalPlayer.NetTransform.Halt();
                 PlayerControl.LocalPlayer.moveable = false;
             },
             () => { return !PlayerControl.LocalPlayer.Data.IsDead; },

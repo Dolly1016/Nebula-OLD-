@@ -335,8 +335,8 @@ public static class HnsPatch
     {
         //最終盤面でもタスクをこなせる
 
-        __instance.TimerBar.StartFinalHide();
-        SoundManager.Instance.PlaySound(__instance.HideAndSeekManager.FinalHideAlertSFX, false, 1f, null);
+        __instance.timerBar.StartFinalHide();
+        SoundManager.Instance.PlaySound(__instance.hideAndSeekManager.FinalHideAlertSFX, false, 1f, null);
         DestroyableSingleton<HudManager>.Instance.SetAlertFlash(true);
 
         return false;

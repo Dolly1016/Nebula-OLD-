@@ -80,6 +80,7 @@ public class HnSCleaner : Role
         ValidGamemode = Module.CustomGameMode.StandardHnS;
         HideInExclusiveAssignmentOption = true;
         canInvokeSabotage = false;
+        canReport = false;
         HideKillButtonEvenImpostor = true;
     }
 }

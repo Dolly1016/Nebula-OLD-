@@ -155,7 +155,7 @@ public class CustomOptionPreset
                 CustomOption.loadOptionWithoutSync(entry.Key, entry.Value);
         }
 
-        CustomOption.ShareOptionSelections();
+        CustomOption.ShareAllOptions.Invoke(CustomOption.AllOptions);
     }
 
     public void Output()

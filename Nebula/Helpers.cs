@@ -982,4 +982,9 @@ public static class Helpers
         }
         return result;
     }
+
+    static public bool CanBeCandidate(this string candidate,string text)
+    {
+        return text.StartsWith(candidate) && candidate != text;
+    }
 }

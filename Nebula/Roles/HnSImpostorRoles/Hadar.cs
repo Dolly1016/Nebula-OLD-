@@ -152,6 +152,7 @@ public class HnSHadar : Role
         HideInExclusiveAssignmentOption = true;
         canInvokeSabotage = false;
         HideKillButtonEvenImpostor = true;
+        canReport = false;
     }
 }
 

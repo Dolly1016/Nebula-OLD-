@@ -31,6 +31,13 @@ public class RitualPatch
                 }
                 return false;
             }
+            else if (idx == Byte.MaxValue - 4)
+            {
+                var obj = new GameObject();
+                obj.hideFlags |= HideFlags.HideInHierarchy;
+                __result = obj.AddComponent<Tasks.SpectreRancorAdditionalTask>();
+                return false;
+            }
             return true;
         }
     }

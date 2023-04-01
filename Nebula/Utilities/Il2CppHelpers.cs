@@ -1,6 +1,23 @@
-﻿using System.Linq.Expressions;
+﻿using JetBrains.Annotations;
+using System.Linq.Expressions;
 
 namespace Nebula.Utilities;
+
+public class Il2CppArgument<T>
+{
+    public T Value { get; private set; }
+    public Il2CppArgument(T value)
+    {
+        Value = value;
+    }
+
+    public static implicit operator Il2CppArgument<T>(T value)
+    {
+        return new Il2CppArgument<T>(value);
+    }
+
+
+}
 
 public static class Il2CppHelpers
 {

@@ -1,9 +1,12 @@
-﻿using Nebula.Patches;
+﻿using Cpp2IL.Core.Extensions;
+using Nebula.Patches;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Unity.Services.Core.Internal;
 
 namespace Nebula;
 
@@ -95,7 +98,7 @@ public class NebulaManager : MonoBehaviour
 
             IEnumerator DestroyField(string errorTxt)
             {
-                component.InputText = "";
+                component.SetText("");
                 component.HintText = errorTxt;
 
                 float t = 2f;

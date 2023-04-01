@@ -156,6 +156,7 @@ public class Crewmate : Role
         IsHideRole = true;
         ValidGamemode = Module.CustomGameMode.StandardHnS;
         HideInExclusiveAssignmentOption = true;
+        canReport = false;
 
         VentColor = Palette.CrewmateBlue;
 

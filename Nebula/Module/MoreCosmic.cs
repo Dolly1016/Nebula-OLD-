@@ -623,6 +623,16 @@ public class CustomParts
     public static Dictionary<int, CustomNamePlate> CustomNamePlateRegistry = new Dictionary<int, CustomNamePlate>();
     public static Dictionary<int, CustomVisor> CustomVisorRegistry = new Dictionary<int, CustomVisor>();
 
+    public static HashSet<string> LocalAuthorsHistory = new HashSet<string>();
+
+    public static void ReloadLocalAuthors()
+    {
+        LocalAuthorsHistory.Clear();
+        foreach (var hat in CustomHatRegistry.Values) if (hat.IsLocal) LocalAuthorsHistory.Add(hat.Author.Value);
+        foreach (var nameplate in CustomNamePlateRegistry.Values) if (nameplate.IsLocal) LocalAuthorsHistory.Add(nameplate.Author.Value);
+        foreach (var visor in CustomVisorRegistry.Values) if (visor.IsLocal) LocalAuthorsHistory.Add(visor.Author.Value);
+    }
+
     public static HatData CreateHatData(CustomHat ch, bool fromDisk = false)
     {
         if (hatShader == null)
@@ -742,7 +752,7 @@ public class CustomParts
             vd.ChipOffset = new Vector2(0f, 0.2f);
             vd.Free = true;
             vd.NotInStore = true;
-            vd.viewData.viewData.BehindHats = ch.BehindHat.Value;
+            vd.behindHats = ch.BehindHat.Value;
 
             if (ch.Adaptive.Value && hatShader != null)
                 vd.viewData.viewData.AltShader = hatShader;
@@ -1492,45 +1502,49 @@ public class CosmicLoader
         if (!NebulaOption.GetGameControlArgument(2))
             GetUserCosmicRepos(ref repos);
 
-        foreach (string repo in repos)
+        using (HttpClient httpClient = new HttpClient())
         {
-            string? json;
-            HttpClient? http = null;
 
-            if (repo.StartsWith("https://"))
+            foreach (string repo in repos)
             {
-                http = new HttpClient();
-                json = await FetchOnlineItems(repo, http);
-            }
-            else
-                json = FetchOfflineItems(repo);
+                string? json;
+                HttpClient? http = null;
 
-            if (json == null) continue;
+                if (repo.StartsWith("https://"))
+                {
+                    http = httpClient;
+                    json = await FetchOnlineItems(repo, http);
+                }
+                else
+                    json = FetchOfflineItems(repo);
 
-            try
-            {
-                HttpStatusCode status;
+                if (json == null) continue;
 
-                status = await LoadPackage(json, repo, http == null);
-                if (status != HttpStatusCode.OK)
-                    NebulaPlugin.Instance.Logger.Print($"[Failed]Load MoreCosmic Packages {repo}\n");
+                try
+                {
+                    HttpStatusCode status;
 
-                status = await FetchItems(http, json, repo, "hats", hatdetails);
-                if (status != HttpStatusCode.OK)
-                    NebulaPlugin.Instance.Logger.Print($"[Failed]Load MoreCosmic Hats {repo}\n");
+                    status = await LoadPackage(json, repo, http == null);
+                    if (status != HttpStatusCode.OK)
+                        NebulaPlugin.Instance.Logger.Print($"[Failed]Load MoreCosmic Packages {repo}\n");
 
-                status = await FetchItems(http, json, repo, "namePlates", namePlatedetails);
-                if (status != HttpStatusCode.OK)
-                    NebulaPlugin.Instance.Logger.Print($"[Failed]Load MoreCosmic Nameplates {repo}\n");
+                    status = await FetchItems(http, json, repo, "hats", hatdetails);
+                    if (status != HttpStatusCode.OK)
+                        NebulaPlugin.Instance.Logger.Print($"[Failed]Load MoreCosmic Hats {repo}\n");
 
-                status = await FetchItems(http, json, repo, "visors", visordetails);
-                if (status != HttpStatusCode.OK)
-                    NebulaPlugin.Instance.Logger.Print($"[Failed]Load MoreCosmic Visors {repo}\n");
+                    status = await FetchItems(http, json, repo, "namePlates", namePlatedetails);
+                    if (status != HttpStatusCode.OK)
+                        NebulaPlugin.Instance.Logger.Print($"[Failed]Load MoreCosmic Nameplates {repo}\n");
 
-            }
-            catch 
-            {
-                NebulaPlugin.Instance.Logger.Print($"[Failed]Load MoreCosmic {repo}");
+                    status = await FetchItems(http, json, repo, "visors", visordetails);
+                    if (status != HttpStatusCode.OK)
+                        NebulaPlugin.Instance.Logger.Print($"[Failed]Load MoreCosmic Visors {repo}\n");
+
+                }
+                catch
+                {
+                    NebulaPlugin.Instance.Logger.Print($"[Failed]Load MoreCosmic {repo}");
+                }
             }
         }
         running = false;

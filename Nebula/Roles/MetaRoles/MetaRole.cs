@@ -177,7 +177,7 @@ public class MetaObjectManager
         for (int i = 0; i < multiString.Length; i++) MetaInfoText[i] = multiString[i].text;
         TextInputField = textInput.TextInputField;
         TextInputField.HintText = "freePlay.metaObject";
-        textInput.TextInputField.DecisionAction = (id) => SpawnMetaObject(id);
+        textInput.TextInputField.LoseFocusAction = (id) => SpawnMetaObject(id);
 
         SpawnMetaObject("freePlay.metaObject");   
     }

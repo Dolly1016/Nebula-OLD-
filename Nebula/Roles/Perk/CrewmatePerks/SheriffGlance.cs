@@ -28,7 +28,7 @@ public class SheriffGlance : Perk
 
         if (dis < threthold && perkData.IntegerAry[0] == 0 && !(perkData.DataAry[0]>0f))
         {
-            Game.HnSModificator.NoticeSeekerEvent.Invoke(0);
+            Game.HnSModificator.NoticeSeekerEvent.Invoke();
             perkData.DataAry[0] = IP(0, PerkPropertyType.Second);
         }
 

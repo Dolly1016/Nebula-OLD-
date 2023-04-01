@@ -19,6 +19,14 @@ public class ElecPole : DelayedObject
         return CustomObject.ObjectOrder.IsBack;
     }
 
+    public override void Initialize(CustomObject obj)
+    {
+        base.Initialize(obj);
+        var collider = obj.GameObject.AddComponent<CircleCollider2D>();
+        collider.radius = 0.4f;
+        collider.enabled = false;
+    }
+
     public override void Update(CustomObject obj, int command) {
         IEnumerator GetEnumerator(int[] indexAry)
         {
@@ -37,31 +45,21 @@ public class ElecPole : DelayedObject
             }
         }
 
-        Sanitize(obj);
-
         if (command == 0)
         {
-            var collider = obj.GameObject.AddComponent<CircleCollider2D>();
-            collider.radius = 0.4f;
+            obj.GameObject.GetComponent<CircleCollider2D>().enabled = true;
             obj.Behaviour.StartCoroutine(GetEnumerator(new int[] { 1, 2, 3 }).WrapToIl2Cpp());
         }
         if (command == 1)
         {
+            obj.GameObject.GetComponent<CircleCollider2D>().enabled = false;
             obj.Behaviour.StartCoroutine(GetEnumerator(new int[] { 2, 1, 0 }).WrapToIl2Cpp());
         }
     }
 
-    private void Sanitize(CustomObject obj)
-    {
-        obj.Renderer.sprite = Sprite.GetSprite();
-
-        var colliders = obj.GameObject.GetComponents<CircleCollider2D>();
-        if (colliders.Count == 0) return;
-        foreach (var c in colliders) GameObject.Destroy(c);
-    }
-
     public override void OnMeetingEnd(CustomObject obj)
     {
-        Sanitize(obj);
+        obj.Renderer.sprite = Sprite.GetSprite();
+        obj.GameObject.GetComponent<CircleCollider2D>().enabled = false;
     }
 }

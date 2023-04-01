@@ -53,7 +53,7 @@ namespace Nebula.Tasks
                             {
                                 MyNormTask.NextStep();
                                 Close();
-                                var pair = Roles.Roles.Spectre.FriedConsoles.FirstOrDefault(pair => pair.Value.name == Console.gameObject.name);
+                                var pair = Roles.Roles.Spectre.CustomConsoles.FirstOrDefault(pair => pair.Value.name == Console.gameObject.name);
                                 RPCEventInvoker.SpectreReform(pair.Key);
                             }
                         }
@@ -123,7 +123,14 @@ namespace Nebula.Tasks
             taskStep = 0;
             
             MaxStep = (int)Roles.Roles.Spectre.numOfTheFriedRequireToWinOption.getFloat();
-            if (Roles.Roles.Spectre.FriedConsoles.Count < MaxStep) MaxStep = Roles.Roles.Spectre.FriedConsoles.Count;
+
+            int count;
+
+            count = 0;
+            Roles.Roles.Spectre.friedTaskSetting.ForAllValidLoc(GameOptionsManager.Instance.CurrentGameOptions.MapId, (data) => {
+                count++;
+            });
+            if (count < MaxStep) MaxStep = count;
 
             LocationDirty = true;
             HasLocation = true;

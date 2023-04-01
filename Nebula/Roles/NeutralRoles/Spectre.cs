@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using Epic.OnlineServices.UI;
+using JetBrains.Annotations;
 using Nebula.Expansion;
 using Nebula.Game;
 using Nebula.Map;
@@ -8,6 +9,7 @@ using Nebula.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using static Il2CppSystem.Globalization.CultureInfo;
 
 namespace Nebula.Roles.NeutralRoles;
 
@@ -35,11 +37,15 @@ public class Spectre : Role
 
     private SpriteLoader buttonSprite = new SpriteLoader("Nebula.Resources.SpectreButton.png", 115f, "ui.button.spectre.clarify");
 
+    public SpriteLoader spectreLetterConsoleSprite = new SpriteLoader("Nebula.Resources.SpectreMinigameConsoleLetter.png", 100f);
+
     public SpriteLoader spectreFriedConsoleSprite = new SpriteLoader("Nebula.Resources.SpectreMinigameConsole.png", 100f);
     public SpriteLoader spectreFriedConsoleEatenSprite = new SpriteLoader("Nebula.Resources.SpectreMinigameConsoleUsed.png", 100f);
 
     public SpriteLoader spectreRancorConsoleSprite = new SpriteLoader("Nebula.Resources.SpectreMinigameConsoleStatue.png", 100f);
     public SpriteLoader spectreRancorConsoleBrokenSprite = new SpriteLoader("Nebula.Resources.SpectreMinigameConsoleStatueBroken.png", 100f);
+
+    public ISpriteLoader[] spectreFoxAnimationSprites,spectreStatueSprites;
 
     public SpriteLoader GetConsoleUnusedSprite()
     {
@@ -77,29 +83,51 @@ public class Spectre : Role
         return spectreFriedConsoleEatenSprite;
     }
 
-    static Dictionary<byte, List<FriedTaskData>> friedTaskPos = new();
-    public Dictionary<byte, Module.CustomOption> friedTaskOption = new();
-    public Dictionary<int, GameObject> FriedConsoles = new();
+    public CustomTaskSetting friedTaskSetting = new();
+    public CustomTaskSetting letterTaskSetting = new();
+    public CustomTaskSetting statueTaskSetting = new();
+
+    public Dictionary<int, GameObject> CustomConsoles = new();
 
     public override bool CanFixEmergencySabotage { get { return canFixEmergencySabotageOption.getBool(); } }
 
-    class FriedTaskData : PointData
+    public class CustomTaskData : PointData
     {
         public float z { get; private set; }
         public float usableDistance { get; private set; }
-        public FriedTaskData(string name, Vector2 pos,float z) : base(name, pos) {
+        public CustomTaskData(string name, Vector2 pos,float z) : base(name, pos) {
             this.z = z;
             usableDistance = 0.7f;
         }
-        public FriedTaskData(string name, Vector2 pos) : base(name, pos) {
+        public CustomTaskData(string name, Vector2 pos) : base(name, pos) {
             z = pos.y / 1000f + 0.001f;
             usableDistance = 0.7f;
         }
 
-        public FriedTaskData SetUsableDistance(float distance)
+        public CustomTaskData SetUsableDistance(float distance)
         {
             usableDistance= distance;
             return this;
+        }
+    }
+
+    public class CustomTaskSetting
+    {
+        private Dictionary<byte, System.Tuple<List<CustomTaskData>, CustomOption>> TaskDic = new();
+        public void AddSetting(byte mapId,List<CustomTaskData> taskSettings,CustomOption option)
+        {
+            TaskDic[mapId] = new(taskSettings, option);
+        }
+
+        public void ForAllValidLoc(byte mapId,Action<CustomTaskData> process)
+        {
+            var setting = TaskDic[mapId];
+            for (int i=0;i<setting.Item1.Count;i++) if ((setting.Item2.selection & (1 << i)) != 0) process(setting.Item1[i]);
+        }
+
+        public System.Tuple<List<CustomTaskData>, CustomOption> GetSetting(byte mapId)
+        {
+            return TaskDic[mapId];
         }
     }
 
@@ -109,21 +137,18 @@ public class Spectre : Role
 
         if (!IsSpawnable()) return;
 
-        if (!friedTaskOption.ContainsKey(mapId)) return;
-
-        FriedConsoles.Clear();
+        CustomConsoles.Clear();
 
         int i = 0;
 
-        var option = friedTaskOption[mapId];
-        foreach(var data in friedTaskPos[mapId])
+        switch (spectreTaskOption.selection)
         {
-            if ((option.selection & (1 << i)) != 0)
-            {
-                var console = ConsoleExpansion.GenerateConsole<Console>(new Vector3(data.point.x, data.point.y, data.z), "NoS-SpectreFried-" + data.name, GetConsoleUnusedSprite().GetSprite());
-                console.usableDistance = data.usableDistance;
-
+            case 1:
+                friedTaskSetting.ForAllValidLoc(mapId, (loc) =>
                 {
+                    var console = ConsoleExpansion.GenerateConsole<Console>(new Vector3(loc.point.x, loc.point.y, loc.z), "NoS-SpectreFried-" + loc.name, GetConsoleUnusedSprite().GetSprite());
+                    console.usableDistance = loc.usableDistance;
+
                     console.gameObject.layer = LayerExpansion.GetDefaultLayer();
                     var sObj = new GameObject("inShaddow");
                     sObj.transform.SetParent(console.transform);
@@ -131,12 +156,37 @@ public class Spectre : Role
                     sObj.transform.localScale = Vector2.one;
                     sObj.layer = LayerExpansion.GetShadowLayer();
                     sObj.AddComponent<SpriteRenderer>().sprite = GetConsoleInShadowSprite().GetSprite();
-                }
-                FriedConsoles.Add(i, console.gameObject);
-            }
 
-            i++;
+                    CustomConsoles.Add(i, console.gameObject);
+                    i++;
+                });
+                break;
+            case 2:
+                letterTaskSetting.ForAllValidLoc(mapId, (loc) =>
+                {
+                    var console = ConsoleExpansion.GenerateConsole<Console>(new Vector3(loc.point.x, loc.point.y, loc.z), "NoS-SpectreLetter-" + loc.name, spectreLetterConsoleSprite.GetSprite());
+                    console.usableDistance = loc.usableDistance;
+                });
+
+                statueTaskSetting.ForAllValidLoc(mapId, (loc) =>
+                {
+                    var console = ConsoleExpansion.GenerateConsole<Console>(new Vector3(loc.point.x, loc.point.y, loc.z), "NoS-SpectreStatue-" + loc.name, GetConsoleUnusedSprite().GetSprite());
+                    console.usableDistance = loc.usableDistance;
+
+                    console.gameObject.layer = LayerExpansion.GetDefaultLayer();
+                    var sObj = new GameObject("inShaddow");
+                    sObj.transform.SetParent(console.transform);
+                    sObj.transform.localPosition = Vector2.zero;
+                    sObj.transform.localScale = Vector2.one;
+                    sObj.layer = LayerExpansion.GetShadowLayer();
+                    sObj.AddComponent<SpriteRenderer>().sprite = GetConsoleInShadowSprite().GetSprite();
+
+                    CustomConsoles.Add(i, console.gameObject);
+                    i++;
+                });
+                break;
         }
+
     }
 
     private CustomButton spectreButton;
@@ -222,53 +272,236 @@ public class Spectre : Role
             }
     }
 
-    private Action<byte> getRefresher<T>(Dictionary<byte,CustomOption> optionDic,Dictionary<byte,List<T>> posDic) where T : PointData
+    private Action<byte> getRefresher(params Tuple<CustomTaskSetting,Sprite?>[] settings) 
     {
         Action<byte> refresher = null;
         refresher = (mapId) => MetaDialog.OpenMapDialog(mapId, true, (obj, id) =>
         {
             var mapData = Map.MapData.MapDatabase[id];
-            var option = optionDic[id];
-            int index = 0;
-            foreach (T point in posDic[id])
+            foreach (var setting in settings)
             {
-                bool flag = ((option.selection & 1 << index) != 0);
-                PassiveButton button = Module.MetaScreen.MSDesigner.AddSubButton(obj, new Vector2(2.4f, 0.4f), "Point", flag ? "o" : "-", flag ? Color.yellow : Color.white);
-                button.transform.localPosition = (Vector3)mapData.ConvertMinimapPosition(point.point) + new Vector3(0f, 0f, -5f);
-                button.transform.localScale /= (obj.transform.localScale.x / 0.75f);
-
-                SpriteRenderer renderer = button.GetComponent<SpriteRenderer>();
-                TMPro.TextMeshPro text = button.transform.GetChild(0).GetComponent<TMPro.TextMeshPro>();
-
-                renderer.size = new Vector2(text.preferredWidth + 0.3f, renderer.size.y);
-                button.GetComponent<BoxCollider2D>().size = renderer.size;
-
-                int i = index;
-                button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
+                var option = setting.Item1.GetSetting(id).Item2;
+                int index = 0;
+                foreach (PointData point in setting.Item1.GetSetting(id).Item1)
                 {
-                    int selection = option.selection;
-                    selection ^= 1 << i;
-                    option.updateSelection(selection);
-                    MetaDialog.EraseDialog(1);
-                    refresher(id);
-                }));
-                index++;
+                    bool flag = ((option.selection & 1 << index) != 0);
+                    PassiveButton button = Module.MetaScreen.MSDesigner.AddSubButton(obj, new Vector2(2.4f, 0.4f), "Point", setting.Item2 == null ? (flag ? "o" : "-") : "", flag ? Color.yellow : Color.white);
+                    button.transform.localPosition = (Vector3)mapData.ConvertMinimapPosition(point.point) + new Vector3(0f, 0f, -5f);
+                    button.transform.localScale /= (obj.transform.localScale.x / 0.75f);
+
+                    SpriteRenderer renderer = button.GetComponent<SpriteRenderer>();
+
+                    var text = button.transform.GetChild(0).GetComponent<TMPro.TextMeshPro>();
+
+                    var spriteObj = new GameObject("Icon");
+                    spriteObj.transform.SetParent(button.transform, false);
+                    spriteObj.transform.localPosition = new Vector3(0,0,-1f);
+                    spriteObj.layer = LayerExpansion.GetUILayer();
+                    var iconRenderer = spriteObj.AddComponent<SpriteRenderer>();
+                    iconRenderer.sprite = setting.Item2;
+
+                    if (setting.Item2 == null)
+                        renderer.size = new Vector2(text.preferredWidth + 0.3f, renderer.size.y);
+                    else
+                    {
+                        var sprite = setting.Item2;
+                        float size = Mathf.Max(sprite.rect.size.x, sprite.rect.size.y);
+                        spriteObj.transform.localScale = new Vector2(40f / size, 40f / size);
+                        renderer.size = new Vector2(0.55f, 0.55f);
+                        if (!flag) iconRenderer.color = Color.white.RGBMultiplied(0.6f);
+                    }
+                    button.GetComponent<BoxCollider2D>().size = renderer.size;
+
+                    int i = index;
+                    button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
+                    {
+                        int selection = option.selection;
+                        selection ^= 1 << i;
+                        option.updateSelection(selection);
+                        MetaDialog.EraseDialog(1);
+                        refresher(id);
+                    }));
+                    index++;
+                }
             }
         });
-            return refresher;
-        }
+        return refresher;
+    }
+
+    private void SetUpCustomTaskOption()
+    {
+        friedTaskSetting.AddSetting(0,
+            new List<CustomTaskData>{
+            new CustomTaskData("Cafe0", new Vector2(1.88f, -1.97f)).SetUsableDistance(1.2f),
+            new CustomTaskData("Cafe1", new Vector2(-3.31f, 3.13f)).SetUsableDistance(1.2f),
+            new CustomTaskData("Right", new Vector2(12.27f, -3.12f)),
+            new CustomTaskData("Shields", new Vector2(9.84f, -12.82f)),
+            new CustomTaskData("Storage", new Vector2(-0.65f, -14.6f)),
+            new CustomTaskData("Electrical", new Vector2(-7.67f, -12.10f)),
+            new CustomTaskData("Lower", new Vector2(-15.24f, -9.93f)),
+            new CustomTaskData("Reactor", new Vector2(-22.57f, -6.64f)),
+            new CustomTaskData("MedBay", new Vector2(-7.78f, -1.49f)),
+            new CustomTaskData("Admin", new Vector2(5.99f, -9.88f))
+        }, CreateMetaOption(Color.white, "spectreTask.eatTheFried.skeld", int.MaxValue).HiddenOnDisplay(true).HiddenOnMetaScreen(true));
+
+        friedTaskSetting.AddSetting(1,
+            new List<CustomTaskData> {
+            new CustomTaskData("Launchpad", new Vector2(-3.25f, 3.79f)),
+            new CustomTaskData("Lower", new Vector2(6.47f, -0.82f)),
+            new CustomTaskData("MedBay", new Vector2(15.57f, 1.21f)),
+            new CustomTaskData("Locker", new Vector2(8.91f, 5.61f)),
+            new CustomTaskData("Laboratory", new Vector2(10.71f, 12.96f),0.013f).SetUsableDistance(1f),
+            new CustomTaskData("Upper", new Vector2(5.26f, 13.44f)),
+            new CustomTaskData("Admin", new Vector2(19.47f, 20.61f)),
+            new CustomTaskData("Greenhouse", new Vector2(21.07f, 24.30f),0.025f),
+            new CustomTaskData("NextToAdmin", new Vector2(18.60f, 16.36f)),
+            new CustomTaskData("Cafeteria", new Vector2(27.18f, 3.57f),-0.5f).SetUsableDistance(0.85f)
+        }, CreateMetaOption(Color.white, "spectreTask.eatTheFried.mira", int.MaxValue).HiddenOnDisplay(true).HiddenOnMetaScreen(true));
+
+        friedTaskSetting.AddSetting(2,
+            new List<CustomTaskData>(){
+            new CustomTaskData("Dropship", new Vector2(20.50f, -7.95f)),
+            new CustomTaskData("Laboratory0", new Vector2(29.66f, -8.19f)),
+            new CustomTaskData("Laboratory1", new Vector2(37.78f, -7.02f)).SetUsableDistance(0.8f),
+            new CustomTaskData("Specimen", new Vector2(36.67f, -21.25f)),
+            new CustomTaskData("SpecimenToAdmin", new Vector2(27.34f, -20.68f)),
+            new CustomTaskData("Admin", new Vector2(22.25f, -25.14f)),
+            new CustomTaskData("Office", new Vector2(20.82f, -17.05f),-0.017f),
+            new CustomTaskData("Weapons", new Vector2(13.47f, -24.20f)),
+            new CustomTaskData("Comms", new Vector2(11.50f, -16.84f)),
+            new CustomTaskData("LifeSupp", new Vector2(0.81f, -22.02f)),
+            new CustomTaskData("Electrical", new Vector2(4.60f, -9.20f)),
+            new CustomTaskData("Storage", new Vector2(19.79f, -12.47f))
+        }, CreateMetaOption(Color.white, "spectreTask.eatTheFried.polus", int.MaxValue).HiddenOnDisplay(true).HiddenOnMetaScreen(true));
+
+        friedTaskSetting.AddSetting(4,
+            new List<CustomTaskData>(){
+            new CustomTaskData("MainHall0", new Vector2(13.17f, -2.20f)),
+            new CustomTaskData("MainHall1", new Vector2(8.43f, 1.85f)),
+            new CustomTaskData("MainHall2", new Vector2(5.14f, 3.31f)),
+            new CustomTaskData("Engine", new Vector2(1.49f, -2.17f)).SetUsableDistance(0.2f),
+            new CustomTaskData("Vault", new Vector2(-6.73f, 10.43f)),
+            new CustomTaskData("MeetingRoom", new Vector2(3.32f, 15.72f)),
+            new CustomTaskData("Comms", new Vector2(-14.38f, 0.87f)),
+            new CustomTaskData("Cockpit", new Vector2(-17.51f, 0.92f)),
+            new CustomTaskData("Armory", new Vector2(-15.04f, -9.26f)),
+            new CustomTaskData("ViewingDeck", new Vector2(-13.05f, -14.77f)),
+            new CustomTaskData("Security", new Vector2(5.05f, -10.35f)),
+            new CustomTaskData("Medical0", new Vector2(24.32f, -8.76f)),
+            new CustomTaskData("Medical1", new Vector2(29.39f, -7.40f),-0.007f).SetUsableDistance(0.8f),
+            new CustomTaskData("CargoBay", new Vector2(35.96f, 1.71f)),
+            new CustomTaskData("Lounge", new Vector2(24.41f, 6.34f)),
+            new CustomTaskData("Shower", new Vector2(21.27f, 0.06f),0f),
+        }, CreateMetaOption(Color.white, "spectreTask.eatTheFried.airship", int.MaxValue).HiddenOnDisplay(true).HiddenOnMetaScreen(true));
+
+        letterTaskSetting.AddSetting(0,
+            new List<CustomTaskData>{
+            new CustomTaskData("MedBay", new Vector2(-7.78f, -1.49f)),
+            new CustomTaskData("Comms", new Vector2(2.438f,-15.0722f)),
+            new CustomTaskData("Reactor", new Vector2(-21.6699f, -4.2203f)),
+            new CustomTaskData("LifeSupport", new Vector2(5.4116f, -4.2365f)),
+            new CustomTaskData("Electrical", new Vector2(-7.67f, -12.10f))
+        }, CreateMetaOption(Color.white, "spectreTask.letter.skeld", int.MaxValue).HiddenOnDisplay(true).HiddenOnMetaScreen(true));
+
+        letterTaskSetting.AddSetting(1,
+            new List<CustomTaskData> {
+            new CustomTaskData("Launchpad", new Vector2(-5.5496f, -2.1019f)),
+            new CustomTaskData("MedBay", new Vector2(16.8141f, -1.4631f)),
+            new CustomTaskData("Locker", new Vector2(8.91f, 5.61f)),
+            new CustomTaskData("Upper", new Vector2(5.26f, 13.44f)),
+            new CustomTaskData("Laboratory", new Vector2(10.71f, 12.96f),0.013f).SetUsableDistance(1f),
+            new CustomTaskData("Office", new Vector2(15.8369f, 20.2052f)),
+            new CustomTaskData("Storage", new Vector2(20.3024f, 4.734f)),
+        }, CreateMetaOption(Color.white, "spectreTask.letter.mira", int.MaxValue).HiddenOnDisplay(true).HiddenOnMetaScreen(true));
+        
+        letterTaskSetting.AddSetting(2,
+            new List<CustomTaskData>(){
+            new CustomTaskData("Dropship", new Vector2(18.8381f, -1.1588f)),
+            new CustomTaskData("Drill", new Vector2(28.1577f, -7.4765f)),
+            new CustomTaskData("SpecimenToAdmin", new Vector2(27.34f, -20.68f)),
+            new CustomTaskData("Storage", new Vector2(19.79f, -12.47f)),
+            new CustomTaskData("Electrical",new Vector2(11.9516f, -13.3554f)),
+            new CustomTaskData("Comms", new Vector2(11.50f, -16.84f)),
+            new CustomTaskData("Admin",new Vector2(22.2758f, -25.1438f))
+        }, CreateMetaOption(Color.white, "spectreTask.letter.polus", int.MaxValue).HiddenOnDisplay(true).HiddenOnMetaScreen(true));
+
+        letterTaskSetting.AddSetting(4,
+            new List<CustomTaskData>(){
+            new CustomTaskData("Engine", new Vector2(1.49f, -2.17f)).SetUsableDistance(0.2f),
+            new CustomTaskData("Cockpit", new Vector2(-20.2177f, -0.4666f)),
+            new CustomTaskData("Armory", new Vector2(-15.04f, -9.26f)),
+            new CustomTaskData("Security", new Vector2(5.05f, -10.35f)),
+            new CustomTaskData("Electrical", new Vector2(9.9102f, -6.1868f)),
+            new CustomTaskData("Medical1", new Vector2(29.39f, -7.40f),-0.007f).SetUsableDistance(0.8f),
+            new CustomTaskData("CargoBay", new Vector2(32.5286f, -1.5272f)),
+            new CustomTaskData("Shower", new Vector2(21.27f, 0.06f),0f),
+            new CustomTaskData("MainHall2", new Vector2(5.14f, 3.31f))
+        }, CreateMetaOption(Color.white, "spectreTask.letter.airship", int.MaxValue).HiddenOnDisplay(true).HiddenOnMetaScreen(true));
+
+        statueTaskSetting.AddSetting(0,
+            new List<CustomTaskData>{
+            new CustomTaskData("Storage", new Vector2(-0.4934f, -14.4472f)),
+            new CustomTaskData("Cafeteria", new Vector2(0.5851f, 5.6232f)),
+            new CustomTaskData("RightSide", new Vector2(12.3742f, -3.0637f)),
+            new CustomTaskData("LeftSide", new Vector2(-11.5461f, -11.3865f)),
+            new CustomTaskData("Reactor", new Vector2(-19.398f, -6.8135f)),
+            new CustomTaskData("UpperEngine", new Vector2(-17.929f, 2.5338f)),
+            new CustomTaskData("MedBay", new Vector2(-9.3721f, -5.1098f))
+        }, CreateMetaOption(Color.white, "spectreTask.statue.skeld", int.MaxValue).HiddenOnDisplay(true).HiddenOnMetaScreen(true));
+
+        statueTaskSetting.AddSetting(1,
+            new List<CustomTaskData> {
+            new CustomTaskData("Launchpad", new Vector2(-3.25f, 3.79f)),
+            new CustomTaskData("Lower", new Vector2(6.4548f, -0.6719f)),
+            new CustomTaskData("Comms", new Vector2(16.3502f, 2.9761f)),
+            new CustomTaskData("Locker", new Vector2(10.3955f, 0.6231f)),
+            new CustomTaskData("Laboratory", new Vector2(11.9223f, 10.3604f)),
+            new CustomTaskData("Reactor", new Vector2(2.4664f, 13.5236f)),
+            new CustomTaskData("Office", new Vector2(19.629f, 20.6572f)),
+            new CustomTaskData("Greenhouse", new Vector2(15.8851f, 24.3287f)),
+            new CustomTaskData("Cafeteria", new Vector2(28.8174f, 0.0511f))
+        }, CreateMetaOption(Color.white, "spectreTask.statue.mira", int.MaxValue).HiddenOnDisplay(true).HiddenOnMetaScreen(true));
+
+        statueTaskSetting.AddSetting(2,
+            new List<CustomTaskData>(){
+            new CustomTaskData("Upper", new Vector2(20.7383f, -7.959f)),
+            new CustomTaskData("Laboratory", new Vector2(32.1845f,-10.0475f)),
+            new CustomTaskData("UpperDecon", new Vector2(40.6586f, -10.4651f)),
+            new CustomTaskData("Specimen", new Vector2(37.4256f, -21.9897f)),
+            new CustomTaskData("SpecimenToAdmin", new Vector2(27.34f, -20.68f)),
+            new CustomTaskData("Office",new Vector2(30.8732f, -17.2265f)),
+            new CustomTaskData("Electrical",new Vector2(7.2648f, -13.0184f)),
+            new CustomTaskData("LifeSupp", new Vector2(0.81f, -22.02f)),
+            new CustomTaskData("Weapons",new Vector2(12.6854f, -24.6149f))
+        }, CreateMetaOption(Color.white, "spectreTask.statue.polus", int.MaxValue).HiddenOnDisplay(true).HiddenOnMetaScreen(true));
+
+        statueTaskSetting.AddSetting(4,
+            new List<CustomTaskData>(){
+            new CustomTaskData("Comms", new Vector2(-12.1675f, 0.9115f)),
+            new CustomTaskData("Cockpit", new Vector2(-17.51f, 0.92f)),
+            new CustomTaskData("ViewingDeck", new Vector2(-13.0425f, -14.714f)),
+            new CustomTaskData("Security", new Vector2(5.8124f, -14.4985f)),
+            new CustomTaskData("Electrical", new Vector2(20.128f, -3.8049f)),
+            new CustomTaskData("Medical", new Vector2(23.4159f, -5.3001f)),
+            new CustomTaskData("CargoBay", new Vector2(39.2912f, -3.4117f)),
+            new CustomTaskData("Lounge", new Vector2(22.3679f, 10.7894f)),
+            new CustomTaskData("GapRoom", new Vector2(13.5349f, 8.1746f)),
+            new CustomTaskData("MainHall", new Vector2(8.43f, 1.85f)),
+            new CustomTaskData("Vault", new Vector2(-8.8081f, 4.8566f)),
+            new CustomTaskData("MeetingRoom1", new Vector2(3.6384f, 14.8067f)),
+            new CustomTaskData("MeetingRoom2", new Vector2(17.0308f, 14.6693f)),
+        }, CreateMetaOption(Color.white, "spectreTask.statue.airship", int.MaxValue).HiddenOnDisplay(true).HiddenOnMetaScreen(true));
+    }
 
     public override void LoadOptionData()
     {
         spawnImmoralistOption = CreateOption(Color.white, "spawnImmoralist", true);
         occupyDoubleRoleCountOption = CreateOption(Color.white, "occupyDoubleRoleCount", true).AddPrerequisite(spawnImmoralistOption);
 
-        spectreTaskOption = CreateOption(Color.white, "spectreTask", new string[] { "option.switch.off","role.spectre.spectreTask.eatTheFried"/*, "role.spectre.spectreTask.deliveryRancor"*/ },(object)"role.spectre.spectreTask.eatTheFried");
+        spectreTaskOption = CreateOption(Color.white, "spectreTask", new string[] { "option.switch.off","role.spectre.spectreTask.eatTheFried", "role.spectre.spectreTask.deliveryRancor" },(object)"role.spectre.spectreTask.eatTheFried");
         numOfTheFriedRequireToWinOption = CreateOption(Color.white, "numOfTheFriedRequiredToWin", 5f, 1f, 16f, 1f).AddCustomPrerequisite(() => spectreTaskOption.getSelection() == 1);
-        friedTaskOption.Add(0, CreateMetaOption(Color.white, "spectreTask.eatTheFried.skeld", int.MaxValue).HiddenOnDisplay(true).HiddenOnMetaScreen(true));
-        friedTaskOption.Add(1, CreateMetaOption(Color.white, "spectreTask.eatTheFried.mira", int.MaxValue).HiddenOnDisplay(true).HiddenOnMetaScreen(true));
-        friedTaskOption.Add(2, CreateMetaOption(Color.white, "spectreTask.eatTheFried.polus", int.MaxValue).HiddenOnDisplay(true).HiddenOnMetaScreen(true));
-        friedTaskOption.Add(4, CreateMetaOption(Color.white, "spectreTask.eatTheFried.airship", int.MaxValue).HiddenOnDisplay(true).HiddenOnMetaScreen(true));
+
+        SetUpCustomTaskOption();
 
         spectreTaskOption.alternativeOptionScreenBuilder = (refresher) =>
         {
@@ -277,7 +510,13 @@ public class Spectre : Role
                 if (spectreTaskOption.getSelection() == 1)
                     return new MSButton(1.6f, 0.4f, "Customize", TMPro.FontStyles.Bold, () =>
                     {
-                        Action<byte> refresher = getRefresher(friedTaskOption, friedTaskPos);
+                        Action<byte> refresher = getRefresher(new Tuple<CustomTaskSetting, Sprite?>(friedTaskSetting, spectreFriedConsoleSprite.GetSprite()));
+                        refresher(GameOptionsManager.Instance.CurrentGameOptions.MapId);
+                    });
+                else if (spectreTaskOption.getSelection() == 2)
+                    return new MSButton(1.6f, 0.4f, "Customize", TMPro.FontStyles.Bold, () =>
+                    {
+                        Action<byte> refresher = getRefresher(new Tuple<CustomTaskSetting, Sprite?>(letterTaskSetting, spectreLetterConsoleSprite.GetSprite()), new Tuple<CustomTaskSetting, Sprite?>(statueTaskSetting, spectreRancorConsoleSprite.GetSprite()));
                         refresher(GameOptionsManager.Instance.CurrentGameOptions.MapId);
                     });
                 else
@@ -412,6 +651,27 @@ public class Spectre : Role
         RPCEventInvoker.AddExtraRole(Helpers.playerById(impostorId), Roles.LastImpostor, 0);
     }
 
+    public IEnumerator CoAnimateFox(SpriteRenderer renderer,float duration)
+    {
+        float t = 0f;
+        int i = 0;
+        while (true)
+        {
+            t -= Time.deltaTime;
+            duration -= Time.deltaTime;
+            if (t < 0f)
+            {
+                renderer.sprite = spectreFoxAnimationSprites[i].GetSprite();
+                i++;
+                if (i == 15 && duration > 2.2f) i = 11;
+                if (i >= 25) break;
+
+                t = 0.115f;
+            }
+            yield return null;
+        }
+    }
+
     public Spectre()
     : base("Spectre", "spectre", RoleColor, RoleCategory.Neutral, Side.Spectre, Side.Spectre,
          new HashSet<Side>() { Side.Spectre }, new HashSet<Side>() { Side.Spectre },
@@ -423,70 +683,15 @@ public class Spectre : Role
         canReport = false;
         impostorArrows = new List<Arrow?>();
 
-        List<FriedTaskData> points;
+        spectreFoxAnimationSprites = new ISpriteLoader[25];
+        for(int i = 0; i < 25; i++)
+            spectreFoxAnimationSprites[i] = new AssetSpriteLoader(AssetLoader.NebulaMainAsset,
+                string.Format("assets/Animations/Fox/{0:00}.png", i), 115f);
 
-        points = new List<FriedTaskData>{
-            new FriedTaskData("Cafe0", new Vector2(1.88f, -1.97f)).SetUsableDistance(1.2f),
-            new FriedTaskData("Cafe1", new Vector2(-3.31f, 3.13f)).SetUsableDistance(1.2f),
-            new FriedTaskData("Right", new Vector2(12.27f, -3.12f)),
-            new FriedTaskData("Shields", new Vector2(9.84f, -12.82f)),
-            new FriedTaskData("Storage", new Vector2(-0.65f, -14.6f)),
-            new FriedTaskData("Electrical", new Vector2(-7.67f, -12.10f)),
-            new FriedTaskData("Lower", new Vector2(-15.24f, -9.93f)),
-            new FriedTaskData("Reactor", new Vector2(-22.57f, -6.64f)),
-            new FriedTaskData("MedBay", new Vector2(-7.78f, -1.49f)),
-            new FriedTaskData("Admin", new Vector2(5.99f, -9.88f))
-        };
-        friedTaskPos.Add(0,points);
+        spectreStatueSprites = new ISpriteLoader[5];
+        for (int i = 0; i < 5; i++)
+            spectreStatueSprites[i] = new AssetSpriteLoader(AssetLoader.NebulaMainAsset,
+                string.Format("assets/Minigames/SpectreStatueMinigame/Statue{0}.png", i + 1), 100f);
 
-        points = new List<FriedTaskData> {
-            new FriedTaskData("Launchpad", new Vector2(-3.25f, 3.79f)),
-            new FriedTaskData("Lower", new Vector2(6.47f, -0.82f)),
-            new FriedTaskData("MedBay", new Vector2(15.57f, 1.21f)),
-            new FriedTaskData("Locker", new Vector2(8.91f, 5.61f)),
-            new FriedTaskData("Laboratory", new Vector2(10.71f, 12.96f),0.013f).SetUsableDistance(1f),
-            new FriedTaskData("Upper", new Vector2(5.26f, 13.44f)),
-            new FriedTaskData("Admin", new Vector2(19.47f, 20.61f)),
-            new FriedTaskData("Greenhouse", new Vector2(21.07f, 24.30f),0.025f),
-            new FriedTaskData("NextToAdmin", new Vector2(18.60f, 16.36f)),
-            new FriedTaskData("Cafeteria", new Vector2(27.18f, 3.57f),-0.5f).SetUsableDistance(0.85f)
-        };
-        friedTaskPos.Add(1, points);
-
-        points = new List<FriedTaskData>(){
-            new FriedTaskData("Dropship", new Vector2(20.50f, -7.95f)),
-            new FriedTaskData("Laboratory0", new Vector2(29.66f, -8.19f)),
-            new FriedTaskData("Laboratory1", new Vector2(37.78f, -7.02f)).SetUsableDistance(0.8f),
-            new FriedTaskData("Specimen", new Vector2(36.67f, -21.25f)),
-            new FriedTaskData("SpecimenToAdmin", new Vector2(27.34f, -20.68f)),
-            new FriedTaskData("Admin", new Vector2(22.25f, -25.14f)),
-            new FriedTaskData("Office", new Vector2(20.82f, -17.05f),-0.017f),
-            new FriedTaskData("Weapons", new Vector2(13.47f, -24.20f)),
-            new FriedTaskData("Comms", new Vector2(11.50f, -16.84f)),
-            new FriedTaskData("LifeSupp", new Vector2(0.81f, -22.02f)),
-            new FriedTaskData("Electrical", new Vector2(4.60f, -9.20f)),
-            new FriedTaskData("Storage", new Vector2(19.79f, -12.47f))
-        };
-        friedTaskPos.Add(2, points);
-
-        points = new List<FriedTaskData>(){
-            new FriedTaskData("MainHall0", new Vector2(13.17f, -2.20f)),
-            new FriedTaskData("MainHall1", new Vector2(8.43f, 1.85f)),
-            new FriedTaskData("MainHall2", new Vector2(5.14f, 3.31f)),
-            new FriedTaskData("Engine", new Vector2(1.49f, -2.17f)).SetUsableDistance(0.2f),
-            new FriedTaskData("Vault", new Vector2(-6.73f, 10.43f)),
-            new FriedTaskData("MeetingRoom", new Vector2(3.32f, 15.72f)),
-            new FriedTaskData("Comms", new Vector2(-14.38f, 0.87f)),
-            new FriedTaskData("Cockpit", new Vector2(-17.51f, 0.92f)),
-            new FriedTaskData("Armory", new Vector2(-15.04f, -9.26f)),
-            new FriedTaskData("ViewingDeck", new Vector2(-13.05f, -14.77f)),
-            new FriedTaskData("Security", new Vector2(5.05f, -10.35f)),
-            new FriedTaskData("Medical0", new Vector2(24.32f, -8.76f)),
-            new FriedTaskData("Medical1", new Vector2(29.39f, -7.40f),-0.007f).SetUsableDistance(0.8f),
-            new FriedTaskData("CargoBay", new Vector2(35.96f, 1.71f)),
-            new FriedTaskData("Lounge", new Vector2(24.41f, 6.34f)),
-            new FriedTaskData("Shower", new Vector2(21.27f, 0.06f),0f),
-        };
-        friedTaskPos.Add(4, points);
     }
 }

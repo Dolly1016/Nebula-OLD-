@@ -220,7 +220,7 @@ public class HnSRaider : Role
         HideInExclusiveAssignmentOption = true;
         canInvokeSabotage = false;
         HideKillButtonEvenImpostor = true;
-
+        canReport = false;
         leftAxes = 0;
     }
 }

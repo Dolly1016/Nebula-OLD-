@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Nebula.Tasks;
 
+[NebulaRPCHolder]
 public class TimedTask
 {
     public struct TimedTaskMessage
@@ -15,6 +16,7 @@ public class TimedTask
     }
 
     public static RemoteProcess<TimedTaskMessage> TimedTaskEvent = new RemoteProcess<TimedTaskMessage>(
+        "TimedTask",
             (writer, message) =>
             {
                 writer.Write(message.TaskId);
@@ -35,7 +37,7 @@ public class TimedTask
                 {
                     case 0:
                         var hudTask = new GameObject("TimedHudOverrideTask").AddComponent<TimedHudOverrideTask>();
-                        hudTask.LeftTime=message.LeftTime;
+                        hudTask.LeftTime = message.LeftTime;
                         task = hudTask;
                         break;
 

@@ -5,6 +5,7 @@ using Nebula.Objects;
 
 namespace Nebula.Roles.Perk;
 
+[NebulaRPCHolder]
 public class PerkHolder : ExtraRole
 {
     public struct SharePerkMessage
@@ -15,6 +16,7 @@ public class PerkHolder : ExtraRole
     }
 
     public static RemoteProcess<SharePerkMessage> SharePerks = new RemoteProcess<SharePerkMessage>(
+        "SharePerks",
             (writer, message) =>
             {
                 writer.Write(message.playerId);
@@ -59,6 +61,7 @@ public class PerkHolder : ExtraRole
     }
 
     public static RemoteProcess<PerkDataMessage<float>> ShareFloatPerkData = new RemoteProcess<PerkDataMessage<float>>(
+        "SharePerkDataFloat",
             (writer, message) =>
             {
                 writer.Write(message.playerId);
@@ -82,6 +85,7 @@ public class PerkHolder : ExtraRole
             );
 
     public static RemoteProcess<PerkDataMessage<int>> ShareIntegerPerkData = new RemoteProcess<PerkDataMessage<int>>(
+        "SharePerkDataInteger",
             (writer, message) =>
             {
                 writer.Write(message.playerId);

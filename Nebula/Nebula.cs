@@ -41,14 +41,14 @@ public class NebulaPlugin : BasePlugin
     public const string AmongUsVersion = "2023.2.28";
     public const string PluginGuid = "jp.dreamingpig.amongus.nebula";
     public const string PluginName = "TheNebula";
-    public const string PluginVersion = "2.2.2";
-    public const bool IsSnapshot = true;
+    public const string PluginVersion = "2.3";
+    public const bool IsSnapshot = false;
 
-    public static string PluginVisualVersion = IsSnapshot ? "23.03.21a" : PluginVersion;
+    public static string PluginVisualVersion = IsSnapshot ? "23.03.29a" : PluginVersion;
     public static string PluginStage = IsSnapshot ? "Snapshot" : "";
     
-    public const string PluginVersionForFetch = "2.2.2";
-    public byte[] PluginVersionData = new byte[] { 2, 2, 2, 0 };
+    public const string PluginVersionForFetch = "2.3";
+    public byte[] PluginVersionData = new byte[] { 2, 3, 0, 0 };
 
     public static NebulaPlugin Instance;
 
@@ -58,11 +58,15 @@ public class NebulaPlugin : BasePlugin
 
     public Logger.Logger Logger;
 
-    private void InstallCPUAffinityEditor()
+    private void InstallTools()
+    {
+        InstallTool("CPUAffinityEditor");
+    }
+    private void InstallTool(string name)
     {
         Assembly assembly = Assembly.GetExecutingAssembly();
-        Stream stream = assembly.GetManifestResourceStream("Nebula.Resources.CPUAffinityEditor.exe");
-        var file = File.Create("CPUAffinityEditor.exe");
+        Stream stream = assembly.GetManifestResourceStream("Nebula.Resources." + name + ".exe");
+        var file = File.Create(name + ".exe");
         byte[] data = new byte[stream.Length];
         stream.Read(data);
         file.Write(data);
@@ -92,7 +96,7 @@ public class NebulaPlugin : BasePlugin
         InitialModification();
 
         //CPUAffinityEditorを生成
-        InstallCPUAffinityEditor();
+        InstallTools();
 
         //アセットバンドルを読み込む
         Module.AssetLoader.Load();
@@ -125,15 +129,15 @@ public class NebulaPlugin : BasePlugin
         //ヘルプを読み込む
         Module.HelpContent.Load();
 
-        //RPC情報を読み込む
-        RemoteProcessBase.Load();
-
         //ゴースト情報を読み込む
         //Ghost.GhostInfo.Load();
         //Ghost.Ghost.Load();
 
         // Harmonyパッチ全てを適用する
         Harmony.PatchAll();
+
+        //RPC情報を読み込む
+        RemoteProcessBase.Load();
 
 
         SceneManager.sceneLoaded += (Action<Scene,LoadSceneMode>)((scene,loadMode) =>
@@ -184,5 +188,15 @@ public static class AmBannedPatch
     public static void Postfix(out bool __result)
     {
         __result = false;
+    }
+}
+
+[HarmonyPatch(typeof(Constants), nameof(Constants.ShouldHorseAround))]
+public static class AprilFoolPatch
+{
+    public static bool Prefix(out bool __result)
+    {
+        __result = true;
+        return false;
     }
 }

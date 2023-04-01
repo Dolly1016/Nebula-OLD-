@@ -1,5 +1,7 @@
 ﻿
 
+using System.Runtime.CompilerServices;
+
 namespace Nebula.Tasks;
 
 [HarmonyPatch]
@@ -145,6 +147,44 @@ public class NormalPlayerTaskPatch
     }
 }
 
+[NebulaRPCHolder]
+public static class PlayerTaskAdder
+{
+    static public RemoteProcess<Tuple<byte, byte>> AddTaskProcess = new(
+        "AddTask",
+        (writer, message) =>
+        {
+            writer.Write(message.Item1);
+            writer.Write(message.Item2);
+        },
+           (reader) =>
+           {
+               return new(reader.ReadByte(), reader.ReadByte());
+           },
+           (message, isCalledByMe) =>
+           {
+               var player = Helpers.playerById(message.Item1);
+               var task = GameObject.Instantiate(ShipStatus.Instance.GetTaskById(message.Item2), player.transform);
+               player.myTasks.Add(task);
+               try
+               {
+                   task.Id = GameData.Instance.TutOnlyAddTask(player.PlayerId);
+               }
+               catch
+               {
+                   task.Id = (uint)player.myTasks.Count;
+               }
+               task.Owner = player;
+               task.Initialize();
+               RPCEvents.AddTasks(message.Item1, 1);
+           }
+        );
+
+    static public void AddTask(this PlayerControl player, byte taskId)
+    {
+        AddTaskProcess.Invoke(new(player.PlayerId,taskId));
+    }
+}
 
 public class NebulaPlayerTask : NormalPlayerTask
 {

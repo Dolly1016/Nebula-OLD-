@@ -299,12 +299,12 @@ public static class UpdatePatch
                 if (player.inVent)
                 {
                     deadBody.Reported = true;
-                    deadBody.bodyRenderer.enabled = false;
+                    foreach (var r in deadBody.bodyRenderers) r.enabled = false;
                 }
                 else
                 {
                     deadBody.Reported = false;
-                    deadBody.bodyRenderer.enabled = true;
+                    foreach (var r in deadBody.bodyRenderers) r.enabled = true;
                 }
             }
 

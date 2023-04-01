@@ -4,10 +4,37 @@ using System.Text;
 using UnityEngine.Events;
 using static Nebula.Game.PlayerData;
 using static Nebula.Module.CustomDesignerSublist;
-using static Nebula.Module.CustomParts;
 using static Rewired.Controller;
 
 namespace Nebula.Module;
+
+public class DesignerPackageSuggester : ICandidateSuggester
+{
+    public void GetCandidate(string text, out TextCandidate[]? candidates, out int index)
+    {
+        List<TextCandidate> result = new();
+        foreach(var package in CustomPackage.AllPackage)
+        {
+            if (text.CanBeCandidate(package.Key.Value)) result.Add(new(TextCandidate.TextCandidateType.Suggestion, package.Key.Value));
+        }
+        candidates = result.ToArray();
+        index = 0;
+    }
+}
+
+public class DesignerAuthorSuggester : ICandidateSuggester
+{
+    public void GetCandidate(string text, out TextCandidate[]? candidates, out int index)
+    {
+        List<TextCandidate> result = new();
+        foreach (var author in CustomParts.LocalAuthorsHistory)
+        {
+            if (text.CanBeCandidate(author)) result.Add(new(TextCandidate.TextCandidateType.Suggestion, author));
+        }
+        candidates = result.ToArray();
+        index = 0;
+    }
+}
 
 public class DesignerFileAccepter : MonoBehaviour
 {
@@ -493,22 +520,18 @@ public class DesignersHat
             if (Move != null)
             {
                 modData.I_Move.LoadImage(Move);
-                vanillaData.hatViewData.viewData.MainImage = modData.I_Move.GetMainImage();
             }
             if (MoveFlip != null)
             {
                 modData.I_MoveFlip.LoadImage(MoveFlip);
-                vanillaData.hatViewData.viewData.LeftMainImage = modData.I_MoveFlip.GetMainImage();
             }
             if (MoveBack != null)
             {
                 modData.I_MoveBack.LoadImage(MoveBack);
-                vanillaData.hatViewData.viewData.BackImage = modData.I_MoveBack.GetMainImage();
             }
             if (MoveBackFlip != null)
             {
                 modData.I_MoveBackFlip.LoadImage(MoveBackFlip);
-                vanillaData.hatViewData.viewData.LeftBackImage = modData.I_MoveBackFlip.GetMainImage();
             }
             if (Climb != null)
             {
@@ -646,7 +669,7 @@ public class DesignersVisor
             if (BehindHat.HasValue)
             {
                 modData.BehindHat.Value = BehindHat.Value;
-                vanillaData.viewData.viewData.BehindHats = BehindHat.Value;
+                vanillaData.behindHats = BehindHat.Value;
             }
             if (Adaptive.HasValue)
             {
@@ -671,7 +694,7 @@ public class DesignersVisor
         VanillaData.viewData.viewData.LeftIdleFrame = null;
         VanillaData.name = "designerVisor";
         VanillaData.ProductId = "designerVisor";
-        VanillaData.viewData.viewData.BehindHats = false;
+        VanillaData.behindHats = false;
         VanillaData.viewData.viewData.AltShader = null;
 
         NebulaData = new CustomVisor();
@@ -1155,15 +1178,17 @@ public class CustomDesignerSublist : MonoBehaviour
                 Contents = null;
                 break;
             case DesignerType.Hat:
-                Contents = CustomHatRegistry.Values.Where((item) => item.IsLocal).ToArray<CustomCosmicItem>();
+                Contents = CustomParts.CustomHatRegistry.Values.Where((item) => item.IsLocal).ToArray<CustomCosmicItem>();
                 break;
             case DesignerType.Visor:
-                Contents = CustomVisorRegistry.Values.Where((item) => item.IsLocal).ToArray<CustomCosmicItem>();
+                Contents = CustomParts.CustomVisorRegistry.Values.Where((item) => item.IsLocal).ToArray<CustomCosmicItem>();
                 break;
             case DesignerType.Nameplate:
-                Contents = CustomNamePlateRegistry.Values.Where((item) => item.IsLocal).ToArray<CustomCosmicItem>();
+                Contents = CustomParts.CustomNamePlateRegistry.Values.Where((item) => item.IsLocal).ToArray<CustomCosmicItem>();
                 break;
         }
+        CustomParts.ReloadLocalAuthors();
+
         UpdateButtons();
     }
     public void SetType(DesignerType type)
@@ -1276,7 +1301,7 @@ public class CustomPlayerDesigner : CustomDesignerBase
 
     public void Update()
     {
-        AnimationHandler.HandleAnimation(Display.Animations, Display.Cosmetics, CosmicTimer);
+        CustomParts.AnimationHandler.HandleAnimation(Display.Animations, Display.Cosmetics, CosmicTimer);
     }
 
 }
@@ -1306,9 +1331,9 @@ public class CustomHatDesigner : CustomPlayerDesigner
     {
         Hat.CopyFrom(Display,hat);
         targetHat=hat;
-        NameField.InputText = hat.Name.Value;
-        AuthorField.InputText = hat.Author.Value;
-        CategoryField.InputText = hat.Package.Value;
+        NameField.SetText(hat.Name.Value);
+        AuthorField.SetText(hat.Author.Value);
+        CategoryField.SetText(hat.Package.Value);
         BounceButton.Flag = hat.Bounce.Value;
         AdaptiveButton.Flag = hat.Adaptive.Value;
         BehindButton.Flag = hat.Behind.Value;
@@ -1410,7 +1435,7 @@ public class CustomHatDesigner : CustomPlayerDesigner
             GenerateReloadButton((hat) => hat.I_MoveFlip, (parameter, img) => parameter.MoveFlip = img)
         );
         rightScreen.AddTopic(
-            GeneratePartButton(Language.Language.GetString("designers.parts.moveBackFlip"), (parameter, img) => parameter.MoveBack = img),
+            GeneratePartButton(Language.Language.GetString("designers.parts.moveBack"), (parameter, img) => parameter.MoveBack = img),
             new MSMargin(-0.05f),
             GenerateReloadButton((hat) => hat.I_MoveBack, (parameter, img) => parameter.MoveBack = img),
             GeneratePartButton(Language.Language.GetString("designers.parts.moveBackFlip"), (parameter, img) => parameter.MoveBackFlip = img),
@@ -1435,7 +1460,7 @@ public class CustomHatDesigner : CustomPlayerDesigner
                 AuthorField.HintText = Language.Language.GetString("designers.requiredField");
                 return;
             }
-            if (CategoryField.InputText.Length == 0) CategoryField.InputText = "NoSCollection";
+            if (CategoryField.InputText.Length == 0) CategoryField.SetText("NoSCollection");
             if (targetHat != null)
             {
                 //既存のハットを上書き
@@ -1464,10 +1489,12 @@ public class CustomHatDesigner : CustomPlayerDesigner
 
         NameField = nameInputContent.TextInputField;
         AuthorField = authorInputContent.TextInputField;
+        AuthorField.Suggester = new DesignerAuthorSuggester();
         CategoryField = categoryInputContent.TextInputField;
+        CategoryField.Suggester = new DesignerPackageSuggester();
         FPSField= fpsInputContent.TextInputField;
         FPSField.AllowCharacters = (c) => '0' <= c && c <= '9';
-        FPSField.DecisionAction = (s) =>
+        FPSField.LoseFocusAction = (s) =>
         {
             if (int.TryParse(s, out int fps) && fps>0)
             {
@@ -1475,7 +1502,7 @@ public class CustomHatDesigner : CustomPlayerDesigner
             }
             else
             {
-                FPSField.InputText = "";
+                FPSField.SetText("");
             }
         };
 
@@ -1512,9 +1539,9 @@ public class CustomVisorDesigner : CustomPlayerDesigner
     {
         Visor.CopyFrom(Display, visor);
         targetVisor = visor;
-        NameField.InputText = visor.Name.Value;
-        AuthorField.InputText = visor.Author.Value;
-        CategoryField.InputText = visor.Package.Value;
+        NameField.SetText(visor.Name.Value);
+        AuthorField.SetText(visor.Author.Value);
+        CategoryField.SetText(visor.Package.Value);
         BehindHatButton.Flag = visor.BehindHat.Value;
         AdaptiveButton.Flag = visor.Adaptive.Value;
     }
@@ -1598,7 +1625,7 @@ public class CustomVisorDesigner : CustomPlayerDesigner
                 AuthorField.HintText = Language.Language.GetString("designers.requiredField");
                 return;
             }
-            if (CategoryField.InputText.Length == 0) CategoryField.InputText = "NoSCollection";
+            if (CategoryField.InputText.Length == 0) CategoryField.SetText("NoSCollection");
             if (targetVisor != null)
             {
                 //既存のバイザーを上書き
@@ -1627,10 +1654,12 @@ public class CustomVisorDesigner : CustomPlayerDesigner
 
         NameField = nameInputContent.TextInputField;
         AuthorField = authorInputContent.TextInputField;
+        AuthorField.Suggester = new DesignerAuthorSuggester();
         CategoryField = categoryInputContent.TextInputField;
+        CategoryField.Suggester = new DesignerPackageSuggester();
         FPSField = fpsInputContent.TextInputField;
         FPSField.AllowCharacters = (c) => '0' <= c && c <= '9';
-        FPSField.DecisionAction = (s) =>
+        FPSField.LoseFocusAction = (s) =>
         {
             if (int.TryParse(s, out int fps) && fps > 0)
             {
@@ -1638,7 +1667,7 @@ public class CustomVisorDesigner : CustomPlayerDesigner
             }
             else
             {
-                FPSField.InputText = "";
+                FPSField.SetText("");
             }
         };
 
@@ -1685,9 +1714,9 @@ public class CustomNameplateDesigner : CustomDesignerBase
         Nameplate.CopyFrom(PlateRenderer,nameplate);
 
         targetNameplate = nameplate;
-        NameField.InputText = nameplate.Name.Value;
-        AuthorField.InputText = nameplate.Author.Value;
-        CategoryField.InputText = nameplate.Package.Value;
+        NameField.SetText(nameplate.Name.Value);
+        AuthorField.SetText(nameplate.Author.Value);
+        CategoryField.SetText(nameplate.Package.Value);
     }
 
     public void Awake()
@@ -1760,7 +1789,7 @@ public class CustomNameplateDesigner : CustomDesignerBase
                 AuthorField.HintText = Language.Language.GetString("designers.requiredField");
                 return; 
             }
-            if (CategoryField.InputText.Length == 0) CategoryField.InputText = "NoSCollection";
+            if (CategoryField.InputText.Length == 0) CategoryField.SetText("NoSCollection");
             if (targetNameplate != null)
             {
                 //既存のネームプレートを上書き
@@ -1789,7 +1818,9 @@ public class CustomNameplateDesigner : CustomDesignerBase
 
         NameField = nameInputContent.TextInputField;
         AuthorField = authorInputContent.TextInputField;
+        AuthorField.Suggester = new DesignerAuthorSuggester();
         CategoryField = categoryInputContent.TextInputField;
+        CategoryField.Suggester = new DesignerPackageSuggester();
 
         NameField.UseIME = true;
         AuthorField.UseIME = true;
@@ -1817,9 +1848,9 @@ public class CustomPackageDesigner : CustomDesignerBase
     public void SetTargetPackage(CustomPackage package)
     {
         targetPackage = package;
-        IdField.InputText = package.Key.Value;
-        FormatField.InputText = package.Format.Value;
-        PriorityField.InputText = package.Priority.Value;
+        IdField.SetText(package.Key.Value);
+        FormatField.SetText(package.Format.Value);
+        PriorityField.SetText(package.Priority.Value);
     }
 
     public void Awake()
@@ -1855,7 +1886,7 @@ public class CustomPackageDesigner : CustomDesignerBase
                 if (!int.TryParse(PriorityField.InputText, out priority))
                 {
                     priority = 100;
-                    PriorityField.InputText = "100";
+                    PriorityField.SetText("100");
                 }
                 if (targetPackage != null)
                 {

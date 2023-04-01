@@ -5,6 +5,7 @@ using TMPro;
 
 namespace Nebula.Roles.NeutralRoles;
 
+[NebulaRPCHolder]
 public class Paparazzo : Role, Template.HasWinTrigger
 {
     public struct PaparazzoImageMessage
@@ -18,6 +19,7 @@ public class Paparazzo : Role, Template.HasWinTrigger
     }
 
     public static RemoteProcess<PaparazzoImageMessage> SharePaparazzoImage = new RemoteProcess<PaparazzoImageMessage>(
+        "SharePaparazzoImage",
         (writer,message) => { 
             writer.Write(message.sender);
             writer.Write(message.id);

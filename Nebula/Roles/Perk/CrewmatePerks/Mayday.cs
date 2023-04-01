@@ -22,7 +22,7 @@ public class Mayday : Perk
             if (!(t > 0f))
             {
                 if (PlayerControl.LocalPlayer.Data.IsDead) break;
-                Game.HnSModificator.NoticeSeekerEvent.Invoke(0);
+                Game.HnSModificator.NoticeSeekerEvent.Invoke();
                 t = IP(1, PerkPropertyType.Second);
                 left--;
                 if (left <= 0) break;

@@ -207,7 +207,7 @@ public class PlayerControlPatch
         bool invalidFlag;
         foreach (DeadBody deadBody in Helpers.AllDeadBodies())
         {
-            if (!deadBody.bodyRenderer.enabled)
+            if (!deadBody.bodyRenderers[0].enabled)
             {
                 continue;
             }
@@ -230,10 +230,10 @@ public class PlayerControlPatch
 
     static public void SetDeadBodyOutline(DeadBody target, Color color)
     {
-        if (target == null || target.bodyRenderer == null) return;
+        if (target == null) return;
 
-        target.bodyRenderer.material.SetFloat("_Outline", 1f);
-        target.bodyRenderer.material.SetColor("_OutlineColor", color);
+        target.bodyRenderers[0].material.SetFloat("_Outline", 1f);
+        target.bodyRenderers[0].material.SetColor("_OutlineColor", color);
     }
 
 
@@ -251,9 +251,9 @@ public class PlayerControlPatch
     {
         foreach (DeadBody deadBody in Helpers.AllDeadBodies())
         {
-            if (deadBody == null || deadBody.bodyRenderer == null) continue;
+            if (deadBody == null) continue;
 
-            deadBody.bodyRenderer.material.SetFloat("_Outline", 0f);
+            foreach (var r in deadBody.bodyRenderers) r.material.SetFloat("_Outline", 0f);
         }
     }
 
@@ -577,10 +577,10 @@ class KillAnimationCoPerformKillPatch
             PlayerPhysics sourcePhys = source.MyPhysics;
             KillAnimation.SetMovement(source, false);
             KillAnimation.SetMovement(target, false);
-            DeadBody deadBody = GameObject.Instantiate<DeadBody>(__instance.bodyPrefab);
+            DeadBody deadBody = GameObject.Instantiate<DeadBody>(GameManager.Instance.DeadBodyPrefab);
             deadBody.enabled = false;
             deadBody.ParentId = target.PlayerId;
-            target.SetPlayerMaterialColors(deadBody.bodyRenderer);
+            foreach (var r in deadBody.bodyRenderers) target.SetPlayerMaterialColors(r);
             target.SetPlayerMaterialColors(deadBody.bloodSplatter);
             Vector3 vector = target.transform.position + __instance.BodyOffset;
             vector.z = vector.y / 1000f;

@@ -28,7 +28,6 @@ public enum CustomRPC
     SynchronizeTimer,
     UpdatePlayerControl,
     WinTrigger,
-    ShareOptions,
     SendPreMeetingPosition,
     SetPlayerStatus,
     SetRoles,
@@ -160,9 +159,6 @@ class RPCHandlerPatch
                 break;
             case (byte)CustomRPC.WinTrigger:
                 RPCEvents.WinTrigger(reader.ReadByte(), reader.ReadByte());
-                break;
-            case (byte)CustomRPC.ShareOptions:
-                RPCEvents.ShareOptions((int)reader.ReadPackedUInt32(), reader);
                 break;
             case (byte)CustomRPC.SetRoles:
                 int num = reader.ReadInt32();
@@ -1014,34 +1010,6 @@ static class RPCEvents
         }
     }
 
-    //送信元と受信先で挙動が異なる（以下は受信側）
-    public static void ShareOptions(int numberOfOptions, MessageReader reader)
-    {
-        try
-        {
-            for (int i = 0; i < numberOfOptions; i++)
-            {
-                uint optionId = reader.ReadPackedUInt32();
-                uint selection = reader.ReadPackedUInt32();
-
-                if (optionId == uint.MaxValue)
-                {
-                    GameOptionsManager.Instance.CurrentGameOptions.SetInt(Int32OptionNames.NumImpostors, (int)selection);
-                }
-                else
-                {
-                    CustomOption option = CustomOption.AllOptions.FirstOrDefault(opt => opt.id == (int)optionId);
-                    option.updateSelection((int)selection);
-                }
-            }
-        }
-        catch (Exception e)
-        {
-
-        }
-        GameOptionsDataPatch.dirtyFlag = true;
-    }
-
     public static void CleanDeadBody(byte deadBodyId)
     {
         foreach (DeadBody deadBody in Helpers.AllDeadBodies())
@@ -1133,6 +1101,15 @@ static class RPCEvents
         p.Tasks = new Game.TaskData(allTasks, allTasks, allQuota, true, false);
     }
 
+    public static void AddTasks(byte playerId, int addTasks)
+    {
+        var p = Game.GameData.data.playersArray[playerId];
+        if (p == null) return;
+
+        RefreshTasks(playerId, p.Tasks?.DisplayTasks ?? 0 + addTasks, addTasks);
+    }
+
+
     public static void RefreshTasks(byte playerId, int displayTasks, int addQuota)
     {
         var p = Game.GameData.data.playersArray[playerId];
@@ -1146,7 +1123,7 @@ static class RPCEvents
         }
         else
         {
-            p.Tasks = new Game.TaskData(displayTasks, displayTasks, addQuota, true, false);
+            p.Tasks = new Game.TaskData(displayTasks, displayTasks, addQuota, false, false);
         }
     }
 
@@ -1547,10 +1524,10 @@ static class RPCEvents
     static public void InstantiateDeadBody(byte targetId, Vector3 position)
     {
         var p = Helpers.playerById(targetId);
-        DeadBody deadBody = GameObject.Instantiate<DeadBody>(p.KillAnimations[0].bodyPrefab);
+        DeadBody deadBody = GameObject.Instantiate<DeadBody>(GameManager.Instance.deadBodyPrefab);
         deadBody.enabled = false;
         deadBody.ParentId = targetId;
-        p.SetPlayerMaterialColors(deadBody.bodyRenderer);
+        foreach (var r in deadBody.bodyRenderers) p.SetPlayerMaterialColors(r);
         p.SetPlayerMaterialColors(deadBody.bloodSplatter);
 
         position.z = position.y / 1000f;
@@ -1605,7 +1582,7 @@ static class RPCEvents
 
     static public void SpectrReform(int id)
     {
-        var obj = Roles.Roles.Spectre.FriedConsoles[id];
+        var obj = Roles.Roles.Spectre.CustomConsoles[id];
         obj.GetComponent<SpriteRenderer>().sprite = Roles.Roles.Spectre.GetConsoleUsedSprite().GetSprite();
         obj.name = "NoS-Used";
     }
