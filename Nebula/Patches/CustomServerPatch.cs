@@ -5,7 +5,7 @@ using Discord;
 
 namespace Nebula.Patches;
 
-[HarmonyPatch(typeof(ServerInfo), nameof(ServerInfo.HttpUrl),MethodType.Getter)]
+/* [HarmonyPatch(typeof(ServerInfo), nameof(ServerInfo.HttpUrl),MethodType.Getter)]
 public static class HttpConvertPatch
 {
     public static bool Prefix(ServerInfo __instance,ref string __result)
@@ -15,7 +15,7 @@ public static class HttpConvertPatch
         __result = string.Format("http://{0}:{1}/", __instance.Ip, __instance.Port);
         return false;
     }
-}
+} */
 
 [HarmonyPatch(typeof(RegionMenu), nameof(RegionMenu.Open))]
 public static class RegionMenuOpenPatch
@@ -31,9 +31,17 @@ public static class RegionMenuOpenPatch
     {
         ServerManager serverManager = DestroyableSingleton<ServerManager>.Instance;
         IRegionInfo[] regions = defaultRegions;
-
-        var CustomRegion = new DnsRegionInfo(SaveIp.Value, "Custom", StringNames.NoTranslation, SaveIp.Value, SavePort.Value, false);
-        regions = regions.Concat(new IRegionInfo[] { CustomRegion.Cast<IRegionInfo>() }).ToArray();
+        if (SavePort.Value == 22000 || SavePort.Value == 443)
+        {
+            var httpIp = (SavePort.Value == 22000 ? "http://" : "https://") + SaveIp.Value;
+            var CustomRegion = new StaticHttpRegionInfo("Custom", StringNames.NoTranslation, httpIp,new ServerInfo[]{new ServerInfo("Custom", httpIp, SavePort.Value, false)});
+            regions = regions.Concat(new IRegionInfo[] { CustomRegion.Cast<IRegionInfo>() }).ToArray();
+        }
+        else
+        {
+            var CustomRegion = new DnsRegionInfo(SaveIp.Value, "Custom", StringNames.NoTranslation, SaveIp.Value, SavePort.Value, false);
+            regions = regions.Concat(new IRegionInfo[] { CustomRegion.Cast<IRegionInfo>() }).ToArray();
+        }
         ServerManager.DefaultRegions = regions;
         serverManager.AvailableRegions = regions;
 
@@ -62,7 +70,7 @@ public static class RegionMenuOpenPatch
             if (arrow == null || arrow.gameObject == null) return;
             UnityEngine.Object.DestroyImmediate(arrow.gameObject);
 
-            ipField.transform.localPosition = new Vector3(0.2f, -1.75f, -100f);
+            ipField.transform.localPosition = new Vector3(3f, 1.5f, -100f);
             ipField.characterLimit = 30;
             ipField.AllowSymbols = true;
             ipField.ForceUppercase = false;
@@ -99,7 +107,7 @@ public static class RegionMenuOpenPatch
             if (arrow == null || arrow.gameObject == null) return;
             UnityEngine.Object.DestroyImmediate(arrow.gameObject);
 
-            portField.transform.localPosition = new Vector3(0.2f, -2.5f, -100f);
+            portField.transform.localPosition = new Vector3(3f, 0.5f, -100f);
             portField.characterLimit = 5;
             portField.SetText(SavePort.Value.ToString());
             __instance.StartCoroutine(Effects.Lerp(0.1f, new Action<float>((p) =>
