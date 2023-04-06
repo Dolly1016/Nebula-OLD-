@@ -34,7 +34,7 @@ public static class RegionMenuOpenPatch
         if (SavePort.Value == 22000 || SavePort.Value == 443)
         {
             var httpIp = (SavePort.Value == 22000 ? "http://" : "https://") + SaveIp.Value;
-            var CustomRegion = new StaticHttpRegionInfo("Custom", StringNames.NoTranslation, httpIp,new ServerInfo[]{new ServerInfo("Custom", httpIp, SavePort.Value, false)});
+            var CustomRegion = new StaticHttpRegionInfo("Custom", StringNames.NoTranslation, SaveIp.Value,new ServerInfo[]{new ServerInfo("Custom", httpIp, SavePort.Value, false)});
             regions = regions.Concat(new IRegionInfo[] { CustomRegion.Cast<IRegionInfo>() }).ToArray();
         }
         else
