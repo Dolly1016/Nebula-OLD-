@@ -391,6 +391,34 @@ public class ModAbilityButton
     }
 }
 
+public class StaticAttribute : ModAbilityButton.IButtonAttribute
+{
+    public virtual void OnActivated(ModAbilityButton button) { }
+
+    public virtual void Update(ModAbilityButton button) { }
+    public virtual void OutlineUpdate(ModAbilityButton button) { }
+
+    public virtual void OnEndMeeting(ModAbilityButton button) { }
+    public virtual void OnDestroy(ModAbilityButton button) { }
+    public virtual bool IsEnabled() => canUsePredicate?.Invoke() ?? true;
+    public virtual bool IsShown() => canUseIgnoredSafety || !PlayerControl.LocalPlayer.Data.IsDead;
+    public virtual bool IsCoolingDown() => false;
+    public virtual void StartCoolingDown() { }
+    private bool canUseIgnoredSafety;
+
+    public virtual IEnumerable<ModAbilityButton.IButtonEvent> GetEvents() => new ModAbilityButton.IButtonEvent[0];
+    private ModAbilityButton.IButtonEvent[] events;
+    private Func<bool>? canUsePredicate;
+    public StaticAttribute(bool canUseIgnoredSafety,Action buttonAction,KeyCode keyCode, Func<bool>? canUsePredicate=null)
+    {
+        this.canUseIgnoredSafety = canUseIgnoredSafety;
+        this.canUsePredicate = canUsePredicate;
+        events = new ModAbilityButton.IButtonEvent[1] { 
+            new SimpleButtonEvent((button)=>buttonAction.Invoke(),keyCode)
+        };
+    }
+}
+
 public class HasCoolDownAttribute : ModAbilityButton.IButtonAttribute
 {
     public virtual void OnActivated(ModAbilityButton button){}

@@ -7,6 +7,7 @@ using Nebula.Map;
 using JetBrains.Annotations;
 using Nebula.Roles.CrewmateRoles;
 using UnityEngine;
+using Nebula.Roles.HnSImpostorRoles;
 
 namespace Nebula.Game;
 
@@ -375,21 +376,37 @@ public class SpeedFactorManager
     }
 }
 
+public enum AttributeOperateReason
+{
+    TimeOver,
+    Command,
+    PreMeeting,
+    Other
+}
+
 public class PlayerAttribute
 {
+    
+
     public static Dictionary<byte, PlayerAttribute> AllAttributes = new Dictionary<byte, PlayerAttribute>();
 
     public static PlayerAttribute Invisible = new PlayerAttribute(0);
     public static PlayerAttribute CannotKill = new PlayerAttribute(1);
+    public static PoisonedAttribute Poisoned = new PoisonedAttribute(2);
 
     public byte Id { get; private set; }
 
-    private PlayerAttribute(byte Id)
+    protected PlayerAttribute(byte Id)
     {
         this.Id = Id;
 
         AllAttributes[Id] = this;
     }
+
+    public virtual void OnGainAttribute(PlayerControl player, AttributeOperateReason reason) { }
+    public virtual void OnLostAttribute(PlayerControl player, AttributeOperateReason reason) { }
+    public virtual void OnGainAttributeLocal(PlayerControl player, AttributeOperateReason reason) { }
+    public virtual void OnLostAttributeLocal(PlayerControl player, AttributeOperateReason reason) { }
 }
 public class PlayerAttributeFactor
 {
@@ -437,29 +454,61 @@ public class PlayerAttributeFactorManager
         return Factors.Any(factor => factor.Attribute == Attribute);
     }
 
-    public void Register(PlayerAttributeFactor attributeFactor)
+    public void Register(PlayerAttributeFactor attributeFactor,AttributeOperateReason reason = AttributeOperateReason.Other)
     {
+        if (!HasAttribute(attributeFactor.Attribute))
+        {
+            var p = Helpers.playerById(PlayerId);
+            attributeFactor.Attribute.OnGainAttribute(p, reason);
+            if(PlayerControl.LocalPlayer.PlayerId == PlayerId)
+                attributeFactor.Attribute.OnGainAttributeLocal(p, reason);
+        }
+
         if (attributeFactor.DupId != 0) Factors.RemoveWhere((factor) => { return factor.DupId == attributeFactor.DupId; });
         Factors.Add(attributeFactor);
     }
 
+    private void RemoveFactors(Predicate<PlayerAttributeFactor> predicate,AttributeOperateReason reason = AttributeOperateReason.Other)
+    {
+        UInt64 removed = 0x0;
+        Factors.RemoveWhere(
+            (factor) =>
+            {
+                bool flag = predicate.Invoke(factor);
+                if (flag) removed |= (UInt64)1 << factor.Attribute.Id;
+                return flag;
+            }
+            );
+
+        foreach (var attr in PlayerAttribute.AllAttributes)
+        {
+            if ((((UInt64)1 << attr.Key) & removed) != 0) {
+                if (!HasAttribute(attr.Value))
+                {
+                    var p = Helpers.playerById(PlayerId);
+                    attr.Value.OnLostAttribute(p,reason);
+                    if (PlayerControl.LocalPlayer.PlayerId == PlayerId)
+                        attr.Value.OnLostAttributeLocal(p,reason);
+                }
+            }
+        }
+    }
+
     public void Update()
     {
-        int num = Factors.Count;
-        Factors.RemoveWhere((factor) =>
+        RemoveFactors((factor) =>
         {
-            if (!factor.IsPermanent)
-                factor.Duration -= Time.deltaTime;
+            if (!factor.IsPermanent) factor.Duration -= Time.deltaTime;
             return !(factor.Duration > 0);
-        });
+        },AttributeOperateReason.TimeOver);
     }
 
     public void OnMeeting()
     {
-        Factors.RemoveWhere((factor) =>
+        RemoveFactors((factor) =>
         {
             return !factor.CanCrossOverMeeting;
-        });
+        }, AttributeOperateReason.PreMeeting);
     }
 }
 

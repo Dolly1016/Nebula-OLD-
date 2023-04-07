@@ -104,8 +104,6 @@ static public class Roles
     public static MinigameRoles.Player Player = new MinigameRoles.Player();
 
 
-    public static MinigameRoles.Hunters.Hadar Hadar = new MinigameRoles.Hunters.Hadar();
-
     public static HnSCrewmateRoles.Crewmate HnSCrewmate = new HnSCrewmateRoles.Crewmate();
 
     public static HnSImpostorRoles.HnSCleaner HnSCleaner = new HnSImpostorRoles.HnSCleaner();
@@ -148,7 +146,6 @@ static public class Roles
             Crewmate,CrewmateWithoutTasks,Agent,Alien,Bait,Busker,Comet,DamnedCrew,Doctor,Guardian,Mayor,Navvy,Necromancer,NiceGuesser,NiceTracker,NiceTrapper,Oracle,Provocateur,Psychic,Seer,Sheriff,Splicer,Spy,
             Madmate,
             Player,
-            Hadar,
             HnSCrewmate,
             HnSCleaner,HnSHadar,HnSRaider,HnSReaper
         };

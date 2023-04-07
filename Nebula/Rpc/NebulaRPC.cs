@@ -18,10 +18,32 @@ public class NebulaRPCHolder : Attribute
 
 }
 
-public class RemoteProcessBase
+public class NebulaRPCInvoker
 {
 
+    Action<MessageWriter> sender;
+    Action localBodyProcess;
+    int hash;
+
+    public NebulaRPCInvoker(int hash,Action<MessageWriter> sender, Action localBodyProcess)
+    {
+        this.hash = hash;
+        this.sender = sender;
+        this.localBodyProcess = localBodyProcess;
+    }
+
+    public void Invoke(MessageWriter writer)
+    {
+        writer.Write(hash);
+        sender.Invoke(writer);
+        localBodyProcess.Invoke();
+    }
+}
+
+public class RemoteProcessBase
+{
     static public Dictionary<int,RemoteProcessBase> AllNebulaProcess = new();
+
 
     public int Hash { get; private set; } = -1;
     public string Name { get; private set; }
@@ -75,12 +97,18 @@ public class RemoteProcess<Parameter> : RemoteProcessBase
         Body = process;
     }
 
+
     public void Invoke(Parameter parameter) {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, 64, Hazel.SendOption.Reliable, -1);
         writer.Write(Hash);
         Sender(writer,parameter);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         Body.Invoke(parameter,true);
+    }
+
+    public NebulaRPCInvoker GetInvoker(Parameter parameter)
+    {
+        return new NebulaRPCInvoker(Hash,(writer) => Sender(writer, parameter), () => Body.Invoke(parameter, true));
     }
 
     public void LocalInvoke(Parameter parameter) {
@@ -90,6 +118,27 @@ public class RemoteProcess<Parameter> : RemoteProcessBase
     public override void Receive(MessageReader reader)
     {
         Body.Invoke(Receiver.Invoke(reader), false);
+    }
+}
+
+[NebulaRPCHolder]
+public class CombinedRemoteProcess : RemoteProcessBase
+{
+    public static CombinedRemoteProcess CombinedRPC = new();
+    CombinedRemoteProcess() : base("CombinedRPC") { }
+
+    public override void Receive(MessageReader reader) {
+        int num = reader.ReadInt32();
+        for (int i = 0; i < num; i++) RemoteProcessBase.AllNebulaProcess[reader.ReadInt32()].Receive(reader);
+    }
+
+    public void Invoke(params NebulaRPCInvoker[] invokers)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, 64, Hazel.SendOption.Reliable, -1);
+        writer.Write(Hash);
+        writer.Write(invokers.Length);
+        foreach (var invoker in invokers) invoker.Invoke(writer);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 }
 
@@ -108,6 +157,11 @@ public class RemoteProcess : RemoteProcessBase
         writer.Write(Hash);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         Body.Invoke(true);
+    }
+
+    public NebulaRPCInvoker GetInvoker()
+    {
+        return new NebulaRPCInvoker(Hash, (writer) => { }, () => Body.Invoke(true));
     }
 
     public override void Receive(MessageReader reader)
@@ -144,7 +198,6 @@ public class DivisibleRemoteProcess<Parameter,DividedParameter> : RemoteProcessB
             AmongUsClient.Instance.FinishRpcImmediately(writer);
             Body.Invoke(param, true);
         }
-
         Sender(parameter, dividedSend);
     }
 
@@ -158,7 +211,6 @@ public class DivisibleRemoteProcess<Parameter,DividedParameter> : RemoteProcessB
         Body.Invoke(Receiver.Invoke(reader), false);
     }
 }
-
 
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.HandleRpc))]
 class NebulaRPCHandlerPatch

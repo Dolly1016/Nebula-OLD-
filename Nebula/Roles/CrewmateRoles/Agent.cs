@@ -4,7 +4,7 @@ public class Agent : Template.ExemptTasks
 {
     static public Color RoleColor = new Color(166f / 255f, 183f / 255f, 144f / 255f);
 
-    private CustomButton agentButton;
+    private ModAbilityButton agentButton;
 
     private TMPro.TextMeshPro ventButtonUsesString;
     private GameObject ventButtonUsesObject;
@@ -43,41 +43,23 @@ public class Agent : Template.ExemptTasks
 
     public override void ButtonInitialize(HudManager __instance)
     {
-        if (agentButton != null)
-        {
-            agentButton.Destroy();
-        }
-        agentButton = new CustomButton(
-            () =>
-            {
-                Game.TaskData task = PlayerControl.LocalPlayer.GetModData().Tasks;
+        agentButton?.Destroy();
+        agentButton = new ModAbilityButton(buttonSprite.GetSprite()).SetLabelLocalized("button.label.agent");
+        agentButton.MyAttribute = new StaticAttribute(false, () => {
+            RPCEventInvoker.RefreshTasks(PlayerControl.LocalPlayer.PlayerId, (int)actOverOption.getFloat(), 0, 0.2f);
+        }, Module.NebulaInputManager.abilityInput.keyCode,
+        () => {
+            Game.TaskData? task = PlayerControl.LocalPlayer.GetModData().Tasks;
+            if (task == null) return false;
 
-                RPCEventInvoker.RefreshTasks(PlayerControl.LocalPlayer.PlayerId, (int)actOverOption.getFloat(), 0, 0.2f);
-            },
-            () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
-            () =>
-            {
-                Game.TaskData? task = PlayerControl.LocalPlayer.GetModData().Tasks;
-                if (task == null) return false;
-
-                return task.AllTasks == task.Completed && PlayerControl.LocalPlayer.CanMove && task.Quota > 0;
-
-            },
-            () => { agentButton.Timer = 0; },
-            buttonSprite.GetSprite(),
-            Expansion.GridArrangeExpansion.GridArrangeParameter.None,
-            __instance,
-            Module.NebulaInputManager.abilityInput.keyCode,
-            "button.label.agent"
-        );
-        agentButton.MaxTimer = agentButton.Timer = 0;
-
+            return task.AllTasks == task.Completed && PlayerControl.LocalPlayer.CanMove && task.Quota > 0;
+        });
+        
         var ventButton = FastDestroyableSingleton<HudManager>.Instance.ImpostorVentButton;
         ventButtonUsesObject = ventButton.ShowUsesIcon(0,out ventButtonUsesString);
         ventButtonUsesString.text = maxVentsOption.getFloat().ToString();
         ventButton.gameObject.GetComponent<SpriteRenderer>().sprite = RoleManager.Instance.AllRoles.First(r => r.Role == RoleTypes.Engineer).Ability.Image;
         ventButton.transform.GetChild(1).GetComponent<TMPro.TextMeshPro>().outlineColor = Palette.CrewmateBlue;
-
     }
 
     public override void MyUpdate()
@@ -99,11 +81,8 @@ public class Agent : Template.ExemptTasks
 
     public override void CleanUp()
     {
-        if (agentButton != null)
-        {
-            agentButton.Destroy();
-            agentButton = null;
-        }
+        agentButton?.Destroy();
+
         if (ventButtonUsesObject)
         {
             UnityEngine.Object.Destroy(ventButtonUsesObject);
