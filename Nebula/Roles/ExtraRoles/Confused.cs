@@ -40,7 +40,7 @@ public class Confused : Template.StandardExtraRole
 
     public override void EditDisplayRoleNameForcely(byte playerId, ref string roleName)
     {
-        roleName += "✿";
+        roleName += Helpers.cs(RoleColor, "✿");
     }
 
     public override void LoadOptionData()

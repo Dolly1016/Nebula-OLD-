@@ -186,7 +186,7 @@ public class Hadar : Role
                  true, VentPermission.CanNotUse, false, false, true)
     {
         ValidGamemode = Module.CustomGameMode.StandardHnS;
-        CanCallEmergencyMeeting = false;
+        canCallEmergencyMeeting = false;
 
         ventButton = null;
     }

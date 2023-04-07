@@ -1287,7 +1287,7 @@ public class PlayerJoinedPatch
 {
     public static void Postfix()
     {
-        if(AmongUsClient.Instance.AmHost)CustomOption.ShareAllOptions.Invoke(CustomOption.AllOptions);
+        if (AmongUsClient.Instance.AmHost && PlayerControl.AllPlayerControls.Count > 1) CustomOption.ShareAllOptions.Invoke(CustomOption.AllOptions);
     }
 }
 

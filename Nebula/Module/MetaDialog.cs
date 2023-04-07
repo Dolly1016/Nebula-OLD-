@@ -443,7 +443,8 @@ public class MetaDialog : MetaScreen
                     int index = 2;
                     foreach (var r in data.extraRole)
                     {
-                        var extraRole = r;
+                        var extraRole = r.AssignableOnHelp;
+                        if (extraRole == null) continue;
                         int currentIndex = index;
                         if (arg == index) assignable = extraRole;
                         yield return new MSButton(1.3f, 0.36f,

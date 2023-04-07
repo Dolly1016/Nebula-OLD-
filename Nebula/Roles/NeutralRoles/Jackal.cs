@@ -5,9 +5,8 @@ public class Jackal : Role
 {
     static public Color RoleColor = new Color(0f, 162f / 255f, 211f / 255f);
 
-    static private CustomButton killButton;
-    static private CustomButton sidekickButton;
-    static private SpriteRenderer lockedButtonRenderer;
+    static private ModAbilityButton killButton;
+    static private ModAbilityButton sidekickButton;
 
     static public Module.CustomOption CanCreateSidekickOption;
     static public Module.CustomOption NumOfKillingToCreateSidekickOption;
@@ -46,30 +45,6 @@ public class Jackal : Role
         yield return Roles.Sidekick;
     }
 
-    public override void MyPlayerControlUpdate()
-    {
-        int jackalId = Game.GameData.data.AllPlayers[PlayerControl.LocalPlayer.PlayerId].GetRoleData(jackalDataId);
-
-        Game.MyPlayerData data = Game.GameData.data.myData;
-
-        data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(
-            (player) =>
-            {
-                if (player.Object.inVent) return false;
-                if (player.GetModData().role == Roles.Sidekick)
-                {
-                    return player.GetModData().GetRoleData(jackalDataId) != jackalId;
-                }
-                else if (player.GetModData().HasExtraRole(Roles.SecondarySidekick))
-                {
-                    return player.GetModData().GetExtraRoleData(Roles.SecondarySidekick) != (ulong)jackalId;
-                }
-                return true;
-            });
-
-        Patches.PlayerControlPatch.SetPlayerOutline(data.currentTarget, Palette.ImpostorRed);
-    }
-
     public override void GlobalInitialize(PlayerControl __instance)
     {
         __instance.GetModData().SetRoleData(jackalDataId, __instance.PlayerId);
@@ -80,89 +55,79 @@ public class Jackal : Role
 
     public override void ButtonInitialize(HudManager __instance)
     {
-        if (killButton != null)
-        {
-            killButton.Destroy();
-        }
-        killButton = new CustomButton(
-            () =>
-            {
-                var r = Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, Game.GameData.data.myData.currentTarget, Game.PlayerData.PlayerStatus.Dead, true);
-                if (r == Helpers.MurderAttemptResult.PerformKill) RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, killingDataId, 1);
-                killButton.Timer = killButton.MaxTimer;
-                Game.GameData.data.myData.currentTarget = null;
-            },
-            () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
-            () => { return Game.GameData.data.myData.currentTarget && PlayerControl.LocalPlayer.CanMove; },
-            () => { killButton.Timer = killButton.MaxTimer; },
-            __instance.KillButton.graphic.sprite,
-            Expansion.GridArrangeExpansion.GridArrangeParameter.AlternativeKillButtonContent,
-            __instance,
-            Module.NebulaInputManager.modKillInput.keyCode
-        ).SetTimer(CustomOptionHolder.InitialKillCoolDownOption.getFloat());
-        killButton.MaxTimer = KillCoolDownOption.getFloat();
-        killButton.SetButtonCoolDownOption(true);
+        int jackalId = Game.GameData.data.AllPlayers[PlayerControl.LocalPlayer.PlayerId].GetRoleData(jackalDataId);
+        SpriteRenderer? lockedRenderer = null;
 
-        if (sidekickButton != null)
+        bool canCreateSidekick(out int left)
         {
-            sidekickButton.Destroy();
+            int killing = PlayerControl.LocalPlayer.GetModData().GetRoleData(killingDataId);
+            int goal = (int)NumOfKillingToCreateSidekickOption.getFloat();
+            left = goal - killing;
+            return killing >= goal;
         }
-        sidekickButton = new CustomButton(
-            () =>
-            {
-                    //Sidekick生成
-                    int jackalId = PlayerControl.LocalPlayer.GetModData().GetRoleData(jackalDataId);
-                RPCEventInvoker.CreateSidekick(Game.GameData.data.myData.currentTarget.PlayerId, (byte)jackalId);
-                RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, leftSidekickDataId, -1);
-
-                Game.GameData.data.myData.currentTarget = null;
-            },
-            () => { return !PlayerControl.LocalPlayer.Data.IsDead && Game.GameData.data.myData.getGlobalData().GetRoleData(leftSidekickDataId) > 0; },
-            () => {
-                int killing = PlayerControl.LocalPlayer.GetModData().GetRoleData(killingDataId);
-                int goal = (int)NumOfKillingToCreateSidekickOption.getFloat();
-                if (killing >= goal)
+        void setUpSidekickButtonAttribute() {
+            sidekickButton.MyAttribute = new InterpersonalAbilityAttribute(0f,0f,(p)=>true,Color.yellow, GameManager.Instance.LogicOptions.GetKillDistance(),
+                new SimpleButtonEvent((button) =>
                 {
-                    lockedButtonRenderer?.gameObject.SetActive(false);
-                    sidekickButton.ShowUsesText(false);
+                    int jackalId = PlayerControl.LocalPlayer.GetModData().GetRoleData(jackalDataId);
+                    RPCEventInvoker.CreateSidekick(Game.GameData.data.myData.currentTarget.PlayerId, (byte)jackalId);
+                    RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, leftSidekickDataId, -1);
+
+                    Game.GameData.data.myData.currentTarget = null;
+
+                    button.Destroy();
+                }, Module.NebulaInputManager.abilityInput.keyCode, true));
+            sidekickButton.ShowUsesText(false);
+        }
+
+        killButton?.Destroy();
+        killButton = new ModAbilityButton(__instance.KillButton.graphic.sprite, Expansion.GridArrangeExpansion.GridArrangeParameter.AlternativeKillButtonContent)
+            .SetLabelLocalized("button.label.kill").SetLabelType(ModAbilityButton.LabelType.Impostor);
+
+        killButton.MyAttribute = new KillAbilityAttribute(
+            KillCoolDownOption.getFloat(), CustomOptionHolder.InitialKillCoolDownOption.getFloat(),
+            (player) =>
+            {
+                if (player.Object.inVent) return false;
+                var modData = player.GetModData();
+                if (modData.role == Roles.Sidekick) return modData.GetRoleData(jackalDataId) != jackalId;
+                else if (modData.HasExtraRole(Roles.SecondarySidekick)) return modData.GetExtraRoleData(Roles.SecondarySidekick) != (ulong)jackalId;
+
+                return true;
+            }, Palette.ImpostorRed, GameManager.Instance.LogicOptions.GetKillDistance(), Game.PlayerData.PlayerStatus.Dead,
+            (player) =>
+            {
+                RPCEventInvoker.AddAndUpdateRoleData(PlayerControl.LocalPlayer.PlayerId, killingDataId, 1);
+                if(canCreateSidekick(out int left) && lockedRenderer!=null)
+                {
+                    GameObject.Destroy(lockedRenderer.gameObject);
+                    lockedRenderer = null;
+                    setUpSidekickButtonAttribute();
                 }
                 else
                 {
-                    sidekickButton.UsesText.text = (goal - killing).ToString();
+                    sidekickButton.UsesText.text = left.ToString();
                 }
+            });
 
-                return Game.GameData.data.myData.currentTarget && PlayerControl.LocalPlayer.CanMove && killing >= goal; 
-            },
-            () => { sidekickButton.Timer = sidekickButton.MaxTimer; },
-            sidekickButtonSprite.GetSprite(),
-            Expansion.GridArrangeExpansion.GridArrangeParameter.LeftSideContent,
-            __instance,
-            Module.NebulaInputManager.abilityInput.keyCode,
-            "button.label.sidekick"
-        );
-        sidekickButton.MaxTimer = 20;
+        sidekickButton?.Destroy();
+        sidekickButton = new ModAbilityButton(sidekickButtonSprite.GetSprite(), Expansion.GridArrangeExpansion.GridArrangeParameter.LeftSideContent)
+            .SetLabelLocalized("button.label.sidekick");
 
-        int killing = PlayerControl.LocalPlayer.GetModData().GetRoleData(killingDataId);
-        int goal = (int)NumOfKillingToCreateSidekickOption.getFloat();
-        if (killing < goal)
-        {
-            lockedButtonRenderer = sidekickButton.AddOverlay(CustomButton.lockedButtonSprite.GetSprite(), 0f);
-        }
+
+        if (canCreateSidekick(out int left))
+            setUpSidekickButtonAttribute();
         else
         {
-            lockedButtonRenderer = null;
+            sidekickButton.UsesText.text = left.ToString();
+            lockedRenderer = AbilityButtonDecorator.AddLockedOverlay(sidekickButton);
         }
-
-        sidekickButton.UsesText.text= NumOfKillingToCreateSidekickOption.getFloat().ToString();
     }
 
     public override void CleanUp()
     {
-        if (killButton != null)
-        {
-            killButton.Destroy();
-            killButton = null;
-        }
+        killButton?.Destroy();
+        sidekickButton?.Destroy();
     }
 
     private void ChangeSidekickToJackal(byte playerId)

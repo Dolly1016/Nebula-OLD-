@@ -397,6 +397,7 @@ public static class UpdatePatch
 
             // ボタン類の更新 
             CustomButton.HudUpdate();
+            ModAbilityButton.HudUpdate();
 
             if (MapBehaviour.Instance && MapBehaviour.Instance.gameObject.active) MapUpdate();
 
@@ -439,9 +440,7 @@ public static class UpdatePatch
                 }
             }
 
-            bool canReport = true;
-            Helpers.RoleAction(PlayerControl.LocalPlayer.GetModData(), (r) => canReport &= r.CanReport);
-            if (canReport) __instance.ReportButton.Show(); else __instance.ReportButton.Hide();
+            if (Helpers.RoleActionAll(PlayerControl.LocalPlayer.GetModData(),(r)=>r.CanReport)) __instance.ReportButton.Show(); else __instance.ReportButton.Hide();
 
             Events.GlobalEvent.Update();
             Events.LocalEvent.Update();
@@ -455,8 +454,6 @@ public static class UpdatePatch
             if (CustomOptionHolder.timeLimitOption.getBool()) Game.GameData.data.TimerUpdate();
 
             Module.Information.UpperInformationManager.Update();
-
-            if (Game.GameData.data.Ghost != null) Game.GameData.data.Ghost.Update();
 
         }
         catch (NullReferenceException excep) { UnityEngine.Debug.Log(excep.StackTrace); }

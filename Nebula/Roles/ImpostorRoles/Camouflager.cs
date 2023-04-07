@@ -2,7 +2,7 @@
 
 public class Camouflager : Role
 {
-    private CustomButton camouflageButton;
+    private ModAbilityButton camouflageButton;
 
     private Module.CustomOption camouflageCoolDownOption;
     private Module.CustomOption camouflageDurationOption;
@@ -24,43 +24,23 @@ public class Camouflager : Role
 
     public override void ButtonInitialize(HudManager __instance)
     {
-        if (camouflageButton != null)
-        {
-            camouflageButton.Destroy();
-        }
-        camouflageButton = new CustomButton(
+        camouflageButton?.Destroy();
+        camouflageButton = new ModAbilityButton(buttonSprite.GetSprite())
+            .SetLabelLocalized("button.label.camouflage");
+
+        var activatedAttribute = new EffectActivatedAttribute(camouflageDurationOption.getFloat());
+        var inactivatedAttribute = new EffectInactivatedAttribute(camouflageCoolDownOption.getFloat(), CustomOptionHolder.InitialAbilityCoolDownOption.getFloat(), Module.NebulaInputManager.abilityInput.keyCode, activatedAttribute,
             () =>
             {
                 RPCEventInvoker.GlobalEvent(Events.GlobalEvent.Type.Camouflage, camouflageDurationOption.getFloat());
-            },
-            () => { return !PlayerControl.LocalPlayer.Data.IsDead; },
-            () => { return PlayerControl.LocalPlayer.CanMove; },
-            () =>
-            {
-                camouflageButton.Timer = camouflageButton.MaxTimer;
-                camouflageButton.isEffectActive = false;
-                camouflageButton.actionButton.cooldownTimerText.color = Palette.EnabledColor;
-            },
-            buttonSprite.GetSprite(),
-            Expansion.GridArrangeExpansion.GridArrangeParameter.None,
-            __instance,
-            Module.NebulaInputManager.abilityInput.keyCode,
-            true,
-            camouflageDurationOption.getFloat(),
-            () => { camouflageButton.Timer = camouflageButton.MaxTimer; },
-            "button.label.camouflage"
-        ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());
-        camouflageButton.MaxTimer = camouflageCoolDownOption.getFloat();
-        camouflageButton.EffectDuration = camouflageDurationOption.getFloat();
+            });
+        activatedAttribute.SetInactivatedAttribute(inactivatedAttribute);
+        camouflageButton.MyAttribute = inactivatedAttribute;
     }
 
     public override void CleanUp()
     {
-        if (camouflageButton != null)
-        {
-            camouflageButton.Destroy();
-            camouflageButton = null;
-        }
+        camouflageButton?.Destroy();
     }
 
     public override void OnRoleRelationSetting()

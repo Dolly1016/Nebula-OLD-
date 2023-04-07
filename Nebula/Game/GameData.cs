@@ -714,6 +714,7 @@ public class PlayerData
         public static PlayerStatus Misfire = new PlayerStatus("misfire");
         public static PlayerStatus Slapped = new PlayerStatus("slapped");
         public static PlayerStatus Withered = new PlayerStatus("withered");
+        public static PlayerStatus Assassinated = new PlayerStatus("assassinated");
 
 
         public string Status { get; private set; }
@@ -1322,12 +1323,6 @@ public class GameData
     //ゲームモード
     public Module.CustomGameMode GameMode;
 
-    //ゴースト
-    public Ghost.Ghost? Ghost;
-
-    //ミニゲーム開始時のカウントダウン
-    public Objects.CustomMessage CountDownMessage;
-
     //Oracleの役職絞り込み
     public Roles.RoleAI.EstimationAI EstimationAI;
 
@@ -1359,9 +1354,6 @@ public class GameData
 
         GameRule = new GameRule();
         GameMode = CustomOptionHolder.GetCustomGameMode();
-
-        Ghost = null;
-        CountDownMessage = null;
 
         EstimationAI = new Roles.RoleAI.EstimationAI();
 

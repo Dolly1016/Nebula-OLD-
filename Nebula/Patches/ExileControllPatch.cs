@@ -143,6 +143,8 @@ class ExileControllerPatch
         }
 
         Objects.CustomButton.OnMeetingEnd();
+        ModAbilityButton.OnMeetingEnd();
+
         Objects.CustomObject.OnMeetingEnd();
         Expansion.GridArrangeExpansion.OnMeetingEnd();
     }

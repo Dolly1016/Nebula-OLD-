@@ -443,8 +443,8 @@ public class Spectre : Role
             new CustomTaskData("Storage", new Vector2(-0.4934f, -14.4472f)),
             new CustomTaskData("Cafeteria", new Vector2(0.5851f, 5.6232f)),
             new CustomTaskData("RightSide", new Vector2(12.3742f, -3.0637f)),
-            new CustomTaskData("LeftSide", new Vector2(-11.5461f, -11.3865f)),
-            new CustomTaskData("Reactor", new Vector2(-19.398f, -6.8135f)),
+            new CustomTaskData("LeftSide", new Vector2(-11.6061f, -11.3865f)),
+            new CustomTaskData("Reactor", new Vector2(-19.458f, -6.8135f)),
             new CustomTaskData("UpperEngine", new Vector2(-17.929f, 2.5338f)),
             new CustomTaskData("MedBay", new Vector2(-9.3721f, -5.1098f))
         }, CreateMetaOption(Color.white, "spectreTask.statue.skeld", int.MaxValue).HiddenOnDisplay(true).HiddenOnMetaScreen(true));

@@ -473,7 +473,6 @@ public class DesignersHat
         public DesignersImageParameter? ClimbFlip;
         public bool? Bounce;
         public bool? Adaptive;
-        public bool? Behind;
         public bool? HideHands;
         public bool? IsSkinny;
         public float? SecPerFrame;
@@ -492,7 +491,6 @@ public class DesignersHat
             ClimbFlip = DesignersImageParameter.Create(modData.I_ClimbFlip);
             Bounce = modData.Bounce.Value;
             Adaptive = modData.Adaptive.Value;
-            Behind = modData.Behind.Value;
             HideHands = modData.HideHands.Value;
             IsSkinny = modData.IsSkinny.Value;
             SecPerFrame = modData.SecPerFrame.SecPerFrame;
@@ -508,7 +506,7 @@ public class DesignersHat
             if (Flip != null)
             {
                 modData.I_Flip.LoadImage(Flip);
-                vanillaData.hatViewData.viewData.LeftMainImage = modData.I_Flip.GetMainImage();
+                //vanillaData.hatViewData.viewData.LeftMainImage = modData.I_Flip.GetMainImage();
             }
             if (Back != null)
             {
@@ -556,17 +554,6 @@ public class DesignersHat
                 modData.Adaptive.Value = Adaptive.Value;
                 vanillaData.hatViewData.viewData.AltShader = Adaptive.Value ? DestroyableSingleton<HatManager>.Instance.PlayerMaterial : null;
             }
-            if (Behind.HasValue)
-            {
-                if (vanillaData.hatViewData.viewData.BackImage != null) Behind = true;
-                modData.Behind.Value = Behind.Value;
-                vanillaData.InFront = !Behind.Value;
-            }
-            else if (vanillaData.hatViewData.viewData.BackImage != null)
-            {
-                modData.Behind.Value = true;
-                vanillaData.InFront = false;
-            }
             if (IsSkinny.HasValue)
             {
                 modData.IsSkinny.Value = IsSkinny.Value;
@@ -602,14 +589,14 @@ public class DesignersHat
         VanillaData.StoreName = "designerHat";
         VanillaData.name = VanillaData.StoreName;
         VanillaData.ProductId = "designerHat";
-        VanillaData.InFront = true;
+        VanillaData.InFront = false;
         VanillaData.NoBounce = true;
 
         viewData.AltShader = null;
 
         NebulaData = new CustomHat();
-        NebulaData.Behind.Value = false;
         NebulaData.Bounce.Value = false;
+        NebulaData.HatData = VanillaData;
     }
 
     public void CopyFrom(PlayerDisplay? display, CustomHat hat)
@@ -702,6 +689,7 @@ public class DesignersVisor
 
         NebulaData = new CustomVisor();
         NebulaData.BehindHat.Value = false;
+        NebulaData.VisorData = VanillaData;
     }
 
     public void CopyFrom(PlayerDisplay? display, CustomVisor visor)
@@ -762,6 +750,7 @@ public class DesignersNameplate
         VanillaData.ProductId = "designerNameplate";
 
         NebulaData = new CustomNamePlate();
+        NebulaData.NamePlateData = VanillaData;
     }
 
     public void CopyFrom(SpriteRenderer? display, CustomNamePlate nameplate)
@@ -786,6 +775,8 @@ public class DesignersNameplate
 public class CustomDesignerBase : MonoBehaviour
 {
     protected static SpriteLoader IconSprite = new SpriteLoader("Nebula.Resources.ReloadIcon.png", 100f);
+    protected static SpriteLoader HasGraphicSprite = new SpriteLoader("Nebula.Resources.HasGraphicIcon.png", 100f);
+    protected Dictionary<string, GameObject> hasGraphicObjects = new();
 
     protected MetaScreen.MSDesigner ShowDialog(Vector2 size)
     {
@@ -1312,17 +1303,16 @@ public class CustomPlayerDesigner : CustomDesignerBase
 
 public class CustomHatDesigner : CustomPlayerDesigner
 {
-    static public DesignersHat Hat = null;
+    static public DesignersHat? Hat = null;
     TextInputField NameField;
     TextInputField AuthorField;
     TextInputField CategoryField;
     TextInputField FPSField;
     MSRadioButton BounceButton;
     MSRadioButton AdaptiveButton;
-    MSRadioButton BehindButton;
     MSRadioButton IsSkinnyButton;
     MSRadioButton HideHandsButton;
-
+    
     CustomHat? targetHat = null;
 
     static CustomHatDesigner()
@@ -1339,9 +1329,19 @@ public class CustomHatDesigner : CustomPlayerDesigner
         CategoryField.SetText(hat.Package.Value);
         BounceButton.Flag = hat.Bounce.Value;
         AdaptiveButton.Flag = hat.Adaptive.Value;
-        BehindButton.Flag = hat.Behind.Value;
         IsSkinnyButton.Flag = hat.IsSkinny.Value;
         HideHandsButton.Flag = hat.HideHands.Value;
+
+        hasGraphicObjects["idle"].SetActive(hat.I_Main);
+        hasGraphicObjects["idleFlip"].SetActive(hat.I_Flip);
+        hasGraphicObjects["back"].SetActive(hat.I_Back);
+        hasGraphicObjects["backFlip"].SetActive(hat.I_BackFlip);
+        hasGraphicObjects["move"].SetActive(hat.I_Move);
+        hasGraphicObjects["moveFlip"].SetActive(hat.I_MoveFlip);
+        hasGraphicObjects["moveBack"].SetActive(hat.I_MoveBack);
+        hasGraphicObjects["moveBackFlip"].SetActive(hat.I_MoveBackFlip);
+        hasGraphicObjects["climb"].SetActive(hat.I_Climb);
+        hasGraphicObjects["climbFlip"].SetActive(hat.I_ClimbFlip);
     }
 
     public void Awake()
@@ -1357,7 +1357,6 @@ public class CustomHatDesigner : CustomPlayerDesigner
 
         BounceButton = new MSRadioButton(false, 1.4f, Language.Language.GetString("designers.options.bounce"), 1.7f, 1.7f, TMPro.TextAlignmentOptions.Left, TMPro.FontStyles.Bold);
         AdaptiveButton = new MSRadioButton(false, 1.4f, Language.Language.GetString("designers.options.adaptive"), 1.7f, 1.7f, TMPro.TextAlignmentOptions.Left, TMPro.FontStyles.Bold);
-        BehindButton = new MSRadioButton(false, 1.4f, Language.Language.GetString("designers.options.behind"), 1.7f, 1.7f, TMPro.TextAlignmentOptions.Left, TMPro.FontStyles.Bold);
         IsSkinnyButton = new MSRadioButton(false, 1.4f, Language.Language.GetString("designers.options.isSkinny"), 1.7f, 1.7f, TMPro.TextAlignmentOptions.Left, TMPro.FontStyles.Bold);
         HideHandsButton = new MSRadioButton(false, 1.4f, Language.Language.GetString("designers.options.hideHands"), 1.7f, 1.7f, TMPro.TextAlignmentOptions.Left, TMPro.FontStyles.Bold);
 
@@ -1367,25 +1366,35 @@ public class CustomHatDesigner : CustomPlayerDesigner
         rightScreen.AddTopic(new MSString(0.4f, Language.Language.GetString("designers.label.package") + " :", 1.7f, 1.7f, TMPro.TextAlignmentOptions.Right, TMPro.FontStyles.Bold), categoryInputContent);
         rightScreen.AddTopic(BounceButton, AdaptiveButton);
         rightScreen.CustomUse(-0.15f);
-        rightScreen.AddTopic(BehindButton, IsSkinnyButton, HideHandsButton);
+        rightScreen.AddTopic(IsSkinnyButton, HideHandsButton);
 
         BounceButton.FlagUpdateAction = (bounce) => Hat.UpdateHat(Display, new DesignersHat.DesignersHatParameter() { Bounce = bounce });
         AdaptiveButton.FlagUpdateAction = (adaptive) => Hat.UpdateHat(Display, new DesignersHat.DesignersHatParameter() { Adaptive = adaptive });
-        BehindButton.FlagUpdateAction = (behind) => Hat.UpdateHat(Display, new DesignersHat.DesignersHatParameter() { Behind = behind });
         IsSkinnyButton.FlagUpdateAction = (isSkinny) => Hat.UpdateHat(Display, new DesignersHat.DesignersHatParameter() { IsSkinny = isSkinny });
         HideHandsButton.FlagUpdateAction = (hideHands) => Hat.UpdateHat(Display, new DesignersHat.DesignersHatParameter() { HideHands = hideHands });
 
         MSButton GeneratePartButton(string label,Action<DesignersHat.DesignersHatParameter,DesignersImageParameter> parameterEditor)
         {
-            return new MSButton(2f, 0.36f, label, TMPro.FontStyles.Bold, () =>
+            return new MSButton(2f, 0.36f, Language.Language.GetString($"designers.parts.{label}"), TMPro.FontStyles.Bold, () =>
             {
                 AcceptImage(400, (path, texture, split) =>
                 {
                     var parameter = new DesignersHat.DesignersHatParameter();
                     parameterEditor(parameter,new(path,texture,split));
                     Hat.UpdateHat(Display,parameter);
+                    hasGraphicObjects[label].SetActive(true);
                 });
-            });
+            })
+            {
+                PostBuilder = (obj) => {
+                    var hasGraphicObj = new GameObject("HasGraphic");
+                    hasGraphicObj.transform.SetParent(obj.transform);
+                    hasGraphicObj.SetActive(false);
+                    hasGraphicObj.transform.localPosition = new Vector3(0.95f, 0.13f, -10f);
+                    hasGraphicObj.AddComponent<SpriteRenderer>().sprite = HasGraphicSprite.GetSprite();
+                    hasGraphicObjects[label] = hasGraphicObj;
+                }
+            };
         }
 
         MSButton GenerateReloadButton(Func<CustomHat,CustomVImage> imageGetter, Action<DesignersHat.DesignersHatParameter, DesignersImageParameter> parameterEditor)
@@ -1414,42 +1423,42 @@ public class CustomHatDesigner : CustomPlayerDesigner
 
 
         rightScreen.AddTopic(
-            GeneratePartButton(Language.Language.GetString("designers.parts.idle"), (parameter, img) => parameter.Main = img),
+            GeneratePartButton("idle", (parameter, img) => parameter.Main = img),
             new MSMargin(-0.05f),
             GenerateReloadButton((hat)=>hat.I_Main, (parameter, img) => parameter.Main = img),
-            GeneratePartButton(Language.Language.GetString("designers.parts.idleFlip"), (parameter, img) => parameter.Flip = img),
+            GeneratePartButton("idleFlip", (parameter, img) => parameter.Flip = img),
             new MSMargin(-0.05f),
             GenerateReloadButton((hat) => hat.I_Flip, (parameter, img) => parameter.Flip = img)
         );
         rightScreen.AddTopic(
-            GeneratePartButton(Language.Language.GetString("designers.parts.back"), (parameter, img) => parameter.Back = img),
+            GeneratePartButton("back", (parameter, img) => parameter.Back = img),
             new MSMargin(-0.05f),
             GenerateReloadButton((hat) => hat.I_Back, (parameter, img) => parameter.Back = img),
-            GeneratePartButton(Language.Language.GetString("designers.parts.backFlip"), (parameter, img) => parameter.BackFlip = img),
+            GeneratePartButton("backFlip", (parameter, img) => parameter.BackFlip = img),
             new MSMargin(-0.05f),
             GenerateReloadButton((hat) => hat.I_BackFlip, (parameter, img) => parameter.BackFlip = img)
         );
         rightScreen.AddTopic(
-            GeneratePartButton(Language.Language.GetString("designers.parts.move"), (parameter, img) => parameter.Move = img),
+            GeneratePartButton("move", (parameter, img) => parameter.Move = img),
             new MSMargin(-0.05f),
             GenerateReloadButton((hat) => hat.I_Move, (parameter, img) => parameter.Move = img),
-            GeneratePartButton(Language.Language.GetString("designers.parts.moveFlip"), (parameter, img) => parameter.MoveFlip = img),
+            GeneratePartButton("moveFlip", (parameter, img) => parameter.MoveFlip = img),
             new MSMargin(-0.05f),
             GenerateReloadButton((hat) => hat.I_MoveFlip, (parameter, img) => parameter.MoveFlip = img)
         );
         rightScreen.AddTopic(
-            GeneratePartButton(Language.Language.GetString("designers.parts.moveBack"), (parameter, img) => parameter.MoveBack = img),
+            GeneratePartButton("moveBack", (parameter, img) => parameter.MoveBack = img),
             new MSMargin(-0.05f),
             GenerateReloadButton((hat) => hat.I_MoveBack, (parameter, img) => parameter.MoveBack = img),
-            GeneratePartButton(Language.Language.GetString("designers.parts.moveBackFlip"), (parameter, img) => parameter.MoveBackFlip = img),
+            GeneratePartButton("moveBackFlip", (parameter, img) => parameter.MoveBackFlip = img),
             new MSMargin(-0.05f),
             GenerateReloadButton((hat) => hat.I_MoveBackFlip, (parameter, img) => parameter.MoveBackFlip = img)
         );
         rightScreen.AddTopic(
-            GeneratePartButton(Language.Language.GetString("designers.parts.climb"), (parameter, img) => parameter.Climb = img),
+            GeneratePartButton("climb", (parameter, img) => parameter.Climb = img),
             new MSMargin(-0.05f),
             GenerateReloadButton((hat) => hat.I_Climb, (parameter, img) => parameter.Climb = img),
-            GeneratePartButton(Language.Language.GetString("designers.parts.climbFlip"), (parameter, img) => parameter.ClimbFlip = img),
+            GeneratePartButton("climbFlip", (parameter, img) => parameter.ClimbFlip = img),
             new MSMargin(-0.05f),
             GenerateReloadButton((hat) => hat.I_ClimbFlip, (parameter, img) => parameter.ClimbFlip = img)
         );
@@ -1515,7 +1524,8 @@ public class CustomHatDesigner : CustomPlayerDesigner
 
     public void OnDestroy()
     {
-        if (Hat != null) Hat.NebulaData.Remove();
+        Hat?.NebulaData.Remove();
+        Hat = null;
     }
 }
 
@@ -1523,7 +1533,7 @@ public class CustomHatDesigner : CustomPlayerDesigner
 
 public class CustomVisorDesigner : CustomPlayerDesigner
 {
-    static public DesignersVisor Visor = null;
+    static public DesignersVisor? Visor = null;
     TextInputField NameField;
     TextInputField AuthorField;
     TextInputField CategoryField;
@@ -1547,6 +1557,9 @@ public class CustomVisorDesigner : CustomPlayerDesigner
         CategoryField.SetText(visor.Package.Value);
         BehindHatButton.Flag = visor.BehindHat.Value;
         AdaptiveButton.Flag = visor.Adaptive.Value;
+
+        hasGraphicObjects["idle"].SetActive(visor.I_Main);
+        hasGraphicObjects["idleFlip"].SetActive(visor.I_Flip);
     }
 
     public void Awake()
@@ -1574,15 +1587,26 @@ public class CustomVisorDesigner : CustomPlayerDesigner
        
         MSButton GeneratePartButton(string label, Action<DesignersVisor.DesignersVisorParameter, DesignersImageParameter> parameterEditor)
         {
-            return new MSButton(2f, 0.36f, label, TMPro.FontStyles.Bold, () =>
+            return new MSButton(2f, 0.36f, Language.Language.GetString($"designers.parts.{label}"), TMPro.FontStyles.Bold, () =>
             {
                 AcceptImage(400, (path, texture, split) =>
                 {
                     var parameter = new DesignersVisor.DesignersVisorParameter();
                     parameterEditor(parameter, new(path, texture, split));
                     Visor.UpdateVisor(Display, parameter);
+                    hasGraphicObjects[label].SetActive(true);
                 });
-            });
+            })
+            {
+                PostBuilder = (obj) => {
+                    var hasGraphicObj = new GameObject("HasGraphic");
+                    hasGraphicObj.transform.SetParent(obj.transform);
+                    hasGraphicObj.SetActive(false);
+                    hasGraphicObj.transform.localPosition = new Vector3(0.95f, 0.13f, -10f);
+                    hasGraphicObj.AddComponent<SpriteRenderer>().sprite = HasGraphicSprite.GetSprite();
+                    hasGraphicObjects[label] = hasGraphicObj;
+                }
+            };
         }
 
         MSButton GenerateReloadButton(Func<CustomVisor, CustomVImage> imageGetter, Action<DesignersVisor.DesignersVisorParameter, DesignersImageParameter> parameterEditor)
@@ -1611,10 +1635,10 @@ public class CustomVisorDesigner : CustomPlayerDesigner
 
 
         rightScreen.AddTopic(
-            GeneratePartButton(Language.Language.GetString("designers.parts.idle"), (parameter, img) => parameter.Main = img),
+            GeneratePartButton("idle", (parameter, img) => parameter.Main = img),
             new MSMargin(-0.05f),
             GenerateReloadButton((hat) => hat.I_Main, (parameter, img) => parameter.Main = img),
-            GeneratePartButton(Language.Language.GetString("designers.parts.idleFlip"), (parameter, img) => parameter.Flip = img),
+            GeneratePartButton("idleFlip", (parameter, img) => parameter.Flip = img),
             new MSMargin(-0.05f),
             GenerateReloadButton((hat) => hat.I_Flip, (parameter, img) => parameter.Flip = img)
         );
@@ -1680,13 +1704,14 @@ public class CustomVisorDesigner : CustomPlayerDesigner
 
     public void OnDestroy()
     {
-        if (Visor != null) Visor.NebulaData.Remove();
+        Visor?.NebulaData.Remove();
+        Visor = null;
     }
 }
 
 public class CustomNameplateDesigner : CustomDesignerBase
 {
-    static public DesignersNameplate Nameplate = null;
+    static public DesignersNameplate? Nameplate = null;
     TextInputField NameField;
     TextInputField AuthorField;
     TextInputField CategoryField;
@@ -1720,6 +1745,8 @@ public class CustomNameplateDesigner : CustomDesignerBase
         NameField.SetText(nameplate.Name.Value);
         AuthorField.SetText(nameplate.Author.Value);
         CategoryField.SetText(nameplate.Package.Value);
+
+        hasGraphicObjects["image"].SetActive(nameplate.I_Plate);
     }
 
     public void Awake()
@@ -1743,17 +1770,28 @@ public class CustomNameplateDesigner : CustomDesignerBase
         rightScreen.AddTopic(new MSString(0.4f, Language.Language.GetString("designers.label.package") + " :", 1.7f, 1.7f, TMPro.TextAlignmentOptions.Right, TMPro.FontStyles.Bold), categoryInputContent);
 
 
-        MSButton GeneratePartButton(string label, Action<DesignersNameplate.DesignersNameplateParameter, DesignersImageParameter> parameterEditor)
+        MSButton GeneratePartButton(string label,Action<DesignersNameplate.DesignersNameplateParameter, DesignersImageParameter> parameterEditor)
         {
-            return new MSButton(2f, 0.36f, label, TMPro.FontStyles.Bold, () =>
+            return new MSButton(2f, 0.36f, Language.Language.GetString($"designers.parts.{label}"), TMPro.FontStyles.Bold, () =>
             {
                 AcceptImage((path, texture) =>
                 {
                     var parameter = new DesignersNameplate.DesignersNameplateParameter();
                     parameterEditor(parameter, new(path, texture, 1));
                     Nameplate.UpdateNameplate(PlateRenderer, parameter);
+                    hasGraphicObjects[label].SetActive(true);
                 });
-            });
+            })
+            {
+                PostBuilder = (obj) => {
+                    var hasGraphicObj = new GameObject("HasGraphic");
+                    hasGraphicObj.transform.SetParent(obj.transform);
+                    hasGraphicObj.SetActive(false);
+                    hasGraphicObj.transform.localPosition = new Vector3(0.95f, 0.13f, -10f);
+                    hasGraphicObj.AddComponent<SpriteRenderer>().sprite = HasGraphicSprite.GetSprite();
+                    hasGraphicObjects[label] = hasGraphicObj;
+                }
+            };
         }
 
         MSButton GenerateReloadButton(Func<CustomNamePlate, CustomVImage> imageGetter, Action<DesignersNameplate.DesignersNameplateParameter, DesignersImageParameter> parameterEditor)
@@ -1781,7 +1819,7 @@ public class CustomNameplateDesigner : CustomDesignerBase
         }
 
         rightScreen.AddTopic(
-            GeneratePartButton(Language.Language.GetString("designers.parts.image"), (parameter, img) => parameter.Plate = img),
+            GeneratePartButton("image", (parameter, img) => parameter.Plate = img),
             new MSMargin(-0.05f),
             GenerateReloadButton((nameplate) => nameplate.I_Plate, (parameter, img) => parameter.Plate = img)
         );
@@ -1831,7 +1869,8 @@ public class CustomNameplateDesigner : CustomDesignerBase
 
     public void OnDestroy()
     {
-        Nameplate.NebulaData.Remove();
+        Nameplate?.NebulaData.Remove();
+        Nameplate = null;
     }
 }
 

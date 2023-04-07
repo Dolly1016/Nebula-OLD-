@@ -125,7 +125,7 @@ public static class EmergencyPatch
                 return;
             }
 
-            if (!PlayerControl.LocalPlayer.GetModData().role.CanCallEmergencyMeeting)
+            if (!Helpers.RoleActionAll(PlayerControl.LocalPlayer.GetModData(),(r)=>r.CanCallEmergencyMeeting))
             {
                 __instance.StatusText.text = "You can't start an emergency meeting due to your role.";
                 __instance.NumberText.text = string.Empty;

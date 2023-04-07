@@ -24,6 +24,6 @@ public class Player : Role
     {
         IsHideRole = true;
         ValidGamemode = Module.CustomGameMode.FreePlay;
-        CanCallEmergencyMeeting = false;
+        canCallEmergencyMeeting = false;
     }
 }

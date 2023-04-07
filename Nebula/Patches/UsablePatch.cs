@@ -18,6 +18,30 @@ class KillButtonDoClickPatch
     }
 }
 
+[HarmonyPatch(typeof(ReportButton), nameof(ReportButton.SetActive))]
+class ReportButtonSetActivePatch
+{
+    public static bool Prefix(ReportButton __instance)
+    {
+        if (AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Started || Game.GameData.data == null) return true;
+        if (Helpers.RoleActionAny(PlayerControl.LocalPlayer.GetModData(), (r) => r.HasFakeReportButton))
+        {
+            __instance.SetDisabled();
+            return false;
+        }
+        return true;
+    }
+}
+
+[HarmonyPatch(typeof(ReportButton), nameof(ReportButton.DoClick))]
+class ReportButtonDoClickPatch
+{
+    public static bool Prefix(ReportButton __instance)
+    {
+        return __instance.canInteract;
+    }
+}
+
 [HarmonyPatch(typeof(NormalPlayerTask), nameof(NormalPlayerTask.NextStep))]
 class TaskCompletePatch
 {

@@ -1,5 +1,11 @@
-﻿using Nebula.Patches;
+﻿using AmongUs.Data.Player;
+using Nebula.Patches;
+using Sentry.Unity.NativeUtils;
+using Steamworks;
+using System.Reflection.Metadata.Ecma335;
+using UnityEngine.TextCore;
 using UnityEngine.UI;
+using static Il2CppSystem.Xml.Schema.FacetsChecker.FacetsCompiler;
 
 namespace Nebula.Objects;
 
@@ -60,15 +66,516 @@ public static class ButtonEffect
         renderer.sprite = sprite;
         return renderer;
     }
+
+    static SpriteLoader keyBindBackgroundSprite = new("Nebula.Resources.KeyBindBackground.png", 100f);
+    static public GameObject? AddKeyGuide(GameObject button, KeyCode key, Vector2 pos)
+    {
+        Sprite? numSprite = null;
+        if (Module.NebulaInputManager.allKeyCodes.ContainsKey(key)) numSprite = Module.NebulaInputManager.allKeyCodes[key].GetSprite();
+        if (numSprite == null) return null;
+
+        GameObject obj = new GameObject();
+        obj.name = "HotKeyGuide";
+        obj.transform.SetParent(button.transform);
+        obj.layer = button.layer;
+        SpriteRenderer renderer = obj.AddComponent<SpriteRenderer>();
+        renderer.transform.localPosition = (Vector3)pos + new Vector3(0f, 0f, -10f);
+        renderer.sprite = keyBindBackgroundSprite.GetSprite();
+
+        GameObject numObj = new GameObject();
+        numObj.name = "HotKeyText";
+        numObj.transform.SetParent(obj.transform);
+        numObj.layer = button.layer;
+        renderer = numObj.AddComponent<SpriteRenderer>();
+        renderer.transform.localPosition = new Vector3(0, 0, -1f);
+        renderer.sprite = numSprite;
+
+        return obj;
+    }
+    static public GameObject? SetKeyGuide(GameObject button, KeyCode key)
+    {
+        return AddKeyGuide(button, key, new Vector2(0.48f, 0.48f));
+    }
+
+    static public GameObject? SetKeyGuideOnSmallButton(GameObject button, KeyCode key)
+    {
+        return AddKeyGuide(button, key, new Vector2(0.28f, 0.28f));
+    }
+}
+
+public static class AbilityButtonDecorator
+{
+    private static SpriteLoader lockedButtonSprite = new SpriteLoader("Nebula.Resources.LockedButton.png", 100f);
+
+    public static SpriteRenderer AddLockedOverlay(ModAbilityButton button)
+    {
+        return button.AddOverlay(lockedButtonSprite.GetSprite(), 0f);
+    }
+}
+
+public static class ModAbilityAssets
+{
+    public static Sprite OriginalVentButtonSprite;
+}
+
+public class ModAbilityButton
+{
+    public enum LabelType
+    {
+        Standard,
+        Impostor,
+        Utility,
+        Crewmate,
+    }
+
+    public interface IButtonEvent
+    {
+        KeyCode GetKey();
+        bool CanBeTriggeredByCenterClickToo();
+        bool IsMainEvent();
+        void OnTriggered(ModAbilityButton button);
+    }
+
+    public interface IButtonAttribute
+    {
+        void OnActivated(ModAbilityButton button);
+        void Update(ModAbilityButton button);
+        void OutlineUpdate(ModAbilityButton button);
+        void OnEndMeeting(ModAbilityButton button);
+        void OnDestroy(ModAbilityButton button);
+        //使用可能かどうかを返します。
+        bool IsEnabled();
+        //ボタンが表示されるかどうか返します。
+        bool IsShown();
+        bool IsCoolingDown();
+        //クールダウンを開始します。
+        void StartCoolingDown();
+        IEnumerable<IButtonEvent> GetEvents();
+    }
+
+    public ModAbilityButton(Sprite sprite, Expansion.GridArrangeExpansion.GridArrangeParameter gridParam = Expansion.GridArrangeExpansion.GridArrangeParameter.None)
+    {
+        allButtons.Add(this);
+        button = UnityEngine.Object.Instantiate(HudManager.Instance.KillButton, HudManager.Instance.KillButton.transform.parent);
+        if (button.transform.childCount == 4) GameObject.Destroy(button.transform.GetChild(3).gameObject);
+        Component.Destroy(button.buttonLabelText.gameObject.GetComponent<TextTranslatorTMP>());
+
+        PassiveButton passiveButton = button.GetComponent<PassiveButton>();
+        passiveButton.OnClick = new Button.ButtonClickedEvent();
+        passiveButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
+        {
+            if (currentAttribute == null) return;
+            foreach(var ev in currentAttribute.GetEvents())
+            {
+                if (!ev.IsMainEvent()) continue;
+                ev.OnTriggered(this);
+                break;
+            }
+        }));
+
+        SetSprite(sprite);
+
+        Expansion.GridArrangeExpansion.AddGridArrangeContent(button.gameObject, gridParam);
+        SetLabelType(LabelType.Standard);
+    }
+
+    private ActionButton button;
+    private IButtonAttribute? currentAttribute;
+
+
+    public IButtonAttribute? MyAttribute { get => currentAttribute; set {
+            if (currentAttribute == value) return;
+            currentAttribute?.OnDestroy(this);
+            currentAttribute = value;
+            currentAttribute?.OnActivated(this);
+        } }
+
+    //ボタン下部のテキスト
+    public TMPro.TextMeshPro LabelText { get { return button.buttonLabelText; } }
+
+    public ModAbilityButton SetLabelType(LabelType labelType)
+    {
+        Material material = HudManager.Instance.UseButton.fastUseSettings[ImageNames.UseButton].FontMaterial;
+        switch (labelType)
+        {
+            case LabelType.Standard:
+                break;
+            case LabelType.Utility:
+                material = HudManager.Instance.UseButton.fastUseSettings[ImageNames.PolusAdminButton].FontMaterial;
+                break;
+            case LabelType.Impostor:
+                material = RoleManager.Instance.GetRole(RoleTypes.Shapeshifter).Ability.FontMaterial;
+                break;
+            case LabelType.Crewmate:
+                material = RoleManager.Instance.GetRole(RoleTypes.Engineer).Ability.FontMaterial;
+                break;
+
+        }
+        LabelText.SetSharedMaterial(material);
+        return this;
+    }
+
+    public ModAbilityButton SetLabelLocalized(string localeKey) {
+        LabelText.text = Language.Language.GetString(localeKey);
+        return this;
+    }
+
+    //ボタン上部のテキスト
+    private TMPro.TextMeshPro? upperText;
+    public TMPro.TextMeshPro UpperText
+    {
+        get
+        {
+            if (upperText != null) return upperText;
+            upperText = button.CreateButtonUpperText();
+            return upperText;
+        }
+    }
+
+    //ボタンの使用回数テキスト
+    private GameObject? usesObject = null;
+    private TMPro.TextMeshPro? usesText = null;
+    public TMPro.TextMeshPro UsesText
+    {
+        get
+        {
+            if (usesObject != null) return usesText!;
+            usesObject = button.ShowUsesIcon();
+            usesText = usesObject.transform.GetChild(0).GetComponent<TMPro.TextMeshPro>();
+            return usesText;
+        }
+    }
+
+    public ModAbilityButton SetUsesIcon(int variation)
+    {
+        if (usesObject == null) { var text = UsesText; }
+        var renderer = usesObject.GetComponent<SpriteRenderer>();
+        renderer.sprite = GetUsesIconSprite(variation);
+        CooldownHelpers.SetCooldownNormalizedUvs(renderer);
+        return this;
+    }
+
+    public void ShowUsesText(bool showFlag = true)
+    {
+        if (usesObject == null && showFlag) { var text = UsesText; }
+        if (!usesObject) SetUsesIcon(0);
+        usesObject.SetActive(showFlag);
+    }
+
+    public ModAbilityButton SetCoolDownTextColor(Color color)
+    {
+        button.cooldownTimerText.color = color;
+        return this;
+    }
+
+    private static DividedSpriteLoader textureUsesIconsSprite = new("Nebula.Resources.UsesIcon.png", 100f, 10, 1);
+    private static Sprite GetUsesIconSprite(int variation)
+    {
+        if (variation == 0)
+            return HudManager.Instance.AbilityButton.transform.GetChild(2).GetComponent<SpriteRenderer>().sprite;
+        return textureUsesIconsSprite.GetSprite(variation - 1);
+    }
+
+    public SpriteRenderer AddOverlay(Sprite sprite, float order)
+    {
+        return button.AddOverlay(sprite, order);
+    }
+
+    public void SetCoolDown(float timer,float max)
+    {
+        if (!(max > 0f)) max = 1f;
+        button.SetCoolDown(timer, max);
+        CooldownHelpers.SetCooldownNormalizedUvs(button.graphic);
+    }
+
+    private List<GameObject> allKeyGuide = new();
+
+    SpriteLoader keyBindOptionSprite = new("Nebula.Resources.KeyBindOption.png", 100f);
+
+    public void ClearAllKeyGuide()
+    {
+        foreach (var keyGuide in allKeyGuide) GameObject.Destroy(keyGuide);
+        allKeyGuide.Clear();
+    }
+
+    public void AddKeyGuide(KeyCode? key, bool requireChangeOption)
+    {
+        if (!key.HasValue) return;
+
+        var guide = ButtonEffect.AddKeyGuide(button.gameObject, key.Value, new Vector2(0.48f, 0.48f - 0.35f * (float)allKeyGuide.Count));
+        allKeyGuide.Add(guide);
+
+        if (requireChangeOption)
+        {
+            GameObject obj = new GameObject();
+            obj.name = "HotKeyOption";
+            obj.transform.SetParent(guide.transform);
+            obj.layer = button.gameObject.layer;
+            var renderer = obj.AddComponent<SpriteRenderer>();
+            renderer.transform.localPosition = new Vector3(0.12f, 0.07f, -2f);
+            renderer.sprite = keyBindOptionSprite.GetSprite();
+        }
+    }
+
+    public void SetSprite(Sprite buttonSprite)
+    {
+        button.graphic.sprite = buttonSprite;
+    }
+
+    public void Destroy()
+    {
+        if (button) GameObject.Destroy(button.gameObject);
+    }
+
+    public bool IsShown => button && button.gameObject.active;
+
+    private static List<ModAbilityButton> allButtons = new();
+    public static void HudUpdate()
+    {
+        allButtons.RemoveAll((b)=>
+        {
+            bool result = !b.button;
+            if (!result) b.MyUpdate();
+            return result;
+        });
+    }
+    public static void OutlineUpdate()
+    {
+        foreach (var button in allButtons) if (button.button) button.MyAttribute?.OutlineUpdate(button);
+    }
+
+    public static void OnMeetingEnd()
+    {
+        foreach (var button in allButtons) if (button.button) button.MyAttribute?.OnEndMeeting(button);
+    }
+
+    private void MyUpdate()
+    {
+        bool checkMouseClick()
+        {
+            if (!Input.GetMouseButtonDown(0)) return false;
+
+            //中心からの距離を求める
+            float x = Input.mousePosition.x - (Screen.width) / 2;
+            float y = Input.mousePosition.y - (Screen.height) / 2;
+
+            return Mathf.Sqrt(x * x + y * y) < 280;
+        }
+
+        if (currentAttribute != null)
+        {
+            button.gameObject.SetActive(currentAttribute.IsShown());
+
+            currentAttribute.Update(this);
+
+            if (button.gameObject.active)
+            {
+                var enabled = currentAttribute.IsEnabled();
+
+                button.graphic.color = button.buttonLabelText.color = enabled ? Palette.EnabledColor : Palette.DisabledClear;
+                button.graphic.material.SetFloat("_Desat", enabled ? 0f : 1f);
+
+                foreach(var ev in currentAttribute.GetEvents()) {
+                    if ((ev.CanBeTriggeredByCenterClickToo() && checkMouseClick()) || Input.GetKeyDown(ev.GetKey()))
+                        ev.OnTriggered(this);
+                }
+            }
+        }
+        else
+        {
+            button.gameObject.SetActive(true);
+            button.graphic.color = button.buttonLabelText.color = Palette.DisabledClear;
+            button.graphic.material.SetFloat("_Desat", 1f);
+            SetCoolDown(0f, 1f);
+        }
+    }
+}
+
+public class HasCoolDownAttribute : ModAbilityButton.IButtonAttribute
+{
+    public virtual void OnActivated(ModAbilityButton button){}
+
+    public virtual void Update(ModAbilityButton button)
+    {
+        if (Helpers.ProceedTimer(IsKillButton))
+        {
+            timer = Mathf.Max(0f, timer -= Time.deltaTime);
+            button.SetCoolDown(timer, coolDown);
+
+        }
+    }
+    public virtual void OutlineUpdate(ModAbilityButton button) { }
+
+    public virtual void OnEndMeeting(ModAbilityButton button) => StartCoolingDown();
+    public virtual void OnDestroy(ModAbilityButton button) { }
+    public virtual bool IsEnabled() => PlayerControl.LocalPlayer.CanMove;
+    public virtual bool IsShown() => !PlayerControl.LocalPlayer.Data.IsDead;
+    public virtual bool IsCoolingDown() => timer > 0f;
+    public virtual void StartCoolingDown() => timer = coolDown;
+    protected virtual bool IsKillButton => false;
+
+    public virtual IEnumerable<ModAbilityButton.IButtonEvent> GetEvents() => new ModAbilityButton.IButtonEvent[0];
+    protected float timer, coolDown;
+
+    public HasCoolDownAttribute(float coolDown, float initialCoolDown)
+    {
+        timer = initialCoolDown;
+        this.coolDown = coolDown;
+    }
+}
+
+public class SimpleAbilityAttribute : HasCoolDownAttribute
+{
+    public override void OnActivated(ModAbilityButton button) {
+        button.ClearAllKeyGuide();
+        button.AddKeyGuide(events[0].GetKey(),false);
+    }
+
+    public override IEnumerable<ModAbilityButton.IButtonEvent> GetEvents() => events;
+    private ModAbilityButton.IButtonEvent[] events;
+
+    public SimpleAbilityAttribute(float coolDown, float initialCoolDown, ModAbilityButton.IButtonEvent buttonEvent):
+        base(coolDown,initialCoolDown)
+    {
+        this.events = new ModAbilityButton.IButtonEvent[1] { buttonEvent };
+    }
+}
+
+public class InterpersonalAbilityAttribute : SimpleAbilityAttribute
+{
+    public override void OutlineUpdate(ModAbilityButton button) {
+        if (!button.IsShown) return;
+
+        Game.MyPlayerData data = Game.GameData.data.myData;
+        data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(distance, targetablePredicate);
+        Patches.PlayerControlPatch.SetPlayerOutline(data.currentTarget, outlineColor);
+    }
+
+    public override bool IsEnabled() => base.IsEnabled() && Game.GameData.data.myData.currentTarget != null;
+
+    private Predicate<GameData.PlayerInfo> targetablePredicate;
+    private Color outlineColor;
+    private float distance;
+
+    public InterpersonalAbilityAttribute(float coolDown, float initialCoolDown, Predicate<GameData.PlayerInfo> targetablePredicate, Color outlineColor,float distance,ModAbilityButton.IButtonEvent buttonEvent)
+    :base(coolDown,initialCoolDown, buttonEvent)
+    {
+        this.targetablePredicate = targetablePredicate;
+        this.distance = distance;
+        this.outlineColor= outlineColor;
+    }
+}
+
+public class KillAbilityAttribute : InterpersonalAbilityAttribute
+{
+    protected override bool IsKillButton => true;
+
+    public KillAbilityAttribute(float coolDown, float initialCoolDown, Predicate<GameData.PlayerInfo> targetablePredicate, Color outlineColor, float distance, Action<PlayerControl> buttonEvent)
+    : base(coolDown, initialCoolDown, targetablePredicate, outlineColor,distance,new SimpleButtonEvent((button) => {
+        if (Game.GameData.data.myData.currentTarget != null) buttonEvent.Invoke(Game.GameData.data.myData.currentTarget);
+        button.MyAttribute!.StartCoolingDown();
+    }, Module.NebulaInputManager.modKillInput.keyCode)){}
+
+    public KillAbilityAttribute(float coolDown, float initialCoolDown, Predicate<GameData.PlayerInfo> targetablePredicate, Color outlineColor, float distance, Game.PlayerData.PlayerStatus deathReason ,Action<PlayerControl>? extraAction)
+     : base(coolDown, initialCoolDown, targetablePredicate, outlineColor, distance, new SimpleButtonEvent((button) => {
+         if (Game.GameData.data.myData.currentTarget != null)
+         {
+             var r = Helpers.checkMuderAttemptAndKill(PlayerControl.LocalPlayer, Game.GameData.data.myData.currentTarget, Game.PlayerData.PlayerStatus.Dead, true);
+             if (r == Helpers.MurderAttemptResult.PerformKill) extraAction?.Invoke(Game.GameData.data.myData.currentTarget);
+             Game.GameData.data.myData.currentTarget = null;
+             button.MyAttribute!.StartCoolingDown();
+         }
+     }, Module.NebulaInputManager.modKillInput.keyCode)){}
+}
+
+class EffectInactivatedAttribute : SimpleAbilityAttribute
+{
+    public override void OnActivated(ModAbilityButton button)
+    {
+        base.OnActivated(button);
+        StartCoolingDown();
+        button.SetCoolDownTextColor(Color.white);
+    }
+    public EffectInactivatedAttribute(float coolDown, float initialCoolDown,KeyCode keyCode,EffectActivatedAttribute activatedAttribute,Action activateEvent) 
+        : base(coolDown,initialCoolDown,new SimpleButtonEvent((button) => {
+            activateEvent.Invoke();
+            button.MyAttribute = activatedAttribute;
+        },keyCode))
+    {}
+}
+
+class EffectActivatedAttribute : HasCoolDownAttribute
+{
+    EffectInactivatedAttribute? inactivatedAttribute;
+    Action? inactivateEvent;
+
+    public override void OnActivated(ModAbilityButton button)
+    {
+        base.OnActivated(button);
+        button.ClearAllKeyGuide();
+        StartCoolingDown();
+        button.SetCoolDownTextColor(new Color(0f, 0.8f, 0f));
+    }
+    public override bool IsEnabled() => true;
+    
+    public override void Update(ModAbilityButton button)
+    {
+        timer = Mathf.Max(0f, timer -= Time.deltaTime);
+        button.SetCoolDown(timer, coolDown);
+
+        if (!IsCoolingDown())
+        {
+            inactivateEvent?.Invoke();
+            button.MyAttribute = inactivatedAttribute;
+        }
+    }
+
+    public override void OnEndMeeting(ModAbilityButton button) {
+        inactivateEvent?.Invoke();
+        button.MyAttribute = inactivatedAttribute;
+        button.MyAttribute.OnEndMeeting(button);
+    }
+
+    public EffectActivatedAttribute(float duration, Action? inactivateEvent = null) :base(duration,duration)
+    {
+        inactivatedAttribute = null;
+        this.inactivateEvent = inactivateEvent;
+    }
+
+    public void SetInactivatedAttribute(EffectInactivatedAttribute inactivatedAttribute)
+    {
+        this.inactivatedAttribute = inactivatedAttribute;
+    }
+}
+
+public class SimpleButtonEvent : ModAbilityButton.IButtonEvent
+{
+    public KeyCode GetKey() => keyCode;
+    public bool CanBeTriggeredByCenterClickToo() => false;
+    public bool IsMainEvent() => isMainEvent;
+    public void OnTriggered(ModAbilityButton button)
+    {
+        if (!button.MyAttribute!.IsShown() || !button.MyAttribute!.IsEnabled() || button.MyAttribute.IsCoolingDown()) return;
+        button.MyAttribute!.StartCoolingDown();
+        buttonEvent.Invoke(button);
+    }
+
+    KeyCode keyCode;
+    bool isMainEvent;
+    Action<ModAbilityButton> buttonEvent;
+
+    public SimpleButtonEvent(Action<ModAbilityButton> buttonEvent,KeyCode keyCode,bool isMainEvent = true)
+    {
+        this.keyCode= keyCode;
+        this.isMainEvent= isMainEvent;
+        this.buttonEvent= buttonEvent;
+    }
 }
 
 public class CustomButton
 {
-    public static Sprite OriginalVentButtonSprite;
-
     public static List<CustomButton> buttons = new List<CustomButton>();
     public ActionButton actionButton;
-    public Vector3 PositionOffset;
     public float MaxTimer = float.MaxValue;
     public float Timer = 0f;
     private Action? AidAction = null;
@@ -238,16 +745,6 @@ public class CustomButton
         renderer.sprite = numSprite;
 
         return obj;
-    }
-
-    static public GameObject? SetKeyGuide(GameObject button, KeyCode key)
-    {
-        return SetKeyGuide(button, key, new Vector2(0.48f, 0.48f));
-    }
-
-    static public GameObject? SetKeyGuideOnSmallButton(GameObject button, KeyCode key)
-    {
-        return SetKeyGuide(button, key, new Vector2(0.28f, 0.28f));
     }
 
     public void SetKeyGuide(KeyCode? key, Vector2 pos, bool requireChangeOption)

@@ -11,6 +11,7 @@ public static class HttpConvertPatch
     public static bool Prefix(ServerInfo __instance,ref string __result)
     {
         if (__instance.Port != 22000) return true;
+        if (__instance.Ip.IndexOf("://") != -1) return true;
 
         __result = string.Format("http://{0}:{1}/", __instance.Ip, __instance.Port);
         return false;
@@ -23,8 +24,8 @@ public static class RegionMenuOpenPatch
     private static ConfigEntry<string> SaveIp;
     private static ConfigEntry<ushort> SavePort;
 
-    private static TextBoxTMP? ipField = null;
-    private static TextBoxTMP? portField = null;
+    private static TextInputField? ipField = null;
+    private static TextInputField? portField = null;
 
     public static IRegionInfo[] defaultRegions;
     public static void UpdateRegions()
@@ -32,7 +33,9 @@ public static class RegionMenuOpenPatch
         ServerManager serverManager = DestroyableSingleton<ServerManager>.Instance;
         IRegionInfo[] regions = defaultRegions;
 
-        var CustomRegion = new DnsRegionInfo(SaveIp.Value, "Custom", StringNames.NoTranslation, SaveIp.Value, SavePort.Value, false);
+        //var CustomRegion = new DnsRegionInfo(SaveIp.Value, "Custom", StringNames.NoTranslation, SaveIp.Value, SavePort.Value, false);
+        var CustomRegion = new StaticHttpRegionInfo("Custom", StringNames.NoTranslation, SaveIp.Value,
+            new ServerInfo[] { new ServerInfo("Custom", SaveIp.Value, SavePort.Value, false) });
         regions = regions.Concat(new IRegionInfo[] { CustomRegion.Cast<IRegionInfo>() }).ToArray();
         ServerManager.DefaultRegions = regions;
         serverManager.AvailableRegions = regions;
@@ -48,92 +51,54 @@ public static class RegionMenuOpenPatch
         UpdateRegions();
     }
 
-    public static void Postfix(RegionMenu __instance)
+    private static void ChooseOption(RegionMenu __instance, IRegionInfo region)
     {
 
-        var template = GameObject.Find("NormalMenu/JoinGameButton/JoinGameMenu/GameIdText");
-        if (template == null) return;
+        DestroyableSingleton<ServerManager>.Instance.SetRegion(region);
+        __instance.RegionText.text = DestroyableSingleton<TranslationController>.Instance.GetStringWithDefault(region.TranslateName, region.Name, new Il2CppReferenceArray<Il2CppSystem.Object>(new Il2CppSystem.Object[0]));
+    }
 
-        if (ipField == null || ipField.gameObject == null)
+    public static void Postfix(RegionMenu __instance)
+    {
+        if (!__instance.TryCast<RegionMenu>()) return;
+        //var template = GameObject.Find("NormalMenu/JoinGameButton/JoinGameMenu/GameIdText");
+        //if (template == null) return;
+
+        if (!ipField)
         {
-            ipField = UnityEngine.Object.Instantiate(template.gameObject, __instance.transform).GetComponent<TextBoxTMP>();
-            ipField.gameObject.name = "IpTextBox";
-            var arrow = ipField.transform.FindChild("arrowEnter");
-            if (arrow == null || arrow.gameObject == null) return;
-            UnityEngine.Object.DestroyImmediate(arrow.gameObject);
-
-            ipField.transform.localPosition = new Vector3(0.2f, -1.75f, -100f);
-            ipField.characterLimit = 30;
-            ipField.AllowSymbols = true;
-            ipField.ForceUppercase = false;
+            ipField = new GameObject("IPField").AddComponent<TextInputField>();
+            ipField.transform.SetParent(__instance.transform);
+            ipField.SetTextProperty(new Vector2(2.4f,0.3f),2f,TMPro.TextAlignmentOptions.Center,TMPro.FontStyles.Normal);
+            ipField.AllowCharacters = (c) =>
+            ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') || ('0' <= c && c <= '9') || c is '?' or '!' or ',' or '.' or '/' or ':';
+            
+            ipField.transform.localPosition = new Vector3(0f, -1.75f, -100f);
             ipField.SetText(SaveIp.Value);
-            __instance.StartCoroutine(Effects.Lerp(0.1f, new Action<float>((p) =>
-            {
-                ipField.outputText.SetText(SaveIp.Value);
-                ipField.SetText(SaveIp.Value);
-            })));
 
-            ipField.ClearOnFocus = false;
-            ipField.OnEnter = ipField.OnChange = new Button.ButtonClickedEvent();
-            ipField.OnFocusLost = new Button.ButtonClickedEvent();
-            ipField.OnChange.AddListener((UnityAction)onEnterOrIpChange);
-            ipField.OnFocusLost.AddListener((UnityAction)onFocusLost);
-
-            void onEnterOrIpChange()
+            ipField.LoseFocusAction = (text) =>
             {
-                SaveIp.Value = ipField.text;
-            }
-
-            void onFocusLost()
-            {
+                SaveIp.Value = text;
                 UpdateRegions();
-                __instance.ChooseOption(ServerManager.DefaultRegions[ServerManager.DefaultRegions.Length - 1]);
-            }
+                ChooseOption(__instance, ServerManager.DefaultRegions[ServerManager.DefaultRegions.Length - 1]);
+            };
         }
 
-        if (portField == null || portField.gameObject == null)
+        if (!portField)
         {
-            portField = UnityEngine.Object.Instantiate(template.gameObject, __instance.transform).GetComponent<TextBoxTMP>();
-            portField.gameObject.name = "PortTextBox";
-            var arrow = portField.transform.FindChild("arrowEnter");
-            if (arrow == null || arrow.gameObject == null) return;
-            UnityEngine.Object.DestroyImmediate(arrow.gameObject);
+            portField = new GameObject("PortField").AddComponent<TextInputField>();
+            portField.transform.SetParent(__instance.transform);
+            portField.SetTextProperty(new Vector2(2.4f, 0.3f), 2f, TMPro.TextAlignmentOptions.Center, TMPro.FontStyles.Normal);
+            portField.AllowCharacters = (c) => '0' <= c && c <= '9';
 
-            portField.transform.localPosition = new Vector3(0.2f, -2.5f, -100f);
-            portField.characterLimit = 5;
+            portField.transform.localPosition = new Vector3(0f, -2.4f, -100f);
             portField.SetText(SavePort.Value.ToString());
-            __instance.StartCoroutine(Effects.Lerp(0.1f, new Action<float>((p) =>
+
+            portField.LoseFocusAction = (text) =>
             {
-                portField.outputText.SetText(SavePort.Value.ToString());
-                portField.SetText(SavePort.Value.ToString());
-            })));
-
-
-            portField.ClearOnFocus = false;
-            portField.OnEnter = portField.OnChange = new Button.ButtonClickedEvent();
-            portField.OnFocusLost = new Button.ButtonClickedEvent();
-            portField.OnChange.AddListener((UnityAction)onEnterOrPortFieldChange);
-            portField.OnFocusLost.AddListener((UnityAction)onFocusLost);
-
-            void onEnterOrPortFieldChange()
-            {
-                ushort port = 0;
-                if (ushort.TryParse(portField.text, out port))
-                {
-                    SavePort.Value = port;
-                    portField.outputText.color = Color.white;
-                }
-                else
-                {
-                    portField.outputText.color = Color.red;
-                }
-            }
-
-            void onFocusLost()
-            {
+                SavePort.Value = ushort.TryParse(text, out var port) ? port : (ushort)22000;
                 UpdateRegions();
-                __instance.ChooseOption(ServerManager.DefaultRegions[ServerManager.DefaultRegions.Length - 1]);
-            }
+                ChooseOption(__instance,ServerManager.DefaultRegions[ServerManager.DefaultRegions.Length - 1]);
+            };
         }
     }
 }

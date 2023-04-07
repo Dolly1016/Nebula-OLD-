@@ -4,7 +4,7 @@ public class Empiric : Template.HasAlignedHologram, Template.HasWinTrigger
 {
     static public Color RoleColor = new Color(183f / 255f, 233f / 255f, 0f / 255f);
 
-    static private CustomButton infectButton;
+    static private ModAbilityButton? infectButton;
 
     private Module.CustomOption maxInfectMyselfOption;
     private Module.CustomOption infectRangeOption;
@@ -77,11 +77,7 @@ public class Empiric : Template.HasAlignedHologram, Template.HasWinTrigger
         leftInfect = 0;
         WinTrigger = false;
 
-        if (infectButton != null)
-        {
-            infectButton.Destroy();
-            infectButton = null;
-        }
+        infectButton?.Destroy();
     }
 
     public override void InitializePlayerIcon(PoolablePlayer player, byte PlayerId, int index)
@@ -93,36 +89,25 @@ public class Empiric : Template.HasAlignedHologram, Template.HasWinTrigger
 
     public override void ButtonInitialize(HudManager __instance)
     {
-        if (infectButton != null)
-        {
-            infectButton.Destroy();
-        }
-        infectButton = new CustomButton(
-            () =>
-            {
-                if (!activePlayers.Contains(Game.GameData.data.myData.currentTarget.PlayerId))
-                {
-                    activePlayers.Add(Game.GameData.data.myData.currentTarget.PlayerId);
-                    leftInfect--;
-                    infectButton.UsesText.text = (leftInfect).ToString();
-                    Game.GameData.data.myData.currentTarget = null;
-                }
-            },
-            () => { return !PlayerControl.LocalPlayer.Data.IsDead && leftInfect > 0; },
-            () =>
-            {
-                return Game.GameData.data.myData.currentTarget != null && PlayerControl.LocalPlayer.CanMove;
-            },
-            () => { },
-            infectSprite.GetSprite(),
-            Expansion.GridArrangeExpansion.GridArrangeParameter.None,
-            __instance,
-            Module.NebulaInputManager.abilityInput.keyCode,
-            "button.label.infect"
-        ).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat());
-        infectButton.UsesText.text = (leftInfect).ToString();
-        infectButton.SetUsesIcon(2);
-        infectButton.MaxTimer = CustomOptionHolder.InitialAbilityCoolDownOption.getFloat();
+        infectButton?.Destroy();
+        infectButton = new ModAbilityButton(infectSprite.GetSprite())
+            .SetLabelLocalized("button.label.infect")
+            .SetUsesIcon(2);
+        infectButton.UsesText.text= leftInfect.ToString();
+        infectButton.MyAttribute = new InterpersonalAbilityAttribute(
+            CustomOptionHolder.InitialAbilityCoolDownOption.getFloat(),
+            CustomOptionHolder.InitialAbilityCoolDownOption.getFloat(),
+            (p) => !activePlayers.Contains(p.PlayerId), RoleColor, 1f, new SimpleButtonEvent(
+                (button) => {
+                    if (!activePlayers.Contains(Game.GameData.data.myData.currentTarget.PlayerId))
+                    {
+                        activePlayers.Add(Game.GameData.data.myData.currentTarget.PlayerId);
+                        leftInfect--;
+                        button.UsesText.text = (leftInfect).ToString();
+                        Game.GameData.data.myData.currentTarget = null;
+                        if (leftInfect <= 0) button.Destroy();
+                    }
+                }, Module.NebulaInputManager.abilityInput.keyCode));
     }
 
 
@@ -145,10 +130,6 @@ public class Empiric : Template.HasAlignedHologram, Template.HasWinTrigger
     public override void MyPlayerControlUpdate()
     {
         base.MyPlayerControlUpdate();
-
-        Game.MyPlayerData data = Game.GameData.data.myData;
-        data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(1f, false, false, activePlayers);
-        Patches.PlayerControlPatch.SetPlayerOutline(data.currentTarget, Color.yellow);
 
         //感染停滞期を進める
         if (MeetingHud.Instance == null && SpawnInMinigame.Instance == null && ExileController.Instance == null)

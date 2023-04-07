@@ -772,7 +772,7 @@
 
 "role.painter.name" : "ペインター"
 "role.painter.short" : "ペ"
-"role.painter.description" : "その目を欺く影"
+"role.painter.description" : "罪を塗り替えよ"
 "role.painter.hint" : "サンプルを採取し、塗りつけよう。"
 "role.painter.info" : "プレイヤーの見た目を変えることができます。\n見た目を変えられたプレイヤーは、自身の見た目が変わっていることに\n気づけません。"
 "role.painter.help.sample" : "サンプルを取得します。"
@@ -895,6 +895,9 @@
 "role.jester.ventDuration" : "ベント潜伏時間"
 "role.jester.canDragBodies" : "死体掴みと移動"
 "role.jester.canFireBlankShots" : "空砲の発射"
+
+"role.lordLloyd.name" : "ロイド卿"
+"role.lordLloyd.short" : "ロ"
 
 "role.opportunist.name" : "オポチュニスト"
 "role.opportunist.short" : "オ"
@@ -1137,6 +1140,7 @@
 "side.empiric.name" : "エンパイリック"
 "side.jackal.name" : "ジャッカル"
 "side.jester.name" : "ジェスター"
+"side.lordLloyd.name" : "灰の一族"
 "side.opportunist.name" : "オポチュニスト"
 "side.paparazzo.name" : "パパラッチ"
 "side.spectre.name" : "妖狐"

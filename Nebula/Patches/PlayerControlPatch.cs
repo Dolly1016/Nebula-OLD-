@@ -165,7 +165,7 @@ public class PlayerControlPatch
         {
             GameData.PlayerInfo playerInfo = allPlayers[i];
 
-            if (playerInfo == null || (PlayerControl.LocalPlayer.PlayerId == playerInfo.PlayerId) || (playerInfo.Object == null))
+            if (playerInfo == null || (targetingPlayer.PlayerId == playerInfo.PlayerId) || (playerInfo.Object == null))
                 continue;
 
 
@@ -177,6 +177,7 @@ public class PlayerControlPatch
                 PlayerControl @object = playerInfo.Object;
                 if (@object && targetablePlayers.Invoke(playerInfo))
                 {
+                    if (@object.inVent) continue;
                     if (CheckTargetable(@object.GetTruePosition(), truePosition, ref num))
                     {
                         result = @object;
@@ -455,6 +456,7 @@ public class PlayerControlPatch
              {
                  role.MyPlayerControlUpdate();
              });
+            ModAbilityButton.OutlineUpdate();
         }
 
         pData.Speed.Update();

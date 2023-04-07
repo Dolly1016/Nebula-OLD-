@@ -43,7 +43,6 @@ public class Assignable
     /// 割り当てを設定しない場合はNoneにしてください。
     /// </summary>
     public AllocationType Allocation { get; protected set; }
-
     public virtual bool IsUnsuitable { get { return false; } }
 
     public Module.CustomGameMode ValidGamemode { get; set; }
@@ -56,6 +55,11 @@ public class Assignable
 
     protected bool canReport { get; set; }
     public virtual bool CanReport { get { return canReport; } }
+    protected bool hasFakeReportButton { get; set; }
+    public virtual bool HasFakeReportButton { get { return hasFakeReportButton; } }
+
+    protected bool canCallEmergencyMeeting { get; set; }
+    public bool CanCallEmergencyMeeting { get { return canCallEmergencyMeeting; } }
 
     public class RelatedExtraRoleData
     {
@@ -261,6 +265,8 @@ public class Assignable
 
     }
 
+    
+
     public Module.CustomOption CreateMetaOption(Color color, string name, int defaultValue, bool isGeneral = false)
     {
         Module.CustomOption option = new Module.CustomOption(color, (isGeneral ? "" : "role." + this.LocalizeName + ".") + name, new object[0], defaultValue, TopOption, false, false, "", Module.CustomOptionTab.None);
@@ -327,6 +333,15 @@ public class Assignable
     [RoleLocalMethod]
     public virtual void ButtonInitialize(HudManager __instance) { }
 
+
+    /// <summary>
+    /// 会議後のゲーム終了チェックでゲームが終了せず継続した場合に呼び出されます。
+    /// </summary>
+    [RoleLocalMethod]
+    public virtual void OnThroughCheckingEndAfterExile()
+    {
+
+    }
 
     /*--------------------------------------------------------------------------------------*/
 
@@ -806,5 +821,7 @@ public class Assignable
         this.canFixSabotage = true;
         this.canFixEmergencySabotage = true;
         this.canReport = true;
+        this.canCallEmergencyMeeting = true;
+        this.hasFakeReportButton = false;
     }
 }

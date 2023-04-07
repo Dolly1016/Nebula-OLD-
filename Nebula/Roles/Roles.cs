@@ -91,6 +91,7 @@ static public class Roles
     public static NeutralRoles.Empiric Empiric = new NeutralRoles.Empiric();
     public static NeutralRoles.Immoralist Immoralist = new NeutralRoles.Immoralist();
     public static NeutralRoles.Jackal Jackal = new NeutralRoles.Jackal();
+    public static NeutralRoles.LordLloyd LordLloyd = new NeutralRoles.LordLloyd();
     public static NeutralRoles.Sidekick Sidekick = new NeutralRoles.Sidekick();
     public static NeutralRoles.Jester Jester = new NeutralRoles.Jester();
     public static NeutralRoles.Paparazzo Paparazzo = new NeutralRoles.Paparazzo();
@@ -126,6 +127,7 @@ static public class Roles
     public static ExtraRoles.Confused Confused = new ExtraRoles.Confused();
     public static ExtraRoles.Drunk Drunk = new ExtraRoles.Drunk();
     public static ExtraRoles.LastImpostor LastImpostor = new ExtraRoles.LastImpostor();
+    public static ExtraRoles.LloydFollower LloydFollower = new ExtraRoles.LloydFollower();
     public static ExtraRoles.Lover Lover = new ExtraRoles.Lover();
     public static ExtraRoles.Trilemma Trilemma = new ExtraRoles.Trilemma();
     public static ExtraRoles.AvengerTarget AvengerTarget = new ExtraRoles.AvengerTarget();
@@ -140,7 +142,7 @@ static public class Roles
         {
             VOID,
             Impostor,Banshee,BountyHunter,Camouflager,Cleaner,Covert,Damned,Disturber,Eraser,EvilAce,EvilGuesser,EvilTracker,EvilTrapper,Executioner,Jailer,Marionette,Morphing,Ninja,Painter,Raider,Reaper,Sniper,
-            /*SantaClaus,BlackSanta,*/Arsonist,Avenger,ChainShifter,Empiric,Immoralist,Jackal,Jester,Opportunist,Paparazzo,Sidekick,Spectre,Vulture,
+            /*SantaClaus,BlackSanta,*/Arsonist,Avenger,ChainShifter,Empiric,Immoralist,Jackal,Jester,LordLloyd,Opportunist,Paparazzo,Sidekick,Spectre,Vulture,
             F_Crewmate,
             F_Guesser,F_Tracker,F_Trapper,
             Crewmate,CrewmateWithoutTasks,Agent,Alien,Bait,Busker,Comet,DamnedCrew,Doctor,Guardian,Mayor,Navvy,Necromancer,NiceGuesser,NiceTracker,NiceTrapper,Oracle,Provocateur,Psychic,Seer,Sheriff,Splicer,Spy,
@@ -155,7 +157,7 @@ static public class Roles
         {
             SecondaryGuesser,SecondarySidekick,SecondaryMadmate,InheritedJailer,
             DiamondPossessor,LastImpostor,/*TeamSanta,*/
-            Bloody,Confused,Drunk,Lover,Trilemma,
+            Bloody,Confused,Drunk,LloydFollower,Lover,Trilemma,
             MetaRole,AvengerTarget,
             PerkHolder
         };

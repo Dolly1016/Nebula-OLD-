@@ -38,9 +38,9 @@ class IntroCutsceneOnDestroyPatch
 
         PlayerPrefab = __instance.PlayerPrefab;
         
-        if (CustomButton.OriginalVentButtonSprite) CustomButton.OriginalVentButtonSprite.hideFlags&= ~HideFlags.DontUnloadUnusedAsset;
-        CustomButton.OriginalVentButtonSprite = HudManager.Instance.ImpostorVentButton.GetComponent<SpriteRenderer>().sprite;
-        CustomButton.OriginalVentButtonSprite.hideFlags |= HideFlags.DontUnloadUnusedAsset;
+        if (ModAbilityAssets.OriginalVentButtonSprite) ModAbilityAssets.OriginalVentButtonSprite.hideFlags&= ~HideFlags.DontUnloadUnusedAsset;
+        ModAbilityAssets.OriginalVentButtonSprite = HudManager.Instance.ImpostorVentButton.GetComponent<SpriteRenderer>().sprite;
+        ModAbilityAssets.OriginalVentButtonSprite.hideFlags |= HideFlags.DontUnloadUnusedAsset;
 
         Module.Information.UpperInformationManager.Initialize();
         if (CustomOptionHolder.limiterOptions.getBool())
@@ -87,27 +87,6 @@ class IntroCutsceneOnDestroyPatch
 
         Game.GameData.data.myData.VentCoolDownTimer = PlayerControl.LocalPlayer.GetModData().role.VentCoolDownMaxTimer;
 
-        if (AmongUsClient.Instance.AmHost)
-        {
-            if (Game.GameModeProperty.GetProperty(Game.GameData.data.GameMode).RequireStartCountDown)
-            {
-                byte count = 10;
-                FastDestroyableSingleton<HudManager>.Instance.StartCoroutine(Effects.Lerp(10f, new System.Action<float>((p) =>
-                {
-                    if ((byte)((1f - p) * 10f) < count)
-                    {
-                        RPCEventInvoker.CountDownMessage(count);
-                        count = (byte)((1f - p) * 10f);
-                    }
-                    if (p == 1f)
-                    {
-                        RPCEventInvoker.CountDownMessage(0);
-                        Game.GameModeProperty.GetProperty(Game.GameData.data.GameMode).OnCountFinished.Invoke();
-                    }
-                })));
-            }
-        }
-
         //ボタンのガイドを表示
         var keyboardMap = Rewired.ReInput.mapping.GetKeyboardMapInstance(0, 0);
         Il2CppReferenceArray<Rewired.ActionElementMap> actionArray;
@@ -118,8 +97,8 @@ class IntroCutsceneOnDestroyPatch
         if (actionArray.Count > 0)
         {
             actionMap = actionArray[0];
-            Objects.CustomButton.SetKeyGuideOnSmallButton(HudManager.Instance.MapButton.gameObject, actionMap.keyCode);
-            Objects.CustomButton.SetKeyGuide(HudManager.Instance.SabotageButton.gameObject, actionMap.keyCode);
+            Objects.ButtonEffect.SetKeyGuideOnSmallButton(HudManager.Instance.MapButton.gameObject, actionMap.keyCode);
+            Objects.ButtonEffect.SetKeyGuide(HudManager.Instance.SabotageButton.gameObject, actionMap.keyCode);
         }
 
         //使用
@@ -127,8 +106,8 @@ class IntroCutsceneOnDestroyPatch
         if (actionArray.Count > 0)
         {
             actionMap = actionArray[0];
-            Objects.CustomButton.SetKeyGuide(HudManager.Instance.UseButton.gameObject, actionMap.keyCode);
-            Objects.CustomButton.SetKeyGuide(HudManager.Instance.PetButton.gameObject, actionMap.keyCode);
+            Objects.ButtonEffect.SetKeyGuide(HudManager.Instance.UseButton.gameObject, actionMap.keyCode);
+            Objects.ButtonEffect.SetKeyGuide(HudManager.Instance.PetButton.gameObject, actionMap.keyCode);
         }
 
         //レポート
@@ -136,7 +115,7 @@ class IntroCutsceneOnDestroyPatch
         if (actionArray.Count > 0)
         {
             actionMap = actionArray[0];
-            Objects.CustomButton.SetKeyGuide(HudManager.Instance.ReportButton.gameObject, actionMap.keyCode);
+            Objects.ButtonEffect.SetKeyGuide(HudManager.Instance.ReportButton.gameObject, actionMap.keyCode);
         }
 
         //キル
@@ -144,7 +123,7 @@ class IntroCutsceneOnDestroyPatch
         if (actionArray.Count > 0)
         {
             actionMap = actionArray[0];
-            Objects.CustomButton.SetKeyGuide(HudManager.Instance.KillButton.gameObject, actionMap.keyCode);
+            Objects.ButtonEffect.SetKeyGuide(HudManager.Instance.KillButton.gameObject, actionMap.keyCode);
         }
 
         //ベント
@@ -152,7 +131,7 @@ class IntroCutsceneOnDestroyPatch
         if (actionArray.Count > 0)
         {
             actionMap = actionArray[0];
-            Objects.CustomButton.SetKeyGuide(HudManager.Instance.ImpostorVentButton.gameObject, actionMap.keyCode);
+            Objects.ButtonEffect.SetKeyGuide(HudManager.Instance.ImpostorVentButton.gameObject, actionMap.keyCode);
         }
     }
 }

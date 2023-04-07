@@ -386,6 +386,7 @@ static class RPCEvents
         Objects.EffectCircle.Initialize();
         Patches.MeetingHudPatch.Initialize();
         Patches.EmergencyPatch.Initialize();
+        Patches.CheckEndCriteriaPatch.Initialize();
         Objects.Ghost.Initialize();
         Objects.SoundPlayer.Initialize();
         Patches.LightPatch.Initialize();
@@ -1051,18 +1052,6 @@ static class RPCEvents
         else
         {
             text = Language.Language.GetString("game.message.start");
-        }
-
-
-        if (Game.GameData.data.CountDownMessage == null)
-        {
-            Game.GameData.data.CountDownMessage =
-                Objects.CustomMessage.Create(text,
-                (float)count + 1f, 0f, 1f, Color.white);
-        }
-        else
-        {
-            Game.GameData.data.CountDownMessage.SetText(text);
         }
     }
 
@@ -1870,10 +1859,11 @@ public class RPCEventInvoker
         RPCEvents.CloseUpKill(murder.PlayerId, target.PlayerId, status.Id, playSoundForEveryone);
     }
 
-    public static void AddAndUpdateRoleData(byte playerId, int dataId, int addData)
+    public static int AddAndUpdateRoleData(byte playerId, int dataId, int addData)
     {
         int newData = Game.GameData.data.playersArray[playerId].GetRoleData(dataId) + addData;
         UpdateRoleData(playerId, dataId, newData);
+        return newData;
     }
 
     public static void ChangeRole(PlayerControl player, Roles.Role role)

@@ -93,7 +93,7 @@ public class Crewmate : Role
         if (HudManager.InstanceExists)
         {
             var ventButton = FastDestroyableSingleton<HudManager>.Instance.ImpostorVentButton;
-            ventButton.gameObject.GetComponent<SpriteRenderer>().sprite = CustomButton.OriginalVentButtonSprite;
+            ventButton.gameObject.GetComponent<SpriteRenderer>().sprite = ModAbilityAssets.OriginalVentButtonSprite;
             ventButton.transform.GetChild(1).GetComponent<TMPro.TextMeshPro>().outlineColor = Palette.ImpostorRed;
         }
     }

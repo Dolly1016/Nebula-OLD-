@@ -4,7 +4,7 @@ class Camouflage : GlobalEvent
 {
     Game.PlayerData.PlayerOutfitData outfit;
 
-    public Camouflage(float duration, ulong option) : base(GlobalEvent.Type.Camouflage, duration - 1f, option)
+    public Camouflage(float duration, ulong option) : base(GlobalEvent.Type.Camouflage, duration, option)
     {
     }
 

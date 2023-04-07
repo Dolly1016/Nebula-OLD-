@@ -6,6 +6,7 @@ using System.IO.Compression;
 using TMPro;
 using Nebula.Module;
 using UnityEngine;
+using static Il2CppSystem.Globalization.CultureInfo;
 
 namespace Nebula;
 
@@ -451,7 +452,7 @@ public static class Helpers
         BlankKill
     }
 
-    private static MurderAttemptResult checkMuderAttempt(PlayerControl killer, PlayerControl target, bool blockRewind = false)
+    private static MurderAttemptResult checkMuderAttempt(PlayerControl killer, PlayerControl target)
     {
         MurderAttemptResult result = MurderAttemptResult.PerformKill;
         var targetData = target.GetModData();
@@ -472,9 +473,9 @@ public static class Helpers
         return MurderAttemptResult.PerformKill;
     }
 
-    public static MurderAttemptResult checkMurderAttemptAndAction(PlayerControl killer, PlayerControl target, Action successAction, Action failedAction, bool isMeetingStart = false)
+    public static MurderAttemptResult checkMurderAttemptAndAction(PlayerControl killer, PlayerControl target, Action successAction, Action failedAction)
     {
-        MurderAttemptResult murder = checkMuderAttempt(killer, target, isMeetingStart);
+        MurderAttemptResult murder = checkMuderAttempt(killer, target);
         switch (murder)
         {
             case MurderAttemptResult.PerformKill:
@@ -490,7 +491,7 @@ public static class Helpers
 
     public static MurderAttemptResult checkMuderAttemptAndKill(PlayerControl killer, PlayerControl target, Game.PlayerData.PlayerStatus status, bool isMeetingStart = false, bool showAnimation = true)
     {
-        MurderAttemptResult murder = checkMuderAttempt(killer, target, isMeetingStart);
+        MurderAttemptResult murder = checkMuderAttempt(killer, target);
         switch (murder)
         {
             case MurderAttemptResult.PerformKill:
@@ -591,17 +592,36 @@ public static class Helpers
         return arr;
     }
 
+    static private List<Action> extraRoleActionQueue = new();
+    static private bool canAddExAction = false;
+
+    static public void PostponeInterferingProcess(Action interferingProcess)
+    {
+        if (canAddExAction) extraRoleActionQueue.Add(interferingProcess);
+    }
+
     static public void RoleAction(Game.PlayerData? player, System.Action<Roles.Assignable> action)
     {
         if (player == null) return;
 
         action.Invoke(player.role);
+        if (player.ShouldBeGhostRole) action.Invoke(player.ghostRole);
 
         if (player.extraRole.Count > 0)
         {
-            foreach (Roles.ExtraRole role in player.extraRole)
+
+            bool callExAction = !canAddExAction;
+            canAddExAction = true;
+            try { foreach (Roles.ExtraRole role in player.extraRole) action.Invoke(role); }
+            catch (Exception ex) { Debug.LogError(ex.StackTrace); }
+
+            try { foreach (var exAction in extraRoleActionQueue) exAction.Invoke(); }
+            catch (Exception ex) { Debug.LogError(ex.StackTrace); }
+
+            if (callExAction)
             {
-                action.Invoke(role);
+                extraRoleActionQueue.Clear();
+                canAddExAction = false;
             }
         }
 
@@ -612,17 +632,7 @@ public static class Helpers
         try
         {
             data = Game.GameData.data.AllPlayers[playerId];
-
-            action.Invoke(data.role);
-            if (data.ShouldBeGhostRole) action.Invoke(data.ghostRole);
-
-            if (data.extraRole.Count > 0)
-            {
-                foreach (Roles.ExtraRole role in data.extraRole)
-                {
-                    action.Invoke(role);
-                }
-            }
+            RoleAction(data,action);
         }
         catch (Exception e) { return; }
     }
@@ -630,6 +640,20 @@ public static class Helpers
     static public void RoleAction(PlayerControl player, System.Action<Roles.Assignable> action)
     {
         RoleAction(player.PlayerId, action);
+    }
+
+    static public bool RoleActionAll(Game.PlayerData? player, System.Predicate<Roles.Assignable> predicate)
+    {
+        bool flag = true;
+        RoleAction(player, (r) => flag &= predicate.Invoke(r));
+        return flag;
+    }
+
+    static public bool RoleActionAny(Game.PlayerData? player, System.Predicate<Roles.Assignable> predicate)
+    {
+        bool flag = false;
+        RoleAction(player, (r) => flag |= predicate.Invoke(r));
+        return flag;
     }
 
     static public Game.VentData GetVentData(this Vent vent)

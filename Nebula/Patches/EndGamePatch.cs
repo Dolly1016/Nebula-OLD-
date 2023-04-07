@@ -17,15 +17,18 @@ public class EndCondition
     public static EndCondition CrewmateWinHnS = new EndCondition(GameOverReason.HideAndSeek_ByTimer, Palette.CrewmateBlue, "crewmate", 16, Module.CustomGameMode.StandardHnS);
     public static EndCondition ImpostorWinHnS = new EndCondition(GameOverReason.HideAndSeek_ByKills, Palette.ImpostorRed, "lonelyImpostor", 16, Module.CustomGameMode.StandardHnS);
     public static EndCondition JesterWin = new EndCondition(16, Roles.NeutralRoles.Jester.RoleColor, "jester", 1, Module.CustomGameMode.Standard);
-    public static EndCondition JackalWin = new EndCondition(17, Roles.NeutralRoles.Jackal.RoleColor, "jackal", 2, Module.CustomGameMode.Standard);
+    public static EndCondition JackalWin = new EndCondition(17, Roles.NeutralRoles.Jackal.RoleColor, "jackal", 8, Module.CustomGameMode.Standard);
     public static EndCondition ArsonistWin = new EndCondition(18, Roles.NeutralRoles.Arsonist.RoleColor, "arsonist", 1, Module.CustomGameMode.Standard, false, (fpData) => { PlayerControl.AllPlayerControls.ForEach((Action<PlayerControl>)((p) => { if (!p.Data.IsDead && Roles.Roles.Arsonist.Winner != p.PlayerId) { p.MurderPlayer(p); fpData.GetPlayer(p.PlayerId).status = Game.PlayerData.PlayerStatus.Burned; } })); });
     public static EndCondition EmpiricWin = new EndCondition(19, Roles.NeutralRoles.Empiric.RoleColor, "empiric", 1, Module.CustomGameMode.Standard);
-    public static EndCondition PaparazzoWin = new EndCondition(20, Roles.NeutralRoles.Paparazzo.RoleColor, "paparazzo", 1, Module.CustomGameMode.Standard);
+    public static EndCondition PaparazzoWin = new EndCondition(20, Roles.NeutralRoles.Paparazzo.RoleColor, "paparazzo", 0, Module.CustomGameMode.Standard);
     public static EndCondition SpectreWin = new EndCondition(21, Roles.NeutralRoles.Spectre.RoleColor, "spectre", 1, Module.CustomGameMode.Standard);
     public static EndCondition VultureWin = new EndCondition(22, Roles.NeutralRoles.Vulture.RoleColor, "vulture", 1, Module.CustomGameMode.Standard);
     public static EndCondition AvengerWin = new EndCondition(23, Roles.NeutralRoles.Avenger.RoleColor, "avenger", 0, Module.CustomGameMode.Standard);
     public static EndCondition LoversWin = new EndCondition(24, Roles.ExtraRoles.Lover.iconColor[0], "lovers", 0, Module.CustomGameMode.Standard);
     public static EndCondition TrilemmaWin = new EndCondition(25, new Color(209f / 255f, 63f / 255f, 138f / 255f), "trilemma", 0, Module.CustomGameMode.Standard);
+    public static EndCondition LordLloydWin = new EndCondition(26, Roles.NeutralRoles.LordLloyd.RoleColor, "lordLloyd", 8, Module.CustomGameMode.Standard);
+    public static EndCondition ClanOfGreyWin = new EndCondition(27, Roles.NeutralRoles.LordLloyd.RoleColor, "clanOfGrey", 8, Module.CustomGameMode.Standard);
+    public static EndCondition NobodyGreyWin = new EndCondition(28, Roles.NeutralRoles.LordLloyd.RoleColor, "nobody.lloyd", 8, Module.CustomGameMode.All).SetNoBodyWin(true);
     //public static EndCondition SantaWin = new EndCondition(26, Roles.NeutralRoles.SantaClaus.RoleColor, "santa", 4, Module.CustomGameMode.Standard);
 
     public static EndCondition NobodyWin = new EndCondition(48, new Color(72f / 255f, 78f / 255f, 84f / 255f), "nobody", 0, Module.CustomGameMode.All).SetNoBodyWin(true);
@@ -50,6 +53,7 @@ public class EndCondition
             ImpostorWinByKill,ImpostorWinBySabotage,ImpostorWinByVote,ImpostorWinDisconnect,
             CrewmateWinHnS,ImpostorWinHnS,
             JesterWin,JackalWin,ArsonistWin,EmpiricWin,PaparazzoWin,VultureWin,SpectreWin,/*SantaWin,*/
+            LordLloydWin,ClanOfGreyWin,NobodyGreyWin,
             LoversWin,TrilemmaWin,AvengerWin,
             NoGame,NobodyWin,NobodySkeldWin,NobodyMiraWin,NobodyPolusWin,NobodyAirshipWin
         };
@@ -588,9 +592,20 @@ public class EndGameManagerSetUpPatch
     }
 }
 
-
-class CheckEndCriteriaPatch
+[NebulaRPCHolder]
+public class CheckEndCriteriaPatch
 {
+    private static RemoteProcess OnThroughGameEndAfterMeeting = new("onThroughGameEndAfterMeeting", (calledByMe) =>
+        Helpers.RoleAction(Game.GameData.data.myData.getGlobalData(), (r) => r.OnThroughCheckingEndAfterExile())
+    );
+
+    static bool inExile = false;
+
+    public static void Initialize()
+    {
+        inExile = false;
+    }
+
     public static void CommonPrefix()
     {
         if (!AmongUsClient.Instance.AmHost) return;
@@ -598,10 +613,10 @@ class CheckEndCriteriaPatch
         if (!GameManager.Instance) return;
         if (!GameManager.Instance.ShouldCheckForGameEnd) return;
 
-            if (ExileController.Instance != null)
+        if (ExileController.Instance != null)
         {
-            if (SpawnInMinigame.Instance == null)
-                return;// return false;
+            inExile = true;
+            if (SpawnInMinigame.Instance == null) return;
         }
 
         if (!GameData.Instance) return;// return false;
@@ -639,11 +654,13 @@ class CheckEndCriteriaPatch
 
             ShipStatus.Instance.enabled = false;
             GameManager.Instance.RpcEndGame(endCondition.Id, false);
-            //return false;
-            return;
+        }
+        else if(inExile)
+        {
+            OnThroughGameEndAfterMeeting.Invoke();
         }
 
-        return;// return false;
+        inExile = false;
     }
 }
 
@@ -684,6 +701,10 @@ public class PlayerStatistics
     public int AliveImpostorTrilemma;
     public int AliveImpostorsWithSidekick;
     public int AliveSpectre;
+    public int AliveLloyd;
+    public int AliveGrey;
+    public int AliveJackalGrey;
+    public int AliveImpostorGrey;
 
     //設定次第で適切な値が入る(独立した陣営として見ない場合常に0)
     public int AliveInLoveImpostors;
@@ -717,6 +738,8 @@ public class PlayerStatistics
         AliveInLoveJackals = 0;
         AliveInLoveImpostors = 0;
         AliveImpostorsWithSidekick = 0;
+        AliveGrey = 0;
+        AliveLloyd = 0;
 
         Roles.Side side;
         
@@ -753,8 +776,13 @@ public class PlayerStatistics
                     alivePlayers[side] = alivePlayers[side] + 1;
                 }
 
-                if (data.HasExtraRole(Roles.Roles.Lover))
+                if (data.HasExtraRole(Roles.Roles.LloydFollower))
                 {
+                    AliveGrey++;
+                }
+
+                if (data.HasExtraRole(Roles.Roles.Lover))
+                { 
                     var lData = Roles.Roles.Lover.GetLoversData(data);
                     if (lData != data && lData.id > data.id && lData.IsAlive)
                     {
@@ -837,6 +865,8 @@ public class PlayerStatistics
         AliveCrewmates = GetAlivePlayers(Roles.Side.Crewmate);
         AliveImpostors = GetAlivePlayers(Roles.Side.Impostor);
         AliveJackals = GetAlivePlayers(Roles.Side.Jackal);
+
+        AliveLloyd = GetAlivePlayers(Roles.Side.LordLloyd);
 
         if (!Roles.Roles.Lover.loversAsIndependentSideOption.getBool())
         {

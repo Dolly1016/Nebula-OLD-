@@ -16,8 +16,7 @@ public class Side
     {
         if (GameOptionsManager.Instance.currentGameMode == GameModes.Normal)
         {
-            if (statistics.GetAlivePlayers(Impostor) == 0 &&
-            statistics.GetAlivePlayers(Jackal) == 0 &&
+            if (statistics.AliveImpostors == 0 && statistics.AliveJackals == 0 && statistics.AliveLloyd == 0 &&
             !Game.GameData.data.AllPlayers.Values.Any((p) => p.IsAlive && p.extraRole.Contains(Roles.SecondarySidekick)))
             {
                 return EndCondition.CrewmateWinByVote;
@@ -84,7 +83,7 @@ public class Side
             }
 
             if (statistics.AliveImpostors > 0 &&
-            statistics.AliveJackals == 0 &&
+            statistics.AliveJackals == 0 && statistics.AliveLloyd == 0 &&
             !Game.GameData.data.AllPlayers.Values.Any((p) => p.IsAlive && p.extraRole.Contains(Roles.SecondarySidekick)) &&
             (statistics.TotalAlive - statistics.AliveSpectre) <= (statistics.AliveImpostors - statistics.AliveInLoveImpostors) * 2 &&
             (statistics.AliveImpostorCouple + statistics.AliveImpostorTrilemma == 0 ||
@@ -111,6 +110,7 @@ public class Side
     public static Side Jackal = new Side("Jackal", "jackal", IntroDisplayOption.SHOW_ONLY_ME, NeutralRoles.Jackal.RoleColor, (PlayerStatistics statistics, ShipStatus status) =>
     {
         if ((statistics.AliveJackals - statistics.AliveInLoveJackals) * 2 >= (statistics.TotalAlive-statistics.AliveSpectre) && statistics.GetAlivePlayers(Impostor) - statistics.AliveImpostorsWithSidekick <= 0 &&
+        statistics.AliveLloyd == 0 && 
         (statistics.AliveJackalCouple + statistics.AliveJackalTrilemma == 0 ||
         statistics.AliveJackalCouple * 2 + statistics.AliveJackalTrilemma * 3 >= statistics.AliveCouple * 2 + statistics.AliveTrilemma * 3))
         {
@@ -152,6 +152,17 @@ public class Side
         {
             return EndCondition.EmpiricWin;
         }
+        return null;
+    });
+
+    public static Side LordLloyd = new Side("LordLloyd", "lordLloyd", IntroDisplayOption.SHOW_ONLY_ME, NeutralRoles.LordLloyd.RoleColor, (PlayerStatistics statistics, ShipStatus side) =>
+    {
+        if (statistics.AliveImpostors == 0 && statistics.AliveJackals == 0 &&
+        (statistics.AliveLloyd + statistics.AliveGrey) * 2 >= statistics.TotalAlive && Roles.LordLloyd.WinTrigger)
+            return Roles.LordLloyd.CanWinWithFollowers.getBool() ? EndCondition.ClanOfGreyWin : EndCondition.LordLloydWin;
+        if (statistics.AliveLloyd == 1 && statistics.TotalAlive == 2 && statistics.AliveImpostors==0 && statistics.AliveJackals == 0 && !Roles.LordLloyd.WinTrigger)
+            return EndCondition.NobodyGreyWin;
+
         return null;
     });
 
@@ -313,7 +324,7 @@ public class Side
     public static List<Side> AllSides = new List<Side>()
         {
             Crewmate, Impostor,
-            Jackal, Jester, Vulture, Empiric, Arsonist, Paparazzo, Avenger,ChainShifter,Spectre,/*SantaClaus,*/
+            Jackal, Jester, Vulture, Empiric, Arsonist, Paparazzo, Avenger,ChainShifter,LordLloyd,Spectre,/*SantaClaus,*/
             GamePlayer,
             Extra,VOID,
             RitualCrewmate

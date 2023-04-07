@@ -89,7 +89,7 @@ public class CustomVImage : CustomVariable
 
     private void LoadImage(Texture2D texture)
     {
-        if (Texture != null && texture != Texture) Texture.hideFlags = HideFlags.None;
+        if (Texture != null) Texture.hideFlags = HideFlags.None;
         if (Images != null) foreach (var i in Images) i.hideFlags = HideFlags.None;
 
         Texture = texture;
@@ -103,6 +103,7 @@ public class CustomVImage : CustomVariable
             if (sprite == null)
                 return;
             Images[i] = sprite;
+            sprite.hideFlags |= HideFlags.HideAndDontSave | HideFlags.DontUnloadUnusedAsset;
         }
 
         Loaded = true;
@@ -144,7 +145,9 @@ public class CustomVImage : CustomVariable
     {
         Address = parameter.Path;
         Length = parameter.Split;
-        LoadImage(parameter.Texture);
+        Texture2D texture = new(parameter.Texture.width,parameter.Texture.height,parameter.Texture.format,true);
+        Graphics.CopyTexture(parameter.Texture,texture);
+        LoadImage(texture);
     }
 
     public override void LoadImage(string parent, bool fromDisk = false)
@@ -409,7 +412,6 @@ public class CustomHat : CustomCosmicItem
     public CustomVHatImage I_ClimbFlip { get; set; }
     public CustomVBool Bounce { get; set; }
     public CustomVBool Adaptive { get; set; }
-    public CustomVBool Behind { get; set; }
     public CustomVBool HideHands { get; set; }
     public CustomVBool IsSkinny { get; set; }
     public CustomVSecPerFrame SecPerFrame { get; set; }
@@ -437,7 +439,6 @@ public class CustomHat : CustomCosmicItem
         yield return I_ClimbFlip;
         yield return Bounce;
         yield return Adaptive;
-        yield return Behind;
         yield return HideHands;
         yield return IsSkinny;
         yield return SecPerFrame;
@@ -458,7 +459,6 @@ public class CustomHat : CustomCosmicItem
         I_ClimbFlip = new CustomVHatImage("ClimbFlip");
         Bounce = new CustomVBool("Bounce");
         Adaptive = new CustomVBool("Adaptive");
-        Behind = new CustomVBool("Behind");
         HideHands = new CustomVBool("HideHands");
         IsSkinny = new CustomVBool("IsSkinny");
         SecPerFrame = new CustomVSecPerFrame("FPS");
@@ -651,26 +651,15 @@ public class CustomParts
         {
             foreach (var content in ch.Contents()) content.LoadImage("MoreCosmic/hats", fromDisk);
 
-            viewData.MainImage = ch.I_Main.GetMainImage();
-            if (ch.I_Flip)
-                viewData.LeftMainImage = ch.I_Flip.GetMainImage();
-            if (ch.I_Back)
-            {
-                viewData.BackImage = ch.I_Back.GetMainImage();
-                ch.Behind.Value = true;
-            }
-            if (ch.I_Climb)
-                viewData.ClimbImage = ch.I_Climb.GetMainImage();
-            if (ch.I_ClimbFlip)
-                viewData.LeftClimbImage = ch.I_ClimbFlip.GetMainImage();
-            if (ch.I_BackFlip)
-                viewData.LeftBackImage = ch.I_BackFlip.GetMainImage();
+            if (ch.I_Main) viewData.MainImage = ch.I_Main.GetMainImage();
+            if (ch.I_Back) viewData.BackImage = ch.I_Back.GetMainImage();
+            if (ch.I_Climb)  viewData.ClimbImage = ch.I_Climb.GetMainImage();
+            if (ch.I_ClimbFlip)viewData.LeftClimbImage = ch.I_ClimbFlip.GetMainImage();
 
             ch.ReflectNameToVanillaData();
             
-            //hat.Order = 99;
             hat.ProductId = "hat_" + ch.Name.Value.Replace(' ', '_');
-            hat.InFront = !ch.Behind.Value;
+            hat.InFront = false;
             hat.NoBounce = !ch.Bounce.Value;
             hat.ChipOffset = new Vector2(0f, 0.2f);
             hat.Free = true;
@@ -942,9 +931,9 @@ public class CustomParts
 
     public static class AnimationHandler
     {
-        private static Sprite? UpdateAndGetSprite(Game.PlayerData.CosmicPartTimer cosmicTimer, Sprite?[] sprites)
+        private static Sprite? UpdateAndGetSprite(Game.PlayerData.CosmicPartTimer cosmicTimer, Sprite?[]? sprites)
         {
-            if (sprites.Length == 0) return null;
+            if (sprites == null || sprites.Length == 0) return null;
             if (cosmicTimer.Index >= sprites.Length) cosmicTimer.Index = 0;
             return sprites[cosmicTimer.Index];
         }
@@ -962,18 +951,21 @@ public class CustomParts
             cosmicTimer.Timer -= Time.deltaTime;
             if (cosmicTimer.Timer < 0f) { cosmicTimer.Timer = extend.SecPerFrame.SecPerFrame; cosmicTimer.Index++; }
 
+            bool flipX = cosmetics.FlipX;
+            Sprite?[]? frontSprites = extend.I_Main.Images, backSprites = extend.I_Back.Images;
+            if (flipX && extend.I_Flip) frontSprites = extend.I_Flip.Images;
+            if (flipX && extend.I_BackFlip) backSprites = extend.I_BackFlip.Images;
             if (currentAnimation == animation.group.RunAnim)
             {
-                if (extend.I_Move)
-                    hp.FrontLayer.sprite = UpdateAndGetSprite(cosmicTimer, (cosmetics.FlipX && extend.I_MoveFlip) ? extend.I_MoveFlip.Images : extend.I_Move.Images);
-                if (extend.I_MoveBack)
-                    hp.BackLayer.sprite = UpdateAndGetSprite(cosmicTimer, (cosmetics.FlipX && extend.I_MoveBackFlip) ? extend.I_MoveBackFlip.Images : extend.I_MoveBack.Images);
+                if (extend.I_Move) frontSprites = extend.I_Move.Images;
+                if (extend.I_MoveBack) backSprites = extend.I_MoveBack.Images;
+                if(flipX && extend.I_MoveFlip) frontSprites = extend.I_MoveFlip.Images;
+                if (flipX && extend.I_MoveBackFlip) backSprites = extend.I_MoveBackFlip.Images;
             }
-            else
-            {
-                hp.FrontLayer.sprite = UpdateAndGetSprite(cosmicTimer, (cosmetics.FlipX && extend.I_Flip) ? extend.I_Flip.Images : extend.I_Main.Images);
-                hp.BackLayer.sprite = UpdateAndGetSprite(cosmicTimer, (cosmetics.FlipX && extend.I_BackFlip) ? extend.I_BackFlip.Images : extend.I_Back.Images);
-            }
+
+            hp.FrontLayer.sprite = UpdateAndGetSprite(cosmicTimer, frontSprites);
+            hp.BackLayer.sprite = UpdateAndGetSprite(cosmicTimer, backSprites);
+
         }
         private static void HandleVisor(PlayerAnimations animation, CosmeticsLayer cosmetics, Nebula.Game.PlayerData.CosmicTimer timer)
         {
@@ -1009,6 +1001,22 @@ public class CustomParts
         }
     }
 
+
+    [HarmonyPatch(typeof(HatParent), nameof(HatParent.PopulateFromHatViewData))]
+    private static class PopulateFromHatViewDataPatch
+    {
+        private static void Postfix(HatParent __instance)
+        {
+            if (__instance.options.Initialized && __instance.HideHat()) return;
+            if (__instance.Hat.getHatData() != null)
+            {
+                __instance.BackLayer.enabled = true;
+                __instance.FrontLayer.enabled = true;
+                __instance.BackLayer.sprite = __instance.hatView.BackImage;
+                __instance.FrontLayer.sprite = __instance.hatView.MainImage;
+            }
+        }
+    }
 
     private static List<TMPro.TMP_Text> hatsTabCustomTexts = new List<TMPro.TMP_Text>();
     private static List<TMPro.TMP_Text> nameplatesTabCustomTexts = new List<TMPro.TMP_Text>();
@@ -1677,27 +1685,25 @@ public static class CustomItemManager
 {
     public static CustomHat getHatData(this HatData hat)
     {
-        CustomHat ret = null;
         if (hat == CustomHatDesigner.Hat?.VanillaData) return CustomHatDesigner.Hat!.NebulaData;
         
-        CustomParts.CustomHatRegistry.TryGetValue(hat.GetInstanceID(), out ret);
+        CustomParts.CustomHatRegistry.TryGetValue(hat.GetInstanceID(), out var ret);
         return ret;
     }
 
     public static CustomNamePlate getNamePlateData(this NamePlateData namePlate)
     {
-        CustomNamePlate ret = null;
-       
-        CustomParts.CustomNamePlateRegistry.TryGetValue(namePlate.GetInstanceID(), out ret);
+        if (namePlate == CustomNameplateDesigner.Nameplate?.VanillaData) return CustomNameplateDesigner.Nameplate!.NebulaData;
+
+        CustomParts.CustomNamePlateRegistry.TryGetValue(namePlate.GetInstanceID(), out var ret);
         return ret;
     }
 
-    public static CustomVisor getVisorData(this VisorData visorData)
+    public static CustomVisor getVisorData(this VisorData visor)
     {
-        CustomVisor ret = null;
-        //if (visorData == CustomVisorDesigner.Visor?.VanillaData) return CustomVisorDesigner.Visor!.NebulaData;
-        
-        CustomParts.CustomVisorRegistry.TryGetValue(visorData.GetInstanceID(), out ret);
+        if (visor == CustomVisorDesigner.Visor?.VanillaData) return CustomVisorDesigner.Visor!.NebulaData;
+
+        CustomParts.CustomVisorRegistry.TryGetValue(visor.GetInstanceID(), out var ret);
         return ret;
     }
 

@@ -138,7 +138,6 @@ public abstract class Role : Assignable
     public bool DeceiveImpostorInNameDisplay { get; set; }
     public virtual bool IsGuessableRole { get; protected set; }
 
-    public bool CanCallEmergencyMeeting { get; protected set; }
 
     public bool HideKillButtonEvenImpostor { get; protected set; }
 
@@ -376,7 +375,6 @@ public abstract class Role : Assignable
 
         this.winReasons = winReasons;
 
-        this.CanCallEmergencyMeeting = true;
         this.HideKillButtonEvenImpostor = false;
 
         this.HideInExclusiveAssignmentOption = false;

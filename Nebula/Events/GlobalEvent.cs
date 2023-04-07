@@ -47,7 +47,7 @@ public class GlobalEvent
 
     public bool CheckTerminal()
     {
-        if (duration < 0)
+        if (duration < 0f)
         {
             OnTerminal();
             return true;
@@ -81,7 +81,7 @@ public class GlobalEvent
         foreach (GlobalEvent globalEvent in Events)
         {
             if (globalEvent.type != type) continue;
-            if (globalEvent.duration > 0) return true;
+            return true;
         }
         return false;
     }

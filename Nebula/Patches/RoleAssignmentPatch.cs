@@ -396,14 +396,6 @@ class RoleAssignmentPatch
 
         }
 
-
-
-        //Ghostをランダムに選択するオプションをここに付けたい
-        if (Game.GameModeProperty.GetProperty(CustomOptionHolder.GetCustomGameMode()).RequireGhosts)
-        {
-            Game.GameData.data.Ghost = new Ghost.Ghosts.TestGhost();
-        }
-
         RPCEventInvoker.SetRoles(assignMap);
     }
 
