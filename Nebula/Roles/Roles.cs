@@ -110,6 +110,7 @@ static public class Roles
     public static HnSImpostorRoles.HnSHadar HnSHadar = new HnSImpostorRoles.HnSHadar();
     public static HnSImpostorRoles.HnSRaider HnSRaider = new HnSImpostorRoles.HnSRaider();
     public static HnSImpostorRoles.HnSReaper HnSReaper = new HnSImpostorRoles.HnSReaper();
+    public static HnSImpostorRoles.HnSViper HnSViper = new HnSImpostorRoles.HnSViper();
 
     public static ComplexRoles.FCrewmate F_Crewmate = new ComplexRoles.FCrewmate();
     public static ComplexRoles.FGuesser F_Guesser = new ComplexRoles.FGuesser();
@@ -147,7 +148,7 @@ static public class Roles
             Madmate,
             Player,
             HnSCrewmate,
-            HnSCleaner,HnSHadar,HnSRaider,HnSReaper
+            HnSCleaner,HnSHadar,HnSRaider,HnSReaper,HnSViper
         };
 
     public static List<ExtraRole> AllExtraRoles = new List<ExtraRole>()

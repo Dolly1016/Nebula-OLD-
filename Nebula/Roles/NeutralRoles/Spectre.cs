@@ -31,7 +31,8 @@ public class Spectre : Role
     private Module.CustomOption ventCoolDownOption;
     private Module.CustomOption ventDurationOption;
 
-    private List<Objects.Arrow?> impostorArrows;
+    SpriteLoader arrowSprite = new SpriteLoader("role.spectre.arrow");
+    PlayerArrow impostorsArrow;
 
     int clarifyChargeId;
 
@@ -234,8 +235,6 @@ public class Spectre : Role
             spectreButton.Destroy();
             spectreButton = null;
         }
-        foreach (var a in impostorArrows) if (a != null) GameObject.Destroy(a.arrow);
-        impostorArrows.Clear();
     }
 
     //道連れ
@@ -580,6 +579,10 @@ public class Spectre : Role
     {
         base.Initialize(__instance);
 
+        impostorsArrow = new((p) => p.Data.RoleType == RoleTypes.Impostor && !p.Data.IsDead);
+        impostorsArrow.ArrowColor = Palette.ImpostorRed;
+        impostorsArrow.ArrowSprite = arrowSprite.GetSprite();
+
         VentCoolDownMaxTimer = ventCoolDownOption.getFloat();
         VentDurationMaxTimer = ventDurationOption.getFloat();
     }
@@ -608,26 +611,11 @@ public class Spectre : Role
         }
     }
 
-    SpriteLoader arrowSprite = new SpriteLoader("role.spectre.arrow");
+    
+
     public override void MyPlayerControlUpdate()
     {
-        int i = 0;
-        foreach (var p in PlayerControl.AllPlayerControls.GetFastEnumerator())
-        {
-            if ((p.Data.Role.IsImpostor || p.GetModData().role.DeceiveImpostorInNameDisplay) && !p.Data.IsDead)
-            {
-                if (impostorArrows.Count >= i) impostorArrows.Add(null);
-
-                var arrow = impostorArrows[i];
-                RoleSystem.TrackSystem.PlayerTrack_MyControlUpdate(ref arrow, p, Palette.ImpostorRed,arrowSprite);
-                impostorArrows[i] = arrow;
-
-                i++;
-            }
-        }
-        int removed = impostorArrows.Count - i;
-        for (; i < impostorArrows.Count; i++) if (impostorArrows[i] != null) GameObject.Destroy(impostorArrows[i].arrow);
-        impostorArrows.RemoveRange(impostorArrows.Count - removed, removed);
+        impostorsArrow.Update();
     }
 
     //ラストインポスターに推察チャンスを与える
@@ -681,7 +669,6 @@ public class Spectre : Role
         clarifyChargeId = Game.GameData.RegisterRoleDataId("spectre.clarifyCharge");
         FixedRoleCount = true;
         canReport = false;
-        impostorArrows = new List<Arrow?>();
 
         spectreFoxAnimationSprites = new ISpriteLoader[25];
         for(int i = 0; i < 25; i++)

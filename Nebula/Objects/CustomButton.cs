@@ -389,11 +389,24 @@ public class ModAbilityButton
             SetCoolDown(0f, 1f);
         }
     }
+
+    public Tuple<EffectInactivatedAttribute,EffectActivatedAttribute> SetUpEffectAttribute(KeyCode keyCode,float initialCoolDown,float coolDown,float duration,Action? onTriggeredAction = null, Action? onInactivatedAction = null)
+    {
+        var activatedAttribute = new EffectActivatedAttribute(duration, onInactivatedAction);
+        var inactivatedAttribute = new EffectInactivatedAttribute(coolDown, initialCoolDown, keyCode, activatedAttribute, onTriggeredAction);
+        activatedAttribute.SetInactivatedAttribute(inactivatedAttribute);
+        MyAttribute = inactivatedAttribute;
+        return new(inactivatedAttribute,activatedAttribute);
+    }
 }
 
 public class StaticAttribute : ModAbilityButton.IButtonAttribute
 {
-    public virtual void OnActivated(ModAbilityButton button) { }
+    public virtual void OnActivated(ModAbilityButton button) {
+        button.SetCoolDown(0f, 1f);
+        button.ClearAllKeyGuide();
+        button.AddKeyGuide(events[0].GetKey(), false);
+    }
 
     public virtual void Update(ModAbilityButton button) { }
     public virtual void OutlineUpdate(ModAbilityButton button) { }
@@ -406,7 +419,7 @@ public class StaticAttribute : ModAbilityButton.IButtonAttribute
     public virtual void StartCoolingDown() { }
     private bool canUseIgnoredSafety;
 
-    public virtual IEnumerable<ModAbilityButton.IButtonEvent> GetEvents() => new ModAbilityButton.IButtonEvent[0];
+    public virtual IEnumerable<ModAbilityButton.IButtonEvent> GetEvents() => events;
     private ModAbilityButton.IButtonEvent[] events;
     private Func<bool>? canUsePredicate;
     public StaticAttribute(bool canUseIgnoredSafety,Action buttonAction,KeyCode keyCode, Func<bool>? canUsePredicate=null)
@@ -516,7 +529,7 @@ public class KillAbilityAttribute : InterpersonalAbilityAttribute
      }, Module.NebulaInputManager.modKillInput.keyCode)){}
 }
 
-class EffectInactivatedAttribute : SimpleAbilityAttribute
+public class EffectInactivatedAttribute : SimpleAbilityAttribute
 {
     public override void OnActivated(ModAbilityButton button)
     {
@@ -524,15 +537,15 @@ class EffectInactivatedAttribute : SimpleAbilityAttribute
         StartCoolingDown();
         button.SetCoolDownTextColor(Color.white);
     }
-    public EffectInactivatedAttribute(float coolDown, float initialCoolDown,KeyCode keyCode,EffectActivatedAttribute activatedAttribute,Action activateEvent) 
+    public EffectInactivatedAttribute(float coolDown, float initialCoolDown,KeyCode keyCode,EffectActivatedAttribute activatedAttribute,Action? activateEvent = null) 
         : base(coolDown,initialCoolDown,new SimpleButtonEvent((button) => {
-            activateEvent.Invoke();
+            activateEvent?.Invoke();
             button.MyAttribute = activatedAttribute;
         },keyCode))
     {}
 }
 
-class EffectActivatedAttribute : HasCoolDownAttribute
+public class EffectActivatedAttribute : HasCoolDownAttribute
 {
     EffectInactivatedAttribute? inactivatedAttribute;
     Action? inactivateEvent;

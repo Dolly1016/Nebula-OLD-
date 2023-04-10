@@ -65,9 +65,6 @@ public class Vulture : Role, Template.HasWinTrigger
         eatButton.MaxTimer = eatCoolDownOption.getFloat();
     }
 
-    /* 矢印 */
-    Dictionary<byte, Arrow> Arrows;
-
     public byte deadBodyId;
 
     public int eatLeftId;
@@ -101,66 +98,15 @@ public class Vulture : Role, Template.HasWinTrigger
             }
             Patches.PlayerControlPatch.SetDeadBodyOutline(body, Color.yellow);
         }
-
-        /* 矢印の更新 */
-
-        if (PlayerControl.LocalPlayer.Data.IsDead)
-        {
-            if (Arrows.Count > 0) ClearArrows();
-        }
-        else
-        {
-            DeadBody[] deadBodys = Helpers.AllDeadBodies();
-            //削除するキーをリストアップする
-            var removeList = Arrows.Where(entry =>
-            {
-                foreach (DeadBody body in deadBodys)
-                {
-                    if (body.ParentId == entry.Key) return false;
-                }
-                return true;
-            });
-            foreach (var entry in removeList)
-            {
-                UnityEngine.Object.Destroy(entry.Value.arrow);
-                Arrows.Remove(entry.Key);
-            }
-            //残った矢印を最新の状態へ更新する
-            foreach (DeadBody body in deadBodys)
-            {
-                if (!Arrows.ContainsKey(body.ParentId))
-                {
-                    Arrows[body.ParentId] = new Arrow(Color.blue,true,arrowSprite.GetSprite());
-                    Arrows[body.ParentId].arrow.SetActive(true);
-                }
-                Arrows[body.ParentId].Update(body.transform.position);
-            }
-        }
     }
 
-    private void ClearArrows()
+    public override void OnDeadBodyGenerated(DeadBody deadBody)
     {
-        //矢印を消す
-        foreach (Arrow arrow in Arrows.Values)
-        {
-            UnityEngine.Object.Destroy(arrow.arrow);
-        }
-        Arrows.Clear();
-    }
-
-    public override void OnDied()
-    {
-        ClearArrows();
-    }
-
-    public override void OnMeetingEnd()
-    {
-        ClearArrows();
+        new FollowerArrow("VultureArrow", true, deadBody.gameObject, Color.blue, arrowSprite.GetSprite());
     }
 
     public override void Initialize(PlayerControl __instance)
     {
-        Arrows = new Dictionary<byte, Arrow>();
         WinTrigger = false;
 
         VentCoolDownMaxTimer = ventCoolDownOption.getFloat();
@@ -174,8 +120,6 @@ public class Vulture : Role, Template.HasWinTrigger
 
     public override void CleanUp()
     {
-        ClearArrows();
-
         if (eatButton != null)
         {
             eatButton.Destroy();

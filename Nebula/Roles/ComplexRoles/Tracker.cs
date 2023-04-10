@@ -50,9 +50,8 @@ public class Tracker : Template.BilateralnessRole
 {
     private CustomButton trackButton;
 
-    private List<Objects.Arrow?> impostorArrows;
     private Game.PlayerObject? trackTarget;
-    private Objects.Arrow? arrow;
+    private FollowerArrow trackArrow;
     private SpriteRenderer? targetIndicator;
     private byte taskTrackTarget;
     private List<Tuple<Vector2, bool>>? tasks;
@@ -71,7 +70,6 @@ public class Tracker : Template.BilateralnessRole
                  isImpostor, isImpostor, isImpostor, () => { return Roles.F_Tracker; }, isImpostor)
     {
         IsHideRole = true;
-        impostorArrows = new List<Arrow?>();
 
         arrowSprite = new SpriteLoader("role."+localizeName+".arrow");
     }
@@ -141,33 +139,23 @@ public class Tracker : Template.BilateralnessRole
 
         if (!Roles.F_Tracker.evilTrackerCanTrackImpostorsOption.getBool()) return;
 
-        RoleSystem.TrackSystem.PlayerTrack_MyControlUpdate(ref arrow, trackTarget, Roles.F_Tracker.Color,arrowSprite);
-
-        int i = 0;
-        if (category == RoleCategory.Impostor)
+        if (trackTarget != null && !(trackTarget.control?.Data.IsDead ?? true))
         {
-            foreach (var p in PlayerControl.AllPlayerControls.GetFastEnumerator())
+            if (!trackArrow) trackArrow = new FollowerArrow("TrackerArrow",true,trackTarget.control.gameObject,Color,arrowSprite.GetSprite());
+        }
+        else
+        {
+            if (trackArrow)
             {
-                if ((p.Data.Role.IsImpostor || p.GetModData().role.DeceiveImpostorInNameDisplay) && !p.Data.IsDead && p.PlayerId != PlayerControl.LocalPlayer.PlayerId && p.PlayerId != (trackTarget?.control?.PlayerId ?? byte.MaxValue))
-                {
-                    if (impostorArrows.Count >= i) impostorArrows.Add(null);
-
-                    var arrow = impostorArrows[i];
-                    RoleSystem.TrackSystem.PlayerTrack_MyControlUpdate(ref arrow, p, Palette.ImpostorRed,arrowSprite);
-                    impostorArrows[i] = arrow;
-
-                    i++;
-                }
+                trackArrow.Destroy();
+                trackArrow = null;
             }
         }
-        int removed = impostorArrows.Count - i;
-        for (; i < impostorArrows.Count; i++) if (impostorArrows[i] != null) GameObject.Destroy(impostorArrows[i].arrow);
-        impostorArrows.RemoveRange(impostorArrows.Count - removed, removed);
     }
 
     public override void ButtonInitialize(HudManager __instance)
     {
-        arrow = null;
+        trackArrow?.Destroy();
         trackTarget = null;
         tasks = null;
         targetIndicator = null;
@@ -212,20 +200,11 @@ public class Tracker : Template.BilateralnessRole
             trackButton = null;
         }
 
-        if (arrow != null)
-        {
-            GameObject.Destroy(arrow.arrow);
-            arrow = null;
-        }
-
         if (targetIndicator != null)
         {
             if (targetIndicator) GameObject.Destroy(targetIndicator.gameObject);
             targetIndicator = null;
         }
-
-        foreach (var a in impostorArrows) if (a != null) GameObject.Destroy(a.arrow);
-        impostorArrows.Clear();
 
         trackTarget = null;
     }

@@ -26,7 +26,7 @@ public class Necromancer : Template.Draggable
         }),
    };
 
-    public Arrow reviveArrow;
+    public FixedArrow reviveArrow;
     public SystemTypes targetRoom;
 
     private SpriteRenderer FS_BodiesSensor = null;
@@ -84,7 +84,7 @@ public class Necromancer : Template.Draggable
 
     public override void OnDropPlayer()
     {
-        CleanArrow();
+        if (reviveArrow) reviveArrow.Destroy();
     }
 
     public override void OnDragPlayer(byte playerId)
@@ -176,7 +176,7 @@ public class Necromancer : Template.Draggable
             {
                 if (!DraggingPlayerIsInReviveRoom()) return;
 
-                CleanArrow();
+                if (reviveArrow) reviveArrow.Destroy();
                 RPCEventInvoker.RevivePlayer(Helpers.playerById(PlayerControl.LocalPlayer.GetModData().dragPlayerId));
                 if (PlayerControl.LocalPlayer.IsMadmate())
                 {
@@ -191,7 +191,7 @@ public class Necromancer : Template.Draggable
 
     public override void OnMeetingEnd()
     {
-        CleanArrow();
+        if (reviveArrow) reviveArrow.Destroy();
     }
 
     public override void CleanUp()
@@ -210,38 +210,22 @@ public class Necromancer : Template.Draggable
             FS_BodiesSensor = null;
         }
 
-        CleanArrow();
-    }
-
-    private void CleanArrow()
-    {
-        if (reviveArrow != null)
-        {
-            UnityEngine.Object.Destroy(reviveArrow.arrow);
-            reviveArrow = null;
-        }
+        if (reviveArrow) reviveArrow.Destroy();
     }
 
     SpriteLoader arrowSprite = new SpriteLoader("role.necromancer.arrow");
 
     private void SpawnArrow(SystemTypes roomType)
     {
-        CleanArrow();
+        if(reviveArrow)reviveArrow.Destroy();
 
-        reviveArrow = new Arrow(Color.cyan,true,arrowSprite.GetSprite());
-        reviveArrow.arrow.SetActive(true);
-        reviveArrow.Update(ShipStatus.Instance.FastRooms[roomType].roomArea.transform.position);
+        reviveArrow = new FixedArrow("NecromancerArrow", true, ShipStatus.Instance.FastRooms[roomType].roomArea.transform.position, Color.cyan, arrowSprite.GetSprite());
         targetRoom = roomType;
     }
 
     public override void MyPlayerControlUpdate()
     {
         base.MyPlayerControlUpdate();
-
-        if (reviveArrow != null)
-        {
-            reviveArrow.Update(ShipStatus.Instance.FastRooms[targetRoom].roomArea.transform.position);
-        }
 
         UpdateFullScreen();
     }

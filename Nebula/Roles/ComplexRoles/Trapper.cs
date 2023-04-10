@@ -179,26 +179,23 @@ public class Trapper : Template.BilateralnessRole
 
                         if (player.transform.position.Distance(obj.GameObject.transform.position) < 1.125f / 2f)
                         {
-                            Arrow arrow = new Arrow(Palette.PlayerColors[player.CurrentOutfit.ColorId],true, FTrapper.commArrowSprite.GetSprite());
-                            arrow.arrow.SetActive(true);
-                            arrow.Update(obj.GameObject.transform.position);
-                            detectedPlayers.Add(player.PlayerId);
+                            Color color = Palette.PlayerColors[player.CurrentOutfit.ColorId];
+                            var arrow = new FixedArrow("TrapperArrow", true, obj.GameObject.transform.position, color);
 
-                            byte id = player.PlayerId;
-                            Vector3 pos = obj.GameObject.transform.position;
-                            FastDestroyableSingleton<HudManager>.Instance.StartCoroutine(Effects.Lerp(5f, new Action<float>((p) =>
+                            IEnumerator GetEnumerator()
                             {
-                                arrow.Update(pos);
-                                if (p > 0.8f)
+                                float t = 0f;
+                                while (t < 5f)
                                 {
-                                    arrow.image.color = new Color(arrow.image.color.r, arrow.image.color.g, arrow.image.color.b, (1f - p) * 5f);
+                                    if (t > 4f) arrow.Color = color.AlphaMultiplied((1f - (t - 4f)));
+                                    t += Time.deltaTime;
+                                    yield return null;
                                 }
-                                if (p == 1f)
-                                {
-                                        //矢印を消す
-                                        UnityEngine.Object.Destroy(arrow.arrow);
-                                }
-                            })));
+                                arrow.Destroy();
+                            }
+
+                            arrow.StartCoroutine(GetEnumerator());
+                            detectedPlayers.Add(player.PlayerId);
                         }
                     }
                 }

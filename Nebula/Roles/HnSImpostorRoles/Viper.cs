@@ -13,8 +13,9 @@ public class PoisonedAttribute : PlayerAttribute
     {
     }
 
-    public override void OnLostAttributeLocal(PlayerControl player, AttributeOperateReason reason) { 
-        if(reason is AttributeOperateReason.TimeOver or AttributeOperateReason.PreMeeting)
+    public override void OnLostAttributeLocal(PlayerControl player, AttributeOperateReason reason) {
+        if (!(reason is AttributeOperateReason.TimeOver or AttributeOperateReason.PreMeeting)) return;
+        RPCEventInvoker.UncheckedMurderPlayer(HnSModificator.Seeker.PlayerId,PlayerControl.LocalPlayer.PlayerId, Game.PlayerData.PlayerStatus.Poisoned.Id,false);
     }
 }
 
@@ -26,6 +27,15 @@ public class HnSViper : Role
     {
         killButton?.Destroy();
         killButton = new(HudManager.Instance.KillButton.graphic.sprite, Expansion.GridArrangeExpansion.GridArrangeParameter.AlternativeKillButtonContent);
+        killButton.MyAttribute = new InterpersonalAbilityAttribute(
+            GameOptionsManager.Instance.CurrentGameOptions.GetFloat(FloatOptionNames.KillCooldown),
+            GameOptionsManager.Instance.CurrentGameOptions.GetFloat(FloatOptionNames.KillCooldown),
+            (p)=>!p.GetModData().Attribute.HasAttribute(PlayerAttribute.Poisoned),
+            Color.yellow,GameManager.Instance.LogicOptions.GetKillDistance(),
+            new SimpleButtonEvent((button) => {
+                RPCEventInvoker.EmitAttributeFactor(Game.GameData.data.myData.currentTarget, new PlayerAttributeFactor(PlayerAttribute.Poisoned, false, 10f, 0, false));
+            },Module.NebulaInputManager.modKillInput.keyCode)
+            );
     }
 
     public override void CleanUp()

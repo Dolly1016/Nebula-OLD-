@@ -203,6 +203,7 @@ namespace Nebula.Tasks
 
         Console? deliveryConsole = null;
         PlayerControl? deliveryPlayer = null;
+        PlayerArrow? deliveryArrow;
 
         static SpectreRancorTask()
         {
@@ -223,6 +224,12 @@ namespace Nebula.Tasks
             if (!deliveryPlayer || !deliveryPlayer.Data.IsDead) return;
             UpdateDeliveryConsole();
             
+        }
+
+        public override void __Update()
+        {
+            base.__Update();
+            deliveryArrow?.Update();
         }
 
         public override void __AppendTaskText(Il2CppSystem.Text.StringBuilder sb)
@@ -283,9 +290,18 @@ namespace Nebula.Tasks
 
         public override bool __NextStep()
         {
+            deliveryArrow?.Destroy();
+            deliveryArrow = null;
+
             int nextStep = (taskStep + 1) % 3;
             if (nextStep == 2) Events.Schedule.RegisterPreMeetingAction(() => deliveryPlayer.AddTask(byte.MaxValue - 4), 0);
-            if (nextStep == 1) UpdateDeliveryConsole();
+            if (nextStep == 1)
+            {
+                deliveryArrow = new PlayerArrow((p) => p.PlayerId == deliveryPlayer!.PlayerId && !p.Data.IsDead);
+                deliveryArrow.ArrowColor = Color.yellow;
+                deliveryArrow.ArrowAffecetedByComms = true;
+                UpdateDeliveryConsole();
+            }
             
 
             UpdateMinigamePrefab();

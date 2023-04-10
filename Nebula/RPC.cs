@@ -1311,25 +1311,20 @@ static class RPCEvents
         if (Helpers.playerById(murderId).transform.position.Distance(PlayerControl.LocalPlayer.transform.position) > Roles.Roles.Sniper.noticeRangeOption.getFloat())
             return;
 
-        Objects.Arrow arrow = new Objects.Arrow(Color.white,false);
-        arrow.image.sprite = Roles.Roles.Sniper.getSnipeArrowSprite();
+        var icon = new Objects.PositionalIcon("SniperIcon", Helpers.playerById(murderId).transform.position, false, Roles.Roles.Sniper.getSnipeArrowSprite());
 
-        Vector3 pos = Helpers.playerById(murderId).transform.position;
-
-        FastDestroyableSingleton<HudManager>.Instance.StartCoroutine(Effects.Lerp(10f, new Action<float>((p) =>
+        IEnumerator GetEnumerator()
         {
-            arrow.Update(pos);
-            arrow.arrow.transform.eulerAngles = new Vector3(0f, 0f, 0f);
-            if (p > 0.8f)
+            float t = 0f;
+            while (t < 10f)
             {
-                arrow.image.color = new Color(1f, 1f, 1f, (1f - p) * 5f);
+                if (t > 8f) icon.Color = Color.white.AlphaMultiplied(1f-(t-8f)*0.5f);
+                t += Time.deltaTime;
+                yield return null;
             }
-            if (p == 1f)
-            {
-                    //矢印を消す
-                    UnityEngine.Object.Destroy(arrow.arrow);
-            }
-        })));
+            icon.Destroy();
+        }
+        icon.StartCoroutine(GetEnumerator());
     }
 
     public static void RaiderThrow(byte murderId, Vector2 pos, float angle)
@@ -1394,25 +1389,22 @@ static class RPCEvents
         if (pos.Distance(PlayerControl.LocalPlayer.transform.position) < Roles.Roles.Banshee.minWeepNoticeRangeOption.getFloat())
             return;
 
-        Objects.Arrow arrow = new Objects.Arrow(Color.white, false);
-        arrow.image.sprite = Roles.Roles.Banshee.bansheeArrowSprite.GetSprite();
-
         pos += (Vector2)((Vector3.one * Roles.Roles.Banshee.fuzzinessWeepNoticeOption.getFloat()).RotateZ((float)NebulaPlugin.rnd.NextDouble() * 360f));
 
-        FastDestroyableSingleton<HudManager>.Instance.StartCoroutine(Effects.Lerp(4f, new Action<float>((p) =>
+        var icon = new Objects.PositionalIcon("BansheeIcon", pos, false, Roles.Roles.Banshee.bansheeArrowSprite.GetSprite());
+
+        IEnumerator GetEnumerator()
         {
-            arrow.Update(pos);
-            arrow.arrow.transform.eulerAngles = new Vector3(0f, 0f, 0f);
-            if (p > 0.8f)
+            float t = 0f;
+            while (t < 10f)
             {
-                arrow.image.color = new Color(1f, 1f, 1f, (1f - p) * 5f);
+                if (t > 8f) icon.Color = Color.white.AlphaMultiplied(1f - (t - 8f) * 0.5f);
+                t += Time.deltaTime;
+                yield return null;
             }
-            if (p == 1f)
-            {
-                //矢印を消す
-                UnityEngine.Object.Destroy(arrow.arrow);
-            }
-        })));
+            icon.Destroy();
+        }
+        icon.StartCoroutine(GetEnumerator());
     }
 
     public static void UpdatePlayerVisibility(byte player, bool flag)
@@ -1522,6 +1514,8 @@ static class RPCEvents
         position.z = position.y / 1000f;
         deadBody.transform.position = position;
         deadBody.enabled = true;
+
+        Helpers.RoleAction(Game.GameData.data.myData.getGlobalData(), (r) => r.OnDeadBodyGenerated(deadBody));
     }
 
     static public void EnterRemoteVent(byte playerId, Vector2 pos,int ventId)

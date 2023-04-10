@@ -343,6 +343,9 @@ public class Assignable
 
     }
 
+    [RoleLocalMethod]
+    public virtual void OnDeadBodyGenerated(DeadBody deadBody) { }
+
     /*--------------------------------------------------------------------------------------*/
 
     /// <summary>

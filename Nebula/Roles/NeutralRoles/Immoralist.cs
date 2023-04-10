@@ -27,72 +27,12 @@ namespace Nebula.Roles.NeutralRoles
             return Roles.Spectre.IsSpawnable() && Roles.Spectre.spawnImmoralistOption.getBool();
         }
 
-        Dictionary<byte, Arrow> Arrows;
-
         SpriteLoader arrowSprite = new SpriteLoader("role.immoralist.arrow");
 
-        public override void MyPlayerControlUpdate()
+        public override void OnDeadBodyGenerated(DeadBody deadBody)
         {
-            if (PlayerControl.LocalPlayer.Data.IsDead)
-            {
-                if (Arrows.Count > 0) ClearArrows();
-                return;
-            }
-
-
-
             if (!canKnowWhereIsDeadBodiesOption.getBool()) return;
-
-            DeadBody[] deadBodys = Helpers.AllDeadBodies();
-            //削除するキーをリストアップする
-            var removeList = Arrows.Where(entry =>
-            {
-                foreach (DeadBody body in deadBodys)
-                {
-                    if (body.ParentId == entry.Key) return false;
-                }
-                return true;
-            });
-            foreach (var entry in removeList)
-            {
-                UnityEngine.Object.Destroy(entry.Value.arrow);
-                Arrows.Remove(entry.Key);
-            }
-            //残った矢印を最新の状態へ更新する
-            foreach (DeadBody body in deadBodys)
-            {
-                if (!Arrows.ContainsKey(body.ParentId))
-                {
-                    Arrows[body.ParentId] = new Arrow(Color.blue,true,arrowSprite.GetSprite());
-                    Arrows[body.ParentId].arrow.SetActive(true);
-                }
-                Arrows[body.ParentId].Update(body.transform.position);
-            }
-        }
-
-        private void ClearArrows()
-        {
-            //矢印を消す
-            foreach (Arrow arrow in Arrows.Values)
-            {
-                UnityEngine.Object.Destroy(arrow.arrow);
-            }
-            Arrows.Clear();
-        }
-
-        public override void OnDied()
-        {
-            ClearArrows();
-        }
-
-        public override void OnMeetingEnd()
-        {
-            ClearArrows();
-        }
-
-        public override void Initialize(PlayerControl __instance)
-        {
-            Arrows = new Dictionary<byte, Arrow>();
+            new FollowerArrow("ImmoralistArrow",true,deadBody.gameObject, Color.blue,arrowSprite.GetSprite());
         }
 
         public override void OnAnyoneMurdered(byte murderId, byte targetId)
@@ -133,8 +73,6 @@ namespace Nebula.Roles.NeutralRoles
 
         public override void CleanUp()
         {
-            ClearArrows();
-
             if (suicideButton != null)
             {
                 suicideButton.Destroy();

@@ -28,14 +28,10 @@ public class Camouflager : Role
         camouflageButton = new ModAbilityButton(buttonSprite.GetSprite())
             .SetLabelLocalized("button.label.camouflage");
 
-        var activatedAttribute = new EffectActivatedAttribute(camouflageDurationOption.getFloat());
-        var inactivatedAttribute = new EffectInactivatedAttribute(camouflageCoolDownOption.getFloat(), CustomOptionHolder.InitialAbilityCoolDownOption.getFloat(), Module.NebulaInputManager.abilityInput.keyCode, activatedAttribute,
-            () =>
-            {
-                RPCEventInvoker.GlobalEvent(Events.GlobalEvent.Type.Camouflage, camouflageDurationOption.getFloat());
-            });
-        activatedAttribute.SetInactivatedAttribute(inactivatedAttribute);
-        camouflageButton.MyAttribute = inactivatedAttribute;
+        camouflageButton.SetUpEffectAttribute(Module.NebulaInputManager.abilityInput.keyCode,
+            CustomOptionHolder.InitialAbilityCoolDownOption.getFloat(),
+            camouflageCoolDownOption.getFloat(), camouflageDurationOption.getFloat(),
+            () => RPCEventInvoker.GlobalEvent(Events.GlobalEvent.Type.Camouflage, camouflageDurationOption.getFloat()));
     }
 
     public override void CleanUp()

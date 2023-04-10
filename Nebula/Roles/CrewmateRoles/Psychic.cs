@@ -4,12 +4,10 @@ public class Psychic : Role
 {
     static public Color RoleColor = new Color(96f / 255f, 206f / 255f, 137f / 255f);
 
-    private CustomButton searchButton;
+    ModAbilityButton searchButton;
 
     private Module.CustomOption searchCoolDownOption;
     private Module.CustomOption searchDurationOption;
-
-    private Dictionary<byte, Arrow> Arrows = new Dictionary<byte, Arrow>();
 
     private Sprite mapIconSprite = null;
 
@@ -36,30 +34,30 @@ public class Psychic : Role
         Ghosts.Clear();
     }
 
+    EffectActivatedAttribute activatedAttribute;
+    
     public override void ButtonInitialize(HudManager __instance)
     {
-        if (searchButton != null)
-        {
-            searchButton.Destroy();
-        }
-        searchButton = RoleSystem.TrackSystem.DeadBodySearch_ButtonInitialize(__instance, Arrows,
-            buttonSprite.GetSprite(), searchDurationOption.getFloat(), searchCoolDownOption.getFloat()).SetTimer(CustomOptionHolder.InitialAbilityCoolDownOption.getFloat()); ;
-        searchButton.SetLabel("button.label.search");
+        searchButton?.Destroy();
+
+        searchButton = new ModAbilityButton(buttonSprite.GetSprite()).SetLabelLocalized("button.label.search");
+
+        activatedAttribute = searchButton.SetUpEffectAttribute(Module.NebulaInputManager.abilityInput.keyCode,
+            CustomOptionHolder.InitialAbilityCoolDownOption.getFloat(),
+            searchCoolDownOption.getFloat(), searchDurationOption.getFloat(),null,
+            ()=>AbstractArrow.RemoveArrow("PsychicArrow")).Item2;
+    }
+
+    public override void OnDeadBodyGenerated(DeadBody deadBody)
+    {
+        if (searchButton.MyAttribute != activatedAttribute) return;
+
+        new FollowerArrow("PsychicArrow",true,deadBody.gameObject,Color.blue, arrowSprite.GetSprite());
     }
 
     public override void CleanUp()
     {
-        if (searchButton != null)
-        {
-            searchButton.Destroy();
-            searchButton = null;
-        }
-
-        foreach (var arrow in Arrows.Values)
-        {
-            UnityEngine.Object.Destroy(arrow.arrow);
-        }
-        Arrows.Clear();
+        searchButton?.Destroy();
     }
 
     static public HashSet<Objects.Ghost> Ghosts = new HashSet<Objects.Ghost>();
@@ -96,8 +94,6 @@ public class Psychic : Role
 
     public override void MyPlayerControlUpdate()
     {
-        RoleSystem.TrackSystem.DeadBodySearch_MyControlUpdate(searchButton.isEffectActive && !PlayerControl.LocalPlayer.Data.IsDead, Arrows,arrowSprite);
-
         deathMessageInterval -= Time.deltaTime;
         if (deathMessageInterval > 0) return;
         deathMessageInterval = 7f;

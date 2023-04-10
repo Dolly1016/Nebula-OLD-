@@ -42,9 +42,9 @@ public class NebulaPlugin : BasePlugin
     public const string PluginGuid = "jp.dreamingpig.amongus.nebula";
     public const string PluginName = "TheNebula";
     public const string PluginVersion = "2.3.1";
-    public const bool IsSnapshot = false;
+    public const bool IsSnapshot = true;
 
-    public static string PluginVisualVersion = IsSnapshot ? "23.03.29a" : PluginVersion;
+    public static string PluginVisualVersion = IsSnapshot ? "23.04.08b" : PluginVersion;
     public static string PluginStage = IsSnapshot ? "Snapshot" : "";
     
     public const string PluginVersionForFetch = "2.3.1";

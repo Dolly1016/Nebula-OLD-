@@ -33,7 +33,7 @@ public class Morphing : Role
 
     private PlayerControl? morphTarget;
     private Game.PlayerData.PlayerOutfitData morphOutfit;
-    private Objects.Arrow? arrow;
+    private FollowerArrow? arrow;
 
     private SpriteLoader sampleButtonSprite = new SpriteLoader("Nebula.Resources.SampleButton.png", 115f, "ui.button.morphing.sample");
     private SpriteLoader morphButtonSprite = new SpriteLoader("Nebula.Resources.MorphButton.png", 115f, "ui.button.morphing.morph");
@@ -69,6 +69,8 @@ public class Morphing : Role
                     morphButton.Timer = 3f;
                     morphButton.isEffectActive = false;
                     morphTarget = Game.GameData.data.myData.currentTarget;
+                    if (arrow) arrow.Destroy();
+                    arrow = new FollowerArrow("MorphingArrow",true,morphTarget.gameObject,Palette.ImpostorRed,arrowSprite.GetSprite());
                     Game.GameData.data.myData.currentTarget = null;
                     morphButton.Sprite = morphButtonSprite.GetSprite();
                     morphButton.SetLabel("button.label.morph");
@@ -115,7 +117,7 @@ public class Morphing : Role
         data.currentTarget = Patches.PlayerControlPatch.SetMyTarget(1f);
         Patches.PlayerControlPatch.SetPlayerOutline(data.currentTarget, Color.yellow);
 
-        RoleSystem.TrackSystem.PlayerTrack_MyControlUpdate(ref arrow, morphTarget, Color.red, arrowSprite);
+        if (morphTarget != null && morphTarget.Data.IsDead && arrow) arrow!.Destroy();
     }
 
     public override void OnMeetingEnd()
@@ -132,11 +134,7 @@ public class Morphing : Role
             morphButton.Destroy();
             morphButton = null;
         }
-        if (arrow != null)
-        {
-            GameObject.Destroy(arrow.arrow);
-            arrow = null;
-        }
+        if (arrow) arrow.Destroy();
     }
 
     public override void OnRoleRelationSetting()

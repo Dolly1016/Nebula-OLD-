@@ -24,9 +24,8 @@ public class Avenger : Role
     public Module.CustomOption canTakeOverSabotageWinOption;
 
     /* 矢印 */
-    Arrow Arrow;
+    FixedArrow Arrow;
     private float noticeInterval = 0f;
-    private Vector2 noticePos = Vector2.zero;
 
     public override void LoadOptionData()
     {
@@ -69,35 +68,28 @@ public class Avenger : Role
                 {
                     if (data.IsAlive)
                     {
-                        if (Helpers.playerById(data.id) != null)
+                        var target = Helpers.playerById(data.id);
+                        if (target)
                         {
-                            if (Arrow == null)
+                            if (!Arrow)
                             {
-                                Arrow = new Arrow(Color,true,arrowSprite.GetSprite());
-                                Arrow.arrow.SetActive(true);
+                                Arrow = new FixedArrow("AvengerArrow", true, target.transform.position, Color, arrowSprite.GetSprite());
                                 noticeInterval = 0f;
                             }
                             noticeInterval -= Time.deltaTime;
 
                             if (noticeInterval < 0f)
                             {
-                                noticePos = Helpers.playerById(data.id).transform.position;
+                                Arrow.Position = target.transform.position;
                                 noticeInterval = avengerNoticeIntervalOption.getFloat();
-                                Arrow.arrow.SetActive(true);
                             }
-
-                            Arrow.Update(noticePos);
                         }
                     }
                     break;
                 }
             }
         }
-        else if (Arrow != null)
-        {
-            UnityEngine.Object.Destroy(Arrow.arrow);
-            Arrow = null;
-        }
+        else if (Arrow) Arrow.Destroy();
 
 
         Game.MyPlayerData myData = Game.GameData.data.myData;
@@ -110,7 +102,7 @@ public class Avenger : Role
     public override void OnMeetingEnd()
     {
         base.OnMeetingEnd();
-        if (Arrow != null) Arrow.arrow.SetActive(false);
+        if (Arrow) Arrow.Destroy();
         noticeInterval = Roles.Avenger.avengerNoticeIntervalOption.getFloat();
     }
 
@@ -155,11 +147,7 @@ public class Avenger : Role
             killButton = null;
         }
 
-        if (Arrow != null)
-        {
-            UnityEngine.Object.Destroy(Arrow.arrow);
-            Arrow = null;
-        }
+        if (Arrow) Arrow.Destroy();
     }
 
     public override bool CheckWin(PlayerControl player, EndCondition winReason)

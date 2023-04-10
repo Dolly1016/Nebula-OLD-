@@ -10,7 +10,7 @@ public class AvengerTarget : ExtraRole
     public override Assignable AssignableOnHelp { get => Roles.Avenger.canKnowExistenceOfAvengerOption.getSelection() != 0 ? this : null; }
 
     /* 矢印 */
-    private Arrow Arrow;
+    private FixedArrow Arrow;
     private float noticeInterval = 0f;
     private Vector2 noticePos = Vector2.zero;
 
@@ -39,50 +39,43 @@ public class AvengerTarget : ExtraRole
                 {
                     aliveFlag = true;
 
-                    if (Helpers.playerById(data.id) != null)
+                    var target = Helpers.playerById(data.id);
+                    if (target)
                     {
-                        if (Arrow == null)
+                        if (!Arrow)
                         {
-                            Arrow = new Arrow(TargetColor,true,Roles.Avenger.arrowSprite.GetSprite());
-                            Arrow.arrow.SetActive(true);
+                            Arrow = new FixedArrow("AvengerArrow",true, target.transform.position,TargetColor, Roles.Avenger.arrowSprite.GetSprite());
                             noticeInterval = 0f;
                         }
                         noticeInterval -= Time.deltaTime;
 
                         if (noticeInterval < 0f)
                         {
-                            noticePos = Helpers.playerById(data.id).transform.position;
                             noticeInterval = Roles.Avenger.murderNoticeIntervalOption.getFloat();
-                            Arrow.arrow.SetActive(true);
+                            Arrow.Position = target.transform.position;
                         }
-
-                        Arrow.Update(noticePos);
                     }
                     break;
                 }
             }
 
         }
-        if (!aliveFlag && Arrow != null)
+        if (!aliveFlag && Arrow)
         {
-            UnityEngine.Object.Destroy(Arrow.arrow);
+            Arrow.Destroy();
             Arrow = null;
         }
     }
 
     public override void CleanUp()
     {
-        if (Arrow != null)
-        {
-            UnityEngine.Object.Destroy(Arrow.arrow);
-            Arrow = null;
-        }
+        if (Arrow) Arrow.Destroy();
     }
 
     public override void OnMeetingEnd()
     {
         base.OnMeetingEnd();
-        if (Arrow != null) Arrow.arrow.SetActive(false);
+        if (Arrow) Arrow.Destroy();
         noticeInterval = Roles.Avenger.murderNoticeIntervalOption.getFloat();
     }
 

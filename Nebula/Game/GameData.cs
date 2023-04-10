@@ -764,6 +764,7 @@ public class PlayerData
         public static PlayerStatus Slapped = new PlayerStatus("slapped");
         public static PlayerStatus Withered = new PlayerStatus("withered");
         public static PlayerStatus Assassinated = new PlayerStatus("assassinated");
+        public static PlayerStatus Poisoned = new PlayerStatus("poisoned");
 
 
         public string Status { get; private set; }

@@ -9,9 +9,8 @@ public class BountyHunter : Template.HasHologram
     private Module.CustomOption bountyArrowUpdateIntervalOption;
 
     /* 矢印 */
-    private Arrow? Arrow = null;
+    private FixedArrow? Arrow = null;
     private float noticeInterval = 0f;
-    private Vector2 noticePos = Vector2.zero;
 
     //Local
     private float bountyDuration = 0f;
@@ -89,11 +88,7 @@ public class BountyHunter : Template.HasHologram
             killButton = null;
         }
 
-        if (Arrow != null)
-        {
-            UnityEngine.Object.Destroy(Arrow.arrow);
-            Arrow = null;
-        }
+        if (Arrow) Arrow.Destroy();
     }
 
     private void ChangeBounty()
@@ -142,22 +137,18 @@ public class BountyHunter : Template.HasHologram
 
         if (!showArrowPointingTowardsTheBountyOption.getBool()) return;
 
-        if (Arrow == null)
+        if (!Arrow)
         {
-            Arrow = new Arrow(Palette.ImpostorRed,true,arrowSprite.GetSprite());
-            Arrow.arrow.SetActive(true);
+            Arrow = new("BountyHunterArrow",true,Vector2.zero,Palette.ImpostorRed,arrowSprite.GetSprite());
             noticeInterval = 0f;
         }
         noticeInterval -= Time.deltaTime;
 
         if (noticeInterval < 0f)
         {
-            noticePos = Helpers.playerById(currentBounty).transform.position;
+            Arrow.Position = Helpers.playerById(currentBounty).transform.position;
             noticeInterval = bountyArrowUpdateIntervalOption.getFloat();
-            Arrow.arrow.SetActive(true);
         }
-
-        Arrow.Update(noticePos);
     }
 
     public override void Initialize(PlayerControl __instance)
@@ -170,7 +161,7 @@ public class BountyHunter : Template.HasHologram
     public override void OnMeetingEnd()
     {
         base.OnMeetingEnd();
-        if (Arrow != null) Arrow.arrow.SetActive(false);
+        if (Arrow) Arrow.Destroy();
         noticeInterval = bountyArrowUpdateIntervalOption.getFloat();
     }
 

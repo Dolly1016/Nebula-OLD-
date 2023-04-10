@@ -606,6 +606,9 @@ class KillAnimationCoPerformKillPatch
             KillAnimation.SetMovement(source, true);
             KillAnimation.SetMovement(target, true);
             deadBody.enabled = true;
+            
+            Helpers.RoleAction(Game.GameData.data.myData.getGlobalData(), (r) => r.OnDeadBodyGenerated(deadBody));
+
             if (isParticipant)
             {
                 cam.Locked = false;

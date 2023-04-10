@@ -35,8 +35,11 @@ public class LordLloyd : Role, Template.HasWinTrigger
         RequiredKillingToWin = CreateOption(Color.white, "requiredVictimsToWin", 2, 0, 10, 1);
 
         KillCoolDown = CreateOption(Color.white, "killCoolDown", 15f, 5f, 30f, 2.5f);
+        KillCoolDown.suffix = "second";
         KillStreakCoolDown = CreateOption(Color.white, "killStreakCoolDown", 20f, 10f, 60f, 2.5f);
+        KillStreakCoolDown.suffix = "second";
         AbetCoolDown = CreateOption(Color.white, "abetCoolDown", 10f,5f,30f,2.5f);
+        AbetCoolDown.suffix = "second";
     }
 
     public override void GlobalInitialize(PlayerControl __instance)
@@ -112,7 +115,7 @@ public class LordLloyd : Role, Template.HasWinTrigger
             button.SetLabelLocalized("button.label.lloyd").SetLabelType(ModAbilityButton.LabelType.Standard);
         }
 
-        abetAttribute = new InterpersonalAbilityAttribute(AbetCoolDown.getFloat(), AbetCoolDown.getFloat(),(p)=>true,Color.yellow,1f,
+        abetAttribute = new InterpersonalAbilityAttribute(AbetCoolDown.getFloat(), CustomOptionHolder.InitialAbilityCoolDownOption.getFloat(),(p)=>true,Color.yellow,1f,
             new SimpleButtonEvent((button) => {
                 PlayerControl target = Game.GameData.data!.myData.currentTarget!;
                 RPCEventInvoker.AddExtraRole(target, Roles.LloydFollower, 0);
