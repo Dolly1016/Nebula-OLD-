@@ -101,10 +101,13 @@ public enum CustomRPC
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.HandleRpc))]
 class RPCHandlerPatch
 {
-    static void Postfix([HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
+    static void Postfix(PlayerControl __instance,[HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
+        if (PlayerControl.LocalPlayer.PlayerId == __instance.PlayerId) NebulaPlugin.Instance.Logger.Print($"Receive Invalid Call. (PacketId:{callId})");
+
         byte packetId = callId;
         int length;
+
         switch (packetId)
         {
             case 2:

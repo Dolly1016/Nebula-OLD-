@@ -1,12 +1,30 @@
-﻿using static Il2CppSystem.Globalization.CultureInfo;
+﻿using Nebula.Game;
+using static Il2CppSystem.Globalization.CultureInfo;
 using static Rewired.Controller;
 
 namespace Nebula.Roles.HnSImpostorRoles;
 
 public static class HnSImpostorSystem
 {
-    public static CustomButton GenerateKillButton(HudManager __instance)
+    public static ModAbilityButton GenerateKillButton()
     {
+        killButton?.Destroy();
+        killButton = new(HudManager.Instance.KillButton.graphic.sprite, Expansion.GridArrangeExpansion.GridArrangeParameter.AlternativeKillButtonContent);
+        killButton.SetLabelType(ModAbilityButton.LabelType.Impostor).SetLabelLocalized("button.label.poison");
+        killButton.MyAttribute = new SimpleAbilityAttribute(
+            HnSModificator.GetDefaultCoolDown(),
+            HnSModificator.GetDefaultCoolDown(),
+            new SimpleButtonEvent((button) =>
+            {
+                var target = Game.GameData.data.myData.currentTarget;
+                if (target != null) RPCEventInvoker.EmitAttributeFactor(Game.GameData.data.myData.currentTarget, new PlayerAttributeFactor(PlayerAttribute.Poisoned, false, 10f, 0, false));
+                killButton.MyAttribute.StartCoolingDown(HnSModificator.StartKillCoolDown(target == null));
+            }, Module.NebulaInputManager.modKillInput.keyCode)
+            {
+
+            });
+
+
         CustomButton killButton = null;
         var data = PlayerControl.LocalPlayer.GetModData();
         killButton = new CustomButton(

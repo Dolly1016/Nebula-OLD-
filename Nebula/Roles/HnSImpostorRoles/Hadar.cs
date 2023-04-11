@@ -8,7 +8,8 @@ public class HnSHadar : Role
 { 
     public override bool ShowInHelpWindow => false;
 
-    static private CustomButton ventButton,killButton;
+    static private CustomButton ventButton;
+    static private ModAbilityButton killButton;
     private float lightRadius = 1f;
     private SpriteLoader AppearSprite = new SpriteLoader("Nebula.Resources.HadarAppearButton.png", 115f,"ui.button.hadar.appear");
     private SpriteLoader HideSprite = new SpriteLoader("Nebula.Resources.HadarHideButton.png", 115f, "ui.button.hadar.hide");
@@ -63,7 +64,7 @@ public class HnSHadar : Role
 
     public override void ButtonInitialize(HudManager __instance)
     {
-        if (killButton != null) killButton.Destroy();
+        killButton?.Destroy();
         killButton = HnSImpostorSystem.GenerateKillButton(__instance);
 
         if (ventButton != null)
@@ -114,7 +115,7 @@ public class HnSHadar : Role
     }
     public override void CleanUp()
     {
-        if (killButton != null) killButton.Destroy();
+        killButton?.Destroy();
         if (ventButton != null) ventButton.Destroy();
         
         ventButton = null;

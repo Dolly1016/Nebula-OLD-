@@ -150,6 +150,7 @@ public class ModAbilityButton
         bool IsCoolingDown();
         //クールダウンを開始します。
         void StartCoolingDown();
+        void StartCoolingDown(float coolDown);
         IEnumerable<IButtonEvent> GetEvents();
     }
 
@@ -417,6 +418,7 @@ public class StaticAttribute : ModAbilityButton.IButtonAttribute
     public virtual bool IsShown() => canUseIgnoredSafety || !PlayerControl.LocalPlayer.Data.IsDead;
     public virtual bool IsCoolingDown() => false;
     public virtual void StartCoolingDown() { }
+    public virtual void StartCoolingDown(float coolDown) { }
     private bool canUseIgnoredSafety;
 
     public virtual IEnumerable<ModAbilityButton.IButtonEvent> GetEvents() => events;
@@ -453,6 +455,7 @@ public class HasCoolDownAttribute : ModAbilityButton.IButtonAttribute
     public virtual bool IsShown() => !PlayerControl.LocalPlayer.Data.IsDead;
     public virtual bool IsCoolingDown() => timer > 0f;
     public virtual void StartCoolingDown() => timer = coolDown;
+    public virtual void StartCoolingDown(float coolDown) => timer = coolDown;
     protected virtual bool IsKillButton => false;
 
     public virtual IEnumerable<ModAbilityButton.IButtonEvent> GetEvents() => new ModAbilityButton.IButtonEvent[0];

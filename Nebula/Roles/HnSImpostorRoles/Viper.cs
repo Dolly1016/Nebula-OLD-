@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static UnityEngine.GraphicsBuffer;
 
 namespace Nebula.Roles.HnSImpostorRoles;
 
@@ -22,25 +23,34 @@ public class PoisonedAttribute : PlayerAttribute
 public class HnSViper : Role
 {
     ModAbilityButton killButton;
+    ModAbilityButton poisonButton;
+    SpriteLoader spreadButtonSprite = new("Nebula.Resources.ViperButton.png", 115f);
 
     public override void ButtonInitialize(HudManager __instance)
     {
-        killButton?.Destroy();
-        killButton = new(HudManager.Instance.KillButton.graphic.sprite, Expansion.GridArrangeExpansion.GridArrangeParameter.AlternativeKillButtonContent);
-        killButton.MyAttribute = new InterpersonalAbilityAttribute(
-            GameOptionsManager.Instance.CurrentGameOptions.GetFloat(FloatOptionNames.KillCooldown),
-            GameOptionsManager.Instance.CurrentGameOptions.GetFloat(FloatOptionNames.KillCooldown),
-            (p)=>!p.GetModData().Attribute.HasAttribute(PlayerAttribute.Poisoned),
+        /*
+           (p)=>!p.GetModData().Attribute.HasAttribute(PlayerAttribute.Poisoned),
             Color.yellow,GameManager.Instance.LogicOptions.GetKillDistance(),
+        */
+        killButton?.Destroy();
+        killBuutton = HnSImpostorSystem.GenerateKillButton();
+
+        poisonButton?.Destroy();
+        poisonButton = new(spreadButtonSprite.GetSprite());
+        poisonButton.SetLabelLocalized("button.label.spread");
+        poisonButton.MyAttribute = new SimpleAbilityAttribute(
+            40f,40f,
             new SimpleButtonEvent((button) => {
-                RPCEventInvoker.EmitAttributeFactor(Game.GameData.data.myData.currentTarget, new PlayerAttributeFactor(PlayerAttribute.Poisoned, false, 10f, 0, false));
-            },Module.NebulaInputManager.modKillInput.keyCode)
+
+                
+            }, Module.NebulaInputManager.abilityInput.keyCode)
             );
     }
 
     public override void CleanUp()
     {
         killButton?.Destroy();
+        poisonButton?.Destroy();
     }
 
     public HnSViper()

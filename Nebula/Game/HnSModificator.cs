@@ -6,12 +6,39 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static Nebula.Roles.NeutralRoles.Paparazzo;
+using static UnityEngine.GraphicsBuffer;
 
 namespace Nebula.Game;
 
 [NebulaRPCHolder]
 public class HnSModificator
 {
+    public static float GetDefaultCoolDown()
+    {
+        return GameOptionsManager.Instance.CurrentGameOptions.GetFloat(FloatOptionNames.KillCooldown);
+    }
+    public static float StartKillCoolDown(bool onFailed = false)
+    {
+        float cool = GetDefaultCoolDown();
+        float additional = 0f, ratio = 1f;
+        PerkHolder.PerkData.MyPerkData.PerkAction((p) => p.Perk.SetKillCoolDown(p, !onFailed, ref additional, ref ratio));
+        if (ratio < 0f) ratio = 0f;
+        cool = (cool + additional) * ratio;
+        if (cool < 0f) cool = 0f;
+
+        if (onFailed)
+        {
+            float sa = 0f, sr = 1f;
+            float ta = 0f, tr = 1f;
+            PerkHolder.PerkData.MyPerkData.PerkAction((p) => p.Perk.SetFailedKillPenalty(p, ref sa, ref sr, ref ta, ref tr));
+            sr = Mathf.Min(0, sr);
+            tr = Mathf.Min(0, tr);
+            RPCEventInvoker.EmitSpeedFactor(PlayerControl.LocalPlayer, new Game.SpeedFactor(0, (cool + ta) * tr, (0.25f + sa) * sr, false));
+        }
+
+        return cool;
+    }
+
     public static RemoteProcess NoticeSeekerEvent = new RemoteProcess(
         "PingSeeker",
            (isCalledByMe) =>
