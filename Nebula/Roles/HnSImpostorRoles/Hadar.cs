@@ -65,7 +65,7 @@ public class HnSHadar : Role
     public override void ButtonInitialize(HudManager __instance)
     {
         killButton?.Destroy();
-        killButton = HnSImpostorSystem.GenerateKillButton(__instance);
+        killButton = HnSImpostorSystem.GenerateKillButton();
 
         if (ventButton != null)
         {

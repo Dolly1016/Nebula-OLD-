@@ -33,11 +33,11 @@ public class HnSViper : Role
             Color.yellow,GameManager.Instance.LogicOptions.GetKillDistance(),
         */
         killButton?.Destroy();
-        killBuutton = HnSImpostorSystem.GenerateKillButton();
+        killButton = HnSImpostorSystem.GenerateKillButton();
 
         poisonButton?.Destroy();
         poisonButton = new(spreadButtonSprite.GetSprite());
-        poisonButton.SetLabelLocalized("button.label.spread");
+        poisonButton.SetLabelLocalized("button.label.poison");
         poisonButton.MyAttribute = new SimpleAbilityAttribute(
             40f,40f,
             new SimpleButtonEvent((button) => {
