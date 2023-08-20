@@ -1,0 +1,65 @@
+# Game Mode
+
+"gamemode.standard" : "標準"
+"gamemode.freeplay" : "フリープレイ"
+
+# Options
+
+"options.switch.off" : "Off"
+"options.switch.on" : "On"
+"options.percentage" : "%"
+"options.cross" : "x"
+"options.followPrimaryChance" : "-"
+
+"options.gamemode" : "ゲームモード"
+
+"options.tab.setting" : "各種[設定]"
+"options.tab.crewmate" : "[クルーメイト] ロール"
+"options.tab.impostor" : "[インポスター] ロール"
+"options.tab.neutral" : "[第三陣営] ロール"
+"options.tab.ghost" : "[ゴースト] ロール"
+"options.tab.modifier" : "[モディファイア]"
+
+"options.role.count" : "割当人数"
+"options.role.chance" : "割当確率"
+"options.role.secondaryChance" : "2回目～"
+
+
+# Crewmate Roles
+
+"role.crewmate.name" : "クルーメイト"
+"role.crewmate.blurb" : "タスクをせよ"
+"options.role.crewmate.detail" : "特殊な能力を持たない素のクルーメイトです。<br>割り当てる役職が他に無い場合にもこれが割り当てられます。"
+
+"role.sheriff.name" : "シェリフ"
+"role.sheriff.blurb" : "インポスターを撃ち抜け"
+"options.role.sheriff.detail" : "キルができるクルーメイトです。<br>クルーを誤射すると代わりに自身が死亡します。"
+"options.role.sheriff.canKillMadmate" : "キル可能：マッドメイト"
+
+"role.madmate.name" : "マッドメイト"
+"role.madmate.blurb" : "インポスターを勝利へ導け"
+"options.role.madmate.detail" : "インポスターの勝利のために場を乱す狂人です。"
+
+# Impostor Roles
+
+"role.impostor.name" : "インポスター"
+"role.impostor.blurb" : "妨害し、キルせよ"
+"options.role.impostor.detail" : "特殊な能力を持たない素のインポスターです。<br>割り当てる役職が他に無い場合にもこれが割り当てられます。"
+
+# Teams
+
+"teams.crewmate" : "クルーメイト"
+"teams.impostor" : "インポスター"
+
+# Statistics
+
+"statistics.events.startGame" : "ゲーム開始"
+"statistics.events.endGame" : "ゲーム終了"
+"statistics.events.kill" : "キル"
+"statistics.events.misfire" : "誤射"
+"statistics.events.exiled" : "追放"
+
+# Endings
+
+"end.crewmate" : "クルーメイト勝利"
+"end.impostor" : "インポスター勝利"

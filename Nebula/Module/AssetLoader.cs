@@ -179,6 +179,7 @@ public static class AssetLoader
     }
     public static T DontUnload<T>(this T obj) where T : UnityEngine.Object
     {
+        GameObject.DontDestroyOnLoad(obj);
         obj.hideFlags |= HideFlags.DontUnloadUnusedAsset;
 
         return obj;

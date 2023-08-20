@@ -1,0 +1,65 @@
+# Game Mode
+
+"gamemode.standard" : "Standard"
+"gamemode.freeplay" : "Free Play"
+
+# Options
+
+"options.switch.off" : "Off"
+"options.switch.on" : "On"
+"options.percentage" : "%"
+"options.cross" : "x"
+"options.followPrimaryChance" : "-"
+
+"options.gamemode" : "Game Mode"
+
+"options.tab.setting" : "Game [Settings]"
+"options.tab.crewmate" : "[Crewmate] Roles"
+"options.tab.impostor" : "[Impostor] Roles"
+"options.tab.neutral" : "[Neutral] Roles"
+"options.tab.ghost" : "[Ghost] Roles"
+"options.tab.modifier" : "[Modifiers]"
+
+"options.role.count" : "Role Assignment"
+"options.role.chance" : "Assignment Chance"
+"options.role.secondaryChance" : "2nd Onward"
+
+
+# Crewmate Roles
+
+"role.crewmate.name" : "Crewmate"
+"role.crewmate.blurb" : "Do Tasks"
+"options.role.crewmate.detail" : "Crewmates with no special abilities."
+
+"role.sheriff.name" : "Sheriff"
+"role.sheriff.blurb" : "Shoot the Impostor"
+"options.role.sheriff.detail" : "Sheriff can kill other members.<br>Attempting to kill a Crewmate will die instead."
+"options.role.sheriff.canKillMadmate" : "Can Kill Madmate"
+
+"role.madmate.name" : "Madmate"
+"role.madmate.blurb" : "Assist Impostors"
+"options.role.madmate.detail" : "Madmate is on the side of imposters.<br>Obstruct crewmates to help imposters win."
+
+# Impostor Roles
+
+"role.impostor.name" : "Impostor"
+"role.impostor.blurb" : "Kill and Sabotage"
+"options.role.impostor.detail" : "Impostors with no special abilities."
+
+# Teams
+
+"teams.crewmate" : "Crewmate"
+"teams.impostor" : "Impostor"
+
+# Statistics
+
+"statistics.events.startGame" : "Game Start"
+"statistics.events.endGame" : "Game Set"
+"statistics.events.kill" : "Kill"
+"statistics.events.misfire" : "Misfire"
+"statistics.events.exiled" : "Exiled"
+
+# Endings
+
+"end.crewmate" : "Crewmate win"
+"end.impostor" : "Impostors win"

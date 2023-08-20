@@ -568,6 +568,8 @@ public class MapData
         asset.WaitForCompletion();
         Assets = assetReference.Asset.Cast<GameObject>().GetComponent<ShipStatus>();
         GameObject.DontDestroyOnLoad(Assets.gameObject);
+
+        
     }
 
     public Sprite GetMapSprite()

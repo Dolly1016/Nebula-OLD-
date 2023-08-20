@@ -604,7 +604,7 @@ public static class DynamicColors
 
     private static void DetectColor(out Color? detectedColor,out byte? detectedH, out byte? detectedD, out float? detectedL)
     {
-        Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition) - PaletteObject.transform.position;
+        Vector3 pos = Camera.allCameras.FirstOrDefault(c => (c.cullingMask & (1 << LayerExpansion.GetUILayer())) != 0)?.ScreenToWorldPoint(Input.mousePosition) - PaletteObject.transform.position ?? new Vector3(0, 0, 0);
         float dis = Mathf.Sqrt(pos.x * pos.x + pos.y * pos.y);
 
         float angle = Mathf.Atan2(pos.y, pos.x) - (float)System.Math.PI / 2f;
