@@ -34,7 +34,7 @@ public class Cleaner : ConfigurableStandardRole
 
         static private ISpriteLoader buttonSprite = SpriteLoader.FromResource("Nebula.Resources.Buttons.CleanButton.png", 115f);
         public override AbstractRole Role => MyRole;
-        public Instance(PlayerControl player) : base(player)
+        public Instance(PlayerModInfo player) : base(player)
         {
         }
 

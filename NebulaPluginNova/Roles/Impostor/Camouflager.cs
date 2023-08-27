@@ -35,7 +35,7 @@ public class Camouflager : ConfigurableStandardRole
 
         static private ISpriteLoader buttonSprite = SpriteLoader.FromResource("Nebula.Resources.Buttons.CamoButton.png", 115f);
         public override AbstractRole Role => MyRole;
-        public Instance(PlayerControl player) : base(player)
+        public Instance(PlayerModInfo player) : base(player)
         {
         }
 

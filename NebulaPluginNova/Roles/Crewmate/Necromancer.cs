@@ -37,7 +37,7 @@ public class Necromancer : ConfigurableStandardRole
 
         private Dictionary<byte, SystemTypes> resurrectionRoom = new();
 
-        public Instance(PlayerControl player) : base(player)
+        public Instance(PlayerModInfo player) : base(player)
         {
             if (AmOwner)
             {

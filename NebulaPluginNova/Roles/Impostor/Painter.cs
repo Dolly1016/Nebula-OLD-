@@ -36,7 +36,7 @@ public class Painter : ConfigurableStandardRole
         static private ISpriteLoader sampleButtonSprite = SpriteLoader.FromResource("Nebula.Resources.Buttons.SampleButton.png", 115f);
         static private ISpriteLoader paintButtonSprite = SpriteLoader.FromResource("Nebula.Resources.Buttons.MorphButton.png", 115f);
         public override AbstractRole Role => MyRole;
-        public Instance(PlayerControl player) : base(player)
+        public Instance(PlayerModInfo player) : base(player)
         {
         }
 

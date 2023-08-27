@@ -21,7 +21,7 @@ public class Madmate : ConfigurableStandardRole
     public class Instance : Crewmate.Instance
     {
         public override AbstractRole Role => MyRole;
-        public Instance(PlayerControl player) : base(player)
+        public Instance(PlayerModInfo player) : base(player)
         {
         }
 
