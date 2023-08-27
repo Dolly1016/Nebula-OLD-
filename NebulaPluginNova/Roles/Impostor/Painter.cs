@@ -16,7 +16,7 @@ public class Painter : ConfigurableStandardRole
     public override Color RoleColor => Palette.ImpostorRed;
     public override Team Team => Impostor.MyTeam;
 
-    public override RoleInstance CreateInstance(PlayerControl player, int[]? arguments) => new Instance(player);
+    public override RoleInstance CreateInstance(PlayerModInfo player, int[]? arguments) => new Instance(player);
 
     private NebulaConfiguration SampleCoolDownOption;
     private NebulaConfiguration PaintCoolDownOption;
@@ -46,12 +46,12 @@ public class Painter : ConfigurableStandardRole
             {
                 GameData.PlayerOutfit? sample = null;
                 PoolablePlayer? sampleIcon = null;
-                var sampleTracker = Bind(ObjectTrackers.ForPlayer(1.2f, player, (p) => p.PlayerId != player.PlayerId && !p.Data.IsDead));
+                var sampleTracker = Bind(ObjectTrackers.ForPlayer(1.2f, MyPlayer.MyControl, (p) => p.PlayerId != MyPlayer.PlayerId && !p.Data.IsDead));
 
                 sampleButton = Bind(new ModAbilityButton()).KeyBind(KeyCode.F);
                 sampleButton.SetSprite(sampleButtonSprite.GetSprite());
-                sampleButton.Availability = (button) => sampleTracker.CurrentTarget != null && player.CanMove;
-                sampleButton.Visibility = (button) => !player.Data.IsDead && sample == null;
+                sampleButton.Availability = (button) => sampleTracker.CurrentTarget != null && MyPlayer.MyControl.CanMove;
+                sampleButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead && sample == null;
                 sampleButton.OnClick = (button) => {
                     paintButton.CoolDownTimer.SetTime(5f).Resume();
                     sample = sampleTracker.CurrentTarget!.GetModInfo().GetOutfit(75);
@@ -64,8 +64,8 @@ public class Painter : ConfigurableStandardRole
 
                 paintButton = Bind(new ModAbilityButton()).KeyBind(KeyCode.F);
                 paintButton.SetSprite(paintButtonSprite.GetSprite());
-                paintButton.Availability = (button) => sampleTracker.CurrentTarget != null && player.CanMove;
-                paintButton.Visibility = (button) => !player.Data.IsDead && sample != null;
+                paintButton.Availability = (button) => sampleTracker.CurrentTarget != null && MyPlayer.MyControl.CanMove;
+                paintButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead && sample != null;
                 paintButton.OnClick = (button) => {
                     PlayerModInfo.RpcAddOutfit.Invoke(new(sampleTracker.CurrentTarget!.PlayerId, new("Paint", 40, false, sample)));
                 };

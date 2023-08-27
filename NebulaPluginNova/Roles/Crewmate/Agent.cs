@@ -18,7 +18,7 @@ public class Agent : ConfigurableStandardRole
     public override Color RoleColor => new Color(166f / 255f, 183f / 255f, 144f / 255f);
     public override Team Team => Crewmate.MyTeam;
 
-    public override RoleInstance CreateInstance(PlayerControl player, int[]? arguments) => new Instance(player);
+    public override RoleInstance CreateInstance(PlayerModInfo player, int[]? arguments) => new Instance(player);
 
     private NebulaConfiguration NumOfExemptedTasksOption;
     private NebulaConfiguration NumOfExtraTasksOption;
@@ -36,7 +36,7 @@ public class Agent : ConfigurableStandardRole
 
         static private ISpriteLoader buttonSprite = SpriteLoader.FromResource("Nebula.Resources.Buttons.AgentButton.png", 115f);
         public override AbstractRole Role => MyRole;
-        public Instance(PlayerControl player) : base(player)
+        public Instance(PlayerModInfo player) : base(player)
         {
         }
 
@@ -52,10 +52,10 @@ public class Agent : ConfigurableStandardRole
             {
                 taskButton = Bind(new ModAbilityButton()).KeyBind(KeyCode.F);
                 taskButton.SetSprite(buttonSprite.GetSprite());
-                taskButton.Availability = (button) => player.CanMove && (player.GetModInfo()?.Tasks.IsCompletedCurrentTasks ?? false);
-                taskButton.Visibility = (button) => !player.Data.IsDead;
+                taskButton.Availability = (button) => MyPlayer.MyControl.CanMove && MyPlayer.Tasks.IsCompletedCurrentTasks;
+                taskButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;
                 taskButton.OnClick = (button) => {
-                    player.GetModInfo().Tasks.GainExtraTasksAndRecompute(MyRole.NumOfExtraTasksOption.GetMappedInt().Value, 0, 0, false);
+                    MyPlayer.Tasks.GainExtraTasksAndRecompute(MyRole.NumOfExtraTasksOption.GetMappedInt().Value, 0, 0, false);
                 };
                 taskButton.SetLabelType(ModAbilityButton.LabelType.Standard);
                 taskButton.SetLabel("agent");

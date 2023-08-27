@@ -18,7 +18,7 @@ public class Morphing : ConfigurableStandardRole
     public override Color RoleColor => Palette.ImpostorRed;
     public override Team Team => Impostor.MyTeam;
 
-    public override RoleInstance CreateInstance(PlayerControl player, int[]? arguments) => new Instance(player);
+    public override RoleInstance CreateInstance(PlayerModInfo player, int[]? arguments) => new Instance(player);
 
     private NebulaConfiguration SampleCoolDownOption;
     private NebulaConfiguration MorphCoolDownOption;
@@ -50,12 +50,12 @@ public class Morphing : ConfigurableStandardRole
             {
                 GameData.PlayerOutfit? sample = null;
                 PoolablePlayer? sampleIcon = null;
-                var sampleTracker = Bind(ObjectTrackers.ForPlayer(1.2f, player, (p) => p.PlayerId != player.PlayerId && !p.Data.IsDead && sample == null));
+                var sampleTracker = Bind(ObjectTrackers.ForPlayer(1.2f, MyPlayer.MyControl, (p) => p.PlayerId != MyPlayer.PlayerId && !p.Data.IsDead && sample == null));
 
                 sampleButton = Bind(new ModAbilityButton()).KeyBind(KeyCode.F);
                 sampleButton.SetSprite(sampleButtonSprite.GetSprite());
-                sampleButton.Availability = (button) => sampleTracker.CurrentTarget != null && player.CanMove;
-                sampleButton.Visibility = (button) => !player.Data.IsDead && sample == null;
+                sampleButton.Availability = (button) => sampleTracker.CurrentTarget != null && MyPlayer.MyControl.CanMove;
+                sampleButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead && sample == null;
                 sampleButton.OnClick = (button) => {
                     morphButton.CoolDownTimer.SetTime(5f).Resume();
                     sample = sampleTracker.CurrentTarget!.GetModInfo().GetOutfit(75);
@@ -68,8 +68,8 @@ public class Morphing : ConfigurableStandardRole
 
                 morphButton = Bind(new ModAbilityButton()).KeyBind(KeyCode.F);
                 morphButton.SetSprite(morphButtonSprite.GetSprite());
-                morphButton.Availability = (button) => player.CanMove;
-                morphButton.Visibility = (button) => !player.Data.IsDead && sample != null;
+                morphButton.Availability = (button) => MyPlayer.MyControl.CanMove;
+                morphButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead && sample != null;
                 morphButton.OnClick = (button) => {
                     button.ToggleEffect();
                 };

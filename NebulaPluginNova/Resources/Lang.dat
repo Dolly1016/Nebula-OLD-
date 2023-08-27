@@ -141,6 +141,10 @@
 "options.role.vulture.eatCoolDown" : "Eat Cool Down"
 "options.role.vulture.numOfTheEatenToWin" : "Num of the Eaten to Win"
 
+# Modifiers
+
+"role.metaRole.ui.roles" : "Roles"
+
 # Teams
 
 "teams.crewmate" : "Crewmate"
@@ -223,6 +227,7 @@
 "button.label.eat" : "eat"
 "button.label.lantern" : "lantern"
 "button.label.morph" : "morph"
+"button.label.operate" : "operate"
 "button.label.place" : "place"
 "button.label.release" : "release"
 "button.label.revive" : "revive"

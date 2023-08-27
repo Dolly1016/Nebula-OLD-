@@ -419,6 +419,7 @@ public class ConfigurationTab
     public static ConfigurationTab CrewmateRoles = new ConfigurationTab(0x02, "options.tab.crewmate", Palette.CrewmateBlue);
     public static ConfigurationTab ImpostorRoles = new ConfigurationTab(0x04, "options.tab.impostor", Palette.ImpostorRed);
     public static ConfigurationTab NeutralRoles = new ConfigurationTab(0x08, "options.tab.neutral", new Color(244f / 255f, 211f / 255f, 53f / 255f));
+    public static ConfigurationTab Modifiers = new ConfigurationTab(0x10, "options.tab.modifier", new Color(255f / 255f, 255f / 255f, 243f / 255f));
 
     private int bitFlag;
     private string translateKey { get; init; }

@@ -13,7 +13,7 @@ public class Jester : ConfigurableStandardRole
     public override Color RoleColor => new Color(253f / 255f, 84f / 255f, 167f / 255f);
     public override Team Team => MyTeam;
 
-    public override RoleInstance CreateInstance(PlayerControl player, int[]? arguments) => new Instance(player);
+    public override RoleInstance CreateInstance(PlayerModInfo player, int[]? arguments) => new Instance(player);
 
     private NebulaConfiguration CanDragDeadBodyOption;
     protected override void LoadOptions()
@@ -39,7 +39,7 @@ public class Jester : ConfigurableStandardRole
         public override AbstractRole Role => MyRole;
         private Scripts.Draggable? draggable = null;
 
-        public Instance(PlayerControl player) : base(player)
+        public Instance(PlayerModInfo player) : base(player)
         {
             if (MyRole.CanDragDeadBodyOption.GetBool().Value) draggable = Bind(new Scripts.Draggable());
         }

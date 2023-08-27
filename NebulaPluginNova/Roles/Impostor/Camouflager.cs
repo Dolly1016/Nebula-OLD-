@@ -17,7 +17,7 @@ public class Camouflager : ConfigurableStandardRole
     public override Color RoleColor => Palette.ImpostorRed;
     public override Team Team => Impostor.MyTeam;
 
-    public override RoleInstance CreateInstance(PlayerControl player, int[]? arguments) => new Instance(player);
+    public override RoleInstance CreateInstance(PlayerModInfo player, int[]? arguments) => new Instance(player);
 
     private NebulaConfiguration CamoCoolDownOption;
     private NebulaConfiguration CamoDurationOption;
@@ -45,18 +45,18 @@ public class Camouflager : ConfigurableStandardRole
             {
                 camouflageButton = Bind(new ModAbilityButton()).KeyBind(KeyCode.F);
                 camouflageButton.SetSprite(buttonSprite.GetSprite());
-                camouflageButton.Availability = (button) =>player.CanMove;
-                camouflageButton.Visibility = (button) => !player.Data.IsDead;
+                camouflageButton.Availability = (button) =>MyPlayer.MyControl.CanMove;
+                camouflageButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;
                 camouflageButton.OnClick = (button) => {
                     button.ActivateEffect();
                 };
                 camouflageButton.OnEffectStart = (button) =>
                 {
-                    RpcCamouflage.Invoke(new(player.PlayerId,true));
+                    RpcCamouflage.Invoke(new(MyPlayer.PlayerId,true));
                 };
                 camouflageButton.OnEffectEnd = (button) =>
                 {
-                    RpcCamouflage.Invoke(new(player.PlayerId,false));
+                    RpcCamouflage.Invoke(new(MyPlayer.PlayerId,false));
                 };
                 camouflageButton.CoolDownTimer = Bind(new Timer(0f, MyRole.CamoCoolDownOption.GetFloat()!.Value));
                 camouflageButton.EffectTimer = Bind(new Timer(0f, MyRole.CamoDurationOption.GetFloat()!.Value));

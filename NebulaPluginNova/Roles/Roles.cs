@@ -12,13 +12,19 @@ namespace Nebula.Roles;
 public class Roles
 {
     static public IReadOnlyList<AbstractRole> AllRoles { get; private set; }
+    static public IReadOnlyList<AbstractModifier> AllModifiers { get; private set; }
     static public IReadOnlyList<Team> AllTeams { get; private set; }
 
     static private List<AbstractRole>? allRoles = new();
+    static private List<AbstractModifier>? allModifiers = new();
     static private List<Team>? allTeams = new();
 
     static public void Register(AbstractRole role) {
         allRoles?.Add(role);
+    }
+    static public void Register(AbstractModifier role)
+    {
+        allModifiers?.Add(role);
     }
     static public void Register(Team team) {
         allTeams?.Add(team);
@@ -26,7 +32,7 @@ public class Roles
     static public void Load()
     {
         var iroleType = typeof(AbstractRole);
-        var types = Assembly.GetAssembly(typeof(AbstractRole))?.GetTypes().Where((type) => type.IsAssignableTo(typeof(AbstractRole)) || type.IsDefined(typeof(NebulaRoleHoler)));
+        var types = Assembly.GetAssembly(typeof(AbstractRole))?.GetTypes().Where((type) => type.IsAssignableTo(typeof(IAssignableBase)) || type.IsDefined(typeof(NebulaRoleHoler)));
         if (types == null) return;
 
         foreach (var type in types)
@@ -44,14 +50,21 @@ public class Roles
 
             return role1.InternalName.CompareTo(role2.InternalName);
         });
+
+        allModifiers!.Sort((role1, role2) => {
+            return role1.InternalName.CompareTo(role2.InternalName);
+        });
+
         allTeams!.Sort((team1, team2) => team1.TranslationKey.CompareTo(team2.TranslationKey));
 
         for (int i = 0; i < allRoles!.Count; i++) allRoles![i].Id = i;
 
         AllRoles = allRoles!.AsReadOnly();
+        AllModifiers = allModifiers!.AsReadOnly();
         AllTeams = allTeams!.AsReadOnly();
 
         allRoles = null;
+        allModifiers = null;
         allTeams = null;
     }
 }

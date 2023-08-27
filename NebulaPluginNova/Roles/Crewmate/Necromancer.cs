@@ -13,7 +13,7 @@ public class Necromancer : ConfigurableStandardRole
     public override Color RoleColor => new Color(108f / 255f, 50f / 255f, 160f / 255f);
     public override Team Team => Crewmate.MyTeam;
 
-    public override RoleInstance CreateInstance(PlayerControl player, int[]? arguments) => new Instance(player);
+    public override RoleInstance CreateInstance(PlayerModInfo player, int[]? arguments) => new Instance(player);
 
     private NebulaConfiguration ReviveCoolDownOption;
     private NebulaConfiguration ReviveDurationOption;
@@ -121,7 +121,7 @@ public class Necromancer : ConfigurableStandardRole
 
         public override void LocalUpdate()
         {
-            bool flag = player.GetModInfo().HoldingDeadBody.HasValue;
+            bool flag = MyPlayer.HoldingDeadBody.HasValue;
             myArrow.IsActive = flag;
             message.gameObject.SetActive(flag);
             if (flag) message.color = MyRole.RoleColor.AlphaMultiplied(MathF.Sin(Time.time * 2.4f) * 0.2f + 0.8f);

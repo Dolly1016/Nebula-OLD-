@@ -14,28 +14,28 @@ public class Draggable : ScriptHolder
 
     public void OnActivated(RoleInstance role)
     {
-        if (role.player.AmOwner)
+        if (role.MyPlayer.AmOwner)
         {
-            var deadBodyTracker = Bind(ObjectTrackers.ForDeadBody(1.2f, role.player, (d) => d.GetHolder() == null));
+            var deadBodyTracker = Bind(ObjectTrackers.ForDeadBody(1.2f, role.MyPlayer.MyControl, (d) => d.GetHolder() == null));
 
             var dragButton = Bind(new ModAbilityButton()).KeyBind(KeyCode.F);
             dragButton.SetSprite(buttonSprite.GetSprite());
             dragButton.Availability = (button) =>
             {
-                return (deadBodyTracker.CurrentTarget != null || role.player.GetModInfo().HoldingDeadBody.HasValue) && role.player.CanMove;
+                return (deadBodyTracker.CurrentTarget != null || role.MyPlayer.HoldingDeadBody.HasValue) && role.MyPlayer.MyControl.CanMove;
             };
-            dragButton.Visibility = (button) => !role.player.Data.IsDead;
+            dragButton.Visibility = (button) => !role.MyPlayer.MyControl.Data.IsDead;
             dragButton.OnClick = (button) =>
             {
-                if (!role.player.GetModInfo().HoldingDeadBody.HasValue)
+                if (!role.MyPlayer.HoldingDeadBody.HasValue)
                 {
-                    role.player.GetModInfo().HoldDeadBody(deadBodyTracker.CurrentTarget);
+                    role.MyPlayer.HoldDeadBody(deadBodyTracker.CurrentTarget);
                     OnHoldingDeadBody?.Invoke(deadBodyTracker.CurrentTarget);
                 }
                 else
-                    role.player.GetModInfo().ReleaseDeadBody();
+                    role.MyPlayer.ReleaseDeadBody();
             };
-            dragButton.OnUpdate = (button) => dragButton.SetLabel(role.player.GetModInfo().HoldingDeadBody.HasValue ? "release" : "drag");
+            dragButton.OnUpdate = (button) => dragButton.SetLabel(role.MyPlayer.HoldingDeadBody.HasValue ? "release" : "drag");
             dragButton.SetLabelType(ModAbilityButton.LabelType.Standard);
             dragButton.SetLabel("drag");
         }
@@ -43,11 +43,11 @@ public class Draggable : ScriptHolder
 
     public void OnDead(RoleInstance role)
     {
-        role.player.GetModInfo()?.ReleaseDeadBody();
+        role.MyPlayer.ReleaseDeadBody();
     }
 
     public void OnInactivated(RoleInstance role)
     {
-        role.player.GetModInfo()?.ReleaseDeadBody();
+        role.MyPlayer.ReleaseDeadBody();
     }
 }

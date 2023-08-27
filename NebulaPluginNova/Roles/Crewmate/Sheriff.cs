@@ -14,7 +14,7 @@ public class Sheriff : ConfigurableStandardRole
     public override Color RoleColor => new Color(240f / 255f, 191f / 255f, 0f);
     public override Team Team => Crewmate.MyTeam;
 
-    public override RoleInstance CreateInstance(PlayerControl player, int[]? arguments) => new Instance(player);
+    public override RoleInstance CreateInstance(PlayerModInfo player, int[]? arguments) => new Instance(player);
 
     private KillCoolDownConfiguration KillCoolDownOption;
     private NebulaConfiguration CanKillMadmateOption;
@@ -33,7 +33,7 @@ public class Sheriff : ConfigurableStandardRole
 
         static private ISpriteLoader buttonSprite = SpriteLoader.FromResource("Nebula.Resources.Buttons.SheriffKillButton.png", 100f);
         public override AbstractRole Role => MyRole;
-        public Instance(PlayerControl player) : base(player)
+        public Instance(PlayerModInfo player) : base(player)
         {
         }
 
@@ -49,18 +49,18 @@ public class Sheriff : ConfigurableStandardRole
         {
             if (AmOwner)
             {
-                var killTracker = Bind(ObjectTrackers.ForPlayer(1.2f, player, (p) => p.PlayerId != player.PlayerId && !p.Data.IsDead));
+                var killTracker = Bind(ObjectTrackers.ForPlayer(1.2f, MyPlayer.MyControl, (p) => p.PlayerId != MyPlayer.PlayerId && !p.Data.IsDead));
                 killButton = Bind(new ModAbilityButton(isArrangedAsKillButton: true)).KeyBind(KeyCode.F);
                 killButton.SetSprite(buttonSprite.GetSprite());
-                killButton.Availability = (button) => killTracker.CurrentTarget != null && player.CanMove;
-                killButton.Visibility = (button) => !player.Data.IsDead;
+                killButton.Availability = (button) => killTracker.CurrentTarget != null && MyPlayer.MyControl.CanMove;
+                killButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;
                 killButton.OnClick = (button) => {
                     if (CanKill(killTracker.CurrentTarget!)) 
-                        player.ModKill(killTracker.CurrentTarget!, PlayerState.Dead, EventDetail.Kill); 
+                        MyPlayer.MyControl.ModKill(killTracker.CurrentTarget!, PlayerState.Dead, EventDetail.Kill); 
                     else
                     {
-                        player.ModKill(player, PlayerState.Misfired, null); 
-                        GameStatistics.RpcRecord.Invoke(new(GameStatistics.EventVariation.Kill, EventDetail.Misfire, player, killTracker.CurrentTarget!));
+                        MyPlayer.MyControl.ModKill(MyPlayer.MyControl, PlayerState.Misfired, null); 
+                        GameStatistics.RpcRecord.Invoke(new(GameStatistics.EventVariation.Kill, EventDetail.Misfire, MyPlayer.MyControl, killTracker.CurrentTarget!));
                     }
                     button.StartCoolDown();
                 };

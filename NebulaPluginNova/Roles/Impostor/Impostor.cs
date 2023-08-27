@@ -17,19 +17,19 @@ public class Impostor : ConfigurableStandardRole
     public override Team Team => Impostor.MyTeam;
     public override bool IsDefaultRole => true;
 
-    public override RoleInstance CreateInstance(PlayerControl player, int[]? arguments) => new Instance(player);
+    public override RoleInstance CreateInstance(PlayerModInfo player, int[]? arguments) => new Instance(player);
 
     public class Instance : RoleInstance
     {
         public override AbstractRole Role => MyRole;
-        public Instance(PlayerControl player) : base(player)
+        public Instance(PlayerModInfo player) : base(player)
         {
         }
         public override bool CheckWins(CustomEndCondition endCondition) => endCondition == NebulaGameEnd.ImpostorWin;
 
-        public override void DecoratePlayerName(PlayerModInfo player, ref string text, ref Color color)
+        public override void DecoratePlayerName(ref string text, ref Color color)
         {
-            if (player.Role.Role.RoleCategory == RoleCategory.ImpostorRole) color = Palette.ImpostorRed;
+            if (MyPlayer.Role.Role.RoleCategory == RoleCategory.ImpostorRole) color = Palette.ImpostorRed;
         }
     }
 }

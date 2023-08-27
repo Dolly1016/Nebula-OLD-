@@ -18,7 +18,7 @@ public class Cleaner : ConfigurableStandardRole
     public override Color RoleColor => Palette.ImpostorRed;
     public override Team Team => Impostor.MyTeam;
 
-    public override RoleInstance CreateInstance(PlayerControl player, int[]? arguments) => new Instance(player);
+    public override RoleInstance CreateInstance(PlayerModInfo player, int[]? arguments) => new Instance(player);
 
     private NebulaConfiguration CleanCoolDownOption;
     protected override void LoadOptions()
@@ -50,14 +50,14 @@ public class Cleaner : ConfigurableStandardRole
         {
             if (AmOwner)
             {
-                var cleanTracker = Bind(ObjectTrackers.ForDeadBody(1.2f, player, (d) => true));
+                var cleanTracker = Bind(ObjectTrackers.ForDeadBody(1.2f, MyPlayer.MyControl, (d) => true));
 
                 cleanButton = Bind(new ModAbilityButton()).KeyBind(KeyCode.F);
                 cleanButton.SetSprite(buttonSprite.GetSprite());
-                cleanButton.Availability = (button) => cleanTracker.CurrentTarget != null && player.CanMove;
-                cleanButton.Visibility = (button) => !player.Data.IsDead;
+                cleanButton.Availability = (button) => cleanTracker.CurrentTarget != null && MyPlayer.MyControl.CanMove;
+                cleanButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;
                 cleanButton.OnClick = (button) => {
-                    AmongUsUtil.RpcCleanDeadBody(cleanTracker.CurrentTarget!.ParentId,player.PlayerId,EventDetail.Clean);
+                    AmongUsUtil.RpcCleanDeadBody(cleanTracker.CurrentTarget!.ParentId,MyPlayer.PlayerId,EventDetail.Clean);
                     PlayerControl.LocalPlayer.killTimer = GameOptionsManager.Instance.CurrentGameOptions.GetFloat(FloatOptionNames.KillCooldown);
                 };
                 cleanButton.CoolDownTimer = Bind(new Timer(0f, MyRole.CleanCoolDownOption.GetFloat()!.Value));

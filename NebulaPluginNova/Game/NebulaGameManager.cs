@@ -296,6 +296,11 @@ public class NebulaGameManager
             NebulaGameManager.Instance?.CheckAndEndGame(CustomEndCondition.GetEndCondition((byte)message.Item1), message.Item2);
         }
         );
+
+    public readonly static RemoteProcess RpcStartGame = new RemoteProcess(
+        "StartGame",
+        (_) => NebulaGameManager.Instance?.CheckGameState()
+        );
 }
 
 public static class NebulaGameManagerExpansion

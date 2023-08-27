@@ -20,7 +20,7 @@ public enum RoleCategory
     CrewmateRole
 }
 
-public abstract class AbstractRole
+public abstract class AbstractRole : IAssignableBase
 {
     public abstract RoleCategory RoleCategory { get; }
     //内部用の名称。AllRolesのソートに用いる
@@ -31,8 +31,8 @@ public abstract class AbstractRole
     public virtual string IntroBlurb { get => Language.Translate("role." + LocalizedName + ".blurb"); }
     public abstract Color RoleColor { get; }
     public virtual bool IsDefaultRole { get => false; }
-    public abstract RoleInstance CreateInstance(PlayerControl player, int[]? arguments);
-    public int Id { get; internal set; }
+    public abstract RoleInstance CreateInstance(PlayerModInfo player, int[]? arguments);
+    public int Id { get; set; }
     public abstract int RoleCount { get; }
     public abstract float GetRoleChance(int count);
     public abstract Team Team { get; }

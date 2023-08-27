@@ -18,7 +18,7 @@ public class Vulture : ConfigurableStandardRole
     public override Color RoleColor => new Color(140f / 255f, 70f / 255f, 18f / 255f);
     public override Team Team => MyTeam;
 
-    public override RoleInstance CreateInstance(PlayerControl player, int[]? arguments) => new Instance(player);
+    public override RoleInstance CreateInstance(PlayerModInfo player, int[]? arguments) => new Instance(player);
 
     private NebulaConfiguration EatCoolDownOption;
     private NebulaConfiguration NumToEatenToWinOption;
@@ -38,7 +38,7 @@ public class Vulture : ConfigurableStandardRole
         static private ISpriteLoader buttonSprite = SpriteLoader.FromResource("Nebula.Resources.Buttons.EatButton.png", 115f);
 
         public override AbstractRole Role => MyRole;
-        public Instance(PlayerControl player) : base(player)
+        public Instance(PlayerModInfo player) : base(player)
         {
         }
 
@@ -48,19 +48,19 @@ public class Vulture : ConfigurableStandardRole
             {
                 int leftEaten = MyRole.NumToEatenToWinOption.GetMappedInt()!.Value;
 
-                var eatTracker = Bind(ObjectTrackers.ForDeadBody(1.2f, player, (d) => true));
+                var eatTracker = Bind(ObjectTrackers.ForDeadBody(1.2f, MyPlayer.MyControl, (d) => true));
 
                 eatButton = Bind(new ModAbilityButton()).KeyBind(KeyCode.F);
                 var usesIcon = eatButton.ShowUsesIcon(2);
                 eatButton.SetSprite(buttonSprite.GetSprite());
-                eatButton.Availability = (button) => eatTracker.CurrentTarget != null && player.CanMove;
-                eatButton.Visibility = (button) => !player.Data.IsDead;
+                eatButton.Availability = (button) => eatTracker.CurrentTarget != null && MyPlayer.MyControl.CanMove;
+                eatButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;
                 eatButton.OnClick = (button) => {
-                    AmongUsUtil.RpcCleanDeadBody(eatTracker.CurrentTarget!.ParentId,player.PlayerId,EventDetail.Eat);
+                    AmongUsUtil.RpcCleanDeadBody(eatTracker.CurrentTarget!.ParentId,MyPlayer.PlayerId,EventDetail.Eat);
                     leftEaten--;
                     usesIcon.text=leftEaten.ToString();
 
-                    if (leftEaten <= 0) NebulaGameManager.Instance.RpcInvokeSpecialWin(NebulaGameEnd.VultureWin, 1 << player.PlayerId);
+                    if (leftEaten <= 0) NebulaGameManager.Instance.RpcInvokeSpecialWin(NebulaGameEnd.VultureWin, 1 << MyPlayer.PlayerId);
                 };
                 eatButton.CoolDownTimer = Bind(new Timer(0f, MyRole.EatCoolDownOption.GetFloat()!.Value));
                 eatButton.SetLabelType(ModAbilityButton.LabelType.Standard);

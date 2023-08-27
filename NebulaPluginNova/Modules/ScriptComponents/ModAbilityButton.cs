@@ -34,7 +34,7 @@ public class ModAbilityButton : INebulaScriptComponent
     public Predicate<ModAbilityButton>? Visibility { get; set; } = null;
     private KeyCode? keyCode { get; set; } = null;
 
-    internal ModAbilityButton(bool isLeftSideButton = false, bool isArrangedAsKillButton = false)
+    internal ModAbilityButton(bool isLeftSideButton = false, bool isArrangedAsKillButton = false,int priority = 0)
     {
 
         VanillaButton = UnityEngine.Object.Instantiate(HudManager.Instance.KillButton, HudManager.Instance.KillButton.transform.parent);
@@ -47,6 +47,7 @@ public class ModAbilityButton : INebulaScriptComponent
 
         var gridContent = VanillaButton.gameObject.GetComponent<HudContent>();
         gridContent.MarkAsKillButtonContent(isArrangedAsKillButton);
+        gridContent.SetPriority(priority);
         NebulaGameManager.Instance?.HudGrid.RegisterContent(gridContent, isLeftSideButton);
 
     }

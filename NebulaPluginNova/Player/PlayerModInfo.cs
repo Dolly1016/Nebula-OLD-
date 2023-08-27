@@ -37,23 +37,33 @@ public class PlayerModInfo
         }
     }
 
-    public PlayerControl MyPlayer { get; private set; }
+    public PlayerControl MyControl { get; private set; }
     public byte PlayerId { get; private set; }
     public bool AmOwner { get; private set; }
     public bool IsDisconnected { get; set; } = false;
-    public bool IsDead => IsDisconnected || MyPlayer.Data.IsDead;
+    public bool IsDead => IsDisconnected || MyControl.Data.IsDead;
     
     public byte? HoldingDeadBody { get; private set; } = null;
     private DeadBody? deadBodyCache { get; set; } = null;
 
     public RoleInstance Role => myRole;
     private RoleInstance myRole;
-    //private RoleInstance? myGhostRole = null;
+    private List<ModifierInstance> myModifiers = new();
 
     private List<OutfitCandidate> outfits = new List<OutfitCandidate>();
     private TMPro.TextMeshPro roleText;
 
     public PlayerTaskState Tasks { get; set; }
+
+    public bool HasCrewmateTasks
+    {
+        get
+        {
+            bool hasCrewmateTasks = Role.HasCrewmateTasks;
+            ModifierAction((modifier) => { hasCrewmateTasks &= !modifier.InvalidateCrewmateTask; });
+            return hasCrewmateTasks;
+        }
+    }
 
     //各種収集データ
     public PlayerModInfo? MyKiller = null;
@@ -63,7 +73,7 @@ public class PlayerModInfo
     {
         if (Role != null) yield return Role;
 
-        //TODO Modifierも全て返すようにする
+        foreach (var m in myModifiers) yield return m;
     }
 
     public void RoleAction(Action<AssignableInstance> action)
@@ -71,9 +81,14 @@ public class PlayerModInfo
         foreach (var role in AllAssigned()) action(role);
     }
 
+    public void ModifierAction(Action<ModifierInstance> action)
+    {
+        foreach (var role in myModifiers) action(role);
+    }
+
     public PlayerModInfo(PlayerControl myPlayer)
     {
-        this.MyPlayer = myPlayer;
+        this.MyControl = myPlayer;
         this.Tasks = new PlayerTaskState(myPlayer);
         PlayerId = myPlayer.PlayerId;
         AmOwner = myPlayer.AmOwner;
@@ -97,20 +112,20 @@ public class PlayerModInfo
             newOutfit = outfits[outfits.Count - 1].outfit;
         }
 
-        MyPlayer.RawSetColor(newOutfit.ColorId);
-        MyPlayer.RawSetName(newOutfit.PlayerName);
-        MyPlayer.RawSetHat(newOutfit.HatId, newOutfit.ColorId);
-        MyPlayer.RawSetSkin(newOutfit.SkinId, newOutfit.ColorId);
-        MyPlayer.RawSetVisor(newOutfit.VisorId, newOutfit.ColorId);
-        MyPlayer.RawSetPet(newOutfit.PetId, newOutfit.ColorId);
-        MyPlayer.RawSetColor(newOutfit.ColorId);
-        MyPlayer.MyPhysics.ResetAnimState();
-        MyPlayer.cosmetics.StopAllAnimations();
+        MyControl.RawSetColor(newOutfit.ColorId);
+        MyControl.RawSetName(newOutfit.PlayerName);
+        MyControl.RawSetHat(newOutfit.HatId, newOutfit.ColorId);
+        MyControl.RawSetSkin(newOutfit.SkinId, newOutfit.ColorId);
+        MyControl.RawSetVisor(newOutfit.VisorId, newOutfit.ColorId);
+        MyControl.RawSetPet(newOutfit.PetId, newOutfit.ColorId);
+        MyControl.RawSetColor(newOutfit.ColorId);
+        MyControl.MyPhysics.ResetAnimState();
+        MyControl.cosmetics.StopAllAnimations();
     }
 
     public void AddOutfit(OutfitCandidate outfit)
     {
-        if (!outfit.SelfAware && MyPlayer.AmOwner) return;
+        if (!outfit.SelfAware && MyControl.AmOwner) return;
         outfits.Add(outfit);
         UpdateOutfit();
     }
@@ -127,16 +142,23 @@ public class PlayerModInfo
         return DefaultOutfit;
     }
 
-    public void UpdateNameText(TMPro.TextMeshPro nameText)
+    public void UpdateNameText(TMPro.TextMeshPro nameText,bool showDefaultName = false)
     {
         var text = CurrentOutfit.PlayerName;
         var color = Color.white;
 
         var viewerInfo = PlayerControl.LocalPlayer.GetModInfo();
 
-        viewerInfo?.Role?.DecoratePlayerName(this, ref text, ref color);
+        viewerInfo?.Role?.DecoratePlayerName(ref text, ref color);
+
+        if (showDefaultName && !CurrentOutfit.PlayerName.Equals(DefaultName))
+            text += (" (" + DefaultName + ")").Color(Color.gray);
+        
+
         nameText.text = text;
         nameText.color = color;
+
+        
     }
 
     static Color fakeTaskColor = new Color(0x86 / 255f, 0x86 / 255f, 0x86 / 255f);
@@ -144,6 +166,8 @@ public class PlayerModInfo
     public void UpdateRoleText(TMPro.TextMeshPro roleText) {
         
         string text = myRole?.DisplayRoleName ?? "Undefined";
+
+        ModifierAction(m => m.DecorateRoleName(ref text));
 
         if (myRole.HasAnyTasks)
             text += (" (" + Tasks.ToString(NebulaGameManager.Instance.CanSeeAllInfo || !AmongUsUtil.InCommSab) + ")").Color(myRole.HasCrewmateTasks ? crewTaskColor : fakeTaskColor);
@@ -158,37 +182,49 @@ public class PlayerModInfo
         myRole?.Inactivate();
 
         if (role.RoleCategory == Roles.RoleCategory.ImpostorRole)
-            DestroyableSingleton<RoleManager>.Instance.SetRole(MyPlayer, RoleTypes.Impostor);
+            DestroyableSingleton<RoleManager>.Instance.SetRole(MyControl, RoleTypes.Impostor);
         else
-            DestroyableSingleton<RoleManager>.Instance.SetRole(MyPlayer, RoleTypes.Crewmate);
+            DestroyableSingleton<RoleManager>.Instance.SetRole(MyControl, RoleTypes.Crewmate);
         
-        myRole = role.CreateInstance(MyPlayer,arguments);
+        myRole = role.CreateInstance(MyControl,arguments);
         myRole.OnActivated();
-
-        NebulaGameManager.Instance?.CheckGameState();
     }
 
-    public class SetRoleMessage
+    private void SetModifier(AbstractModifier role, int[]? arguments)
+    {
+        var modifier = role.CreateInstance(MyControl, arguments);
+        myModifiers.Add(modifier);
+        modifier.OnActivated();
+    }
+
+    public void RpcSetRole(AbstractRole role, int[]? arguments) => RpcSetAssignable.Invoke(new SetAssignableMessage() { playerId = PlayerId, assignableId = role.Id, arguments = arguments, isRole = true });
+    public void RpcSetModifier(AbstractModifier modifier, int[]? arguments) => RpcSetAssignable.Invoke(new SetAssignableMessage() { playerId = PlayerId, assignableId = modifier.Id, arguments = arguments, isRole = false });
+
+
+    public class SetAssignableMessage
     {
         public byte playerId;
-        public int roleId;
+        public int assignableId;
         public int[]? arguments;
+        public bool isRole;
     }
 
-    public readonly static RemoteProcess<SetRoleMessage> RpcSetRole = new RemoteProcess<SetRoleMessage>(
-        "SetRole",
+    public readonly static RemoteProcess<SetAssignableMessage> RpcSetAssignable = new RemoteProcess<SetAssignableMessage>(
+        "SetAssignable",
         (writer, message) =>
         {
             writer.Write(message.playerId);
-            writer.Write(message.roleId);
+            writer.Write(message.assignableId);
+            writer.Write(message.isRole);
             writer.Write(message.arguments?.Length ?? 0);
             for (int i = 0; i < (message.arguments?.Length ?? 0); i++) writer.Write(message.arguments![i]);
         },
         (reader) =>
         {
-            SetRoleMessage message = new SetRoleMessage();
+            SetAssignableMessage message = new SetAssignableMessage();
             message.playerId = reader.ReadByte();
-            message.roleId = reader.ReadInt32();
+            message.assignableId = reader.ReadInt32();
+            message.isRole = reader.ReadBoolean();
             int length = reader.ReadInt32();
             if (length > 0)
             {
@@ -199,7 +235,11 @@ public class PlayerModInfo
         },
         (message, isCalledByMe) =>
         {
-            NebulaGameManager.Instance!.RegisterPlayer(PlayerControl.AllPlayerControls.Find((Il2CppSystem.Predicate<PlayerControl>)(p => p.PlayerId == message.playerId)))!.SetRole(Roles.Roles.AllRoles[message.roleId], message.arguments);
+            var player = NebulaGameManager.Instance!.RegisterPlayer(PlayerControl.AllPlayerControls.Find((Il2CppSystem.Predicate<PlayerControl>)(p => p.PlayerId == message.playerId)));
+            if(message.isRole)
+                player.SetRole(Roles.Roles.AllRoles[message.assignableId], message.arguments);
+            else
+                player.SetModifier(Roles.Roles.AllModifiers[message.assignableId], message.arguments);
         }
         );
 
@@ -277,21 +317,21 @@ public class PlayerModInfo
             }
         }
 
-        if (MyPlayer.inVent)
+        if (MyControl.inVent)
         {
             deadBodyCache.transform.localPosition = new Vector3(10000, 10000);
         }
         else
         {
-            var targetPosition = MyPlayer.transform.position + new Vector3(-0.1f, -0.1f);
+            var targetPosition = MyControl.transform.position + new Vector3(-0.1f, -0.1f);
 
-            if (MyPlayer.transform.position.Distance(deadBodyCache.transform.position) < 1.8f)
+            if (MyControl.transform.position.Distance(deadBodyCache.transform.position) < 1.8f)
                 deadBodyCache.transform.position += (targetPosition - deadBodyCache.transform.position) * 0.15f;
             else
                 deadBodyCache.transform.position = targetPosition;
 
 
-            Vector3 playerPos = MyPlayer.GetTruePosition();
+            Vector3 playerPos = MyControl.GetTruePosition();
             Vector3 deadBodyPos = deadBodyCache.TruePosition;
             Vector3 diff = (deadBodyPos - playerPos);
             float d = diff.magnitude;
@@ -357,13 +397,13 @@ public class PlayerModInfo
 
     public void Update()
     {
-        UpdateNameText(MyPlayer.cosmetics.nameText);
+        UpdateNameText(MyControl.cosmetics.nameText, true);
         UpdateRoleText(roleText);
         UpdateHoldingDeadBody();
 
         RoleAction((role) => {
             role.Update();
-            if (MyPlayer.AmOwner) role.LocalUpdate();
+            if (MyControl.AmOwner) role.LocalUpdate();
         });
     }
 
@@ -379,4 +419,5 @@ public class PlayerModInfo
 
         RoleAction((role) =>role.OnGameStart());
     }
+    
 }
