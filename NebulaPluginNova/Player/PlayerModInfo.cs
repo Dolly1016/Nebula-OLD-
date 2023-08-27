@@ -186,13 +186,13 @@ public class PlayerModInfo
         else
             DestroyableSingleton<RoleManager>.Instance.SetRole(MyControl, RoleTypes.Crewmate);
         
-        myRole = role.CreateInstance(MyControl,arguments);
+        myRole = role.CreateInstance(this, arguments);
         myRole.OnActivated();
     }
 
     private void SetModifier(AbstractModifier role, int[]? arguments)
     {
-        var modifier = role.CreateInstance(MyControl, arguments);
+        var modifier = role.CreateInstance(this, arguments);
         myModifiers.Add(modifier);
         modifier.OnActivated();
     }

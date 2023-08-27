@@ -19,7 +19,7 @@ public class MetaRole : AbstractModifier
     public class Instance : ModifierInstance
     {
         public override AbstractModifier Role => MyRole;
-        public Instance(PlayerControl player) : base(player)
+        public Instance(PlayerModInfo player) : base(player)
         {
         }
 

@@ -30,14 +30,12 @@ public abstract class ConfigurableModifier : AbstractModifier
     public ConfigurableModifier(int TabMask)
     {
         RoleConfig = new ConfigurationHolder("options.role." + LocalizedName, new ColorTextComponent(RoleColor, new TranslateTextComponent("role." + LocalizedName + ".name")), TabMask, CustomGameMode.AllGameModeMask);
-        RoleConfig.Priority = IsDefaultRole ? 0 : 1;
         LoadOptions();
     }
 
     public ConfigurableModifier()
     {
-        RoleConfig = new ConfigurationHolder("options.role." + LocalizedName, new ColorTextComponent(RoleColor, new TranslateTextComponent("role." + LocalizedName + ".name")), ConfigurationTab.FromRoleCategory(RoleCategory), CustomGameMode.AllGameModeMask);
-        RoleConfig.Priority = IsDefaultRole ? 0 : 1;
+        RoleConfig = new ConfigurationHolder("options.role." + LocalizedName, new ColorTextComponent(RoleColor, new TranslateTextComponent("role." + LocalizedName + ".name")), ConfigurationTab.Modifiers, CustomGameMode.AllGameModeMask);
         LoadOptions();
     }
 

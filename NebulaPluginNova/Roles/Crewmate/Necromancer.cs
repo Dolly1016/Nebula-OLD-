@@ -52,7 +52,7 @@ public class Necromancer : ConfigurableStandardRole
 
                 bool canReviveHere()
                 {
-                    return !(!currentTargetRoom.HasValue || !player.GetModInfo().HoldingDeadBody.HasValue || !ShipStatus.Instance.FastRooms[currentTargetRoom.Value].roomArea.OverlapPoint(player.GetTruePosition()));
+                    return !(!currentTargetRoom.HasValue || !player.HoldingDeadBody.HasValue || !ShipStatus.Instance.FastRooms[currentTargetRoom.Value].roomArea.OverlapPoint(player.MyControl.GetTruePosition()));
                 }
 
                 myArrow = Bind(new Arrow());
@@ -69,7 +69,7 @@ public class Necromancer : ConfigurableStandardRole
                         {
                             if (entry.Key == SystemTypes.Ventilation) continue;
 
-                            float d = entry.Value.roomArea.Distance(player.Collider).distance;
+                            float d = entry.Value.roomArea.Distance(player.MyControl.Collider).distance;
                             if (d < 3f) continue;
 
                             cand.Add(new(d,entry.Value));
@@ -91,8 +91,8 @@ public class Necromancer : ConfigurableStandardRole
 
                 reviveButton = Bind(new ModAbilityButton()).KeyBind(KeyCode.G);
                 reviveButton.SetSprite(buttonSprite.GetSprite());
-                reviveButton.Availability = (button) => player.CanMove && player.GetModInfo().HoldingDeadBody.HasValue && canReviveHere();
-                reviveButton.Visibility = (button) => !player.Data.IsDead;
+                reviveButton.Availability = (button) => player.MyControl.CanMove && player.HoldingDeadBody.HasValue && canReviveHere();
+                reviveButton.Visibility = (button) => !player.MyControl.Data.IsDead;
                 reviveButton.OnClick = (button) => {
                     button.ActivateEffect();
                 };
@@ -100,7 +100,7 @@ public class Necromancer : ConfigurableStandardRole
                 {
                     if (!button.EffectTimer.IsInProcess)
                     {
-                        Helpers.GetPlayer(player.GetModInfo().HoldingDeadBody.Value)?.ModRevive(player.transform.position, true);
+                        Helpers.GetPlayer(player.HoldingDeadBody.Value)?.ModRevive(player.MyControl.transform.position, true);
                         reviveButton.CoolDownTimer.Start();
                     }
                 };
