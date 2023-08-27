@@ -237,31 +237,30 @@ public class NebulaConfiguration
             );
     }
 
-    static protected Func<IMetaContext?> HideConfigurationEditor = () => null;
     static public TextAttribute GetOptionBoldAttr(float width, TMPro.TextAlignmentOptions alignment = TMPro.TextAlignmentOptions.Center) => new(TextAttribute.BoldAttr)
     {
         FontMaterial = VanillaAsset.StandardMaskedFontMaterial,
         Size = new Vector2(width, 0.4f),
         Alignment = alignment
     };
-    static protected TextAttribute OptionTitleAttr = GetOptionBoldAttr(4f,TMPro.TextAlignmentOptions.Left);
-    static protected TextAttribute OptionValueAttr = GetOptionBoldAttr(1.1f);
-    static protected TextAttribute OptionButtonAttr = new(TextAttribute.BoldAttr) {
+    static public TextAttribute OptionTitleAttr = GetOptionBoldAttr(4f,TMPro.TextAlignmentOptions.Left);
+    static public TextAttribute OptionValueAttr = GetOptionBoldAttr(1.1f);
+    static public TextAttribute OptionButtonAttr = new(TextAttribute.BoldAttr) {
         FontMaterial = VanillaAsset.StandardMaskedFontMaterial,
         Size = new Vector2(0.32f, 0.22f) 
     };
-    static public MetaContext.Button OptionButtonContext(Action clickAction,string rawText) {
+    static public MetaContext.Button OptionButtonContext(Action clickAction,string rawText,float? width = null) {
         return new MetaContext.Button(() =>
         {
             clickAction();
             if (NebulaSettingMenu.Instance) NebulaSettingMenu.Instance.UpdateSecondaryPage();
-        }, OptionButtonAttr)
+        }, width.HasValue ? new(OptionButtonAttr) { Size = new(width.Value, 0.22f) } : OptionButtonAttr)
         {
             RawText = rawText,
             PostBuilder = (button, renderer, text) => { renderer.maskInteraction = SpriteMaskInteraction.VisibleInsideMask; }
         };
     }
-    static protected IMetaParallelPlacable OptionTextColon => new MetaContext.Text(new(OptionTitleAttr) { Size = new Vector2(0.2f, 0.4f), Alignment = TMPro.TextAlignmentOptions.Center }) { RawText = ":" };
+    static public IMetaParallelPlacable OptionTextColon => new MetaContext.Text(new(OptionTitleAttr) { Size = new Vector2(0.2f, 0.4f), Alignment = TMPro.TextAlignmentOptions.Center }) { RawText = ":" };
     
 
     static public Func<object?, string> PercentageDecorator = (mapped) => mapped + Language.Translate("options.percentage");

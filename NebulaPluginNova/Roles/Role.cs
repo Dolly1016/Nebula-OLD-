@@ -1,4 +1,5 @@
-﻿using Il2CppSystem.Reflection.Metadata.Ecma335;
+﻿using AmongUs.GameOptions;
+using Il2CppSystem.Reflection.Metadata.Ecma335;
 using Nebula.Configuration;
 using Nebula.Modules;
 using Nebula.Utilities;
@@ -95,6 +96,7 @@ public abstract class ConfigurableStandardRole : ConfigurableRole
             {
                 return new CombinedContent(0.55f, IMetaContext.AlignmentOption.Center,
                 new MetaContext.Text(NebulaConfiguration.GetOptionBoldAttr(1.8f)) { RawText = ChanceOptionText.Text },
+                NebulaConfiguration.OptionTextColon,
                 NebulaConfiguration.OptionButtonContext(() => RoleChanceOption.ChangeValue(false), "<<"),
                 new MetaContext.Text(NebulaConfiguration.GetOptionBoldAttr(0.8f)) { RawText = RoleChanceOption.ToDisplayString() },
                 NebulaConfiguration.OptionButtonContext(() => RoleChanceOption.ChangeValue(true), ">>")
@@ -104,11 +106,13 @@ public abstract class ConfigurableStandardRole : ConfigurableRole
             {
                 return new CombinedContent(0.55f, IMetaContext.AlignmentOption.Center,
                new MetaContext.Text(NebulaConfiguration.GetOptionBoldAttr(1.8f)) { RawText = ChanceOptionText.Text },
+               NebulaConfiguration.OptionTextColon,
                NebulaConfiguration.OptionButtonContext(() => RoleChanceOption.ChangeValue(false), "<<"),
                new MetaContext.Text(NebulaConfiguration.GetOptionBoldAttr(0.8f)) { RawText = RoleChanceOption.ToDisplayString() },
                NebulaConfiguration.OptionButtonContext(() => RoleChanceOption.ChangeValue(true), ">>"),
                new MetaContext.HorizonalMargin(0.3f),
                new MetaContext.Text(NebulaConfiguration.GetOptionBoldAttr(1.4f)) { RawText = SecondaryChanceOptionText.Text },
+               NebulaConfiguration.OptionTextColon,
                NebulaConfiguration.OptionButtonContext(() => RoleSecondaryChanceOption.ChangeValue(false), "<<"),
                new MetaContext.Text(NebulaConfiguration.GetOptionBoldAttr(0.8f)) { RawText = RoleSecondaryChanceOption.ToDisplayString() },
                NebulaConfiguration.OptionButtonContext(() => RoleSecondaryChanceOption.ChangeValue(true), ">>")
@@ -125,5 +129,83 @@ public abstract class ConfigurableStandardRole : ConfigurableRole
         }
         };
         RoleSecondaryChanceOption.Editor = NebulaConfiguration.EmptyEditor;
+    }
+
+    public class KillCoolDownConfiguration
+    {
+        public enum KillCoolDownType
+        {
+            Immediate = 0,
+            Relative = 1,
+            Ratio = 2
+        }
+
+        private NebulaConfiguration selectionOption;
+        private NebulaConfiguration immediateOption, relativeOption, ratioOption;
+        private float minCoolDown;
+
+        private NebulaConfiguration GetCurrentOption()
+        {
+            switch (selectionOption.CurrentValue)
+            {
+                case 0:
+                    return immediateOption;
+                case 1:
+                    return relativeOption;
+                case 2:
+                    return ratioOption;
+            }
+            return null;
+        }
+        private static string[] AllSelections = new string[] { "options.killCoolDown.type.immediate", "options.killCoolDown.type.relative", "options.killCoolDown.type.ratio" };
+
+        private static Func<object?, string> RelativeDecorator = (mapped) =>
+        {
+            float val = (float)mapped;
+            string str = val.ToString();
+            if (val > 0f) str = "+" + str;
+            else if (!(val < 0f)) str = "±" + str;
+            return str + Language.Translate("options.sec");
+        };
+
+        public KillCoolDownConfiguration(ConfigurationHolder holder, string id, KillCoolDownType defaultType, float step, float immediateMin, float immediateMax, float relativeMin, float relativeMax, float ratioStep, float ratioMin, float ratioMax)
+        {
+            selectionOption = new NebulaConfiguration(holder, id, null, AllSelections, (int)defaultType, (int)defaultType);
+            selectionOption.Editor = () =>
+            {
+                var currentOption = GetCurrentOption();
+
+                return new CombinedContent(0.55f, IMetaContext.AlignmentOption.Center,
+                    new MetaContext.Text(NebulaConfiguration.GetOptionBoldAttr(2.5f, TMPro.TextAlignmentOptions.Left)) { RawText = selectionOption.Title.Text },
+                    NebulaConfiguration.OptionTextColon,
+                    new MetaContext.HorizonalMargin(0.04f),
+                    NebulaConfiguration.OptionButtonContext(() => selectionOption.ChangeValue(true), selectionOption.ToDisplayString(), 0.9f),
+                    new MetaContext.HorizonalMargin(0.2f),
+                    NebulaConfiguration.OptionButtonContext(() => currentOption.ChangeValue(false), "<<"),
+                    new MetaContext.Text(NebulaConfiguration.OptionValueAttr) { RawText = currentOption.ToDisplayString() },
+                    NebulaConfiguration.OptionButtonContext(() => currentOption.ChangeValue(true), ">>")
+                );
+            };
+
+            immediateOption = new NebulaConfiguration(holder, id + ".immediate", null, immediateMin, immediateMax, step, 30f, 30f) { Decorator = NebulaConfiguration.SecDecorator, Editor = NebulaConfiguration.EmptyEditor };
+            relativeOption = new NebulaConfiguration(holder, id + ".relative", null, relativeMin, relativeMax, step, 0f, 0f) { Decorator = RelativeDecorator, Editor = NebulaConfiguration.EmptyEditor };
+            ratioOption = new NebulaConfiguration(holder, id + ".ratio", null, ratioMin, ratioMax, ratioStep, 1f, 1f) { Decorator = NebulaConfiguration.OddsDecorator, Editor = NebulaConfiguration.EmptyEditor };
+
+            minCoolDown = immediateMin;
+        }
+
+        public float KillCoolDown { get {
+                float vanillaCoolDown = GameOptionsManager.Instance.CurrentGameOptions.GetFloat(FloatOptionNames.KillCooldown);
+                switch (selectionOption.CurrentValue)
+                {
+                    case 0:
+                        return immediateOption.GetFloat()!.Value;
+                    case 1:
+                        return Mathf.Max(relativeOption.GetFloat()!.Value + vanillaCoolDown, minCoolDown);
+                    case 2:
+                        return ratioOption.GetFloat()!.Value * vanillaCoolDown;
+                }
+                return vanillaCoolDown;
+            } }
     }
 }

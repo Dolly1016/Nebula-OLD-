@@ -70,8 +70,7 @@ public static class HudManagerCoStartGamePatch
             PlayerControl.LocalPlayer.SetKillTimer(10f);
             ShipStatus.Instance.Systems[SystemTypes.Sabotage].Cast<SabotageSystemType>().ForceSabTime(10f);
 
-            yield return ModPreSpawnInPatch.ModPreSpawnIn(__instance.transform);
-            NebulaGameManager.Instance.GameStatistics.RecordEvent(new GameStatistics.Event(GameStatistics.EventVariation.GameStart, null, 0, GameStatisticsGatherTag.Spawn) { RelatedTag = EventDetail.GameStart });
+            yield return ModPreSpawnInPatch.ModPreSpawnIn(__instance.transform, GameStatistics.EventVariation.GameStart, EventDetail.GameStart);
 
             PlayerControl.LocalPlayer.AdjustLighting();
             yield return __instance.CoFadeFullScreen(Color.black, Color.clear, 0.2f, false);

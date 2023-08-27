@@ -12,7 +12,7 @@ namespace Nebula.Patches;
 
 public static class ModPreSpawnInPatch
 {
-    public static IEnumerator ModPreSpawnIn(Transform minigameParent)
+    public static IEnumerator ModPreSpawnIn(Transform minigameParent, GameStatistics.EventVariation eventVariation,TranslatableTag tag)
     {
         if (NebulaPreSpawnMinigame.PreSpawnLocations.Length > 0)
         {
@@ -21,6 +21,12 @@ public static class ModPreSpawnInPatch
             yield return NebulaGameManager.Instance.Syncronizer.CoSync(Modules.SynchronizeTag.PreSpawnMinigame, true, false, false);
             NebulaGameManager.Instance.Syncronizer.ResetSync(Modules.SynchronizeTag.PreSpawnMinigame);
             spawnInMinigame.Close();
+
+            NebulaGameManager.Instance?.GameStatistics.RecordEvent(new GameStatistics.Event(eventVariation, null, 0, GameStatisticsGatherTag.Spawn) { RelatedTag = tag });
+        }
+        else
+        {
+            NebulaGameManager.Instance?.GameStatistics.RecordEvent(new GameStatistics.Event(eventVariation, null, 0) { RelatedTag = tag });
         }
     }
 }
@@ -52,10 +58,10 @@ public static class NebulaExileWrapUp
 
         NebulaGameManager.Instance?.OnMeetingEnd(__instance.exiled?.Object);
 
-        yield return ModPreSpawnInPatch.ModPreSpawnIn(__instance.transform.parent);
+        yield return ModPreSpawnInPatch.ModPreSpawnIn(__instance.transform.parent, GameStatistics.EventVariation.MeetingEnd, EventDetail.MeetingEnd);
 
 
-        NebulaGameManager.Instance?.GameStatistics.RecordEvent(new GameStatistics.Event(GameStatistics.EventVariation.MeetingEnd, null, 0, GameStatisticsGatherTag.Spawn) { RelatedTag = EventDetail.MeetingEnd });
+        
 
         NebulaGameManager.Instance?.AllRoleAction(r=>r.OnGameReenabled());
 

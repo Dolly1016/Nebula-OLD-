@@ -16,11 +16,14 @@ public class Sheriff : ConfigurableStandardRole
 
     public override RoleInstance CreateInstance(PlayerControl player, int[]? arguments) => new Instance(player);
 
+    private KillCoolDownConfiguration KillCoolDownOption;
     private NebulaConfiguration CanKillMadmateOption;
+    
     protected override void LoadOptions()
     {
         base.LoadOptions();
 
+        KillCoolDownOption = new(RoleConfig, "killCoolDown", KillCoolDownConfiguration.KillCoolDownType.Relative, 2.5f, 10f, 60f, -40f, 40f, 0.125f, 0.125f, 2f);
         CanKillMadmateOption = new(RoleConfig, "canKillMadmate", null, false, false);
     }
 

@@ -128,7 +128,7 @@ public class NebulaSettingMenu : MonoBehaviour
                     subTextAttr.Reflect(subTxt);
                     subTxt.text = Language.Translate(holder.Id + ".detail");
                     subTxt.transform.localPosition = new Vector3(0f, -0.15f, -0.5f);
-                    
+                    subTxt.sortingOrder = 30;
                 },
                 Alignment = IMetaContext.AlignmentOption.Center
             });

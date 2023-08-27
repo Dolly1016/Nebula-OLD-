@@ -52,6 +52,9 @@
 "options.role.chance" : "Assignment Chance"
 "options.role.secondaryChance" : "2nd Onward"
 
+"options.killCoolDown.type.immediate" : "Immediate"
+"options.killCoolDown.type.relative" : "Relative"
+"options.killCoolDown.type.ratio" : "Ratio"
 
 # Crewmate Roles
 
@@ -73,6 +76,7 @@
 "role.sheriff.name" : "Sheriff"
 "role.sheriff.blurb" : "Shoot the Impostor"
 "options.role.sheriff.detail" : "Sheriff can kill other members.<br>Attempting to kill a Crewmate will die instead."
+"options.role.sheriff.killCoolDown" : "Kill Cool Down"
 "options.role.sheriff.canKillMadmate" : "Can Kill Madmate"
 
 "role.necromancer.name" : "Necromancer"

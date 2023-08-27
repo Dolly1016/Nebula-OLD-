@@ -48,7 +48,7 @@ public class NebulaManager : MonoBehaviour
     public void Update()
     {
         //スクリーンショット
-        if (NebulaInput.GetKeyDown(KeyCode.P)) StartCoroutine(CaptureAndSave().WrapToIl2Cpp());
+        if (Input.GetKeyDown(KeyCode.P)) StartCoroutine(CaptureAndSave().WrapToIl2Cpp());
 
         //if (NebulaInput.GetKeyDown(KeyCode.T)) NebulaPlugin.Test();
         if (NebulaInput.GetKeyDown(KeyCode.F5) && NebulaInput.GetKey(KeyCode.LeftControl)) NebulaGameEnd.RpcSendNoGame();
