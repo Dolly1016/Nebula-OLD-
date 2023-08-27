@@ -39,7 +39,7 @@ public class SheriffGlance : Perk
         perkData.Display?.SetCool(perkData.DataAry[0] / IP(0, PerkPropertyType.Second));
     }
 
-    public SheriffGlance(int id) : base(id, "sheriffGlance", true, 32, 5, CrewmateRoles.Sheriff.RoleColor)
+    public SheriffGlance(int id) : base(id, "sheriffGlance", true, 32, 5, Crewmate.Sheriff.RoleColor)
     {
         ImportantProperties = new float[] { 40f };
     }

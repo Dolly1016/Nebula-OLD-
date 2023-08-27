@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Nebula.Roles.CrewmateRoles;
+namespace Nebula.Roles.Crewmate;
 
 public class Crewmate : ConfigurableStandardRole
 {
@@ -12,8 +12,6 @@ public class Crewmate : ConfigurableStandardRole
     static public Team MyTeam = new("teams.crewmate", Palette.CrewmateBlue, TeamRevealType.Everyone);
 
     public override RoleCategory RoleCategory => RoleCategory.CrewmateRole;
-
-    public override string InternalName => "crewmate";
 
     public override string LocalizedName => "crewmate";
     public override Color RoleColor => Palette.CrewmateBlue;
@@ -24,7 +22,7 @@ public class Crewmate : ConfigurableStandardRole
 
     public class Instance : RoleInstance
     {
-        public override AbstractRole Role => Crewmate.MyRole;
+        public override AbstractRole Role => MyRole;
         public Instance(PlayerControl player) : base(player)
         {
         }

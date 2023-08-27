@@ -102,9 +102,9 @@ public class Trapper : Template.BilateralnessRole
                  isImpostor ? Palette.ImpostorRed : FTrapper.RoleColor,
                  isImpostor ? RoleCategory.Impostor : RoleCategory.Crewmate,
                  isImpostor ? Side.Impostor : Side.Crewmate, isImpostor ? Side.Impostor : Side.Crewmate,
-                 isImpostor ? ImpostorRoles.Impostor.impostorSideSet : CrewmateRoles.Crewmate.crewmateSideSet,
-                 isImpostor ? ImpostorRoles.Impostor.impostorSideSet : CrewmateRoles.Crewmate.crewmateSideSet,
-                 isImpostor ? ImpostorRoles.Impostor.impostorEndSet : CrewmateRoles.Crewmate.crewmateEndSet,
+                 isImpostor ? Impostor.Impostor.impostorSideSet : Crewmate.Crewmate.crewmateSideSet,
+                 isImpostor ? Impostor.Impostor.impostorSideSet : Crewmate.Crewmate.crewmateSideSet,
+                 isImpostor ? Impostor.Impostor.impostorEndSet : Crewmate.Crewmate.crewmateEndSet,
                  false, isImpostor ? VentPermission.CanUseUnlimittedVent : VentPermission.CanNotUse,
                  isImpostor, isImpostor, isImpostor, () => { return Roles.F_Trapper; }, isImpostor)
     {

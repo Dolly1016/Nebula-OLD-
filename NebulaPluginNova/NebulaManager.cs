@@ -50,7 +50,7 @@ public class NebulaManager : MonoBehaviour
         //スクリーンショット
         if (NebulaInput.GetKeyDown(KeyCode.P)) StartCoroutine(CaptureAndSave().WrapToIl2Cpp());
 
-        if (NebulaInput.GetKeyDown(KeyCode.T)) NebulaPlugin.Test();
+        //if (NebulaInput.GetKeyDown(KeyCode.T)) NebulaPlugin.Test();
         if (NebulaInput.GetKeyDown(KeyCode.F5) && NebulaInput.GetKey(KeyCode.LeftControl)) NebulaGameEnd.RpcSendNoGame();
 
         //ダイアログ管理
@@ -62,23 +62,14 @@ public class NebulaManager : MonoBehaviour
             allModUi[i].Item2?.gameObject.SetActive(i == allModUi.Count - 1);
         }
 
+        if (allModUi.Count > 0 && Input.GetKeyDown(KeyCode.Escape))
+            allModUi[allModUi.Count - 1].Item2?.OnClick.Invoke();
+
         MoreCosmic.Update();
     }
 
     public void Awake()
     {
         Instance = this;
-    }
-
-}
-
-[HarmonyPatch(typeof(ControllerManager),nameof(ControllerManager.IsUiControllerActive),MethodType.Getter)]
-public class UIPatch
-{
-    static public void Postfix(ControllerManager __instance,ref bool __result)
-    {
-        if (NebulaManager.Instance == null) return;
-
-        __result |= NebulaManager.Instance.HasSomeUI;
     }
 }

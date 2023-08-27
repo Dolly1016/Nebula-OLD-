@@ -4,20 +4,21 @@ global using Nebula.Expansions;
 global using Nebula.Utilities;
 global using Nebula.Game;
 global using Nebula.Player;
+global using Nebula.Modules;
 global using UnityEngine;
 global using Nebula.Modules.ScriptComponents;
+global using System.Collections;
 global using Timer = Nebula.Modules.ScriptComponents.Timer;
 using BepInEx;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
 using Nebula;
-using Nebula.Game;
-using Nebula.Modules;
 using Nebula.Roles;
 using System.Runtime.InteropServices;
 using UnityEngine.SceneManagement;
 using Nebula.Configuration;
 using System.Reflection;
+using UnityEngine.Rendering;
 
 namespace Nebula;
 
@@ -34,7 +35,7 @@ public class NebulaPlugin : BasePlugin
     public const bool IsSnapshot = false;
     public const string MajorCodeName = "Experimental"/*"Haro"*/;
     public const string SnapshotVersion = "23.08.01";
-    public const string VisualPluginVersion = "1";
+    public const string VisualPluginVersion = "2";
 
     public static bool FinishedPreload { get; private set; } = false;
 
@@ -111,9 +112,20 @@ public class NebulaPlugin : BasePlugin
         });
     }
 
+
+    private static SpriteLoader testSprite = SpriteLoader.FromResource("Nebula.Resources.LightMask.png", 100f);
     public static void Test()
     {
-        
+        /*
+        var renderer = UnityHelper.CreateObject<SpriteRenderer>("Map", null, new Vector3(0, 0, -400f), LayerExpansion.GetUILayer());
+        renderer.sprite = NebulaAsset.GetMapSprite(0, int.MaxValue);
+        renderer.sharedMaterial = HatManager.Instance.PlayerMaterial;
+        PlayerMaterial.SetColors(Color.blue, renderer);
+        */
+
+        var renderer = UnityHelper.CreateObject<SpriteRenderer>("Light",null,PlayerControl.LocalPlayer.transform.position + new Vector3(0,0,-50f),LayerExpansion.GetDrawShadowsLayer());
+        renderer.sprite = testSprite.GetSprite();
+        renderer.material.shader = NebulaAsset.MultiplyBackShader;
     }
 
 

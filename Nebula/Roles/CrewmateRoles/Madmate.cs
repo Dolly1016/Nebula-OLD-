@@ -1,4 +1,4 @@
-﻿namespace Nebula.Roles.CrewmateRoles;
+﻿namespace Nebula.Roles.Crewmate;
 
 public class Madmate : Role
 {
@@ -227,7 +227,7 @@ public class Madmate : Role
 
     public Madmate()
             : base("Madmate", "madmate", Palette.ImpostorRed, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
-                 Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, ImpostorRoles.Impostor.impostorEndSet,
+                 Crewmate.crewmateSideSet, Crewmate.crewmateSideSet, Impostor.Impostor.impostorEndSet,
                  true, VentPermission.CanUseUnlimittedVent, true, false, false)
     {
     }

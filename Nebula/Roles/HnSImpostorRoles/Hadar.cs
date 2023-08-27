@@ -145,7 +145,7 @@ public class HnSHadar : Role
 
     public HnSHadar()
             : base("HnSHadar", "hadarHnS", Palette.ImpostorRed, RoleCategory.Impostor, Side.Impostor, Side.Impostor,
-                 ImpostorRoles.Impostor.impostorSideSet, ImpostorRoles.Impostor.impostorSideSet, ImpostorRoles.Impostor.impostorEndSet,
+                 Impostor.Impostor.impostorSideSet, Impostor.Impostor.impostorSideSet, Impostor.Impostor.impostorEndSet,
                  true, VentPermission.CanNotUse, false, true, true)
     {
         IsHideRole = true;

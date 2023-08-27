@@ -1,7 +1,7 @@
 ﻿using Il2CppInterop.Generator;
 using Nebula.Configuration;
 using Nebula.Roles;
-using Nebula.Roles.ImpostorRoles;
+using Nebula.Roles.Impostor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +17,7 @@ public class NebulaEndCriteria
     public bool IsValidCriteria => (gameModeMask & GeneralConfigurations.CurrentGameMode) != 0;
 
     public Func<CustomEndCondition?>? OnUpdate = null;
-    public Func<PlayerControl?,CustomEndCondition?>? OnExiled = null;
+    public Func<PlayerControl?,Tuple<CustomEndCondition,int>?>? OnExiled = null;
     public Func<CustomEndCondition?>? OnTaskUpdated = null;
 
     public NebulaEndCriteria(int gameModeMask)
@@ -70,7 +70,7 @@ public class NebulaEndCriteria
         {
             if (NebulaGameManager.Instance?.AllPlayerInfo().Any(p =>
             {
-                if (p.MyPlayer.Data.IsDead) return false;
+                if (p.IsDead) return false;
                 if (p.Role.Role.Team == Impostor.MyTeam) return true;
                 return false;
             }) ?? true) return null;
@@ -103,7 +103,7 @@ public class NebulaEndCriteria
             int totalAlive = 0;
             foreach(var p in NebulaGameManager.Instance!.AllPlayerInfo())
             {
-                if (p.MyPlayer.Data.IsDead) continue;
+                if (p.IsDead) continue;
                 totalAlive++;
                 if (p.Role.Role.Team == Impostor.MyTeam) impostors++;
             }
@@ -137,7 +137,24 @@ public class CriteriaManager
         }
         return end;
     }
+
+    public Tuple<CustomEndCondition, int>? CheckEnd(Func<NebulaEndCriteria, Tuple<CustomEndCondition,int>?> checker)
+    {
+        //ホスト以外はゲーム終了チェックをしない
+        if (!AmongUsClient.Instance.AmHost) return null;
+
+        Tuple<CustomEndCondition, int>? end = null;
+        foreach (var c in monitorings)
+        {
+            var temp = checker.Invoke(c);
+            if (temp == null) continue;
+            if (end != null && temp.Item1.Priority < end.Item1.Priority) continue;
+            end = temp;
+        }
+        return end;
+    }
+
     public CustomEndCondition? OnUpdate() => CheckEnd(c=>c.OnUpdate?.Invoke());
-    public CustomEndCondition? OnExiled(PlayerControl? exiled) => CheckEnd(c => c.OnExiled?.Invoke(exiled));
+    public Tuple<CustomEndCondition,int>? OnExiled(PlayerControl? exiled) => CheckEnd(c => c.OnExiled?.Invoke(exiled));
     public CustomEndCondition? OnTaskUpdated() => CheckEnd(c => c.OnTaskUpdated?.Invoke());
 }

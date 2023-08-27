@@ -46,3 +46,12 @@ public static class StartGamePatch
         __instance.ShouldCheckForGameEnd = false;
     }
 }
+
+[HarmonyPatch(typeof(RoleManager),nameof(RoleManager.AssignRoleOnDeath))]
+public static class SetGhostRolePatch
+{
+    static bool Prefix()
+    {
+        return false;
+    }
+}

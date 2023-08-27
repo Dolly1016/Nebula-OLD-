@@ -15,6 +15,11 @@ public static class Helpers
         return PlayerControl.AllPlayerControls.Find((Il2CppSystem.Predicate<PlayerControl>)((p) => p.PlayerId == id));
     }
 
+    public static DeadBody? GetDeadBody(byte id)
+    {
+        return AllDeadBodies().FirstOrDefault((p) => p.ParentId == id);
+    }
+
     public static int ComputeConstantHash(this string str)
     {
         const int MulPrime = 127;
@@ -41,5 +46,11 @@ public static class Helpers
         return deadBodies;
     }
 
-    public static bool InCommSab => PlayerTask.PlayerHasTaskOfType<IHudOverrideTask>(PlayerControl.LocalPlayer);
+    public static int[] GetRandomArray(int length)
+    {
+        var array = new int[length];
+        for (int i = 0; i < length; i++) array[i] = i;
+        return array.OrderBy(i => Guid.NewGuid()).ToArray();
+    }
+    
 }

@@ -6,6 +6,7 @@ using System.Collections;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TMPro;
 using Twitch;
 using UnityEngine;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -23,6 +24,13 @@ public class VanillaAsset
     static public AudioClip SelectClip { get; private set; }
     static public Material StandardMaskedFontMaterial { get;private set; }
     static public Material OblongMaskedFontMaterial { get; private set; }
+    static private TMP_FontAsset? preSpawnFont = null;
+    static public TMP_FontAsset PreSpawnFont { get
+        {
+            if(preSpawnFont==null) preSpawnFont = UnityHelper.FindAsset<TMP_FontAsset>("DIN_Pro_Bold_700 SDF")!;
+            return preSpawnFont;
+        }
+    }
     static public GameSettingMenu PlayerOptionsMenuPrefab { get; private set; }
     static public IEnumerator CoLoadAsset()
     {
@@ -43,6 +51,7 @@ public class VanillaAsset
 
         StandardMaskedFontMaterial = UnityHelper.FindAsset<Material>("LiberationSans SDF - BlackOutlineMasked")!;
         OblongMaskedFontMaterial = UnityHelper.FindAsset<Material>("Brook Atlas Material Masked")!;
+       
 
         PlayerOptionsMenuPrefab = UnityHelper.FindAsset<GameSettingMenu>("PlayerOptionsMenu")!;
 
@@ -96,6 +105,8 @@ public class VanillaAsset
         scroller.ScrollbarY = scrollBar;
         scroller.active = true;
         //scroller.Colliders = new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Collider2D>(new Collider2D[] { hitBox });
+
+        scroller.ScrollToTop();
 
         return scroller;
     }

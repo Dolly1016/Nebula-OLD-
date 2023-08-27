@@ -97,7 +97,7 @@ public static class AssetLoader
         Paparazzo = assetBundleBundle.LoadAsset<AudioClip>("Camera").DontUnload();
     }
 
-    public static Sprite GetMapSprite(byte mapId,Vector2 size,Int32 mask)
+    public static Sprite GetMapSprite(byte mapId,Int32 mask, Vector2? size = null)
     {
         GameObject prefab;
         switch (mapId)
@@ -119,10 +119,11 @@ public static class AssetLoader
                 break;
         }
         if (prefab == null) return null;
+        if (size == null) size = prefab.transform.GetChild(0).GetChild(0).GetComponent<SpriteRenderer>().sprite.bounds.size;
         var obj = GameObject.Instantiate(prefab);
         Camera cam = obj.AddComponent<Camera>();
         cam.orthographic = true;
-        cam.orthographicSize = size.y/200;
+        cam.orthographicSize = size.Value.y / 200;
         cam.transform.localScale = Vector3.one;
         cam.clearFlags = CameraClearFlags.SolidColor;
         cam.backgroundColor = Color.clear;

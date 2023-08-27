@@ -20,7 +20,7 @@ public class Timer : INebulaScriptComponent
         currentTime = max;
         return this;
     }
-    public Timer Continue()
+    public Timer Resume()
     {
         isActive = true;
         return this;

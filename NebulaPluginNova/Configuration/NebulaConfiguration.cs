@@ -190,6 +190,8 @@ public class ConfigurationHolder
         MetaContext context = new();
         foreach(var config in myConfigurations)
         {
+            if (!config.IsShown) continue;
+
             var editor = config.GetEditor();
             if (editor != null) context.Append(editor);
         }
@@ -197,6 +199,7 @@ public class ConfigurationHolder
     }
 
     public int TabMask => tabMask;
+    public int GameModeMask => gamemodeMask;
     public bool IsShown => ((entry?.CurrentValue ?? 1) == 1) && (predicate?.Invoke() ?? true);
     public void Toggle()
     {
@@ -263,13 +266,14 @@ public class NebulaConfiguration
 
     static public Func<object?, string> PercentageDecorator = (mapped) => mapped + Language.Translate("options.percentage");
     static public Func<object?, string> OddsDecorator = (mapped) => mapped + Language.Translate("options.cross");
+    static public Func<object?, string> SecDecorator = (mapped) => mapped + Language.Translate("options.sec");
     static public Func<IMetaContext?> EmptyEditor = () => null;
 
     public NebulaConfiguration(ConfigurationHolder? holder, string id,ITextComponent? title, int maxValue,int defaultValue,int invalidatedValue)
     {
         MaxValue = maxValue;
         defaultValue = Mathf.Clamp(defaultValue,0,maxValue);
-        InvalidatedValue = invalidatedValue;
+        InvalidatedValue = Mathf.Clamp(invalidatedValue, 0, maxValue);
 
         MyHolder = holder;
         MyHolder?.RegisterOption(this);
@@ -282,13 +286,13 @@ public class NebulaConfiguration
     }
 
     public NebulaConfiguration(ConfigurationHolder holder, string id, ITextComponent? title, int minValue,int maxValue, int defaultValue, int invalidatedValue) :
-        this(holder, id, title, maxValue-minValue+1, defaultValue-minValue, invalidatedValue - minValue)
+        this(holder, id, title, maxValue-minValue, defaultValue-minValue, invalidatedValue - minValue)
     {
         Mapper = (i) => i + minValue;
     }
 
     public NebulaConfiguration(ConfigurationHolder holder, string id, ITextComponent? title, bool defaultValue, bool invalidatedValue) :
-        this(holder, id, title, 2, defaultValue ? 1 : 0, invalidatedValue ? 1 : 0)
+        this(holder, id, title, 1, defaultValue ? 1 : 0, invalidatedValue ? 1 : 0)
     {
         Mapper = (i) => i == 1;
         Decorator = (v) => Language.Translate((bool)v! ? "options.switch.on" : "options.switch.off");
@@ -298,6 +302,14 @@ public class NebulaConfiguration
         this(holder,id, title, selections.Length-1,Array.IndexOf(selections,defaultValue), Array.IndexOf(selections, invalidatedValue))
     {
         Mapper = (i) => selections[i];
+        Decorator = (v) => Language.Translate((string?)v);
+    }
+
+    public NebulaConfiguration(ConfigurationHolder holder, string id, ITextComponent? title, string[] selections, int defaultIndex,int invalidatedIndex) :
+       this(holder, id, title, selections.Length - 1, defaultIndex, invalidatedIndex)
+    {
+        Mapper = (i) => selections[i];
+        Decorator = (v) => Language.Translate((string?)v);
     }
 
     public NebulaConfiguration(ConfigurationHolder holder, string id, ITextComponent? title, float[] selections, float defaultValue, float invalidatedValue) :
@@ -407,6 +419,7 @@ public class ConfigurationTab
     public static ConfigurationTab Settings = new ConfigurationTab(0x01,"options.tab.setting",new Color(0.75f,0.75f,0.75f));
     public static ConfigurationTab CrewmateRoles = new ConfigurationTab(0x02, "options.tab.crewmate", Palette.CrewmateBlue);
     public static ConfigurationTab ImpostorRoles = new ConfigurationTab(0x04, "options.tab.impostor", Palette.ImpostorRed);
+    public static ConfigurationTab NeutralRoles = new ConfigurationTab(0x08, "options.tab.neutral", new Color(244f / 255f, 211f / 255f, 53f / 255f));
 
     private int bitFlag;
     private string translateKey { get; init; }
@@ -431,7 +444,7 @@ public class ConfigurationTab
             case RoleCategory.ImpostorRole:
                 return ImpostorRoles;
             case RoleCategory.NeutralRole:
-                return Settings;
+                return NeutralRoles;
         }
         return Settings;
     }

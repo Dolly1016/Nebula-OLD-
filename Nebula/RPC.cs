@@ -1355,16 +1355,16 @@ static class RPCEvents
         //Morphingを確定させる
         Game.GameData.data.EstimationAI.Determine(Roles.Roles.Morphing);
 
-        Events.LocalEvent.Activate(new Roles.ImpostorRoles.Morphing.MorphEvent(playerId, outfit));
+        Events.LocalEvent.Activate(new Roles.Impostor.Morphing.MorphEvent(playerId, outfit));
     }
 
     public static void MorphCancel(byte playerId)
     {
         Events.LocalEvent.Inactivate((Events.LocalEvent e) =>
         {
-            if (e is Roles.ImpostorRoles.Morphing.MorphEvent)
+            if (e is Roles.Impostor.Morphing.MorphEvent)
             {
-                return ((Roles.ImpostorRoles.Morphing.MorphEvent)e).PlayerId == playerId;
+                return ((Roles.Impostor.Morphing.MorphEvent)e).PlayerId == playerId;
             }
             return false;
         });

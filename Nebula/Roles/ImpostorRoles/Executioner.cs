@@ -4,7 +4,7 @@ using System.Text;
 using static Il2CppSystem.Globalization.CultureInfo;
 using static UnityEngine.GraphicsBuffer;
 
-namespace Nebula.Roles.ImpostorRoles;
+namespace Nebula.Roles.Impostor;
 
 public class Executioner : Role
 {

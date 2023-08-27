@@ -1,4 +1,4 @@
-﻿namespace Nebula.Roles.CrewmateRoles;
+﻿namespace Nebula.Roles.Crewmate;
 
 public class Doctor : Role
 {

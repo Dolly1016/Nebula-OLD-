@@ -1,4 +1,4 @@
-﻿namespace Nebula.Roles.CrewmateRoles;
+﻿namespace Nebula.Roles.Crewmate;
 
 public class Spy : Role
 {
@@ -50,7 +50,7 @@ public class Spy : Role
 
     public Spy()
             : base("Spy", "spy", Palette.ImpostorRed, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
-                 Crewmate.crewmateSideSet, ImpostorRoles.Impostor.impostorSideSet, Crewmate.crewmateEndSet,
+                 Crewmate.crewmateSideSet, Impostor.Impostor.impostorSideSet, Crewmate.crewmateEndSet,
                  false, VentPermission.CanUseLimittedVent, false, false, true)
     {
         DeceiveImpostorInNameDisplay = true;

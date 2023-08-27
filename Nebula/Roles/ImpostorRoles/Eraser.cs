@@ -1,4 +1,4 @@
-﻿namespace Nebula.Roles.ImpostorRoles;
+﻿namespace Nebula.Roles.Impostor;
 
 public class Eraser : Role
 {

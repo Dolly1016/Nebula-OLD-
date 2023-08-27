@@ -4,15 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Nebula.Roles.CrewmateRoles;
+namespace Nebula.Roles.Crewmate;
 
 public class Madmate : ConfigurableStandardRole
 {
     static public Madmate MyRole = new Madmate();
 
     public override RoleCategory RoleCategory => RoleCategory.CrewmateRole;
-
-    public override string InternalName => "madmate";
 
     public override string LocalizedName => "madmate";
     public override Color RoleColor => Palette.ImpostorRed;
@@ -22,7 +20,7 @@ public class Madmate : ConfigurableStandardRole
 
     public class Instance : Crewmate.Instance
     {
-        public override AbstractRole Role => Madmate.MyRole;
+        public override AbstractRole Role => MyRole;
         public Instance(PlayerControl player) : base(player)
         {
         }

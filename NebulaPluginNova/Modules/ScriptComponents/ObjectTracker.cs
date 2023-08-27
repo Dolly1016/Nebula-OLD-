@@ -3,12 +3,28 @@ using static UnityEngine.GraphicsBuffer;
 
 namespace Nebula.Modules.ScriptComponents;
 
-public static class ObjectTrackerHelper
+
+public static class ObjectTrackers
 {
-    static public Func<IEnumerable<PlayerControl>> PlayerSupplier = () => PlayerControl.AllPlayerControls.GetFastEnumerator();
-    static public Func<PlayerControl,Vector2> DefaultPosConverter = (p) => p.GetTruePosition();
-    static public Func<PlayerControl, SpriteRenderer> DefaultRendererConverter = (p) => p.cosmetics.currentBodySprite.BodySprite;
+    static private Func<IEnumerable<PlayerControl>> PlayerSupplier = () => PlayerControl.AllPlayerControls.GetFastEnumerator();
+    static private Func<PlayerControl, Vector2> DefaultPlayerPosConverter = (p) => p.GetTruePosition();
+    static private Func<PlayerControl, SpriteRenderer> DefaultPlayerRendererConverter = (p) => p.cosmetics.currentBodySprite.BodySprite;
+
+    static private Func<IEnumerable<DeadBody>> DeadBodySupplier = () => Helpers.AllDeadBodies();
+    static private Func<DeadBody, Vector2> DefaultDeadBodyPosConverter = (d) => d.TruePosition;
+    static private Func<DeadBody, SpriteRenderer> DefaultDeadBodyRendererConverter = (d) => d.bodyRenderers[0];
+
+    public static ObjectTracker<PlayerControl> ForPlayer(float distance, PlayerControl tracker, Predicate<PlayerControl>? candidatePredicate)
+    {
+        return new ObjectTracker<PlayerControl>(distance, tracker, PlayerSupplier, candidatePredicate, DefaultPlayerPosConverter, DefaultPlayerRendererConverter);
+    }
+
+    public static ObjectTracker<DeadBody> ForDeadBody(float distance, PlayerControl tracker, Predicate<DeadBody>? candidatePredicate)
+    {
+        return new ObjectTracker<DeadBody>(distance, tracker, DeadBodySupplier, candidatePredicate, DefaultDeadBodyPosConverter, DefaultDeadBodyRendererConverter);
+    }
 }
+
 public class ObjectTracker<T> : INebulaScriptComponent where T : MonoBehaviour 
 {
     public T? CurrentTarget { get; private set; }

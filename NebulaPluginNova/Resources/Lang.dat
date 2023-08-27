@@ -1,3 +1,11 @@
+# Title
+
+"title.buttons.nebula" : "NEBULA"
+"title.label.nebula" : "Nebula on the Ship"
+
+"title.buttons.update" : "Update to Latest NoS"
+"title.buttons.addons" : "Add-ons"
+
 # Game Mode
 
 "gamemode.standard" : "Standard"
@@ -9,6 +17,7 @@
 "options.switch.on" : "On"
 "options.percentage" : "%"
 "options.cross" : "x"
+"options.sec" : "s"
 "options.followPrimaryChance" : "-"
 
 "options.gamemode" : "Game Mode"
@@ -19,6 +28,25 @@
 "options.tab.neutral" : "[Neutral] Roles"
 "options.tab.ghost" : "[Ghost] Roles"
 "options.tab.modifier" : "[Modifiers]"
+
+"options.assignment" : "Assignment Options"
+"options.assignment.detail" : "About the number of role assignments"
+"options.assignment.crewmate" : "Crewmate Role"
+"options.assignment.impostor" : "Impostor Role"
+"options.assignment.neutral" : "Neutral Role"
+"options.assignment.unlimited" : "Unlimited"
+
+"options.soloFreePlay" : "Solo Free Play Options"
+"options.soloFreePlay.detail" : "About dummies"
+"options.soloFreePlay.numOfDummies" : "Num Of Dummies"
+
+"options.map" : "Map Options"
+"options.map.detail" : "About spawning method"
+"options.map.spawnMethod" : "Spawning Method"
+"options.map.spawnMethod.default" : "Default"
+"options.map.spawnMethod.selective" : "Selective"
+"options.map.spawnMethod.random" : "Random"
+"options.map.spawnCandidates" : "Num of Spawning Candidates"
 
 "options.role.count" : "Role Assignment"
 "options.role.chance" : "Assignment Chance"
@@ -31,14 +59,40 @@
 "role.crewmate.blurb" : "Do Tasks"
 "options.role.crewmate.detail" : "Crewmates with no special abilities."
 
+"role.agent.name" : "Agent"
+"role.agent.blurb" : "Do Tasks More"
+"options.role.agent.detail" : "You can gain extra tasks to cover someone else's incomplete ones."
+"options.role.agent.numOfExemptedTasks" : "Num of Exempted Tasks"
+"options.role.agent.numOfExtraTasks" : "Num of Extra Tasks"
+
+"role.bait.name" : "Bait"
+"role.bait.blurb" : "Bait Your Enemies"
+"options.role.bait.detail" : "Your murderer reports your body immediately."
+"options.role.bait.showKillFlash" : "Show Kill Flash"
+
 "role.sheriff.name" : "Sheriff"
 "role.sheriff.blurb" : "Shoot the Impostor"
 "options.role.sheriff.detail" : "Sheriff can kill other members.<br>Attempting to kill a Crewmate will die instead."
 "options.role.sheriff.canKillMadmate" : "Can Kill Madmate"
 
+"role.necromancer.name" : "Necromancer"
+"role.necromancer.blurb" : "Revive Phantoms"
+"options.role.necromancer.detail" : "Necromancer can raise dead bodies from the dead!<br>They drags a corpse for a resurrection ritual."
+"options.role.necromancer.reviveCoolDown" : "Revive Cool Down"
+"options.role.necromancer.reviveDuration" : "Revive Duration"
+"role.necromancer.phantomMessage" : "Please take me to %ROOM%..."
+
 "role.madmate.name" : "Madmate"
 "role.madmate.blurb" : "Assist Impostors"
 "options.role.madmate.detail" : "Madmate is on the side of imposters.<br>Obstruct crewmates to help imposters win."
+
+"role.phosphorus.name" : "Phosphorus"
+"role.phosphorus.blurb" : "Pierce the Darkness"
+"options.role.phosphorus.detail" : "Lamps that Phosphorus places give a better view of the surroundings.<br>Imposters will avoid kills around lamps. "
+"options.role.phosphorus.numOfLamps" : "Num of Lamps"
+"options.role.phosphorus.placeCoolDown" : "Place Cool Down"
+"options.role.phosphorus.lampCoolDown" : "Lamp Cool Down"
+"options.role.phosphorus.lampDuration" : "Lamp Duration"
 
 # Impostor Roles
 
@@ -46,10 +100,135 @@
 "role.impostor.blurb" : "Kill and Sabotage"
 "options.role.impostor.detail" : "Impostors with no special abilities."
 
+"role.camouflager.name" : "Camouflager"
+"role.camouflager.blurb" : "Camouflage and Kill"
+"options.role.camouflager.detail" : "Camouflager prevents players from identify each other."
+"options.role.camouflager.camoCoolDown" : "Camo. Cool Down"
+"options.role.camouflager.camoDuration" : "Camo. Duration"
+
+"role.cleaner.name" : "Cleaner"
+"role.cleaner.blurb" : "Kill Everyone and Leave No Traces"
+"options.role.cleaner.detail" : "Cleaner can obliterate corpses."
+"options.role.cleaner.cleanCoolDown" : "Clean Cool Down"
+
+"role.morphing.name" : "Morphing"
+"role.morphing.blurb" : "Change Your Look to Not Get Caught"
+"options.role.morphing.detail" : "Morphing samples the appearance of the player<br>and transforms into that form."
+"options.role.morphing.sampleCoolDown" : "Sample Cool Down"
+"options.role.morphing.morphCoolDown" : "Morph Cool Down"
+"options.role.morphing.morphDuration" : "Morph Duration"
+
+"role.painter.name" : "Painter"
+"role.painter.blurb" : "No One Knows You Anymore"
+"options.role.painter.detail" : "Painter samples the appearance of the player<br>and paints the form onto players."
+"options.role.painter.sampleCoolDown" : "Sample Cool Down"
+"options.role.painter.paintCoolDown" : "Paint Cool Down"
+
+# Neutral Roles
+
+"role.jester.name" : "Jester"
+"role.jester.blurb" : "Get Voted Out"
+"options.role.jester.detail" : "Jester schemes to be exiled to win.<br>Crewmates must not vote for the Jester!"
+"options.role.jester.canDragDeadBody" : "Can Drag Dead Body"
+
+"role.vulture.name" : "Vulture"
+"role.vulture.blurb" : "Eat Corpses to Win"
+"options.role.vulture.detail" : "Vulture eats dead bodies to win.<br>Crewmates must report before the corpse is eaten."
+"options.role.vulture.eatCoolDown" : "Eat Cool Down"
+"options.role.vulture.numOfTheEatenToWin" : "Num of the Eaten to Win"
+
 # Teams
 
 "teams.crewmate" : "Crewmate"
 "teams.impostor" : "Impostor"
+"teams.jester" : "Jester"
+"teams.vulture" : "Vulture"
+
+# Location
+
+"location.skeld.admin" : "Admin"
+"location.skeld.cafeteria" : "Cafeteria"
+"location.skeld.comms" : "Comms."
+"location.skeld.electrical" : "Electrical"
+"location.skeld.lifeSupp" : "O2"
+"location.skeld.lifeSupport" : "O2"
+"location.skeld.lowerEngine" : "Lower Engine"
+"location.skeld.medBay" : "Med Bay"
+"location.skeld.nav" : "Navigation"
+"location.skeld.navigation" : "Navigation"
+"location.skeld.reactor" : "Reactor"
+"location.skeld.security" : "Security"
+"location.skeld.shields" : "Shields"
+"location.skeld.storage" : "Storage"
+"location.skeld.upperEngine" : "Upper Engine"
+"location.skeld.weapons" : "Weapons"
+"location.mira.admin" : "Admin"
+"location.mira.balcony" : "Balcony"
+"location.mira.cafeteria" : "Cafeteria"
+"location.mira.comms" : "Comms."
+"location.mira.decontamination" : "Decontamination"
+"location.mira.greenhouse" : "Greenhouse"
+"location.mira.laboratory" : "Laboratory"
+"location.mira.lockerRoom" : "Locker Room"
+"location.mira.medBay" : "Med Bay"
+"location.mira.office" : "Office"
+"location.mira.reactor" : "Reactor"
+"location.mira.rendezvous" : "Rendezvous"
+"location.mira.storage" : "Storage"
+"location.polus.abditory" : "Abditory"
+"location.polus.admin" : "Admin"
+"location.polus.comms" : "Comms."
+"location.polus.drill" : "Drill"
+"location.polus.dropship" : "Dropship"
+"location.polus.ejection" : "Ejection"
+"location.polus.electrical" : "Electrical"
+"location.polus.laboratory" : "Laboratory"
+"location.polus.lifeSupp" : "O2"
+"location.polus.lifeSupport" : "O2"
+"location.polus.office" : "Office"
+"location.polus.security" : "Security"
+"location.polus.snowdrift" : "Snowdrift"
+"location.polus.specimens" : "Specimens"
+"location.polus.storage" : "Storage"
+"location.polus.weapons" : "Weapons"
+"location.airship.brig" : "Brig"
+"location.airship.engine" : "Engine Room"
+"location.airship.hallway" : "Main Hall"
+"location.airship.kitchen" : "Kitchen"
+"location.airship.record" : "Records"
+"location.airship.storage" : "Cargo Bay"
+"location.airship.armory" : "Armory"
+"location.airship.cockpit" : "Cockpit"
+"location.airship.comms" : "Comms."
+"location.airship.electrical" : "Electrical"
+"location.airship.gapRoom" : "Gap Room"
+"location.airship.lounge" : "Lounge"
+"location.airship.medical" : "Medical"
+"location.airship.meetingRoom" : "Meeting Room"
+"location.airship.security" : "Security"
+"location.airship.shower" : "Shower"
+"location.airship.toilet" : "Toilet"
+"location.airship.vault" : "Vault"
+"location.airship.viewingDeck" : "Viewing Deck"
+
+# Button
+
+"button.label.camo" : "camo"
+"button.label.clean" : "clean"
+"button.label.drag" : "drag"
+"button.label.eat" : "eat"
+"button.label.lantern" : "lantern"
+"button.label.morph" : "morph"
+"button.label.place" : "place"
+"button.label.release" : "release"
+"button.label.revive" : "revive"
+"button.label.sample" : "sample"
+
+# Game
+
+"game.prespawn.countdown" : "Time Remaining: %SECOND%"
+"game.prespawn.waiting" : "Wait For Other Players..."
+"game.prespawn.spawnIn" : "You Spawn In"
 
 # Statistics
 
@@ -58,8 +237,18 @@
 "statistics.events.kill" : "Kill"
 "statistics.events.misfire" : "Misfire"
 "statistics.events.exiled" : "Exiled"
+"statistics.events.report" : "Report"
+"statistics.events.baitReport" : "Bait Report"
+"statistics.events.emergency" : "Emergency"
+"statistics.events.endMeeting" : "Meeting End"
+"statistics.events.disconnect" : "Disconnect"
+"statistics.events.revive" : "Revive"
+"statistics.events.eat" : "Eat"
+"statistics.events.clean" : "Clean"
 
 # Endings
 
-"end.crewmate" : "Crewmate win"
+"end.crewmate" : "Crewmates win"
 "end.impostor" : "Impostors win"
+"end.jester" : "Jester Wins"
+"end.vulture" : "Vulture Wins"

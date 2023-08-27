@@ -1,7 +1,9 @@
 ﻿using AmongUs.Data.Player;
+using Epic.OnlineServices.Presence;
 using HarmonyLib;
 using Nebula.Game;
 using Nebula.Modules;
+using static UnityEngine.RemoteConfigSettingsHelper;
 
 namespace Nebula.Patches;
 
@@ -86,5 +88,117 @@ public static class PlayerCompleteTaskPatch
         if (!__instance.AmOwner) return;
 
         __instance.GetModInfo().Tasks.OnCompleteTask();
+        __instance.GetModInfo().RoleAction((r)=>r.OnTaskCompleteLocal());
+    }
+}
+
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.StartMeeting))]
+public static class PlayerStartMeetingPatch
+{
+    public static void Prefix(PlayerControl __instance, [HarmonyArgument(0)] GameData.PlayerInfo info)
+    {
+        TranslatableTag tag = info == null ? EventDetail.EmergencyButton : EventDetail.Report;
+
+        if (info != null)
+        {
+            var targetInfo = Helpers.GetPlayer(info.PlayerId)!.GetModInfo();
+
+            //ベイトレポートチェック
+            if (targetInfo?.Role.Role is Roles.Crewmate.Bait && ((targetInfo.MyKiller?.PlayerId ?? byte.MaxValue) == __instance.PlayerId) && (targetInfo.DeathTimeStamp.HasValue && NebulaGameManager.Instance.CurrentTime - targetInfo.DeathTimeStamp.Value < 3f))
+                tag = EventDetail.BaitReport;
+        }
+
+        NebulaGameManager.Instance.GameStatistics.RecordEvent(new GameStatistics.Event(
+            info == null ? GameStatistics.EventVariation.EmergencyButton : GameStatistics.EventVariation.Report, __instance.PlayerId,
+            info == null ? 0 : (1 << info.PlayerId))
+        { RelatedTag = tag });
+    }
+}
+
+[HarmonyPatch(typeof(OverlayKillAnimation), nameof(OverlayKillAnimation.Initialize))]
+class OverlayKillAnimationPatch
+{
+    public static bool Prefix(OverlayKillAnimation __instance, [HarmonyArgument(0)] GameData.PlayerInfo kInfo, [HarmonyArgument(1)] GameData.PlayerInfo vInfo)
+    {
+        if (__instance.killerParts)
+        {
+            GameData.PlayerOutfit? currentOutfit = NebulaGameManager.Instance?.GetModPlayerInfo(kInfo.PlayerId)?.CurrentOutfit;
+            if (currentOutfit != null)
+            {
+                __instance.killerParts.SetBodyType(PlayerBodyTypes.Normal);
+                __instance.killerParts.UpdateFromPlayerOutfit(currentOutfit, PlayerMaterial.MaskType.None, false, false);
+                __instance.killerParts.ToggleName(false);
+                __instance.LoadKillerSkin(currentOutfit);
+                __instance.LoadKillerPet(currentOutfit);
+            }
+        }
+        if (vInfo != null && __instance.victimParts)
+        {
+            GameData.PlayerOutfit? defaultOutfit = NebulaGameManager.Instance?.GetModPlayerInfo(vInfo.PlayerId)?.DefaultOutfit;
+            if (defaultOutfit != null)
+            {
+                __instance.victimHat = defaultOutfit.HatId;
+                __instance.killerParts.SetBodyType(PlayerBodyTypes.Normal);
+                __instance.victimParts.UpdateFromPlayerOutfit(defaultOutfit, PlayerMaterial.MaskType.None, false, false);
+                __instance.victimParts.ToggleName(false);
+                __instance.LoadVictimSkin(defaultOutfit);
+                __instance.LoadVictimPet(defaultOutfit);
+            }
+        }
+        return false;
+    }
+}
+
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetTasks))]
+class SetTaskPAtch
+{
+    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] Il2CppSystem.Collections.Generic.List<GameData.TaskInfo> tasks)
+    {
+        if (!__instance.AmOwner) return true;
+
+        var tasksList = tasks.ToArray().ToList();
+        int num = tasksList.Count;
+        var info = __instance.GetModInfo();
+        info.RoleAction((r)=>r.OnSetTaskLocal(ref tasksList));
+        if (num != tasksList.Count) info.Tasks.ReplaceTasks(tasksList.Count);
+
+        __instance.StartCoroutine(CoSetTasks().WrapToIl2Cpp());
+
+        IEnumerator CoSetTasks()
+        {
+            while (!ShipStatus.Instance) yield return null;
+
+            HudManager.Instance.TaskStuff.SetActive(true);
+
+            for (int i = 0; i < __instance.myTasks.Count; i++) GameObject.Destroy(__instance.myTasks[i].gameObject);
+            __instance.myTasks.Clear();
+
+            __instance.Data.Role.SpawnTaskHeader(__instance);
+            for (int i = 0; i < tasksList.Count; i++)
+            {
+                GameData.TaskInfo taskInfo = tasksList[i];
+                NormalPlayerTask normalPlayerTask = GameObject.Instantiate<NormalPlayerTask>(ShipStatus.Instance.GetTaskById(taskInfo.TypeId), __instance.transform);
+                normalPlayerTask.Id = taskInfo.Id;
+                normalPlayerTask.Owner = __instance;
+                normalPlayerTask.Initialize();
+                __instance.myTasks.Add(normalPlayerTask);
+            }
+            yield break;
+        }
+
+        return false;
+    }
+}
+
+[HarmonyPatch(typeof(GameData), nameof(GameData.HandleDisconnect), typeof(PlayerControl), typeof(DisconnectReasons))]
+class PlayerDisconnectPatch
+{
+    public static void Postfix(GameData __instance, [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] DisconnectReasons reason)
+    {
+        if (NebulaGameManager.Instance.GameState == NebulaGameStates.NotStarted) return;
+
+        player.GetModInfo().IsDisconnected = true;
+
+        NebulaGameManager.Instance.GameStatistics.RecordEvent(new GameStatistics.Event(GameStatistics.EventVariation.Disconnect, player.PlayerId, 0){ RelatedTag = EventDetail.Disconnect }) ;
     }
 }

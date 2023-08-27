@@ -69,7 +69,7 @@ public class HnSReaper : Template.Draggable
 
     public HnSReaper()
             : base("HnSReaper", "reaperHnS", Palette.ImpostorRed, RoleCategory.Impostor, Side.Impostor, Side.Impostor,
-                 ImpostorRoles.Impostor.impostorSideSet, ImpostorRoles.Impostor.impostorSideSet, ImpostorRoles.Impostor.impostorEndSet,
+                 Impostor.Impostor.impostorSideSet, Impostor.Impostor.impostorSideSet, Impostor.Impostor.impostorEndSet,
                  true, VentPermission.CanNotUse, false, true, true)
     {
         IsHideRole = true;

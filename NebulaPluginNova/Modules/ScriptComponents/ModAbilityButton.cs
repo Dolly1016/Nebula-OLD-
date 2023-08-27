@@ -22,13 +22,14 @@ public class ModAbilityButton : INebulaScriptComponent
 
     public Timer? CoolDownTimer;
     public Timer? EffectTimer;
-    public Timer? CurrentTimer => EffectTimer?.IsInProcess ?? false ? EffectTimer : CoolDownTimer;
+    public Timer? CurrentTimer => (EffectActive && (EffectTimer?.IsInProcess ?? false)) ? EffectTimer : CoolDownTimer;
     public bool EffectActive = false;
 
     public Action<ModAbilityButton>? OnEffectStart { get; set; } = null;
     public Action<ModAbilityButton>? OnEffectEnd { get; set; } = null;
+    public Action<ModAbilityButton>? OnUpdate { get; set; } = null;
     public Action<ModAbilityButton>? OnClick { get; set; } = null;
-    public Action<ModAbilityButton>? OnMeetingStart { get; set; } = null;
+    public Action<ModAbilityButton>? OnMeeting { get; set; } = null;
     public Predicate<ModAbilityButton>? Availability { get; set; } = null;
     public Predicate<ModAbilityButton>? Visibility { get; set; } = null;
     private KeyCode? keyCode { get; set; } = null;
@@ -65,6 +66,8 @@ public class ModAbilityButton : INebulaScriptComponent
         else
             VanillaButton.SetDisabled();
 
+        OnUpdate?.Invoke(this);
+
         if (EffectActive && (EffectTimer == null || !EffectTimer.IsInProcess)) InactivateEffect();
 
         VanillaButton.SetCooldownFill(CurrentTimer?.Percentage ?? 0f);
@@ -72,22 +75,40 @@ public class ModAbilityButton : INebulaScriptComponent
         string timerText = "";
         if (CurrentTimer?.IsInProcess ?? false) timerText = Mathf.CeilToInt(CurrentTimer.CurrentTime).ToString();
         VanillaButton.cooldownTimerText.text = timerText;
+        VanillaButton.cooldownTimerText.color = EffectActive ? Color.green : Color.white;
 
-        if (keyCode.HasValue && NebulaInput.GetKey(keyCode.Value)) DoClick();
+        if (keyCode.HasValue && NebulaInput.GetKeyDown(keyCode.Value)) DoClick();
     }
+
+    public override void OnMeetingStart()
+    {
+        OnMeeting?.Invoke(this);
+    }
+
 
     public ModAbilityButton InactivateEffect()
     {
-        if (EffectActive) return this;
+        if (!EffectActive) return this;
         EffectActive = false;
         OnEffectEnd?.Invoke(this);
         return this;
     }
 
+    public ModAbilityButton ToggleEffect()
+    {
+        if (EffectActive)
+            InactivateEffect();
+        else
+            ActivateEffect();
+
+        return this;
+    }
+
     public ModAbilityButton ActivateEffect()
     {
-        if (!EffectActive) return this;
+        if (EffectActive) return this;
         EffectActive = true;
+        EffectTimer?.Start();
         OnEffectStart?.Invoke(this);
         return this;
     }
@@ -118,8 +139,7 @@ public class ModAbilityButton : INebulaScriptComponent
 
     public ModAbilityButton SetLabel(string translationKey)
     {
-        VanillaButton.buttonLabelText.text = Language.Translate(translationKey);
-        VanillaButton.graphic.SetCooldownNormalizedUvs();
+        VanillaButton.buttonLabelText.text = Language.Translate("button.label." + translationKey);
         return this;
     }
 
@@ -144,6 +164,12 @@ public class ModAbilityButton : INebulaScriptComponent
         }
         if (material != null) VanillaButton.buttonLabelText.SetSharedMaterial(material);
         return this;
+    }
+
+    public TMPro.TextMeshPro ShowUsesIcon(int iconVariation)
+    {
+        ButtonEffect.ShowUsesIcon(VanillaButton,iconVariation,out var text);
+        return text;
     }
 
     public ModAbilityButton KeyBind(KeyCode keyCode)
@@ -207,7 +233,7 @@ public static class ButtonEffect
         }
     }
 
-    private static DividedSpriteLoader textureUsesIconsSprite = DividedSpriteLoader.FromResource("Nebula.Resources.UsesIcon.png", 100f, 10, 1);
+    private static IDividedSpriteLoader textureUsesIconsSprite = XOnlyDividedSpriteLoader.FromResource("Nebula.Resources.UsesIcon.png", 100f, 10);
     static public GameObject ShowUsesIcon(this ActionButton button)
     {
         Transform template = HudManager.Instance.AbilityButton.transform.GetChild(2);

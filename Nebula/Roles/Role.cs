@@ -1,6 +1,6 @@
 ﻿using Nebula.Module;
 using Nebula.Patches;
-using Nebula.Roles.CrewmateRoles;
+using Nebula.Roles.Crewmate;
 
 namespace Nebula.Roles;
 

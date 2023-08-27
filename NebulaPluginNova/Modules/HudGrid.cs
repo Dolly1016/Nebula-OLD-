@@ -29,19 +29,21 @@ public class HudGrid : MonoBehaviour
         GameObject.Destroy(buttonParent.gameObject.GetComponent<AspectPosition>());
         ButtonsHolder = buttonParent;
 
-        HudContent AddVanillaButtons(GameObject obj)
+        HudContent AddVanillaButtons(GameObject obj,int priority)
         {
             var content = obj.AddComponent<HudContent>();
+            content.SetPriority(priority);
             RegisterContentToRight(content);
+
             return content;
         }
 
-        AddVanillaButtons(HudManager.Instance.UseButton.gameObject);
-        AddVanillaButtons(HudManager.Instance.PetButton.gameObject);
-        AddVanillaButtons(HudManager.Instance.ImpostorVentButton.gameObject);
-        AddVanillaButtons(HudManager.Instance.ReportButton.gameObject);
-        AddVanillaButtons(HudManager.Instance.SabotageButton.gameObject);
-        AddVanillaButtons(HudManager.Instance.KillButton.gameObject).MarkAsKillButtonContent();
+        AddVanillaButtons(HudManager.Instance.UseButton.gameObject,1000);
+        AddVanillaButtons(HudManager.Instance.PetButton.gameObject,1000);
+        AddVanillaButtons(HudManager.Instance.ImpostorVentButton.gameObject,998);
+        AddVanillaButtons(HudManager.Instance.ReportButton.gameObject,999);
+        AddVanillaButtons(HudManager.Instance.SabotageButton.gameObject, 997);
+        AddVanillaButtons(HudManager.Instance.KillButton.gameObject, -1).MarkAsKillButtonContent();
         
 
         //ベントボタンにクールダウンテキストを設定
@@ -54,7 +56,7 @@ public class HudGrid : MonoBehaviour
         {
             Contents[i].RemoveAll(c => !c.Value);
 
-            Contents[i].Sort((c1, c2) => c1.Value.Priority - c2.Value.Priority);
+            Contents[i].Sort((c1, c2) => c2.Value.Priority - c1.Value.Priority);
 
             if (Contents[i].Count == 0) continue;
 
@@ -106,8 +108,8 @@ public class HudContent : MonoBehaviour
 
     public Vector2 CurrentPos { get; set; }
 
-    //Priorityの小さいものが先に配置される
-    public int Priority { get => onKillButtonPos ? -1 : priority; }
+    //Priorityの大きいものから配置される
+    public int Priority { get => onKillButtonPos ? 10000 : priority; }
     private int priority;
     private bool onKillButtonPos;
     private bool isLeftSide;

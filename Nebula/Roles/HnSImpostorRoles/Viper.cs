@@ -55,7 +55,7 @@ public class HnSViper : Role
 
     public HnSViper()
             : base("HnSViper", "viperHnS", Palette.ImpostorRed, RoleCategory.Impostor, Side.Impostor, Side.Impostor,
-                 ImpostorRoles.Impostor.impostorSideSet, ImpostorRoles.Impostor.impostorSideSet, ImpostorRoles.Impostor.impostorEndSet,
+                 Impostor.Impostor.impostorSideSet, Impostor.Impostor.impostorSideSet, Impostor.Impostor.impostorEndSet,
                  true, VentPermission.CanNotUse, false, true, true)
     {
         IsHideRole = true;

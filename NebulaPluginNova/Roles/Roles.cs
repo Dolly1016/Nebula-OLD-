@@ -39,7 +39,7 @@ public class Roles
             diff = (int)role1.RoleCategory - (int)role2.RoleCategory;
             if (diff != 0) return diff;
 
-            diff = (role1.IsDefaultRole ? -1 : 1) - (role1.IsDefaultRole ? -1 : 1);
+            diff = (role1.IsDefaultRole ? -1 : 1) - (role2.IsDefaultRole ? -1 : 1);
             if (diff != 0) return diff;
 
             return role1.InternalName.CompareTo(role2.InternalName);

@@ -5,7 +5,7 @@ using Hazel;
 using AmongUs.Data.Player;
 using Nebula.Map;
 using JetBrains.Annotations;
-using Nebula.Roles.CrewmateRoles;
+using Nebula.Roles.Crewmate;
 using UnityEngine;
 using Nebula.Roles.HnSImpostorRoles;
 

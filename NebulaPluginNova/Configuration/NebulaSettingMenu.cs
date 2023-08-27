@@ -115,7 +115,7 @@ public class NebulaSettingMenu : MonoBehaviour
         {
             var copiedHolder = holder;
 
-            if (!holder.IsShown || ((holder.TabMask & CurrentTab) == 0)) continue;
+            if (!holder.IsShown || ((holder.TabMask & CurrentTab) == 0) || (holder.GameModeMask & GeneralConfigurations.CurrentGameMode) == 0) continue;
 
             context.Append(new MetaContext.Button(() => OpenSecondaryPage(copiedHolder), mainTextAttr)
             {

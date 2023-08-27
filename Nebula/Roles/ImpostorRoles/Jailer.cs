@@ -1,7 +1,7 @@
 ﻿using Nebula.Patches;
 using Nebula.Roles.RoleSystem;
 
-namespace Nebula.Roles.ImpostorRoles;
+namespace Nebula.Roles.Impostor;
 
 public class Jailer : Role
 {

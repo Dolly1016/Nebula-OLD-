@@ -1,4 +1,4 @@
-﻿namespace Nebula.Roles.CrewmateRoles;
+﻿namespace Nebula.Roles.Crewmate;
 
 public class Necromancer : Template.Draggable
 {
@@ -238,8 +238,8 @@ public class Necromancer : Template.Draggable
 
     public Necromancer()
         : base("Necromancer", "necromancer", RoleColor, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
-             CrewmateRoles.Crewmate.crewmateSideSet, CrewmateRoles.Crewmate.crewmateSideSet,
-             CrewmateRoles.Crewmate.crewmateEndSet,
+             Nebula.Roles.Crewmate.Crewmate.crewmateSideSet, Nebula.Roles.Crewmate.Crewmate.crewmateSideSet,
+             Nebula.Roles.Crewmate.Crewmate.crewmateEndSet,
              false, VentPermission.CanNotUse, false, false, false)
     {
         reviveArrow = null;

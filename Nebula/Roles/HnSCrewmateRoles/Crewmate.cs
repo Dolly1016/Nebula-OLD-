@@ -150,7 +150,7 @@ public class Crewmate : Role
 
     public Crewmate()
             : base("Hider", "hider", Palette.CrewmateBlue, RoleCategory.Crewmate, Side.Crewmate, Side.Crewmate,
-                 CrewmateRoles.Crewmate.crewmateSideSet, CrewmateRoles.Crewmate.crewmateSideSet, new HashSet<Patches.EndCondition>(),
+                 Nebula.Roles.Crewmate.Crewmate.crewmateSideSet, Nebula.Roles.Crewmate.Crewmate.crewmateSideSet, new HashSet<Patches.EndCondition>(),
                  false, VentPermission.CanUseLimittedVent, true, false, false)
     {
         IsHideRole = true;

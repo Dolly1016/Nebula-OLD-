@@ -50,7 +50,7 @@ public static class UnityHelper
     public static T MarkDontUnload<T>(this T obj) where T : UnityEngine.Object
     {
         GameObject.DontDestroyOnLoad(obj);
-        obj.hideFlags |= HideFlags.DontUnloadUnusedAsset;
+        obj.hideFlags |= HideFlags.DontUnloadUnusedAsset | HideFlags.HideAndDontSave;
 
         return obj;
     }
@@ -83,5 +83,17 @@ public static class UnityHelper
     static public void AddListener(this UnityEngine.UI.Button.ButtonClickedEvent onClick, Action action) => onClick.AddListener((UnityEngine.Events.UnityAction)action);
     static public void AddListener(this UnityEngine.Events.UnityEvent unityEvent, Action action) => unityEvent.AddListener((UnityEngine.Events.UnityAction)action);
 
+    public static void SetModText(this TextTranslatorTMP text,string translationKey)
+    {
+        text.TargetText = (StringNames)short.MaxValue;
+        text.defaultStr = translationKey;
+    }
+
+    public static float Distance(this Vector3 vector, Vector3 opponent)
+    {
+        float x = vector.x - opponent.x;
+        float y = vector.y - opponent.y;
+        return Mathf.Sqrt(x * x + y * y);
+    }
 }
 

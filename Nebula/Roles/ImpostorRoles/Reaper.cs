@@ -1,6 +1,6 @@
 ﻿using Nebula.Game;
 
-namespace Nebula.Roles.ImpostorRoles;
+namespace Nebula.Roles.Impostor;
 
 public class Reaper : Template.Draggable
 {

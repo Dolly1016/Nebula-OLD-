@@ -1,7 +1,11 @@
-﻿using AmongUs.GameOptions;
+﻿using AmongUs.Data.Player;
+using AmongUs.GameOptions;
 using Nebula.Game;
 using Nebula.Modules;
 using Nebula.Roles;
+using TMPro;
+using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace Nebula.Player;
 
@@ -15,186 +19,20 @@ public static class PlayerState
 }
 
 [NebulaRPCHolder]
-public class PlayerTaskState
-{
-    public int CurrentTasks { get; private set; } = 0;
-    public int CurrentCompleted { get; private set; } = 0;
-    public int TotalTasks { get; private set; } = 0;
-    public int TotalCompleted { get; private set; } = 0;
-    public int Quota { get; private set; } = 0;
-    public bool IsCrewmateTask { get; private set; } = true;
-    private PlayerControl player { get; init; }
-
-    public PlayerTaskState(PlayerControl player)
-    {
-        this.player = player;
-
-        GetTasks(out int shortTasks, out int longTasks, out int commonTasks);
-        int sum = shortTasks + longTasks + commonTasks;
-        Quota = TotalTasks = CurrentTasks = sum;
-    }
-
-    public string ToString(bool canSee)
-    {
-        return canSee ? (TotalCompleted + "/" + Quota) : "?/?";
-    }
-    public static void GetTasks(out int shortTasks,out int longTasks,out int commonTasks)
-    {
-        var option = GameOptionsManager.Instance.CurrentGameOptions;
-        shortTasks = option.GetInt(Int32OptionNames.NumShortTasks);
-        longTasks = option.GetInt(Int32OptionNames.NumLongTasks);
-        commonTasks = option.GetInt(Int32OptionNames.NumCommonTasks);
-    }
-
-    public void OnCompleteTask()
-    {
-        RpcUpdateTaskState.Invoke(new Tuple<byte, TaskUpdateMessage>(player.PlayerId,TaskUpdateMessage.CompleteTask));
-    }
-
-    public void BecomeToOutsider()
-    {
-        RpcUpdateTaskState.Invoke(new Tuple<byte, TaskUpdateMessage>(player.PlayerId, TaskUpdateMessage.BecomeToOutsider));
-    }
-
-    public void BecomeToCrewmate()
-    {
-        RpcUpdateTaskState.Invoke(new Tuple<byte, TaskUpdateMessage>(player.PlayerId, TaskUpdateMessage.BecomeToCrewmate));
-    }
-
-    public void WaiveAndBecomeToCrewmate()
-    {
-        Quota = 0;
-        IsCrewmateTask = true;
-        RpcSyncTaskState.Invoke(this);
-    }
-
-    public void WaiveAllTasksAsOutsider()
-    {
-        IsCrewmateTask = false;
-        ReplaceTasks(0);
-    }
-
-    //指定の個数だけタスクを免除します。
-    public void ExemptTasks(int tasks)
-    {
-        CurrentTasks -= tasks;
-        TotalTasks-= tasks;
-        Quota -= tasks;
-        RpcSyncTaskState.Invoke(this);
-    }
-
-    //いま保持しているタスクを新たなものに切り替えます。
-    public void ReplaceTasks(int tasks)
-    {
-        TotalTasks -= CurrentTasks;
-        Quota -= CurrentTasks;
-        TotalCompleted -= CurrentCompleted;
-        
-        CurrentTasks = tasks;
-        CurrentCompleted = 0;
-        TotalTasks += tasks;
-        Quota += tasks;
-        RpcSyncTaskState.Invoke(this);
-    }
-
-    public void GainExtraTasks(int tasks,bool addQuota = false)
-    {
-        TotalTasks += tasks;
-        CurrentTasks = tasks;
-        CurrentCompleted = 0;
-        if (addQuota) Quota += tasks;
-        RpcSyncTaskState.Invoke(this);
-    }
-
-
-    private static RemoteProcess<PlayerTaskState> RpcSyncTaskState = new RemoteProcess<PlayerTaskState>(
-        "SyncTaskState",
-        (writer, message) =>
-        {
-            writer.Write(message.player.PlayerId);
-            writer.Write(message.CurrentTasks);
-            writer.Write(message.CurrentCompleted);
-            writer.Write(message.TotalTasks);
-            writer.Write(message.TotalCompleted);
-            writer.Write(message.Quota);
-            writer.Write(message.IsCrewmateTask);
-        },
-        (reader) =>
-        {
-            var task = NebulaGameManager.Instance?.GetModPlayerInfo(reader.ReadByte())?.Tasks;
-            if (task != null)
-            {
-                task.CurrentTasks = reader.ReadInt32();
-                task.CurrentCompleted = reader.ReadInt32();
-                task.CurrentTasks = reader.ReadInt32();
-                task.TotalTasks = reader.ReadInt32();
-                task.TotalCompleted = reader.ReadInt32();
-                task.Quota = reader.ReadInt32();
-                task.IsCrewmateTask = reader.ReadBoolean();
-            }
-            return task;
-        },
-        (message, isCalledByMe) => NebulaGameManager.Instance?.OnTaskUpdated()
-        );
-
-    private enum TaskUpdateMessage
-    {
-        CompleteTask,
-        BecomeToCrewmate,
-        BecomeToOutsider,
-        WaiveTasks
-    }
-
-    private static RemoteProcess<Tuple<byte, TaskUpdateMessage>> RpcUpdateTaskState = new RemoteProcess<Tuple<byte, TaskUpdateMessage>>(
-        "UpdateTaskState",
-        (writer, message) =>
-        {
-            writer.Write(message.Item1);
-            writer.Write((int)message.Item2);
-        },
-        (reader) =>
-        {
-            return new Tuple<byte, TaskUpdateMessage>(reader.ReadByte(), (TaskUpdateMessage)reader.ReadInt32());
-        },
-        (message, isCalledByMe) => {
-            var task = NebulaGameManager.Instance?.GetModPlayerInfo(message.Item1)?.Tasks;
-            if (task != null)
-            {
-                switch (message.Item2)
-                {
-                    case TaskUpdateMessage.CompleteTask:
-                        task.CurrentCompleted++;
-                        task.TotalCompleted++;
-                        break;
-                    case TaskUpdateMessage.BecomeToCrewmate:
-                        task.IsCrewmateTask = true;
-                        break;
-                    case TaskUpdateMessage.BecomeToOutsider:
-                        task.IsCrewmateTask = false;
-                        break;
-                    case TaskUpdateMessage.WaiveTasks:
-                        task.Quota = 0;
-                        break;
-                }
-            }
-            NebulaGameManager.Instance?.OnTaskUpdated();
-        }
-        );    
-}
-
-[NebulaRPCHolder]
 public class PlayerModInfo
 {
     public class OutfitCandidate
     {
         public string Tag { get; private set; }
-        public int priority { get; private set; }
+        public int Priority { get; private set; }
+        public bool SelfAware { get; private set; }
         public GameData.PlayerOutfit outfit { get; private set; }
 
-        public OutfitCandidate(string Tag,int priority,GameData.PlayerOutfit outfit)
+        public OutfitCandidate(string tag,int priority,bool selfAware,GameData.PlayerOutfit outfit)
         {
-            this.Tag = Tag;
-            this.priority = priority;
+            this.Tag = tag;
+            this.Priority = priority;
+            this.SelfAware = selfAware;
             this.outfit = outfit;
         }
     }
@@ -202,14 +40,25 @@ public class PlayerModInfo
     public PlayerControl MyPlayer { get; private set; }
     public byte PlayerId { get; private set; }
     public bool AmOwner { get; private set; }
-    public RoleInstance? Role => myRole;
-    private RoleInstance? myRole = null;
-    private RoleInstance? myGhostRole = null;
-    private List<OutfitCandidate> outfit = new List<OutfitCandidate>();
+    public bool IsDisconnected { get; set; } = false;
+    public bool IsDead => IsDisconnected || MyPlayer.Data.IsDead;
+    
+    public byte? HoldingDeadBody { get; private set; } = null;
+    private DeadBody? deadBodyCache { get; set; } = null;
+
+    public RoleInstance Role => myRole;
+    private RoleInstance myRole;
+    //private RoleInstance? myGhostRole = null;
+
+    private List<OutfitCandidate> outfits = new List<OutfitCandidate>();
     private TMPro.TextMeshPro roleText;
 
     public PlayerTaskState Tasks { get; set; }
-    
+
+    //各種収集データ
+    public PlayerModInfo? MyKiller = null;
+    public float? DeathTimeStamp = null;
+
     public IEnumerable<AssignableInstance> AllAssigned()
     {
         if (Role != null) yield return Role;
@@ -237,7 +86,46 @@ public class PlayerModInfo
 
     public string DefaultName => DefaultOutfit.PlayerName;
     public GameData.PlayerOutfit DefaultOutfit { get; private set; }
-    public GameData.PlayerOutfit CurrentOutfit => outfit.Count>0 ? outfit[0].outfit : DefaultOutfit;
+    public GameData.PlayerOutfit CurrentOutfit => outfits.Count>0 ? outfits[0].outfit : DefaultOutfit;
+
+    private void UpdateOutfit()
+    {
+        GameData.PlayerOutfit newOutfit = DefaultOutfit;
+        if (outfits.Count > 0)
+        {
+            outfits.Sort((o1, o2) => o2.Priority - o1.Priority);
+            newOutfit = outfits[outfits.Count - 1].outfit;
+        }
+
+        MyPlayer.RawSetColor(newOutfit.ColorId);
+        MyPlayer.RawSetName(newOutfit.PlayerName);
+        MyPlayer.RawSetHat(newOutfit.HatId, newOutfit.ColorId);
+        MyPlayer.RawSetSkin(newOutfit.SkinId, newOutfit.ColorId);
+        MyPlayer.RawSetVisor(newOutfit.VisorId, newOutfit.ColorId);
+        MyPlayer.RawSetPet(newOutfit.PetId, newOutfit.ColorId);
+        MyPlayer.RawSetColor(newOutfit.ColorId);
+        MyPlayer.MyPhysics.ResetAnimState();
+        MyPlayer.cosmetics.StopAllAnimations();
+    }
+
+    public void AddOutfit(OutfitCandidate outfit)
+    {
+        if (!outfit.SelfAware && MyPlayer.AmOwner) return;
+        outfits.Add(outfit);
+        UpdateOutfit();
+    }
+
+    public void RemoveOutfit(string tag)
+    {
+        outfits.RemoveAll(o => o.Tag.Equals(tag));
+        UpdateOutfit();
+    }
+
+    public GameData.PlayerOutfit GetOutfit(int maxPriority)
+    {
+        foreach(var outfit in outfits) if (outfit.Priority <= maxPriority) return outfit.outfit;
+        return DefaultOutfit;
+    }
 
     public void UpdateNameText(TMPro.TextMeshPro nameText)
     {
@@ -258,7 +146,7 @@ public class PlayerModInfo
         string text = myRole?.DisplayRoleName ?? "Undefined";
 
         if (myRole.HasAnyTasks)
-            text += (" (" + Tasks.ToString(NebulaGameManager.Instance.CanSeeAllInfo || !Helpers.InCommSab) + ")").Color(myRole.HasCrewmateTasks ? crewTaskColor : fakeTaskColor);
+            text += (" (" + Tasks.ToString(NebulaGameManager.Instance.CanSeeAllInfo || !AmongUsUtil.InCommSab) + ")").Color(myRole.HasCrewmateTasks ? crewTaskColor : fakeTaskColor);
         
         roleText.text = text;
 
@@ -314,11 +202,164 @@ public class PlayerModInfo
             NebulaGameManager.Instance!.RegisterPlayer(PlayerControl.AllPlayerControls.Find((Il2CppSystem.Predicate<PlayerControl>)(p => p.PlayerId == message.playerId)))!.SetRole(Roles.Roles.AllRoles[message.roleId], message.arguments);
         }
         );
-    
+
+    public readonly static RemoteProcess<Tuple<byte,OutfitCandidate>> RpcAddOutfit = new RemoteProcess<Tuple<byte, OutfitCandidate>>(
+        "AddOutfit",
+        (writer, message) =>
+        {
+            writer.Write(message.Item1);
+            writer.Write(message.Item2.outfit.PlayerName);
+            writer.Write(message.Item2.outfit.HatId);
+            writer.Write(message.Item2.outfit.SkinId);
+            writer.Write(message.Item2.outfit.VisorId);
+            writer.Write(message.Item2.outfit.PetId);
+            writer.Write(message.Item2.outfit.ColorId);
+            writer.Write(message.Item2.Tag);
+            writer.Write(message.Item2.Priority);
+            writer.Write(message.Item2.SelfAware);
+        },
+        (reader) =>
+        {
+            byte playerId = reader.ReadByte();
+            GameData.PlayerOutfit outfit = new();
+            outfit.PlayerName = reader.ReadString();
+            outfit.HatId = reader.ReadString();
+            outfit.SkinId = reader.ReadString();
+            outfit.VisorId = reader.ReadString();
+            outfit.PetId = reader.ReadString();
+            outfit.ColorId = reader.ReadInt32();
+            return new(playerId, new(reader.ReadString(), reader.ReadInt32(), reader.ReadBoolean() ,outfit));
+        },
+        (message, isCalledByMe) =>
+        {
+            NebulaGameManager.Instance.GetModPlayerInfo(message.Item1).AddOutfit(message.Item2);
+        }
+        );
+
+    public readonly static RemoteProcess<Tuple<byte, string>> RpcRemoveOutfit = new RemoteProcess<Tuple<byte, string>>(
+       "RemoveOutfit",
+       (writer, message) =>
+       {
+           writer.Write(message.Item1);
+           writer.Write(message.Item2);
+       },
+       (reader) =>
+       {
+           return new(reader.ReadByte(), reader.ReadString());
+       },
+       (message, isCalledByMe) =>
+       {
+           NebulaGameManager.Instance.GetModPlayerInfo(message.Item1).RemoveOutfit(message.Item2);
+       }
+       );
+
+    private void UpdateHoldingDeadBody()
+    {
+        if (!HoldingDeadBody.HasValue) return;
+
+        //同じ死体を持つプレイヤーがいる
+        if (NebulaGameManager.Instance.AllPlayerInfo().Any(p => p.PlayerId < PlayerId && p.HoldingDeadBody.HasValue && p.HoldingDeadBody.Value == HoldingDeadBody.Value))
+        {
+            deadBodyCache = null;
+            if (AmOwner) ReleaseDeadBody();
+            return;
+        }
+
+
+        if (!deadBodyCache || deadBodyCache.ParentId != HoldingDeadBody.Value)
+        {
+            deadBodyCache = Helpers.AllDeadBodies().FirstOrDefault((d) => d.ParentId == HoldingDeadBody.Value);
+            if (!deadBodyCache)
+            {
+                deadBodyCache = null;
+                if (AmOwner) ReleaseDeadBody();
+                return;
+            }
+        }
+
+        if (MyPlayer.inVent)
+        {
+            deadBodyCache.transform.localPosition = new Vector3(10000, 10000);
+        }
+        else
+        {
+            var targetPosition = MyPlayer.transform.position + new Vector3(-0.1f, -0.1f);
+
+            if (MyPlayer.transform.position.Distance(deadBodyCache.transform.position) < 1.8f)
+                deadBodyCache.transform.position += (targetPosition - deadBodyCache.transform.position) * 0.15f;
+            else
+                deadBodyCache.transform.position = targetPosition;
+
+
+            Vector3 playerPos = MyPlayer.GetTruePosition();
+            Vector3 deadBodyPos = deadBodyCache.TruePosition;
+            Vector3 diff = (deadBodyPos - playerPos);
+            float d = diff.magnitude;
+            if (PhysicsHelpers.AnythingBetween(playerPos, deadBodyPos, Constants.ShipAndAllObjectsMask, false))
+            {
+                foreach (var ray in PhysicsHelpers.castHits)
+                {
+                    float temp = ((Vector3)ray.point - playerPos).magnitude;
+                    if (d > temp) d = temp;
+                }
+
+                d -= 0.15f;
+                if (d < 0f) d = 0f;
+
+                deadBodyCache.transform.localPosition = playerPos + diff.normalized * d;
+            }
+            else
+            {
+                deadBodyCache.transform.localPosition = deadBodyCache.transform.position;
+            }
+        }
+    }
+
+    public void ReleaseDeadBody() {
+        RpcHoldDeadBody.Invoke(new(PlayerId, byte.MaxValue, deadBodyCache?.transform.localPosition ?? new Vector2(10000, 10000)));
+    }
+
+    public void HoldDeadBody(DeadBody deadBody) {
+        RpcHoldDeadBody.Invoke(new(PlayerId, deadBody.ParentId, deadBody.transform.position));
+    }
+
+    readonly static RemoteProcess<Tuple<byte, byte,Vector2>> RpcHoldDeadBody = new RemoteProcess<Tuple<byte, byte, Vector2>>(
+      "HoldDeadBody",
+      (writer, message) =>
+      {
+          writer.Write(message.Item1);
+          writer.Write(message.Item2);
+          writer.Write(message.Item3.x);
+          writer.Write(message.Item3.y);
+      },
+      (reader) =>
+      {
+          return new(reader.ReadByte(), reader.ReadByte(), new(reader.ReadSingle(), reader.ReadSingle()));
+      },
+      (message, isCalledByMe) =>
+      {
+          var info = NebulaGameManager.Instance.GetModPlayerInfo(message.Item1);
+          
+          if(message.Item2 == byte.MaxValue)
+          {
+              info.HoldingDeadBody = null;
+          }
+          else
+          {
+              info.HoldingDeadBody = message.Item2;
+
+              var deadBody = Helpers.AllDeadBodies().FirstOrDefault(d => d.ParentId == message.Item2);
+              info.deadBodyCache = deadBody;
+              if (deadBody && message.Item3.magnitude < 10000) deadBody.transform.localPosition = new Vector3(message.Item3.x, message.Item3.y, message.Item3.y / 1000f);
+          }
+      }
+      );
+
     public void Update()
     {
         UpdateNameText(MyPlayer.cosmetics.nameText);
         UpdateRoleText(roleText);
+        UpdateHoldingDeadBody();
 
         RoleAction((role) => {
             role.Update();

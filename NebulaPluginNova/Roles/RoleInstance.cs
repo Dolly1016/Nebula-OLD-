@@ -3,32 +3,20 @@
 namespace Nebula.Roles;
 
 
-public abstract class AssignableInstance
+public abstract class AssignableInstance : ScriptHolder
 {
     public PlayerControl player { get; private init; }
-    private List<INebulaScriptComponent> myComponent { get; init; }
 
     public bool AmOwner => player.AmOwner;
 
     public AssignableInstance(PlayerControl player)
     {
         this.player = player;
-        this.myComponent = new();
     }
 
-    protected T Bind<T>(T component) where T : INebulaScriptComponent
-    {
-        BindComponent(component);
-        return component;
-    } 
-
-    protected void BindComponent(INebulaScriptComponent component) => myComponent.Add(component);
-    
     public void Inactivate()
     {
-        foreach (INebulaScriptComponent component in myComponent) NebulaGameManager.Instance?.ReleaseComponent(component);
-        myComponent.Clear();
-
+        Release();
         OnInactivated();
     }
 
@@ -36,11 +24,15 @@ public abstract class AssignableInstance
     public virtual void Update() { }
     public virtual void LocalUpdate() { }
     public virtual void OnMeetingStart() { }
+    public virtual void OnGameReenabled() { }
     public virtual void OnDead() { }
     public virtual void OnExiled() { }
     public virtual void OnMurdered(PlayerControl murder) { }
-    public virtual void OnPlayerDead(PlayerControl dead) { }
+    public virtual void OnKillPlayer(PlayerControl target) { }
+    public virtual void OnPlayerDeadLocal(PlayerControl dead) { }
     public virtual void OnActivated() { }
+    public virtual void OnSetTaskLocal(ref List<GameData.TaskInfo> tasks) { }
+    public virtual void OnTaskCompleteLocal() { }
     protected virtual void OnInactivated() { }
 }
 
@@ -53,7 +45,7 @@ public abstract class RoleInstance : AssignableInstance
     }
 
     public virtual bool CanInvokeSabotage => Role.RoleCategory == RoleCategory.ImpostorRole;
-    public virtual bool HasVanillaKillButton => Role.RoleCategory != RoleCategory.CrewmateRole;
+    public virtual bool HasVanillaKillButton => Role.RoleCategory == RoleCategory.ImpostorRole;
     public virtual bool CanReport => true;
     public virtual bool CanUseVent => Role.RoleCategory != RoleCategory.CrewmateRole;
     public virtual bool CanMoveInVent => true;

@@ -73,6 +73,14 @@ public static class JsonStructure
         return instance;
     }
 
+    public static object? Deserialize(Stream json,Type type)
+    {
+        using var reader = new StreamReader(json,System.Text.Encoding.UTF8);
+        var result = Deserialize(reader.ReadToEnd(),type);
+        reader.Close();
+        json.Close();
+        return result;
+    }
     public static object? Deserialize(string json,Type type)
     {
         json = System.Text.RegularExpressions.Regex.Replace(json, @"[\s\n]+", "");

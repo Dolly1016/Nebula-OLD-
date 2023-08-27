@@ -1,6 +1,6 @@
 ﻿using Nebula.Patches;
 
-namespace Nebula.Roles.ImpostorRoles;
+namespace Nebula.Roles.Impostor;
 
 public class Impostor : Role
 {

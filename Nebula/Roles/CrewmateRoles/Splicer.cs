@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace Nebula.Roles.CrewmateRoles;
+namespace Nebula.Roles.Crewmate;
 
 public class Splicer : Role
 {

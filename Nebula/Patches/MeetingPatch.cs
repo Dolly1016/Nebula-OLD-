@@ -1,4 +1,4 @@
-﻿using Nebula.Roles.CrewmateRoles;
+﻿using Nebula.Roles.Crewmate;
 using UnityEngine;
 
 namespace Nebula.Patches;

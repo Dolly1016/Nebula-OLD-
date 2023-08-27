@@ -1,6 +1,6 @@
 ﻿using Nebula.Module;
 
-namespace Nebula.Roles.CrewmateRoles;
+namespace Nebula.Roles.Crewmate;
 
 public class Guardian : Role
 {

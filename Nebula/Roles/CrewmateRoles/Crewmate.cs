@@ -1,6 +1,6 @@
 ﻿using Nebula.Patches;
 
-namespace Nebula.Roles.CrewmateRoles;
+namespace Nebula.Roles.Crewmate;
 
 public class Crewmate : Role
 {

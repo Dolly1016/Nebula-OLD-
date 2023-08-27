@@ -12,6 +12,20 @@ public static class EventDetail
     static public TranslatableTag Misfire = new("statistics.events.misfire");
     static public TranslatableTag GameStart = new("statistics.events.startGame");
     static public TranslatableTag GameEnd = new("statistics.events.endGame");
+    static public TranslatableTag MeetingEnd = new("statistics.events.endMeeting");
+    static public TranslatableTag Report = new("statistics.events.report");
+    static public TranslatableTag BaitReport = new("statistics.events.baitReport");
+    static public TranslatableTag EmergencyButton = new("statistics.events.emergency");
+    static public TranslatableTag MayorButton = new("statistics.events.mayorEmergency");
+    static public TranslatableTag Disconnect = new("statistics.events.disconnect");
+    static public TranslatableTag Revive = new("statistics.events.revive");
+    static public TranslatableTag Eat = new("statistics.events.eat");
+    static public TranslatableTag Clean = new("statistics.events.clean");
+}
+
+public enum GameStatisticsGatherTag
+{
+    Spawn
 }
 
 [NebulaRPCHolder]
@@ -20,11 +34,17 @@ public class GameStatistics
     public class EventVariation
     {
         static Dictionary<int, EventVariation> AllEvents = new();
-        static private DividedSpriteLoader iconSprite = DividedSpriteLoader.FromResource("Nebula.Resources.GameStatisticsIcon.png", 100f, 3, 1);
+        static private DividedSpriteLoader iconSprite = DividedSpriteLoader.FromResource("Nebula.Resources.GameStatisticsIcon.png", 100f, 8, 1);
         static public EventVariation Kill = new(0, iconSprite.WrapLoader(0), iconSprite.WrapLoader(0), true, true);
         static public EventVariation Exile = new(1, iconSprite.WrapLoader(2), iconSprite.WrapLoader(2), false, false);
         static public EventVariation GameStart = new(2, iconSprite.WrapLoader(1), iconSprite.WrapLoader(1), true, false);
         static public EventVariation GameEnd = new(3, iconSprite.WrapLoader(1), iconSprite.WrapLoader(1), true, false);
+        static public EventVariation MeetingEnd = new(4, iconSprite.WrapLoader(1), iconSprite.WrapLoader(1), true, false);
+        static public EventVariation Report = new(5, iconSprite.WrapLoader(4), iconSprite.WrapLoader(4), true, false);
+        static public EventVariation EmergencyButton = new(6, iconSprite.WrapLoader(3), iconSprite.WrapLoader(3), true, false);
+        static public EventVariation Disconnect = new(7, iconSprite.WrapLoader(5), iconSprite.WrapLoader(5), false, false);
+        static public EventVariation Revive = new(8, iconSprite.WrapLoader(6), iconSprite.WrapLoader(6), true, false);
+        static public EventVariation CreanBody = new(9, iconSprite.WrapLoader(7), iconSprite.WrapLoader(7), true, false);
 
         public int Id { get; private init; }
         public ISpriteLoader? EventIcon { get; private init; }
@@ -54,10 +74,10 @@ public class GameStatistics
         public TranslatableTag? RelatedTag { get; set; } = null;
 
 
-        public Event(EventVariation variation, byte? sourceId, int targetIdMask)
-            : this(variation, NebulaGameManager.Instance.CurrentTime, sourceId, targetIdMask) { }
+        public Event(EventVariation variation, byte? sourceId, int targetIdMask,GameStatisticsGatherTag? positionTag = null)
+            : this(variation, NebulaGameManager.Instance.CurrentTime, sourceId, targetIdMask,positionTag) { }
 
-        public Event(EventVariation variation, float time, byte? sourceId, int targetIdMask)
+        public Event(EventVariation variation, float time, byte? sourceId, int targetIdMask, GameStatisticsGatherTag? positionTag)
         {
             Variation = variation;
             Time = time;
@@ -71,7 +91,10 @@ public class GameStatistics
                 {
                     if (p.Data.IsDead && p.PlayerId != sourceId && ((TargetIdMask & (1 << p.PlayerId)) == 0)) continue;
 
-                    list.Add(new Tuple<byte, Vector2>(p.PlayerId, p.transform.position));
+                    if (positionTag != null)
+                        list.Add(new Tuple<byte, Vector2>(p.PlayerId, NebulaGameManager.Instance.GameStatistics.Gathering[positionTag.Value][p.PlayerId]));
+                    else
+                        list.Add(new Tuple<byte, Vector2>(p.PlayerId, p.transform.position));
                 }
                 Position = list.ToArray();
             }
@@ -95,6 +118,8 @@ public class GameStatistics
 
     private List<Event> AllEvents { get; set; } = new List<Event>();
     public Event[] Sealed { get => AllEvents.ToArray(); }
+
+    public Dictionary<GameStatisticsGatherTag, Dictionary<byte, Vector2>> Gathering { get; set; } = new();
 
     public void RecordEvent(Event statisticsEvent)
     {
@@ -132,6 +157,7 @@ public class GameStatistics
             foreach (var t in target) TargetIdMask |= 1 << t.PlayerId;
         }
     }
+
     static public RemoteProcess<RecordMessage> RpcRecord = new RemoteProcess<RecordMessage>(
         "RecordStatistics",
         (writer, message) =>
@@ -156,6 +182,25 @@ public class GameStatistics
            NebulaGameManager.Instance?.GameStatistics.RecordEvent(new Event(message.Variation, message.SourceId, message.TargetIdMask) { RelatedTag = TranslatableTag.ValueOf(message.RelatedTagId) });
        });
 
+    static public RemoteProcess<Tuple<GameStatisticsGatherTag,byte, Vector2>> RpcPoolPosition = new RemoteProcess<Tuple<GameStatisticsGatherTag,byte, Vector2>>(
+        "PoolPosition",
+        (writer, message) => {
+            writer.Write((int)message.Item1);
+            writer.Write(message.Item2);
+            writer.Write(message.Item3.x);
+            writer.Write(message.Item3.y);
+        },
+        (reader) => new Tuple<GameStatisticsGatherTag,byte, Vector2>((GameStatisticsGatherTag)reader.ReadInt32(),reader.ReadByte(),new(reader.ReadSingle(),reader.ReadSingle())),
+        (message, calledByMe) =>
+        {
+            if (NebulaGameManager.Instance == null) return;
+
+            if (!NebulaGameManager.Instance!.GameStatistics.Gathering.ContainsKey((GameStatisticsGatherTag)message.Item1))
+                NebulaGameManager.Instance!.GameStatistics.Gathering.Add((GameStatisticsGatherTag)message.Item1, new());
+
+            NebulaGameManager.Instance!.GameStatistics.Gathering[(GameStatisticsGatherTag)message.Item1][message.Item2] = message.Item3;
+        }
+        );
 }
 
 public class CriticalPoint : MonoBehaviour
@@ -469,12 +514,12 @@ public class GameStatisticsViewer : MonoBehaviour
             icon.transform.localScale=new Vector3(0.7f,0.7f,1f);
             if(target.RelatedTag != null)
             {
-                var text = GameObject.Instantiate(GameEndText, detail.transform);
+                var text = GameObject.Instantiate(GameEndText, icon.transform);
                 text.text = target.RelatedTag.Text;
                 text.color = Color.white;
                 text.outlineWidth = 0.1f;
-                text.transform.localPosition = new Vector3(0f,-0.1f,-1f);
-                text.transform.localScale = new Vector3(0.2f, 0.2f, 1f);
+                text.transform.localPosition = new Vector3(0f, -0.18f, -1f);
+                text.transform.localScale = new Vector3(0.2f / 0.7f, 0.2f / 0.7f, 1f);
                 icon.transform.localPosition += new Vector3(0f, 0.05f, 0f);
             }
             objects.Add(icon.gameObject);

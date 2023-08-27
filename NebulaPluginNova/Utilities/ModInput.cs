@@ -8,7 +8,7 @@ namespace Nebula.Utilities;
 
 public class NebulaInput
 {
-    private static bool SomeUiIsActive => ControllerManager.Instance && ControllerManager.Instance.IsUiControllerActive;
+    private static bool SomeUiIsActive => (ControllerManager.Instance && ControllerManager.Instance.CurrentUiState?.BackButton  != null) || NebulaManager.Instance.HasSomeUI;
 
     public static bool GetKeyDown(KeyCode keyCode)
     {

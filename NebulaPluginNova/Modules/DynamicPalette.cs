@@ -2,6 +2,7 @@
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using Nebula;
+using TMPro;
 using static Nebula.Modules.NebulaPlayerTab;
 using static Nebula.Player.PlayerModInfo;
 using static Rewired.Demos.PressStartToJoinExample_Assigner;
@@ -14,6 +15,7 @@ public class DynamicPalette
 {
     static public ColorPalette[] AllColorPalette = { new DefaultColorPalette() };
     static public ShadowPattern[] AllShadowPattern = { new DefaultShadowPattern() };
+    static public Tuple<Color,Color>[] VanillaColors;
 
     static public Dictionary<int, Tuple<int, int>> ColorNameDic = new();
 
@@ -24,6 +26,12 @@ public class DynamicPalette
     {
         ColorData = new DataSaver("DynamicColor");
         MyColor = new ModColor("myColor");
+        VanillaColors = new Tuple<Color,Color>[18];
+        for (int i = 0; i < 18; i++) VanillaColors[i] = new(Palette.PlayerColors[i], Palette.ShadowColors[i]);
+
+        //カモフラージャーカラー
+        Palette.PlayerColors[16] = Palette.PlayerColors[6].Multiply(new Color32(180, 180, 180, 255));
+        Palette.ShadowColors[16] = Palette.ShadowColors[6].Multiply(new Color32(180, 180, 180, 255));
     }
 
     public class ColorParameters
@@ -266,6 +274,7 @@ public class NebulaPlayerTab : MonoBehaviour
         else
             DynamicPalette.MyColor.GetMainParam(out h, out d, out float b);
         TargetRenderer.transform.localPosition = ToPalettePosition(h,d);
+
     }
 
     public void OnEnable()
@@ -273,6 +282,7 @@ public class NebulaPlayerTab : MonoBehaviour
         DynamicPalette.MyColor.GetMainParam(out var h,out var d,out _);
         string colorName = Language.Translate(ColorNamePatch.ToTranslationKey(h, d));
         PlayerCustomizationMenu.Instance.SetItemName(colorName);
+        PreviewColor(h, d, DynamicPalette.MyColor.MainColor, DynamicPalette.MyColor.ShadowColor);
     }
 
     private Vector2 GetOnPalettePosition()

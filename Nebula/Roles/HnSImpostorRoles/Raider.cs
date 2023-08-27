@@ -40,7 +40,7 @@ public class HnSRaider : Role
 
                 Vector2 killPos = PlayerControl.LocalPlayer.GetTruePosition() * 0.6f + (Vector2)thrownAxe.GameObject.transform.position * 0.4f;
                 //周囲のプレイヤーをキルする
-                ImpostorRoles.Raider.BeatenAroundAxe(killPos, 0.9f, true);
+                Impostor.Raider.BeatenAroundAxe(killPos, 0.9f, true);
 
                 float additional = 0f, ratio = Perks.RoleRaider.IP(0,PerkPropertyType.Percentage);
                 Perk.PerkHolder.PerkData.MyPerkData.PerkAction((p) => p.Perk.SetKillCoolDown(p, true, ref additional, ref ratio));
@@ -201,7 +201,7 @@ public class HnSRaider : Role
             {
                 if (thrownAxe.Data[0] == (int)Objects.ObjectTypes.RaidAxe.AxeState.Thrown)
                 {
-                    ImpostorRoles.Raider.BeatenAroundAxe(thrownAxe.GameObject.transform.position, 0.5f, true);
+                    Impostor.Raider.BeatenAroundAxe(thrownAxe.GameObject.transform.position, 0.5f, true);
                 }
             }
         }
@@ -212,7 +212,7 @@ public class HnSRaider : Role
 
     public HnSRaider()
             : base("HnSRaider", "raiderHnS", Palette.ImpostorRed, RoleCategory.Impostor, Side.Impostor, Side.Impostor,
-                 ImpostorRoles.Impostor.impostorSideSet, ImpostorRoles.Impostor.impostorSideSet, ImpostorRoles.Impostor.impostorEndSet,
+                 Impostor.Impostor.impostorSideSet, Impostor.Impostor.impostorSideSet, Impostor.Impostor.impostorEndSet,
                  true, VentPermission.CanUseInUnusualWays, false, true, true)
     {
         IsHideRole = true;

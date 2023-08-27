@@ -1,5 +1,6 @@
 ﻿using Il2CppInterop.Runtime.Injection;
 using UnityEngine;
+using UnityEngine.Rendering;
 using static Nebula.Modules.IMetaContext;
 
 namespace Nebula.Modules;
@@ -57,6 +58,46 @@ public class MetaContext : IMetaContext
     public MetaContext Append(IMetaContext content)
     {
         contents.Add(content);
+        return this;
+    }
+
+    //linesを-1にすると全部を並べる
+    public MetaContext Append<T>(IEnumerable<T> enumerable,Func<T, IMetaParallelPlacable> converter,int perLine,int lines,int page,float height,bool fixedHeight = false)
+    {
+        int skip = lines > 0 ? page * lines : 0;
+        int leftLines = lines;
+        int index = 0;
+        IMetaParallelPlacable[] contextList = new IMetaParallelPlacable[perLine];
+
+        foreach(var content in enumerable)
+        {
+            if (skip > 0)
+            {
+                skip--;
+                continue;
+            }
+
+            contextList[index] = converter.Invoke(content);
+            index++;
+
+            if(index == perLine)
+            {
+                Append(new CombinedContent(height, contextList));
+                index = 0;
+                leftLines--;
+
+                if (leftLines == 0) break;
+            }
+        }
+
+        if (index != 0)
+        {
+            for (; index < perLine; index++) contextList[index] = new HorizonalMargin(0f);
+            Append(new CombinedContent(height, contextList));
+        }
+
+        if (fixedHeight && leftLines > 0) for (int i = 0; i < leftLines; i++) Append(new VerticalMargin(height));
+
         return this;
     }
 
@@ -127,6 +168,7 @@ public class MetaContext : IMetaContext
             TextAttribute.Reflect(text);
             text.text = RawText;
             text.transform.localPosition = new Vector3(0,0,-0.1f);
+            text.sortingOrder = 15;
 
             var collider = button.gameObject.AddComponent<BoxCollider2D>();
             collider.size = TextAttribute.Size + new Vector2(TextMargin * 0.6f, TextMargin * 0.6f);
@@ -149,6 +191,7 @@ public class MetaContext : IMetaContext
         {
             var renderer = UnityHelper.CreateObject<SpriteRenderer>("Button", screen.transform, 
                 ReflectAlignment(Alignment, TextAttribute.Size + new Vector2(TextMargin, TextMargin), cursor, size));
+            renderer.sortingOrder = 5;
             Generate(renderer, out var button, out var text);
             PostBuilder?.Invoke(button, renderer, text);
             return TextAttribute.Size.y + TextMargin;
@@ -193,6 +236,59 @@ public class MetaContext : IMetaContext
             return;
         }
     }
+
+    public class ScrollView : IMetaContext, IMetaParallelPlacable
+    {
+        public AlignmentOption Alignment { get; set; }
+        public float Width { get => Size.x; }
+        public IMetaContext? Inner;
+        public Vector2 Size;
+        public bool WithMask;
+        public ScrollView(Vector2 size,IMetaContext inner,bool withMask=true)
+        {
+            this.Size = size;
+            this.Inner = inner;
+            this.WithMask = withMask;
+        }
+
+        public void Generate(GameObject screen, Vector2 center)
+        {
+            var view = UnityHelper.CreateObject("ScrollView", screen.transform, new Vector3(center.x, center.y, -0.01f));
+            var inner = UnityHelper.CreateObject("Inner", view.transform, new Vector3(0, 0, 0));
+            var innerSize = Size - new Vector2(0.4f, 0f);
+
+            if (WithMask)
+            {
+                view.AddComponent<SortingGroup>();
+                var mask = UnityHelper.CreateObject<SpriteMask>("Mask", view.transform, new Vector3(0, 0, 0));
+                mask.sprite = VanillaAsset.FullScreenSprite;
+                mask.transform.localScale = innerSize;
+            }
+
+            float height = Inner?.Generate(inner, new Vector2(-innerSize.x / 2f - 0.2f, innerSize.y / 2f), innerSize) ?? 0f;
+            VanillaAsset.GenerateScroller(Size, view.transform, new Vector2(Size.x / 2 - 0.15f, 0f), inner.transform, new FloatRange(0, height - Size.y), Size.y);
+        }
+
+        public float Generate(GameObject screen, Vector2 cursor, Vector2 size)
+        {
+            var view = UnityHelper.CreateObject("ScrollView", screen.transform, ReflectAlignment(Alignment, Size, cursor, size));
+            var inner = UnityHelper.CreateObject("Inner", view.transform, new Vector3(0, 0, 0));
+            var innerSize = Size - new Vector2(0.2f, 0f);
+
+            if (WithMask)
+            {
+                view.AddComponent<SortingGroup>();
+                var mask = UnityHelper.CreateObject<SpriteMask>("Mask", view.transform, new Vector3(0, 0, 0));
+                mask.sprite = VanillaAsset.FullScreenSprite;
+                mask.transform.localScale = innerSize;
+            }
+
+            float height = Inner?.Generate(inner, new Vector2(-innerSize.x / 2f, innerSize.y / 2f), innerSize) ?? 0f;
+            VanillaAsset.GenerateScroller(Size, view.transform, new Vector2(Size.x / 2 - 0.1f, 0f), inner.transform, new FloatRange(0, height - Size.y), Size.y);
+
+            return Size.y;
+        }
+    }
 }
 
 public class ParallelContext : IMetaContext
@@ -234,7 +330,7 @@ public class CombinedContent : IMetaContext
 
     public CombinedContent(float height, AlignmentOption alignment, params IMetaParallelPlacable[] contents)
     {
-        this.contents = contents;
+        this.contents = contents.ToArray();
         this.Alignment = alignment;
         this.height = height;
     }

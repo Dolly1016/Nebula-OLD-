@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Nebula.Roles.ImpostorRoles;
+namespace Nebula.Roles.Impostor;
 
 public class Raider : Role
 {

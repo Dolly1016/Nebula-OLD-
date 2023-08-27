@@ -15,6 +15,7 @@ static public class LayerExpansion
     static int? uiLayer = null;
     static int? shipLayer = null;
     static int? shadowLayer = null;
+    static int? drawShadowsLayer = null;
 
     static public int GetDefaultLayer()
     {
@@ -50,6 +51,12 @@ static public class LayerExpansion
     {
         if (shadowLayer == null) shadowLayer = LayerMask.NameToLayer("Shadow");
         return shadowLayer.Value;
+    }
+
+    static public int GetDrawShadowsLayer()
+    {
+        if (drawShadowsLayer == null) drawShadowsLayer = LayerMask.NameToLayer("DrawShadows");
+        return drawShadowsLayer.Value;
     }
 
     static public int GetShadowObjectsLayer()

@@ -23,7 +23,7 @@ public abstract class AbstractRole
 {
     public abstract RoleCategory RoleCategory { get; }
     //内部用の名称。AllRolesのソートに用いる
-    public abstract string InternalName { get; }
+    public virtual string InternalName { get => LocalizedName; }
     //翻訳キー用の名称。
     public abstract string LocalizedName { get; }
     public virtual string DisplayName { get => Language.Translate("role." + LocalizedName + ".name"); }
@@ -52,12 +52,13 @@ public abstract class ConfigurableRole : AbstractRole {
     public ConfigurableRole(int TabMask)
     {
         RoleConfig = new ConfigurationHolder("options.role." + LocalizedName, new ColorTextComponent(RoleColor, new TranslateTextComponent("role." + LocalizedName + ".name")), TabMask, CustomGameMode.AllGameModeMask);
-        RoleConfig.Priority = IsDefaultRole ? 1 : 0;
+        RoleConfig.Priority = IsDefaultRole ? 0 : 1;
         LoadOptions();
     }
 
     public ConfigurableRole() {
         RoleConfig = new ConfigurationHolder("options.role." + LocalizedName, new ColorTextComponent(RoleColor, new TranslateTextComponent("role." + LocalizedName + ".name")), ConfigurationTab.FromRoleCategory(RoleCategory), CustomGameMode.AllGameModeMask);
+        RoleConfig.Priority = IsDefaultRole ? 0 : 1;
         LoadOptions();
     }
 
@@ -93,7 +94,7 @@ public abstract class ConfigurableStandardRole : ConfigurableRole
             if (RoleCount <= 1)
             {
                 return new CombinedContent(0.55f, IMetaContext.AlignmentOption.Center,
-                new MetaContext.Text(NebulaConfiguration.GetOptionBoldAttr(1.4f)) { RawText = ChanceOptionText.Text },
+                new MetaContext.Text(NebulaConfiguration.GetOptionBoldAttr(1.8f)) { RawText = ChanceOptionText.Text },
                 NebulaConfiguration.OptionButtonContext(() => RoleChanceOption.ChangeValue(false), "<<"),
                 new MetaContext.Text(NebulaConfiguration.GetOptionBoldAttr(0.8f)) { RawText = RoleChanceOption.ToDisplayString() },
                 NebulaConfiguration.OptionButtonContext(() => RoleChanceOption.ChangeValue(true), ">>")

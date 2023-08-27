@@ -2,15 +2,13 @@
 using Nebula.Configuration;
 using System;
 
-namespace Nebula.Roles.CrewmateRoles;
+namespace Nebula.Roles.Crewmate;
 
 public class Sheriff : ConfigurableStandardRole
 {
     static public Sheriff MyRole = new Sheriff();
 
     public override RoleCategory RoleCategory => RoleCategory.CrewmateRole;
-
-    public override string InternalName => "sheriff";
 
     public override string LocalizedName => "sheriff";
     public override Color RoleColor => new Color(240f / 255f, 191f / 255f, 0f);
@@ -30,8 +28,8 @@ public class Sheriff : ConfigurableStandardRole
     {
         private ModAbilityButton? killButton = null;
 
-        static private ISpriteLoader buttonSprite = SpriteLoader.FromResource("Nebula.Resources.SheriffKillButton.png", 100f);
-        public override AbstractRole Role => Sheriff.MyRole;
+        static private ISpriteLoader buttonSprite = SpriteLoader.FromResource("Nebula.Resources.Buttons.SheriffKillButton.png", 100f);
+        public override AbstractRole Role => MyRole;
         public Instance(PlayerControl player) : base(player)
         {
         }
@@ -39,14 +37,16 @@ public class Sheriff : ConfigurableStandardRole
         private bool CanKill(PlayerControl target)
         {
             var info = target.GetModInfo();
+            if (info.Role.Role == Madmate.MyRole) return Sheriff.MyRole.CanKillMadmateOption.GetBool()!.Value;
             if (info.Role.Role.RoleCategory == RoleCategory.CrewmateRole) return false;
             return true;
         }
+
         public override void OnActivated()
         {
             if (AmOwner)
             {
-                var killTracker = Bind(new ObjectTracker<PlayerControl>(1.2f, player, ObjectTrackerHelper.PlayerSupplier, (p) => p.PlayerId != player.PlayerId && !p.Data.IsDead, ObjectTrackerHelper.DefaultPosConverter, ObjectTrackerHelper.DefaultRendererConverter));
+                var killTracker = Bind(ObjectTrackers.ForPlayer(1.2f, player, (p) => p.PlayerId != player.PlayerId && !p.Data.IsDead));
                 killButton = Bind(new ModAbilityButton(isArrangedAsKillButton: true)).KeyBind(KeyCode.F);
                 killButton.SetSprite(buttonSprite.GetSprite());
                 killButton.Availability = (button) => killTracker.CurrentTarget != null && player.CanMove;
@@ -67,6 +67,11 @@ public class Sheriff : ConfigurableStandardRole
         }
 
         public override void OnGameStart()
+        {
+            killButton?.StartCoolDown();
+        }
+
+        public override void OnGameReenabled()
         {
             killButton?.StartCoolDown();
         }

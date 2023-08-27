@@ -37,7 +37,9 @@ public class NebulaGameEnd
     static private Color InvalidColor = new Color(72f / 255f, 78f / 255f, 84f / 255f);
     static public CustomEndCondition CrewmateWin = new(16, "crewmate", Palette.CrewmateBlue, 16);
     static public CustomEndCondition ImpostorWin = new(17, "impostor", Palette.ImpostorRed, 16);
-    static public CustomEndCondition NoGame = new(128, "nogame", InvalidColor, 32);
+    static public CustomEndCondition VultureWin = new(24, "vulture", Roles.Neutral.Vulture.MyRole.RoleColor, 32);
+    static public CustomEndCondition JesterWin = new(25, "jester", Roles.Neutral.Jester.MyRole.RoleColor, 32);
+    static public CustomEndCondition NoGame = new(128, "nogame", InvalidColor, 128);
 
     private readonly static RemoteProcess<NebulaEndState> RpcEndGame = new RemoteProcess<NebulaEndState>(
        "EndGame",
