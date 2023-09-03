@@ -107,15 +107,23 @@ public static class MainMenuSetUpPatch
 
             TextAttribute NameAttribute = new(TextAttribute.BoldAttr) { 
                 FontMaterial = VanillaAsset.StandardMaskedFontMaterial,
-                Size = new Vector2(4f,0.3f),
+                Size = new Vector2(3.4f,0.3f),
                 Alignment = TMPro.TextAlignmentOptions.Left
             };
+
+            TextAttribute VersionAttribute = new TextAttribute(TextAttribute.NormalAttr)
+            {
+                FontMaterial = VanillaAsset.StandardMaskedFontMaterial,
+                Size = new Vector2(0.8f, 0.3f),
+                Alignment = TMPro.TextAlignmentOptions.Left
+            }.EditFontSize(1.4f, 1f, 1.4f);
             TextAttribute AuthorAttribute = new TextAttribute(TextAttribute.NormalAttr)
             {
                 FontMaterial = VanillaAsset.StandardMaskedFontMaterial,
                 Size = new Vector2(1.2f, 0.3f),
                 Alignment = TMPro.TextAlignmentOptions.Left
             }.EditFontSize(1.4f, 1f, 1.4f);
+
             TextAttribute DescAttribute = new TextAttribute(TextAttribute.NormalAttr) {
                 FontMaterial = VanillaAsset.StandardMaskedFontMaterial, 
                 Alignment = TMPro.TextAlignmentOptions.TopLeft,
@@ -128,7 +136,10 @@ public static class MainMenuSetUpPatch
             foreach (var addon in NebulaAddon.AllAddons)
             {
                 inner.Append(new CombinedContent(0.5f,
+                    new MetaContext.Image(addon.Icon) { Width = 0.3f },
+                    new MetaContext.HorizonalMargin(0.1f),
                     new MetaContext.Text(NameAttribute) { RawText = addon.AddonName },
+                    new MetaContext.Text(VersionAttribute) { RawText = addon.Version },
                     new MetaContext.Text(AuthorAttribute) { RawText = "by " + addon.Author })
                 { Alignment = IMetaContext.AlignmentOption.Left });
                 inner.Append(new MetaContext.Text(DescAttribute) { RawText = addon.Description });

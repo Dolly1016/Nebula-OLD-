@@ -17,7 +17,7 @@ public class Impostor : ConfigurableStandardRole
     public override Team Team => Impostor.MyTeam;
     public override bool IsDefaultRole => true;
 
-    public override RoleInstance CreateInstance(PlayerModInfo player, int[]? arguments) => new Instance(player);
+    public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player);
 
     public class Instance : RoleInstance
     {
@@ -29,7 +29,7 @@ public class Impostor : ConfigurableStandardRole
 
         public override void DecoratePlayerName(ref string text, ref Color color)
         {
-            if (MyPlayer.Role.Role.RoleCategory == RoleCategory.ImpostorRole) color = Palette.ImpostorRed;
+            if (PlayerControl.LocalPlayer.GetModInfo().Role.Role.RoleCategory == RoleCategory.ImpostorRole) color = Palette.ImpostorRed;
         }
     }
 }

@@ -19,7 +19,7 @@ public class Phosphorus : ConfigurableStandardRole
     public override Color RoleColor => new Color(249f / 255f, 188f / 255f, 81f / 255f);
     public override Team Team => Crewmate.MyTeam;
 
-    public override RoleInstance CreateInstance(PlayerModInfo player, int[]? arguments) => new Instance(player);
+    public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player);
 
     private NebulaConfiguration NumOfLampsOption;
     private NebulaConfiguration PlaceCoolDownOption;
@@ -90,7 +90,7 @@ public class Phosphorus : ConfigurableStandardRole
                     CombinedRemoteProcess.CombinedRPC.Invoke(globalLanterns!.Select((id)=>RpcLantern.GetInvoker(id)).ToArray());
                 };
                 lanternButton.OnEffectEnd = (button) => lanternButton.StartCoolDown();
-                lanternButton.CoolDownTimer = Bind(new Timer(0f, MyRole.LampCoolDownOption.GetFloat()!.Value));
+                lanternButton.CoolDownTimer = Bind(new Timer(0f, MyRole.LampCoolDownOption.GetFloat()!.Value).SetAsAbilityCoolDown().Start());
                 lanternButton.EffectTimer = Bind(new Timer(0f, MyRole.LampDurationOption.GetFloat()!.Value));
                 lanternButton.SetLabelType(ModAbilityButton.LabelType.Standard);
                 lanternButton.SetLabel("lantern");
@@ -104,30 +104,21 @@ public class Phosphorus : ConfigurableStandardRole
                 placeButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead && globalLanterns == null && left > 0;
                 placeButton.OnClick = (button) => {
                     var pos = PlayerControl.LocalPlayer.GetTruePosition();
-                    localLanterns.Add(NebulaSyncObject.LocalInstantiate(Lantern.MyLocalTag, new float[] { pos.x, pos.y }) as NebulaSyncStandardObject);
+                    localLanterns.Add(Bind<NebulaSyncStandardObject>(NebulaSyncObject.LocalInstantiate(Lantern.MyLocalTag, new float[] { pos.x, pos.y }) as NebulaSyncStandardObject));
 
                     left--;
                     usesText.text = left.ToString();
 
                     placeButton.StartCoolDown();
                 };
-                placeButton.CoolDownTimer = Bind(new Timer(0f, MyRole.PlaceCoolDownOption.GetFloat()!.Value));
+                placeButton.CoolDownTimer = Bind(new Timer(0f, MyRole.PlaceCoolDownOption.GetFloat()!.Value).SetAsAbilityCoolDown());
                 placeButton.SetLabelType(ModAbilityButton.LabelType.Standard);
                 placeButton.SetLabel("place");
                 usesText.text = left.ToString();
+
+                lanternButton.StartCoolDown();
+                placeButton.StartCoolDown();
             }
-        }
-
-        public override void OnGameStart()
-        {
-            lanternButton?.StartCoolDown();
-            placeButton?.StartCoolDown();
-        }
-
-        public override void OnGameReenabled()
-        {
-            lanternButton?.StartCoolDown();
-            placeButton?.StartCoolDown();
         }
 
 
@@ -149,13 +140,8 @@ public class Phosphorus : ConfigurableStandardRole
 
     }
 
-    public static RemoteProcess<int> RpcLantern = new(
+    public static RemoteProcess<int> RpcLantern = RemotePrimitiveProcess.OfInteger(
       "Lantern",
-      (writer, message) =>
-      {
-          writer.Write(message);
-      },
-      (reader) => reader.ReadInt32(),
       (message, _) =>
       {
           var lantern = NebulaSyncObject.GetObject<Lantern>(message);

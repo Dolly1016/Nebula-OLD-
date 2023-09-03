@@ -55,3 +55,12 @@ public static class SetGhostRolePatch
         return false;
     }
 }
+
+[HarmonyPatch(typeof(GameManager), nameof(GameManager.CheckTaskCompletion))]
+static class CheckTaskCompletionPatch
+{
+    static bool Prefix(GameManager __instance)
+    {
+        return false;
+    }
+}

@@ -26,6 +26,8 @@ public abstract class INebulaScriptComponent : INebulaBindableComponent
     public abstract void Update();
     public virtual void OnMeetingStart() { }
     public virtual void OnReleased() { }
+    public virtual void OnGameReenabled() { }
+    public virtual void OnGameStart() { }
     public override void Release()
     {
         MarkedRelease = true;

@@ -33,7 +33,7 @@ public class ObjectTracker<T> : INebulaScriptComponent where T : MonoBehaviour
     private Predicate<T>? candidatePredicate;
     private Func<T, Vector2> positionConverter;
     private Func<T, SpriteRenderer> rendererConverter;
-    public Color Color = Color.yellow;
+    public Color? Color = UnityEngine.Color.yellow;
     private bool UpdateTarget { get; set; } = true;
     private float MaxDistance { get; set; } = 1f;
     public bool IgnoreColliders { get; set; } = false;
@@ -54,9 +54,13 @@ public class ObjectTracker<T> : INebulaScriptComponent where T : MonoBehaviour
     private void ShowTarget()
     {
         if (!CurrentTarget) return;
-        var renderer = rendererConverter.Invoke(CurrentTarget!);
-        renderer.material.SetFloat("_Outline", 1f);
-        renderer.material.SetColor("_OutlineColor", Color);
+
+        if (Color.HasValue)
+        {
+            var renderer = rendererConverter.Invoke(CurrentTarget!);
+            renderer.material.SetFloat("_Outline", 1f);
+            renderer.material.SetColor("_OutlineColor", Color.Value);
+        }
     }
 
     public override void Update()

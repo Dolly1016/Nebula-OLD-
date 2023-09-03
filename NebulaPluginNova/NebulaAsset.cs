@@ -13,8 +13,11 @@ namespace Nebula;
 public static class NebulaAsset
 {
     static AssetBundle AssetBundle;
-    public static void Load()
+    public static IEnumerator CoLoad()
     {
+        Patches.LoadPatch.LoadingText = "Loading Map Expansions";
+        yield return null;
+
         var resourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Nebula.Resources.Assets.nebula_asset");
         AssetBundle = AssetBundle.LoadFromMemory(resourceStream.ReadBytes());
 
@@ -91,6 +94,8 @@ public static class NebulaAsset
 
     static public Shader MultiplyBackShader { get; private set; }
     static public Shader StoreBackShader { get; private set; }
+
+    static public ResourceExpandableSpriteLoader SharpWindowBackgroundSprite = new("Nebula.Resources.StatisticsBackground.png", 100f,5,5);
 
     public static GameObject[] DivMap { get; private set; } = new GameObject[5];
 

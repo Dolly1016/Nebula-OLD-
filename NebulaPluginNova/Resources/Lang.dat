@@ -47,14 +47,30 @@
 "options.map.spawnMethod.selective" : "Selective"
 "options.map.spawnMethod.random" : "Random"
 "options.map.spawnCandidates" : "Num of Spawning Candidates"
+"options.map.silentVents" : "Silent Vents"
 
 "options.role.count" : "Role Assignment"
 "options.role.chance" : "Assignment Chance"
 "options.role.secondaryChance" : "2nd Onward"
+"options.role.count.short" : "Assignment"
 
 "options.killCoolDown.type.immediate" : "Immediate"
 "options.killCoolDown.type.relative" : "Relative"
 "options.killCoolDown.type.ratio" : "Ratio"
+
+# Roles
+
+"role.general.ventOption" : "Vent Option"
+"role.general.ventCoolDown" : "Cool Down"
+"role.general.ventCoolDown.short" : "Cool"
+"role.general.ventDuration" : "Duration"
+"role.general.ventDuration.short" : "Duration"
+"role.general.ventUses" : "Max Uses"
+"role.general.ventUses.short" : "Uses"
+"role.general.common" : "[COMMON]"
+
+"role.guesser.numOfGuess" : "Num Of Guess"
+"options.role.guesser.detail" : "Guesser can shoot players in the meeting by guessing the role.<br>If the guess is wrong, guesser dies instead."
 
 # Crewmate Roles
 
@@ -73,18 +89,16 @@
 "options.role.bait.detail" : "Your murderer reports your body immediately."
 "options.role.bait.showKillFlash" : "Show Kill Flash"
 
-"role.sheriff.name" : "Sheriff"
-"role.sheriff.blurb" : "Shoot the Impostor"
-"options.role.sheriff.detail" : "Sheriff can kill other members.<br>Attempting to kill a Crewmate will die instead."
-"options.role.sheriff.killCoolDown" : "Kill Cool Down"
-"options.role.sheriff.canKillMadmate" : "Can Kill Madmate"
-
 "role.necromancer.name" : "Necromancer"
 "role.necromancer.blurb" : "Revive Phantoms"
 "options.role.necromancer.detail" : "Necromancer can raise dead bodies from the dead!<br>They drags a corpse for a resurrection ritual."
 "options.role.necromancer.reviveCoolDown" : "Revive Cool Down"
 "options.role.necromancer.reviveDuration" : "Revive Duration"
 "role.necromancer.phantomMessage" : "Please take me to %ROOM%..."
+
+"role.niceGuesser.name" : "Nice Guesser"
+"role.niceGuesser.blurb" : "Guess and Shoot"
+"options.role.niceGuesser.detail" : "Guesser can shoot players in the meeting by guessing the role.<br>If the guess is wrong, guesser dies instead."
 
 "role.madmate.name" : "Madmate"
 "role.madmate.blurb" : "Assist Impostors"
@@ -97,6 +111,17 @@
 "options.role.phosphorus.placeCoolDown" : "Place Cool Down"
 "options.role.phosphorus.lampCoolDown" : "Lamp Cool Down"
 "options.role.phosphorus.lampDuration" : "Lamp Duration"
+
+"role.seer.name" : "Seer"
+"role.seer.blurb" : "You Will See Players Die"
+"options.role.seer.detail" : "Seer can see the ghosts to find out where victims died."
+"options.role.seer.ghostDuration" : "Ghost Duration"
+
+"role.sheriff.name" : "Sheriff"
+"role.sheriff.blurb" : "Shoot the Impostor"
+"options.role.sheriff.detail" : "Sheriff can kill other members.<br>Attempting to kill a Crewmate will die instead."
+"options.role.sheriff.canKillMadmate" : "Can Kill Madmate"
+"options.role.sheriff.killCoolDown" : "Kill Cool Down"
 
 # Impostor Roles
 
@@ -115,20 +140,52 @@
 "options.role.cleaner.detail" : "Cleaner can obliterate corpses."
 "options.role.cleaner.cleanCoolDown" : "Clean Cool Down"
 
+"role.evilGuesser.name" : "Evil Guesser"
+"role.evilGuesser.blurb" : "Guess and Shoot"
+"options.role.evilGuesser.detail" : "Guesser can shoot players in the meeting by guessing the role.<br>If the guess is wrong, guesser dies instead."
+
 "role.morphing.name" : "Morphing"
 "role.morphing.blurb" : "Change Your Look to Not Get Caught"
 "options.role.morphing.detail" : "Morphing samples the appearance of the player<br>and transforms into that form."
 "options.role.morphing.sampleCoolDown" : "Sample Cool Down"
 "options.role.morphing.morphCoolDown" : "Morph Cool Down"
 "options.role.morphing.morphDuration" : "Morph Duration"
+"options.role.morphing.loseSampleOnMeeting" : "Lose Sample On Meeting"
 
 "role.painter.name" : "Painter"
 "role.painter.blurb" : "No One Knows You Anymore"
 "options.role.painter.detail" : "Painter samples the appearance of the player<br>and paints the form onto players."
 "options.role.painter.sampleCoolDown" : "Sample Cool Down"
 "options.role.painter.paintCoolDown" : "Paint Cool Down"
+"options.role.painter.loseSampleOnMeeting" : "Lose Sample On Meeting"
+
+"role.reaper.name" : "Reaper"
+"role.reaper.blurb" : "Kill and Deceive the Crewmates"
+"options.role.reaper.detail" : "Reaper can drag dead bodies."
+
+"role.sniper.name" : "Sniper"
+"role.sniper.blurb" : "Shoot Up!"
+"options.role.sniper.detail" : "Painter samples the appearance of the player<br>and paints the form onto players."
+"options.role.sniper.snipeCoolDown" : "Snipe Cool Down"
+"options.role.sniper.shotSize" : "Shot Size"
+"options.role.sniper.shotEffectiveRange" : "Shot Effective Range"
+"options.role.sniper.shotNoticeRange" : "Snipe Notice Range"
 
 # Neutral Roles
+
+"role.jackal.name" : "Jackal"
+"role.jackal.blurb" : "Kill Everyone"
+"options.role.jackal.detail" : "Jackal annihilates players to win.<br>Exile of the Jackal is a common goal for Impostors and Crewmates."
+"options.role.jackal.killCoolDown" : "Kill Cool Down"
+"options.role.jackal.canCreateSidekick" : "Can Create Sidekick"
+"options.role.jackal.numOfKillingToCreateSidekick" : "Num of Killing to Create Sidekick"
+
+"role.sidekick.name" : "Sidekick"
+"options.role.jackal.sidekick.detail" : "Sidekick assists Jackal.<br>Sidekick is promoted to Jackal upon Jackal's death."
+"options.role.jackal.sidekick.canKill" : "Can Kill"
+"options.role.jackal.sidekick.killCoolDown" : "Kill Cool Down"
+"options.role.jackal.sidekick.isModifier" : "Is Modifier"
+"options.role.jackal.sidekick.canCreateSidekickChainly" : "Can Create Sidekick Chainly"
 
 "role.jester.name" : "Jester"
 "role.jester.blurb" : "Get Voted Out"
@@ -221,10 +278,13 @@
 
 # Button
 
+"button.label.agent" : "agent"
 "button.label.camo" : "camo"
 "button.label.clean" : "clean"
 "button.label.drag" : "drag"
 "button.label.eat" : "eat"
+"button.label.equip" : "equip"
+"button.label.kill" : "kill"
 "button.label.lantern" : "lantern"
 "button.label.morph" : "morph"
 "button.label.operate" : "operate"
@@ -232,6 +292,9 @@
 "button.label.release" : "release"
 "button.label.revive" : "revive"
 "button.label.sample" : "sample"
+"button.label.snipe" : "snipe"
+"button.label.sidekick" : "sidekick"
+"button.label.unequip" : "unequip"
 
 # Game
 
@@ -261,3 +324,12 @@
 "end.impostor" : "Impostors win"
 "end.jester" : "Jester Wins"
 "end.vulture" : "Vulture Wins"
+
+# Help
+
+"help.tabs.myInfo" : "My Role"
+"help.tabs.roles" : "Roles"
+"help.tabs.modifiers" : "Modifiers"
+"help.tabs.options" : "Options"
+"help.tabs.slides" : "Slides"
+"help.slides.share" : "Share"

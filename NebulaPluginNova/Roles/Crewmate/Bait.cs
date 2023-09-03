@@ -17,7 +17,7 @@ public class Bait : ConfigurableStandardRole
     public override Color RoleColor => new Color(0f / 255f, 247f / 255f, 255f / 255f);
     public override Team Team => Crewmate.MyTeam;
 
-    public override RoleInstance CreateInstance(PlayerModInfo player, int[]? arguments) => new Instance(player);
+    public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player);
 
     private NebulaConfiguration ShowKillFlashOption;
     protected override void LoadOptions()

@@ -13,7 +13,11 @@ public static class PlayerExpansion
 
     public static void StopAllAnimations(this CosmeticsLayer layer)
     {
-        if (layer.skin.animator) layer.skin.animator.Stop();
-        if (layer.currentPet.animator)layer.currentPet.animator.Stop();
+        try
+        {
+            if (layer.skin.animator) layer.skin.animator.Stop();
+            if (layer.currentPet.animator) layer.currentPet.animator.Stop();
+        }
+        catch { }
     }
 }

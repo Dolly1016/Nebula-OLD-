@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Nebula.Patches;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,6 +55,7 @@ public class EastAsianFontChanger
     }
 }
 
+[NebulaPreLoad]
 public class Language
 {
     static private Language? CurrentLanguage = null;
@@ -103,15 +105,16 @@ public class Language
         return "English";
     }
 
-    public static void Load()
+    public static IEnumerator CoLoad()
     {
+        LoadPatch.LoadingText = "Loading Language Data";
+        yield return null;
+
         DefaultLanguage = new Language();
         DefaultLanguage.Deserialize(StreamHelper.OpenFromResource("Nebula.Resources.Color.dat"));
         DefaultLanguage.Deserialize(StreamHelper.OpenFromResource("Nebula.Resources.Lang.dat"));
 
         EastAsianFontChanger.LoadFont();
-
-        OnChangeLanguage((uint)AmongUs.Data.DataManager.Settings.Language.CurrentLanguage);
     }
 
     public static void OnChangeLanguage(uint language)
@@ -122,8 +125,12 @@ public class Language
         CurrentLanguage = new Language();
         CurrentLanguage.Deserialize(StreamHelper.OpenFromResource("Nebula.Resources.Languages." + lang + ".dat"));
         CurrentLanguage.Deserialize(StreamHelper.OpenFromResource("Nebula.Resources.Languages." + lang + "_Help.dat"));
-        CurrentLanguage.Deserialize(StreamHelper.OpenFromDisk(@"Language\" + lang + "_Color.dat"));
-        CurrentLanguage.Deserialize(StreamHelper.OpenFromDisk(@"Language\" + lang + ".dat"));
+
+        foreach(var addon in NebulaAddon.AllAddons)
+        {
+            using var stream = addon.OpenStream("Language/" + lang + ".dat");
+            if (stream != null) CurrentLanguage.Deserialize(stream);
+        }
     }
 
     private void Deserialize(Stream? stream)
@@ -151,14 +158,14 @@ public class Language
                     }
                     catch
                     {
-                        Debug.LogWarning("[Language] Cannot read the line \"" + line + "\"");
+                        NebulaPlugin.Log.Print(NebulaLog.LogCategory.Language,"Cannot read the line \"" + line + "\"");
                         continue;
                     }
                 }
 
                 if (strings.Length != 2)
                 {
-                    Debug.LogWarning("[Language] Failed to read the line \"" + line + "\"");
+                    NebulaPlugin.Log.Print(NebulaLog.LogCategory.Language, "Failed to read the line \"" + line + "\"");
                     continue;
                 }
 

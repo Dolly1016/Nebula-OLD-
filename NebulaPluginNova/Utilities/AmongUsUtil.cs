@@ -9,6 +9,7 @@ namespace Nebula.Utilities;
 [NebulaRPCHolder]
 public static class AmongUsUtil
 {
+    public static bool InMeeting => MeetingHud.Instance == null && ExileController.Instance == null;
     public static byte CurrentMapId => GameOptionsManager.Instance.CurrentGameOptions.MapId;
     private static string[] mapName = new string[] { "skeld", "mira", "polus", "undefined", "airship" };
     public static string ToDisplayString(SystemTypes room)=> Language.Translate("location." + mapName[CurrentMapId] + "." + Enum.GetName(typeof(SystemTypes),room).HeadLower());

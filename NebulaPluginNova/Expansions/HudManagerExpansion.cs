@@ -32,7 +32,7 @@ public static class HudManagerExpansion
         manager.ReportButton.ToggleVisible(!flag && (modRole?.CanReport ?? false) && GameManager.Instance.CanReportBodies() && ShipStatus.Instance != null);
         manager.KillButton.ToggleVisible((modRole?.HasVanillaKillButton ?? false) && !flag);
         manager.SabotageButton.ToggleVisible((modRole?.CanInvokeSabotage ?? false));
-        manager.ImpostorVentButton.ToggleVisible(!flag && (modRole?.CanUseVent ?? false) /*&& GameOptionsManager.Instance.CurrentGameOptions.GameMode != GameModes.HideNSeek*/);
+        manager.ImpostorVentButton.ToggleVisible(!flag && ((modRole?.CanUseVent ?? false) || PlayerControl.LocalPlayer.walkingToVent || PlayerControl.LocalPlayer.inVent));
     }
 
     static public void ShowVanillaKeyGuide(this HudManager manager)

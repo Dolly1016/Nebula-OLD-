@@ -14,6 +14,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Unity;
+using Unity.IL2CPP.CompilerServices;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.XR;
@@ -74,26 +75,36 @@ public class CustomCosmicItem : CustomItemGrouped
         }
     }
 
-    public virtual void Activate()
+    public virtual IEnumerator Activate()
     {
         string holder = SubholderPath;
         foreach (var image in AllImage())
         {
+            var loader = MyBundle.GetTextureLoader(Category, SubholderPath, image.Address);
+            yield return loader.LoadAsync((ex) => {
+                string? message = null;
+                if (ex is DirectoryNotFoundException)
+                    message = "Missed Directory";
+                if (ex is FileNotFoundException)
+                    message = "Missed File";
+                NebulaPlugin.Log.Print(NebulaLog.LogCategory.MoreCosmic, "Failed to load images. ( \"" + image.Address + "\" in \"" + Name + "\" )\nReason: " + (message ?? "Others (" + ex.Message + ")"));
+            });
+            
             try
             {
-                if (!image.TryLoadImage(MyBundle.GetTextureLoader(Category, SubholderPath, image.Address)))
+                if (!image.TryLoadImage(loader.Result))
                 {
                     IsValid = false;
-                    //Debug.LogWarning("[MoreCosmic] Cosmic item \"" + Name + "\" is requiring invalid image.");
                     break;
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 IsValid = false;
                 break;
             }
         }
+        yield break;
     }
 
 
@@ -117,6 +128,7 @@ public class CosmicImage
 
     public bool RequirePlayFirstState = false;
     private IDividedSpriteLoader? spriteLoader { get; set; }
+
 
     public bool TryLoadImage(ITextureLoader textureLoader)
     {
@@ -188,16 +200,16 @@ public class CosmicHat : CustomCosmicItem
 
     public HatData MyHat { get; private set; }
     public HatViewData MyView { get; private set; }
-    public override void Activate()
+    public override IEnumerator Activate()
     {
         foreach (var image in AllImage()) {
             image.Pivot = new Vector2(0.53f, 0.575f);
             image.PixelsPerUnit = 112.875f;
         }
 
-        base.Activate();
+        yield return base.Activate();
 
-        if (!IsValid) return;
+        if (!IsValid) yield break;
 
         var viewdata = ScriptableObject.CreateInstance<HatViewData>();
         HatData hat = ScriptableObject.CreateInstance<HatData>();
@@ -281,7 +293,7 @@ public class CosmicVisor : CustomCosmicItem
     public bool HasClimbUpImage => Climb != null;
     public bool HasClimbDownImage => (ClimbDown ?? Climb) != null;
 
-    public override void Activate()
+    public override IEnumerator Activate()
     {
         foreach (var image in AllImage())
         {
@@ -289,9 +301,9 @@ public class CosmicVisor : CustomCosmicItem
             image.PixelsPerUnit = 112.875f;
         }
 
-        base.Activate();
+        yield return base.Activate();
 
-        if (!IsValid) return;
+        if (!IsValid) yield break;
 
         var viewdata = ScriptableObject.CreateInstance<VisorViewData>();
         VisorData visor = ScriptableObject.CreateInstance<VisorData>();
@@ -335,10 +347,10 @@ public class CosmicNamePlate : CustomCosmicItem
 
     public NamePlateData MyPlate { get; private set; }
     public NamePlateViewData MyView { get; private set; }
-    public override void Activate()
+    public override IEnumerator Activate()
     {
-        base.Activate();
-        if (!IsValid) return;
+        yield return base.Activate();
+        if (!IsValid) yield break;
 
         var viewdata = ScriptableObject.CreateInstance<NamePlateViewData>();
         NamePlateData nameplate = ScriptableObject.CreateInstance<NamePlateData>();
@@ -377,11 +389,6 @@ public class CosmicPackage : CustomItemGrouped
 public class CustomItemBundle
 {
     static public MD5 MD5 = MD5.Create();
-    static public HttpClient HttpClient { get {
-            if (httpClient == null) httpClient = new HttpClient();
-            return httpClient;
-        } }
-    static private HttpClient? httpClient = null;
 
     static Dictionary<string, CustomItemBundle> AllBundles = new();
 
@@ -425,12 +432,15 @@ public class CustomItemBundle
         if (AllBundles.ContainsKey(BundleName)) throw new Exception("Duplicated Bundle Error");
     }
 
-    public void Activate()
+    public IEnumerator Activate()
     {
         IsActive = true;
         AllBundles[BundleName] = this;
 
-        foreach (var item in AllCosmicItem()) item.Activate();
+        foreach (var item in AllCosmicItem())
+        {
+            yield return item.Activate();
+        }
 
         var hatList = HatManager.Instance.allHats.ToList();
         foreach (var item in Hats) if (item.IsValid) hatList.Add(item.MyHat);
@@ -447,6 +457,11 @@ public class CustomItemBundle
 
     public Stream? OpenStream(string path)
     {
+        if (RelatedZip != null && RelatedLocalAddress != null)
+        {
+            string address = RelatedLocalAddress + path;
+            return RelatedZip.GetEntry(address)?.Open();
+        }
         if (RelatedLocalAddress != null)
         {
             string address = RelatedLocalAddress + path;
@@ -461,7 +476,7 @@ public class CustomItemBundle
         //リモートリポジトリやローカルの配置先が無い場合はダウンロードできない
         if (RelatedRemoteAddress == null || RelatedLocalAddress == null) return;
 
-        var hatFileResponse = await HttpClient.GetAsync(RelatedRemoteAddress + category + "/" + address, HttpCompletionOption.ResponseContentRead);
+        var hatFileResponse = await NebulaPlugin.HttpClient.GetAsync(RelatedRemoteAddress + category + "/" + address, HttpCompletionOption.ResponseContentRead);
         if (hatFileResponse.StatusCode != HttpStatusCode.OK) return;
 
         using var responseStream = await hatFileResponse.Content.ReadAsStreamAsync();
@@ -475,18 +490,18 @@ public class CustomItemBundle
         responseStream.CopyTo(fileStream);
     }
 
-    public ITextureLoader GetTextureLoader(string category,string subholder,string address)
+    public UnloadTextureLoader.AsyncLoader GetTextureLoader(string category,string subholder,string address)
     {
         if (RelatedZip != null)
-            return null;
+            return new UnloadTextureLoader.AsyncLoader(() => RelatedZip.GetEntry(RelatedLocalAddress + category + "/" + address)?.Open());
         else
-            return new DiskTextureLoader(RelatedLocalAddress + category + "/" + subholder + "/" + address);
+            return new UnloadTextureLoader.AsyncLoader(() => File.OpenRead(RelatedLocalAddress + category + "/" + subholder + "/" + address));
     }
 
     static public async Task<CustomItemBundle?> LoadOnline(string url)
     {
-        HttpClient.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue { NoCache = true };
-        var response = await HttpClient.GetAsync(new System.Uri($"{url}/Contents.json"), HttpCompletionOption.ResponseContentRead);
+        NebulaPlugin.HttpClient.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue { NoCache = true };
+        var response = await NebulaPlugin.HttpClient.GetAsync(new System.Uri($"{url}/Contents.json"), HttpCompletionOption.ResponseContentRead);
         if (response.StatusCode != HttpStatusCode.OK) return null;
 
         using StreamReader stream = new(await response.Content.ReadAsStreamAsync(),Encoding.UTF8);
@@ -503,13 +518,29 @@ public class CustomItemBundle
         return bundle;
     }
 
-    static public CustomItemBundle LoadOffline()
+    static public async Task<CustomItemBundle?> LoadOffline(NebulaAddon addon)
     {
-        return null;
+        using var stream = addon.OpenStream("MoreCosmic/Contents.json");
+
+        if (stream == null) return null;
+
+        string json = new StreamReader(stream, Encoding.UTF8).ReadToEnd();
+        CustomItemBundle? bundle = (CustomItemBundle?)JsonStructure.Deserialize(json, typeof(CustomItemBundle));
+
+        if (bundle == null) return null;
+
+        bundle.RelatedRemoteAddress = null;
+        bundle.RelatedLocalAddress = addon.InZipPath + "MoreCosmic/";
+        bundle.RelatedZip = addon.Archive;
+        if (bundle.BundleName == null) bundle.BundleName = addon.AddonName;
+
+        await bundle.Load();
+
+        return bundle;
     }
 }
 
-[NebulaPreLoad]
+[NebulaPreLoad(typeof(NebulaAddon))]
 public static class MoreCosmic
 {
     public static Dictionary<string, CosmicHat> AllHats = new();
@@ -525,9 +556,23 @@ public static class MoreCosmic
 
     private static bool isLoaded = false;
     private static List<CustomItemBundle?> loadedBundles = new();
+
+    private static async Task LoadLocal()
+    {
+        foreach(var addon in NebulaAddon.AllAddons)
+        {
+            var bundle = await CustomItemBundle.LoadOffline(addon);
+
+            lock (loadedBundles)
+            {
+                loadedBundles.Add(bundle);
+            }
+        }
+    }
+
     private static async Task LoadOnline()
     {
-        var response = await CustomItemBundle.HttpClient.GetAsync(new System.Uri("https://raw.githubusercontent.com/Dolly1016/MoreCosmic/master/UserCosmics.dat"), HttpCompletionOption.ResponseContentRead);
+        var response = await NebulaPlugin.HttpClient.GetAsync(new System.Uri("https://raw.githubusercontent.com/Dolly1016/MoreCosmic/master/UserCosmics.dat"), HttpCompletionOption.ResponseContentRead);
         if (response.StatusCode != HttpStatusCode.OK) return;
 
         string repos = await response.Content.ReadAsStringAsync();
@@ -549,23 +594,41 @@ public static class MoreCosmic
         }
     }
 
+    static private Queue<StackfullCoroutine> ActivateQueue = new Queue<StackfullCoroutine>();
+    
     public static void Update()
     {
+        if (!HatManager.InstanceExists) return;
+        if (!EOSManager.InstanceExists) return;
+        if (!EOSManager.Instance.HasFinishedLoginFlow()) return;
+
         lock (loadedBundles)
         {
             if (loadedBundles.Count > 0)
             {
-                foreach (var bundle in loadedBundles) bundle.Activate();
+                foreach (var bundle in loadedBundles) if(bundle != null) ActivateQueue.Enqueue(new(bundle!.Activate()));
                 loadedBundles.Clear();
             }
         }
+
+        if (ActivateQueue.Count > 0)
+        {
+            var current = ActivateQueue.Peek();
+            if (!(current?.MoveNext() ?? false)) ActivateQueue.Dequeue();
+        }
+    }
+
+    private static async Task LoadAll()
+    {
+        await LoadLocal();
+        await LoadOnline();
     }
 
     public static void Load()
     {
         if (isLoaded) return;
 
-        var detached = LoadOnline();
+        var detached = LoadAll();
 
         isLoaded = true;
     }
@@ -940,7 +1003,7 @@ public class NebulaCosmeticsLayer : MonoBehaviour
 
             void SetImage(ref CosmicImage? current, CosmicImage? normal, CosmicImage? flipped)
             {
-                current = (flip ? normal : flipped) ?? normal ?? flipped ?? current;
+                current = (flip ? flipped : normal) ?? normal ?? flipped ?? current;
             }
 
             if (CurrentModHat != null)

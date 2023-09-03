@@ -1,5 +1,7 @@
 ﻿using Il2CppInterop.Runtime.Injection;
+using System.Text;
 using Nebula.Modules;
+using Nebula.Utilities;
 using UnityEngine;
 
 namespace Nebula.Configuration;
@@ -11,7 +13,7 @@ public class NebulaSettingMenu : MonoBehaviour
         ClassInjector.RegisterTypeInIl2Cpp<NebulaSettingMenu>();
     }
 
-    MetaScreen LeftHolder, MainHolder, SecondScreen;
+    MetaScreen LeftHolder, MainHolder, RightHolder, SecondScreen;
     GameObject FirstPage, SecondPage;
     Scroller FirstScroller, SecondScroller;
     TMPro.TextMeshPro SecondTitle;
@@ -27,6 +29,7 @@ public class NebulaSettingMenu : MonoBehaviour
 
         FirstPage = UnityHelper.CreateObject("FirstPage",transform,Vector3.zero);
         LeftHolder = UnityHelper.CreateObject<MetaScreen>("LeftHolder", FirstPage.transform, new Vector3(-4.1f, 0.3f));
+        RightHolder = UnityHelper.CreateObject<MetaScreen>("RightHolder", FirstPage.transform, new Vector3(2.4f, 0f));
 
         var MainHolderParent = UnityHelper.CreateObject("Main", FirstPage.transform, new Vector3(-1.05f, -0.4f));
         var MainHolderMask = UnityHelper.CreateObject<SpriteMask>("Mask",MainHolderParent.transform, Vector3.zero);
@@ -89,6 +92,8 @@ public class NebulaSettingMenu : MonoBehaviour
         LeftHolder.SetContext(new Vector2(2f, 3f), context);
     }
 
+    private static TextAttribute RightTextAttr = new(TextAttribute.NormalAttr) { FontSize = 1.5f, FontMaxSize = 1.5f, FontMinSize = 1.5f, Size = new(2.3f, 5f), Alignment = TMPro.TextAlignmentOptions.TopLeft };
+
     private void UpdateMainTab()
     {
         MainHolder.transform.localPosition = new Vector3(0, 0, 0);
@@ -129,11 +134,18 @@ public class NebulaSettingMenu : MonoBehaviour
                     subTxt.text = Language.Translate(holder.Id + ".detail");
                     subTxt.transform.localPosition = new Vector3(0f, -0.15f, -0.5f);
                     subTxt.sortingOrder = 30;
+
+                    button.OnMouseOver.AddListener(() =>
+                    {
+                        StringBuilder builder = new();
+                        copiedHolder.GetShownString(ref builder);
+                        RightHolder.SetContext(new(2f, 3.8f),new MetaContext.Text(RightTextAttr) { RawText = builder.ToString() });
+                    });
                 },
-                Alignment = IMetaContext.AlignmentOption.Center
+                Alignment = IMetaContext.AlignmentOption.Center,
+                Color = (copiedHolder.IsActivated?.Invoke() ?? true) ? Color.white : new Color(0.2f,0.2f,0.2f)
             });
             context.Append(new MetaContext.VerticalMargin(0.05f));
-
         }
 
         FirstScroller.SetYBoundsMax(MainHolder.SetContext(new Vector2(3.2f, 4.5f), context) - 4.5f);
@@ -161,6 +173,7 @@ public class NebulaSettingMenu : MonoBehaviour
     {
         CloseAllPage();
         FirstPage.SetActive(true);
+        UpdateMainTab();
     }
 
     private void CloseAllPage()

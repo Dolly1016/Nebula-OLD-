@@ -14,7 +14,7 @@ public class MetaRole : AbstractModifier
     public override string LocalizedName => "metaRole";
     public override Color RoleColor => Color.white;
 
-    public override ModifierInstance CreateInstance(PlayerModInfo player, int[]? arguments) => new Instance(player);
+    public override ModifierInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player);
 
     public class Instance : ModifierInstance
     {
@@ -33,7 +33,7 @@ public class MetaRole : AbstractModifier
                 roleButton.Availability = (button) => true;
                 roleButton.Visibility = (button) => true;
                 roleButton.OnClick = (button) => {
-                    
+                    OpenRoleWindow();  
                 };
                 roleButton.SetLabelType(ModAbilityButton.LabelType.Standard);
                 roleButton.SetLabel("operate");
@@ -51,13 +51,16 @@ public class MetaRole : AbstractModifier
             var roleTitleAttr = new TextAttribute(TextAttribute.BoldAttr) { Size = new Vector2(1.4f, 0.26f), FontMaterial = VanillaAsset.StandardMaskedFontMaterial };
             MetaContext scrollInnner = new();
             MetaContext.ScrollView scrollView = new(new(7.4f, 4f), scrollInnner);
-            scrollInnner.Append(Roles.AllRoles, (role) => new MetaContext.Button(() => MyPlayer.RpcSetRole(role,null), roleTitleAttr)
+            scrollInnner.Append(Roles.AllRoles, (role) => new MetaContext.Button(() => { 
+                MyPlayer.RpcInvokerSetRole(role, null).InvokeSingle();
+                window.CloseScreen();
+            }, roleTitleAttr)
             {
                 RawText = role.DisplayName.Color(role.RoleColor),
                 PostBuilder = (button, renderer, text) => renderer.maskInteraction = SpriteMaskInteraction.VisibleInsideMask,
                 Alignment = IMetaContext.AlignmentOption.Center
             }, 4, -1, 0, 0.6f);
-            context.Append(scrollInnner);
+            context.Append(scrollView);
 
             window.SetContext(context);
         }

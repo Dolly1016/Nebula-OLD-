@@ -14,17 +14,20 @@ public class Arrow : INebulaScriptComponent
     public bool IsAffectedByComms { get; set; } = false;
     public bool IsSmallenNearPlayer { get; set; } = true;
     public bool IsActive { get; set; } = true;
+    public bool FixedAngle { get; set; } = false;
+    public bool IsDisappearing { get; set; } = false;
 
     private static SpriteLoader arrowSprite = SpriteLoader.FromResource("Nebula.Resources.Arrow.png", 185f);
-    public Arrow()
+
+    public Arrow(Sprite? sprite = null, bool usePlayerMaterial = true)
     {
-        arrowRenderer = UnityHelper.CreateObject<SpriteRenderer>("Arrow", HudManager.Instance.transform, new Vector3(0, 0, -40f), LayerExpansion.GetUILayer());
-        arrowRenderer.sprite = arrowSprite.GetSprite();
-        arrowRenderer.sharedMaterial = HatManager.Instance.PlayerMaterial;
-        SetColor(Color.white,Color.gray);
+        arrowRenderer = UnityHelper.CreateObject<SpriteRenderer>("Arrow", HudManager.Instance.transform, new Vector3(0, 0, -10f), LayerExpansion.GetUILayer());
+        arrowRenderer.sprite = sprite ?? arrowSprite.GetSprite();
+        arrowRenderer.sharedMaterial = usePlayerMaterial ? HatManager.Instance.PlayerMaterial : HatManager.Instance.DefaultShader;
+        if (usePlayerMaterial) SetColor(Color.white, Color.gray);
     }
 
-    public void SetColor(Color mainColor,Color shadowColor)
+    public void SetColor(Color mainColor, Color shadowColor)
     {
         arrowRenderer?.material.SetColor(PlayerMaterial.BackColor, shadowColor);
         arrowRenderer?.material.SetColor(PlayerMaterial.BodyColor, mainColor);
@@ -32,8 +35,9 @@ public class Arrow : INebulaScriptComponent
 
     public void SetColor(Color mainColor) => SetColor(mainColor, mainColor * 0.65f);
 
-    public override void OnReleased() { 
-        if(arrowRenderer)GameObject.Destroy(arrowRenderer!.gameObject);
+    public override void OnReleased()
+    {
+        if (arrowRenderer) GameObject.Destroy(arrowRenderer!.gameObject);
         arrowRenderer = null;
     }
 
@@ -73,7 +77,22 @@ public class Arrow : INebulaScriptComponent
         }
 
         vector.Normalize();
-        arrowRenderer.transform.eulerAngles = new Vector3(0f, 0f, Mathf.Atan2(vector.y, vector.x) * 180f / Mathf.PI);
 
+        if(FixedAngle)
+            arrowRenderer.transform.eulerAngles = new Vector3(0f, 0f, 0f);
+        else
+            arrowRenderer.transform.eulerAngles = new Vector3(0f, 0f, Mathf.Atan2(vector.y, vector.x) * 180f / Mathf.PI);
+
+        if (IsDisappearing)
+        {
+            float a = arrowRenderer.color.a;
+            a -= Time.deltaTime * 0.85f;
+            if (a < 0f)
+            {
+                Release();
+                a = 0f;
+            }
+            arrowRenderer.color = new Color(arrowRenderer.color.r, arrowRenderer.color.g, arrowRenderer.color.b, a);
+        }
     }
 }

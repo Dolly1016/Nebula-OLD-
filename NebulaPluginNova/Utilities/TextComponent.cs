@@ -12,6 +12,45 @@ public interface ITextComponent
     string Text { get; }
 }
 
+public class CombinedComponent : ITextComponent
+{
+    ITextComponent[] components;
+
+    public CombinedComponent(params ITextComponent[] components)
+    {
+        this.components = components;
+    }
+
+    public string Text { get {
+            StringBuilder builder = new();
+            foreach (var str in components) builder.Append(str.Text);
+            return builder.ToString();
+        }
+    }
+}
+
+public class RawTextComponent : ITextComponent
+{
+    public string RawText { get; set; }
+    public string Text => RawText;
+
+    public RawTextComponent(string text)
+    {
+        RawText = text;
+    }
+}
+
+public class LazyTextComponent : ITextComponent
+{
+    private Func<string> supplier;
+    public LazyTextComponent(Func<string> supplier)
+    {
+        this.supplier = supplier;
+    }
+
+    public string Text => supplier.Invoke();
+}
+
 public class ColorTextComponent : ITextComponent
 {
     public Color Color { get; set; }

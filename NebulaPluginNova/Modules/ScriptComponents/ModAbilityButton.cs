@@ -39,6 +39,7 @@ public class ModAbilityButton : INebulaScriptComponent
 
         VanillaButton = UnityEngine.Object.Instantiate(HudManager.Instance.KillButton, HudManager.Instance.KillButton.transform.parent);
         VanillaButton.gameObject.ForEachChild((Il2CppSystem.Action<GameObject>)((c) => { if (c.name.Equals("HotKeyGuide")) GameObject.Destroy(c); }));
+        VanillaButton.cooldownTimerText.gameObject.SetActive(true);
 
         VanillaButton.buttonLabelText.GetComponent<TextTranslatorTMP>().enabled = false;
         var passiveButton = VanillaButton.GetComponent<PassiveButton>();
@@ -118,6 +119,15 @@ public class ModAbilityButton : INebulaScriptComponent
     {
         CoolDownTimer?.Start();
         return this;
+    }
+
+    public bool UseCoolDownSupport { get; set; } = true;
+    public override void OnGameReenabled() {
+        if (UseCoolDownSupport) StartCoolDown();
+    }
+
+    public override void OnGameStart() {
+        if (UseCoolDownSupport) StartCoolDown();
     }
 
     public ModAbilityButton DoClick()
@@ -265,6 +275,10 @@ public static class ButtonEffect
         renderer.sprite = sprite;
         return renderer;
     }
+
+    private static SpriteLoader lockedButtonSprite = SpriteLoader.FromResource("Nebula.Resources.Buttons.LockedButton.png", 100f);
+    static public SpriteRenderer AddLockedOverlay(this ActionButton button) => AddOverlay(button, lockedButtonSprite.GetSprite(), 0f);
+    
 
     static ISpriteLoader keyBindBackgroundSprite = SpriteLoader.FromResource("Nebula.Resources.KeyBindBackground.png", 100f);
     static public GameObject? AddKeyGuide(GameObject button, KeyCode key, Vector2 pos)

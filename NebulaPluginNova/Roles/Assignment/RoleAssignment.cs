@@ -26,24 +26,24 @@ public abstract class IRoleAllocator
 {
     public class RoleTable
     {
-        public List<(AbstractRole role, int[]? arguments, byte playerId)> roles = new();
-        public List<(AbstractModifier modifier, int[]? arguments, byte playerId)> modifiers = new();
+        public List<(AbstractRole role, int[] arguments, byte playerId)> roles = new();
+        public List<(AbstractModifier modifier, int[] arguments, byte playerId)> modifiers = new();
 
         public void SetRole(PlayerControl player, AbstractRole role, int[]? arguments = null)
         {
-            roles.Add(new(role, arguments, player.PlayerId));
+            roles.Add(new(role, arguments ?? Array.Empty<int>(), player.PlayerId));
         }
 
         public void SetModifier(PlayerControl player, AbstractModifier role, int[]? arguments = null)
         {
-            modifiers.Add(new(role, arguments, player.PlayerId));
+            modifiers.Add(new(role, arguments ?? Array.Empty<int>(), player.PlayerId));
         }
 
         public void Determine()
         {
             List<NebulaRPCInvoker> allInvokers = new();
-            foreach (var role in roles) allInvokers.Add(PlayerModInfo.RpcSetAssignable.GetInvoker(new PlayerModInfo.SetAssignableMessage() { assignableId = role.role.Id, playerId = role.playerId, arguments = role.arguments, isRole = true }));
-            foreach (var modifier in modifiers) allInvokers.Add(PlayerModInfo.RpcSetAssignable.GetInvoker(new PlayerModInfo.SetAssignableMessage() { assignableId = modifier.modifier.Id, playerId = modifier.playerId, arguments = modifier.arguments, isRole = false }));
+            foreach (var role in roles) allInvokers.Add(PlayerModInfo.RpcSetAssignable.GetInvoker((role.playerId, role.role.Id, role.arguments, true )));
+            foreach (var modifier in modifiers) allInvokers.Add(PlayerModInfo.RpcSetAssignable.GetInvoker((modifier.playerId, modifier.modifier.Id, modifier.arguments, false)));
 
             allInvokers.Add(NebulaGameManager.RpcStartGame.GetInvoker());
 
@@ -54,7 +54,7 @@ public abstract class IRoleAllocator
     public abstract void Assign(List<PlayerControl> impostors, List<PlayerControl> others);
 }
 
-public class AllCrewmateRoleAllocator : IRoleAllocator
+public class FreePlayRoleAllocator : IRoleAllocator
 {
     public override void Assign(List<PlayerControl> impostors, List<PlayerControl> others)
     {
@@ -62,6 +62,8 @@ public class AllCrewmateRoleAllocator : IRoleAllocator
 
         foreach (var p in impostors) table.SetRole(p,Crewmate.Crewmate.MyRole);
         foreach (var p in others) table.SetRole(p, Crewmate.Crewmate.MyRole);
+
+        foreach (var p in PlayerControl.AllPlayerControls) table.SetModifier(p, Modifier.MetaRole.MyRole);
 
         table.Determine();
     }

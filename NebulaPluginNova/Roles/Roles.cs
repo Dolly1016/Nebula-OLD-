@@ -29,11 +29,14 @@ public class Roles
     static public void Register(Team team) {
         allTeams?.Add(team);
     }
-    static public void Load()
+    static public IEnumerator CoLoad()
     {
+        Patches.LoadPatch.LoadingText = "Building Roles Database";
+        yield return null;
+
         var iroleType = typeof(AbstractRole);
         var types = Assembly.GetAssembly(typeof(AbstractRole))?.GetTypes().Where((type) => type.IsAssignableTo(typeof(IAssignableBase)) || type.IsDefined(typeof(NebulaRoleHoler)));
-        if (types == null) return;
+        if (types == null) yield break;
 
         foreach (var type in types)
             System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(type.TypeHandle);
@@ -57,7 +60,11 @@ public class Roles
 
         allTeams!.Sort((team1, team2) => team1.TranslationKey.CompareTo(team2.TranslationKey));
 
-        for (int i = 0; i < allRoles!.Count; i++) allRoles![i].Id = i;
+        foreach (var role in allRoles) role.Load();
+        foreach (var modifier in allModifiers) modifier.Load();
+
+        for (int i = 0; i < allRoles!.Count; i++) allRoles![i].Id = i; 
+        for (int i = 0; i < allModifiers!.Count; i++) allModifiers![i].Id = i;
 
         AllRoles = allRoles!.AsReadOnly();
         AllModifiers = allModifiers!.AsReadOnly();

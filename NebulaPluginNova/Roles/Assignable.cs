@@ -13,6 +13,8 @@ public interface IAssignableBase
     public string DisplayName { get => Language.Translate("role." + LocalizedName + ".name"); }
     public Color RoleColor { get; }
     public int Id { get; set; }
+
+    public void Load();
 }
 
 public abstract class AssignableInstance : ScriptHolder
@@ -32,6 +34,7 @@ public abstract class AssignableInstance : ScriptHolder
         OnInactivated();
     }
 
+    public virtual bool CheckWins(CustomEndCondition endCondition) => false;
     public virtual void OnGameStart() { }
     public virtual void Update() { }
     public virtual void LocalUpdate() { }
@@ -48,4 +51,5 @@ public abstract class AssignableInstance : ScriptHolder
     protected virtual void OnInactivated() { }
 
     public virtual void DecoratePlayerName(ref string text, ref Color color) { }
+    public virtual void DecorateOtherPlayerName(PlayerModInfo player,ref string text, ref Color color) { }
 }

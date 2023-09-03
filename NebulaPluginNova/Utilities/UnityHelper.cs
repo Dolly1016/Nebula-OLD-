@@ -55,12 +55,14 @@ public static class UnityHelper
         return obj;
     }
 
+    public static Camera? FindCamera(int cameraLayer) => Camera.allCameras.FirstOrDefault(c => (c.cullingMask & (1 << cameraLayer)) != 0);
+
     public static Vector3 ScreenToWorldPoint(Vector3 screenPos, int cameraLayer)
     {
-        return Camera.allCameras.FirstOrDefault(c => (c.cullingMask & (1 << cameraLayer)) != 0)?.ScreenToWorldPoint(screenPos) ?? Vector3.zero;
+        return FindCamera(cameraLayer)?.ScreenToWorldPoint(screenPos) ?? Vector3.zero;
     }
 
-    public static PassiveButton SetUpButton(this GameObject gameObject, bool withSound = false, SpriteRenderer? buttonRenderer = null) {
+    public static PassiveButton SetUpButton(this GameObject gameObject, bool withSound = false, SpriteRenderer? buttonRenderer = null, Color? defaultColor = null) {
         var button = gameObject.AddComponent<PassiveButton>();
         button.OnClick = new UnityEngine.UI.Button.ButtonClickedEvent();
         button.OnMouseOut = new UnityEngine.Events.UnityEvent();
@@ -73,9 +75,11 @@ public static class UnityHelper
         }
         if (buttonRenderer != null)
         {
-            button.OnMouseOut.AddListener(() => buttonRenderer!.color = Color.white);
+            button.OnMouseOut.AddListener(() => buttonRenderer!.color = defaultColor ?? Color.white);
             button.OnMouseOver.AddListener(() => buttonRenderer!.color = Color.green);
         }
+
+        if (buttonRenderer != null) buttonRenderer.color = defaultColor ?? Color.white;
         
         return button;
     }

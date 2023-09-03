@@ -17,7 +17,7 @@ public class Camouflager : ConfigurableStandardRole
     public override Color RoleColor => Palette.ImpostorRed;
     public override Team Team => Impostor.MyTeam;
 
-    public override RoleInstance CreateInstance(PlayerModInfo player, int[]? arguments) => new Instance(player);
+    public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player);
 
     private NebulaConfiguration CamoCoolDownOption;
     private NebulaConfiguration CamoDurationOption;
@@ -58,40 +58,24 @@ public class Camouflager : ConfigurableStandardRole
                 {
                     RpcCamouflage.Invoke(new(MyPlayer.PlayerId,false));
                 };
-                camouflageButton.CoolDownTimer = Bind(new Timer(0f, MyRole.CamoCoolDownOption.GetFloat()!.Value));
-                camouflageButton.EffectTimer = Bind(new Timer(0f, MyRole.CamoDurationOption.GetFloat()!.Value));
+                camouflageButton.CoolDownTimer = Bind(new Timer(MyRole.CamoCoolDownOption.GetFloat()!.Value).SetAsAbilityCoolDown().Start());
+                camouflageButton.EffectTimer = Bind(new Timer(MyRole.CamoDurationOption.GetFloat()!.Value));
                 camouflageButton.SetLabelType(ModAbilityButton.LabelType.Standard);
                 camouflageButton.SetLabel("camo");
             }
-        }
-
-        public override void OnGameStart()
-        {
-            camouflageButton?.StartCoolDown();
-        }
-
-        public override void OnGameReenabled()
-        {
-            camouflageButton?.StartCoolDown();
         }
     }
 
     private static GameData.PlayerOutfit CamouflagerOutfit = new() { PlayerName = "", ColorId = 16, HatId = "hat_NoHat", SkinId = "skin_None", VisorId = "visor_EmptyVisor", PetId= "pet_EmptyPet" };
 
-    public static RemoteProcess<Tuple<byte, bool>> RpcCamouflage = new(
+    public static RemoteProcess<(byte camouflagerId, bool on)> RpcCamouflage = new(
         "Camouflage",
-        (writer, message) =>
-        {
-            writer.Write(message.Item1);
-            writer.Write(message.Item2);
-        },
-        (reader) => new(reader.ReadByte(), reader.ReadBoolean()),
         (message, _) =>
         {
-            PlayerModInfo.OutfitCandidate outfit = new("Camo" + message.Item1, 100, true, CamouflagerOutfit);
+            PlayerModInfo.OutfitCandidate outfit = new("Camo" + message.camouflagerId, 100, true, CamouflagerOutfit);
             foreach(var p in NebulaGameManager.Instance.AllPlayerInfo())
             {
-                if (message.Item2)
+                if (message.on)
                     p.AddOutfit(outfit);
                 else
                     p.RemoveOutfit(outfit.Tag);

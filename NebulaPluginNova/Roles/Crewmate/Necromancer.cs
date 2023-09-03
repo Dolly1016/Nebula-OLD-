@@ -13,7 +13,7 @@ public class Necromancer : ConfigurableStandardRole
     public override Color RoleColor => new Color(108f / 255f, 50f / 255f, 160f / 255f);
     public override Team Team => Crewmate.MyTeam;
 
-    public override RoleInstance CreateInstance(PlayerModInfo player, int[]? arguments) => new Instance(player);
+    public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player);
 
     private NebulaConfiguration ReviveCoolDownOption;
     private NebulaConfiguration ReviveDurationOption;
@@ -39,84 +39,7 @@ public class Necromancer : ConfigurableStandardRole
 
         public Instance(PlayerModInfo player) : base(player)
         {
-            if (AmOwner)
-            {
-                draggable = Bind(new Scripts.Draggable());
-
-                message = GameObject.Instantiate(VanillaAsset.StandardTextPrefab,HudManager.Instance.transform);
-                new TextAttribute(TextAttribute.NormalAttr) { Size = new Vector2(5f, 0.9f) }.EditFontSize(2.7f, 2.7f, 2.7f).Reflect(message);
-                message.transform.localPosition = new Vector3(0, -1.2f, -4f);
-                Bind(new GameObjectBinding(message.gameObject));
-
-                SystemTypes? currentTargetRoom = null;
-
-                bool canReviveHere()
-                {
-                    return !(!currentTargetRoom.HasValue || !player.HoldingDeadBody.HasValue || !ShipStatus.Instance.FastRooms[currentTargetRoom.Value].roomArea.OverlapPoint(player.MyControl.GetTruePosition()));
-                }
-
-                myArrow = Bind(new Arrow());
-                myArrow.IsActive = false;
-                myArrow.SetColor(MyRole.RoleColor);
-
-                draggable.OnHoldingDeadBody = (deadBody) =>
-                {
-                    if (!resurrectionRoom.ContainsKey(deadBody.ParentId))
-                    {
-                        //復活部屋を計算
-                        List<Tuple<float, PlainShipRoom>> cand = new();
-                        foreach(var entry in ShipStatus.Instance.FastRooms)
-                        {
-                            if (entry.Key == SystemTypes.Ventilation) continue;
-
-                            float d = entry.Value.roomArea.Distance(player.MyControl.Collider).distance;
-                            if (d < 3f) continue;
-
-                            cand.Add(new(d,entry.Value));
-                        }
-
-                        //近い順にソートし、遠すぎる部屋は候補から外す 少なくとも1部屋は候補に入るようにする
-                        cand.Sort((c1, c2) => Math.Sign(c1.Item1 - c2.Item1));
-                        int lastIndex = cand.FindIndex((tuple) => tuple.Item1 > 15f);
-                        if (lastIndex == -1) lastIndex = cand.Count;
-                        if (lastIndex == 0) lastIndex = 1;
-
-                        resurrectionRoom[deadBody.ParentId] = cand[System.Random.Shared.Next(lastIndex)].Item2.RoomId;
-                    }
-
-                    currentTargetRoom = resurrectionRoom[deadBody.ParentId];
-                    myArrow.TargetPos = ShipStatus.Instance.FastRooms[currentTargetRoom.Value].roomArea.transform.position;
-                    message.text = Language.Translate("role.necromancer.phantomMessage").Replace("%ROOM%",AmongUsUtil.ToDisplayString(currentTargetRoom.Value));
-                };
-
-                reviveButton = Bind(new ModAbilityButton()).KeyBind(KeyCode.G);
-                reviveButton.SetSprite(buttonSprite.GetSprite());
-                reviveButton.Availability = (button) => player.MyControl.CanMove && player.HoldingDeadBody.HasValue && canReviveHere();
-                reviveButton.Visibility = (button) => !player.MyControl.Data.IsDead;
-                reviveButton.OnClick = (button) => {
-                    button.ActivateEffect();
-                };
-                reviveButton.OnEffectEnd = (button) =>
-                {
-                    if (!button.EffectTimer.IsInProcess)
-                    {
-                        Helpers.GetPlayer(player.HoldingDeadBody.Value)?.ModRevive(player.MyControl.transform.position, true);
-                        reviveButton.CoolDownTimer.Start();
-                    }
-                };
-                reviveButton.OnMeeting = (button) =>
-                {
-                    reviveButton.InactivateEffect();
-                };
-                reviveButton.OnUpdate = (button) => {
-                    if (!button.EffectActive) return;
-                    if (!canReviveHere()) button.InactivateEffect();
-                };
-                reviveButton.CoolDownTimer = Bind(new Timer(0f, MyRole.ReviveCoolDownOption.GetFloat()!.Value));
-                reviveButton.EffectTimer = Bind(new Timer(0f, MyRole.ReviveDurationOption.GetFloat()!.Value));
-                reviveButton.SetLabelType(ModAbilityButton.LabelType.Standard);
-                reviveButton.SetLabel("revive");
-            }
+            draggable = Bind(new Scripts.Draggable());
         }
 
         public override void LocalUpdate()
@@ -131,6 +54,82 @@ public class Necromancer : ConfigurableStandardRole
         {
             draggable?.OnActivated(this);
 
+            if (AmOwner)
+            {
+                message = GameObject.Instantiate(VanillaAsset.StandardTextPrefab, HudManager.Instance.transform);
+                new TextAttribute(TextAttribute.NormalAttr) { Size = new Vector2(5f, 0.9f) }.EditFontSize(2.7f, 2.7f, 2.7f).Reflect(message);
+                message.transform.localPosition = new Vector3(0, -1.2f, -4f);
+                Bind(new GameObjectBinding(message.gameObject));
+
+                SystemTypes? currentTargetRoom = null;
+
+                bool canReviveHere()
+                {
+                    return !(!currentTargetRoom.HasValue || !MyPlayer.HoldingDeadBody.HasValue || !ShipStatus.Instance.FastRooms[currentTargetRoom.Value].roomArea.OverlapPoint(MyPlayer.MyControl.GetTruePosition()));
+                }
+
+                myArrow = Bind(new Arrow());
+                myArrow.IsActive = false;
+                myArrow.SetColor(MyRole.RoleColor);
+
+                draggable.OnHoldingDeadBody = (deadBody) =>
+                {
+                    if (!resurrectionRoom.ContainsKey(deadBody.ParentId))
+                    {
+                        //復活部屋を計算
+                        List<Tuple<float, PlainShipRoom>> cand = new();
+                        foreach (var entry in ShipStatus.Instance.FastRooms)
+                        {
+                            if (entry.Key == SystemTypes.Ventilation) continue;
+
+                            float d = entry.Value.roomArea.Distance(MyPlayer.MyControl.Collider).distance;
+                            if (d < 3f) continue;
+
+                            cand.Add(new(d, entry.Value));
+                        }
+
+                        //近い順にソートし、遠すぎる部屋は候補から外す 少なくとも1部屋は候補に入るようにする
+                        cand.Sort((c1, c2) => Math.Sign(c1.Item1 - c2.Item1));
+                        int lastIndex = cand.FindIndex((tuple) => tuple.Item1 > 15f);
+                        if (lastIndex == -1) lastIndex = cand.Count;
+                        if (lastIndex == 0) lastIndex = 1;
+
+                        resurrectionRoom[deadBody.ParentId] = cand[System.Random.Shared.Next(lastIndex)].Item2.RoomId;
+                    }
+
+                    currentTargetRoom = resurrectionRoom[deadBody.ParentId];
+                    myArrow.TargetPos = ShipStatus.Instance.FastRooms[currentTargetRoom.Value].roomArea.transform.position;
+                    message.text = Language.Translate("role.necromancer.phantomMessage").Replace("%ROOM%", AmongUsUtil.ToDisplayString(currentTargetRoom.Value));
+                };
+
+                reviveButton = Bind(new ModAbilityButton()).KeyBind(KeyCode.G);
+                reviveButton.SetSprite(buttonSprite.GetSprite());
+                reviveButton.Availability = (button) => MyPlayer.MyControl.CanMove && MyPlayer.HoldingDeadBody.HasValue && canReviveHere();
+                reviveButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;
+                reviveButton.OnClick = (button) => {
+                    button.ActivateEffect();
+                };
+                reviveButton.OnEffectEnd = (button) =>
+                {
+                    if (!button.EffectTimer.IsInProcess)
+                    {
+                        Helpers.GetPlayer(MyPlayer.HoldingDeadBody.Value)?.ModRevive(MyPlayer.MyControl, MyPlayer.MyControl.transform.position, true);
+                        reviveButton.CoolDownTimer.Start();
+                    }
+                };
+                reviveButton.OnMeeting = (button) =>
+                {
+                    reviveButton.InactivateEffect();
+                };
+                reviveButton.OnUpdate = (button) => {
+                    if (!button.EffectActive) return;
+                    if (!canReviveHere()) button.InactivateEffect();
+                };
+                reviveButton.CoolDownTimer = Bind(new Timer(MyRole.ReviveCoolDownOption.GetFloat()!.Value).SetAsAbilityCoolDown().Start());
+                reviveButton.EffectTimer = Bind(new Timer(MyRole.ReviveDurationOption.GetFloat()!.Value));
+                reviveButton.SetLabelType(ModAbilityButton.LabelType.Standard);
+                reviveButton.SetLabel("revive");
+            }
         }
 
         public override void OnDead()
@@ -146,16 +145,6 @@ public class Necromancer : ConfigurableStandardRole
         public override void OnPlayerDeadLocal(PlayerControl dead)
         {
             resurrectionRoom?.Remove(dead.PlayerId);
-        }
-
-        public override void OnGameStart()
-        {
-            reviveButton?.StartCoolDown();
-        }
-
-        public override void OnGameReenabled()
-        {
-            reviveButton?.StartCoolDown();
         }
     }
 }

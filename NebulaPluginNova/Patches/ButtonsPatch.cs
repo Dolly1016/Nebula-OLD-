@@ -103,6 +103,12 @@ public static class VentClickPatch
     {
         if ((!PlayerControl.LocalPlayer.inVent) && (PlayerControl.LocalPlayer?.GetModInfo()?.Role?.VentCoolDown?.IsInProcess ?? false))
             return false;
+
+        if (__instance.currentTarget != null)
+        {
+            var role = PlayerControl.LocalPlayer.GetModInfo()!.Role;
+        }
+
         return true;
     }
 }
@@ -114,10 +120,19 @@ public static class KillButtonClickPatch
     {
         if (__instance.enabled && __instance.currentTarget && !__instance.isCoolingDown && !PlayerControl.LocalPlayer.Data.IsDead && PlayerControl.LocalPlayer.CanMove)
         {
-            PlayerControl.LocalPlayer.ModKill(__instance.currentTarget, PlayerState.Dead, EventDetail.Kill);
+            PlayerControl.LocalPlayer.ModKill(__instance.currentTarget, true, PlayerState.Dead, EventDetail.Kill);
             __instance.SetTarget(null);
         }
         return false;
+    }
+}
+
+[HarmonyPatch(typeof(KillButton), nameof(KillButton.SetTarget))]
+public static class KillButtonSetTargetPatch
+{
+    static bool Prefix(KillButton __instance)
+    {
+        return __instance.gameObject.active;
     }
 }
 

@@ -39,24 +39,16 @@ public class NebulaGameEnd
     static public CustomEndCondition ImpostorWin = new(17, "impostor", Palette.ImpostorRed, 16);
     static public CustomEndCondition VultureWin = new(24, "vulture", Roles.Neutral.Vulture.MyRole.RoleColor, 32);
     static public CustomEndCondition JesterWin = new(25, "jester", Roles.Neutral.Jester.MyRole.RoleColor, 32);
+    static public CustomEndCondition JackalWin = new(26, "jackal", Roles.Neutral.Jackal.MyRole.RoleColor, 16);
     static public CustomEndCondition NoGame = new(128, "nogame", InvalidColor, 128);
 
-    private readonly static RemoteProcess<NebulaEndState> RpcEndGame = new RemoteProcess<NebulaEndState>(
+    private readonly static RemoteProcess<(byte conditionId, ulong winnersMask)> RpcEndGame = new(
        "EndGame",
-       (writer, message) =>
-       {
-           writer.Write(message.ConditionId);
-           writer.Write(message.WinnersMask);
-       },
-       (reader) =>
-       {
-           return new NebulaEndState(reader.ReadByte(),reader.ReadUInt64());
-       },
        (message, isCalledByMe) =>
        {
            if (NebulaGameManager.Instance != null)
            {
-               NebulaGameManager.Instance.EndState ??= message;
+               NebulaGameManager.Instance.EndState ??= new NebulaEndState(message.conditionId,message.winnersMask);
                NebulaGameManager.Instance.ToGameEnd();
                NebulaGameManager.Instance.OnGameEnd();
            }
@@ -68,13 +60,13 @@ public class NebulaGameEnd
         if (NebulaGameManager.Instance.EndState != null) return false;
         ulong winnersMask = 0;
         foreach (byte w in winners) winnersMask |= (ulong)(1 << w);
-        RpcEndGame.Invoke(new NebulaEndState(winCondition.Id, winnersMask));
+        RpcEndGame.Invoke((winCondition.Id, winnersMask));
         return true;
     }
 
     public static void RpcSendNoGame()
     {
-        RpcEndGame.Invoke(new NebulaEndState(NoGame.Id, 1));
+        RpcEndGame.Invoke((NoGame.Id, 0));
     }
 }
 
@@ -174,7 +166,6 @@ public class EndGamePatch
 
     public static bool Prefix(AmongUsClient __instance, ref Il2CppSystem.Collections.IEnumerator __result)
     {
-        Debug.Log("Test");
         if (NebulaGameManager.Instance == null) return true;
         NebulaGameManager.Instance.ReceiveVanillaGameResult();
         NebulaGameManager.Instance.ToGameEnd();

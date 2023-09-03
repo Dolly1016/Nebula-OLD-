@@ -14,7 +14,7 @@ public class Sheriff : ConfigurableStandardRole
     public override Color RoleColor => new Color(240f / 255f, 191f / 255f, 0f);
     public override Team Team => Crewmate.MyTeam;
 
-    public override RoleInstance CreateInstance(PlayerModInfo player, int[]? arguments) => new Instance(player);
+    public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player);
 
     private KillCoolDownConfiguration KillCoolDownOption;
     private NebulaConfiguration CanKillMadmateOption;
@@ -23,7 +23,7 @@ public class Sheriff : ConfigurableStandardRole
     {
         base.LoadOptions();
 
-        KillCoolDownOption = new(RoleConfig, "killCoolDown", KillCoolDownConfiguration.KillCoolDownType.Relative, 2.5f, 10f, 60f, -40f, 40f, 0.125f, 0.125f, 2f);
+        KillCoolDownOption = new(RoleConfig, "killCoolDown", KillCoolDownConfiguration.KillCoolDownType.Relative, 2.5f, 10f, 60f, -40f, 40f, 0.125f, 0.125f, 2f, 25f, -5f, 1f);
         CanKillMadmateOption = new(RoleConfig, "canKillMadmate", null, false, false);
     }
 
@@ -56,27 +56,18 @@ public class Sheriff : ConfigurableStandardRole
                 killButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;
                 killButton.OnClick = (button) => {
                     if (CanKill(killTracker.CurrentTarget!)) 
-                        MyPlayer.MyControl.ModKill(killTracker.CurrentTarget!, PlayerState.Dead, EventDetail.Kill); 
+                        MyPlayer.MyControl.ModKill(killTracker.CurrentTarget!, true, PlayerState.Dead, EventDetail.Kill); 
                     else
                     {
-                        MyPlayer.MyControl.ModKill(MyPlayer.MyControl, PlayerState.Misfired, null); 
-                        GameStatistics.RpcRecord.Invoke(new(GameStatistics.EventVariation.Kill, EventDetail.Misfire, MyPlayer.MyControl, killTracker.CurrentTarget!));
+                        MyPlayer.MyControl.ModKill(MyPlayer.MyControl, true, PlayerState.Misfired, null); 
+                        NebulaGameManager.Instance?.GameStatistics.RpcRecordEvent(GameStatistics.EventVariation.Kill, EventDetail.Misfire, MyPlayer.MyControl, killTracker.CurrentTarget!);
                     }
                     button.StartCoolDown();
                 };
-                killButton.CoolDownTimer = Bind(new Timer(0f, 25f));
+                killButton.CoolDownTimer = Bind(new Timer(MyRole.KillCoolDownOption.KillCoolDown).SetAsKillCoolDown().Start());
                 killButton.SetLabelType(ModAbilityButton.LabelType.Standard);
+                killButton.SetLabel("kill");
             }
-        }
-
-        public override void OnGameStart()
-        {
-            killButton?.StartCoolDown();
-        }
-
-        public override void OnGameReenabled()
-        {
-            killButton?.StartCoolDown();
         }
 
     }

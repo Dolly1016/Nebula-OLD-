@@ -13,17 +13,19 @@ public class Jester : ConfigurableStandardRole
     public override Color RoleColor => new Color(253f / 255f, 84f / 255f, 167f / 255f);
     public override Team Team => MyTeam;
 
-    public override RoleInstance CreateInstance(PlayerModInfo player, int[]? arguments) => new Instance(player);
+    public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player);
 
     private NebulaConfiguration CanDragDeadBodyOption;
+    private VentConfiguration VentConfiguration;
     protected override void LoadOptions()
     {
         base.LoadOptions();
 
+        VentConfiguration = new(RoleConfig, null, (5f, 60f, 15f), (2.5f, 30f, 10f));
         CanDragDeadBodyOption = new NebulaConfiguration(RoleConfig, "canDragDeadBody", null, true, true);
     }
 
-    static public NebulaEndCriteria JesterCriteria = new(0xFFFF)
+    static public NebulaEndCriteria JesterCriteria = new(CustomGameMode.Standard)
     {
         OnExiled = (PlayerControl? p)=>
         {
@@ -38,6 +40,10 @@ public class Jester : ConfigurableStandardRole
     {
         public override AbstractRole Role => MyRole;
         private Scripts.Draggable? draggable = null;
+        private Timer ventCoolDown = new Timer(MyRole.VentConfiguration.CoolDown).SetAsAbilityCoolDown().Start();
+        private Timer ventDuration = new(MyRole.VentConfiguration.Duration);
+        public override Timer? VentCoolDown => ventCoolDown;
+        public override Timer? VentDuration => ventDuration;
 
         public Instance(PlayerModInfo player) : base(player)
         {

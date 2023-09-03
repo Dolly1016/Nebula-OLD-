@@ -19,24 +19,25 @@ public abstract class DataEntry<T>
         set
         {
             this.value = value;
-            saver.SetValue(name, value);
+            saver.SetValue(name, Serialize(value));
         }
     }
 
     public void SetValueWithoutSave(T value)
     {
         this.value = value;
-        saver.SetValue(name, value, true);
+        saver.SetValue(name, Serialize(value), true);
     }
 
     public DataEntry(string name, DataSaver saver, T defaultValue)
     {
         this.name = name;
         this.saver = saver;
-        value = Parse(saver.GetValue(name, defaultValue).ToString());
+        value = Parse(saver.GetValue(name, Serialize(defaultValue)));
     }
 
     public abstract T Parse(string str);
+    protected virtual string Serialize(T value) => value.ToString()!;
 }
 
 public class StringDataEntry : DataEntry<string>
@@ -67,6 +68,36 @@ public class BooleanDataEntry : DataEntry<bool>
 {
     public override bool Parse(string str) { return bool.Parse(str); }
     public BooleanDataEntry(string name, DataSaver saver, bool defaultValue) : base(name, saver, defaultValue) { }
+}
+
+public class IntegerTupleAryDataEntry : DataEntry<(int,int)[]>
+{
+    public override (int,int)[] Parse(string str) {
+        if (str == "Empty") return new (int, int)[0];
+
+        var strings = str.Split('|');
+        (int, int)[] result = new (int, int)[strings.Length];
+        for(int i = 0; i < result.Length; i++)
+        {
+            var tuple = strings[i].Split(',');
+            result[i] = (int.Parse(tuple[0]), int.Parse(tuple[1]));
+        }
+        return result;
+    }
+
+    protected override string Serialize((int, int)[] value)
+    {
+        if (value.Length == 0) return "Empty";
+        StringBuilder builder = new();
+        foreach(var tuple in value)
+        {
+            if(builder.Length>0)builder.Append('|');
+            builder.Append(tuple.Item1 + ',' + tuple.Item2);
+        }
+        return builder.ToString();
+    }
+
+    public IntegerTupleAryDataEntry(string name, DataSaver saver, (int,int)[] defaultValue) : base(name, saver, defaultValue) { }
 }
 
 public class DataSaver

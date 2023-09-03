@@ -41,10 +41,12 @@ public static class GraphicsHelper
         return texture;
     }
 
-    public static Texture2D LoadTextureFromStream(Stream stream)
+    public static Texture2D LoadTextureFromStream(Stream stream) => LoadTextureFromByteArray(stream.ReadBytes());
+
+    public static Texture2D LoadTextureFromByteArray(byte[] data)
     {
         Texture2D texture = new Texture2D(2, 2, TextureFormat.ARGB32, true);
-        LoadImage(texture, stream.ReadBytes(), false);
+        LoadImage(texture, data, false);
         return texture;
     }
 
@@ -103,14 +105,14 @@ public static class GraphicsHelper
         return Sprite.Create(texture, rect, pivot, pixelsPerUnit);
     }
 
-    public static Sprite ToExpandableSprite(this Texture2D texture, float pixelsPerUnit)
+    public static Sprite ToExpandableSprite(this Texture2D texture, float pixelsPerUnit,int x,int y)
     {
-        return Sprite.CreateSprite(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), pixelsPerUnit, 0, SpriteMeshType.FullRect, new Vector4(texture.width/3f, texture.height / 3f, texture.width/3f, texture.height/3f), false);
+        return Sprite.CreateSprite(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), pixelsPerUnit, 0, SpriteMeshType.FullRect, new Vector4(x, y, x, y), false);
     }
 
     internal delegate bool d_LoadImage(IntPtr tex, IntPtr data, bool markNonReadable);
     internal static d_LoadImage iCall_LoadImage;
-    private static bool LoadImage(Texture2D tex, byte[] data, bool markNonReadable)
+    public static bool LoadImage(Texture2D tex, byte[] data, bool markNonReadable)
     {
         if (iCall_LoadImage == null)
             iCall_LoadImage = IL2CPP.ResolveICall<d_LoadImage>("UnityEngine.ImageConversion::LoadImage");
@@ -161,13 +163,13 @@ public class DiskTextureLoader : ITextureLoader
 
 public class ZipTextureLoader : ITextureLoader
 {
-    string zipAddress;
+    ZipArchive archive;
     string address;
     Texture2D texture = null;
 
-    public ZipTextureLoader(string zipPath,string address)
+    public ZipTextureLoader(ZipArchive zip,string address)
     {
-        this.zipAddress = zipPath;
+        this.archive = zip;
         this.address = address;
     }
 
@@ -175,11 +177,69 @@ public class ZipTextureLoader : ITextureLoader
     {
         if (!texture)
         {
-            texture = GraphicsHelper.LoadTextureFromZip(ZipFile.OpenRead(zipAddress), address);
+            texture = GraphicsHelper.LoadTextureFromZip(archive, address);
             if(texture!=null) texture.hideFlags |= HideFlags.DontUnloadUnusedAsset | HideFlags.HideAndDontSave;
         }
         return texture;
     }
+}
+
+public class UnloadTextureLoader : ITextureLoader
+{
+    Texture2D texture = null;
+    
+    public UnloadTextureLoader(byte[] byteTexture)
+    {
+        texture = new Texture2D(2, 2, TextureFormat.ARGB32, true);
+        GraphicsHelper.LoadImage(texture, byteTexture, false);
+        texture.hideFlags |= HideFlags.DontUnloadUnusedAsset | HideFlags.HideAndDontSave;
+    }
+
+    public class AsyncLoader
+    {
+        public UnloadTextureLoader? Result { get; private set; } = null;
+        Func<Stream?> stream;
+
+        public AsyncLoader(Func<Stream?> stream)
+        {
+            this.stream = stream;
+        }
+
+        private async Task<byte[]> ReadStreamAsync(Action<Exception>? exceptionHandler = null)
+        {
+            try
+            {
+                var myStream = stream.Invoke();
+                if (myStream == null) return new byte[0];
+
+                List<byte> bytes = new();
+
+                MemoryStream dest = new();
+                await myStream.CopyToAsync(dest);
+                return dest.ToArray();
+            }
+            catch(Exception ex)
+            {
+                exceptionHandler?.Invoke(ex);
+
+            }
+            return new byte[0];
+        }
+
+        public IEnumerator LoadAsync(Action<Exception>? exceptionHandler = null)
+        {
+            if (stream == null) yield break;
+
+            
+            var task = ReadStreamAsync(exceptionHandler);
+            while (!task.IsCompleted) yield return new WaitForSeconds(0.15f);
+            
+            Result = new UnloadTextureLoader(task.Result);
+        }
+    }
+
+    public Texture2D GetTexture() => texture;
+    
 }
 
 public class AssetTextureLoader : ITextureLoader
@@ -225,17 +285,20 @@ public class ResourceExpandableSpriteLoader : ISpriteLoader
     Sprite sprite = null;
     string address;
     float pixelsPerUnit;
-
-    public ResourceExpandableSpriteLoader(string address, float pixelsPerUnit)
+    //端のピクセル数
+    int x, y;
+    public ResourceExpandableSpriteLoader(string address, float pixelsPerUnit,int x,int y)
     {
         this.address = address;
         this.pixelsPerUnit = pixelsPerUnit;
+        this.x = x;
+        this.y = y;
     }
 
     public Sprite GetSprite()
     {
         if (!sprite)
-            sprite = GraphicsHelper.LoadTextureFromResources(address).ToExpandableSprite(pixelsPerUnit);
+            sprite = GraphicsHelper.LoadTextureFromResources(address).ToExpandableSprite(pixelsPerUnit, x, y);
         return sprite;
     }
 }

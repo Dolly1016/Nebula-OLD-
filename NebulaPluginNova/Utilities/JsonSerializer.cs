@@ -5,6 +5,7 @@ using System.Collections;
 using System.Linq;
 using System.Reflection;
 using static Il2CppSystem.Linq.Expressions.Interpreter.CastInstruction.CastInstructionNoT;
+using static Il2CppSystem.Linq.Expressions.Interpreter.NullableMethodCallInstruction;
 
 namespace Nebula.Utilities;
 
@@ -21,6 +22,7 @@ public class JSFieldAmbiguous : JsonSerializableField
 
 public static class JsonStructure
 {
+    public static T? Deserialize<T>(Stream json) => (T?)Deserialize(json, typeof(T));
     public static T? Deserialize<T>(string json) => (T?)Deserialize(json, typeof(T));
 
     private static object? DeserializePrimitive(string json,Type type)
@@ -81,10 +83,10 @@ public static class JsonStructure
         json.Close();
         return result;
     }
+
     public static object? Deserialize(string json,Type type)
     {
-        json = System.Text.RegularExpressions.Regex.Replace(json, @"[\s\n]+", "");
-        return DeserializeTrimmed(json,type);
+        return DeserializeTrimmed(json.Replace("\n", "").Trim(), type);
     }
 
     private static object? DeserializeTrimmed(string json,Type type) {
@@ -99,7 +101,7 @@ public static class JsonStructure
         if (!json.StartsWith('{'))
             return DeserializePrimitive(json, type);
 
-        json = json.Substring(1);
+        json = json.Substring(1).TrimStart();
 
         Dictionary<string, string> textMap = new();
         Dictionary<string, string> ignoreCaseMap = new();
@@ -116,17 +118,33 @@ public static class JsonStructure
 
         object? instance = type.GetConstructor(new Type[0])?.Invoke(new object[0]);
         if (instance == null) throw new Exception("Constructor is not found.");
-        foreach(var f in type.GetFields())
+
+        if (type.IsAssignableTo(typeof(IDictionary)))
         {
-            if (!f.IsDefined(typeof(JsonSerializableField))) continue;
+            //Dictionaryのデシリアライズ
 
-            var name = f.Name;
+            var entryType = type.GetGenericArguments();
+            if(entryType[0] != typeof(string)) throw new Exception("Deserializable dictionary must have string key.");
 
-            //あいまい一致
-            if (f.IsDefined(typeof(JSFieldAmbiguous)) && ignoreCaseMap.TryGetValue(f.Name.ToLower(), out var tableName)) name = tableName;
+            var addMethod = type.GetMethod("Add");
+            foreach (var entry in textMap) addMethod!.Invoke(instance, new object?[] { entry.Key, DeserializeTrimmed(entry.Value, entryType[1]) });
+        }
+        else
+        {
+            //その他のデータのデシリアライズ
 
-            if (!textMap.TryGetValue(name, out var rawValue)) continue;
-            f.SetValue(instance, DeserializeTrimmed(rawValue, f.FieldType));
+            foreach (var f in type.GetFields())
+            {
+                if (!f.IsDefined(typeof(JsonSerializableField))) continue;
+
+                var name = f.Name;
+
+                //あいまい一致
+                if (f.IsDefined(typeof(JSFieldAmbiguous)) && ignoreCaseMap.TryGetValue(f.Name.ToLower(), out var tableName)) name = tableName;
+
+                if (!textMap.TryGetValue(name, out var rawValue)) continue;
+                f.SetValue(instance, DeserializeTrimmed(rawValue, f.FieldType));
+            }
         }
 
         return instance;
@@ -154,12 +172,29 @@ public static class JsonStructure
         return DeserializeTrimmed(json, type);
     }
 
-    /*
-    private static string? SerializeDictionary(IDictionary obj)
+    
+    private static string SerializeDictionary(IDictionary obj)
     {
-       
+        var valType = obj.GetType().GenericTypeArguments[1];
+
+        string result = "{";
+        bool isFirst = true;
+        foreach (var key in obj.Keys)
+        {
+            if (!isFirst) result += ",";
+            result += "\n\t";
+            result += "\"" + (string)key + "\" : ";
+            var val = obj[(string)key];
+            if (val != null && !valType.Equals(val.GetType())) result += "<" + obj.GetType()!.Name + ">";
+            result += (val?.Serialize()! ?? "null").Replace("\n", "\n\t");
+
+            isFirst = false;
+        }
+        result += "\n}";
+
+        return result;
     }
-    */
+    
 
     private static string SerializeEnumerable(IEnumerable obj)
     {
@@ -182,8 +217,8 @@ public static class JsonStructure
             return obj.ToString() ?? "null";
         if (obj is string)
             return "\"" + obj + "\"";
-        //if (obj is IDictionary dic)
-        //    return SerializeDictionary(dic);
+        if (obj is IDictionary dic && dic.GetType().GenericTypeArguments[0] == typeof(string))
+            return SerializeDictionary(dic);
         if (obj is IList and not Array)
             return SerializeEnumerable((IEnumerable)obj);
     
@@ -217,10 +252,11 @@ public static class JsonStructure
         int index = 1;
         while (index < json.Length && json[index] != '"') index++;
         string label = json.Substring(1, index - 1);
-        if (json[index + 1] != ':') return;
-        index += 2;
 
-        SplitObject(json.Substring(index),out var currentVal,out follower);
+        json = json.Substring(index + 1).Trim();
+        if (json[0] != ':') return;
+
+        SplitObject(json.Substring(1).TrimStart(), out var currentVal,out follower);
         if (currentVal != null) current = new(label, currentVal);
     }
 
@@ -243,7 +279,7 @@ public static class JsonStructure
             index++;
         }
 
-        if (index > 0) current = json.Substring(0, index);
-        if (index + 1 < json.Length) follower = json.Substring(index + 1);
+        if (index > 0) current = json.Substring(0, index).Trim();
+        if (index + 1 < json.Length) follower = json.Substring(index + 1).TrimStart();
     }
 }

@@ -18,13 +18,16 @@ public class Vulture : ConfigurableStandardRole
     public override Color RoleColor => new Color(140f / 255f, 70f / 255f, 18f / 255f);
     public override Team Team => MyTeam;
 
-    public override RoleInstance CreateInstance(PlayerModInfo player, int[]? arguments) => new Instance(player);
+    public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player);
 
     private NebulaConfiguration EatCoolDownOption;
     private NebulaConfiguration NumToEatenToWinOption;
+    private VentConfiguration VentConfiguration;
     protected override void LoadOptions()
     {
         base.LoadOptions();
+
+        VentConfiguration = new(RoleConfig, null, (5f, 60f, 15f), (2.5f, 30f, 10f));
 
         EatCoolDownOption = new NebulaConfiguration(RoleConfig, "eatCoolDown", null, 5f, 60f, 5f, 20f, 20f) { Decorator = NebulaConfiguration.SecDecorator };
         NumToEatenToWinOption = new NebulaConfiguration(RoleConfig, "numToTheEatenToWin", null, 1, 8, 3, 3);
@@ -38,6 +41,11 @@ public class Vulture : ConfigurableStandardRole
         static private ISpriteLoader buttonSprite = SpriteLoader.FromResource("Nebula.Resources.Buttons.EatButton.png", 115f);
 
         public override AbstractRole Role => MyRole;
+
+        private Timer ventCoolDown = new Timer(MyRole.VentConfiguration.CoolDown).SetAsAbilityCoolDown().Start();
+        private Timer ventDuration = new(MyRole.VentConfiguration.Duration);
+        public override Timer? VentCoolDown => ventCoolDown;
+        public override Timer? VentDuration => ventDuration;
         public Instance(PlayerModInfo player) : base(player)
         {
         }
@@ -62,21 +70,11 @@ public class Vulture : ConfigurableStandardRole
 
                     if (leftEaten <= 0) NebulaGameManager.Instance.RpcInvokeSpecialWin(NebulaGameEnd.VultureWin, 1 << MyPlayer.PlayerId);
                 };
-                eatButton.CoolDownTimer = Bind(new Timer(0f, MyRole.EatCoolDownOption.GetFloat()!.Value));
+                eatButton.CoolDownTimer = Bind(new Timer(MyRole.EatCoolDownOption.GetFloat()!.Value).SetAsAbilityCoolDown().Start());
                 eatButton.SetLabelType(ModAbilityButton.LabelType.Standard);
                 eatButton.SetLabel("eat");
                 usesIcon.text= leftEaten.ToString();
             }
-        }
-
-        public override void OnGameStart()
-        {
-            eatButton?.StartCoolDown();
-        }
-
-        public override void OnGameReenabled()
-        {
-            eatButton?.StartCoolDown();
         }
     }
 }

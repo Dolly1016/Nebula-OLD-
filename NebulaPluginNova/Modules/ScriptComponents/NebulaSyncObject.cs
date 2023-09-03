@@ -15,7 +15,7 @@ public abstract class NebulaSyncObject : INebulaScriptComponent
     static protected void RegisterInstantiater(string tag, Func<float[], NebulaSyncObject> instantiater)
     {
         int hash = tag.ComputeConstantHash();
-        if (instantiaters.ContainsKey(hash)) Debug.Log($"[NebulaSyncObject] Duplicated Instantiater Error ({tag})");
+        if (instantiaters.ContainsKey(hash)) NebulaPlugin.Log.Print(null, $"Duplicated Instantiater Error ({tag})");
         instantiaters[hash] = instantiater;
     }
 
@@ -40,38 +40,20 @@ public abstract class NebulaSyncObject : INebulaScriptComponent
         allObjects.Remove(ObjectId);
     }
 
-    static private RemoteProcess<Tuple<int,int, float[]>> RpcInstantiateDef = new(
+    static private RemoteProcess<(int id,int tagHash, float[] arguments)> RpcInstantiateDef = new(
         "InstantiateObj",
-        (writer, message) =>
-        {
-            writer.Write(message.Item1);
-            writer.Write(message.Item2);
-            writer.Write(message.Item3.Length);
-            foreach (var item in message.Item3) writer.Write(item);
-        },
-        (reader) =>
-        {
-            int id = reader.ReadInt32();
-            int hash = reader.ReadInt32();
-            int length = reader.ReadInt32();
-            float[] args = new float[length];
-            for (int i = 0; i < length; i++) args[i] = reader.ReadSingle();
-            return new(id, hash, args);
-        },
         (message,_) =>
         {
-            var obj = instantiaters[message.Item2]?.Invoke(message.Item3);
+            var obj = instantiaters[message.tagHash]?.Invoke(message.arguments);
 
-            obj.ObjectId = message.Item1;
-            obj.TagHash = message.Item2;
+            obj.ObjectId = message.id;
+            obj.TagHash = message.tagHash;
             if (allObjects.ContainsKey(obj.ObjectId)) throw new Exception("[NebulaSyncObject] Duplicated Key Error");
             allObjects.Add(obj.ObjectId, obj);
         });
 
-    static private RemoteProcess<int> RpcDestroyDef = new(
+    static private RemoteProcess<int> RpcDestroyDef = RemotePrimitiveProcess.OfInteger(
        "DestroyObj",
-       (writer, message) => writer.Write(message),
-       (reader) => reader.ReadInt32(),
        (message, _) =>
        {
            if (allObjects.TryGetValue(message, out var obj)) obj?.Release();
@@ -195,4 +177,10 @@ public class NebulaSyncStandardObject : NebulaSyncObject
     }
 
     public override void Update() {}
+
+    public override void OnReleased()
+    {
+        base.OnReleased();
+        if(MyRenderer) GameObject.Destroy(MyRenderer.gameObject);
+    }
 }

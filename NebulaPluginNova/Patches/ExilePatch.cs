@@ -64,6 +64,7 @@ public static class NebulaExileWrapUp
         
 
         NebulaGameManager.Instance?.AllRoleAction(r=>r.OnGameReenabled());
+        NebulaGameManager.Instance?.AllScriptAction(s=>s.OnGameReenabled());
 
         __instance.ReEnableGameplay();
         GameObject.Destroy(__instance.gameObject);

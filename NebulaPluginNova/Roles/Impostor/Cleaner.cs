@@ -18,7 +18,7 @@ public class Cleaner : ConfigurableStandardRole
     public override Color RoleColor => Palette.ImpostorRed;
     public override Team Team => Impostor.MyTeam;
 
-    public override RoleInstance CreateInstance(PlayerModInfo player, int[]? arguments) => new Instance(player);
+    public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player);
 
     private NebulaConfiguration CleanCoolDownOption;
     protected override void LoadOptions()
@@ -60,20 +60,10 @@ public class Cleaner : ConfigurableStandardRole
                     AmongUsUtil.RpcCleanDeadBody(cleanTracker.CurrentTarget!.ParentId,MyPlayer.PlayerId,EventDetail.Clean);
                     PlayerControl.LocalPlayer.killTimer = GameOptionsManager.Instance.CurrentGameOptions.GetFloat(FloatOptionNames.KillCooldown);
                 };
-                cleanButton.CoolDownTimer = Bind(new Timer(0f, MyRole.CleanCoolDownOption.GetFloat()!.Value));
+                cleanButton.CoolDownTimer = Bind(new Timer(MyRole.CleanCoolDownOption.GetFloat()!.Value).SetAsAbilityCoolDown().Start());
                 cleanButton.SetLabelType(ModAbilityButton.LabelType.Standard);
                 cleanButton.SetLabel("clean");
             }
-        }
-
-        public override void OnGameStart()
-        {
-            cleanButton?.StartCoolDown();
-        }
-
-        public override void OnGameReenabled()
-        {
-            cleanButton?.StartCoolDown();
         }
     }
 }

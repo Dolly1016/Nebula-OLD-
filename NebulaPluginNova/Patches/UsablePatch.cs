@@ -47,7 +47,7 @@ public static class VentCanUsePatch
         }
         else {
             //ベント外にいる場合
-            couldUse &= modInfo.Role.CanUseVent;
+            couldUse &= modInfo.Role.CanUseVent || @object.inVent || @object.walkingToVent;
             if (modInfo.Role.HasAnyTasks) couldUse &= !@object.MustCleanVent(__instance.Id);
             couldUse &= !pc.IsDead && @object.CanMove;
         }
@@ -83,6 +83,26 @@ public static class VentSetOutlinePatch
         __instance.myRend.material.SetColor("_AddColor", mainTarget ? color : Color.clear);
 
         return false;
+    }
+}
+
+[HarmonyPatch(typeof(Vent), nameof(Vent.EnterVent))]
+public static class EnterVentPatch
+{
+    public static void Postfix(Vent __instance, [HarmonyArgument(0)] PlayerControl pc)
+    {
+        pc.GetModInfo()?.Role.OnEnterVent(__instance);
+        pc.GetModInfo()?.Role.VentDuration?.Start();
+    }
+}
+
+[HarmonyPatch(typeof(Vent), nameof(Vent.ExitVent))]
+public static class ExitVentPatch
+{
+    public static void Postfix(Vent __instance, [HarmonyArgument(0)] PlayerControl pc)
+    {
+        pc.GetModInfo()?.Role.OnExitVent(__instance);
+        pc.GetModInfo()?.Role.VentCoolDown?.Start();
     }
 }
 

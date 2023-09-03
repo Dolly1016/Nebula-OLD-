@@ -14,10 +14,10 @@ public class Timer : INebulaScriptComponent
         isActive = false;
         return this;
     }
-    public Timer Start()
+    public Timer Start(float? time = null)
     {
         isActive = true;
-        currentTime = max;
+        currentTime = time.HasValue ? time.Value : max;
         return this;
     }
     public Timer Resume()
@@ -50,7 +50,7 @@ public class Timer : INebulaScriptComponent
         return this;
     }
     public float CurrentTime { get => currentTime; }
-    public float Percentage { get => (currentTime - min) / (max - min); }
+    public float Percentage { get => max > min ? (currentTime - min) / (max - min) : 0f; }
     public bool IsInProcess => CurrentTime > min;
 
     public override void Update()
@@ -58,6 +58,8 @@ public class Timer : INebulaScriptComponent
         if (isActive && (predicate?.Invoke() ?? true))
             currentTime = Mathf.Clamp(currentTime - Time.deltaTime, min, max);
     }
+
+    public Timer(float max) : this(0f, max) { }
 
     public Timer(float min, float max)
     {
@@ -76,5 +78,15 @@ public class Timer : INebulaScriptComponent
     public void Abandon()
     {
         NebulaGameManager.Instance?.ReleaseComponent(this);
+    }
+
+    public Timer SetAsKillCoolDown()
+    {
+        return SetPredicate(() => PlayerControl.LocalPlayer.IsKillTimerEnabled);
+    }
+
+    public Timer SetAsAbilityCoolDown()
+    {
+        return SetPredicate(() => PlayerControl.LocalPlayer.CanMove);
     }
 }

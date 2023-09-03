@@ -2,6 +2,7 @@
 using Nebula.Configuration;
 using Nebula.Roles;
 using Nebula.Roles.Impostor;
+using Nebula.Roles.Neutral;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,15 +18,15 @@ public class NebulaEndCriteria
     public bool IsValidCriteria => (gameModeMask & GeneralConfigurations.CurrentGameMode) != 0;
 
     public Func<CustomEndCondition?>? OnUpdate = null;
-    public Func<PlayerControl?,Tuple<CustomEndCondition,int>?>? OnExiled = null;
+    public Func<PlayerControl?, Tuple<CustomEndCondition, int>?>? OnExiled = null;
     public Func<CustomEndCondition?>? OnTaskUpdated = null;
 
-    public NebulaEndCriteria(int gameModeMask)
+    public NebulaEndCriteria(int gameModeMask = 0xFFFF)
     {
         this.gameModeMask = gameModeMask;
     }
 
-    static public NebulaEndCriteria SabotageCriteria = new(0xFFFF)
+    static public NebulaEndCriteria SabotageCriteria = new()
     {
         OnUpdate = () =>
         {
@@ -64,7 +65,7 @@ public class NebulaEndCriteria
         }
     };
 
-    static public NebulaEndCriteria CrewmateAliveCriteria = new(0xFFFF)
+    static public NebulaEndCriteria CrewmateAliveCriteria = new()
     {
         OnUpdate = () =>
         {
@@ -79,13 +80,13 @@ public class NebulaEndCriteria
         }
     };
 
-    static public NebulaEndCriteria CrewmateTaskCriteria = new(0xFFFF)
+    static public NebulaEndCriteria CrewmateTaskCriteria = new()
     {
         OnTaskUpdated = () =>
         {
             int quota = 0;
             int completed = 0;
-            foreach(var p in NebulaGameManager.Instance.AllPlayerInfo())
+            foreach (var p in NebulaGameManager.Instance.AllPlayerInfo())
             {
                 if (!p.Tasks.IsCrewmateTask) continue;
                 quota += p.Tasks.Quota;
@@ -95,20 +96,52 @@ public class NebulaEndCriteria
         }
     };
 
-    static public NebulaEndCriteria ImpostorKillCriteria = new(0xFFFF)
+    static public NebulaEndCriteria ImpostorKillCriteria = new()
     {
         OnUpdate = () =>
         {
             int impostors = 0;
             int totalAlive = 0;
-            foreach(var p in NebulaGameManager.Instance!.AllPlayerInfo())
+            foreach (var p in NebulaGameManager.Instance!.AllPlayerInfo())
             {
                 if (p.IsDead) continue;
                 totalAlive++;
                 if (p.Role.Role.Team == Impostor.MyTeam) impostors++;
+
+                //ジャッカル陣営が生存している間は勝利できない
+                if (p.Role.Role.Team == Jackal.MyTeam || p.AllModifiers.Any(m => m.Role == SidekickModifier.MyRole)) return null;
             }
 
             return impostors * 2 >= totalAlive ? NebulaGameEnd.ImpostorWin : null;
+        }
+    };
+
+    static public NebulaEndCriteria JackalKillCriteria = new()
+    {
+        OnUpdate = () =>
+        {
+            int jackals = 0;
+            int totalAlive = 0;
+            foreach (var p in NebulaGameManager.Instance!.AllPlayerInfo())
+            {
+                if (p.IsDead) continue;
+                totalAlive++;
+                if (p.Role.Role.Team == Jackal.MyTeam || p.AllModifiers.Any(m => m.Role == SidekickModifier.MyRole)) jackals++;
+
+                //インポスターが生存している間は勝利できない
+                if (p.Role.Role.Team == Impostor.MyTeam) return null;
+            }
+
+            return jackals * 2 >= totalAlive ? NebulaGameEnd.ImpostorWin : null;
+        }
+    };
+
+    static public NebulaEndCriteria NoGameCriteria = new()
+    {
+        OnUpdate = () =>
+        {
+            if (NebulaInput.GetKeyDown(KeyCode.F5) && NebulaInput.GetKey(KeyCode.LeftControl)) return NebulaGameEnd.NoGame;
+            return null;
         }
     };
 }

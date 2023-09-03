@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Nebula.Utilities;
 
-[NebulaPreLoad(true)]
+[NebulaPreLoad(NebulaPreLoad.FinalizerType.LoadOnly)]
 public class TranslatableTag
 {
     static public List<TranslatableTag> AllTag = new();
@@ -28,7 +28,7 @@ public class TranslatableTag
         TranslateKey = translateKey;
 
         if (NebulaPreLoad.FinishedLoading)
-            Debug.LogError("[Nebula] Pre-loading has been finished. Translatable tag \"" + TranslateKey + "\" is invalid on current process.");
+            NebulaPlugin.Log.Print(null, "Pre-loading has been finished. Translatable tag \"" + TranslateKey + "\" is invalid on current process.");
         else
             AllTag.Add(this);
         

@@ -2,7 +2,10 @@
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using Nebula;
+using Nebula.Behaviour;
 using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 using static Nebula.Modules.NebulaPlayerTab;
 using static Nebula.Player.PlayerModInfo;
 using static Rewired.Demos.PressStartToJoinExample_Assigner;
@@ -48,12 +51,12 @@ public class DynamicPalette
             brightness = new FloatDataEntry(colorDataId + ".b", ColorData, 1f);
         }
 
-        public void Edit(byte hue, byte distance, float brightness, byte palette)
+        public void Edit(byte? hue, byte? distance, float? brightness, byte? palette)
         {
-            this.hue.Value = hue;
-            this.distance.Value = distance;
-            this.brightness.Value = brightness;
-            this.palette.Value = palette;
+            if(hue.HasValue) this.hue.Value = hue.Value;
+            if(distance.HasValue) this.distance.Value = distance.Value;
+            if(brightness.HasValue) this.brightness.Value = brightness.Value;
+            if(palette.HasValue) this.palette.Value = palette.Value;
         }
 
         public Color ToColor()
@@ -78,18 +81,16 @@ public class DynamicPalette
             AllShadowPattern[shadowType.Value].GetShadowColor(mainParameters.ToColor(), shadowParameters.ToColor(), out mainColor, out shadowColor);
         }
 
-        public void EditMainColor(byte hue, byte distance, float brightness, byte palette)
+        public void EditColor(bool isShadow,byte? hue, byte? distance, float? brightness, byte? palette)
         {
-            mainParameters.Edit(hue, distance, brightness, palette);
-            var tempColor = mainParameters.ToColor();
-            AllShadowPattern[shadowType.Value].GetShadowColor(tempColor, shadowColor, out mainColor, out shadowColor);
-        }
+            var param = isShadow ? shadowParameters : mainParameters;
 
-        public void EditShadowColor(byte hue, byte distance, float brightness, byte palette)
-        {
-            shadowParameters.Edit(hue, distance, brightness, palette);
-            var tempColor = shadowParameters.ToColor();
-            AllShadowPattern[shadowType.Value].GetShadowColor(mainColor, tempColor, out mainColor, out shadowColor);
+            param.Edit(hue, distance, brightness, palette);
+            var tempColor = param.ToColor();
+            AllShadowPattern[shadowType.Value].GetShadowColor(
+                isShadow ? mainColor : tempColor,
+                isShadow ? tempColor : shadowColor, 
+                out mainColor, out shadowColor);
         }
 
         public void GetMainParam(out byte hue, out byte distance,out float brightness) {
@@ -97,10 +98,20 @@ public class DynamicPalette
             distance = mainParameters.distance.Value;
             brightness = mainParameters.brightness.Value;
         }
+
         public void GetShadowParam(out byte hue, out byte distance, out float brightness) {
             hue = shadowParameters.hue.Value;
             distance = shadowParameters.distance.Value;
             brightness = shadowParameters.brightness.Value;
+        }
+
+        public void GetParam(bool isShadow, out byte hue, out byte distance, out float brightness)
+        {
+            var param = isShadow ? shadowParameters : mainParameters;
+
+            hue = param.hue.Value;
+            distance = param.distance.Value;
+            brightness = param.brightness.Value;
         }
 
         public void SetShadowPattern(byte pattern) {
@@ -218,7 +229,9 @@ public class NebulaPlayerTab : MonoBehaviour
     static ISpriteLoader spritePalette = SpriteLoader.FromResource("Nebula.Resources.Palette.png", 100f);
     static ISpriteLoader spriteTarget = SpriteLoader.FromResource("Nebula.Resources.TargetIcon.png", 100f);
 
-    
+    static ISpriteLoader spriteBrPalette = SpriteLoader.FromResource("Nebula.Resources.PaletteBrightness.png", 100f);
+    static ISpriteLoader spriteBrTarget = SpriteLoader.FromResource("Nebula.Resources.PaletteKnob.png", 100f);
+
 
     static NebulaPlayerTab()
     {
@@ -230,10 +243,15 @@ public class NebulaPlayerTab : MonoBehaviour
 
     SpriteRenderer DynamicPaletteRenderer;
     SpriteRenderer TargetRenderer;
-    
+
+    SpriteRenderer BrightnessRenderer;
+    SpriteRenderer BrightnessTargetRenderer;
+
 
     public PlayerTab playerTab;
 
+    static private float BrightnessHeight = 2.6f;
+    static private float ToBrightness(float y) => Mathf.Clamp01((y + BrightnessHeight * 0.5f) / BrightnessHeight);
 
     public void Start()
     {
@@ -242,47 +260,85 @@ public class NebulaPlayerTab : MonoBehaviour
         DynamicPaletteRenderer.gameObject.layer = LayerExpansion.GetUILayer();
         var PaletteCollider = DynamicPaletteRenderer.gameObject.AddComponent<CircleCollider2D>();
         PaletteCollider.radius = 2.1f;
-        var PaletteButton = DynamicPaletteRenderer.gameObject.AddComponent<PassiveButton>();
-        PaletteButton.OnClick = new UnityEngine.UI.Button.ButtonClickedEvent();
-        PaletteButton.OnMouseOut = new UnityEngine.Events.UnityEvent();
-        PaletteButton.OnMouseOver = new UnityEngine.Events.UnityEvent();
+        PaletteCollider.isTrigger = true;
+        var PaletteButton = DynamicPaletteRenderer.gameObject.SetUpButton();
 
         PaletteButton.OnClick.AddListener(() => {
             ToColorParam(GetOnPalettePosition(), out var h, out var d);
 
-            if (edittingShadowColor)
-                DynamicPalette.MyColor.EditShadowColor(h, d, 1.0f, 0);
-            else
-                DynamicPalette.MyColor.EditMainColor(h, d, 1.0f, 0);
+            DynamicPalette.MyColor.EditColor(edittingShadowColor, h, d, null, null);
             TargetRenderer.transform.localPosition = ToPalettePosition(h, d);
 
             if (AmongUsClient.Instance.IsInGame && PlayerControl.LocalPlayer) DynamicPalette.RpcShareColor.Invoke(new DynamicPalette.ShareColorMessage() { playerId=PlayerControl.LocalPlayer.PlayerId}.ReflectMyColor());
         });
         PaletteButton.OnMouseOut.AddListener(() =>
         {
-            DynamicPalette.MyColor.GetMainParam(out var h, out var d, out _);
-            PreviewColor(h, d, DynamicPalette.MyColor.MainColor, DynamicPalette.MyColor.ShadowColor);
+            PreviewColor(null, null, null);
         });
 
         TargetRenderer = UnityHelper.CreateObject<SpriteRenderer>("TargetIcon", DynamicPaletteRenderer.transform, new Vector3(0f, 0f, -10f));
         TargetRenderer.sprite = spriteTarget.GetSprite();
         TargetRenderer.gameObject.layer = LayerExpansion.GetUILayer();
 
-        byte h, d;
-        if(edittingShadowColor)
-            DynamicPalette.MyColor.GetShadowParam(out h,out d,out float b);
-        else
-            DynamicPalette.MyColor.GetMainParam(out h, out d, out float b);
+        DynamicPalette.MyColor.GetParam(edittingShadowColor, out byte h, out byte d, out _);
         TargetRenderer.transform.localPosition = ToPalettePosition(h,d);
 
+        BrightnessRenderer = UnityHelper.CreateObject<SpriteRenderer>("BrightnessPalette", transform, new Vector3(4.1f, 0.2f, -80f));
+        BrightnessRenderer.sprite = spriteBrPalette.GetSprite();
+        BrightnessRenderer.gameObject.layer = LayerExpansion.GetUILayer();
+
+        BrightnessTargetRenderer = UnityHelper.CreateObject<SpriteRenderer>("BrightnessPalette", BrightnessRenderer.transform, new Vector3(0f, 0.0f, -1f));
+        BrightnessTargetRenderer.sprite = spriteBrTarget.GetSprite();
+        BrightnessTargetRenderer.gameObject.layer = LayerExpansion.GetUILayer();
+
+        var BrPaletteCollider = BrightnessRenderer.gameObject.AddComponent<BoxCollider2D>();
+        BrPaletteCollider.size = new Vector2(0.31f, BrightnessHeight);
+        BrPaletteCollider.isTrigger = true;
+
+        var BrPaletteBackButton = BrightnessRenderer.gameObject.SetUpButton();
+
+        BrPaletteBackButton.OnClick.AddListener(() => {
+            var pos = UnityHelper.ScreenToWorldPoint(Input.mousePosition, LayerExpansion.GetUILayer()) - BrPaletteBackButton.transform.position;
+            var b = ToBrightness(pos.y);
+            DynamicPalette.MyColor.EditColor(edittingShadowColor,null, null, b, null);
+
+            var targetLocPos = BrightnessTargetRenderer.transform.localPosition;
+            targetLocPos.y = Mathf.Clamp(pos.y, -BrightnessHeight * 0.5f, BrightnessHeight * 0.5f);
+            BrightnessTargetRenderer.transform.localPosition = targetLocPos;
+
+            if (AmongUsClient.Instance.IsInGame && PlayerControl.LocalPlayer) DynamicPalette.RpcShareColor.Invoke(new DynamicPalette.ShareColorMessage() { playerId = PlayerControl.LocalPlayer.PlayerId }.ReflectMyColor());
+
+            PreviewColor(null, null, null);
+        });
+
+        var BrTargetCollider = BrightnessTargetRenderer.gameObject.AddComponent<BoxCollider2D>();
+        BrTargetCollider.size = new Vector2(0.38f, 0.18f);
+        BrTargetCollider.isTrigger = true;
+
+        var BrTargetKnob = BrightnessTargetRenderer.gameObject.AddComponent<UIKnob>();
+        BrTargetKnob.IsVert = true;
+        BrTargetKnob.Range = (-BrightnessHeight * 0.5f, BrightnessHeight * 0.5f);
+        BrTargetKnob.Renderer = BrightnessTargetRenderer;
+        BrTargetKnob.OnRelease = () => {
+            float b = ToBrightness(BrTargetKnob.transform.localPosition.y);
+
+            DynamicPalette.MyColor.EditColor(edittingShadowColor,null, null, b, null);
+
+            if (AmongUsClient.Instance.IsInGame && PlayerControl.LocalPlayer) DynamicPalette.RpcShareColor.Invoke(new DynamicPalette.ShareColorMessage() { playerId = PlayerControl.LocalPlayer.PlayerId }.ReflectMyColor());
+
+            PreviewColor(null, null, null);
+        };
+        BrTargetKnob.OnDragging = (y) => {
+            float b = (y + (BrightnessHeight * 0.5f)) / BrightnessHeight;
+            PreviewColor(null, null, b);
+        };
+
+        PreviewColor(null, null, null);
     }
 
     public void OnEnable()
     {
-        DynamicPalette.MyColor.GetMainParam(out var h,out var d,out _);
-        string colorName = Language.Translate(ColorNamePatch.ToTranslationKey(h, d));
-        PlayerCustomizationMenu.Instance.SetItemName(colorName);
-        PreviewColor(h, d, DynamicPalette.MyColor.MainColor, DynamicPalette.MyColor.ShadowColor);
+        PreviewColor(null, null, null);
     }
 
     private Vector2 GetOnPalettePosition()
@@ -310,38 +366,59 @@ public class NebulaPlayerTab : MonoBehaviour
     {
         var pos = GetOnPalettePosition();
         float distance = pos.magnitude;
-
+        
         if (distance < 2.06f)
         {
             //DynamicPaletteによる色の更新
-
             ToColorParam(pos, out var h, out var d);
-            Color color = DynamicPalette.AllColorPalette[currentPalette].GetColor(h, d, 1f);
-
-            DynamicPalette.AllShadowPattern[DynamicPalette.MyColor.GetShadowPattern()].GetShadowColor(
-                edittingShadowColor ? DynamicPalette.MyColor.MainColor : color,
-                edittingShadowColor ? color : DynamicPalette.MyColor.ShadowColor,
-                out var resultMain,out var resultShadow
-                );
-            PreviewColor(h, d, resultMain, resultShadow);
+            PreviewColor(h, d, null);
         }
     }
 
     static byte PreviewColorId = 15;
 
-    private void PreviewColor(int concernedHue, int concernedDistance, Color mainColor,Color shadowColor)
+    private void PreviewColor(byte? concernedHue, byte? concernedDistance,float? concernedBrightness)
     {
-        Palette.PlayerColors[PreviewColorId] = mainColor;
-        Palette.ShadowColors[PreviewColorId] = shadowColor;
+        try
+        {
+            DynamicPalette.MyColor.GetParam(edittingShadowColor, out byte h, out byte d, out var b);
+            concernedHue ??= h;
+            concernedDistance ??= d;
+            concernedBrightness ??= b;
 
-        string colorName = Language.Translate(ColorNamePatch.ToTranslationKey(concernedHue,concernedDistance));
-        PlayerCustomizationMenu.Instance.SetItemName(colorName);
-        playerTab.currentColor = PreviewColorId;
-        playerTab.PlayerPreview.SetBodyColor(PreviewColorId);
-        playerTab.PlayerPreview.SetPetColor(PreviewColorId);
-        playerTab.PlayerPreview.SetSkin(DataManager.Player.Customization.Skin, PreviewColorId);
-        playerTab.PlayerPreview.SetHat(DataManager.Player.Customization.Hat, PreviewColorId);
-        playerTab.PlayerPreview.SetVisor(DataManager.Player.Customization.Visor, PreviewColorId);
+            BrightnessRenderer.color = DynamicPalette.AllColorPalette[currentPalette].GetColor((byte)concernedHue, (byte)concernedDistance, 1f);
+
+            Color color = DynamicPalette.AllColorPalette[currentPalette].GetColor(concernedHue.Value, concernedDistance.Value, concernedBrightness.Value);
+            DynamicPalette.AllShadowPattern[DynamicPalette.MyColor.GetShadowPattern()].GetShadowColor(
+                edittingShadowColor ? DynamicPalette.MyColor.MainColor : color,
+                edittingShadowColor ? color : DynamicPalette.MyColor.ShadowColor,
+                out var resultMain, out var resultShadow
+                );
+
+            Palette.PlayerColors[PreviewColorId] = resultMain;
+            Palette.ShadowColors[PreviewColorId] = resultShadow;
+
+            string colorName = Language.Translate(ColorNamePatch.ToTranslationKey(concernedHue.Value, concernedDistance.Value));
+            PlayerCustomizationMenu.Instance.SetItemName(colorName);
+
+
+            playerTab.PlayerPreview.SetBodyColor(PreviewColorId);
+            playerTab.PlayerPreview.SetPetColor(PreviewColorId);
+            if (playerTab.currentColor != PreviewColorId)
+            {
+                playerTab.currentColor = PreviewColorId;
+                playerTab.PlayerPreview.SetSkin(DataManager.Player.Customization.Skin, PreviewColorId);
+                playerTab.PlayerPreview.SetHat(DataManager.Player.Customization.Hat, PreviewColorId);
+                playerTab.PlayerPreview.SetVisor(DataManager.Player.Customization.Visor, PreviewColorId);
+            }
+            else
+            {
+                playerTab.PlayerPreview.cosmetics.skin.UpdateMaterial();
+                playerTab.PlayerPreview.cosmetics.hat.UpdateMaterial();
+                playerTab.PlayerPreview.cosmetics.visor.UpdateMaterial();
+            }
+        }
+        catch { }
     }
 }
 

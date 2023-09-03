@@ -33,20 +33,7 @@ public static class HudManagerUpdatePatch
 
         if (NebulaInput.GetKeyDown(KeyCode.H))
         {
-            var window = MetaScreen.GenerateWindow(new Vector2(7.5f, 4f), HudManager.Instance.transform, new Vector3(0, 0, -400f), true, false);
-            //window.gameObject.AddComponent<SortingGroup>();
-
-            var roleTitleAttr = new TextAttribute(TextAttribute.BoldAttr) { Size = new Vector2(1.4f, 0.26f), FontMaterial = VanillaAsset.StandardMaskedFontMaterial };
-            MetaContext scrollInnner = new();
-            MetaContext.ScrollView scrollView = new(new(7.4f,4f),scrollInnner);
-            scrollInnner.Append(Roles.Roles.AllRoles, (role) => new MetaContext.Button(() => { }, roleTitleAttr)
-            {
-                RawText = role.DisplayName.Color(role.RoleColor),
-                PostBuilder = (button, renderer, text) => renderer.maskInteraction = SpriteMaskInteraction.VisibleInsideMask,
-                Alignment = IMetaContext.AlignmentOption.Center
-            }, 4, -1, 0, 0.6f); 
-
-            window.SetContext(scrollView);
+            HelpScreen.OpenHelpScreen();
         }
     }
 }

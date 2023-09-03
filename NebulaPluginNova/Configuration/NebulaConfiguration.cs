@@ -29,10 +29,14 @@ public class NebulaConfigEntry
     static public DataSaver ConfigData = new DataSaver("Config");
     static public List<NebulaConfigEntry> AllConfig = new();
 
-    static public void Load()
+    static public IEnumerator CoLoad()
     {
+        Patches.LoadPatch.LoadingText = "Building Configuration Database";
+        yield return null;
+
         var types = Assembly.GetAssembly(typeof(RemoteProcessBase))?.GetTypes().Where((type) => type.IsDefined(typeof(NebulaOptionHolder)));
-        if (types == null) return;
+        if (types == null) yield break;
+
         foreach (var type in types) System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(type.TypeHandle);
 
         AllConfig.Sort((c1, c2) => string.Compare(c1.Name, c2.Name));
@@ -66,20 +70,11 @@ public class NebulaConfigEntry
         if (save) dataEntry.Value = value;
     }
 
-    static private RemoteProcess<Tuple<int, int>> RpcShare = new RemoteProcess<Tuple<int, int>>(
+    static private RemoteProcess<(int id, int value)> RpcShare = new(
         "ShareOption",
-        (writer, message) =>
-        {
-            writer.Write(message.Item1);
-            writer.Write(message.Item2);
-        },
-       (reader) =>
-       {
-           return new Tuple<int, int>(reader.ReadInt32(),reader.ReadInt32());
-       },
        (message, isCalledByMe) =>
        {
-           if (!isCalledByMe) AllConfig[message.Item1].UpdateValue(message.Item2, false);
+           if (!isCalledByMe) AllConfig[message.id].UpdateValue(message.value, false);
        }
     );
 
@@ -126,7 +121,7 @@ public class NebulaConfigEntry
 
     public void Share()
     {
-        RpcShare.Invoke(new Tuple<int, int>(Id,CurrentValue));
+        RpcShare.Invoke((Id,CurrentValue));
     }
 
     static public void ShareAll()
@@ -149,6 +144,7 @@ public class ConfigurationHolder
     {
         AllHolders.Sort((c1, c2) =>
         {
+            if (c1.tabMask != c2.tabMask) return c1.tabMask - c2.tabMask;
             if (c1.Priority != c2.Priority) return c1.Priority - c2.Priority;
             return string.Compare(c1.Id, c2.Id);
         });
@@ -161,6 +157,10 @@ public class ConfigurationHolder
     public int Priority { get; set; }
     public ITextComponent Title { get; private init; }
     private List<NebulaConfiguration> myConfigurations = new();
+    public IEnumerable<NebulaConfiguration> MyConfigurations => myConfigurations;
+
+    public Func<bool>? IsActivated { get; set; } = null;
+
     internal void RegisterOption(NebulaConfiguration config) => myConfigurations.Add(config);
 
     public ConfigurationHolder(string id, ITextComponent? title,int tabMask,int gamemodeMask)
@@ -207,21 +207,40 @@ public class ConfigurationHolder
         entry.UpdateValue(entry.CurrentValue == 1 ? 0 : 1, true);
         entry.Share();
     }
+
+    public void GetShownString(ref StringBuilder? builder)
+    {
+        builder ??= new();
+
+        builder.Append(Title.Text + "\n");
+        foreach (var config in MyConfigurations)
+        {
+            if (!config.IsShown) continue;
+
+            string? temp = config.GetShownString();
+            if (temp == null) continue;
+
+            builder.Append("   " + temp.Replace("\n", "\n      "));
+            builder.AppendLine();
+        }
+    }
 }
 
 
 public class NebulaConfiguration
 {
-    private NebulaConfigEntry entry;
+    private NebulaConfigEntry? entry;
     public ConfigurationHolder? MyHolder { get; private set; }
     public Func<object?, string>? Decorator { get; set; } = null;
     public Func<int, object?>? Mapper { get; set; } = null;
     public Func<bool>? Predicate { get; set; } = null;
     public Func<IMetaContext?>? Editor { get; set; } = null;
+    public Func<string>? Shower { get; set; }
     public bool LoopAtBothEnds { get; set; } = true;
     public int MaxValue { get; private init; }
     private int InvalidatedValue { get; init; }
-    public ITextComponent Title { get; private init; }
+    public ITextComponent Title { get; set; }
+    public string Id => entry?.Name ?? "Undefined";
     public bool IsShown => (MyHolder?.IsShown ?? true) && (Predicate?.Invoke() ?? true);
 
     public IMetaContext? GetEditor()
@@ -237,6 +256,17 @@ public class NebulaConfiguration
             );
     }
 
+    public string? GetShownString() {
+        try
+        {
+            return Shower?.Invoke() ?? null;
+        }catch
+        {
+            NebulaPlugin.Log.Print(null, Id + " is not printable.");
+            return null;
+        }
+    }
+
     static public TextAttribute GetOptionBoldAttr(float width, TMPro.TextAlignmentOptions alignment = TMPro.TextAlignmentOptions.Center) => new(TextAttribute.BoldAttr)
     {
         FontMaterial = VanillaAsset.StandardMaskedFontMaterial,
@@ -245,6 +275,7 @@ public class NebulaConfiguration
     };
     static public TextAttribute OptionTitleAttr = GetOptionBoldAttr(4f,TMPro.TextAlignmentOptions.Left);
     static public TextAttribute OptionValueAttr = GetOptionBoldAttr(1.1f);
+    static public TextAttribute OptionShortValueAttr = GetOptionBoldAttr(0.7f);
     static public TextAttribute OptionButtonAttr = new(TextAttribute.BoldAttr) {
         FontMaterial = VanillaAsset.StandardMaskedFontMaterial,
         Size = new Vector2(0.32f, 0.22f) 
@@ -268,6 +299,18 @@ public class NebulaConfiguration
     static public Func<object?, string> SecDecorator = (mapped) => mapped + Language.Translate("options.sec");
     static public Func<IMetaContext?> EmptyEditor = () => null;
 
+    public NebulaConfiguration(ConfigurationHolder? holder, Func<IMetaContext?> editor)
+    {
+        MyHolder = holder;
+        MyHolder?.RegisterOption(this);
+        Editor = editor;
+
+        entry = null;
+        Title = new RawTextComponent("Undefined");
+
+        Shower = null;
+    }
+
     public NebulaConfiguration(ConfigurationHolder? holder, string id,ITextComponent? title, int maxValue,int defaultValue,int invalidatedValue)
     {
         MaxValue = maxValue;
@@ -282,42 +325,44 @@ public class NebulaConfiguration
 
         entry = new NebulaConfigEntry(entryId, defaultValue);
         Title = title ?? new TranslateTextComponent(entryId);
+
+        Shower = () => Title.Text + " : " + ToDisplayString();
     }
 
-    public NebulaConfiguration(ConfigurationHolder holder, string id, ITextComponent? title, int minValue,int maxValue, int defaultValue, int invalidatedValue) :
+    public NebulaConfiguration(ConfigurationHolder? holder, string id, ITextComponent? title, int minValue,int maxValue, int defaultValue, int invalidatedValue) :
         this(holder, id, title, maxValue-minValue, defaultValue-minValue, invalidatedValue - minValue)
     {
         Mapper = (i) => i + minValue;
     }
 
-    public NebulaConfiguration(ConfigurationHolder holder, string id, ITextComponent? title, bool defaultValue, bool invalidatedValue) :
+    public NebulaConfiguration(ConfigurationHolder? holder, string id, ITextComponent? title, bool defaultValue, bool invalidatedValue) :
         this(holder, id, title, 1, defaultValue ? 1 : 0, invalidatedValue ? 1 : 0)
     {
         Mapper = (i) => i == 1;
         Decorator = (v) => Language.Translate((bool)v! ? "options.switch.on" : "options.switch.off");
     }
 
-    public NebulaConfiguration(ConfigurationHolder holder,string id, ITextComponent? title, string[] selections,string defaultValue,string invalidatedValue):
+    public NebulaConfiguration(ConfigurationHolder? holder,string id, ITextComponent? title, string[] selections,string defaultValue,string invalidatedValue):
         this(holder,id, title, selections.Length-1,Array.IndexOf(selections,defaultValue), Array.IndexOf(selections, invalidatedValue))
     {
         Mapper = (i) => selections[i];
         Decorator = (v) => Language.Translate((string?)v);
     }
 
-    public NebulaConfiguration(ConfigurationHolder holder, string id, ITextComponent? title, string[] selections, int defaultIndex,int invalidatedIndex) :
+    public NebulaConfiguration(ConfigurationHolder? holder, string id, ITextComponent? title, string[] selections, int defaultIndex,int invalidatedIndex) :
        this(holder, id, title, selections.Length - 1, defaultIndex, invalidatedIndex)
     {
         Mapper = (i) => selections[i];
         Decorator = (v) => Language.Translate((string?)v);
     }
 
-    public NebulaConfiguration(ConfigurationHolder holder, string id, ITextComponent? title, float[] selections, float defaultValue, float invalidatedValue) :
+    public NebulaConfiguration(ConfigurationHolder? holder, string id, ITextComponent? title, float[] selections, float defaultValue, float invalidatedValue) :
         this(holder, id, title, selections.Length - 1, Array.IndexOf(selections, defaultValue), Array.IndexOf(selections, invalidatedValue))
     {
         Mapper = (i) => selections[i];
     }
 
-    public NebulaConfiguration(ConfigurationHolder holder, string id, ITextComponent? title, float min,float max,float step, float defaultValue, float invalidatedValue) :
+    public NebulaConfiguration(ConfigurationHolder? holder, string id, ITextComponent? title, float min,float max,float step, float defaultValue, float invalidatedValue) :
         this(holder, id, title, (int)((max - min) / step), (int)((defaultValue-min)/step), (int)((invalidatedValue - min) / step))
     {
         Mapper = (i) => (float)(step * i + min);
@@ -380,12 +425,13 @@ public class NebulaConfiguration
 public class CustomGameMode
 {
     public static List<CustomGameMode> allGameMode = new List<CustomGameMode>();
-    public static CustomGameMode Standard = new CustomGameMode(0x01, "gamemode.standard", new StandardRoleAllocator(), 4)
+    public static CustomGameMode Standard = new CustomGameMode(0x01, "gamemode.standard", new StandardRoleAllocator(), 4) { AllowSpecialEnd = true }
         .AddEndCriteria(NebulaEndCriteria.SabotageCriteria)
         .AddEndCriteria(NebulaEndCriteria.ImpostorKillCriteria)
         .AddEndCriteria(NebulaEndCriteria.CrewmateAliveCriteria)
-        .AddEndCriteria(NebulaEndCriteria.CrewmateTaskCriteria);
-    public static CustomGameMode FreePlay = new CustomGameMode(0x02, "gamemode.freeplay", new AllCrewmateRoleAllocator(), 0);
+        .AddEndCriteria(NebulaEndCriteria.CrewmateTaskCriteria)
+        .AddEndCriteria(NebulaEndCriteria.JackalKillCriteria);
+    public static CustomGameMode FreePlay = new CustomGameMode(0x02, "gamemode.freeplay", new FreePlayRoleAllocator(), 0);
     public static int AllGameModeMask = Standard | FreePlay;
 
     private int bitFlag;
@@ -393,6 +439,7 @@ public class CustomGameMode
     public IRoleAllocator RoleAllocator { get; private init; }
     public List<NebulaEndCriteria> GameModeCriteria { get; private init; } = new();
     public int MinPlayers { get; private init; }
+    public bool AllowSpecialEnd { get; private init; } = false;
     public CustomGameMode(int bitFlag,string translateKey, IRoleAllocator roleAllocator, int minPlayers)
     {
         this.bitFlag = bitFlag;

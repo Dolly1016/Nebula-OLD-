@@ -45,17 +45,17 @@ public class PlayerTaskState
 
     public void OnCompleteTask()
     {
-        RpcUpdateTaskState.Invoke(new Tuple<byte, TaskUpdateMessage>(player.PlayerId, TaskUpdateMessage.CompleteTask));
+        RpcUpdateTaskState.Invoke((player.PlayerId, TaskUpdateMessage.CompleteTask));
     }
 
     public void BecomeToOutsider()
     {
-        RpcUpdateTaskState.Invoke(new Tuple<byte, TaskUpdateMessage>(player.PlayerId, TaskUpdateMessage.BecomeToOutsider));
+        RpcUpdateTaskState.Invoke((player.PlayerId, TaskUpdateMessage.BecomeToOutsider));
     }
 
     public void BecomeToCrewmate()
     {
-        RpcUpdateTaskState.Invoke(new Tuple<byte, TaskUpdateMessage>(player.PlayerId, TaskUpdateMessage.BecomeToCrewmate));
+        RpcUpdateTaskState.Invoke((player.PlayerId, TaskUpdateMessage.BecomeToCrewmate));
     }
 
     public void WaiveAndBecomeToCrewmate()
@@ -197,22 +197,13 @@ public class PlayerTaskState
         WaiveTasks
     }
 
-    private static RemoteProcess<Tuple<byte, TaskUpdateMessage>> RpcUpdateTaskState = new RemoteProcess<Tuple<byte, TaskUpdateMessage>>(
+    private static RemoteProcess<(byte playerId, TaskUpdateMessage type)> RpcUpdateTaskState = new(
         "UpdateTaskState",
-        (writer, message) =>
-        {
-            writer.Write(message.Item1);
-            writer.Write((int)message.Item2);
-        },
-        (reader) =>
-        {
-            return new Tuple<byte, TaskUpdateMessage>(reader.ReadByte(), (TaskUpdateMessage)reader.ReadInt32());
-        },
         (message, isCalledByMe) => {
-            var task = NebulaGameManager.Instance?.GetModPlayerInfo(message.Item1)?.Tasks;
+            var task = NebulaGameManager.Instance?.GetModPlayerInfo(message.playerId)?.Tasks;
             if (task != null)
             {
-                switch (message.Item2)
+                switch (message.type)
                 {
                     case TaskUpdateMessage.CompleteTask:
                         task.CurrentCompleted++;

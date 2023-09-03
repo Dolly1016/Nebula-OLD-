@@ -37,6 +37,7 @@ public static class GeneralConfigurations
     static public NebulaConfiguration SpawnMethodOption = new(MapOptions, "spawnMethod", null,
         new string[] { "options.map.spawnMethod.default", "options.map.spawnMethod.selective", "options.map.spawnMethod.random" }, 0, 0);
     static public NebulaConfiguration SpawnCandidatesOption = new NebulaConfiguration(MapOptions, "spawnCandidates", null, 1, 8, 1, 1) { Predicate = () => (!SpawnMethodOption.GetString()?.Equals("options.map.spawnMethod.default")) ?? false };
+    static public NebulaConfiguration SilentVentOption = new NebulaConfiguration(MapOptions, "silentVents", null, false, false);
 
     static public CustomGameMode CurrentGameMode => CustomGameMode.AllGameMode[GameModeOption.CurrentValue];
 }

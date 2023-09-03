@@ -5,17 +5,22 @@ using Nebula.Modules;
 using Nebula.Roles;
 using TMPro;
 using UnityEngine;
+using UnityEngine.AI;
 using static UnityEngine.GraphicsBuffer;
 
 namespace Nebula.Player;
 
-[NebulaPreLoad]
+[NebulaPreLoad(typeof(TranslatableTag))]
 public static class PlayerState
 {
     public static TranslatableTag Alive = new("state.alive");
     public static TranslatableTag Dead = new("state.dead");
     public static TranslatableTag Exiled = new("state.exiled");
     public static TranslatableTag Misfired = new("state.misfired");
+    public static TranslatableTag Sniped = new("state.sniped");
+    public static TranslatableTag Beaten = new("state.beaten");
+    public static TranslatableTag Guessed = new("state.guessed");
+    public static TranslatableTag Misguessed = new("state.misguessed");
 }
 
 [NebulaRPCHolder]
@@ -42,6 +47,9 @@ public class PlayerModInfo
     public bool AmOwner { get; private set; }
     public bool IsDisconnected { get; set; } = false;
     public bool IsDead => IsDisconnected || MyControl.Data.IsDead;
+    public float MouseAngle { get; private set; }
+    private bool requiredUpdateMouseAngle { get; set; }
+    public void RequireUpdateMouseAngle()=> requiredUpdateMouseAngle= true;
     
     public byte? HoldingDeadBody { get; private set; } = null;
     private DeadBody? deadBodyCache { get; set; } = null;
@@ -85,6 +93,8 @@ public class PlayerModInfo
     {
         foreach (var role in myModifiers) action(role);
     }
+
+    public IEnumerable<ModifierInstance> AllModifiers => myModifiers;
 
     public PlayerModInfo(PlayerControl myPlayer)
     {
@@ -147,9 +157,8 @@ public class PlayerModInfo
         var text = CurrentOutfit.PlayerName;
         var color = Color.white;
 
-        var viewerInfo = PlayerControl.LocalPlayer.GetModInfo();
-
-        viewerInfo?.Role?.DecoratePlayerName(ref text, ref color);
+        RoleAction(r => r.DecoratePlayerName(ref text, ref color));
+        PlayerControl.LocalPlayer.GetModInfo()?.RoleAction(r=>r.DecorateOtherPlayerName(this,ref text,ref color));
 
         if (showDefaultName && !CurrentOutfit.PlayerName.Equals(DefaultName))
             text += (" (" + DefaultName + ")").Color(Color.gray);
@@ -177,7 +186,7 @@ public class PlayerModInfo
         roleText.gameObject.SetActive(NebulaGameManager.Instance.CanSeeAllInfo || AmOwner);
     }
 
-    private void SetRole(AbstractRole role, int[]? arguments)
+    private void SetRole(AbstractRole role, int[] arguments)
     {
         myRole?.Inactivate();
 
@@ -190,49 +199,33 @@ public class PlayerModInfo
         myRole.OnActivated();
     }
 
-    private void SetModifier(AbstractModifier role, int[]? arguments)
+    private void SetModifier(AbstractModifier role, int[] arguments)
     {
         var modifier = role.CreateInstance(this, arguments);
         myModifiers.Add(modifier);
         modifier.OnActivated();
     }
 
-    public void RpcSetRole(AbstractRole role, int[]? arguments) => RpcSetAssignable.Invoke(new SetAssignableMessage() { playerId = PlayerId, assignableId = role.Id, arguments = arguments, isRole = true });
-    public void RpcSetModifier(AbstractModifier modifier, int[]? arguments) => RpcSetAssignable.Invoke(new SetAssignableMessage() { playerId = PlayerId, assignableId = modifier.Id, arguments = arguments, isRole = false });
 
-
-    public class SetAssignableMessage
+    public NebulaRPCInvoker RpcInvokerSetRole(AbstractRole role, int[]? arguments) => RpcSetAssignable.GetInvoker((PlayerId, role.Id, arguments ?? Array.Empty<int>(), true));
+    public NebulaRPCInvoker RpcInvokerSetModifier(AbstractModifier modifier, int[]? arguments) => RpcSetAssignable.GetInvoker((PlayerId, modifier.Id, arguments ?? Array.Empty<int>(), false));
+    public NebulaRPCInvoker RpcInvokerUnsetModifier(AbstractModifier modifier) => RpcRemoveModifier.GetInvoker(new(PlayerId,modifier.Id));
+    public void UnsetModifierLocal(Predicate<ModifierInstance> predicate)
     {
-        public byte playerId;
-        public int assignableId;
-        public int[]? arguments;
-        public bool isRole;
+        myModifiers.RemoveAll(m =>
+        {
+            if (predicate.Invoke(m))
+            {
+                m.Inactivate();
+                return true;
+            }
+            return false;
+        });
+        if (NebulaGameManager.Instance.GameState != NebulaGameStates.NotStarted) HudManager.Instance.UpdateHudContent();
     }
 
-    public readonly static RemoteProcess<SetAssignableMessage> RpcSetAssignable = new RemoteProcess<SetAssignableMessage>(
+    public readonly static RemoteProcess<(byte playerId,int assignableId, int[] arguments,bool isRole)> RpcSetAssignable = new(
         "SetAssignable",
-        (writer, message) =>
-        {
-            writer.Write(message.playerId);
-            writer.Write(message.assignableId);
-            writer.Write(message.isRole);
-            writer.Write(message.arguments?.Length ?? 0);
-            for (int i = 0; i < (message.arguments?.Length ?? 0); i++) writer.Write(message.arguments![i]);
-        },
-        (reader) =>
-        {
-            SetAssignableMessage message = new SetAssignableMessage();
-            message.playerId = reader.ReadByte();
-            message.assignableId = reader.ReadInt32();
-            message.isRole = reader.ReadBoolean();
-            int length = reader.ReadInt32();
-            if (length > 0)
-            {
-                message.arguments = new int[length];
-                for (int i = 0; i < length; i++) message.arguments[i] = reader.ReadInt32();
-            }
-            return message;
-        },
         (message, isCalledByMe) =>
         {
             var player = NebulaGameManager.Instance!.RegisterPlayer(PlayerControl.AllPlayerControls.Find((Il2CppSystem.Predicate<PlayerControl>)(p => p.PlayerId == message.playerId)));
@@ -240,57 +233,26 @@ public class PlayerModInfo
                 player.SetRole(Roles.Roles.AllRoles[message.assignableId], message.arguments);
             else
                 player.SetModifier(Roles.Roles.AllModifiers[message.assignableId], message.arguments);
+
+            if (NebulaGameManager.Instance.GameState != NebulaGameStates.NotStarted) HudManager.Instance.UpdateHudContent();
+            
         }
         );
 
-    public readonly static RemoteProcess<Tuple<byte,OutfitCandidate>> RpcAddOutfit = new RemoteProcess<Tuple<byte, OutfitCandidate>>(
-        "AddOutfit",
-        (writer, message) =>
-        {
-            writer.Write(message.Item1);
-            writer.Write(message.Item2.outfit.PlayerName);
-            writer.Write(message.Item2.outfit.HatId);
-            writer.Write(message.Item2.outfit.SkinId);
-            writer.Write(message.Item2.outfit.VisorId);
-            writer.Write(message.Item2.outfit.PetId);
-            writer.Write(message.Item2.outfit.ColorId);
-            writer.Write(message.Item2.Tag);
-            writer.Write(message.Item2.Priority);
-            writer.Write(message.Item2.SelfAware);
-        },
-        (reader) =>
-        {
-            byte playerId = reader.ReadByte();
-            GameData.PlayerOutfit outfit = new();
-            outfit.PlayerName = reader.ReadString();
-            outfit.HatId = reader.ReadString();
-            outfit.SkinId = reader.ReadString();
-            outfit.VisorId = reader.ReadString();
-            outfit.PetId = reader.ReadString();
-            outfit.ColorId = reader.ReadInt32();
-            return new(playerId, new(reader.ReadString(), reader.ReadInt32(), reader.ReadBoolean() ,outfit));
-        },
-        (message, isCalledByMe) =>
-        {
-            NebulaGameManager.Instance.GetModPlayerInfo(message.Item1).AddOutfit(message.Item2);
-        }
+    private readonly static RemoteProcess<(byte playerId, int modifierId)> RpcRemoveModifier = new(
+        "RemoveModifier", (message, _) => NebulaGameManager.Instance?.GetModPlayerInfo(message.playerId)?.UnsetModifierLocal((m) => m.Role.Id == message.modifierId)
         );
 
-    public readonly static RemoteProcess<Tuple<byte, string>> RpcRemoveOutfit = new RemoteProcess<Tuple<byte, string>>(
-       "RemoveOutfit",
-       (writer, message) =>
-       {
-           writer.Write(message.Item1);
-           writer.Write(message.Item2);
-       },
-       (reader) =>
-       {
-           return new(reader.ReadByte(), reader.ReadString());
-       },
-       (message, isCalledByMe) =>
-       {
-           NebulaGameManager.Instance.GetModPlayerInfo(message.Item1).RemoveOutfit(message.Item2);
-       }
+    public readonly static RemoteProcess<(byte playerId,OutfitCandidate outfit)> RpcAddOutfit = new(
+        "AddOutfit", (message, _) => NebulaGameManager.Instance?.GetModPlayerInfo(message.playerId)?.AddOutfit(message.outfit)
+        );
+
+    public readonly static RemoteProcess<(byte playerId, string tag)> RpcRemoveOutfit = new(
+       "RemoveOutfit", (message, _) => NebulaGameManager.Instance!.GetModPlayerInfo(message.playerId)?.RemoveOutfit(message.tag)
+       );
+
+    public readonly static RemoteProcess<(byte playerId, float angle)> RpcUpdateAngle = new(
+       "UpdateAngle", (message, _) => NebulaGameManager.Instance!.GetModPlayerInfo(message.playerId)!.MouseAngle = message.angle
        );
 
     private void UpdateHoldingDeadBody()
@@ -363,43 +325,43 @@ public class PlayerModInfo
         RpcHoldDeadBody.Invoke(new(PlayerId, deadBody.ParentId, deadBody.transform.position));
     }
 
-    readonly static RemoteProcess<Tuple<byte, byte,Vector2>> RpcHoldDeadBody = new RemoteProcess<Tuple<byte, byte, Vector2>>(
+    readonly static RemoteProcess<(byte holderId, byte bodyId, Vector2 pos)> RpcHoldDeadBody = new(
       "HoldDeadBody",
-      (writer, message) =>
+      (message, _) =>
       {
-          writer.Write(message.Item1);
-          writer.Write(message.Item2);
-          writer.Write(message.Item3.x);
-          writer.Write(message.Item3.y);
-      },
-      (reader) =>
-      {
-          return new(reader.ReadByte(), reader.ReadByte(), new(reader.ReadSingle(), reader.ReadSingle()));
-      },
-      (message, isCalledByMe) =>
-      {
-          var info = NebulaGameManager.Instance.GetModPlayerInfo(message.Item1);
-          
-          if(message.Item2 == byte.MaxValue)
-          {
+          var info = NebulaGameManager.Instance?.GetModPlayerInfo(message.holderId);
+          if (info == null) return;
+
+          if(message.bodyId == byte.MaxValue)
               info.HoldingDeadBody = null;
-          }
           else
           {
-              info.HoldingDeadBody = message.Item2;
-
-              var deadBody = Helpers.AllDeadBodies().FirstOrDefault(d => d.ParentId == message.Item2);
+              info.HoldingDeadBody = message.bodyId;
+              var deadBody = Helpers.AllDeadBodies().FirstOrDefault(d => d.ParentId == message.bodyId);
               info.deadBodyCache = deadBody;
-              if (deadBody && message.Item3.magnitude < 10000) deadBody.transform.localPosition = new Vector3(message.Item3.x, message.Item3.y, message.Item3.y / 1000f);
+              if (deadBody && message.pos.magnitude < 10000) deadBody.transform.localPosition = new Vector3(message.Item3.x, message.Item3.y, message.Item3.y / 1000f);
           }
       }
       );
 
+    private void UpdateMouseAngle()
+    {
+        if (!requiredUpdateMouseAngle) return;
+
+        Vector2 vec = (Vector2)Input.mousePosition - new Vector2(Screen.width / 2, Screen.height / 2);
+        float currentAngle = Mathf.Atan2(vec.y,vec.x);
+
+        if (Mathf.Repeat(currentAngle - MouseAngle, Mathf.PI * 2f) > 0.02f) RpcUpdateAngle.Invoke((PlayerId, currentAngle));
+
+        requiredUpdateMouseAngle = false;
+    }
+
     public void Update()
     {
-        UpdateNameText(MyControl.cosmetics.nameText, true);
+        UpdateNameText(MyControl.cosmetics.nameText, NebulaGameManager.Instance.CanSeeAllInfo);
         UpdateRoleText(roleText);
         UpdateHoldingDeadBody();
+        UpdateMouseAngle();
 
         RoleAction((role) => {
             role.Update();
@@ -416,6 +378,8 @@ public class PlayerModInfo
             else if (!Role.HasCrewmateTasks)
                 Tasks.BecomeToOutsider();
         }
+
+        UpdateOutfit();
 
         RoleAction((role) =>role.OnGameStart());
     }

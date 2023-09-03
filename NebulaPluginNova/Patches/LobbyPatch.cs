@@ -23,6 +23,9 @@ public class GameStartManagerUpdatePatch
         if (!GameData.Instance) return false;
         if (!GameManager.Instance) return false;
 
+        //公開ルームではスライド使用不可 (不特定多数への画像配信を禁止)
+        if (AmongUsClient.Instance.IsGamePublic) NebulaGameManager.Instance.LobbySlideManager.Abandon();
+
         __instance.MinPlayers = GeneralConfigurations.CurrentGameMode.MinPlayers;
 
         __instance.MakePublicButton.sprite = (AmongUsClient.Instance.IsGamePublic ? __instance.PublicGameImage : __instance.PrivateGameImage);

@@ -1,4 +1,6 @@
-﻿using Il2CppSystem.Net.NetworkInformation;
+﻿using AmongUs.GameOptions;
+using Assets.CoreScripts;
+using Il2CppSystem.Net.NetworkInformation;
 using Nebula.Configuration;
 using Nebula.Modules;
 using Nebula.Player;
@@ -71,9 +73,9 @@ public class NebulaGameManager
     public GameStatistics GameStatistics { get; private set; } = new();
     public CriteriaManager CriteriaManager { get; private set; } = new();
     public Synchronizer Syncronizer { get; private set; } = new();
-
+    public LobbySlideManager LobbySlideManager { get; private set; } = new();
     //天界視点フラグ
-    public bool CanSeeAllInfo { get; private set; }
+    public bool CanSeeAllInfo { get; set; }
 
     public NebulaGameManager()
     {
@@ -87,6 +89,7 @@ public class NebulaGameManager
     public void Abandon()
     {
         RuntimeAsset.Abandon();
+        LobbySlideManager.Abandon();
 
         foreach (var script in allScripts) script.Release();
         allScripts.Clear();
@@ -127,7 +130,7 @@ public class NebulaGameManager
         HashSet<byte> winners = new();
         foreach(var p in allModPlayers)
         {
-            if (p.Value.Role?.CheckWins(endCondition) ?? false) winners.Add(p.Key);
+            if (p.Value.AllAssigned().Any(a=>a.CheckWins(endCondition))) winners.Add(p.Key);
             else if (((1 << p.Value.PlayerId) & winnersMask) != 0) winners.Add(p.Key);
         }
         NebulaGameEnd.RpcSendGameEnd(endCondition!, winners);
@@ -182,6 +185,7 @@ public class NebulaGameManager
                 ventText = Mathf.CeilToInt(ventTimer.CurrentTime).ToString();
                 ventPercentage = ventTimer.Percentage;
             }
+            if (ventTimer != null && !ventTimer.IsInProcess && PlayerControl.LocalPlayer.inVent) Vent.currentVent?.ExitVent(PlayerControl.LocalPlayer);
             HudManager.Instance.ImpostorVentButton.SetCooldownFill(ventPercentage);
             CooldownHelpers.SetCooldownNormalizedUvs(HudManager.Instance.ImpostorVentButton.graphic);
             HudManager.Instance.ImpostorVentButton.cooldownTimerText.text = ventText;
@@ -206,7 +210,11 @@ public class NebulaGameManager
         //ゲームモードによる終了条件を追加
         foreach(var c in GeneralConfigurations.CurrentGameMode.GameModeCriteria)CriteriaManager.AddCriteria(c);
 
+        //無効試合の終了条件
+        CriteriaManager.AddCriteria(NebulaEndCriteria.NoGameCriteria);
+
         foreach (var p in allModPlayers) p.Value.OnGameStart();
+        NebulaGameManager.Instance?.AllScriptAction(s => s.OnGameStart());
         HudManager.Instance.UpdateHudContent();
     }
 
@@ -227,6 +235,7 @@ public class NebulaGameManager
             case NebulaGameStates.NotStarted:
                 if (PlayerControl.AllPlayerControls.Count == allModPlayers.Count)
                 {
+                    LobbySlideManager.Abandon();
                     DestroyableSingleton<HudManager>.Instance.StartCoroutine(DestroyableSingleton<HudManager>.Instance.CoShowIntro());
                     DestroyableSingleton<HudManager>.Instance.HideGameLoader();
                     GameState = NebulaGameStates.Initialized;
@@ -277,9 +286,16 @@ public class NebulaGameManager
         foreach (var p in AllPlayerInfo()) p.RoleAction(action);
     }
 
-    public void RpcInvokeSpecialWin(CustomEndCondition endCondition,int winnersMask)
+    public IEnumerable<INebulaScriptComponent> AllScripts() => allScripts;
+
+    public void AllScriptAction(Action<INebulaScriptComponent> action)
     {
-        RpcSpecialWin.Invoke(new(endCondition.Id,winnersMask));
+        foreach (var s in AllScripts()) action.Invoke(s);
+    }
+
+    public void RpcInvokeSpecialWin(CustomEndCondition endCondition, int winnersMask)
+    {
+        if (GeneralConfigurations.CurrentGameMode.AllowSpecialEnd) RpcSpecialWin.Invoke(new(endCondition.Id, winnersMask));
     }
 
     static RemoteProcess<Tuple<int, int>> RpcSpecialWin = new RemoteProcess<Tuple<int, int>>(
@@ -317,43 +333,52 @@ public static class NebulaGameManagerExpansion
 [NebulaRPCHolder]
 public static class NebulaExpandedRPC
 {
-    class KillMessage
-    {
-        public byte Killer, Target;
-        public int StateId, RecordId;
-    }
 
-    static RemoteProcess<KillMessage> RpcKill = new RemoteProcess<KillMessage>(
+    static RemoteProcess<(byte killerId,byte targetId,int stateId,int recordId,bool blink)> RpcKill = new(
         "Kill",
-       (writer, message) =>
+       (message, _) =>
        {
-           writer.Write(message.Killer);
-           writer.Write(message.Target);
-           writer.Write(message.StateId);
-           writer.Write(message.RecordId);
-       },
-       (reader) =>
-       {
-           var message = new KillMessage();
-           message.Killer = reader.ReadByte();
-           message.Target = reader.ReadByte();
-           message.StateId = reader.ReadInt32();
-           message.RecordId = reader.ReadInt32();
-
-           return message;
-       },
-       (message, isCalledByMe) =>
-       {
-           var recordTag = TranslatableTag.ValueOf(message.RecordId);
+           var recordTag = TranslatableTag.ValueOf(message.recordId);
            if (recordTag != null)
-               NebulaGameManager.Instance?.GameStatistics.RecordEvent(new GameStatistics.Event(GameStatistics.EventVariation.Kill, message.Killer, 1 << message.Target) { RelatedTag = recordTag });
+               NebulaGameManager.Instance?.GameStatistics.RecordEvent(new GameStatistics.Event(GameStatistics.EventVariation.Kill, message.killerId, 1 << message.targetId) { RelatedTag = recordTag });
 
-           var killer = Helpers.GetPlayer(message.Killer);
-           var target = Helpers.GetPlayer(message.Target);
+           var killer = Helpers.GetPlayer(message.killerId);
+           var target = Helpers.GetPlayer(message.targetId);
 
            if(killer == null || target == null) return;
 
-           killer.MurderPlayer(target);
+           // MurderPlayer ここから
+
+           if (killer.AmOwner)
+           {
+               if (Constants.ShouldPlaySfx()) SoundManager.Instance.PlaySound(killer.KillSfx, false, 0.8f, null);
+               killer.SetKillTimer(GameOptionsManager.Instance.CurrentGameOptions.GetFloat(FloatOptionNames.KillCooldown));
+           }
+
+           target.gameObject.layer = LayerMask.NameToLayer("Ghost");
+
+           if (target.AmOwner)
+           {
+               StatsManager.Instance.IncrementStat(StringNames.StatsTimesMurdered);
+               if (Minigame.Instance)
+               {
+                   try
+                   {
+                       Minigame.Instance.Close();
+                       Minigame.Instance.Close();
+                   }
+                   catch
+                   {
+                   }
+               }
+               DestroyableSingleton<HudManager>.Instance.KillOverlay.ShowKillAnimation(killer.Data, target.Data);
+               target.cosmetics.SetNameMask(false);
+               target.RpcSetScanner(false);
+           }
+           killer.MyPhysics.StartCoroutine(killer.KillAnimations[System.Random.Shared.Next(killer.KillAnimations.Count)].CoPerformModKill(killer, target, message.blink).WrapToIl2Cpp());
+
+           // MurderPlayer ここまで
+
 
            var targetInfo = target.GetModInfo();
            var killerInfo = killer.GetModInfo();
@@ -374,45 +399,91 @@ public static class NebulaExpandedRPC
        }
        );
 
-    static public void ModKill(this PlayerControl killer,PlayerControl target,TranslatableTag playerState,TranslatableTag? recordState)
+    static RemoteProcess<(byte killerId, byte targetId, int stateId, int recordId, bool showOverlay)> RpcMeetingKill = new(
+        "NonPhysicalKill",
+       (message, _) =>
+       {
+           var recordTag = TranslatableTag.ValueOf(message.recordId);
+           if (recordTag != null)
+               NebulaGameManager.Instance?.GameStatistics.RecordEvent(new GameStatistics.Event(GameStatistics.EventVariation.Kill, message.killerId, 1 << message.targetId) { RelatedTag = recordTag });
+
+           var killer = Helpers.GetPlayer(message.killerId);
+           var target = Helpers.GetPlayer(message.targetId);
+
+           if (killer == null || target == null) return;
+
+           if (!target.AmOwner)
+               if (Constants.ShouldPlaySfx()) SoundManager.Instance.PlaySound(killer.KillSfx, false, 0.8f, null);
+
+
+           target.Die(DeathReason.Exile,false);
+
+           if (target.AmOwner)
+           {
+               DestroyableSingleton<HudManager>.Instance.KillOverlay.ShowKillAnimation(killer.Data, target.Data);
+               NebulaGameManager.Instance.CanSeeAllInfo = true;
+           }
+
+
+           if (MeetingHud.Instance != null)
+           {
+               MeetingHud.Instance.RecheckPlayerState();
+
+               if (AmongUsClient.Instance.AmHost) MeetingHud.Instance.CheckForEndVoting();
+           }
+
+
+           var targetInfo = target.GetModInfo();
+           var killerInfo = killer.GetModInfo();
+
+           if (targetInfo != null)
+           {
+               targetInfo.DeathTimeStamp = NebulaGameManager.Instance!.CurrentTime;
+               targetInfo.MyKiller = killerInfo;
+               targetInfo?.RoleAction(role =>
+               {
+                   role.OnMurdered(killer!);
+                   role.OnDead();
+               });
+           }
+           if (killerInfo != null) killerInfo.RoleAction(r => r.OnKillPlayer(target));
+
+           PlayerControl.LocalPlayer.GetModInfo()?.RoleAction(r => r.OnPlayerDeadLocal(target));
+       }
+       );
+
+    static public void ModKill(this PlayerControl killer,PlayerControl target,bool showBlink,TranslatableTag playerState,TranslatableTag? recordState)
     {
-        RpcKill.Invoke(new KillMessage() { Killer = killer.PlayerId, Target = target.PlayerId, StateId = playerState.Id, RecordId = recordState?.Id ?? int.MaxValue });
+        RpcKill.Invoke((killer.PlayerId, target.PlayerId, playerState.Id, recordState?.Id ?? int.MaxValue, showBlink));
     }
 
-    class ReviveMessage
+    static public void ModMeetingKill(this PlayerControl killer, PlayerControl target, bool showOverlay, TranslatableTag playerState, TranslatableTag? recordState)
     {
-        public byte SourceId;
-        public byte TargetId;
-        public Vector2 RevivePos;
-        public bool CleanDeadbody;
+        RpcMeetingKill.Invoke((killer.PlayerId, target.PlayerId, playerState.Id, recordState?.Id ?? int.MaxValue, showOverlay));
     }
 
-    static RemoteProcess<ReviveMessage> RpcRivive = new RemoteProcess<ReviveMessage>(
+    static RemoteProcess<(byte sourceId,byte targetId,Vector2 revivePos,bool cleanDeadBody)> RpcRivive = new(
         "Rivive",
-        (writer, message) =>
-        {
-            writer.Write(message.SourceId);
-            writer.Write(message.TargetId);
-            writer.Write(message.RevivePos.x);
-            writer.Write(message.RevivePos.y);
-            writer.Write(message.CleanDeadbody);
-        },
-        (reader) => new ReviveMessage() { SourceId = reader.ReadByte(),TargetId = reader.ReadByte(), RevivePos = new(reader.ReadSingle(),reader.ReadSingle()), CleanDeadbody = reader.ReadBoolean()},
         (message, _) =>
         {
-            var player = Helpers.GetPlayer(message.TargetId);
+            var player = Helpers.GetPlayer(message.targetId);
             if (!player) return;
 
             player!.Revive();
-            player.NetTransform.SnapTo(message.RevivePos);
-            if (message.CleanDeadbody) foreach (var d in Helpers.AllDeadBodies()) if (d.ParentId == player.PlayerId) GameObject.Destroy(d.gameObject);
+            player.NetTransform.SnapTo(message.revivePos);
+            if (message.cleanDeadBody) foreach (var d in Helpers.AllDeadBodies()) if (d.ParentId == player.PlayerId) GameObject.Destroy(d.gameObject);
 
-            NebulaGameManager.Instance.GameStatistics.RecordEvent(new(GameStatistics.EventVariation.Revive, message.SourceId != byte.MaxValue ? message.SourceId : null, 1 << message.TargetId) { RelatedTag = EventDetail.Revive });
+            NebulaGameManager.Instance.GameStatistics.RecordEvent(new(GameStatistics.EventVariation.Revive, message.sourceId != byte.MaxValue ? message.sourceId : null, 1 << message.targetId) { RelatedTag = EventDetail.Revive });
         }
         );
 
     static public void ModRevive(this PlayerControl player,Vector2 pos,bool cleanDeadBody)
     {
-        RpcRivive.Invoke(new() { TargetId = player.PlayerId, RevivePos = pos, CleanDeadbody = cleanDeadBody });
+        RpcRivive.Invoke((byte.MaxValue, player.PlayerId, pos, cleanDeadBody));
+    }
+
+    static public void ModRevive(this PlayerControl player, PlayerControl healer,Vector2 pos, bool cleanDeadBody)
+    {
+        RpcRivive.Invoke((healer.PlayerId, player.PlayerId, pos, cleanDeadBody));
     }
 }

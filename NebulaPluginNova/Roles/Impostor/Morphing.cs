@@ -23,13 +23,15 @@ public class Morphing : ConfigurableStandardRole
     private NebulaConfiguration SampleCoolDownOption;
     private NebulaConfiguration MorphCoolDownOption;
     private NebulaConfiguration MorphDurationOption;
+    private NebulaConfiguration LoseSampleOnMeetingOption;
     protected override void LoadOptions()
     {
         base.LoadOptions();
 
-        SampleCoolDownOption = new NebulaConfiguration(RoleConfig, "sampleCoolDown", null, 5f, 60f, 2.5f, 15f, 15f) { Decorator = NebulaConfiguration.SecDecorator };
+        SampleCoolDownOption = new NebulaConfiguration(RoleConfig, "sampleCoolDown", null, 0f, 60f, 2.5f, 15f, 15f) { Decorator = NebulaConfiguration.SecDecorator };
         MorphCoolDownOption = new NebulaConfiguration(RoleConfig, "morphCoolDown", null, 5f, 60f, 5f, 30f, 30f) { Decorator = NebulaConfiguration.SecDecorator };
         MorphDurationOption = new NebulaConfiguration(RoleConfig, "morphDuration", null, 5f, 120f, 2.5f, 25f, 25f) { Decorator = NebulaConfiguration.SecDecorator };
+        LoseSampleOnMeetingOption = new NebulaConfiguration(RoleConfig, "loseSampleOnMeeting", null, false, false);
     }
 
     public class Instance : Impostor.Instance
@@ -50,26 +52,27 @@ public class Morphing : ConfigurableStandardRole
             {
                 GameData.PlayerOutfit? sample = null;
                 PoolablePlayer? sampleIcon = null;
-                var sampleTracker = Bind(ObjectTrackers.ForPlayer(1.2f, MyPlayer.MyControl, (p) => p.PlayerId != MyPlayer.PlayerId && !p.Data.IsDead && sample == null));
+                var sampleTracker = Bind(ObjectTrackers.ForPlayer(1.2f, MyPlayer.MyControl, (p) => p.PlayerId != MyPlayer.PlayerId && !p.Data.IsDead));
 
                 sampleButton = Bind(new ModAbilityButton()).KeyBind(KeyCode.F);
                 sampleButton.SetSprite(sampleButtonSprite.GetSprite());
                 sampleButton.Availability = (button) => sampleTracker.CurrentTarget != null && MyPlayer.MyControl.CanMove;
-                sampleButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead && sample == null;
+                sampleButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;
                 sampleButton.OnClick = (button) => {
                     morphButton.CoolDownTimer.SetTime(5f).Resume();
                     sample = sampleTracker.CurrentTarget!.GetModInfo().GetOutfit(75);
 
+                    if (sampleIcon != null) GameObject.Destroy(sampleIcon.gameObject);
                     sampleIcon = AmongUsUtil.GetPlayerIcon(sample, morphButton.VanillaButton.transform, new Vector3(-0.4f, 0.35f, -0.5f), new(0.3f, 0.3f)).SetAlpha(0.5f);
                 };
-                sampleButton.CoolDownTimer = Bind(new Timer(0f, MyRole.SampleCoolDownOption.GetFloat()!.Value));
+                sampleButton.CoolDownTimer = Bind(new Timer(MyRole.SampleCoolDownOption.GetFloat()!.Value).SetAsAbilityCoolDown().Start());
                 sampleButton.SetLabelType(ModAbilityButton.LabelType.Standard);
                 sampleButton.SetLabel("sample");
 
-                morphButton = Bind(new ModAbilityButton()).KeyBind(KeyCode.F);
+                morphButton = Bind(new ModAbilityButton()).KeyBind(KeyCode.G);
                 morphButton.SetSprite(morphButtonSprite.GetSprite());
-                morphButton.Availability = (button) => MyPlayer.MyControl.CanMove;
-                morphButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead && sample != null;
+                morphButton.Availability = (button) => MyPlayer.MyControl.CanMove && sample != null;
+                morphButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;
                 morphButton.OnClick = (button) => {
                     button.ToggleEffect();
                 };
@@ -85,30 +88,19 @@ public class Morphing : ConfigurableStandardRole
                 morphButton.OnMeeting = (button) =>
                 {
                     morphButton.InactivateEffect();
-                    if (sampleIcon != null)
+
+                    if (MyRole.LoseSampleOnMeetingOption.GetBool()!.Value)
                     {
-                        GameObject.Destroy(sampleIcon.gameObject);
+                        if (sampleIcon != null) GameObject.Destroy(sampleIcon.gameObject);
                         sampleIcon = null;
+                        sample = null;
                     }
-                    sample = null;
                 };
-                morphButton.CoolDownTimer = Bind(new Timer(0f, MyRole.MorphCoolDownOption.GetFloat()!.Value));
-                morphButton.EffectTimer = Bind(new Timer(0f, MyRole.MorphDurationOption.GetFloat()!.Value));
+                morphButton.CoolDownTimer = Bind(new Timer(MyRole.MorphCoolDownOption.GetFloat()!.Value).SetAsAbilityCoolDown().Start());
+                morphButton.EffectTimer = Bind(new Timer(MyRole.MorphDurationOption.GetFloat()!.Value));
                 morphButton.SetLabelType(ModAbilityButton.LabelType.Standard);
                 morphButton.SetLabel("morph");
             }
-        }
-
-        public override void OnGameStart()
-        {
-            sampleButton?.StartCoolDown();
-            morphButton?.StartCoolDown();
-        }
-
-        public override void OnGameReenabled()
-        {
-            sampleButton?.StartCoolDown();
-            morphButton?.StartCoolDown();
         }
     }
 }

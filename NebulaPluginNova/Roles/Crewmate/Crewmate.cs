@@ -18,7 +18,7 @@ public class Crewmate : ConfigurableStandardRole
     public override bool IsDefaultRole => true;
     public override Team Team => Crewmate.MyTeam;
 
-    public override RoleInstance CreateInstance(PlayerModInfo player, int[]? arguments) => new Instance(player);
+    public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player);
 
     public class Instance : RoleInstance
     {

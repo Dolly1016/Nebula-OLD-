@@ -2,6 +2,8 @@
 using HarmonyLib;
 using System.Collections;
 using Nebula.Modules;
+using UnityEngine.Rendering;
+using Nebula.Behaviour;
 
 namespace Nebula.Patches;
 
@@ -28,10 +30,13 @@ class MeetingStartPatch
 
     static void Postfix(MeetingHud __instance)
     {
+        NebulaManager.Instance.CloseAllUI();
+
         NebulaGameManager.Instance?.OnMeetingStart();
 
         List<MeetingPlayerContent> allContents = new();
-        
+
+
         //色の明暗を表示
         foreach (var player in __instance.playerStates)
         {
@@ -62,3 +67,52 @@ class MeetingStartPatch
         __instance.StartCoroutine(CoUpdate().WrapToIl2Cpp());
     }
 }
+
+[HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Close))]
+class MeetingClosePatch
+{ 
+    public static void Postfix(MeetingHud __instance)
+    {
+        NebulaManager.Instance.CloseAllUI();
+    }
+}
+
+[HarmonyPatch(typeof(PlayerVoteArea), nameof(PlayerVoteArea.SetMaskLayer))]
+class VoteMaskPatch
+{
+    public static bool Prefix(PlayerVoteArea __instance)
+    {
+        return false;
+    }
+}
+
+[HarmonyPatch(typeof(PlayerVoteArea), nameof(PlayerVoteArea.Start))]
+class VoteAreaPatch
+{
+    public static void Postfix(PlayerVoteArea __instance)
+    {
+        try
+        {
+            var maskParent = UnityHelper.CreateObject<SortingGroup>("MaskedObjects", __instance.transform, new Vector3(0, 0, -0.1f));
+            __instance.MaskArea.transform.SetParent(maskParent.transform);
+            __instance.PlayerIcon.transform.SetParent(maskParent.transform);
+
+            var mask = __instance.MaskArea.gameObject.AddComponent<SpriteMask>();
+            mask.sprite = __instance.MaskArea.sprite;
+            mask.transform.localScale = __instance.MaskArea.size;
+            __instance.MaskArea.enabled = false;
+
+            __instance.Background.material = __instance.Megaphone.material;
+
+            __instance.PlayerIcon.cosmetics.currentBodySprite.BodySprite.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+
+            __instance.PlayerIcon.cosmetics.hat.FrontLayer.gameObject.AddComponent<ZOrderedSortingGroup>();
+            __instance.PlayerIcon.cosmetics.hat.BackLayer.gameObject.AddComponent<ZOrderedSortingGroup>();
+            __instance.PlayerIcon.cosmetics.visor.Image.gameObject.AddComponent<ZOrderedSortingGroup>();
+            __instance.PlayerIcon.cosmetics.skin.layer.gameObject.AddComponent<ZOrderedSortingGroup>();
+            __instance.PlayerIcon.cosmetics.currentBodySprite.BodySprite.gameObject.AddComponent<ZOrderedSortingGroup>();
+        }
+        catch { }
+    }
+}
+

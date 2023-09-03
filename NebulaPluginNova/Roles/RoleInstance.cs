@@ -18,7 +18,17 @@ public abstract class RoleInstance : AssignableInstance
     public virtual Timer? VentCoolDown => null;
     public virtual Timer? VentDuration => null;
     public virtual string DisplayRoleName => Role.DisplayName.Color(Role.RoleColor);
-    public virtual bool CheckWins(CustomEndCondition endCondition) => false;
     public virtual bool HasCrewmateTasks => Role.RoleCategory == RoleCategory.CrewmateRole;
     public virtual bool HasAnyTasks => HasCrewmateTasks;
+
+    public virtual bool HasImpostorVision => Role.RoleCategory == RoleCategory.ImpostorRole;
+    public virtual bool IgnoreBlackout => Role.RoleCategory == RoleCategory.ImpostorRole;
+
+    public virtual void OnEnterVent(Vent vent) { }
+    public virtual void OnExitVent(Vent vent) { }
+
+    public override void OnGameReenabled() => VentCoolDown?.Start();
+    public override void OnActivated() => VentCoolDown?.Start();
+    public override void OnGameStart() => VentCoolDown?.Start();
+
 }

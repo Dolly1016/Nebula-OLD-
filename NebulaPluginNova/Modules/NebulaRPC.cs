@@ -1,12 +1,16 @@
 ﻿using HarmonyLib;
 using Hazel;
+using Il2CppSystem.CodeDom;
+using Il2CppSystem.Reflection.Internal;
 using Nebula.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using static Nebula.Player.PlayerModInfo;
 
 namespace Nebula.Modules;
 
@@ -36,6 +40,20 @@ public class NebulaRPCInvoker
         sender.Invoke(writer);
         localBodyProcess.Invoke();
     }
+
+    public void InvokeSingle()
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, 64, Hazel.SendOption.Reliable, -1);
+        writer.Write(hash);
+        sender.Invoke(writer);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        localBodyProcess.Invoke();
+    }
+
+    public void InvokeLocal()
+    {
+        localBodyProcess.Invoke();
+    }
 }
 
 [NebulaPreLoad(true)]
@@ -53,7 +71,7 @@ public class RemoteProcessBase
         Hash = name.ComputeConstantHash();
         Name = name;
 
-        if (AllNebulaProcess.ContainsKey(Hash)) Debug.Log("[RPC]"+name+" is duplicated!");
+        if (AllNebulaProcess.ContainsKey(Hash)) NebulaPlugin.Log.Print(null, name + " is duplicated.");
 
         AllNebulaProcess[Hash] = this;
     }
@@ -71,6 +89,87 @@ public class RemoteProcessBase
 }
 
 
+
+public static class RemoteProcessAsset
+{
+    private static Dictionary<Type, (Action<MessageWriter, object>, Func<MessageReader, object>)> defaultProcessDic = new();
+
+    static RemoteProcessAsset()
+    {
+        defaultProcessDic[typeof(byte)] = ((writer, obj) => writer.Write((byte)obj), (reader) => reader.ReadByte());
+        defaultProcessDic[typeof(short)] = ((writer, obj) => writer.Write((short)obj), (reader) => reader.ReadInt16());
+        defaultProcessDic[typeof(int)] = ((writer, obj) => writer.Write((int)obj), (reader) => reader.ReadInt32());
+        defaultProcessDic[typeof(ulong)] = ((writer, obj) => writer.Write((ulong)obj), (reader) => reader.ReadUInt64());
+        defaultProcessDic[typeof(float)] = ((writer, obj) => writer.Write((float)obj), (reader) => reader.ReadSingle());
+        defaultProcessDic[typeof(bool)] = ((writer, obj) => writer.Write((bool)obj), (reader) => reader.ReadBoolean());
+        defaultProcessDic[typeof(string)] = ((writer, obj) => writer.Write((string)obj), (reader) => reader.ReadString());
+        defaultProcessDic[typeof(byte[])] = ((writer, obj) => writer.WriteBytesAndSize((byte[])obj), (reader) => reader.ReadBytesAndSize().ToArray());
+        defaultProcessDic[typeof(int[])] = ((writer, obj) => { var ary = (int[])obj; writer.Write(ary.Length); for (int i = 0; i < ary.Length; i++) writer.Write(ary[i]); }, (reader) => { var ary = new int[reader.ReadInt32()]; for (int i = 0; i < ary.Length; i++) ary[i] = reader.ReadInt32(); return ary; });
+        defaultProcessDic[typeof(float[])] = ((writer, obj) => { var ary = (float[])obj; writer.Write(ary.Length); for (int i = 0; i < ary.Length; i++) writer.Write(ary[i]); }, (reader) => { var ary = new float[reader.ReadInt32()]; for (int i = 0; i < ary.Length; i++) ary[i] = reader.ReadSingle(); return ary; });
+        defaultProcessDic[typeof(string[])] = ((writer, obj) => { var ary = (string[])obj; writer.Write(ary.Length); for (int i = 0; i < ary.Length; i++) writer.Write(ary[i]); }, (reader) => { var ary = new string[reader.ReadInt32()]; for (int i = 0; i < ary.Length; i++) ary[i] = reader.ReadString(); return ary; });
+        defaultProcessDic[typeof(Vector2)] = ((writer, obj) => { var vec = (Vector2)obj; writer.Write(vec.x); writer.Write(vec.y); }, (reader) => new Vector2(reader.ReadSingle(), reader.ReadSingle()));
+        defaultProcessDic[typeof(Vector3)] = ((writer, obj) => { var vec = (Vector3)obj; writer.Write(vec.x); writer.Write(vec.y); writer.Write(vec.z); }, (reader) => new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle()));
+        defaultProcessDic[typeof(OutfitCandidate)] = (
+            (writer, obj) => {
+                var cand = (OutfitCandidate)obj;
+                writer.Write(cand.outfit.PlayerName);
+                writer.Write(cand.outfit.HatId);
+                writer.Write(cand.outfit.SkinId);
+                writer.Write(cand.outfit.VisorId);
+                writer.Write(cand.outfit.PetId);
+                writer.Write(cand.outfit.ColorId);
+                writer.Write(cand.Tag);
+                writer.Write(cand.Priority);
+                writer.Write(cand.SelfAware);
+            },
+            (reader) => {
+                GameData.PlayerOutfit outfit = new() { PlayerName = reader.ReadString(), HatId = reader.ReadString(), SkinId = reader.ReadString(), VisorId = reader.ReadString(), PetId = reader.ReadString(), ColorId = reader.ReadInt32() };
+                return new OutfitCandidate(reader.ReadString(), reader.ReadInt32(), reader.ReadBoolean(), outfit);
+            }
+        );
+    }
+
+    static public (Action<MessageWriter, object>, Func<MessageReader, object>) GetProcess(Type type)
+    {
+        if(type.IsAssignableTo(typeof(Enum)))
+            return defaultProcessDic[typeof(int)];
+        return defaultProcessDic[type];
+    }
+
+    public static void GetMessageTreater<Parameter>(out Action<MessageWriter, Parameter> sender, out Func<MessageReader, Parameter> receiver)
+    {
+        Type paramType = typeof(Parameter);
+
+        if (!typeof(Parameter).IsAssignableTo(typeof(ITuple))) throw new Exception("Can not generate sender and receiver for Non-tuple object.");
+
+        int count = 0;
+
+
+        List<(Action<MessageWriter, object>, Func<MessageReader, object>)> processList = new();
+        while (true)
+        {
+            var field = paramType.GetField("Item" + (count + 1).ToString());
+            if (field == null) break;
+
+            processList.Add(RemoteProcessAsset.GetProcess(field.FieldType));
+            count++;
+        }
+
+        var processAry = processList.ToArray();
+        var constructor = paramType.GetConstructors().FirstOrDefault(c => c.GetParameters().Length == processAry.Length);
+
+        if (constructor == null) throw new Exception("Can not Tuple Constructor");
+
+        sender = (writer, param) => {
+            var tuple = (param as ITuple)!;
+            for (int i = 0; i < processAry.Length; i++) processAry[i].Item1.Invoke(writer, tuple[i]);
+        };
+        receiver = (reader) => {
+            return (Parameter)constructor.Invoke(processAry.Select(p => p.Item2.Invoke(reader)).ToArray());
+        };
+    }
+
+}
 public class RemoteProcess<Parameter> : RemoteProcessBase
 {
     public delegate void Process(Parameter parameter, bool isCalledByMe);
@@ -87,6 +186,14 @@ public class RemoteProcess<Parameter> : RemoteProcessBase
         Body = process;
     }
 
+    public RemoteProcess(string name, RemoteProcess<Parameter>.Process process) : base(name)  
+    {
+        Body = process;
+        RemoteProcessAsset.GetMessageTreater<Parameter>(out var sender,out var receiver);
+        Sender = sender;
+        Receiver = receiver;
+    }
+
 
     public void Invoke(Parameter parameter)
     {
@@ -94,7 +201,15 @@ public class RemoteProcess<Parameter> : RemoteProcessBase
         writer.Write(Hash);
         Sender(writer, parameter);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
-        Body.Invoke(parameter, true);
+
+        try
+        {
+            Body.Invoke(parameter, true);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Error in RPC(Invoke: {Name})" + ex.Message);
+        }
     }
 
     public NebulaRPCInvoker GetInvoker(Parameter parameter)
@@ -109,8 +224,25 @@ public class RemoteProcess<Parameter> : RemoteProcessBase
 
     public override void Receive(MessageReader reader)
     {
-        Body.Invoke(Receiver.Invoke(reader), false);
+        try
+        {
+            Body.Invoke(Receiver.Invoke(reader), false);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Error in RPC(Received: {Name})" + ex.Message);
+        }
     }
+}
+
+public static class RemotePrimitiveProcess
+{
+    public static RemoteProcess<int> OfInteger(string name, RemoteProcess<int>.Process process) => new(name, (writer, message) => writer.Write(message), (reader) => reader.ReadInt32(), process);
+    public static RemoteProcess<float> OfFloat(string name, RemoteProcess<float>.Process process) => new(name, (writer, message) => writer.Write(message), (reader) => reader.ReadSingle(), process);
+    public static RemoteProcess<string> OfString(string name, RemoteProcess<string>.Process process) => new(name, (writer, message) => writer.Write(message), (reader) => reader.ReadString(), process);
+    public static RemoteProcess<byte> OfByte(string name, RemoteProcess<byte>.Process process) => new(name, (writer, message) => writer.Write(message), (reader) => reader.ReadByte(), process);
+    public static RemoteProcess<Vector2> OfVector2(string name, RemoteProcess<Vector2>.Process process) => new(name, (writer, message) => { writer.Write(message.x); writer.Write(message.y); }, (reader) => new(reader.ReadSingle(), reader.ReadSingle()), process);
+    public static RemoteProcess<Vector3> OfVector3(string name, RemoteProcess<Vector3>.Process process) => new(name, (writer, message) => { writer.Write(message.x); writer.Write(message.y); writer.Write(message.z); }, (reader) => new(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle()), process);
 }
 
 [NebulaRPCHolder]
@@ -150,7 +282,15 @@ public class RemoteProcess : RemoteProcessBase
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, 64, Hazel.SendOption.Reliable, -1);
         writer.Write(Hash);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
-        Body.Invoke(true);
+
+        try
+        {
+            Body.Invoke(true);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Error in RPC(Invoke: {Name})" + ex.Message);
+        }
     }
 
     public NebulaRPCInvoker GetInvoker()
@@ -160,7 +300,14 @@ public class RemoteProcess : RemoteProcessBase
 
     public override void Receive(MessageReader reader)
     {
-        Body.Invoke(false);
+        try
+        {
+            Body.Invoke(false);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Error in RPC(Received: {Name})" + ex.Message);
+        }
     }
 }
 
@@ -182,6 +329,16 @@ public class DivisibleRemoteProcess<Parameter, DividedParameter> : RemoteProcess
         Body = process;
     }
 
+    public DivisibleRemoteProcess(string name, Func<Parameter, IEnumerator<DividedParameter>> divider, DivisibleRemoteProcess<Parameter, DividedParameter>.Process process)
+    : base(name)
+    {
+        Divider = divider;
+        RemoteProcessAsset.GetMessageTreater<DividedParameter>(out var sender,out var receiver);
+        DividedSender = sender;
+        Receiver = receiver;
+        Body = process;
+    }
+
     public void Invoke(Parameter parameter)
     {
         void dividedSend(DividedParameter param)
@@ -190,7 +347,15 @@ public class DivisibleRemoteProcess<Parameter, DividedParameter> : RemoteProcess
             writer.Write(Hash);
             DividedSender(writer, param);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
-            Body.Invoke(param, true);
+
+            try
+            {
+                Body.Invoke(param, true);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"Error in RPC(Invoke: {Name})" + ex.Message);
+            }
         }
         var enumerator = Divider.Invoke(parameter);
         while (enumerator.MoveNext()) dividedSend(enumerator.Current);
@@ -204,7 +369,14 @@ public class DivisibleRemoteProcess<Parameter, DividedParameter> : RemoteProcess
 
     public override void Receive(MessageReader reader)
     {
-        Body.Invoke(Receiver.Invoke(reader), false);
+        try
+        {
+            Body.Invoke(Receiver.Invoke(reader), false);
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"Error in RPC(Received: {Name})" + ex.Message);
+        }
     }
 }
 

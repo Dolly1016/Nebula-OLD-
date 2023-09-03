@@ -4,7 +4,7 @@ using System.Collections;
 
 namespace Nebula.Game;
 
-[NebulaPreLoad]
+[NebulaPreLoad(typeof(TranslatableTag))]
 public static class EventDetail
 {
     static public TranslatableTag Kill = new("statistics.events.kill");
@@ -21,6 +21,8 @@ public static class EventDetail
     static public TranslatableTag Revive = new("statistics.events.revive");
     static public TranslatableTag Eat = new("statistics.events.eat");
     static public TranslatableTag Clean = new("statistics.events.clean");
+    static public TranslatableTag Missed = new("statistics.events.missed");
+    static public TranslatableTag Guess = new("statistics.events.guess");
 }
 
 public enum GameStatisticsGatherTag
@@ -141,64 +143,33 @@ public class GameStatistics
         AllEvents.Add(statisticsEvent);
     }
 
-    public class RecordMessage
+    public void RpcRecordEvent(EventVariation variation, TranslatableTag relatedTag, PlayerControl? source,params PlayerControl[] targets)
     {
-        public EventVariation Variation;
-        public int RelatedTagId;
-        public byte? SourceId;
-        public int TargetIdMask = 0;
-
-        public RecordMessage() { }
-        public RecordMessage(EventVariation variation, TranslatableTag tag,PlayerControl source,params PlayerControl[] target)
-        {
-            Variation = variation;
-            RelatedTagId = tag.Id;
-            SourceId = source.PlayerId;
-            foreach (var t in target) TargetIdMask |= 1 << t.PlayerId;
-        }
+        int mask = 0;
+        foreach (var p in targets) mask |= p.PlayerId;
+        RpcRecordEvent(variation,relatedTag,source,mask);
     }
 
-    static public RemoteProcess<RecordMessage> RpcRecord = new RemoteProcess<RecordMessage>(
+    public void RpcRecordEvent(EventVariation variation, TranslatableTag relatedTag, PlayerControl? source, int targetMask) => RpcRecord.Invoke((variation.Id, relatedTag.Id, source?.PlayerId ?? byte.MaxValue, targetMask));
+    
+
+    static private RemoteProcess<(int variation,int relatedTag,byte sourceId,int targetMask)> RpcRecord = new(
         "RecordStatistics",
-        (writer, message) =>
-        {
-            writer.Write(message.Variation.Id);
-            writer.Write(message.RelatedTagId);
-            writer.Write(message.SourceId ?? Byte.MaxValue);
-            writer.Write(message.TargetIdMask);
-        },
-       (reader) =>
-       {
-           var message = new RecordMessage();
-           message.Variation = EventVariation.ValueOf(reader.ReadInt32());
-           message.RelatedTagId = reader.ReadInt32();
-           message.SourceId = reader.ReadByte();
-           if (message.SourceId == Byte.MaxValue) message.SourceId = null;
-           message.TargetIdMask = reader.ReadInt32();
-           return message;
-       },
        (message, isCalledByMe) =>
        {
-           NebulaGameManager.Instance?.GameStatistics.RecordEvent(new Event(message.Variation, message.SourceId, message.TargetIdMask) { RelatedTag = TranslatableTag.ValueOf(message.RelatedTagId) });
+           NebulaGameManager.Instance?.GameStatistics.RecordEvent(new Event(EventVariation.ValueOf(message.variation), message.sourceId == byte.MaxValue ? null : message.sourceId, message.targetMask) { RelatedTag = TranslatableTag.ValueOf(message.relatedTag) });
        });
 
-    static public RemoteProcess<Tuple<GameStatisticsGatherTag,byte, Vector2>> RpcPoolPosition = new RemoteProcess<Tuple<GameStatisticsGatherTag,byte, Vector2>>(
+    static public RemoteProcess<(GameStatisticsGatherTag tag,byte playerId, Vector2 pos)> RpcPoolPosition = new(
         "PoolPosition",
-        (writer, message) => {
-            writer.Write((int)message.Item1);
-            writer.Write(message.Item2);
-            writer.Write(message.Item3.x);
-            writer.Write(message.Item3.y);
-        },
-        (reader) => new Tuple<GameStatisticsGatherTag,byte, Vector2>((GameStatisticsGatherTag)reader.ReadInt32(),reader.ReadByte(),new(reader.ReadSingle(),reader.ReadSingle())),
-        (message, calledByMe) =>
+        (message, _) =>
         {
             if (NebulaGameManager.Instance == null) return;
 
-            if (!NebulaGameManager.Instance!.GameStatistics.Gathering.ContainsKey((GameStatisticsGatherTag)message.Item1))
-                NebulaGameManager.Instance!.GameStatistics.Gathering.Add((GameStatisticsGatherTag)message.Item1, new());
+            if (!NebulaGameManager.Instance!.GameStatistics.Gathering.ContainsKey(message.tag))
+                NebulaGameManager.Instance!.GameStatistics.Gathering.Add(message.tag, new());
 
-            NebulaGameManager.Instance!.GameStatistics.Gathering[(GameStatisticsGatherTag)message.Item1][message.Item2] = message.Item3;
+            NebulaGameManager.Instance!.GameStatistics.Gathering[message.tag][message.playerId] = message.pos;
         }
         );
 }
@@ -209,8 +180,8 @@ public class CriticalPoint : MonoBehaviour
     {
         ClassInjector.RegisterTypeInIl2Cpp<CriticalPoint>();
     }
-    static private ResourceExpandableSpriteLoader momentSprite = new("Nebula.Resources.GameStatisticsMoment.png", 100f);
-    static private ResourceExpandableSpriteLoader momentRingSprite = new("Nebula.Resources.GameStatisticsMomentRing.png", 100f);
+    static private SpriteLoader momentSprite = SpriteLoader.FromResource("Nebula.Resources.GameStatisticsMoment.png", 100f);
+    static private SpriteLoader momentRingSprite = SpriteLoader.FromResource("Nebula.Resources.GameStatisticsMomentRing.png", 100f);
 
     public int IndexMin { get; private set; }
     public int IndexMax { get; private set; }
@@ -282,14 +253,12 @@ public class GameStatisticsViewer : MonoBehaviour
 
     public PoolablePlayer PlayerPrefab;
     public TMPro.TextMeshPro GameEndText;
-
-    static private ResourceExpandableSpriteLoader backgroundSprite = new("Nebula.Resources.StatisticsBackground.png",100f);
     static public GameStatisticsViewer Instance { get; private set; }
 
     public SpriteRenderer CreateBackground(Vector2 size,Transform transform)
     {
         var renderer = UnityHelper.CreateObject<SpriteRenderer>("Background",transform,new Vector3(0,0,1f));
-        renderer.sprite = backgroundSprite.GetSprite();
+        renderer.sprite = NebulaAsset.SharpWindowBackgroundSprite.GetSprite();
         renderer.drawMode = SpriteDrawMode.Sliced;
         renderer.tileMode = SpriteTileMode.Continuous;
         renderer.color = MainColor;

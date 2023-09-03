@@ -31,7 +31,7 @@ public abstract class AbstractRole : IAssignableBase
     public virtual string IntroBlurb { get => Language.Translate("role." + LocalizedName + ".blurb"); }
     public abstract Color RoleColor { get; }
     public virtual bool IsDefaultRole { get => false; }
-    public abstract RoleInstance CreateInstance(PlayerModInfo player, int[]? arguments);
+    public abstract RoleInstance CreateInstance(PlayerModInfo player, int[] arguments);
     public int Id { get; set; }
     public abstract int RoleCount { get; }
     public abstract float GetRoleChance(int count);
@@ -40,6 +40,9 @@ public abstract class AbstractRole : IAssignableBase
     //追加付与ロールに役職プールの占有性があるか(追加付与ロールが無い場合、無意味)
     public virtual bool HasAdditionalRoleOccupancy { get => true; }
     public virtual AbstractRole[]? AdditionalRole { get => null; }
+    public virtual bool CanBeGuess { get => true; }
+
+    public abstract void Load();
 
     public AbstractRole()
     {
@@ -48,22 +51,191 @@ public abstract class AbstractRole : IAssignableBase
 }
 
 public abstract class ConfigurableRole : AbstractRole {
-    public ConfigurationHolder RoleConfig { get; private init; }
+    public ConfigurationHolder RoleConfig { get; private set; }
 
+    private int? myTabMask;
     public ConfigurableRole(int TabMask)
     {
-        RoleConfig = new ConfigurationHolder("options.role." + LocalizedName, new ColorTextComponent(RoleColor, new TranslateTextComponent("role." + LocalizedName + ".name")), TabMask, CustomGameMode.AllGameModeMask);
-        RoleConfig.Priority = IsDefaultRole ? 0 : 1;
-        LoadOptions();
+        myTabMask = TabMask;
     }
 
     public ConfigurableRole() {
-        RoleConfig = new ConfigurationHolder("options.role." + LocalizedName, new ColorTextComponent(RoleColor, new TranslateTextComponent("role." + LocalizedName + ".name")), ConfigurationTab.FromRoleCategory(RoleCategory), CustomGameMode.AllGameModeMask);
+    }
+
+    protected virtual void LoadOptions() { }
+
+    public override sealed void Load()
+    {
+        RoleConfig = new ConfigurationHolder("options.role." + InternalName, new ColorTextComponent(RoleColor, new TranslateTextComponent("role." + LocalizedName + ".name")), myTabMask ?? ConfigurationTab.FromRoleCategory(RoleCategory), CustomGameMode.AllGameModeMask);
         RoleConfig.Priority = IsDefaultRole ? 0 : 1;
         LoadOptions();
     }
 
-    protected virtual void LoadOptions() { }
+    public class KillCoolDownConfiguration
+    {
+        public enum KillCoolDownType
+        {
+            Immediate = 0,
+            Relative = 1,
+            Ratio = 2
+        }
+
+        private NebulaConfiguration selectionOption;
+        private NebulaConfiguration immediateOption, relativeOption, ratioOption;
+
+        public NebulaConfiguration EditorOption => selectionOption;
+
+        private float minCoolDown;
+
+        private NebulaConfiguration GetCurrentOption()
+        {
+            switch (selectionOption.CurrentValue)
+            {
+                case 0:
+                    return immediateOption;
+                case 1:
+                    return relativeOption;
+                case 2:
+                    return ratioOption;
+            }
+            return null;
+        }
+        private static string[] AllSelections = new string[] { "options.killCoolDown.type.immediate", "options.killCoolDown.type.relative", "options.killCoolDown.type.ratio" };
+
+        private static Func<object?, string> RelativeDecorator = (mapped) =>
+        {
+            float val = (float)mapped;
+            string str = val.ToString();
+            if (val > 0f) str = "+" + str;
+            else if (!(val < 0f)) str = "±" + str;
+            return str + Language.Translate("options.sec");
+        };
+
+        public KillCoolDownConfiguration(ConfigurationHolder holder, string id, KillCoolDownType defaultType, float step, float immediateMin, float immediateMax, float relativeMin, float relativeMax, float ratioStep, float ratioMin, float ratioMax, float defaultImmediate, float defaultRelative, float defaultRatio)
+        {
+            selectionOption = new NebulaConfiguration(holder, id, null, AllSelections, (int)defaultType, (int)defaultType);
+            selectionOption.Editor = () =>
+            {
+                var currentOption = GetCurrentOption();
+
+                return new CombinedContent(0.55f, IMetaContext.AlignmentOption.Center,
+                    new MetaContext.Text(NebulaConfiguration.GetOptionBoldAttr(2.5f, TMPro.TextAlignmentOptions.Left)) { RawText = selectionOption.Title.Text },
+                    NebulaConfiguration.OptionTextColon,
+                    new MetaContext.HorizonalMargin(0.04f),
+                    NebulaConfiguration.OptionButtonContext(() => selectionOption.ChangeValue(true), selectionOption.ToDisplayString(), 0.9f),
+                    new MetaContext.HorizonalMargin(0.2f),
+                    NebulaConfiguration.OptionButtonContext(() => currentOption.ChangeValue(false), "<<"),
+                    new MetaContext.Text(NebulaConfiguration.OptionValueAttr) { RawText = currentOption.ToDisplayString() },
+                    NebulaConfiguration.OptionButtonContext(() => currentOption.ChangeValue(true), ">>")
+                );
+            };
+            selectionOption.Shower = () =>
+            {
+                var str = selectionOption.Title.Text + " : ";
+                switch (selectionOption.CurrentValue)
+                {
+                    case 0:
+                        str += immediateOption!.ToDisplayString();
+                        break;
+                    case 1:
+                        str += relativeOption!.ToDisplayString();
+                        break;
+                    case 2:
+                        str += ratioOption!.ToDisplayString();
+                        break;
+                }
+                str += (" (" + NebulaConfiguration.SecDecorator.Invoke(KillCoolDown) + ")").Color(Color.gray);
+                return str;
+            };
+
+            immediateOption = new NebulaConfiguration(holder, id + ".immediate", null, immediateMin, immediateMax, step, defaultImmediate, defaultImmediate) { Decorator = NebulaConfiguration.SecDecorator, Editor = NebulaConfiguration.EmptyEditor };
+            immediateOption.Shower = null;
+            
+            relativeOption = new NebulaConfiguration(holder, id + ".relative", null, relativeMin, relativeMax, step, defaultRelative, defaultRelative) { Decorator = RelativeDecorator, Editor = NebulaConfiguration.EmptyEditor };
+            relativeOption.Shower = null;
+            
+            ratioOption = new NebulaConfiguration(holder, id + ".ratio", null, ratioMin, ratioMax, ratioStep, defaultRatio, defaultRatio) { Decorator = NebulaConfiguration.OddsDecorator, Editor = NebulaConfiguration.EmptyEditor };
+            ratioOption.Shower = null;
+
+            minCoolDown = immediateMin;
+        }
+
+        public float KillCoolDown
+        {
+            get
+            {
+                float vanillaCoolDown = GameOptionsManager.Instance.CurrentGameOptions.GetFloat(FloatOptionNames.KillCooldown);
+                switch (selectionOption.CurrentValue)
+                {
+                    case 0:
+                        return immediateOption.GetFloat()!.Value;
+                    case 1:
+                        return Mathf.Max(relativeOption.GetFloat()!.Value + vanillaCoolDown, minCoolDown);
+                    case 2:
+                        return ratioOption.GetFloat()!.Value * vanillaCoolDown;
+                }
+                return vanillaCoolDown;
+            }
+        }
+    }
+
+    public class VentConfiguration
+    {
+        private NebulaConfiguration selectionOption;
+        private NebulaConfiguration? coolDownOption, durationOption, usesOption;
+        public VentConfiguration(ConfigurationHolder holder, (int min, int max, int defaultValue)? ventUses, (float min, float max, float defaultValue)? ventCoolDown, (float min, float max, float defaultValue)? ventDuration)
+        {
+            selectionOption = new NebulaConfiguration(holder, "ventOption", new TranslateTextComponent("role.general.ventOption"), false, false);
+
+            coolDownOption = durationOption = usesOption = null;
+
+            List<IMetaParallelPlacable> list = new();
+            list.Add(new MetaContext.Text(NebulaConfiguration.GetOptionBoldAttr(1.4f,TMPro.TextAlignmentOptions.Left)) { MyText = selectionOption.Title });
+            list.Add(NebulaConfiguration.OptionTextColon);
+
+            void AddOptionToEditor(NebulaConfiguration config)
+            {
+                list.Add(new MetaContext.HorizonalMargin(0.1f));
+                list.Add(new MetaContext.Text(NebulaConfiguration.GetOptionBoldAttr(1.1f)) { MyText = config!.Title });
+                list.Add(NebulaConfiguration.OptionButtonContext(() => config.ChangeValue(false), "<<"));
+                list.Add(new MetaContext.Text(NebulaConfiguration.OptionShortValueAttr) { MyText = new LazyTextComponent(() => config.ToDisplayString()) });
+                list.Add(NebulaConfiguration.OptionButtonContext(() => config.ChangeValue(true), ">>"));
+            }
+
+            if (ventCoolDown.HasValue)
+            {
+                coolDownOption = new NebulaConfiguration(holder, "ventCoolDown", new TranslateTextComponent("role.general.ventCoolDown"), ventCoolDown.Value.min, ventCoolDown.Value.max, 2.5f, ventCoolDown.Value.defaultValue, ventCoolDown.Value.defaultValue) { Editor = NebulaConfiguration.EmptyEditor, Decorator = NebulaConfiguration.SecDecorator };
+                coolDownOption.Shower = null;
+                AddOptionToEditor(coolDownOption);
+            }
+            if (ventDuration.HasValue)
+            {
+                durationOption = new NebulaConfiguration(holder, "ventDuration", new TranslateTextComponent("role.general.ventDuration"), ventDuration.Value.min, ventDuration.Value.max, 2.5f, ventDuration.Value.defaultValue, ventDuration.Value.defaultValue) { Editor = NebulaConfiguration.EmptyEditor, Decorator = NebulaConfiguration.SecDecorator };
+                durationOption.Shower = null;
+                AddOptionToEditor(durationOption);
+            }
+            if (ventUses.HasValue)
+            {
+                usesOption = new NebulaConfiguration(holder, "ventUses", new TranslateTextComponent("role.general.ventUses"), ventUses.Value.min, ventUses.Value.max, ventUses.Value.defaultValue, ventUses.Value.defaultValue) { Editor = NebulaConfiguration.EmptyEditor };
+                usesOption.Shower = null;
+                AddOptionToEditor(usesOption);
+            }
+
+            selectionOption.Editor = () => new CombinedContent(0.55f, IMetaContext.AlignmentOption.Center, list.ToArray());
+            selectionOption.Shower = () =>
+            {
+                var str = selectionOption.Title.Text + " :";
+                if (coolDownOption != null) str += "\n" + Language.Translate("role.general.ventCoolDown.short") + " : " + coolDownOption.ToDisplayString();
+                if (durationOption != null) str += "\n" + Language.Translate("role.general.ventDuration.short") + " : " + durationOption.ToDisplayString();
+                if (usesOption != null) str += "\n" + Language.Translate("role.general.ventUses.short") + " : " + usesOption.ToDisplayString();
+                return str;
+            };
+        }
+
+        public int Uses => usesOption?.GetMappedInt() ?? 0;
+        public float CoolDown => coolDownOption?.GetFloat() ?? 0f;
+        public float Duration => durationOption?.GetFloat() ?? 0f;
+    }
 }
 
 public abstract class ConfigurableStandardRole : ConfigurableRole
@@ -88,7 +260,8 @@ public abstract class ConfigurableStandardRole : ConfigurableRole
     protected static TranslateTextComponent SecondaryChanceOptionText = new("options.role.secondaryChance");
     protected override void LoadOptions() {
         RoleCountOption = new(RoleConfig, "count", CountOptionText, 15, 0, 0);
-        
+        RoleConfig.IsActivated = () => RoleCountOption.GetMappedInt()!.Value > 0;
+
         RoleChanceOption = new(RoleConfig, "chance", ChanceOptionText, 10f, 100f, 10f, 0f, 0f) { Decorator = NebulaConfiguration.PercentageDecorator };
         RoleChanceOption.Editor = () =>
         {
@@ -129,83 +302,17 @@ public abstract class ConfigurableStandardRole : ConfigurableRole
         }
         };
         RoleSecondaryChanceOption.Editor = NebulaConfiguration.EmptyEditor;
-    }
 
-    public class KillCoolDownConfiguration
-    {
-        public enum KillCoolDownType
-        {
-            Immediate = 0,
-            Relative = 1,
-            Ratio = 2
-        }
-
-        private NebulaConfiguration selectionOption;
-        private NebulaConfiguration immediateOption, relativeOption, ratioOption;
-        private float minCoolDown;
-
-        private NebulaConfiguration GetCurrentOption()
-        {
-            switch (selectionOption.CurrentValue)
-            {
-                case 0:
-                    return immediateOption;
-                case 1:
-                    return relativeOption;
-                case 2:
-                    return ratioOption;
-            }
-            return null;
-        }
-        private static string[] AllSelections = new string[] { "options.killCoolDown.type.immediate", "options.killCoolDown.type.relative", "options.killCoolDown.type.ratio" };
-
-        private static Func<object?, string> RelativeDecorator = (mapped) =>
-        {
-            float val = (float)mapped;
-            string str = val.ToString();
-            if (val > 0f) str = "+" + str;
-            else if (!(val < 0f)) str = "±" + str;
-            return str + Language.Translate("options.sec");
+        RoleCountOption.Shower = () => {
+            var str = Language.Translate("options.role.count.short") + " : " + RoleCountOption.ToDisplayString();
+            if (RoleCountOption.GetMappedInt() > 1 && RoleSecondaryChanceOption.CurrentValue > 0)
+                str += " (" + RoleChanceOption.ToDisplayString() + "," + RoleSecondaryChanceOption.ToDisplayString() + ")";
+            else if(RoleCountOption.GetMappedInt() == 1)
+                str += " (" + RoleChanceOption.ToDisplayString() + ")";
+            return str;
         };
 
-        public KillCoolDownConfiguration(ConfigurationHolder holder, string id, KillCoolDownType defaultType, float step, float immediateMin, float immediateMax, float relativeMin, float relativeMax, float ratioStep, float ratioMin, float ratioMax)
-        {
-            selectionOption = new NebulaConfiguration(holder, id, null, AllSelections, (int)defaultType, (int)defaultType);
-            selectionOption.Editor = () =>
-            {
-                var currentOption = GetCurrentOption();
-
-                return new CombinedContent(0.55f, IMetaContext.AlignmentOption.Center,
-                    new MetaContext.Text(NebulaConfiguration.GetOptionBoldAttr(2.5f, TMPro.TextAlignmentOptions.Left)) { RawText = selectionOption.Title.Text },
-                    NebulaConfiguration.OptionTextColon,
-                    new MetaContext.HorizonalMargin(0.04f),
-                    NebulaConfiguration.OptionButtonContext(() => selectionOption.ChangeValue(true), selectionOption.ToDisplayString(), 0.9f),
-                    new MetaContext.HorizonalMargin(0.2f),
-                    NebulaConfiguration.OptionButtonContext(() => currentOption.ChangeValue(false), "<<"),
-                    new MetaContext.Text(NebulaConfiguration.OptionValueAttr) { RawText = currentOption.ToDisplayString() },
-                    NebulaConfiguration.OptionButtonContext(() => currentOption.ChangeValue(true), ">>")
-                );
-            };
-
-            immediateOption = new NebulaConfiguration(holder, id + ".immediate", null, immediateMin, immediateMax, step, 30f, 30f) { Decorator = NebulaConfiguration.SecDecorator, Editor = NebulaConfiguration.EmptyEditor };
-            relativeOption = new NebulaConfiguration(holder, id + ".relative", null, relativeMin, relativeMax, step, 0f, 0f) { Decorator = RelativeDecorator, Editor = NebulaConfiguration.EmptyEditor };
-            ratioOption = new NebulaConfiguration(holder, id + ".ratio", null, ratioMin, ratioMax, ratioStep, 1f, 1f) { Decorator = NebulaConfiguration.OddsDecorator, Editor = NebulaConfiguration.EmptyEditor };
-
-            minCoolDown = immediateMin;
-        }
-
-        public float KillCoolDown { get {
-                float vanillaCoolDown = GameOptionsManager.Instance.CurrentGameOptions.GetFloat(FloatOptionNames.KillCooldown);
-                switch (selectionOption.CurrentValue)
-                {
-                    case 0:
-                        return immediateOption.GetFloat()!.Value;
-                    case 1:
-                        return Mathf.Max(relativeOption.GetFloat()!.Value + vanillaCoolDown, minCoolDown);
-                    case 2:
-                        return ratioOption.GetFloat()!.Value * vanillaCoolDown;
-                }
-                return vanillaCoolDown;
-            } }
-    }
+        RoleChanceOption.Shower = null;
+        RoleSecondaryChanceOption.Shower = null;
+    }   
 }

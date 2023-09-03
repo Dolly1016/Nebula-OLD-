@@ -8,17 +8,17 @@ global using Nebula.Modules;
 global using UnityEngine;
 global using Nebula.Modules.ScriptComponents;
 global using System.Collections;
+global using HarmonyLib;
 global using Timer = Nebula.Modules.ScriptComponents.Timer;
 using BepInEx;
 using BepInEx.Unity.IL2CPP;
-using HarmonyLib;
 using Nebula;
 using Nebula.Roles;
 using System.Runtime.InteropServices;
 using UnityEngine.SceneManagement;
 using Nebula.Configuration;
 using System.Reflection;
-using UnityEngine.Rendering;
+using Nebula.Patches;
 
 namespace Nebula;
 
@@ -35,7 +35,19 @@ public class NebulaPlugin : BasePlugin
     public const bool IsSnapshot = false;
     public const string MajorCodeName = "Experimental"/*"Haro"*/;
     public const string SnapshotVersion = "23.08.01";
-    public const string VisualPluginVersion = "2";
+    public const string VisualPluginVersion = "3";
+
+    static public HttpClient HttpClient
+    {
+        get
+        {
+            if (httpClient == null) httpClient = new HttpClient();
+            return httpClient;
+        }
+    }
+    static private HttpClient? httpClient = null;
+
+    public static NebulaLog Log { get; private set; } = new();
 
     public static bool FinishedPreload { get; private set; } = false;
 
@@ -57,52 +69,92 @@ public class NebulaPlugin : BasePlugin
     [DllImport("user32.dll", EntryPoint = "FindWindow")]
     public static extern System.IntPtr FindWindow(System.String className, System.String windowName);
 
-    override public void Load()
+    public static NebulaPlugin MyPlugin { get; private set; }
+    public IEnumerator CoLoad()
     {
-        // Harmonyパッチ全てを適用する
-        Harmony.PatchAll();
+        VanillaAsset.LoadAssetAtInitialize();
+        yield return Preload();
+    }
 
+    private IEnumerator Preload()
+    {
         var types = Assembly.GetAssembly(typeof(RemoteProcessBase))?.GetTypes().Where((type) => type.IsDefined(typeof(NebulaPreLoad)));
         if (types != null)
         {
-            List<Type> PostLoad = new List<Type>();
+            List<Type> PostLoad = new();
+            HashSet<Type> Loaded = new();
 
-            void Preload(Type type,bool isFinalize)
+            IEnumerator Preload(Type type, bool isFinalize)
             {
+                if (Loaded.Contains(type)) yield break;
+
                 if (type.IsDefined(typeof(NebulaPreLoad)))
                 {
                     var myPreType = type.GetCustomAttribute<NebulaPreLoad>()!;
                     var preTypes = myPreType.PreLoadType;
-                    foreach (var pretype in preTypes) Preload(pretype,isFinalize);
-                    if (!isFinalize && myPreType.IsFinalizer)
+                    foreach (var pretype in preTypes) yield return Preload(pretype, isFinalize);
+                    if (!isFinalize && myPreType.MyFinalizerType != NebulaPreLoad.FinalizerType.NotFinalizer)
                     {
+                        if (myPreType.MyFinalizerType == NebulaPreLoad.FinalizerType.LoadOnly)
+                        {
+                            Debug.Log("Preload (static constructor) " + type.Name);
+                            System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(type.TypeHandle);
+                        }
+
                         PostLoad.Add(type);
-                        return;
+                        yield break;
                     }
                 }
 
+                Debug.Log("Preload " + type.Name);
+
                 System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(type.TypeHandle);
-                Debug.Log("[Nebula] Preload " + type.Name);
+
                 var loadMethod = type.GetMethod("Load");
-                if(loadMethod != null)
+                if (loadMethod != null)
                 {
                     try
                     {
                         loadMethod.Invoke(null, null);
-                        Debug.Log("[Nebula] Preloaded type " + type.Name + " has Load()");
-                    }catch(Exception e)
+                        Debug.Log("Preloaded type " + type.Name + " has Load()");
+                    }
+                    catch (Exception e)
                     {
-                        Debug.Log("[Nebula] Preloaded type " + type.Name + " has Load with unregulated parameters.");
+                        Debug.Log("Preloaded type " + type.Name + " has Load with unregulated parameters.");
                     }
                 }
-                
-                
+
+                var coloadMethod = type.GetMethod("CoLoad");
+                if (coloadMethod != null)
+                {
+                    IEnumerator? coload = null;
+                    try
+                    {
+                        coload = (IEnumerator)coloadMethod.Invoke(null, null)!;
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.Log("Preloaded type " + type.Name + " has CoLoad with unregulated parameters.");
+                    }
+                    if (coload != null) yield return coload;
+                }
+
+                Loaded.Add(type);
             }
 
-            foreach (var type in types) Preload(type, false);
-            foreach (var type in PostLoad) Preload(type, true);
+            foreach (var type in types) yield return Preload(type, false);
+            foreach (var type in PostLoad) yield return Preload(type, true);
         }
         FinishedPreload = true;
+    }
+
+    override public void Load()
+    {
+        MyPlugin = this;
+
+        //ロードパッチを適用する
+        //Harmony.CreateClassProcessor(typeof(Patches.LoadPatch)).Patch();
+        Harmony.PatchAll();
 
         SetWindowText(FindWindow(null, Application.productName),"Among Us w/ " + GetNebulaVersionString());
 
@@ -123,9 +175,27 @@ public class NebulaPlugin : BasePlugin
         PlayerMaterial.SetColors(Color.blue, renderer);
         */
 
-        var renderer = UnityHelper.CreateObject<SpriteRenderer>("Light",null,PlayerControl.LocalPlayer.transform.position + new Vector3(0,0,-50f),LayerExpansion.GetDrawShadowsLayer());
-        renderer.sprite = testSprite.GetSprite();
-        renderer.material.shader = NebulaAsset.MultiplyBackShader;
+        /*
+        if (Input.GetKey(KeyCode.LeftShift))
+            NebulaManager.Instance.SetContext(null);
+        else
+            NebulaManager.Instance.SetContext((alignment) =>
+            {
+                var context = new MetaContext();
+                context.Append(new MetaContext.Text(new(TextAttribute.NormalAttr) { Alignment = alignment == IMetaContext.AlignmentOption.Left ? TMPro.TextAlignmentOptions.Left : TMPro.TextAlignmentOptions.Right })
+                { RawText = "Test", Alignment = alignment });
+                return context;
+            });
+        */
+
+
+        foreach(var temp in LobbySlideManager.AllTemplates)
+        {
+            NebulaGameManager.Instance.LobbySlideManager.RegisterSlide(temp.Generate());
+            NebulaGameManager.Instance.LobbySlideManager.RpcShowScreen(temp.Tag, false);
+
+            break;
+        }
     }
 
 
@@ -140,11 +210,9 @@ public static class AmongUsClientAwakePatch
         if (!IsFirstFlag) return;
         IsFirstFlag = false;
 
+        Language.OnChangeLanguage((uint)AmongUs.Data.DataManager.Settings.Language.CurrentLanguage);
 
-        //言語情報を読み込む
-        Language.Load();
-
-        __instance.StartCoroutine(VanillaAsset.CoLoadAsset().WrapToIl2Cpp());
+        __instance.StartCoroutine(VanillaAsset.CoLoadAssetOnTitle().WrapToIl2Cpp());
 
     }
 }
@@ -153,17 +221,30 @@ public static class AmongUsClientAwakePatch
 public class NebulaPreLoad : Attribute
 {
     public Type[] PreLoadType { get; private set; }
-    public bool IsFinalizer { get; private set; }
+    public FinalizerType MyFinalizerType { get; private set; }
     public NebulaPreLoad(params Type[] preLoadType)
     {
         PreLoadType = preLoadType;
-        IsFinalizer = false;
+        MyFinalizerType = FinalizerType.NotFinalizer;
     }
 
     public NebulaPreLoad(bool isFinalizer, params Type[] preLoadType)
     {
         PreLoadType = preLoadType;
-        IsFinalizer = isFinalizer;
+        MyFinalizerType = isFinalizer ? FinalizerType.StaticConstAndLoad : FinalizerType.NotFinalizer;
+    }
+
+    public enum FinalizerType
+    {
+        LoadOnly,
+        StaticConstAndLoad,
+        NotFinalizer
+    }
+
+    public NebulaPreLoad(FinalizerType finalizerType, params Type[] preLoadType)
+    {
+        PreLoadType = preLoadType;
+        MyFinalizerType = finalizerType;
     }
 
     static public bool FinishedLoading => NebulaPlugin.FinishedPreload;

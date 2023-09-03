@@ -22,8 +22,18 @@ public class VanillaAsset
     static public TMPro.TextMeshPro StandardTextPrefab { get; private set; }
     static public AudioClip HoverClip { get; private set; }
     static public AudioClip SelectClip { get; private set; }
-    static public Material StandardMaskedFontMaterial { get;private set; }
-    static public Material OblongMaskedFontMaterial { get; private set; }
+    static public Material StandardMaskedFontMaterial { get {
+            if (standardMaskedFontMaterial == null) standardMaskedFontMaterial = UnityHelper.FindAsset<Material>("LiberationSans SDF - BlackOutlineMasked")!;
+            return standardMaskedFontMaterial;
+        }
+    }
+    static public Material OblongMaskedFontMaterial { get { 
+            if(oblongMaskedFontMaterial == null) oblongMaskedFontMaterial = UnityHelper.FindAsset<Material>("Brook Atlas Material Masked");
+            return oblongMaskedFontMaterial;
+        } }
+    static private Material? standardMaskedFontMaterial = null;
+    static private Material? oblongMaskedFontMaterial = null;
+
     static private TMP_FontAsset? preSpawnFont = null;
     static public TMP_FontAsset PreSpawnFont { get
         {
@@ -32,7 +42,16 @@ public class VanillaAsset
         }
     }
     static public GameSettingMenu PlayerOptionsMenuPrefab { get; private set; }
-    static public IEnumerator CoLoadAsset()
+
+    static public void LoadAssetAtInitialize()
+    {
+        HoverClip = UnityHelper.FindAsset<AudioClip>("UI_Hover")!;
+        SelectClip = UnityHelper.FindAsset<AudioClip>("UI_Select")!;
+
+        PlayerOptionsMenuPrefab = UnityHelper.FindAsset<GameSettingMenu>("PlayerOptionsMenu")!;
+    }
+
+    static public IEnumerator CoLoadAssetOnTitle()
     {
         var twitchPopUp = TwitchManager.Instance.transform.GetChild(0);
         PopUpBackSprite = twitchPopUp.GetChild(3).GetComponent<SpriteRenderer>().sprite;
@@ -45,17 +64,6 @@ public class VanillaAsset
         StandardTextPrefab.gameObject.hideFlags = HideFlags.HideAndDontSave;
         GameObject.Destroy(StandardTextPrefab.spriteAnimator);
         GameObject.DontDestroyOnLoad(StandardTextPrefab.gameObject);
-
-        HoverClip = UnityHelper.FindAsset<AudioClip>("UI_Hover")!;
-        SelectClip = UnityHelper.FindAsset<AudioClip>("UI_Select")!;
-
-        StandardMaskedFontMaterial = UnityHelper.FindAsset<Material>("LiberationSans SDF - BlackOutlineMasked")!;
-        OblongMaskedFontMaterial = UnityHelper.FindAsset<Material>("Brook Atlas Material Masked")!;
-       
-
-        PlayerOptionsMenuPrefab = UnityHelper.FindAsset<GameSettingMenu>("PlayerOptionsMenu")!;
-
-
 
         while (AmongUsClient.Instance == null) yield return null;
 
