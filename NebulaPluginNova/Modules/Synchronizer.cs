@@ -6,7 +6,8 @@ namespace Nebula.Modules;
 
 public enum SynchronizeTag
 {
-    PreSpawnMinigame
+    PreSpawnMinigame,
+    PostExile
 }
 
 [NebulaRPCHolder]
@@ -25,22 +26,15 @@ public class Synchronizer
         sync[tag] |= (uint)1 << (int)playerId;
     }
 
-    static public RemoteProcess<Tuple<SynchronizeTag, byte>> RpcSync = new RemoteProcess<Tuple<SynchronizeTag, byte>>(
+    static public RemoteProcess<(SynchronizeTag, byte)> RpcSync = new(
         "Syncronize",
-        (sender,message) => {
-            sender.Write((int)message.Item1);
-            sender.Write(message.Item2);
-        },
-        (reader) =>
-        {
-            return new Tuple<SynchronizeTag, byte>((SynchronizeTag)reader.ReadInt32(), reader.ReadByte());
-        },
-        (message, calledByMe) =>
-        {
-            NebulaGameManager.Instance.Syncronizer.Sync(message.Item1,message.Item2);
-        }
-
+        (message, calledByMe) => NebulaGameManager.Instance.Syncronizer.Sync(message.Item1,message.Item2)
         );
+
+    public void SendSync(SynchronizeTag tag)
+    {
+        RpcSync.Invoke((tag,PlayerControl.LocalPlayer.PlayerId));
+    }
     
     public IEnumerator CoSync(SynchronizeTag tag, bool withSurviver = true,bool withGhost = false,bool withBot = false)
     {

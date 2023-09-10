@@ -36,7 +36,7 @@ public class Bait : ConfigurableStandardRole
 
         private IEnumerator CoReport(PlayerControl murderer)
         {
-            if(Bait.MyRole.ShowKillFlashOption.GetBool()!.Value) AmongUsUtil.PlayQuickFlash(Role.RoleColor);
+            if(Bait.MyRole.ShowKillFlashOption) AmongUsUtil.PlayQuickFlash(Role.RoleColor);
 
             float t = 0.1f + 0.25f * (float)System.Random.Shared.NextDouble();
             yield return new WaitForSeconds(t);

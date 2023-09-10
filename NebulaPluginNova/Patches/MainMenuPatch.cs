@@ -135,7 +135,7 @@ public static class MainMenuSetUpPatch
             var inner = new MetaContext();
             foreach (var addon in NebulaAddon.AllAddons)
             {
-                inner.Append(new CombinedContent(0.5f,
+                inner.Append(new CombinedContext(0.5f,
                     new MetaContext.Image(addon.Icon) { Width = 0.3f },
                     new MetaContext.HorizonalMargin(0.1f),
                     new MetaContext.Text(NameAttribute) { RawText = addon.AddonName },

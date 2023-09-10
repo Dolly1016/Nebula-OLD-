@@ -40,6 +40,7 @@ public class NebulaGameEnd
     static public CustomEndCondition VultureWin = new(24, "vulture", Roles.Neutral.Vulture.MyRole.RoleColor, 32);
     static public CustomEndCondition JesterWin = new(25, "jester", Roles.Neutral.Jester.MyRole.RoleColor, 32);
     static public CustomEndCondition JackalWin = new(26, "jackal", Roles.Neutral.Jackal.MyRole.RoleColor, 16);
+    static public CustomEndCondition ArsonistWin = new(27, "arsonist", Roles.Neutral.Arsonist.MyRole.RoleColor, 32);
     static public CustomEndCondition NoGame = new(128, "nogame", InvalidColor, 128);
 
     private readonly static RemoteProcess<(byte conditionId, ulong winnersMask)> RpcEndGame = new(

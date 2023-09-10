@@ -39,6 +39,11 @@ public abstract class IRoleAllocator
             modifiers.Add(new(role, arguments ?? Array.Empty<int>(), player.PlayerId));
         }
 
+        public void SetModifier(byte player, AbstractModifier role, int[]? arguments = null)
+        {
+            modifiers.Add(new(role, arguments ?? Array.Empty<int>(), player));
+        }
+
         public void Determine()
         {
             List<NebulaRPCInvoker> allInvokers = new();
@@ -48,6 +53,11 @@ public abstract class IRoleAllocator
             allInvokers.Add(NebulaGameManager.RpcStartGame.GetInvoker());
 
             CombinedRemoteProcess.CombinedRPC.Invoke(allInvokers.ToArray());
+        }
+
+        public IEnumerable<(byte playerId,AbstractRole role)> GetPlayers(RoleCategory category)
+        {
+            foreach (var tuple in roles) if (tuple.role.RoleCategory == category) yield return (tuple.playerId, tuple.role);
         }
     }
 
@@ -71,7 +81,12 @@ public class FreePlayRoleAllocator : IRoleAllocator
 
 public class StandardRoleAllocator : IRoleAllocator
 {
-    
+    private void OnSetRole(AbstractRole role,List<RoleAssignChance> pool)
+    {
+        foreach(var remove in GeneralConfigurations.ExclusiveOptionBody.OnAssigned(role))
+            pool.RemoveAll(r=>r.Role == remove);
+    }
+
     private void CategoryAssign(RoleTable table, RoleCategory category,int left,List<PlayerControl> main, List<PlayerControl> others)
     {
         if (left < 0) left = 15;
@@ -123,6 +138,9 @@ public class StandardRoleAllocator : IRoleAllocator
             selected ??= currentPool[currentPool.Count - 1];
 
             table.SetRole(main[0], selected!.Role);
+            OnSetRole(selected!.Role, rolePool);
+            OnSetRole(selected!.Role, preferentialPool);
+
             left--;
             main.RemoveAt(0);
 
@@ -132,6 +150,9 @@ public class StandardRoleAllocator : IRoleAllocator
                 foreach (var r in selected.Role.AdditionalRole)
                 {
                     table.SetRole(playerList[0], r);
+                    OnSetRole(r, rolePool);
+                    OnSetRole(r, preferentialPool);
+
                     if (selected.Role.HasAdditionalRoleOccupancy) left--;
                     playerList.RemoveAt(0);
                 }
@@ -147,12 +168,14 @@ public class StandardRoleAllocator : IRoleAllocator
     {
         RoleTable table = new();
 
-        CategoryAssign(table, RoleCategory.ImpostorRole, GeneralConfigurations.AssignmentImpostorOption.GetMappedInt().Value, impostors, others);
-        CategoryAssign(table, RoleCategory.NeutralRole, GeneralConfigurations.AssignmentNeutralOption.GetMappedInt().Value, others, others);
-        CategoryAssign(table, RoleCategory.CrewmateRole, GeneralConfigurations.AssignmentCrewmateOption.GetMappedInt().Value, others, others);
+        CategoryAssign(table, RoleCategory.ImpostorRole, GeneralConfigurations.AssignmentImpostorOption, impostors, others);
+        CategoryAssign(table, RoleCategory.NeutralRole, GeneralConfigurations.AssignmentNeutralOption, others, others);
+        CategoryAssign(table, RoleCategory.CrewmateRole, GeneralConfigurations.AssignmentCrewmateOption, others, others);
 
         foreach (var p in impostors) table.SetRole(p, Impostor.Impostor.MyRole);
         foreach (var p in others) table.SetRole(p, Crewmate.Crewmate.MyRole);
+
+        foreach (var m in Roles.AllIntroAssignableModifiers()) m.Assign(table);
 
         table.Determine();
     }

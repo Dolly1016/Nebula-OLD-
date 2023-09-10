@@ -19,6 +19,7 @@
 "options.cross" : "x"
 "options.sec" : "s"
 "options.followPrimaryChance" : "-"
+"options.inactivated" : "Inactivated"
 
 "options.gamemode" : "Game Mode"
 
@@ -49,14 +50,34 @@
 "options.map.spawnCandidates" : "Num of Spawning Candidates"
 "options.map.silentVents" : "Silent Vents"
 
+"options.meeting" : "Meeting Options"
+"options.meeting.noticeExtraVictims" : "Notice Extra Victims"
+
 "options.role.count" : "Role Assignment"
 "options.role.chance" : "Assignment Chance"
 "options.role.secondaryChance" : "2nd Onward"
 "options.role.count.short" : "Assignment"
+"options.modifier.chance" : "Assignment Chance"
+"options.role.crewmateCount" : "Crewmate Assignment"
+"options.role.impostorCount" : "Impostor Assignment"
+"options.role.neutralCount" : "Neutral Assignment"
 
 "options.killCoolDown.type.immediate" : "Immediate"
 "options.killCoolDown.type.relative" : "Relative"
 "options.killCoolDown.type.ratio" : "Ratio"
+
+"options.exclusiveAssignment" : "Exclusive Assignment"
+"options.exclusiveAssignment.detail" : "Role groups appear exclusively"
+"options.exclusiveAssignment.category.0" : "Category 1"
+"options.exclusiveAssignment.category.1" : "Category 2"
+"options.exclusiveAssignment.category.2" : "Category 3"
+"options.exclusiveAssignment.category.3" : "Category 4"
+"options.exclusiveAssignment.category.4" : "Category 5"
+"options.exclusiveAssignment.category.5" : "Category 6"
+"options.exclusiveAssignment.category.6" : "Category 7"
+"options.exclusiveAssignment.category.7" : "Category 8"
+"options.exclusiveAssignment.category.8" : "Category 9"
+"options.exclusiveAssignment.category.9" : "Category 10"
 
 # Roles
 
@@ -69,8 +90,12 @@
 "role.general.ventUses.short" : "Uses"
 "role.general.common" : "[COMMON]"
 
+# Common Roles
+
 "role.guesser.numOfGuess" : "Num Of Guess"
 "options.role.guesser.detail" : "Guesser can shoot players in the meeting by guessing the role.<br>If the guess is wrong, guesser dies instead."
+
+"options.role.modifierFilter" : "Modifiers Filter"
 
 # Crewmate Roles
 
@@ -94,6 +119,7 @@
 "options.role.necromancer.detail" : "Necromancer can raise dead bodies from the dead!<br>They drags a corpse for a resurrection ritual."
 "options.role.necromancer.reviveCoolDown" : "Revive Cool Down"
 "options.role.necromancer.reviveDuration" : "Revive Duration"
+"options.role.necromancer.detectedRange" : "Detected Range"
 "role.necromancer.phantomMessage" : "Please take me to %ROOM%..."
 
 "role.niceGuesser.name" : "Nice Guesser"
@@ -104,6 +130,15 @@
 "role.madmate.blurb" : "Assist Impostors"
 "options.role.madmate.detail" : "Madmate is on the side of imposters.<br>Obstruct crewmates to help imposters win."
 
+"role.mayor.name" : "Mayor"
+"role.mayor.blurb" : "Find and Vote out the Impostors"
+"options.role.mayor.detail" : "Mayor can save vote on meetings.<br>Saved votes are used other meetings all at once."
+"options.role.mayor.fixedVotes" : "Fixed Votes"
+"options.role.mayor.minVote" : "Min Vote"
+"options.role.mayor.maxVote" : "Max Vote"
+"options.role.mayor.maxVotesStock" : "Max Votes Stock"
+"options.role.mayor.voteAssignment" : "Vote Assignment On Meeting"
+
 "role.phosphorus.name" : "Phosphorus"
 "role.phosphorus.blurb" : "Pierce the Darkness"
 "options.role.phosphorus.detail" : "Lamps that Phosphorus places give a better view of the surroundings.<br>Imposters will avoid kills around lamps. "
@@ -111,6 +146,13 @@
 "options.role.phosphorus.placeCoolDown" : "Place Cool Down"
 "options.role.phosphorus.lampCoolDown" : "Lamp Cool Down"
 "options.role.phosphorus.lampDuration" : "Lamp Duration"
+
+"role.provocateur.name" : "Provocateur"
+"role.provocateur.blurb" : "Go To The Grave Together"
+"options.role.provocateur.detail" : "On died, Provocateur embroils their murderer."
+"options.role.provocateur.embroilCoolDown" : "Embroil Cool Down"
+"options.role.provocateur.embroilAdditionalCoolDown" : "Embroil Additional Cool Down"
+"options.role.provocateur.embroilDuration" : "Embroil Duration"
 
 "role.seer.name" : "Seer"
 "role.seer.blurb" : "You Will See Players Die"
@@ -129,6 +171,15 @@
 "role.impostor.blurb" : "Kill and Sabotage"
 "options.role.impostor.detail" : "Impostors with no special abilities."
 
+"role.bountyHunter.name" : "Bounty Hunter"
+"role.bountyHunter.blurb" : "Get Rich Quick!"
+"options.role.bountyHunter.detail" : "Bounty Hunter can gain a special cool down.<br>Be careful! If they kill them but the bounty, they'll gain penalty cool down."
+"options.role.bountyHunter.bountyKillCoolDown" : "Bounty Kill Cool Down"
+"options.role.bountyHunter.othersKillCoolDown" : "Others Kill Cool Down"
+"options.role.bountyHunter.changeBountyInterval" : "Change Bounty Interval"
+"options.role.bountyHunter.showBountyArrow" : "Show Bounty Arrow"
+"options.role.bountyHunter.arrowUpdateInterval" : "Arrow Update Interval"
+
 "role.camouflager.name" : "Camouflager"
 "role.camouflager.blurb" : "Camouflage and Kill"
 "options.role.camouflager.detail" : "Camouflager prevents players from identify each other."
@@ -143,6 +194,13 @@
 "role.evilGuesser.name" : "Evil Guesser"
 "role.evilGuesser.blurb" : "Guess and Shoot"
 "options.role.evilGuesser.detail" : "Guesser can shoot players in the meeting by guessing the role.<br>If the guess is wrong, guesser dies instead."
+
+"role.jailer.name" : "Jailer"
+"role.jailer.blurb" : "Be Under the Control"
+"options.role.jailer.detail" : "Jailer is an impostor who commits crimes in a planned way.<br>They has the portable admin."
+"options.role.jailer.canMoveWithMapWatching" : "Can Move With Map Watching"
+"options.role.jailer.canIdentifyDeadBodies" : "Can Identify Dead Bodies"
+"options.role.jailer.canIdentifyImpostors" : "Can Identify Impostors"
 
 "role.morphing.name" : "Morphing"
 "role.morphing.blurb" : "Change Your Look to Not Get Caught"
@@ -159,19 +217,34 @@
 "options.role.painter.paintCoolDown" : "Paint Cool Down"
 "options.role.painter.loseSampleOnMeeting" : "Lose Sample On Meeting"
 
+"role.raider.name" : "Raider"
+"role.raider.blurb" : "Let's Rampage"
+"options.role.raider.detail" : "Raider throws axes to kill players.<br>Thrown axe remains and serves as evidence."
+"options.role.raider.throwCoolDown" : "Throw Cool Down"
+"options.role.raider.axeSize" : "Axe Size"
+"options.role.raider.axeSpeed" : "Axe Speed"
+"options.role.raider.canKillImpostor" : "Can Kill Impostor"
+
 "role.reaper.name" : "Reaper"
 "role.reaper.blurb" : "Kill and Deceive the Crewmates"
 "options.role.reaper.detail" : "Reaper can drag dead bodies."
 
 "role.sniper.name" : "Sniper"
 "role.sniper.blurb" : "Shoot Up!"
-"options.role.sniper.detail" : "Painter samples the appearance of the player<br>and paints the form onto players."
+"options.role.sniper.detail" : "Sniper has a rifle to snipe players.<br>When sniper shoots, players nearby they see a notification."
 "options.role.sniper.snipeCoolDown" : "Snipe Cool Down"
 "options.role.sniper.shotSize" : "Shot Size"
 "options.role.sniper.shotEffectiveRange" : "Shot Effective Range"
 "options.role.sniper.shotNoticeRange" : "Snipe Notice Range"
+"options.role.sniper.storeRifleOnFire" : "Store Rifle On Fire"
 
 # Neutral Roles
+
+"role.arsonist.name" : "Arsonist"
+"role.arsonist.blurb" : "Let Them Burn"
+"options.role.arsonist.detail" : "Arsonist douses all of the alive to burn."
+"options.role.arsonist.douseCoolDown" : "Douse Cool Down"
+"options.role.arsonist.douseDuration" : "Douse Duration"
 
 "role.jackal.name" : "Jackal"
 "role.jackal.blurb" : "Kill Everyone"
@@ -202,10 +275,19 @@
 
 "role.metaRole.ui.roles" : "Roles"
 
+"role.guesser.name" : "Guesser"
+"role.guesser.blurb" : "and You Can Guess Anyone"
+
+"role.metaRole.name" : "Free Play Modifier"
+
+"role.tieBreaker.name" : "Tie Breaker"
+"options.role.tieBreaker.detail" : "When the vote results in a tie, Tie Breaker cast an additional vote."
+
 # Teams
 
 "teams.crewmate" : "Crewmate"
 "teams.impostor" : "Impostor"
+"team.jackal" : "Jackal"
 "teams.jester" : "Jester"
 "teams.vulture" : "Vulture"
 
@@ -243,6 +325,7 @@
 "location.polus.abditory" : "Abditory"
 "location.polus.admin" : "Admin"
 "location.polus.comms" : "Comms."
+"location.polus.boilerRoom" : "Boiler Room"
 "location.polus.drill" : "Drill"
 "location.polus.dropship" : "Dropship"
 "location.polus.ejection" : "Ejection"
@@ -283,6 +366,7 @@
 "button.label.clean" : "clean"
 "button.label.drag" : "drag"
 "button.label.eat" : "eat"
+"button.label.embroil" : "Embroil"
 "button.label.equip" : "equip"
 "button.label.kill" : "kill"
 "button.label.lantern" : "lantern"
@@ -294,6 +378,7 @@
 "button.label.sample" : "sample"
 "button.label.snipe" : "snipe"
 "button.label.sidekick" : "sidekick"
+"button.label.throw" : "Throw"
 "button.label.unequip" : "unequip"
 
 # Game
@@ -301,6 +386,8 @@
 "game.prespawn.countdown" : "Time Remaining: %SECOND%"
 "game.prespawn.waiting" : "Wait For Other Players..."
 "game.prespawn.spawnIn" : "You Spawn In"
+
+"game.meeting.someoneDisappeared" : "Someone disappeared too."
 
 # Statistics
 
@@ -317,11 +404,14 @@
 "statistics.events.revive" : "Revive"
 "statistics.events.eat" : "Eat"
 "statistics.events.clean" : "Clean"
+"statistics.events.missed" : "Missed"
+"statistics.events.embroil" : "Embroil"
 
 # Endings
 
 "end.crewmate" : "Crewmates win"
 "end.impostor" : "Impostors win"
+"end.jackal" : "Team Jackal Wins"
 "end.jester" : "Jester Wins"
 "end.vulture" : "Vulture Wins"
 

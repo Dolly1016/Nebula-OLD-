@@ -1,4 +1,5 @@
 ﻿using Nebula.Configuration;
+using Nebula.Roles.Complex;
 
 namespace Nebula.Roles.Neutral;
 
@@ -8,7 +9,7 @@ public class Jackal : ConfigurableStandardRole
     static public Team MyTeam = new("teams.jackal", MyRole.RoleColor, TeamRevealType.OnlyMe);
 
     public override RoleCategory RoleCategory => RoleCategory.NeutralRole;
-
+    public override IEnumerable<IAssignableBase> RelatedOnConfig() { yield return Sidekick.MyRole; }
     public override string LocalizedName => "jackal";
     public override Color RoleColor => new Color(8f / 255f, 190f / 255f, 245f / 255f);
     public override Team Team => MyTeam;
@@ -64,7 +65,7 @@ public class Jackal : ConfigurableStandardRole
                 SpriteRenderer? lockSprite = null;
                 TMPro.TextMeshPro? leftText = null;
 
-                if ((JackalTeamId == MyPlayer.PlayerId && MyRole.CanCreateSidekickOption.GetBool()!.Value || Sidekick.MyRole.CanCreateSidekickChainlyOption.GetBool()!.Value))
+                if ((JackalTeamId == MyPlayer.PlayerId && MyRole.CanCreateSidekickOption || Sidekick.MyRole.CanCreateSidekickChainlyOption))
                 {
                     sidekickButton = Bind(new ModAbilityButton(true)).KeyBind(KeyCode.F);
                     
@@ -81,7 +82,7 @@ public class Jackal : ConfigurableStandardRole
                     {
                         button.StartCoolDown();
 
-                        if (Sidekick.MyRole.IsModifierOption.GetBool()!.Value)
+                        if (Sidekick.MyRole.IsModifierOption)
                             myTracker.CurrentTarget.GetModInfo()?.RpcInvokerSetModifier(SidekickModifier.MyRole, new int[] { JackalTeamId }).InvokeSingle();
                         else
                             myTracker.CurrentTarget.GetModInfo()?.RpcInvokerSetRole(Sidekick.MyRole, new int[] { JackalTeamId }).InvokeSingle();
@@ -156,9 +157,11 @@ public class Sidekick : ConfigurableRole
     static public Sidekick MyRole = new Sidekick();
 
     public override RoleCategory RoleCategory => RoleCategory.NeutralRole;
+    public override IEnumerable<IAssignableBase> RelatedOnConfig() { yield return Jackal.MyRole; }
 
     public override string InternalName => "jackal.sidekick";
     public override string LocalizedName => "sidekick";
+    
     public override Color RoleColor => Jackal.MyRole.RoleColor;
     public override Team Team => Jackal.MyTeam;
 
@@ -175,13 +178,13 @@ public class Sidekick : ConfigurableRole
 
         IsModifierOption = new NebulaConfiguration(RoleConfig, "isModifier", null, false, false);
         SidekickCanKillOption = new NebulaConfiguration(RoleConfig, "canKill", null, false, false);
-        SidekickCanKillOption.Predicate = () => !IsModifierOption.GetBool()!.Value;
+        SidekickCanKillOption.Predicate = () => !IsModifierOption;
         KillCoolDownOption = new(RoleConfig, "killCoolDown", KillCoolDownConfiguration.KillCoolDownType.Relative, 2.5f, 10f, 60f, -40f, 40f, 0.125f, 0.125f, 2f, 25f, -5f, 1f);
-        KillCoolDownOption.EditorOption.Predicate = () => SidekickCanKillOption.GetBool()!.Value;
+        KillCoolDownOption.EditorOption.Predicate = () => SidekickCanKillOption;
 
         CanCreateSidekickChainlyOption = new NebulaConfiguration(RoleConfig, "canCreateSidekickChainly", null, false, false);
 
-        RoleConfig.SetPredicate(() => Jackal.MyRole.CanCreateSidekickOption.GetBool()!.Value);
+        RoleConfig.SetPredicate(() => Jackal.MyRole.RoleCount > 0 && Jackal.MyRole.CanCreateSidekickOption);
     }
 
     public override float GetRoleChance(int count) => 0f;
@@ -201,7 +204,7 @@ public class Sidekick : ConfigurableRole
             //サイドキック除去
             MyPlayer.UnsetModifierLocal(m=>m.Role == SidekickModifier.MyRole);
 
-            if (AmOwner && MyRole.SidekickCanKillOption.GetBool()!.Value)
+            if (AmOwner && MyRole.SidekickCanKillOption)
             {
                 var myTracker = Bind(ObjectTrackers.ForPlayer(1.2f, MyPlayer.MyControl, (p) => p.PlayerId != MyPlayer.PlayerId && !p.Data.IsDead));
 
@@ -226,8 +229,6 @@ public class SidekickModifier : AbstractModifier
 
     public override string LocalizedName => "sidekick";
     public override Color RoleColor => Jackal.MyRole.RoleColor;
-
-
     public override ModifierInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player, arguments.Length == 1 ? arguments[0] : 0);
 
     public class Instance : ModifierInstance

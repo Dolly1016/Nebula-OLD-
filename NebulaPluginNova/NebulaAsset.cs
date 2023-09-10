@@ -9,6 +9,15 @@ using System.Threading.Tasks;
 
 namespace Nebula;
 
+public enum NebulaAudioClip { 
+    ThrowAxe,
+    SniperShot,
+    SniperEquip,
+    Trapper2s,
+    Trapper3s,
+    TrapperKillTrap
+}
+
 [NebulaPreLoad]
 public static class NebulaAsset
 {
@@ -29,6 +38,13 @@ public static class NebulaAsset
         DivMap[2] = AssetBundle.LoadAsset<GameObject>("PolusDivMap").MarkDontUnload();
         DivMap[3] = null;
         DivMap[4] = AssetBundle.LoadAsset<GameObject>("AirshipDivMap").MarkDontUnload();
+
+        audioMap[NebulaAudioClip.ThrowAxe] = AssetBundle.LoadAsset<AudioClip>("RaiderThrow.wav").MarkDontUnload();
+        audioMap[NebulaAudioClip.SniperShot] = AssetBundle.LoadAsset<AudioClip>("SniperShot.wav").MarkDontUnload();
+        audioMap[NebulaAudioClip.SniperEquip] = AssetBundle.LoadAsset<AudioClip>("SniperEquip.wav").MarkDontUnload();
+        audioMap[NebulaAudioClip.Trapper2s] = AssetBundle.LoadAsset<AudioClip>("PlaceTrap2s.wav").MarkDontUnload();
+        audioMap[NebulaAudioClip.Trapper3s] = AssetBundle.LoadAsset<AudioClip>("PlaceTrap3s.wav").MarkDontUnload();
+        audioMap[NebulaAudioClip.TrapperKillTrap] = AssetBundle.LoadAsset<AudioClip>("PlaceKillTrap.wav").MarkDontUnload();
     }
 
     private static T LoadAsset<T>(this AssetBundle assetBundle, string name) where T : UnityEngine.Object
@@ -98,5 +114,10 @@ public static class NebulaAsset
     static public ResourceExpandableSpriteLoader SharpWindowBackgroundSprite = new("Nebula.Resources.StatisticsBackground.png", 100f,5,5);
 
     public static GameObject[] DivMap { get; private set; } = new GameObject[5];
+    private static Dictionary<NebulaAudioClip, AudioClip> audioMap = new();
 
+    public static void PlaySE(NebulaAudioClip clip)
+    {
+        SoundManager.Instance.PlaySound(audioMap[clip],false,0.8f);
+    }
 }

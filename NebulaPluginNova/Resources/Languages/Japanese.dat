@@ -31,20 +31,33 @@
 "role.crewmate.blurb" : "タスクをせよ"
 "options.role.crewmate.detail" : "特殊な能力を持たない素のクルーメイトです。<br>割り当てる役職が他に無い場合にもこれが割り当てられます。"
 
+"role.madmate.name" : "マッドメイト"
+"role.madmate.blurb" : "インポスターを勝利へ導け"
+"options.role.madmate.detail" : "インポスターの勝利のために場を乱す狂人です。"
+
 "role.sheriff.name" : "シェリフ"
 "role.sheriff.blurb" : "インポスターを撃ち抜け"
 "options.role.sheriff.detail" : "キルができるクルーメイトです。<br>クルーを誤射すると代わりに自身が死亡します。"
 "options.role.sheriff.canKillMadmate" : "キル可能：マッドメイト"
-
-"role.madmate.name" : "マッドメイト"
-"role.madmate.blurb" : "インポスターを勝利へ導け"
-"options.role.madmate.detail" : "インポスターの勝利のために場を乱す狂人です。"
 
 # Impostor Roles
 
 "role.impostor.name" : "インポスター"
 "role.impostor.blurb" : "妨害し、キルせよ"
 "options.role.impostor.detail" : "特殊な能力を持たない素のインポスターです。<br>割り当てる役職が他に無い場合にもこれが割り当てられます。"
+
+"role.reaper.name" : "リーパー"
+"role.reaper.blurb" : "ベント引き回しの上、磔獄門"
+"options.role.reaper.detail" : "死体を引きずって移動させてしまうインポスターです。<br>死体を持ったままベント間を自由に移動することができます。"
+
+"role.sniper.name" : "スナイパー"
+"role.sniper.blurb" : "狙撃せよ"
+"options.role.sniper.detail" : "スナイパーは遠距離からプレイヤーを狙撃してキルできます。<br>弾を撃つと近くのプレイヤーには銃声の通知が届きます。"
+"options.role.sniper.snipeCoolDown" : "狙撃クールダウン"
+"options.role.sniper.shotSize" : "弾の大きさ"
+"options.role.sniper.shotEffectiveRange" : "狙撃の有効射程"
+"options.role.sniper.shotNoticeRange" : "銃声通知の有効範囲"
+"options.role.sniper.storeRifleOnFire" : "狙撃後にライフルを格納"
 
 # Teams
 

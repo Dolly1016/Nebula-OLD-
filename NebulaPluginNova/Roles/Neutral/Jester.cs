@@ -47,7 +47,7 @@ public class Jester : ConfigurableStandardRole
 
         public Instance(PlayerModInfo player) : base(player)
         {
-            if (MyRole.CanDragDeadBodyOption.GetBool().Value) draggable = Bind(new Scripts.Draggable());
+            if (MyRole.CanDragDeadBodyOption) draggable = Bind(new Scripts.Draggable());
         }
 
         public override bool CheckWins(CustomEndCondition endCondition) => false;

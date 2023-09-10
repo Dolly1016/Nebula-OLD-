@@ -40,6 +40,16 @@ public abstract class AbstractRole : IAssignableBase
     //追加付与ロールに役職プールの占有性があるか(追加付与ロールが無い場合、無意味)
     public virtual bool HasAdditionalRoleOccupancy { get => true; }
     public virtual AbstractRole[]? AdditionalRole { get => null; }
+
+
+    //For Config
+    public virtual NebulaModifierFilterConfigEntry? ModifierFilter { get => null; }
+    public virtual IEnumerable<IAssignableBase> RelatedOnConfig() { yield break; }
+    public virtual ConfigurationHolder? RelatedConfig { get => null; }
+
+    public virtual bool CanLoadDefault(IntroAssignableModifier modifier) => true;
+    public virtual bool CanLoad(IntroAssignableModifier modifier)=> CanLoadDefault(modifier);
+
     public virtual bool CanBeGuess { get => true; }
 
     public abstract void Load();
@@ -52,6 +62,7 @@ public abstract class AbstractRole : IAssignableBase
 
 public abstract class ConfigurableRole : AbstractRole {
     public ConfigurationHolder RoleConfig { get; private set; }
+    public override ConfigurationHolder? RelatedConfig { get => RoleConfig; }
 
     private int? myTabMask;
     public ConfigurableRole(int TabMask)
@@ -68,6 +79,7 @@ public abstract class ConfigurableRole : AbstractRole {
     {
         RoleConfig = new ConfigurationHolder("options.role." + InternalName, new ColorTextComponent(RoleColor, new TranslateTextComponent("role." + LocalizedName + ".name")), myTabMask ?? ConfigurationTab.FromRoleCategory(RoleCategory), CustomGameMode.AllGameModeMask);
         RoleConfig.Priority = IsDefaultRole ? 0 : 1;
+        RoleConfig.RelatedAssignable = this;
         LoadOptions();
     }
 
@@ -118,7 +130,7 @@ public abstract class ConfigurableRole : AbstractRole {
             {
                 var currentOption = GetCurrentOption();
 
-                return new CombinedContent(0.55f, IMetaContext.AlignmentOption.Center,
+                return new CombinedContext(0.55f, IMetaContext.AlignmentOption.Center,
                     new MetaContext.Text(NebulaConfiguration.GetOptionBoldAttr(2.5f, TMPro.TextAlignmentOptions.Left)) { RawText = selectionOption.Title.Text },
                     NebulaConfiguration.OptionTextColon,
                     new MetaContext.HorizonalMargin(0.04f),
@@ -168,11 +180,11 @@ public abstract class ConfigurableRole : AbstractRole {
                 switch (selectionOption.CurrentValue)
                 {
                     case 0:
-                        return immediateOption.GetFloat()!.Value;
+                        return immediateOption.GetFloat();
                     case 1:
-                        return Mathf.Max(relativeOption.GetFloat()!.Value + vanillaCoolDown, minCoolDown);
+                        return Mathf.Max(relativeOption.GetFloat() + vanillaCoolDown, minCoolDown);
                     case 2:
-                        return ratioOption.GetFloat()!.Value * vanillaCoolDown;
+                        return ratioOption.GetFloat() * vanillaCoolDown;
                 }
                 return vanillaCoolDown;
             }
@@ -221,7 +233,7 @@ public abstract class ConfigurableRole : AbstractRole {
                 AddOptionToEditor(usesOption);
             }
 
-            selectionOption.Editor = () => new CombinedContent(0.55f, IMetaContext.AlignmentOption.Center, list.ToArray());
+            selectionOption.Editor = () => new CombinedContext(0.55f, IMetaContext.AlignmentOption.Center, list.ToArray());
             selectionOption.Shower = () =>
             {
                 var str = selectionOption.Title.Text + " :";
@@ -243,6 +255,8 @@ public abstract class ConfigurableStandardRole : ConfigurableRole
     protected NebulaConfiguration RoleCountOption { get; private set; }
     protected NebulaConfiguration RoleChanceOption { get; private set; }
     protected NebulaConfiguration RoleSecondaryChanceOption { get; private set; }
+    private NebulaModifierFilterConfigEntry modifierFilter;
+    public override NebulaModifierFilterConfigEntry? ModifierFilter { get => modifierFilter; }
 
     public ConfigurableStandardRole(int TabMask):base(TabMask){ }
     public ConfigurableStandardRole() : base() { }
@@ -251,23 +265,24 @@ public abstract class ConfigurableStandardRole : ConfigurableRole
     public override float GetRoleChance(int count)
     {
         if (count > 0 && RoleSecondaryChanceOption.CurrentValue > 0)
-            return RoleSecondaryChanceOption.GetFloat() ?? 0f;
-        return RoleChanceOption.GetFloat() ?? 0f;
+            return RoleSecondaryChanceOption.GetFloat();
+        return RoleChanceOption.GetFloat();
     }
+    public override bool CanLoad(IntroAssignableModifier modifier) => CanLoadDefault(modifier) && !modifierFilter.Contains(modifier);
 
     protected static TranslateTextComponent CountOptionText = new("options.role.count");
     protected static TranslateTextComponent ChanceOptionText = new("options.role.chance");
     protected static TranslateTextComponent SecondaryChanceOptionText = new("options.role.secondaryChance");
     protected override void LoadOptions() {
         RoleCountOption = new(RoleConfig, "count", CountOptionText, 15, 0, 0);
-        RoleConfig.IsActivated = () => RoleCountOption.GetMappedInt()!.Value > 0;
+        RoleConfig.IsActivated = () => RoleCountOption > 0;
 
         RoleChanceOption = new(RoleConfig, "chance", ChanceOptionText, 10f, 100f, 10f, 0f, 0f) { Decorator = NebulaConfiguration.PercentageDecorator };
         RoleChanceOption.Editor = () =>
         {
             if (RoleCount <= 1)
             {
-                return new CombinedContent(0.55f, IMetaContext.AlignmentOption.Center,
+                return new CombinedContext(0.55f, IMetaContext.AlignmentOption.Center,
                 new MetaContext.Text(NebulaConfiguration.GetOptionBoldAttr(1.8f)) { RawText = ChanceOptionText.Text },
                 NebulaConfiguration.OptionTextColon,
                 NebulaConfiguration.OptionButtonContext(() => RoleChanceOption.ChangeValue(false), "<<"),
@@ -277,7 +292,7 @@ public abstract class ConfigurableStandardRole : ConfigurableRole
             }
             else
             {
-                return new CombinedContent(0.55f, IMetaContext.AlignmentOption.Center,
+                return new CombinedContext(0.55f, IMetaContext.AlignmentOption.Center,
                new MetaContext.Text(NebulaConfiguration.GetOptionBoldAttr(1.8f)) { RawText = ChanceOptionText.Text },
                NebulaConfiguration.OptionTextColon,
                NebulaConfiguration.OptionButtonContext(() => RoleChanceOption.ChangeValue(false), "<<"),
@@ -305,14 +320,16 @@ public abstract class ConfigurableStandardRole : ConfigurableRole
 
         RoleCountOption.Shower = () => {
             var str = Language.Translate("options.role.count.short") + " : " + RoleCountOption.ToDisplayString();
-            if (RoleCountOption.GetMappedInt() > 1 && RoleSecondaryChanceOption.CurrentValue > 0)
+            if (RoleCountOption > 1 && RoleSecondaryChanceOption.CurrentValue > 0)
                 str += " (" + RoleChanceOption.ToDisplayString() + "," + RoleSecondaryChanceOption.ToDisplayString() + ")";
-            else if(RoleCountOption.GetMappedInt() == 1)
+            else if(RoleCountOption >= 1)
                 str += " (" + RoleChanceOption.ToDisplayString() + ")";
             return str;
         };
 
         RoleChanceOption.Shower = null;
         RoleSecondaryChanceOption.Shower = null;
+
+        modifierFilter = new NebulaModifierFilterConfigEntry(RoleConfig.Id + ".modifierFilter", Array.Empty<string>());
     }   
 }

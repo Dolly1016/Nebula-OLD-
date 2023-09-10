@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Il2CppMicrosoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +14,7 @@ public class NebulaLog
     private static string FileName = "NebulaLog";
     public NebulaLog()
     {
-        
+
         int counter = 0;
         Stream? stream;
 
@@ -46,8 +47,6 @@ public class NebulaLog
         {
             writer.WriteLine("\n  Nebula on the Ship  Log File \n");
         }
-
-        
     }
 
     public class LogCategory

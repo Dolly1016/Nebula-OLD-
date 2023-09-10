@@ -3,6 +3,8 @@ using System.Text;
 using Nebula.Modules;
 using Nebula.Utilities;
 using UnityEngine;
+using UnityEngine.Rendering;
+using Nebula.Roles;
 
 namespace Nebula.Configuration;
 
@@ -13,7 +15,7 @@ public class NebulaSettingMenu : MonoBehaviour
         ClassInjector.RegisterTypeInIl2Cpp<NebulaSettingMenu>();
     }
 
-    MetaScreen LeftHolder, MainHolder, RightHolder, SecondScreen;
+    MetaScreen LeftHolder, MainHolder, RightHolder, SecondScreen,SecondTopScreen;
     GameObject FirstPage, SecondPage;
     Scroller FirstScroller, SecondScroller;
     TMPro.TextMeshPro SecondTitle;
@@ -29,9 +31,10 @@ public class NebulaSettingMenu : MonoBehaviour
 
         FirstPage = UnityHelper.CreateObject("FirstPage",transform,Vector3.zero);
         LeftHolder = UnityHelper.CreateObject<MetaScreen>("LeftHolder", FirstPage.transform, new Vector3(-4.1f, 0.3f));
-        RightHolder = UnityHelper.CreateObject<MetaScreen>("RightHolder", FirstPage.transform, new Vector3(2.4f, 0f));
+        RightHolder = UnityHelper.CreateObject<MetaScreen>("RightHolder", FirstPage.transform, new Vector3(2.5f, 0f));
 
         var MainHolderParent = UnityHelper.CreateObject("Main", FirstPage.transform, new Vector3(-1.05f, -0.4f));
+        MainHolderParent.AddComponent<SortingGroup>();
         var MainHolderMask = UnityHelper.CreateObject<SpriteMask>("Mask",MainHolderParent.transform, Vector3.zero);
         MainHolderMask.sprite = VanillaAsset.FullScreenSprite;
         MainHolderMask.transform.localScale = new Vector3(6f,4.5f);
@@ -43,11 +46,13 @@ public class NebulaSettingMenu : MonoBehaviour
 
         SecondPage = UnityHelper.CreateObject("SecondPage", transform, Vector3.zero);
         var SecondParent = UnityHelper.CreateObject("Main", SecondPage.transform, new Vector3(-0.3f, -0.7f));
+        SecondParent.AddComponent<SortingGroup>();
         var SecondMask = UnityHelper.CreateObject<SpriteMask>("Mask", SecondParent.transform, Vector3.zero);
         SecondMask.sprite = VanillaAsset.FullScreenSprite;
         SecondMask.transform.localScale = new Vector3(8f, 4.1f);
         SecondScreen = UnityHelper.CreateObject<MetaScreen>("SecondScreen", SecondParent.transform, new Vector3(0f, 0f, -5f));
         SecondScroller = VanillaAsset.GenerateScroller(new Vector2(8f, 4.1f), SecondParent.transform, new Vector3(4.2f, -0.05f, -1f), SecondScreen.transform, new FloatRange(0f, 1f), 4.2f);
+        
 
         //左上タイトルと戻るボタン
         SecondTitle = GameObject.Instantiate(VanillaAsset.StandardTextPrefab, SecondPage.transform);
@@ -55,6 +60,7 @@ public class NebulaSettingMenu : MonoBehaviour
         SecondTitle.text = "Configuration Title";
         SecondTitle.transform.localPosition = new Vector3(-2.8f, 1.9f, -10f);
         new MetaContext.Button(() => OpenFirstPage(), new(TextAttribute.BoldAttr) { Size = new Vector2(0.4f, 0.28f) }) { RawText = "<<" }.Generate(SecondPage, new Vector2(-4.8f, 1.9f));
+        SecondTopScreen = UnityHelper.CreateObject<MetaScreen>("SecondTopScreen", SecondPage.transform, new Vector3(0f, 1.9f, -5f));
 
         OpenFirstPage();
     }
@@ -64,6 +70,7 @@ public class NebulaSettingMenu : MonoBehaviour
         MetaContext context = new();
 
         context.Append(new MetaContext.Text(new(TextAttribute.BoldAttr)) { RawText = Language.Translate("options.gamemode"), Alignment = IMetaContext.AlignmentOption.Center });
+        
         context.Append(new MetaContext.Button(() => {
             GeneralConfigurations.GameModeOption.ChangeValue(true);
             UpdateMainTab();
@@ -92,11 +99,12 @@ public class NebulaSettingMenu : MonoBehaviour
         LeftHolder.SetContext(new Vector2(2f, 3f), context);
     }
 
-    private static TextAttribute RightTextAttr = new(TextAttribute.NormalAttr) { FontSize = 1.5f, FontMaxSize = 1.5f, FontMinSize = 1.5f, Size = new(2.3f, 5f), Alignment = TMPro.TextAlignmentOptions.TopLeft };
+    private static TextAttribute RightTextAttr = new(TextAttribute.NormalAttr) { FontSize = 1.5f, FontMaxSize = 1.5f, FontMinSize = 0.7f, Size = new(3f, 5f), Alignment = TMPro.TextAlignmentOptions.TopLeft };
 
     private void UpdateMainTab()
     {
         MainHolder.transform.localPosition = new Vector3(0, 0, 0);
+        RightHolder.SetContext(null);
 
         MetaContext context = new();
 
@@ -139,7 +147,7 @@ public class NebulaSettingMenu : MonoBehaviour
                     {
                         StringBuilder builder = new();
                         copiedHolder.GetShownString(ref builder);
-                        RightHolder.SetContext(new(2f, 3.8f),new MetaContext.Text(RightTextAttr) { RawText = builder.ToString() });
+                        RightHolder.SetContext(new(2.2f, 3.8f),new MetaContext.Text(RightTextAttr) { RawText = builder.ToString() });
                     });
                 },
                 Alignment = IMetaContext.AlignmentOption.Center,
@@ -152,11 +160,69 @@ public class NebulaSettingMenu : MonoBehaviour
     }
 
     ConfigurationHolder? CurrentHolder = null;
+
+    private static TextAttribute RelatedButtonAttr = new TextAttribute(TextAttribute.BoldAttr) { Size = new Vector2(1.1f, 0.29f) };
+    private static TextAttribute RelatedInsideButtonAttr = new TextAttribute(TextAttribute.BoldAttr) { Size = new Vector2(1.1f, 0.29f), FontMaterial = VanillaAsset.StandardMaskedFontMaterial };
     public void UpdateSecondaryPage()
     {
         if(CurrentHolder == null) return;
 
         SecondScroller.SetYBoundsMax(SecondScreen.SetContext(new Vector2(7.8f, 4.1f), CurrentHolder.GetContext()) - 4.1f);
+
+        List<IMetaParallelPlacable> topContents = new();
+        if(CurrentHolder.RelatedAssignable != null)
+        {
+            var assignable = CurrentHolder.RelatedAssignable;
+            if (assignable is AbstractRole role)
+            {
+                //Modifierを付与されうるロール
+
+                void OpenFilterScreen(MetaScreen? screen,AbstractRole role)
+                {
+                    if (!screen)
+                        screen = MetaScreen.GenerateWindow(new Vector2(5f, 3.2f), HudManager.Instance.transform, Vector3.zero, true, true);
+
+                    MetaContext inner = new();
+                    inner.Append(Roles.Roles.AllIntroAssignableModifiers().Where(m => role.CanLoadDefault(m)), (m) => new MetaContext.Button(() => { role.ModifierFilter.ToggleAndShare(m); OpenFilterScreen(screen,role); }, RelatedInsideButtonAttr)
+                    {
+                        RawText = m.DisplayName.Color(m.RoleColor),
+                        PostBuilder = (button, renderer, text) => renderer.maskInteraction = SpriteMaskInteraction.VisibleInsideMask,
+                        Alignment = IMetaContext.AlignmentOption.Center,
+                        Color = role.ModifierFilter.Contains(m) ? new Color(0.24f, 0.24f, 0.24f) : Color.white
+                    }, 3, -1, 0, 0.6f);
+
+                    screen!.SetContext(new MetaContext.ScrollView(new(5f, 3.1f), inner, true));
+                }
+
+                if (role.ModifierFilter != null) topContents.Add(new MetaContext.Button(() => OpenFilterScreen(null, role), RelatedButtonAttr) { TranslationKey = "options.role.modifierFilter" });
+            }else if(assignable is IntroAssignableModifier iam)
+            {
+                //付与されうるModifier
+
+                void OpenFilterScreen(MetaScreen? screen, IntroAssignableModifier modifier)
+                {
+                    if (!screen)
+                        screen = MetaScreen.GenerateWindow(new Vector2(5f, 3.2f), HudManager.Instance.transform, Vector3.zero, true, true);
+
+                    MetaContext inner = new();
+                    inner.Append(Roles.Roles.AllRoles.Where(r=>r.ModifierFilter != null && r.CanLoadDefault(modifier)), (role) => new MetaContext.Button(() => { role.ModifierFilter.ToggleAndShare(iam); OpenFilterScreen(screen, modifier); }, RelatedInsideButtonAttr)
+                    {
+                        RawText = role.DisplayName.Color(role.RoleColor),
+                        PostBuilder = (button, renderer, text) => renderer.maskInteraction = SpriteMaskInteraction.VisibleInsideMask,
+                        Alignment = IMetaContext.AlignmentOption.Center,
+                        Color = role.ModifierFilter.Contains(modifier) ? new Color(0.24f, 0.24f, 0.24f) : Color.white
+                    }, 3, -1, 0, 0.6f);
+
+                    screen!.SetContext(new MetaContext.ScrollView(new(5f, 3.1f), inner, true));
+                }
+
+                topContents.Add(new MetaContext.Button(() => OpenFilterScreen(null, iam), RelatedButtonAttr) { TranslationKey = "options.role.modifierFilter" });
+            }
+
+            foreach (var related in assignable.RelatedOnConfig()) if(related.RelatedConfig != null) topContents.Add(new MetaContext.Button(() => OpenSecondaryPage(related.RelatedConfig!), RelatedButtonAttr) { RawText = related.DisplayName.Color(related.RoleColor) });
+        }
+
+        SecondTopScreen.SetContext(new Vector2(7.8f,0.4f),new CombinedContext(0.4f, topContents.ToArray()) { Alignment = IMetaContext.AlignmentOption.Right});
         SecondTitle.text = CurrentHolder.Title.Text;
     }
 

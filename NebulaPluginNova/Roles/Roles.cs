@@ -12,7 +12,13 @@ namespace Nebula.Roles;
 public class Roles
 {
     static public IReadOnlyList<AbstractRole> AllRoles { get; private set; }
+    
     static public IReadOnlyList<AbstractModifier> AllModifiers { get; private set; }
+    static public IEnumerable<IntroAssignableModifier> AllIntroAssignableModifiers()
+    {
+        foreach (var m in AllModifiers) if (m is IntroAssignableModifier iam) yield return iam;
+    }
+
     static public IReadOnlyList<Team> AllTeams { get; private set; }
 
     static private List<AbstractRole>? allRoles = new();
@@ -60,15 +66,15 @@ public class Roles
 
         allTeams!.Sort((team1, team2) => team1.TranslationKey.CompareTo(team2.TranslationKey));
 
-        foreach (var role in allRoles) role.Load();
-        foreach (var modifier in allModifiers) modifier.Load();
-
         for (int i = 0; i < allRoles!.Count; i++) allRoles![i].Id = i; 
         for (int i = 0; i < allModifiers!.Count; i++) allModifiers![i].Id = i;
 
         AllRoles = allRoles!.AsReadOnly();
         AllModifiers = allModifiers!.AsReadOnly();
         AllTeams = allTeams!.AsReadOnly();
+
+        foreach (var role in allRoles) role.Load();
+        foreach (var modifier in allModifiers) modifier.Load();
 
         allRoles = null;
         allModifiers = null;

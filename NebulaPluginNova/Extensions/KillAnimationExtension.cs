@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Nebula.Expansions;
+namespace Nebula.Extensions;
 
-public static class KillAnimationExpansion
+public static class KillAnimationExtension
 {
     static public IEnumerator CoPerformModKill(this KillAnimation killAnim, PlayerControl source, PlayerControl target,bool blink)
     {
@@ -33,6 +33,9 @@ public static class KillAnimationExpansion
                 PlayerControl.LocalPlayer.MyPhysics.inputHandler.enabled = true;
             }
         }
+
+        NebulaGameManager.Instance.AllRoleAction((r) => r.OnDeadBodyGenerated(deadBody));
+
         target.Die(DeathReason.Kill, false);
         yield return source.MyPhysics.Animations.CoPlayCustomAnimation(killAnim.BlurAnim);
 

@@ -111,7 +111,7 @@ public class MetaContext : IMetaContext
 
             if(index == perLine)
             {
-                Append(new CombinedContent(height, contextList));
+                Append(new CombinedContext(height, contextList));
                 index = 0;
                 leftLines--;
 
@@ -122,7 +122,7 @@ public class MetaContext : IMetaContext
         if (index != 0)
         {
             for (; index < perLine; index++) contextList[index] = new HorizonalMargin(0f);
-            Append(new CombinedContent(height, contextList));
+            Append(new CombinedContext(height, contextList));
         }
 
         if (fixedHeight && leftLines > 0) for (int i = 0; i < leftLines; i++) Append(new VerticalMargin(height));
@@ -450,20 +450,20 @@ public class ParallelContext : IMetaContext
     }
 }
 
-public class CombinedContent : IMetaContext
+public class CombinedContext : IMetaContext
 {
     IMetaParallelPlacable[] contents;
     public AlignmentOption Alignment { get; set; }
     float height;
 
-    public CombinedContent(float height, AlignmentOption alignment, params IMetaParallelPlacable[] contents)
+    public CombinedContext(float height, AlignmentOption alignment, params IMetaParallelPlacable[] contents)
     {
         this.contents = contents.ToArray();
         this.Alignment = alignment;
         this.height = height;
     }
 
-    public CombinedContent(float height, params IMetaParallelPlacable[] contents) : this(height, AlignmentOption.Center, contents) { }
+    public CombinedContext(float height, params IMetaParallelPlacable[] contents) : this(height, AlignmentOption.Center, contents) { }
 
     public float Generate(GameObject screen, Vector2 cursor,Vector2 size, out (float min, float max) width)
     {
@@ -535,25 +535,31 @@ public class MetaScreen : MonoBehaviour
             }
         } }
 
-    public float SetContext(Vector2? border, IMetaContext context)
+    public float SetContext(Vector2? border, IMetaContext? context)
     {
         if(border != null) Border = border.Value;
 
         return SetContext(context);
     }
 
-    public float SetContext(IMetaContext context,out (float min,float max) width) {
+    public float SetContext(IMetaContext? context,out (float min,float max) width) {
         gameObject.ForEachChild((Il2CppSystem.Action<GameObject>)((obj) =>
         {
             if (obj.name != "BorderLine") GameObject.Destroy(obj);
         }));
+
+        if (context == null)
+        {
+            width = (0f, 0f);
+            return 0f;
+        }
 
         Vector2 cursor = Border / 2f;
         cursor.x *= -1f;
         return context.Generate(gameObject, cursor, Border, out width);
     }
 
-    public float SetContext(IMetaContext context) => SetContext(context, out var _);
+    public float SetContext(IMetaContext? context) => SetContext(context, out var _);
 
     public void CloseScreen()
     {

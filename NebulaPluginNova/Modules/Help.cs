@@ -59,7 +59,7 @@ public static class HelpScreen
 
         foreach (var info in AllHelpTabInfo) if ((validTabs & info.Tab) != 0) tabs.Add(info.GetButton(screen, tab, validTabs));
 
-        return new CombinedContent(0.5f,tabs.ToArray());
+        return new CombinedContext(0.5f,tabs.ToArray());
     }
     private static void ShowScreen(MetaScreen screen, HelpTab tab,HelpTab validTabs)
     {
@@ -114,7 +114,7 @@ public static class HelpScreen
         foreach (var temp in LobbySlideManager.AllTemplates)
         {
             var copiedTemp = temp;
-            inner.Append(new CombinedContent(
+            inner.Append(new CombinedContext(
                 0.5f,
                 new MetaContext.Text(SlideTitleAttr) { RawText = temp.Title },
                 new MetaContext.HorizonalMargin(0.2f),
@@ -133,7 +133,7 @@ public static class HelpScreen
         StringBuilder builder = new();
         foreach (var holder in ConfigurationHolder.AllHolders)
         {
-            if (!(holder.IsActivated?.Invoke() ?? true)) continue;
+            if (!(holder.IsActivated?.Invoke() ?? true) || !holder.IsShown || (holder.GameModeMask & GeneralConfigurations.CurrentGameMode) == 0) continue;
 
             if (builder.Length != 0) builder.Append("\n");
             holder.GetShownString(ref builder);

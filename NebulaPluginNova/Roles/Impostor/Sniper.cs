@@ -30,9 +30,10 @@ public class Sniper : ConfigurableStandardRole
         base.LoadOptions();
 
         SnipeCoolDownOption = new(RoleConfig, "snipeCoolDown", KillCoolDownConfiguration.KillCoolDownType.Immediate, 2.5f, 10f, 60f, -40f, 40f, 0.125f, 0.125f, 2f, 20f, -10f, 1f);
-        ShotSizeOption = new(RoleConfig, "shotSize", null, 0.25f, 4f, 0.25f, 1f, 1f);
-        ShotEffectiveRangeOption = new(RoleConfig, "shotEffectiveRange", null, 2.5f, 40f, 2.5f, 20f, 20f);
-        ShotNoticeRangeOption = new(RoleConfig, "shotNoticeRange", null, 2.5f, 40f, 2.5f, 15f, 15f);
+        ShotSizeOption = new(RoleConfig, "shotSize", null, 0.25f, 4f, 0.25f, 1f, 1f) { Decorator = NebulaConfiguration.OddsDecorator };
+        ShotEffectiveRangeOption = new(RoleConfig, "shotEffectiveRange", null, 2.5f, 40f, 2.5f, 20f, 20f) { Decorator = NebulaConfiguration.OddsDecorator };
+        ShotNoticeRangeOption = new(RoleConfig, "shotNoticeRange", null, 2.5f, 40f, 2.5f, 15f, 15f) { Decorator = NebulaConfiguration.OddsDecorator };
+        StoreRifleOnFireOption = new(RoleConfig, "storeRifleOnFire", null, true, true);
     }
 
     [NebulaRPCHolder]
@@ -53,7 +54,7 @@ public class Sniper : ConfigurableStandardRole
         {
             if (Owner.AmOwner) Owner.RequireUpdateMouseAngle();
             Renderer.transform.localEulerAngles = new Vector3(0, 0, Owner.MouseAngle * 180f / Mathf.PI);
-            var pos = PlayerControl.LocalPlayer.transform.position + new Vector3(Mathf.Cos(Owner.MouseAngle), Mathf.Sin(Owner.MouseAngle), -1f) * 0.87f;
+            var pos = Owner.MyControl.transform.position + new Vector3(Mathf.Cos(Owner.MouseAngle), Mathf.Sin(Owner.MouseAngle), -1f) * 0.87f;
             var diff = (pos - Renderer.transform.position) * Time.deltaTime * 7.5f;
             Renderer.transform.position += diff;
             Renderer.flipY = Mathf.Cos(Owner.MouseAngle) < 0f;
@@ -117,6 +118,11 @@ public class Sniper : ConfigurableStandardRole
                 equipButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;
                 equipButton.OnClick = (button) =>
                 {
+                    if(MyRifle == null)
+                        equipButton.SetLabel("unequip");
+                    else
+                        equipButton.SetLabel("equip");
+
                     RpcEquip.Invoke((MyPlayer.PlayerId, MyRifle == null));
                 };
                 equipButton.SetLabelType(ModAbilityButton.LabelType.Standard);
@@ -127,7 +133,7 @@ public class Sniper : ConfigurableStandardRole
                 killButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;
                 killButton.OnClick = (button) =>
                 {
-                    var target = MyRifle?.GetTarget(MyRole.ShotSizeOption.GetFloat()!.Value, MyRole.ShotEffectiveRangeOption.GetFloat()!.Value);
+                    var target = MyRifle?.GetTarget(MyRole.ShotSizeOption.GetFloat(), MyRole.ShotEffectiveRangeOption.GetFloat());
                     if (target != null)
                     {
                         MyPlayer.MyControl.ModKill(target!.MyControl, false, PlayerState.Sniped, EventDetail.Kill);
@@ -138,9 +144,10 @@ public class Sniper : ConfigurableStandardRole
                     }
                     Sniper.RpcShowNotice.Invoke(MyPlayer.MyControl.GetTruePosition());
 
-                    if (MyRole.StoreRifleOnFireOption.GetBool()!.Value) RpcEquip.Invoke((MyPlayer.PlayerId, false));
-
                     button.StartCoolDown();
+
+                    if (MyRole.StoreRifleOnFireOption) RpcEquip.Invoke((MyPlayer.PlayerId, false));
+
                 };
                 killButton.CoolDownTimer = Bind(new Timer(MyRole.SnipeCoolDownOption.KillCoolDown).SetAsKillCoolDown().Start());
                 killButton.SetLabelType(ModAbilityButton.LabelType.Standard);
@@ -186,7 +193,7 @@ public class Sniper : ConfigurableStandardRole
         "ShowSnipeNotice",
         (message, _) =>
         {
-            if ((message - (Vector2)PlayerControl.LocalPlayer.transform.position).magnitude < Sniper.MyRole.ShotNoticeRangeOption.GetFloat()!.Value)
+            if ((message - (Vector2)PlayerControl.LocalPlayer.transform.position).magnitude < Sniper.MyRole.ShotNoticeRangeOption.GetFloat())
             {
                 var arrow = new Arrow(snipeNoticeSprite.GetSprite(), false) { IsSmallenNearPlayer = false, IsAffectedByComms = false, FixedAngle = true };
                 arrow.TargetPos = message;

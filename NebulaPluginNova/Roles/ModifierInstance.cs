@@ -17,4 +17,5 @@ public abstract class ModifierInstance : AssignableInstance
     public virtual void DecorateRoleName(ref string text) { }
 
     public virtual bool InvalidateCrewmateTask => false;
+    public virtual string? IntroText => null;
 }

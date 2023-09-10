@@ -40,7 +40,7 @@ public class Sheriff : ConfigurableStandardRole
         private bool CanKill(PlayerControl target)
         {
             var info = target.GetModInfo();
-            if (info.Role.Role == Madmate.MyRole) return Sheriff.MyRole.CanKillMadmateOption.GetBool()!.Value;
+            if (info.Role.Role == Madmate.MyRole) return Sheriff.MyRole.CanKillMadmateOption;
             if (info.Role.Role.RoleCategory == RoleCategory.CrewmateRole) return false;
             return true;
         }

@@ -55,13 +55,13 @@ public class Painter : ConfigurableStandardRole
                 sampleButton.Availability = (button) => sampleTracker.CurrentTarget != null && MyPlayer.MyControl.CanMove;
                 sampleButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;
                 sampleButton.OnClick = (button) => {
-                    paintButton.CoolDownTimer.SetTime(5f).Resume();
+                    if (paintButton.CoolDownTimer.CurrentTime < 5f) paintButton.CoolDownTimer.SetTime(5f).Resume();
                     sample = sampleTracker.CurrentTarget!.GetModInfo().GetOutfit(75);
 
                     if (sampleIcon != null) GameObject.Destroy(sampleIcon.gameObject);
                     sampleIcon = AmongUsUtil.GetPlayerIcon(sample, paintButton.VanillaButton.transform, new Vector3(-0.4f, 0.35f, -0.5f), new(0.3f, 0.3f)).SetAlpha(0.5f);
                 };
-                sampleButton.CoolDownTimer = Bind(new Timer(MyRole.SampleCoolDownOption.GetFloat()!.Value).SetAsAbilityCoolDown().Start());
+                sampleButton.CoolDownTimer = Bind(new Timer(MyRole.SampleCoolDownOption.GetFloat()).SetAsAbilityCoolDown().Start());
                 sampleButton.SetLabelType(ModAbilityButton.LabelType.Standard);
                 sampleButton.SetLabel("sample");
 
@@ -74,14 +74,14 @@ public class Painter : ConfigurableStandardRole
                 };
                 paintButton.OnMeeting = (button) =>
                 {
-                    if (MyRole.LoseSampleOnMeetingOption.GetBool()!.Value)
+                    if (MyRole.LoseSampleOnMeetingOption)
                     {
                         if (sampleIcon != null) GameObject.Destroy(sampleIcon.gameObject);
                         sampleIcon = null;
                         sample = null;
                     }
                 };
-                paintButton.CoolDownTimer = Bind(new Timer(MyRole.PaintCoolDownOption.GetFloat()!.Value).SetAsAbilityCoolDown().Start());
+                paintButton.CoolDownTimer = Bind(new Timer(MyRole.PaintCoolDownOption.GetFloat()).SetAsAbilityCoolDown().Start());
                 paintButton.SetLabelType(ModAbilityButton.LabelType.Standard);
                 paintButton.SetLabel("paint");
             }

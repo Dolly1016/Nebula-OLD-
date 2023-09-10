@@ -1,6 +1,6 @@
 ﻿global using BepInEx.Unity.IL2CPP.Utils.Collections;
 global using Il2CppInterop.Runtime;
-global using Nebula.Expansions;
+global using Nebula.Extensions;
 global using Nebula.Utilities;
 global using Nebula.Game;
 global using Nebula.Player;
@@ -19,6 +19,7 @@ using UnityEngine.SceneManagement;
 using Nebula.Configuration;
 using System.Reflection;
 using Nebula.Patches;
+using Il2CppInterop.Runtime.Startup;
 
 namespace Nebula;
 
@@ -35,7 +36,7 @@ public class NebulaPlugin : BasePlugin
     public const bool IsSnapshot = false;
     public const string MajorCodeName = "Experimental"/*"Haro"*/;
     public const string SnapshotVersion = "23.08.01";
-    public const string VisualPluginVersion = "3";
+    public const string VisualPluginVersion = "4";
 
     static public HttpClient HttpClient
     {
@@ -152,8 +153,6 @@ public class NebulaPlugin : BasePlugin
     {
         MyPlugin = this;
 
-        //ロードパッチを適用する
-        //Harmony.CreateClassProcessor(typeof(Patches.LoadPatch)).Patch();
         Harmony.PatchAll();
 
         SetWindowText(FindWindow(null, Application.productName),"Among Us w/ " + GetNebulaVersionString());
@@ -187,24 +186,16 @@ public class NebulaPlugin : BasePlugin
                 return context;
             });
         */
-
-
-        foreach(var temp in LobbySlideManager.AllTemplates)
-        {
-            NebulaGameManager.Instance.LobbySlideManager.RegisterSlide(temp.Generate());
-            NebulaGameManager.Instance.LobbySlideManager.RpcShowScreen(temp.Tag, false);
-
-            break;
-        }
     }
 
-
+    
 }
 
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.Awake))]
 public static class AmongUsClientAwakePatch
 {
     public static bool IsFirstFlag = true;
+    
     public static void Postfix(AmongUsClient __instance)
     {
         if (!IsFirstFlag) return;
@@ -248,4 +239,13 @@ public class NebulaPreLoad : Attribute
     }
 
     static public bool FinishedLoading => NebulaPlugin.FinishedPreload;
+}
+
+[HarmonyPatch(typeof(StatsManager), nameof(StatsManager.AmBanned), MethodType.Getter)]
+public static class AmBannedPatch
+{
+    public static void Postfix(out bool __result)
+    {
+        __result = false;
+    }
 }

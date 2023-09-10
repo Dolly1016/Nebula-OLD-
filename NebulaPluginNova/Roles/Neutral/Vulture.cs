@@ -1,4 +1,5 @@
 ﻿using Nebula.Configuration;
+using Nebula.Modules.ScriptComponents;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,7 @@ public class Vulture : ConfigurableStandardRole
     public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player);
 
     private NebulaConfiguration EatCoolDownOption;
-    private NebulaConfiguration NumToEatenToWinOption;
+    private NebulaConfiguration NumOfEatenToWinOption;
     private VentConfiguration VentConfiguration;
     protected override void LoadOptions()
     {
@@ -30,7 +31,7 @@ public class Vulture : ConfigurableStandardRole
         VentConfiguration = new(RoleConfig, null, (5f, 60f, 15f), (2.5f, 30f, 10f));
 
         EatCoolDownOption = new NebulaConfiguration(RoleConfig, "eatCoolDown", null, 5f, 60f, 5f, 20f, 20f) { Decorator = NebulaConfiguration.SecDecorator };
-        NumToEatenToWinOption = new NebulaConfiguration(RoleConfig, "numToTheEatenToWin", null, 1, 8, 3, 3);
+        NumOfEatenToWinOption = new NebulaConfiguration(RoleConfig, "numOfTheEatenToWin", null, 1, 8, 3, 3);
     }
 
 
@@ -50,11 +51,34 @@ public class Vulture : ConfigurableStandardRole
         {
         }
 
+        private List<(DeadBody deadBody, Arrow arrow)> AllArrows = new();
+        public override void OnDeadBodyGenerated(DeadBody deadBody)
+        {
+            if(AmOwner) AllArrows.Add((deadBody, Bind(new Arrow(null) { TargetPos = deadBody.TruePosition }.SetColor(Color.blue))));
+        }
+
+        public override void LocalUpdate()
+        {
+            AllArrows.RemoveAll((tuple) =>
+            {
+                if (tuple.deadBody)
+                {
+                    tuple.arrow.TargetPos = tuple.deadBody.TruePosition;
+                    return false;
+                }
+                else
+                {
+                    tuple.arrow.Release();
+                    return true;
+                }
+            });
+        }
+
         public override void OnActivated()
         {
             if (AmOwner)
             {
-                int leftEaten = MyRole.NumToEatenToWinOption.GetMappedInt()!.Value;
+                int leftEaten = MyRole.NumOfEatenToWinOption;
 
                 var eatTracker = Bind(ObjectTrackers.ForDeadBody(1.2f, MyPlayer.MyControl, (d) => true));
 
@@ -70,7 +94,7 @@ public class Vulture : ConfigurableStandardRole
 
                     if (leftEaten <= 0) NebulaGameManager.Instance.RpcInvokeSpecialWin(NebulaGameEnd.VultureWin, 1 << MyPlayer.PlayerId);
                 };
-                eatButton.CoolDownTimer = Bind(new Timer(MyRole.EatCoolDownOption.GetFloat()!.Value).SetAsAbilityCoolDown().Start());
+                eatButton.CoolDownTimer = Bind(new Timer(MyRole.EatCoolDownOption.GetFloat()).SetAsAbilityCoolDown().Start());
                 eatButton.SetLabelType(ModAbilityButton.LabelType.Standard);
                 eatButton.SetLabel("eat");
                 usesIcon.text= leftEaten.ToString();

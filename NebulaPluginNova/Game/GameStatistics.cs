@@ -23,6 +23,7 @@ public static class EventDetail
     static public TranslatableTag Clean = new("statistics.events.clean");
     static public TranslatableTag Missed = new("statistics.events.missed");
     static public TranslatableTag Guess = new("statistics.events.guess");
+    static public TranslatableTag Embroil = new("statistics.events.embroil");
 }
 
 public enum GameStatisticsGatherTag
@@ -125,11 +126,16 @@ public class GameStatistics
 
     public void RecordEvent(Event statisticsEvent)
     {
+
+        int index = AllEvents.Count;
+
         if (statisticsEvent.Variation.CanCombine)
         {
             //末尾から検索
             for (int i = AllEvents.Count - 1; i >= 0; i--)
             {
+                if (AllEvents[i].Time > statisticsEvent.Time) index = i;
+
                 //ある程度以上離れた時間のイベントまで来たら検索をやめる
                 if (statisticsEvent.Time - AllEvents[i].Time > 5f) break;
 
@@ -140,7 +146,7 @@ public class GameStatistics
                 }
             }
         }
-        AllEvents.Add(statisticsEvent);
+        AllEvents.Insert(index, statisticsEvent);
     }
 
     public void RpcRecordEvent(EventVariation variation, TranslatableTag relatedTag, PlayerControl? source,params PlayerControl[] targets)
@@ -150,14 +156,15 @@ public class GameStatistics
         RpcRecordEvent(variation,relatedTag,source,mask);
     }
 
-    public void RpcRecordEvent(EventVariation variation, TranslatableTag relatedTag, PlayerControl? source, int targetMask) => RpcRecord.Invoke((variation.Id, relatedTag.Id, source?.PlayerId ?? byte.MaxValue, targetMask));
-    
+    public void RpcRecordEvent(EventVariation variation, TranslatableTag relatedTag, PlayerControl? source, int targetMask) => RpcRecord.Invoke((variation.Id, relatedTag.Id, source?.PlayerId ?? byte.MaxValue, targetMask, 0f));
+    public void RpcRecordEvent(EventVariation variation, TranslatableTag relatedTag, float timeLag, PlayerControl? source, int targetMask) => RpcRecord.Invoke((variation.Id, relatedTag.Id, source?.PlayerId ?? byte.MaxValue, targetMask, timeLag));
 
-    static private RemoteProcess<(int variation,int relatedTag,byte sourceId,int targetMask)> RpcRecord = new(
+
+    static private RemoteProcess<(int variation,int relatedTag,byte sourceId,int targetMask,float timeLag)> RpcRecord = new(
         "RecordStatistics",
        (message, isCalledByMe) =>
        {
-           NebulaGameManager.Instance?.GameStatistics.RecordEvent(new Event(EventVariation.ValueOf(message.variation), message.sourceId == byte.MaxValue ? null : message.sourceId, message.targetMask) { RelatedTag = TranslatableTag.ValueOf(message.relatedTag) });
+           NebulaGameManager.Instance?.GameStatistics.RecordEvent(new Event(EventVariation.ValueOf(message.variation), NebulaGameManager.Instance.CurrentTime + message.timeLag, message.sourceId == byte.MaxValue ? null : message.sourceId, message.targetMask, null) { RelatedTag = TranslatableTag.ValueOf(message.relatedTag) });
        });
 
     static public RemoteProcess<(GameStatisticsGatherTag tag,byte playerId, Vector2 pos)> RpcPoolPosition = new(

@@ -132,6 +132,11 @@ public static class ShowIntroPatch
         var role = myInfo.Role.Role;
         __instance.RoleText.text = role.DisplayName;
         __instance.RoleBlurbText.text = role.IntroBlurb;
+        foreach(var m in myInfo.AllModifiers)
+        {
+            string? mBlurb = m.IntroText;
+            if (mBlurb != null) __instance.RoleBlurbText.text += "\n" + mBlurb;
+        }
         __instance.RoleText.color = role.RoleColor;
         __instance.YouAreText.color = role.RoleColor;
         __instance.RoleBlurbText.color = role.RoleColor;

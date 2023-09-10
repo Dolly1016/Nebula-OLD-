@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Nebula.Behaviour;
+using Nebula.Configuration;
 using Nebula.Game;
 using System;
 using System.Collections;
@@ -46,17 +47,58 @@ public static class NebulaExileWrapUp
             if (info != null)
             {
                 info.DeathTimeStamp = NebulaGameManager.Instance!.CurrentTime;
-                info.RoleAction(role =>
-                {
-                    role.OnExiled();
-                    role.OnDead();
-                });
 
-                PlayerControl.LocalPlayer.GetModInfo()?.RoleAction(r => r.OnPlayerDeadLocal(@object));
+                using (RPCRouter.CreateSection("ExilePlayer"))
+                {
+                    info.RoleAction(role =>
+                    {
+                        role.OnExiled();
+                        role.OnDead();
+                    });
+
+                    PlayerControl.LocalPlayer.GetModInfo()?.RoleAction(r => r.OnPlayerDeadLocal(@object));
+
+                    NebulaGameManager.Instance.Syncronizer.SendSync(SynchronizeTag.PostExile);
+                }
+
+                yield return NebulaGameManager.Instance.Syncronizer.CoSync(Modules.SynchronizeTag.PostExile, true, true, false);
+                NebulaGameManager.Instance.Syncronizer.ResetSync(Modules.SynchronizeTag.PostExile);
+            }
+
+            bool extraExile = MeetingHudExtension.ExtraVictims.Count > 0;
+            MeetingHudExtension.ExileExtraVictims();
+
+            //誰かが追加でいなくなったとき
+            if (GeneralConfigurations.NoticeExtraVictimsOption && extraExile)
+            {
+                string str = Language.Translate("game.meeting.someoneDisappeared");
+                int num = 0;
+                var additionalText = GameObject.Instantiate(__instance.Text, __instance.transform);
+                additionalText.transform.localPosition = new Vector3(0, 0, -800f);
+                additionalText.text = "";
+
+                while (num < str.Length)
+                {
+                    num++;
+                    additionalText.text = str.Substring(0, num);
+                    SoundManager.Instance.PlaySoundImmediate(__instance.TextSound, false, 0.8f, 0.92f);
+                    yield return new WaitForSeconds(Mathf.Min(2.8f / str.Length, 0.28f));
+                }
+                yield return new WaitForSeconds(1.9f);
+
+                float a = 1f;
+                while (a > 0f)
+                {
+                    a -= Time.deltaTime * 1.5f;
+                    additionalText.color = Color.white.AlphaMultiplied(a);
+                    yield return null;
+                }
+                yield return new WaitForSeconds(0.3f);
             }
         }
 
         NebulaGameManager.Instance?.OnMeetingEnd(__instance.exiled?.Object);
+        NebulaGameManager.Instance?.AllRoleAction(r=>r.OnMeetingEnd());
 
         yield return ModPreSpawnInPatch.ModPreSpawnIn(__instance.transform.parent, GameStatistics.EventVariation.MeetingEnd, EventDetail.MeetingEnd);
 

@@ -59,13 +59,13 @@ public class Morphing : ConfigurableStandardRole
                 sampleButton.Availability = (button) => sampleTracker.CurrentTarget != null && MyPlayer.MyControl.CanMove;
                 sampleButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;
                 sampleButton.OnClick = (button) => {
-                    morphButton.CoolDownTimer.SetTime(5f).Resume();
+                    if (morphButton.CoolDownTimer.CurrentTime < 5f) morphButton.CoolDownTimer.SetTime(5f).Resume();
                     sample = sampleTracker.CurrentTarget!.GetModInfo().GetOutfit(75);
 
                     if (sampleIcon != null) GameObject.Destroy(sampleIcon.gameObject);
                     sampleIcon = AmongUsUtil.GetPlayerIcon(sample, morphButton.VanillaButton.transform, new Vector3(-0.4f, 0.35f, -0.5f), new(0.3f, 0.3f)).SetAlpha(0.5f);
                 };
-                sampleButton.CoolDownTimer = Bind(new Timer(MyRole.SampleCoolDownOption.GetFloat()!.Value).SetAsAbilityCoolDown().Start());
+                sampleButton.CoolDownTimer = Bind(new Timer(MyRole.SampleCoolDownOption.GetFloat()).SetAsAbilityCoolDown().Start());
                 sampleButton.SetLabelType(ModAbilityButton.LabelType.Standard);
                 sampleButton.SetLabel("sample");
 
@@ -89,15 +89,15 @@ public class Morphing : ConfigurableStandardRole
                 {
                     morphButton.InactivateEffect();
 
-                    if (MyRole.LoseSampleOnMeetingOption.GetBool()!.Value)
+                    if (MyRole.LoseSampleOnMeetingOption)
                     {
                         if (sampleIcon != null) GameObject.Destroy(sampleIcon.gameObject);
                         sampleIcon = null;
                         sample = null;
                     }
                 };
-                morphButton.CoolDownTimer = Bind(new Timer(MyRole.MorphCoolDownOption.GetFloat()!.Value).SetAsAbilityCoolDown().Start());
-                morphButton.EffectTimer = Bind(new Timer(MyRole.MorphDurationOption.GetFloat()!.Value));
+                morphButton.CoolDownTimer = Bind(new Timer(MyRole.MorphCoolDownOption.GetFloat()).SetAsAbilityCoolDown().Start());
+                morphButton.EffectTimer = Bind(new Timer(MyRole.MorphDurationOption.GetFloat()));
                 morphButton.SetLabelType(ModAbilityButton.LabelType.Standard);
                 morphButton.SetLabel("morph");
             }

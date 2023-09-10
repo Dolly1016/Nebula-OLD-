@@ -92,12 +92,5 @@ public static class UnityHelper
         text.TargetText = (StringNames)short.MaxValue;
         text.defaultStr = translationKey;
     }
-
-    public static float Distance(this Vector3 vector, Vector3 opponent)
-    {
-        float x = vector.x - opponent.x;
-        float y = vector.y - opponent.y;
-        return Mathf.Sqrt(x * x + y * y);
-    }
 }
 

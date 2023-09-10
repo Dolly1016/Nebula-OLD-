@@ -22,12 +22,13 @@ public class NebulaOptionHolder : Attribute
 {
 }
 
+
 [NebulaPreLoad(typeof(Roles.Roles))]
 [NebulaRPCHolder]
-public class NebulaConfigEntry
+public class NebulaConfigEntryManager
 {
     static public DataSaver ConfigData = new DataSaver("Config");
-    static public List<NebulaConfigEntry> AllConfig = new();
+    static public List<INebulaConfigEntry> AllConfig = new();
 
     static public IEnumerator CoLoad()
     {
@@ -46,31 +47,7 @@ public class NebulaConfigEntry
         ConfigurationHolder.Load();
     }
 
-    public int CurrentValue { get; private set; }
-    private IntegerDataEntry dataEntry;
-    public int Id { get; private set; } = -1;
-    public string Name { get; private init; }
-
-    public NebulaConfigEntry(string id, int defaultValue)
-    {
-        dataEntry = new IntegerDataEntry(id, ConfigData, defaultValue);
-        LoadFromSaveData();
-        AllConfig.Add(this);
-        Name = id;
-    }
-
-    public void LoadFromSaveData()
-    {
-        CurrentValue = dataEntry.Value;
-    }
-
-    public void UpdateValue(int value, bool save)
-    {
-        CurrentValue = value;
-        if (save) dataEntry.Value = value;
-    }
-
-    static private RemoteProcess<(int id, int value)> RpcShare = new(
+    static public RemoteProcess<(int id, int value)> RpcShare = new(
         "ShareOption",
        (message, isCalledByMe) =>
        {
@@ -106,7 +83,7 @@ public class NebulaConfigEntry
        {
            int index = reader.ReadInt32();
            int num = reader.ReadInt32();
-           for(int i = 0; i < num; i++)
+           for (int i = 0; i < num; i++)
            {
                AllConfig[index].UpdateValue(reader.ReadInt32(), false);
                index++;
@@ -119,11 +96,6 @@ public class NebulaConfigEntry
        }
     );
 
-    public void Share()
-    {
-        RpcShare.Invoke((Id,CurrentValue));
-    }
-
     static public void ShareAll()
     {
         RpcShareAll.Invoke(0);
@@ -134,7 +106,182 @@ public class NebulaConfigEntry
         foreach (var cfg in AllConfig) cfg.LoadFromSaveData();
         ShareAll();
     }
+
 }
+
+public interface INebulaConfigEntry
+{
+    public int CurrentValue { get; }
+    public int Id { get; set; }
+    public string Name { get; }
+    public void LoadFromSaveData();
+    public INebulaConfigEntry UpdateValue(int value, bool save);
+
+    public void Share()=> NebulaConfigEntryManager.RpcShare.Invoke((Id, CurrentValue));
+}
+
+
+public class NebulaStandardConfigEntry : INebulaConfigEntry
+{
+
+    public int CurrentValue { get; protected set; }
+    private IntegerDataEntry dataEntry;
+    public int Id { get; set; } = -1;
+    public string Name { get; set; }
+
+    public NebulaStandardConfigEntry(string id, int defaultValue)
+    {
+        dataEntry = new IntegerDataEntry(id, NebulaConfigEntryManager.ConfigData, defaultValue);
+        LoadFromSaveData();
+        NebulaConfigEntryManager.AllConfig.Add(this);
+        Name = id;
+    }
+
+    public void LoadFromSaveData()
+    {
+        CurrentValue = dataEntry.Value;
+    }
+
+    public INebulaConfigEntry UpdateValue(int value, bool save)
+    {
+        CurrentValue = value;
+        if (save) dataEntry.Value = value;
+        return this;
+    }
+}
+
+public class NebulaStringConfigEntry : INebulaConfigEntry
+{
+
+    public int CurrentValue { get; protected set; }
+    private StringDataEntry dataEntry;
+    public int Id { get; set; } = -1;
+    public string Name { get; set; }
+    private Func<string, int> mapper;
+    private Func<int, string> serializer;
+
+    public NebulaStringConfigEntry(string id, string defaultValue,Func<string,int> mapper, Func<int, string> serializer)
+    {
+        dataEntry = new StringDataEntry(id, NebulaConfigEntryManager.ConfigData, defaultValue);
+        this.mapper = mapper;
+        this.serializer = serializer;
+
+        LoadFromSaveData();
+        NebulaConfigEntryManager.AllConfig.Add(this);
+        Name = id;
+    }
+
+    public void LoadFromSaveData()
+    {
+        CurrentValue = mapper.Invoke(dataEntry.Value);
+    }
+
+    public INebulaConfigEntry UpdateValue(int value, bool save)
+    {
+        CurrentValue = value;
+        if (save) dataEntry.Value = serializer.Invoke(value);
+        return this;
+    }
+}
+
+public class NebulaModifierFilterConfigEntry
+{
+    class FilterEntry : INebulaConfigEntry
+    {
+        NebulaModifierFilterConfigEntry myConfig { get; init; }
+        public int CurrentValue { get; protected set; }
+        public int Id { get; set; } = -1;
+        public string Name { get; set; }
+        public int Index { get; private set; }
+
+        public FilterEntry(NebulaModifierFilterConfigEntry config, int index)
+        {
+            myConfig = config;
+            Index = index;
+            Name = myConfig.Id + "." + index;
+            LoadFromSaveData();
+            NebulaConfigEntryManager.AllConfig.Add(this);
+        }
+
+        public void LoadFromSaveData()
+        {
+            CurrentValue = myConfig.LoadValue(Index);
+        }
+
+        public INebulaConfigEntry UpdateValue(int value, bool save)
+        {
+            CurrentValue = value;
+            if (save) myConfig.SaveValue(Index, value);
+            return this;
+        }
+    }
+
+    private StringArrayDataEntry dataEntry;
+    private HashSet<IntroAssignableModifier> modifiers = new();
+    private FilterEntry[] sharingEntry;
+
+    public string Id { get; private set; }
+    public NebulaModifierFilterConfigEntry(string id, string[] defaultValue)
+    {
+        Id = id;
+        dataEntry = new StringArrayDataEntry(id, NebulaConfigEntryManager.ConfigData, defaultValue);
+        modifiers = new HashSet<IntroAssignableModifier>();
+        foreach (var name in dataEntry.Value)
+        {
+            var modifier = (IntroAssignableModifier?)Roles.Roles.AllModifiers.FirstOrDefault(m => m is IntroAssignableModifier iam && iam.CodeName == name);
+            if(modifier != null) modifiers.Add(modifier);
+        }
+
+        sharingEntry = new FilterEntry[Roles.Roles.AllModifiers.Count / 30 + 1];
+        for (int i = 0; i < sharingEntry.Length; i++) sharingEntry[i] = new(this, i);
+
+    }
+
+    private void Save()
+    {
+        dataEntry.Value = modifiers.Select(m => m.CodeName).ToArray();
+    }
+
+    public void SaveValue(int index, int value)
+    {
+        //該当要素を全削除
+        modifiers.RemoveWhere(m => (index * 30) <= m.Id && m.Id < (index + 1) * 30);
+
+        for (int i = 0; i < 30; i++)
+        {
+            //追加するべき役職
+            if (((1 << i) & value) != 0) modifiers.Add(Roles.Roles.AllModifiers[i + index * 30] as IntroAssignableModifier);
+        }
+
+        Save();
+    }
+    public bool Contains(IntroAssignableModifier modifier) => modifiers.Contains(modifier);
+
+    public int LoadValue(int index)
+    {
+        int value = 0;
+        foreach(var m in modifiers)
+            if ((index * 30) <= m.Id && m.Id < (index + 1) * 30) value |= 1 << m.Id - (index * 30);
+        return value;
+    }
+
+    public void ToggleAndShare(IntroAssignableModifier modifier)
+    {
+        if (modifiers.Contains(modifier))
+            modifiers.Remove(modifier);
+        else
+            modifiers.Add(modifier);
+
+        foreach (INebulaConfigEntry config in sharingEntry)
+        {
+            config.LoadFromSaveData();
+            config.Share();
+        }
+
+        Save();
+    }
+}
+
 
 
 public class ConfigurationHolder
@@ -150,7 +297,7 @@ public class ConfigurationHolder
         });
     }
 
-    private NebulaConfigEntry? entry = null;
+    private INebulaConfigEntry? entry = null;
     private Func<bool>? predicate = null;
     private int tabMask,gamemodeMask;
     public string Id { get; private set; }
@@ -158,7 +305,7 @@ public class ConfigurationHolder
     public ITextComponent Title { get; private init; }
     private List<NebulaConfiguration> myConfigurations = new();
     public IEnumerable<NebulaConfiguration> MyConfigurations => myConfigurations;
-
+    public IAssignableBase? RelatedAssignable = null;
     public Func<bool>? IsActivated { get; set; } = null;
 
     internal void RegisterOption(NebulaConfiguration config) => myConfigurations.Add(config);
@@ -175,7 +322,7 @@ public class ConfigurationHolder
 
     public ConfigurationHolder SetDefaultShownState(bool shownDefault)
     {
-        if (entry == null) entry = new NebulaConfigEntry(Id, shownDefault ? 1 : 0);
+        if (entry == null) entry = new NebulaStandardConfigEntry(Id, shownDefault ? 1 : 0);
         return this;
     }
 
@@ -229,7 +376,7 @@ public class ConfigurationHolder
 
 public class NebulaConfiguration
 {
-    private NebulaConfigEntry? entry;
+    private INebulaConfigEntry? entry;
     public ConfigurationHolder? MyHolder { get; private set; }
     public Func<object?, string>? Decorator { get; set; } = null;
     public Func<int, object?>? Mapper { get; set; } = null;
@@ -247,7 +394,7 @@ public class NebulaConfiguration
     {
         if (Editor != null)
             return Editor.Invoke();
-        return new CombinedContent(0.55f, IMetaContext.AlignmentOption.Center,
+        return new CombinedContext(0.55f, IMetaContext.AlignmentOption.Center,
             new MetaContext.Text(OptionTitleAttr) { RawText = Title.Text },
             OptionTextColon,
             OptionButtonContext(() => ChangeValue(false), "<<"),
@@ -323,7 +470,7 @@ public class NebulaConfiguration
         string entryId = id;
         if (holder != null) entryId = holder.Id + "." + entryId;
 
-        entry = new NebulaConfigEntry(entryId, defaultValue);
+        entry = new NebulaStandardConfigEntry(entryId, defaultValue);
         Title = title ?? new TranslateTextComponent(entryId);
 
         Shower = () => Title.Text + " : " + ToDisplayString();
@@ -396,30 +543,33 @@ public class NebulaConfiguration
         return Mapper?.Invoke(CurrentValue) ?? CurrentValue;
     }
 
-    public int? GetMappedInt()
+    public int GetMappedInt()
     {
-        return (int?)GetMapped();
+        return (int)GetMapped()!;
     }
 
-    public float? GetFloat()
+    public float GetFloat()
     {
-        return (float?)GetMapped();
+        return (float)GetMapped()!;
     }
 
-    public string? GetString()
+    public string GetString()
     {
-        return GetMapped()?.ToString();
+        return GetMapped()?.ToString()!;
     }
 
-    public bool? GetBool()
+    public bool GetBool()
     {
-        return (bool?)GetMapped();
+        return (bool)GetMapped()!;
     }
 
     public string ToDisplayString()
     {
         return Decorator?.Invoke(GetMapped()) ?? GetString() ?? "None";
     }
+
+    public static implicit operator bool(NebulaConfiguration config) => config.GetBool();
+    public static implicit operator int(NebulaConfiguration config) => config.GetMappedInt();
 }
 
 public class CustomGameMode
@@ -498,6 +648,4 @@ public class ConfigurationTab
 
     public static implicit operator int(ConfigurationTab tab) => tab.bitFlag;
     
-
-
 }

@@ -31,7 +31,7 @@ public static class HudManagerUpdatePatch
     {
         NebulaGameManager.Instance?.OnUpdate();
 
-        if (NebulaInput.GetKeyDown(KeyCode.H))
+        if (NebulaInput.GetKeyDown(KeyCode.H) && !IntroCutscene.Instance && !Minigame.Instance && !ExileController.Instance)
         {
             HelpScreen.OpenHelpScreen();
         }

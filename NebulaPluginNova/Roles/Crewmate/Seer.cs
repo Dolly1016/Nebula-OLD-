@@ -73,7 +73,7 @@ public class Seer : ConfigurableStandardRole
 
         public override void OnPlayerDeadLocal(PlayerControl dead)
         {
-            new Ghost(dead.transform.position, MyRole.GhostDurationOption.GetFloat()!.Value);
+            new Ghost(dead.transform.position, MyRole.GhostDurationOption.GetFloat());
         }
     }
 }

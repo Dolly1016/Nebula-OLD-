@@ -21,6 +21,7 @@ public static class PlayerState
     public static TranslatableTag Beaten = new("state.beaten");
     public static TranslatableTag Guessed = new("state.guessed");
     public static TranslatableTag Misguessed = new("state.misguessed");
+    public static TranslatableTag Embroiled = new("state.embroiled");
 }
 
 [NebulaRPCHolder]
@@ -279,42 +280,40 @@ public class PlayerModInfo
             }
         }
 
-        if (MyControl.inVent)
+        //ベント中の死体
+        deadBodyCache.Reported = MyControl.inVent;
+        foreach (var r in deadBodyCache.bodyRenderers) r.enabled = !MyControl.inVent;
+
+        var targetPosition = MyControl.transform.position + new Vector3(-0.1f, -0.1f);
+
+        if (MyControl.transform.position.Distance(deadBodyCache.transform.position) < 1.8f)
+            deadBodyCache.transform.position += (targetPosition - deadBodyCache.transform.position) * 0.15f;
+        else
+            deadBodyCache.transform.position = targetPosition;
+
+
+        Vector3 playerPos = MyControl.GetTruePosition();
+        Vector3 deadBodyPos = deadBodyCache.TruePosition;
+        Vector3 diff = (deadBodyPos - playerPos);
+        float d = diff.magnitude;
+        if (PhysicsHelpers.AnythingBetween(playerPos, deadBodyPos, Constants.ShipAndAllObjectsMask, false))
         {
-            deadBodyCache.transform.localPosition = new Vector3(10000, 10000);
+            foreach (var ray in PhysicsHelpers.castHits)
+            {
+                float temp = ((Vector3)ray.point - playerPos).magnitude;
+                if (d > temp) d = temp;
+            }
+
+            d -= 0.15f;
+            if (d < 0f) d = 0f;
+
+            deadBodyCache.transform.localPosition = playerPos + diff.normalized * d;
         }
         else
         {
-            var targetPosition = MyControl.transform.position + new Vector3(-0.1f, -0.1f);
-
-            if (MyControl.transform.position.Distance(deadBodyCache.transform.position) < 1.8f)
-                deadBodyCache.transform.position += (targetPosition - deadBodyCache.transform.position) * 0.15f;
-            else
-                deadBodyCache.transform.position = targetPosition;
-
-
-            Vector3 playerPos = MyControl.GetTruePosition();
-            Vector3 deadBodyPos = deadBodyCache.TruePosition;
-            Vector3 diff = (deadBodyPos - playerPos);
-            float d = diff.magnitude;
-            if (PhysicsHelpers.AnythingBetween(playerPos, deadBodyPos, Constants.ShipAndAllObjectsMask, false))
-            {
-                foreach (var ray in PhysicsHelpers.castHits)
-                {
-                    float temp = ((Vector3)ray.point - playerPos).magnitude;
-                    if (d > temp) d = temp;
-                }
-
-                d -= 0.15f;
-                if (d < 0f) d = 0f;
-
-                deadBodyCache.transform.localPosition = playerPos + diff.normalized * d;
-            }
-            else
-            {
-                deadBodyCache.transform.localPosition = deadBodyCache.transform.position;
-            }
+            deadBodyCache.transform.localPosition = deadBodyCache.transform.position;
         }
+
     }
 
     public void ReleaseDeadBody() {

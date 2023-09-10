@@ -12,7 +12,7 @@ public class ShipStatusPatch
 {
     static public void Postfix(ShipStatus __instance)
     {
-        if (GeneralConfigurations.SilentVentOption.GetBool()!.Value)
+        if (GeneralConfigurations.SilentVentOption)
         {
             //ベントを見えなくする
             foreach (var vent in ShipStatus.Instance.AllVents)

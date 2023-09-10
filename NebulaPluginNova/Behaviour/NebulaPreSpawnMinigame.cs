@@ -183,7 +183,7 @@ public class NebulaPreSpawnMinigame : Minigame
         UnderText.text = "";
 
 
-        int candidates = GeneralConfigurations.SpawnCandidatesOption.GetMappedInt().Value;
+        int candidates = GeneralConfigurations.SpawnCandidatesOption;
         if (GeneralConfigurations.SpawnMethodOption.CurrentValue == 2) candidates = 1;
 
         Tuple<SpriteRenderer, TextMeshPro>[] allButton = new Tuple<SpriteRenderer, TextMeshPro>[candidates];

@@ -90,12 +90,12 @@ public class Phosphorus : ConfigurableStandardRole
                     CombinedRemoteProcess.CombinedRPC.Invoke(globalLanterns!.Select((id)=>RpcLantern.GetInvoker(id)).ToArray());
                 };
                 lanternButton.OnEffectEnd = (button) => lanternButton.StartCoolDown();
-                lanternButton.CoolDownTimer = Bind(new Timer(0f, MyRole.LampCoolDownOption.GetFloat()!.Value).SetAsAbilityCoolDown().Start());
-                lanternButton.EffectTimer = Bind(new Timer(0f, MyRole.LampDurationOption.GetFloat()!.Value));
+                lanternButton.CoolDownTimer = Bind(new Timer(0f, MyRole.LampCoolDownOption.GetFloat()).SetAsAbilityCoolDown().Start());
+                lanternButton.EffectTimer = Bind(new Timer(0f, MyRole.LampDurationOption.GetFloat()));
                 lanternButton.SetLabelType(ModAbilityButton.LabelType.Standard);
                 lanternButton.SetLabel("lantern");
 
-                int left = MyRole.NumOfLampsOption.GetMappedInt()!.Value;
+                int left = MyRole.NumOfLampsOption;
 
                 placeButton = Bind(new ModAbilityButton()).KeyBind(KeyCode.F);
                 var usesText = placeButton.ShowUsesIcon(3);
@@ -111,7 +111,7 @@ public class Phosphorus : ConfigurableStandardRole
 
                     placeButton.StartCoolDown();
                 };
-                placeButton.CoolDownTimer = Bind(new Timer(0f, MyRole.PlaceCoolDownOption.GetFloat()!.Value).SetAsAbilityCoolDown());
+                placeButton.CoolDownTimer = Bind(new Timer(0f, MyRole.PlaceCoolDownOption.GetFloat()).SetAsAbilityCoolDown());
                 placeButton.SetLabelType(ModAbilityButton.LabelType.Standard);
                 placeButton.SetLabel("place");
                 usesText.text = left.ToString();
@@ -125,7 +125,7 @@ public class Phosphorus : ConfigurableStandardRole
         public override void OnMeetingStart()
         {
             //ランタンを全て設置していたら全員に公開する
-            if(localLanterns != null && localLanterns.Count == MyRole.NumOfLampsOption.GetMappedInt()!.Value)
+            if(localLanterns != null && localLanterns.Count == MyRole.NumOfLampsOption)
             {
                 globalLanterns = new int[localLanterns.Count];
                 for (int i = 0;i<localLanterns.Count;i++) {
@@ -151,7 +151,7 @@ public class Phosphorus : ConfigurableStandardRole
 
               IEnumerator CoLight()
               {
-                  float t = MyRole.LampDurationOption.GetFloat()!.Value;
+                  float t = MyRole.LampDurationOption.GetFloat();
                   float indexT = 0f;
                   int index = 0;
                   while (t > 0f)

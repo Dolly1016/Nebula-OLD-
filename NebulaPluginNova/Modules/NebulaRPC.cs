@@ -3,6 +3,7 @@ using Hazel;
 using Il2CppSystem.CodeDom;
 using Il2CppSystem.Reflection.Internal;
 using Nebula.Utilities;
+using Steamworks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,6 +54,65 @@ public class NebulaRPCInvoker
     public void InvokeLocal()
     {
         localBodyProcess.Invoke();
+    }
+}
+
+public static class RPCRouter
+{
+    public class RPCSection : IDisposable
+    {
+        public string Name;
+        public void Dispose()
+        {
+            if (currentSection != this) return;
+
+            currentSection = null;
+            Debug.Log($"End Evacuating Rpcs ({Name})");
+
+            CombinedRemoteProcess.CombinedRPC.Invoke(evacuateds.ToArray());
+            evacuateds.Clear();
+        }
+
+        public RPCSection(string? name = null)
+        {
+            Name = name ?? "Untitled";
+            if (currentSection == null)
+            {
+                currentSection = this;
+                Debug.Log($"Start Evacuating Rpcs ({Name})");
+            }
+        }
+    }
+
+    static public RPCSection CreateSection(string? label = null) => new RPCSection(label);
+
+    static RPCSection? currentSection = null;
+    static List<NebulaRPCInvoker> evacuateds = new();
+    public static void SendRpc(string name, int hash, Action<MessageWriter> sender, Action localBodyProcess) { 
+        if(currentSection == null)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, 64, Hazel.SendOption.Reliable, -1);
+            writer.Write(hash);
+            sender.Invoke(writer);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+
+            try
+            {
+                localBodyProcess.Invoke();
+            }
+            catch(Exception ex)
+            {
+                Debug.LogError($"Error in RPC(Invoke: {name})" + ex.Message);
+            }
+
+            Debug.Log($"Called RPC : {name}");
+        }
+        else
+        {
+            evacuateds.Add(new(hash, sender, localBodyProcess));
+
+            Debug.Log($"Evacuated RPC : {name} (by {currentSection!.Name})");
+        }
     }
 }
 
@@ -127,6 +187,7 @@ public static class RemoteProcessAsset
                 return new OutfitCandidate(reader.ReadString(), reader.ReadInt32(), reader.ReadBoolean(), outfit);
             }
         );
+        defaultProcessDic[typeof(TranslatableTag)] = ((writer, obj) => writer.Write(((TranslatableTag)obj).Id), (reader) => TranslatableTag.ValueOf(reader.ReadInt32()));
     }
 
     static public (Action<MessageWriter, object>, Func<MessageReader, object>) GetProcess(Type type)
@@ -197,19 +258,7 @@ public class RemoteProcess<Parameter> : RemoteProcessBase
 
     public void Invoke(Parameter parameter)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, 64, Hazel.SendOption.Reliable, -1);
-        writer.Write(Hash);
-        Sender(writer, parameter);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-
-        try
-        {
-            Body.Invoke(parameter, true);
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError($"Error in RPC(Invoke: {Name})" + ex.Message);
-        }
+        RPCRouter.SendRpc(Name,Hash,(writer)=>Sender(writer,parameter),()=>Body.Invoke(parameter,true));
     }
 
     public NebulaRPCInvoker GetInvoker(Parameter parameter)
@@ -259,11 +308,12 @@ public class CombinedRemoteProcess : RemoteProcessBase
 
     public void Invoke(params NebulaRPCInvoker[] invokers)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, 64, Hazel.SendOption.Reliable, -1);
-        writer.Write(Hash);
-        writer.Write(invokers.Length);
-        foreach (var invoker in invokers) invoker.Invoke(writer);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RPCRouter.SendRpc(Name, Hash, (writer) =>
+        {
+            writer.Write(invokers.Length);
+            foreach (var invoker in invokers) invoker.Invoke(writer);
+        },
+        () => { });
     }
 }
 
@@ -279,18 +329,7 @@ public class RemoteProcess : RemoteProcessBase
 
     public void Invoke()
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, 64, Hazel.SendOption.Reliable, -1);
-        writer.Write(Hash);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-
-        try
-        {
-            Body.Invoke(true);
-        }
-        catch (Exception ex)
-        {
-            Debug.LogError($"Error in RPC(Invoke: {Name})" + ex.Message);
-        }
+        RPCRouter.SendRpc(Name, Hash, (writer) => { }, () => Body.Invoke(true));
     }
 
     public NebulaRPCInvoker GetInvoker()
@@ -343,19 +382,7 @@ public class DivisibleRemoteProcess<Parameter, DividedParameter> : RemoteProcess
     {
         void dividedSend(DividedParameter param)
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, 64, Hazel.SendOption.Reliable, -1);
-            writer.Write(Hash);
-            DividedSender(writer, param);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
-
-            try
-            {
-                Body.Invoke(param, true);
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"Error in RPC(Invoke: {Name})" + ex.Message);
-            }
+            RPCRouter.SendRpc(Name, Hash, (writer) => DividedSender(writer, param), () => Body.Invoke(param, true));
         }
         var enumerator = Divider.Invoke(parameter);
         while (enumerator.MoveNext()) dividedSend(enumerator.Current);

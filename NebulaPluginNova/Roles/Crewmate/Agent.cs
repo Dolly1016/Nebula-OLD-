@@ -61,7 +61,7 @@ public class Agent : ConfigurableStandardRole
 
         public override void OnSetTaskLocal(ref List<GameData.TaskInfo> tasks)
         {
-            int extempts = MyRole.NumOfExemptedTasksOption.GetMappedInt().Value;
+            int extempts = MyRole.NumOfExemptedTasksOption;
             for (int i = 0; i < extempts; i++) tasks.RemoveAt(System.Random.Shared.Next(tasks.Count));
         }
 
@@ -74,7 +74,7 @@ public class Agent : ConfigurableStandardRole
                 taskButton.Availability = (button) => MyPlayer.MyControl.CanMove && MyPlayer.Tasks.IsCompletedCurrentTasks;
                 taskButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;
                 taskButton.OnClick = (button) => {
-                    MyPlayer.Tasks.GainExtraTasksAndRecompute(MyRole.NumOfExtraTasksOption.GetMappedInt().Value, 0, 0, false);
+                    MyPlayer.Tasks.GainExtraTasksAndRecompute(MyRole.NumOfExtraTasksOption, 0, 0, false);
                 };
                 taskButton.SetLabelType(ModAbilityButton.LabelType.Standard);
                 taskButton.SetLabel("agent");

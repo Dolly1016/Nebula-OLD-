@@ -58,8 +58,8 @@ public class Camouflager : ConfigurableStandardRole
                 {
                     RpcCamouflage.Invoke(new(MyPlayer.PlayerId,false));
                 };
-                camouflageButton.CoolDownTimer = Bind(new Timer(MyRole.CamoCoolDownOption.GetFloat()!.Value).SetAsAbilityCoolDown().Start());
-                camouflageButton.EffectTimer = Bind(new Timer(MyRole.CamoDurationOption.GetFloat()!.Value));
+                camouflageButton.CoolDownTimer = Bind(new Timer(MyRole.CamoCoolDownOption.GetFloat()).SetAsAbilityCoolDown().Start());
+                camouflageButton.EffectTimer = Bind(new Timer(MyRole.CamoDurationOption.GetFloat()));
                 camouflageButton.SetLabelType(ModAbilityButton.LabelType.Standard);
                 camouflageButton.SetLabel("camo");
             }

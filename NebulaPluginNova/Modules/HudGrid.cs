@@ -76,7 +76,7 @@ public class HudGrid : MonoBehaviour
 
                 c.Value.CurrentPos = new Vector2(column, row);
 
-                if (column < 2)
+                if (column < 2 && !c.Value.OccupiesLine)
                     column++;
                 else
                 {
@@ -109,11 +109,12 @@ public class HudContent : MonoBehaviour
     public Vector2 CurrentPos { get; set; }
 
     //Priorityの大きいものから配置される
-    public int Priority { get => onKillButtonPos ? 10000 : priority; }
+    public int Priority { get => OccupiesLine ? 20000 : onKillButtonPos ? 10000 : priority; }
     private int priority;
     private bool onKillButtonPos;
     private bool isLeftSide;
     private bool isDirty = true;
+    public bool OccupiesLine = false;
     public Vector3 ToLocalPos => new Vector3((4.5f - CurrentPos.x) * (isLeftSide ? -1 : 1), -2.3f + CurrentPos.y, 0f);
     public bool MarkedAsKillButtonContent => onKillButtonPos;
     public void MarkAsKillButtonContent(bool mark = true)
@@ -154,5 +155,15 @@ public class HudContent : MonoBehaviour
             var diff = ToLocalPos - transform.localPosition;
             transform.localPosition += diff * Time.deltaTime * 5.2f;
         }
+    }
+
+    static public HudContent InstantiateContent(string name, bool isLeftSide = true, bool occupiesLine = false,bool asKillButtonContent = false)
+    {
+        var obj = UnityHelper.CreateObject<HudContent>(name, HudManager.Instance.KillButton.transform.parent, Vector3.zero);
+        obj.OccupiesLine= occupiesLine;
+        obj.MarkAsKillButtonContent(asKillButtonContent);
+
+        NebulaGameManager.Instance.HudGrid.RegisterContent(obj,isLeftSide);
+        return obj;
     }
 }

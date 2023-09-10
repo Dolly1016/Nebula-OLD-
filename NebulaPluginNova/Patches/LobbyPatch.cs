@@ -106,7 +106,7 @@ public class GameStartManagerBeginGame
             {
                 if (PlayerControl.AllPlayerControls.Count == 1)
                 {
-                    int num = GeneralConfigurations.NumOfDummiesOption.GetMappedInt().Value;
+                    int num = GeneralConfigurations.NumOfDummiesOption;
 
                     for (int n = 0; n < num; n++)
                     {

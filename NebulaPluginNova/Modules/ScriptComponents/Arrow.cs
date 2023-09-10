@@ -27,13 +27,14 @@ public class Arrow : INebulaScriptComponent
         if (usePlayerMaterial) SetColor(Color.white, Color.gray);
     }
 
-    public void SetColor(Color mainColor, Color shadowColor)
+    public Arrow SetColor(Color mainColor, Color shadowColor)
     {
         arrowRenderer?.material.SetColor(PlayerMaterial.BackColor, shadowColor);
         arrowRenderer?.material.SetColor(PlayerMaterial.BodyColor, mainColor);
+        return this;
     }
 
-    public void SetColor(Color mainColor) => SetColor(mainColor, mainColor * 0.65f);
+    public Arrow SetColor(Color mainColor) => SetColor(mainColor, mainColor * 0.65f);
 
     public override void OnReleased()
     {

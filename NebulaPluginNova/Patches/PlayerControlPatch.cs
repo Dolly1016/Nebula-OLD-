@@ -1,6 +1,7 @@
 ﻿using AmongUs.Data.Player;
 using Epic.OnlineServices.Presence;
 using HarmonyLib;
+using Nebula.Configuration;
 using Nebula.Game;
 using Nebula.Modules;
 using static UnityEngine.RemoteConfigSettingsHelper;
@@ -200,5 +201,15 @@ class PlayerDisconnectPatch
         player.GetModInfo().IsDisconnected = true;
 
         NebulaGameManager.Instance.GameStatistics.RecordEvent(new GameStatistics.Event(GameStatistics.EventVariation.Disconnect, player.PlayerId, 0){ RelatedTag = EventDetail.Disconnect }) ;
+    }
+}
+
+
+[HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.CoSpawnPlayer))]
+public class PlayerJoinedPatch
+{
+    public static void Postfix()
+    {
+        if (AmongUsClient.Instance.AmHost) NebulaConfigEntryManager.ShareAll();
     }
 }

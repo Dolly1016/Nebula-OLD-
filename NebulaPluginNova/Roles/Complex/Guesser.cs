@@ -98,6 +98,7 @@ public class Guesser : ConfigurableStandardRole
     public override string LocalizedName => IsEvil ? "evilGuesser" : "niceGuesser";
     public override Color RoleColor => IsEvil ? Palette.ImpostorRed : new Color(1f, 1f, 0f);
     public override Team Team => IsEvil ? Impostor.Impostor.MyTeam : Crewmate.Crewmate.MyTeam;
+    public override IEnumerable<IAssignableBase> RelatedOnConfig() { if(MyNiceRole != this) yield return MyNiceRole; if (MyEvilRole != this) yield return MyEvilRole; yield return GuesserModifier.MyRole; }
 
     public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => IsEvil ? new EvilInstance(player) : new NiceInstance(player);
 
@@ -105,6 +106,8 @@ public class Guesser : ConfigurableStandardRole
 
     private NebulaConfiguration? CommonEditorOption;
 
+    public override bool CanLoadDefault(IntroAssignableModifier modifier) => modifier != GuesserModifier.MyRole;
+    
     public Guesser(bool isEvil)
     {
         IsEvil = isEvil;
@@ -130,7 +133,7 @@ public class Guesser : ConfigurableStandardRole
     public class NiceInstance : Crewmate.Crewmate.Instance
     {
         public override AbstractRole Role => MyNiceRole;
-        private int leftGuess = NumOfGuessOption.GetMappedInt()!.Value;
+        private int leftGuess = NumOfGuessOption;
         public NiceInstance(PlayerModInfo player) : base(player)
         {
         }
@@ -149,7 +152,7 @@ public class Guesser : ConfigurableStandardRole
     public class EvilInstance : Crewmate.Crewmate.Instance
     {
         public override AbstractRole Role => MyEvilRole;
-        private int leftGuess = NumOfGuessOption.GetMappedInt()!.Value;
+        private int leftGuess = NumOfGuessOption;
         public EvilInstance(PlayerModInfo player) : base(player)
         {
         }
@@ -166,19 +169,21 @@ public class Guesser : ConfigurableStandardRole
     }
 }
 
-public class GuesserModifier : ConfigurableModifier
+public class GuesserModifier : ConfigurableStandardModifier
 {
     static public GuesserModifier MyRole = new GuesserModifier();
 
     public override string LocalizedName => "guesser";
+    public override string CodeName => "GSR";
     public override Color RoleColor => Guesser.MyNiceRole.RoleColor;
+    public override IEnumerable<IAssignableBase> RelatedOnConfig() { yield return Guesser.MyNiceRole; yield return Guesser.MyEvilRole; }
 
     public override ModifierInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player);
 
     public class Instance : ModifierInstance
     {
         public override AbstractModifier Role => MyRole;
-        private int leftGuess = Guesser.NumOfGuessOption.GetMappedInt()!.Value;
+        private int leftGuess = Guesser.NumOfGuessOption;
 
         public Instance(PlayerModInfo player) : base(player){}
 
@@ -198,5 +203,7 @@ public class GuesserModifier : ConfigurableModifier
         {
             if (AmOwner || NebulaGameManager.Instance.CanSeeAllInfo) text += " ⊕".Color(Jackal.MyRole.RoleColor);
         }
+
+        public override string? IntroText => Language.Translate("role.guesser.blurb");
     }
 }

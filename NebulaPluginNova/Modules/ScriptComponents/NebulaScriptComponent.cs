@@ -62,6 +62,12 @@ public class ScriptHolder : INebulaBindableComponent
         return component;
     }
 
+    protected GameObject Bind(GameObject gameObject)
+    {
+        BindComponent(new GameObjectBinding(gameObject));
+        return gameObject;
+    }
+
     protected void BindComponent(INebulaBindableComponent component) => myComponent.Add(component);
 
     protected void ReleaseComponents()

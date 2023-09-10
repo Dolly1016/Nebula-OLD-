@@ -100,6 +100,63 @@ public class IntegerTupleAryDataEntry : DataEntry<(int,int)[]>
     public IntegerTupleAryDataEntry(string name, DataSaver saver, (int,int)[] defaultValue) : base(name, saver, defaultValue) { }
 }
 
+public class StringTupleAryDataEntry : DataEntry<(string, string)[]>
+{
+    public override (string, string)[] Parse(string str)
+    {
+        if (str == "Empty") return new (string, string)[0];
+
+        var strings = str.Split('|');
+        (string, string)[] result = new (string, string)[strings.Length];
+        for (int i = 0; i < result.Length; i++)
+        {
+            var tuple = strings[i].Split(',');
+            result[i] = (tuple[0], tuple[1]);
+        }
+        return result;
+    }
+
+    protected override string Serialize((string, string)[] value)
+    {
+        if (value.Length == 0) return "Empty";
+        StringBuilder builder = new();
+        foreach (var tuple in value)
+        {
+            if (builder.Length > 0) builder.Append('|');
+
+            builder.Append(tuple.Item1 + ',' + tuple.Item2);
+        }
+        return builder.ToString();
+    }
+
+    public StringTupleAryDataEntry(string name, DataSaver saver, (string, string)[] defaultValue) : base(name, saver, defaultValue) { }
+}
+
+public class StringArrayDataEntry : DataEntry<string[]>
+{
+    public override string[] Parse(string str)
+    {
+        if (str == "Empty") return new string[0];
+
+        return str.Split('|');
+    }
+
+    protected override string Serialize(string[] value)
+    {
+        if (value.Length == 0) return "Empty";
+        StringBuilder builder = new();
+        foreach (var elem in value)
+        {
+            if (builder.Length > 0) builder.Append('|');
+
+            builder.Append(elem);
+        }
+        return builder.ToString();
+    }
+
+    public StringArrayDataEntry(string name, DataSaver saver, string[] defaultValue) : base(name, saver, defaultValue) { }
+}
+
 public class DataSaver
 {
     private Dictionary<string, string> contents;

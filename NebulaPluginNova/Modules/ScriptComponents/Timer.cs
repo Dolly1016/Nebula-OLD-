@@ -1,4 +1,7 @@
 ﻿using Nebula.Game;
+using Rewired.Libraries.SharpDX.RawInput;
+using Rewired.Utils.Platforms.Windows;
+using static Il2CppSystem.Xml.Schema.FacetsChecker.FacetsCompiler;
 
 namespace Nebula.Modules.ScriptComponents;
 
@@ -6,15 +9,15 @@ public class Timer : INebulaScriptComponent
 {
     private Func<bool>? predicate = null;
     private bool isActive;
-    private float currentTime;
-    private float min, max;
+    protected float currentTime;
+    protected float min, max;
 
     public Timer Pause()
     {
         isActive = false;
         return this;
     }
-    public Timer Start(float? time = null)
+    public virtual Timer Start(float? time = null)
     {
         isActive = true;
         currentTime = time.HasValue ? time.Value : max;
@@ -49,8 +52,14 @@ public class Timer : INebulaScriptComponent
         }
         return this;
     }
+    public Timer Expand(float time)
+    {
+        this.max += time;
+        return this;
+    }
+
     public float CurrentTime { get => currentTime; }
-    public float Percentage { get => max > min ? (currentTime - min) / (max - min) : 0f; }
+    public virtual float Percentage { get => max > min ? (currentTime - min) / (max - min) : 0f; }
     public bool IsInProcess => CurrentTime > min;
 
     public override void Update()
@@ -89,4 +98,29 @@ public class Timer : INebulaScriptComponent
     {
         return SetPredicate(() => PlayerControl.LocalPlayer.CanMove);
     }
+}
+
+public class AdvancedTimer : Timer
+{
+    protected float visualMax;
+    protected float defaultMax;
+    public AdvancedTimer(float visualMax,float max) : base(0f, max) {
+        this.visualMax = visualMax;
+    }
+
+    public AdvancedTimer SetVisualMax(float visualMax)
+    {
+        this.visualMax = visualMax;
+        return this;
+    }
+
+    public AdvancedTimer SetDefault(float defaultMax)
+    {
+        this.defaultMax = defaultMax;
+        return this;
+    }
+
+    public override Timer Start(float? time = null) => base.Start(time ?? defaultMax);
+
+    public override float Percentage { get => Mathf.Min(1f, visualMax > min ? (currentTime - min) / (visualMax - min) : 0f); }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AmongUs.GameOptions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +14,7 @@ public static class AmongUsUtil
     public static byte CurrentMapId => GameOptionsManager.Instance.CurrentGameOptions.MapId;
     private static string[] mapName = new string[] { "skeld", "mira", "polus", "undefined", "airship" };
     public static string ToDisplayString(SystemTypes room)=> Language.Translate("location." + mapName[CurrentMapId] + "." + Enum.GetName(typeof(SystemTypes),room).HeadLower());
-
+    public static float VanillaKillCoolDown => GameOptionsManager.Instance.CurrentGameOptions.GetFloat(FloatOptionNames.KillCooldown);
     public static bool InCommSab => PlayerTask.PlayerHasTaskOfType<IHudOverrideTask>(PlayerControl.LocalPlayer);
     public static PoolablePlayer PoolablePrefab => HudManager.Instance.IntroPrefab.PlayerPrefab;
     public static PoolablePlayer GetPlayerIcon(GameData.PlayerOutfit outfit, Transform parent,Vector3 position,Vector2 scale,bool flip = false)
@@ -39,6 +40,8 @@ public static class AmongUsUtil
             r.color = new Color(r.color.r, r.color.g, r.color.b, alpha);
         return player;
     }
+
+    public static float GetAlpha(this PoolablePlayer player)=> player.cosmetics.currentBodySprite.BodySprite.color.a;
 
     public static PoolablePlayer GetPlayerIcon(GameData.PlayerOutfit outfit, Transform parent, Vector3 position, Vector2 scale, float nameScale,Vector3 namePos,bool flip = false)
     {

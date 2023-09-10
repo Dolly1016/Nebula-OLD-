@@ -60,7 +60,7 @@ public class Cleaner : ConfigurableStandardRole
                     AmongUsUtil.RpcCleanDeadBody(cleanTracker.CurrentTarget!.ParentId,MyPlayer.PlayerId,EventDetail.Clean);
                     PlayerControl.LocalPlayer.killTimer = GameOptionsManager.Instance.CurrentGameOptions.GetFloat(FloatOptionNames.KillCooldown);
                 };
-                cleanButton.CoolDownTimer = Bind(new Timer(MyRole.CleanCoolDownOption.GetFloat()!.Value).SetAsAbilityCoolDown().Start());
+                cleanButton.CoolDownTimer = Bind(new Timer(MyRole.CleanCoolDownOption.GetFloat()).SetAsAbilityCoolDown().Start());
                 cleanButton.SetLabelType(ModAbilityButton.LabelType.Standard);
                 cleanButton.SetLabel("clean");
             }

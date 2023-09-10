@@ -17,12 +17,14 @@ public class Necromancer : ConfigurableStandardRole
 
     private NebulaConfiguration ReviveCoolDownOption;
     private NebulaConfiguration ReviveDurationOption;
+    private NebulaConfiguration DetectedRangeOption;
     protected override void LoadOptions()
     {
         base.LoadOptions();
 
         ReviveCoolDownOption = new NebulaConfiguration(RoleConfig, "reviveCoolDown", null, 5f, 60f, 5f, 30f, 30f) { Decorator = NebulaConfiguration.SecDecorator };
         ReviveDurationOption = new NebulaConfiguration(RoleConfig, "reviveDuration", null, 0.5f, 10f, 0.5f, 3f, 3f) { Decorator = NebulaConfiguration.SecDecorator };
+        DetectedRangeOption = new NebulaConfiguration(RoleConfig, "detectedRange", null, 2.5f, 30f, 2.5f, 7.5f, 7.5f) { Decorator = NebulaConfiguration.OddsDecorator };
     }
 
     public class Instance : Crewmate.Instance
@@ -32,6 +34,7 @@ public class Necromancer : ConfigurableStandardRole
         private ModAbilityButton? reviveButton = null;
         private Arrow? myArrow;
         private TMPro.TextMeshPro message;
+        private SpriteRenderer? fullScreen;
 
         static private ISpriteLoader buttonSprite = SpriteLoader.FromResource("Nebula.Resources.Buttons.ReviveButton.png", 115f);
 
@@ -40,6 +43,14 @@ public class Necromancer : ConfigurableStandardRole
         public Instance(PlayerModInfo player) : base(player)
         {
             draggable = Bind(new Scripts.Draggable());
+
+            if (AmOwner)
+            {
+                fullScreen = GameObject.Instantiate(HudManager.Instance.FullScreen, HudManager.Instance.transform);
+                Bind(new GameObjectBinding(fullScreen.gameObject));
+                fullScreen.color = MyRole.RoleColor.AlphaMultiplied(0f);
+                fullScreen.gameObject.SetActive(true);
+            }
         }
 
         public override void LocalUpdate()
@@ -48,6 +59,26 @@ public class Necromancer : ConfigurableStandardRole
             myArrow.IsActive = flag;
             message.gameObject.SetActive(flag);
             if (flag) message.color = MyRole.RoleColor.AlphaMultiplied(MathF.Sin(Time.time * 2.4f) * 0.2f + 0.8f);
+
+            if (fullScreen)
+            {
+                bool detected = false;
+                var myPos = MyPlayer.MyControl.GetTruePosition();
+                float maxDis = MyRole.DetectedRangeOption.GetFloat();
+
+                foreach (var deadbody in Helpers.AllDeadBodies())
+                {
+                    if (MyPlayer.HoldingDeadBody == deadbody.ParentId) continue;
+                    if ((deadbody.TruePosition - myPos).magnitude > maxDis) continue;
+
+                    detected = true;
+                    break;
+                }
+
+                float a = fullScreen.color.a;
+                a += ((detected ? 0.32f : 0) - a) * Time.deltaTime * 1.8f;
+                fullScreen.color = MyRole.RoleColor.AlphaMultiplied(a);
+            }
         }
 
         public override void OnActivated()
@@ -125,8 +156,8 @@ public class Necromancer : ConfigurableStandardRole
                     if (!button.EffectActive) return;
                     if (!canReviveHere()) button.InactivateEffect();
                 };
-                reviveButton.CoolDownTimer = Bind(new Timer(MyRole.ReviveCoolDownOption.GetFloat()!.Value).SetAsAbilityCoolDown().Start());
-                reviveButton.EffectTimer = Bind(new Timer(MyRole.ReviveDurationOption.GetFloat()!.Value));
+                reviveButton.CoolDownTimer = Bind(new Timer(MyRole.ReviveCoolDownOption.GetFloat()).SetAsAbilityCoolDown().Start());
+                reviveButton.EffectTimer = Bind(new Timer(MyRole.ReviveDurationOption.GetFloat()));
                 reviveButton.SetLabelType(ModAbilityButton.LabelType.Standard);
                 reviveButton.SetLabel("revive");
             }

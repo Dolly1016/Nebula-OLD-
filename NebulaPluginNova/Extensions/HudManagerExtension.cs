@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Nebula.Expansions;
+namespace Nebula.Extensions;
 
-public static class HudManagerExpansion
+public static class HudManagerExtension
 {
     static public void UpdateHudContent(this HudManager manager)
     {

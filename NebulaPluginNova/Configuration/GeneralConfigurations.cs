@@ -1,11 +1,15 @@
-﻿using System;
+﻿using Nebula.Roles;
+using Nebula.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Il2CppMono.Security.X509.X520;
 
 namespace Nebula.Configuration;
 
+[NebulaPreLoad(typeof(Roles.Roles))]
 [NebulaOptionHolder]
 public static class GeneralConfigurations
 {
@@ -36,8 +40,139 @@ public static class GeneralConfigurations
     static public ConfigurationHolder MapOptions = new("options.map", null, ConfigurationTab.Settings, CustomGameMode.Standard | CustomGameMode.FreePlay);
     static public NebulaConfiguration SpawnMethodOption = new(MapOptions, "spawnMethod", null,
         new string[] { "options.map.spawnMethod.default", "options.map.spawnMethod.selective", "options.map.spawnMethod.random" }, 0, 0);
-    static public NebulaConfiguration SpawnCandidatesOption = new NebulaConfiguration(MapOptions, "spawnCandidates", null, 1, 8, 1, 1) { Predicate = () => (!SpawnMethodOption.GetString()?.Equals("options.map.spawnMethod.default")) ?? false };
+    static public NebulaConfiguration SpawnCandidatesOption = new NebulaConfiguration(MapOptions, "spawnCandidates", null, 1, 8, 1, 1) { Predicate = () => (SpawnMethodOption.GetString()?.Equals("options.map.spawnMethod.selective")) ?? false };
     static public NebulaConfiguration SilentVentOption = new NebulaConfiguration(MapOptions, "silentVents", null, false, false);
 
+    static public ConfigurationHolder MeetingOptions = new("options.meeting", null, ConfigurationTab.Settings, CustomGameMode.Standard | CustomGameMode.FreePlay);
+    static public NebulaConfiguration NoticeExtraVictimsOption = new NebulaConfiguration(MeetingOptions, "noticeExtraVictims", null, false, false);
+
+    static public ConfigurationHolder ExclusiveAssignmentOptions = new("options.exclusiveAssignment", null, ConfigurationTab.Settings, CustomGameMode.Standard | CustomGameMode.FreePlay);
+    static public ExclusiveAssignmentConfiguration ExclusiveOptionBody = new(ExclusiveAssignmentOptions, 10);
+
+
     static public CustomGameMode CurrentGameMode => CustomGameMode.AllGameMode[GameModeOption.CurrentValue];
+
+    public class ExclusiveAssignmentConfiguration
+    {
+        private static Func<string, int> RoleMapper = (name) =>
+        {
+            if (name == "none") return short.MaxValue;
+            return Roles.Roles.AllRoles.FirstOrDefault((role) => role.LocalizedName == name)?.Id ?? short.MaxValue;
+        };
+
+        private static Func<int,string> RoleSerializer = (id) =>
+        {
+            if (id == short.MaxValue) return "none";
+            return Roles.Roles.AllRoles.FirstOrDefault((role) => role.Id == id)?.LocalizedName ?? "none";
+        };
+
+        public class ExclusiveAssignment
+        {
+            NebulaConfiguration toggleOption;
+            NebulaStringConfigEntry[] roles;
+            public ExclusiveAssignment(ConfigurationHolder holder,int index)
+            {
+                toggleOption = new(holder, "category." + index, null, false, false);
+                toggleOption.Editor = () =>
+                {
+                    MetaContext context = new();
+
+                    List<IMetaParallelPlacable> contents = new();
+                    contents.Add(NebulaConfiguration.OptionButtonContext(() => toggleOption.ChangeValue(true), toggleOption.Title.Text, 0.85f));
+                    contents.Add(NebulaConfiguration.OptionTextColon);
+
+
+                    if (!toggleOption)
+                    {
+                        string innerText = "";
+                        bool isFirst = true;
+                        foreach (var assignment in roles)
+                        {
+                            var role = assignment.CurrentValue == short.MaxValue ? null : Roles.Roles.AllRoles[assignment.CurrentValue];
+                            if (role == null) continue;
+                            if (!isFirst) innerText += ", ";
+                            innerText += role?.DisplayName.Color(role.RoleColor) ?? "None";
+                            isFirst = false;
+                        }
+                        if (innerText.Length > 0) innerText = "(" + innerText + ")";
+                        contents.Add(new MetaContext.Text(NebulaConfiguration.GetOptionBoldAttr(4.8f,TMPro.TextAlignmentOptions.Left)) { RawText = Language.Translate("options.inactivated") + " " + innerText.Color(Color.gray) });
+                    }
+                    else
+                    {
+                        foreach (var assignment in roles)
+                        {
+                            var role = assignment.CurrentValue == short.MaxValue ? null : Roles.Roles.AllRoles[assignment.CurrentValue];
+
+                            var copiedAssignment = assignment;
+                            contents.Add(new MetaContext.Button(() =>
+                            {
+                                MetaScreen screen = MetaScreen.GenerateWindow(new(6.5f, 3f), HudManager.Instance.transform, Vector3.zero, true, true);
+                                MetaContext inner = new();
+                                inner.Append(Roles.Roles.AllRoles.Prepend(null), (role) => NebulaConfiguration.OptionButtonContext(
+                                    () =>
+                                    {
+                                        copiedAssignment.UpdateValue(role?.Id ?? short.MaxValue, true).Share();
+                                        screen.CloseScreen();
+                                    },
+                                    role?.DisplayName.Color(role.RoleColor) ?? "None",
+                                    1.1f
+                                    ), 4, -1, 0, 0.45f);
+                                screen.SetContext(new MetaContext.ScrollView(new Vector2(6.5f, 3f), inner));
+                            }, new(NebulaConfiguration.OptionValueAttr) { Size = new(1.3f, 0.3f) })
+                            { RawText = role?.DisplayName.Color(role.RoleColor) ?? "None", PostBuilder = (_, renderer, _) => renderer.maskInteraction = SpriteMaskInteraction.VisibleInsideMask });
+                        }
+                    }
+
+                    context.Append(new CombinedContext(0.65f, contents.ToArray()));
+                    return context;
+                };
+                toggleOption.Shower = () =>
+                {
+                    if (!toggleOption) return null;
+
+                    string innerText = "";
+                    bool isFirst = true;
+                    foreach (var assignment in roles)
+                    {
+                        var role = assignment.CurrentValue == short.MaxValue ? null : Roles.Roles.AllRoles[assignment.CurrentValue];
+                        if(role == null) continue;
+                        if (!isFirst) innerText += ", ";
+                        innerText += role?.DisplayName.Color(role.RoleColor) ?? "None";
+                        isFirst = false;
+                    }
+                    return toggleOption.Title.Text + " : " + innerText;
+                };
+
+                roles = new NebulaStringConfigEntry[3];
+                
+                for (int i = 0; i < 3; i++) roles[i] = new NebulaStringConfigEntry(toggleOption.Id + ".role" + i, "none", RoleMapper, RoleSerializer);
+                
+            }
+
+            public IEnumerable<AbstractRole> OnAsigned(AbstractRole role) {
+                if (!toggleOption) yield break;
+                if (!roles.Any(entry => entry.CurrentValue == role.Id)) yield break;
+
+                foreach(var assignment in roles)
+                {
+                    if (assignment.CurrentValue == role.Id) continue;
+                    if (assignment.CurrentValue == short.MaxValue) continue;
+
+                    var r = Roles.Roles.AllRoles.FirstOrDefault((role) => role.Id == assignment.CurrentValue);
+                    if(r != null) yield return r;
+                }
+            }
+        }
+
+        ExclusiveAssignment[] allAsignment;
+        public ExclusiveAssignmentConfiguration(ConfigurationHolder holder,int num)
+        {
+            allAsignment = new ExclusiveAssignment[num];
+            for (int i = 0; i < num; i++) allAsignment[i] = new ExclusiveAssignment(holder,i);
+        }
+
+        public IEnumerable<AbstractRole> OnAssigned(AbstractRole role) {
+            foreach (var assignment in allAsignment) foreach (var r in assignment.OnAsigned(role)) yield return r;
+        }
+    }
 }
