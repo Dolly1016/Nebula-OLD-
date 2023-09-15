@@ -102,16 +102,16 @@ public static class RPCRouter
             }
             catch(Exception ex)
             {
-                Debug.LogError($"Error in RPC(Invoke: {name})" + ex.Message);
+                Debug.LogError($"Error in RPC(Invoke: {name})" + ex.Message + ex.StackTrace);
             }
 
-            Debug.Log($"Called RPC : {name}");
+            //Debug.Log($"Called RPC : {name}");
         }
         else
         {
             evacuateds.Add(new(hash, sender, localBodyProcess));
 
-            Debug.Log($"Evacuated RPC : {name} (by {currentSection!.Name})");
+            //Debug.Log($"Evacuated RPC : {name} (by {currentSection!.Name})");
         }
     }
 }

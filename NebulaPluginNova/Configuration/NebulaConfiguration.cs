@@ -389,6 +389,7 @@ public class NebulaConfiguration
     public ITextComponent Title { get; set; }
     public string Id => entry?.Name ?? "Undefined";
     public bool IsShown => (MyHolder?.IsShown ?? true) && (Predicate?.Invoke() ?? true);
+    public Action? OnValueChanged = null;
 
     public IMetaContext? GetEditor()
     {
@@ -517,6 +518,7 @@ public class NebulaConfiguration
 
     public void ChangeValue(bool increment)
     {
+        if (entry == null) return;
         var current = entry.CurrentValue;
         current += increment ? 1 : -1;
         if (LoopAtBothEnds)
@@ -527,12 +529,15 @@ public class NebulaConfiguration
         else
             current = Mathf.Clamp(current, 0, MaxValue);
         entry.UpdateValue(current, true);
+        OnValueChanged?.Invoke();
         entry.Share();
     }
 
     public void ChangeValue(int newValue)
     {
+        if (entry == null) return;
         entry.UpdateValue(Mathf.Clamp(newValue, 0, MaxValue), true);
+        OnValueChanged?.Invoke();
         entry.Share();
     }
 

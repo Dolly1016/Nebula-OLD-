@@ -53,6 +53,14 @@
 "options.meeting" : "Meeting Options"
 "options.meeting.noticeExtraVictims" : "Notice Extra Victims"
 
+"options.voiceChat" : "Voice Chat Options"
+"options.voiceChat.useVoiceChat" : "Use Voice Chat"
+"options.voiceChat.wallsBlockAudio" : "Walls Block Audio"
+"options.voiceChat.killersHearDead" : "Killers Hear Dead"
+"options.voiceChat.killersHearDead.onlyImpostors" : "Only Impostors"
+"options.voiceChat.impostorsRadio" : "Impostors Radio"
+"options.voiceChat.affectedByCommsSab" : "Affected By Comms. Sabotage"
+
 "options.role.count" : "Role Assignment"
 "options.role.chance" : "Assignment Chance"
 "options.role.secondaryChance" : "2nd Onward"

@@ -10,7 +10,8 @@ namespace Nebula;
 public class NebulaLog
 {
     StreamWriter writer;
-
+    int number;
+    public bool IsPreferential => number == 0;
     private static string FileName = "NebulaLog";
     public NebulaLog()
     {
@@ -47,6 +48,8 @@ public class NebulaLog
         {
             writer.WriteLine("\n  Nebula on the Ship  Log File \n");
         }
+
+        number = counter;
     }
 
     public class LogCategory

@@ -31,6 +31,8 @@ public class MouseOverPopup : MonoBehaviour
         myScreen = MetaScreen.GenerateScreen(screenSize,transform,Vector3.zero,false,false,false);
 
         gameObject.SetActive(false);
+
+        NebulaGameManager.Instance?.OnSceneChanged();
     }
 
     public void SetContext(Func<IMetaContext.AlignmentOption, MetaContext?>? context)

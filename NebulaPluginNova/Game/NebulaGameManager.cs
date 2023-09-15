@@ -5,6 +5,7 @@ using Nebula.Configuration;
 using Nebula.Modules;
 using Nebula.Player;
 using Nebula.Roles;
+using Nebula.VoiceChat;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Networking.Types;
@@ -74,6 +75,7 @@ public class NebulaGameManager
     public CriteriaManager CriteriaManager { get; private set; } = new();
     public Synchronizer Syncronizer { get; private set; } = new();
     public LobbySlideManager LobbySlideManager { get; private set; } = new();
+    public VoiceChatManager? VoiceChatManager { get; private set; } = new();
     //天界視点フラグ
     public bool CanSeeAllInfo { get; set; }
 
@@ -95,6 +97,18 @@ public class NebulaGameManager
         allScripts.Clear();
 
         instance = null;
+    }
+
+    public void OnSceneChanged()
+    {
+        VoiceChatManager?.Dispose();
+        VoiceChatManager = null;
+    }
+
+    public void OnTerminal()
+    {
+        VoiceChatManager?.Dispose();
+        VoiceChatManager = null;
     }
 
     public void RegisterComponent(INebulaScriptComponent component)
@@ -160,6 +174,8 @@ public class NebulaGameManager
     public void OnUpdate() {
         CurrentTime += Time.deltaTime;
 
+        VoiceChatManager?.Update();
+
         allScripts.RemoveWhere(script=> {
             if (!script.UpdateWithMyPlayer) script.Update();
 
@@ -206,6 +222,9 @@ public class NebulaGameManager
         RuntimeAsset.MinimapPrefab = ShipStatus.Instance.MapPrefab;
         RuntimeAsset.MinimapPrefab.gameObject.MarkDontUnload();
         RuntimeAsset.MapScale = ShipStatus.Instance.MapScale;
+
+        //VC
+        VoiceChatManager?.OnGameStart();
 
         //ゲームモードによる終了条件を追加
         foreach(var c in GeneralConfigurations.CurrentGameMode.GameModeCriteria)CriteriaManager.AddCriteria(c);

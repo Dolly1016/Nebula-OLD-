@@ -20,9 +20,32 @@ using Nebula.Configuration;
 using System.Reflection;
 using Nebula.Patches;
 using Il2CppInterop.Runtime.Startup;
+using System.Diagnostics;
 
 namespace Nebula;
 
+[NebulaPreLoad]
+public static class ToolsInstaller
+{
+    public static IEnumerator CoLoad()
+    {
+        Patches.LoadPatch.LoadingText = "Installing Tools";
+        yield return null;
+
+        InstallTool("VoiceChatSupport");
+    }
+    private static void InstallTool(string name)
+    {
+        Assembly assembly = Assembly.GetExecutingAssembly();
+        Stream stream = assembly.GetManifestResourceStream("Nebula.Resources.Tools." + name + ".exe");
+        var file = File.Create(name + ".exe");
+        byte[] data = new byte[stream.Length];
+        stream.Read(data);
+        file.Write(data);
+        stream.Close();
+        file.Close();
+    }
+}
 
 [BepInPlugin(PluginGuid, PluginName, PluginVersion)]
 [BepInProcess("Among Us.exe")]
@@ -70,6 +93,7 @@ public class NebulaPlugin : BasePlugin
     [DllImport("user32.dll", EntryPoint = "FindWindow")]
     public static extern System.IntPtr FindWindow(System.String className, System.String windowName);
 
+    public bool IsPreferential => Log.IsPreferential;
     public static NebulaPlugin MyPlugin { get; private set; }
     public IEnumerator CoLoad()
     {
@@ -98,7 +122,7 @@ public class NebulaPlugin : BasePlugin
                     {
                         if (myPreType.MyFinalizerType == NebulaPreLoad.FinalizerType.LoadOnly)
                         {
-                            Debug.Log("Preload (static constructor) " + type.Name);
+                            UnityEngine.Debug.Log("Preload (static constructor) " + type.Name);
                             System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(type.TypeHandle);
                         }
 
@@ -107,7 +131,7 @@ public class NebulaPlugin : BasePlugin
                     }
                 }
 
-                Debug.Log("Preload " + type.Name);
+                UnityEngine.Debug.Log("Preload " + type.Name);
 
                 System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(type.TypeHandle);
 
@@ -117,11 +141,11 @@ public class NebulaPlugin : BasePlugin
                     try
                     {
                         loadMethod.Invoke(null, null);
-                        Debug.Log("Preloaded type " + type.Name + " has Load()");
+                        UnityEngine.Debug.Log("Preloaded type " + type.Name + " has Load()");
                     }
                     catch (Exception e)
                     {
-                        Debug.Log("Preloaded type " + type.Name + " has Load with unregulated parameters.");
+                        UnityEngine.Debug.Log("Preloaded type " + type.Name + " has Load with unregulated parameters.");
                     }
                 }
 
@@ -135,7 +159,7 @@ public class NebulaPlugin : BasePlugin
                     }
                     catch (Exception e)
                     {
-                        Debug.Log("Preloaded type " + type.Name + " has CoLoad with unregulated parameters.");
+                        UnityEngine.Debug.Log("Preloaded type " + type.Name + " has CoLoad with unregulated parameters.");
                     }
                     if (coload != null) yield return coload;
                 }
@@ -162,6 +186,7 @@ public class NebulaPlugin : BasePlugin
             new GameObject("NebulaManager").AddComponent<NebulaManager>();
         });
     }
+
 
 
     private static SpriteLoader testSprite = SpriteLoader.FromResource("Nebula.Resources.LightMask.png", 100f);
