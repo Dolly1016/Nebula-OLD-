@@ -25,6 +25,7 @@ public class Impostor : ConfigurableStandardRole
         public Instance(PlayerModInfo player) : base(player)
         {
         }
+
         public override bool CheckWins(CustomEndCondition endCondition) => endCondition == NebulaGameEnd.ImpostorWin;
 
         public override void DecoratePlayerName(ref string text, ref Color color)

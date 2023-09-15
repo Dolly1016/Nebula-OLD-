@@ -21,6 +21,8 @@ public class VCClient : IDisposable
     private PlayerModInfo relatedInfo;
     public MixingSampleProvider? myRoute = null;
     private float wallRatio = 1f;
+    private bool onRadio = false;
+    private int radioMask;
     public VoiceType VoiceType { get; private set; }
 
     public void SetVoiceType(VoiceType voiceType)
@@ -32,7 +34,7 @@ public class VCClient : IDisposable
     }
 
     public bool IsValid => relatedControl;
-    public bool CanHear => !relatedControl.AmOwner;
+    public bool CanHear => !relatedControl.AmOwner && (PlayerControl.LocalPlayer.Data.IsDead || !relatedControl.Data.IsDead);
     public VCClient(PlayerControl player) {
         relatedControl = player;
 
@@ -53,50 +55,67 @@ public class VCClient : IDisposable
     {
         if (!CanHear) return;
 
-        if (VoiceChatManager.IsInDiscussion)
+        if(GeneralConfigurations.AffectedByCommsSabOption && !PlayerControl.LocalPlayer.Data.IsDead && (!PlayerControl.LocalPlayer.Data.Role?.IsImpostor ?? true) && AmongUsUtil.InCommSab)
+        {
+            volumeFilter.Volume = 0f;
+            return;
+        }
+
+        //互いに死んでいる場合
+        if (PlayerControl.LocalPlayer.Data.IsDead && relatedControl.Data.IsDead)
         {
             volumeFilter.Volume = 1f;
             panningFilter.Pan = 0f;
             return;
         }
 
-        if (VoiceType != VoiceType.Ghost)
+        //ラジオ
+        if (!relatedControl.Data.IsDead && VoiceType == VoiceType.Radio)
         {
-            try
-            {
-                var lightRadius = PlayerControl.LocalPlayer.lightSource.viewDistance;
-                Vector2 ownerPos = PlayerControl.LocalPlayer.transform.position;
-                Vector2 myPos = relatedControl.transform.position;
-
-                float distance = myPos.Distance(ownerPos);
-
-                if (GeneralConfigurations.WallsBlockAudioOption && PhysicsHelpers.AnyNonTriggersBetween(ownerPos, (myPos - ownerPos).normalized, distance, Constants.ShadowMask))
-                    wallRatio *= 0.9f;
-                else
-                    wallRatio += (1f - wallRatio) * 0.9f;
-
-                float distanceRatio = 1f;
-
-                if (distance > lightRadius * 1.7f)
-                    distanceRatio = 0f;
-                else if (distance > lightRadius * 0.7f)
-                    distanceRatio = 1f - (distance - lightRadius * 0.7f) / (lightRadius * 1f);
-
-                volumeFilter.Volume = Mathf.Clamp01(distanceRatio) * wallRatio;
-
-                float xDis = myPos.x - ownerPos.x;
-
-                panningFilter.Pan = Mathf.Clamp(xDis / 1.4f, -1f, 1f);
-            }
-            catch
-            {
-                volumeFilter.Volume = 0f;
-                panningFilter.Pan = 0f;
-            }
+            volumeFilter.Volume = ((1 << PlayerControl.LocalPlayer.PlayerId) & radioMask) == 0 ? 0f : 1f;
+            panningFilter.Pan = 0f;
+            return:
         }
-        else
+
+        //会議中
+        if (VoiceChatManager.IsInDiscussion)
         {
-            volumeFilter.Volume = 1f;
+            volumeFilter.Volume = (PlayerControl.LocalPlayer.Data.IsDead || !relatedControl.Data.IsDead) ? 1f : 0f;
+            panningFilter.Pan = 0f;
+            return;
+        }
+
+
+
+        try
+        {
+            var lightRadius = PlayerControl.LocalPlayer.lightSource.viewDistance;
+            Vector2 ownerPos = PlayerControl.LocalPlayer.transform.position;
+            Vector2 myPos = relatedControl.transform.position;
+
+            float distance = myPos.Distance(ownerPos);
+
+            if (GeneralConfigurations.WallsBlockAudioOption && PhysicsHelpers.AnyNonTriggersBetween(ownerPos, (myPos - ownerPos).normalized, distance, Constants.ShadowMask))
+                wallRatio *= 0.9f;
+            else
+                wallRatio += (1f - wallRatio) * 0.9f;
+
+            float distanceRatio = 1f;
+
+            if (distance > lightRadius * 1.7f)
+                distanceRatio = 0f;
+            else if (distance > lightRadius * 0.7f)
+                distanceRatio = 1f - (distance - lightRadius * 0.7f) / (lightRadius * 1f);
+
+            volumeFilter.Volume = Mathf.Clamp01(distanceRatio) * wallRatio;
+
+            float xDis = myPos.x - ownerPos.x;
+
+            panningFilter.Pan = Mathf.Clamp(xDis / 1.4f, -1f, 1f);
+        }
+        catch
+        {
+            volumeFilter.Volume = 0f;
             panningFilter.Pan = 0f;
         }
     }
@@ -112,10 +131,26 @@ public class VCClient : IDisposable
     public ISampleProvider MyProvider { get => panningFilter; }
 
     private byte[] rawAudioData = new byte[5760];
-    public void OnReceivedData(byte[] data)
+    public void OnReceivedData(bool isRadio, int radioMask,byte[] data)
     {
         //聴こえない音に対しては何もしない
         if (!CanHear) return;
+
+        if(isRadio != onRadio)
+        {
+            isRadio = onRadio;
+            SetVoiceType((isRadio && !relatedControl.Data.IsDead) ? VoiceType.Radio : VoiceType.Normal);
+        }
+
+        if(VoiceType != VoiceType.Radio)
+        {
+            if (relatedControl.Data.IsDead && VoiceChatManager.CanListenGhostVoice) 
+                SetVoiceType(VoiceType.Ghost);
+            else
+                SetVoiceType(VoiceType.Normal);
+        }
+
+        this.radioMask = radioMask; 
 
         int rawSize = myDecoder.Decode(data, data.Length, rawAudioData, rawAudioData.Length);
 

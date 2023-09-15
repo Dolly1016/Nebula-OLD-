@@ -5,6 +5,7 @@ using NAudio.Dsp;
 using NAudio.Utils;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
+using Nebula.Configuration;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -40,6 +41,25 @@ public class VoiceChatManager : IDisposable
 
     Dictionary<byte, VCClient> allClients = new();
 
+    static public bool CanListenGhostVoice
+    {
+        get {
+            if (!PlayerControl.LocalPlayer.Data.IsDead) return false;
+
+            var killerHearDead = GeneralConfigurations.KillersHearDeadOption.CurrentValue;
+            if (killerHearDead == 0) return false;
+            var localInfo = PlayerControl.LocalPlayer.GetModInfo();
+            if (localInfo == null) return false;
+
+            if (localInfo.Role.Role.RoleCategory == Roles.RoleCategory.ImpostorRole) return true;
+            if (killerHearDead != 2) return false;
+
+            if (localInfo.Role.Role == Roles.Neutral.Jackal.MyRole) return true;
+            if (Roles.Neutral.Sidekick.MyRole.SidekickCanKillOption && localInfo.Role.Role == Roles.Neutral.Sidekick.MyRole) return true;
+
+            return false;
+        }
+        }
     static public bool IsInDiscussion => (MeetingHud.Instance && MeetingHud.Instance.CurrentState != MeetingHud.VoteStates.Animating) || (ExileController.Instance && !Minigame.Instance);
     public VoiceChatManager()
     {
@@ -206,7 +226,7 @@ public class VoiceChatManager : IDisposable
                 read += readBodyTask.Result;
             }
 
-            RpcSendAudio.Invoke((PlayerControl.LocalPlayer.PlayerId, resSize, res));
+            RpcSendAudio.Invoke((PlayerControl.LocalPlayer.PlayerId, Input.GetKey(KeyCode.B), resSize, res));
         }
     }
 
@@ -219,21 +239,25 @@ public class VoiceChatManager : IDisposable
         childProcess = null;
     }
 
-    static private RemoteProcess<(byte clientId,int dataLength,byte[] dataAry)> RpcSendAudio = new(
+    static private RemoteProcess<(byte clientId,bool isRadio,int radioMask,int dataLength,byte[] dataAry)> RpcSendAudio = new(
         "SendAudio",
         (writer,message) => {
             writer.Write(message.clientId);
+            writer.Write(message.isRadio);
+            writer.Write(message.radioMask);
             writer.Write(message.dataLength);
             writer.Write(message.dataAry,0,message.dataLength);
         },
         (reader) => {
             byte id = reader.ReadByte();
+            bool isRadio = reader.ReadBoolean();
+            int radioMask = reader.ReadInt32();
             int length = reader.ReadInt32();
-            return (id, length, reader.ReadBytes(length));
+            return (id, isRadio, radioMask, length, reader.ReadBytes(length));
             },
         (message,calledByMe) => {
-            if(NebulaGameManager.Instance?.VoiceChatManager?.allClients.TryGetValue(message.clientId,out var client) ?? false)
-                client?.OnReceivedData(message.dataAry);
+            if (NebulaGameManager.Instance?.VoiceChatManager?.allClients.TryGetValue(message.clientId, out var client) ?? false)
+                client?.OnReceivedData(message.isRadio, message.radioMask, message.dataAry);
         }
         );
 }

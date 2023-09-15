@@ -169,7 +169,7 @@ public class Sidekick : ConfigurableRole
     public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player, arguments.Length == 1 ? arguments[0] : 0);
 
     public NebulaConfiguration IsModifierOption;
-    private NebulaConfiguration SidekickCanKillOption;
+    public NebulaConfiguration SidekickCanKillOption;
     public NebulaConfiguration CanCreateSidekickChainlyOption;
     private KillCoolDownConfiguration KillCoolDownOption;
     protected override void LoadOptions()
