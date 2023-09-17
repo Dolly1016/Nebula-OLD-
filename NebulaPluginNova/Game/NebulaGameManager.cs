@@ -75,7 +75,7 @@ public class NebulaGameManager
     public CriteriaManager CriteriaManager { get; private set; } = new();
     public Synchronizer Syncronizer { get; private set; } = new();
     public LobbySlideManager LobbySlideManager { get; private set; } = new();
-    public VoiceChatManager? VoiceChatManager { get; private set; } = new();
+    public VoiceChatManager? VoiceChatManager { get; set; } = GeneralConfigurations.UseVoiceChatOption ? new() : null;
     //天界視点フラグ
     public bool CanSeeAllInfo { get; set; }
 
@@ -174,6 +174,7 @@ public class NebulaGameManager
     public void OnUpdate() {
         CurrentTime += Time.deltaTime;
 
+        if (VoiceChatManager == null && GeneralConfigurations.UseVoiceChatOption) VoiceChatManager = new();
         VoiceChatManager?.Update();
 
         allScripts.RemoveWhere(script=> {

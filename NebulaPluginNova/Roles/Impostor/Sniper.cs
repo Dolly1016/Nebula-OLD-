@@ -110,6 +110,8 @@ public class Sniper : ConfigurableStandardRole
 
         public override void OnActivated()
         {
+            base.OnActivated();
+
             if (AmOwner)
             {
                 equipButton = Bind(new ModAbilityButton()).KeyBind(KeyCode.F);

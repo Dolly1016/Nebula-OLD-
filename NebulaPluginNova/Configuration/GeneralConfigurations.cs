@@ -51,11 +51,13 @@ public static class GeneralConfigurations
 
     static public ConfigurationHolder VoiceChatOptions = new("options.voiceChat", null, ConfigurationTab.Settings, CustomGameMode.Standard | CustomGameMode.FreePlay);
     static public NebulaConfiguration UseVoiceChatOption = new NebulaConfiguration(VoiceChatOptions, "useVoiceChat", null, false, false);
-    static public NebulaConfiguration WallsBlockAudioOption = new NebulaConfiguration(VoiceChatOptions, "wallsBlockAudio", null, false, false);
+    static public NebulaConfiguration WallsBlockAudioOption = new NebulaConfiguration(VoiceChatOptions, "wallsBlockAudio", null, false, false) { Predicate = () => UseVoiceChatOption };
     static public NebulaConfiguration KillersHearDeadOption = new(VoiceChatOptions, "killersHearDead", null,
-    new string[] { "options.switch.off", "options.voiceChat.killersHearDead.onlyImpostors", "options.switch.on" }, 0, 0);
-    static public NebulaConfiguration ImpostorsRadioOption = new NebulaConfiguration(VoiceChatOptions, "impostorsRadio", null, false, false);
-    static public NebulaConfiguration AffectedByCommsSabOption = new NebulaConfiguration(VoiceChatOptions, "affectedByCommsSab", null, false, false);
+    new string[] { "options.switch.off", "options.voiceChat.killersHearDead.onlyImpostors", "options.switch.on" }, 0, 0)
+    { Predicate = () => UseVoiceChatOption };
+    static public NebulaConfiguration ImpostorsRadioOption = new NebulaConfiguration(VoiceChatOptions, "impostorsRadio", null, false, false) { Predicate = () => UseVoiceChatOption };
+    static public NebulaConfiguration JackalRadioOption = new NebulaConfiguration(VoiceChatOptions, "jackalRadio", null, false, false) { Predicate = () => UseVoiceChatOption };
+    static public NebulaConfiguration AffectedByCommsSabOption = new NebulaConfiguration(VoiceChatOptions, "affectedByCommsSab", null, false, false) { Predicate = () => UseVoiceChatOption };
 
     static public CustomGameMode CurrentGameMode => CustomGameMode.AllGameMode[GameModeOption.CurrentValue];
 

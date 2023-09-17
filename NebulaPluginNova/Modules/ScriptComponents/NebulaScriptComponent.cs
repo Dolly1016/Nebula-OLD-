@@ -80,5 +80,26 @@ public class ScriptHolder : INebulaBindableComponent
     {
         ReleaseComponents();
     }
+}
 
+public class NebulaGameScript : INebulaScriptComponent
+{
+    public Action? OnActivatedEvent = null;
+    public Action? OnMeetingStartEvent = null;
+    public Action? OnReleasedEvent = null;
+    public Action? OnGameReenabledEvent = null;
+    public Action? OnGameStartEvent = null;
+
+    public override void OnMeetingStart() => OnMeetingStartEvent?.Invoke();
+    public override void OnReleased() => OnReleasedEvent?.Invoke();
+    public override void OnGameReenabled() => OnGameReenabledEvent?.Invoke();
+    public override void OnGameStart() => OnGameStartEvent?.Invoke();
+    public override void Update()
+    {
+        if (OnActivatedEvent != null)
+        {
+            OnActivatedEvent.Invoke();
+            OnActivatedEvent= null;
+        }
+    }
 }

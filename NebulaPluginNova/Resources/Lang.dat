@@ -6,6 +6,11 @@
 "title.buttons.update" : "Update to Latest NoS"
 "title.buttons.addons" : "Add-ons"
 
+# UI
+
+"ui.dialog.yes" : "Yes"
+"ui.dialog.no" : "No"
+
 # Game Mode
 
 "gamemode.standard" : "Standard"
@@ -59,6 +64,7 @@
 "options.voiceChat.killersHearDead" : "Killers Hear Dead"
 "options.voiceChat.killersHearDead.onlyImpostors" : "Only Impostors"
 "options.voiceChat.impostorsRadio" : "Impostors Radio"
+"options.voiceChat.jackalRadio" : "Jackal Radio"
 "options.voiceChat.affectedByCommsSab" : "Affected By Comms. Sabotage"
 
 "options.role.count" : "Role Assignment"
@@ -431,3 +437,14 @@
 "help.tabs.options" : "Options"
 "help.tabs.slides" : "Slides"
 "help.slides.share" : "Share"
+
+# Voice Chat
+
+"voiceChat.dialog.confirm" : "Are you sure you want to join the voice chat?"
+"voiceChat.info.mute" : "Muted"
+"voiceChat.info.unmute" : "Unmuted"
+"voiceChat.info.radio" : "Radio"
+"voiceChat.info.impostorRadio" : "Impostor Radio"
+"voiceChat.info.jackalRadio" : "Jackal Radio"
+"voiceChat.info.loversRadio" : "Lovers Radio"
+"voiceChat.info.roomHostRadio" : "Room Host Radio"

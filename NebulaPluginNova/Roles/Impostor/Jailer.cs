@@ -55,6 +55,8 @@ public class Jailer : ConfigurableStandardRole
 
         public override void OnActivated()
         {
+            base.OnActivated();
+
             if (MapBehaviour.Instance) GameObject.Destroy(MapBehaviour.Instance.gameObject);
         }
 

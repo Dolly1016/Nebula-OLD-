@@ -105,6 +105,8 @@ public class BountyHunter : ConfigurableStandardRole
 
         public override void OnActivated()
         {
+            base.OnActivated();
+
             if (AmOwner)
             {
                 bountyTimer = Bind(new Timer(MyRole.ChangeBountyIntervalOption.GetFloat())).Start();

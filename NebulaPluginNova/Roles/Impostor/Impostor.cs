@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Nebula.Configuration;
+using Nebula.VoiceChat;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,6 +26,20 @@ public class Impostor : ConfigurableStandardRole
         public override AbstractRole Role => MyRole;
         public Instance(PlayerModInfo player) : base(player)
         {
+        }
+
+        public override void OnActivated()
+        {
+            if (AmOwner)
+            {
+                if (GeneralConfigurations.ImpostorsRadioOption) {
+                    VoiceChatRadio impostorRadio = new((p) => p.Role.Role.RoleCategory == RoleCategory.ImpostorRole, Language.Translate("voiceChat.info.impostorRadio"), Palette.ImpostorRed);
+                    Bind(new NebulaGameScript() {
+                        OnActivatedEvent = () => NebulaGameManager.Instance?.VoiceChatManager?.AddRadio(impostorRadio) ,
+                        OnReleasedEvent = ()=> NebulaGameManager.Instance?.VoiceChatManager?.RemoveRadio(impostorRadio)
+                    });
+                }
+            }
         }
 
         public override bool CheckWins(CustomEndCondition endCondition) => endCondition == NebulaGameEnd.ImpostorWin;

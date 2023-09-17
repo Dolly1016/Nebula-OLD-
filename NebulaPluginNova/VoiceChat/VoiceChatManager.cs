@@ -1,4 +1,5 @@
-﻿using Mono.Cecil.Cil;
+﻿using Il2CppSystem.ComponentModel;
+using Mono.Cecil.Cil;
 using NAudio.CoreAudioApi;
 using NAudio.Dmo.Effect;
 using NAudio.Dsp;
@@ -28,6 +29,29 @@ public enum VoiceType
 }
 
 
+public class VoiceChatRadio
+{
+    private Predicate<PlayerModInfo> predicate;
+    public string DisplayRadioName { get; private set; }
+    public Color Color { get; private set; }
+    public int RadioMask
+    {
+        get
+        {
+            int mask = 0;
+            foreach (var p in NebulaGameManager.Instance.AllPlayerInfo()) if (predicate.Invoke(p)) mask |= 1 << p.PlayerId;
+            return mask;
+        } 
+    }
+
+    public VoiceChatRadio(Predicate<PlayerModInfo> listenable,string displayName, Color radioColor)
+    {
+        predicate = listenable;
+        this.DisplayRadioName = displayName;
+        this.Color = radioColor;
+    }
+}
+
 [NebulaRPCHolder]
 public class VoiceChatManager : IDisposable
 {
@@ -39,12 +63,32 @@ public class VoiceChatManager : IDisposable
     MixingSampleProvider routeNormal, routeGhost, routeRadio, routeMixer;
     IWavePlayer myPlayer;
 
-    Dictionary<byte, VCClient> allClients = new();
+    public VoiceChatInfo InfoShower;
 
+    public bool IsMuting;
+    public int RadioMask;
+
+    Dictionary<byte, VCClient> allClients = new();
+    List<VoiceChatRadio> allRadios= new();
+    VoiceChatRadio? currentRadio = null;
+
+    private static bool AllowedUsingMic = false;
+    private bool usingMic = false;
+    private Coroutine? myCoroutine = null;
+
+    public void AddRadio(VoiceChatRadio radio)=>allRadios.Add(radio);
+    public void RemoveRadio(VoiceChatRadio radio)
+    {
+        allRadios.Remove(radio);
+        if (radio == currentRadio) currentRadio = null;
+    }
+    
     static public bool CanListenGhostVoice
     {
         get {
-            if (!PlayerControl.LocalPlayer.Data.IsDead) return false;
+            if (PlayerControl.LocalPlayer.Data == null) return false;
+
+            if (PlayerControl.LocalPlayer.Data.IsDead) return false;
 
             var killerHearDead = GeneralConfigurations.KillersHearDeadOption.CurrentValue;
             if (killerHearDead == 0) return false;
@@ -94,7 +138,6 @@ public class VoiceChatManager : IDisposable
             routeMixer.AddMixerInput(resampler);
         }
         
-
         //ラジオ
         {
             var lowPass = BiQuadFilter.LowPassFilter(22050, 2300, 1f);
@@ -114,7 +157,9 @@ public class VoiceChatManager : IDisposable
         myPlayer.Init(routeMixer);
         myPlayer.Play();
 
-        if (NebulaPlugin.MyPlugin.IsPreferential) NebulaManager.Instance.StartCoroutine(CoCommunicate().WrapToIl2Cpp());
+        if (NebulaPlugin.MyPlugin.IsPreferential) myCoroutine = NebulaManager.Instance.StartCoroutine(CoCommunicate().WrapToIl2Cpp());
+
+        InfoShower = UnityHelper.CreateObject<VoiceChatInfo>("VCInfoShower", HudManager.Instance.transform, new Vector3(0f, 4f, -25f));
     }
 
     public MixingSampleProvider GetRoute(VoiceType type)
@@ -138,6 +183,13 @@ public class VoiceChatManager : IDisposable
 
     public void Update()
     {
+        if (!GeneralConfigurations.UseVoiceChatOption)
+        {
+            NebulaGameManager.Instance.VoiceChatManager = null;
+            Dispose();
+            return;
+        }
+
         foreach (var entry in allClients)
         {
             if (!entry.Value.IsValid)
@@ -152,15 +204,43 @@ public class VoiceChatManager : IDisposable
 
         if(PlayerControl.AllPlayerControls.Count != allClients.Count)
         {
-            UnityEngine.Debug.Log("Mixer has " + routeMixer.MixerInputs.Count() + " inputs");
-
             foreach (var p in PlayerControl.AllPlayerControls)
             {
                 if (!allClients.ContainsKey(p.PlayerId))
                 {
                     allClients[p.PlayerId] = new(p);
-                    //allClients[p.PlayerId].SetRoute(routeNormal);
-                    allClients[p.PlayerId].SetRoute(routeGhost);
+                    allClients[p.PlayerId].SetRoute(routeNormal);
+                }
+            }
+        }
+
+        if (!usingMic) return;
+
+        IsMuting = Input.GetKey(KeyCode.V);
+        InfoShower.SetMute(IsMuting);
+
+        if (currentRadio != null && (PlayerControl.LocalPlayer.Data?.IsDead ?? false))
+        {
+            currentRadio = null;
+            InfoShower.UnsetRadioContext();
+        }
+        else
+        {
+            if (Input.GetKeyDown((KeyCode)(KeyCode.Alpha1)))
+            {
+                currentRadio = null;
+                InfoShower.UnsetRadioContext();
+            }
+            else
+            {
+                for (int i = 0; i < allRadios.Count; i++)
+                {
+                    if (Input.GetKeyDown((KeyCode)(KeyCode.Alpha1 + i + 1)))
+                    {
+                        currentRadio = allRadios[i];
+                        InfoShower.SetRadioContext(currentRadio.DisplayRadioName, currentRadio.Color);
+                        break;
+                    }
                 }
             }
         }
@@ -181,10 +261,31 @@ public class VoiceChatManager : IDisposable
 
     private IEnumerator CoCommunicate()
     {
+        if (!AllowedUsingMic /*&& !AmongUsClient.Instance.AmHost*/)
+        {
+            var screen = MetaScreen.GenerateWindow(new(2.4f, 1f), HudManager.Instance.transform, Vector3.zero, true, true, false);
+
+            MetaContext context = new();
+
+            context.Append(new MetaContext.Text(TextAttribute.BoldAttr) { Alignment = IMetaContext.AlignmentOption.Center, TranslationKey = "voiceChat.dialog.confirm" });
+            context.Append(new MetaContext.VerticalMargin(0.15f));
+            context.Append(new CombinedContext(0.45f,
+                new MetaContext.Button(() => { AllowedUsingMic = true; screen.CloseScreen(); }, new(TextAttribute.BoldAttr) { Size = new(0.42f, 0.2f) }) { Alignment = IMetaContext.AlignmentOption.Center, TranslationKey = "ui.dialog.yes" },
+                new MetaContext.HorizonalMargin(0.1f),
+                new MetaContext.Button(() => { AllowedUsingMic = false; screen.CloseScreen(); }, new(TextAttribute.BoldAttr) { Size = new(0.42f, 0.2f) }) { Alignment = IMetaContext.AlignmentOption.Center, TranslationKey = "ui.dialog.no" }));
+
+            screen.SetContext(context);
+
+            while (screen) yield return null;
+
+            if (!AllowedUsingMic) yield break;
+        }
+
         myListener = new TcpListener(System.Net.IPAddress.Parse("127.0.0.1"), 11010);
         myListener.Start();
 
         StartSubprocess();
+        //マイク使用中
 
         var task = myListener.AcceptTcpClientAsync();
         while (!task.IsCompleted) yield return new WaitForSeconds(0.4f);
@@ -199,6 +300,8 @@ public class VoiceChatManager : IDisposable
         NetworkStream voiceStream = myClient.GetStream();
 
         myListener.Stop();
+
+        usingMic = true;
 
         int resSize;
         byte[] headRes = new byte[2];
@@ -215,8 +318,6 @@ public class VoiceChatManager : IDisposable
 
             if (resSize == 0) break;
 
-            //UnityEngine.Debug.Log($"Received Header size:{resSize} ({res[0]},{res[1]})");
-
             int read = 0;
             byte[] res = new byte[resSize];
             while (read < resSize)
@@ -226,7 +327,8 @@ public class VoiceChatManager : IDisposable
                 read += readBodyTask.Result;
             }
 
-            RpcSendAudio.Invoke((PlayerControl.LocalPlayer.PlayerId, Input.GetKey(KeyCode.B), resSize, res));
+            if (IsMuting) continue;
+            RpcSendAudio.Invoke((PlayerControl.LocalPlayer.PlayerId, currentRadio != null, currentRadio?.RadioMask ?? 0, resSize, res));
         }
     }
 
@@ -234,9 +336,13 @@ public class VoiceChatManager : IDisposable
     {
         myClient?.Close();
         myClient?.Dispose();
-        myListener.Stop();
+        myListener?.Stop();
+        myPlayer?.Stop();
+        myPlayer?.Dispose();
         childProcess?.Kill();
         childProcess = null;
+
+        if (myCoroutine != null) NebulaManager.Instance?.StopCoroutine(myCoroutine);
     }
 
     static private RemoteProcess<(byte clientId,bool isRadio,int radioMask,int dataLength,byte[] dataAry)> RpcSendAudio = new(

@@ -44,6 +44,8 @@ public class Painter : ConfigurableStandardRole
 
         public override void OnActivated()
         {
+            base.OnActivated();
+
             if (AmOwner)
             {
                 GameData.PlayerOutfit? sample = null;

@@ -1,5 +1,5 @@
 ﻿using Nebula.Configuration;
-using Nebula.Roles.Complex;
+using Nebula.VoiceChat;
 
 namespace Nebula.Roles.Neutral;
 
@@ -68,7 +68,7 @@ public class Jackal : ConfigurableStandardRole
                 if ((JackalTeamId == MyPlayer.PlayerId && MyRole.CanCreateSidekickOption || Sidekick.MyRole.CanCreateSidekickChainlyOption))
                 {
                     sidekickButton = Bind(new ModAbilityButton(true)).KeyBind(KeyCode.F);
-                    
+
                     if (left > 0)
                     {
                         lockSprite = sidekickButton.VanillaButton.AddLockedOverlay();
@@ -96,7 +96,8 @@ public class Jackal : ConfigurableStandardRole
                 killButton = Bind(new ModAbilityButton(isArrangedAsKillButton: true)).KeyBind(KeyCode.Q);
                 killButton.Availability = (button) => myTracker.CurrentTarget != null && MyPlayer.MyControl.CanMove;
                 killButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;
-                killButton.OnClick = (button) => {
+                killButton.OnClick = (button) =>
+                {
                     MyPlayer.MyControl.ModKill(myTracker.CurrentTarget!, true, PlayerState.Dead, EventDetail.Kill);
                     button.StartCoolDown();
 
@@ -112,6 +113,16 @@ public class Jackal : ConfigurableStandardRole
                 killButton.CoolDownTimer = Bind(new Timer(MyRole.KillCoolDownOption.KillCoolDown).SetAsKillCoolDown().Start());
                 killButton.SetLabelType(ModAbilityButton.LabelType.Standard);
                 killButton.SetLabel("kill");
+
+                if (GeneralConfigurations.JackalRadioOption)
+                {
+                    VoiceChatRadio jackalRadio = new(IsMySidekick, Language.Translate("voiceChat.info.jackalRadio"), MyRole.RoleColor);
+                    Bind(new NebulaGameScript()
+                    {
+                        OnActivatedEvent = () => NebulaGameManager.Instance?.VoiceChatManager?.AddRadio(jackalRadio),
+                        OnReleasedEvent = () => NebulaGameManager.Instance?.VoiceChatManager?.RemoveRadio(jackalRadio)
+                    });
+                }
             }
         }
 
@@ -204,20 +215,34 @@ public class Sidekick : ConfigurableRole
             //サイドキック除去
             MyPlayer.UnsetModifierLocal(m=>m.Role == SidekickModifier.MyRole);
 
-            if (AmOwner && MyRole.SidekickCanKillOption)
+            if (AmOwner)
             {
-                var myTracker = Bind(ObjectTrackers.ForPlayer(1.2f, MyPlayer.MyControl, (p) => p.PlayerId != MyPlayer.PlayerId && !p.Data.IsDead));
+                if (MyRole.SidekickCanKillOption)
+                {
+                    var myTracker = Bind(ObjectTrackers.ForPlayer(1.2f, MyPlayer.MyControl, (p) => p.PlayerId != MyPlayer.PlayerId && !p.Data.IsDead));
 
-                killButton = Bind(new ModAbilityButton(isArrangedAsKillButton: true)).KeyBind(KeyCode.Q);
-                killButton.Availability = (button) => myTracker.CurrentTarget != null && MyPlayer.MyControl.CanMove;
-                killButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;
-                killButton.OnClick = (button) => {
-                    MyPlayer.MyControl.ModKill(myTracker.CurrentTarget!, true, PlayerState.Dead, EventDetail.Kill);
-                    button.StartCoolDown();
-                };
-                killButton.CoolDownTimer = Bind(new Timer(MyRole.KillCoolDownOption.KillCoolDown).SetAsKillCoolDown().Start());
-                killButton.SetLabelType(ModAbilityButton.LabelType.Standard);
-                killButton.SetLabel("kill");
+                    killButton = Bind(new ModAbilityButton(isArrangedAsKillButton: true)).KeyBind(KeyCode.Q);
+                    killButton.Availability = (button) => myTracker.CurrentTarget != null && MyPlayer.MyControl.CanMove;
+                    killButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;
+                    killButton.OnClick = (button) =>
+                    {
+                        MyPlayer.MyControl.ModKill(myTracker.CurrentTarget!, true, PlayerState.Dead, EventDetail.Kill);
+                        button.StartCoolDown();
+                    };
+                    killButton.CoolDownTimer = Bind(new Timer(MyRole.KillCoolDownOption.KillCoolDown).SetAsKillCoolDown().Start());
+                    killButton.SetLabelType(ModAbilityButton.LabelType.Standard);
+                    killButton.SetLabel("kill");
+                }
+
+                if (GeneralConfigurations.JackalRadioOption)
+                {
+                    VoiceChatRadio jackalRadio = new((p)=>p.Role is Jackal.Instance jackal && jackal.JackalTeamId == JackalTeamId, Language.Translate("voiceChat.info.jackalRadio"), MyRole.RoleColor);
+                    Bind(new NebulaGameScript()
+                    {
+                        OnActivatedEvent = () => NebulaGameManager.Instance?.VoiceChatManager?.AddRadio(jackalRadio),
+                        OnReleasedEvent = () => NebulaGameManager.Instance?.VoiceChatManager?.RemoveRadio(jackalRadio)
+                    });
+                }
             }
         }
     }
@@ -246,6 +271,22 @@ public class SidekickModifier : AbstractModifier
         public override void DecoratePlayerName(ref string text, ref Color color)
         {
             if (AmOwner || NebulaGameManager.Instance.CanSeeAllInfo) text += " #".Color(Jackal.MyRole.RoleColor);
+        }
+
+        public override void OnActivated()
+        {
+            if (AmOwner)
+            {
+                if (GeneralConfigurations.JackalRadioOption)
+                {
+                    VoiceChatRadio jackalRadio = new((p) => p.Role is Jackal.Instance jackal && jackal.JackalTeamId == JackalTeamId, Language.Translate("voiceChat.info.jackalRadio"), MyRole.RoleColor);
+                    Bind(new NebulaGameScript()
+                    {
+                        OnActivatedEvent = () => NebulaGameManager.Instance?.VoiceChatManager?.AddRadio(jackalRadio),
+                        OnReleasedEvent = () => NebulaGameManager.Instance?.VoiceChatManager?.RemoveRadio(jackalRadio)
+                    });
+                }
+            }
         }
     }
 }

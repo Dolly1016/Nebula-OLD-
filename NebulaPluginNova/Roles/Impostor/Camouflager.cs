@@ -41,6 +41,8 @@ public class Camouflager : ConfigurableStandardRole
 
         public override void OnActivated()
         {
+            base.OnActivated();
+
             if (AmOwner)
             {
                 camouflageButton = Bind(new ModAbilityButton()).KeyBind(KeyCode.F);

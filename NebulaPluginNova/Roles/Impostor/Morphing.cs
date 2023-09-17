@@ -48,6 +48,8 @@ public class Morphing : ConfigurableStandardRole
 
         public override void OnActivated()
         {
+            base.OnActivated();
+
             if (AmOwner)
             {
                 GameData.PlayerOutfit? sample = null;

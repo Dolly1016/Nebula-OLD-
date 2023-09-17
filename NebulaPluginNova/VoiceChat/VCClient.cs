@@ -28,8 +28,9 @@ public class VCClient : IDisposable
     public void SetVoiceType(VoiceType voiceType)
     {
         if (voiceType == VoiceType) return;
-        var route = NebulaGameManager.Instance.VoiceChatManager?.GetRoute(voiceType);
+
         VoiceType = voiceType;
+        var route = NebulaGameManager.Instance.VoiceChatManager?.GetRoute(voiceType);
         SetRoute(route);
     }
 
@@ -53,16 +54,12 @@ public class VCClient : IDisposable
 
     public void Update()
     {
-        if (!CanHear) return;
+        bool aliveAll = AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Started;
 
-        if(GeneralConfigurations.AffectedByCommsSabOption && !PlayerControl.LocalPlayer.Data.IsDead && (!PlayerControl.LocalPlayer.Data.Role?.IsImpostor ?? true) && AmongUsUtil.InCommSab)
-        {
-            volumeFilter.Volume = 0f;
-            return;
-        }
+        if (!aliveAll && !CanHear) return;
 
         //互いに死んでいる場合
-        if (PlayerControl.LocalPlayer.Data.IsDead && relatedControl.Data.IsDead)
+        if (!aliveAll && PlayerControl.LocalPlayer.Data.IsDead && relatedControl.Data.IsDead)
         {
             volumeFilter.Volume = 1f;
             panningFilter.Pan = 0f;
@@ -70,11 +67,11 @@ public class VCClient : IDisposable
         }
 
         //ラジオ
-        if (!relatedControl.Data.IsDead && VoiceType == VoiceType.Radio)
+        if ((aliveAll || !relatedControl.Data.IsDead) && VoiceType == VoiceType.Radio)
         {
             volumeFilter.Volume = ((1 << PlayerControl.LocalPlayer.PlayerId) & radioMask) == 0 ? 0f : 1f;
             panningFilter.Pan = 0f;
-            return:
+            return;
         }
 
         //会議中
@@ -85,7 +82,12 @@ public class VCClient : IDisposable
             return;
         }
 
-
+        //コミュサボ
+        if (AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started && GeneralConfigurations.AffectedByCommsSabOption && !PlayerControl.LocalPlayer.Data.IsDead && (!PlayerControl.LocalPlayer.Data.Role?.IsImpostor ?? true) && AmongUsUtil.InCommSab)
+        {
+            volumeFilter.Volume = 0f;
+            return;
+        }
 
         try
         {
@@ -131,24 +133,22 @@ public class VCClient : IDisposable
     public ISampleProvider MyProvider { get => panningFilter; }
 
     private byte[] rawAudioData = new byte[5760];
-    public void OnReceivedData(bool isRadio, int radioMask,byte[] data)
+    public void OnReceivedData(bool isRadio, int radioMask, byte[] data)
     {
-        //聴こえない音に対しては何もしない
-        if (!CanHear) return;
-
-        if(isRadio != onRadio)
-        {
-            isRadio = onRadio;
-            SetVoiceType((isRadio && !relatedControl.Data.IsDead) ? VoiceType.Radio : VoiceType.Normal);
-        }
+        onRadio = isRadio;
+        SetVoiceType((isRadio && !(relatedControl.Data?.IsDead ?? false)) ? VoiceType.Radio : VoiceType.Normal);
+    
 
         if(VoiceType != VoiceType.Radio)
         {
-            if (relatedControl.Data.IsDead && VoiceChatManager.CanListenGhostVoice) 
+            if ((relatedControl.Data?.IsDead ?? false) && VoiceChatManager.CanListenGhostVoice) 
                 SetVoiceType(VoiceType.Ghost);
             else
                 SetVoiceType(VoiceType.Normal);
         }
+
+        //聴こえない音に対しては何もしない
+        if (VoiceType != VoiceType.Ghost && !CanHear) return;
 
         this.radioMask = radioMask; 
 

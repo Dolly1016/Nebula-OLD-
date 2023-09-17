@@ -152,6 +152,8 @@ public class Reaper : ConfigurableStandardRole
 
         public override void OnActivated()
         {
+            base.OnActivated();
+
             draggable?.OnActivated(this);
             EditVentInfo(true);
         }

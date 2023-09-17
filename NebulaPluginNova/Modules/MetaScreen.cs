@@ -601,7 +601,7 @@ public class MetaScreen : MonoBehaviour
         return screen;
     }
 
-    static public MetaScreen GenerateWindow(Vector2 size, Transform? parent, Vector3 localPos, bool withBlackScreen,bool closeOnClickOutside)
+    static public MetaScreen GenerateWindow(Vector2 size, Transform? parent, Vector3 localPos, bool withBlackScreen,bool closeOnClickOutside,bool withCloseButton = true)
     {
         var screen = GenerateScreen(size, parent, localPos, true, withBlackScreen, true);
         
@@ -611,8 +611,12 @@ public class MetaScreen : MonoBehaviour
         collider.isTrigger = true;
         collider.gameObject.layer = LayerExpansion.GetUILayer();
         collider.radius = 0.25f;
-        var renderer = collider.gameObject.AddComponent<SpriteRenderer>();
-        renderer.sprite = VanillaAsset.CloseButtonSprite;
+        SpriteRenderer? renderer = null;
+        if (withCloseButton)
+        {
+            renderer = collider.gameObject.AddComponent<SpriteRenderer>();
+            renderer.sprite = VanillaAsset.CloseButtonSprite;
+        }
         var button = collider.gameObject.SetUpButton(true, renderer);
         button.OnClick.AddListener(() => GameObject.Destroy(obj));
         NebulaManager.Instance.RegisterUI(obj, button);
