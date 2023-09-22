@@ -449,7 +449,8 @@
 "help.tabs.options" : "Options"
 "help.tabs.slides" : "Slides"
 "help.slides.share" : "Share"
-"help.command" : "Meta Commands"
+"help.command" : "Meta Command"
+"help.command.nogame" : "No Game"
 
 # Voice Chat
 
