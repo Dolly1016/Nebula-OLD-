@@ -45,7 +45,7 @@ public class Camouflager : ConfigurableStandardRole
 
             if (AmOwner)
             {
-                camouflageButton = Bind(new ModAbilityButton()).KeyBind(KeyCode.F);
+                camouflageButton = Bind(new ModAbilityButton()).KeyBind(KeyAssignmentType.Ability);
                 camouflageButton.SetSprite(buttonSprite.GetSprite());
                 camouflageButton.Availability = (button) =>MyPlayer.MyControl.CanMove;
                 camouflageButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;

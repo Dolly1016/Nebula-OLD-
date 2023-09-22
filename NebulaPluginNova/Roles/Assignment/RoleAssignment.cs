@@ -57,7 +57,7 @@ public abstract class IRoleAllocator
 
         public IEnumerable<(byte playerId,AbstractRole role)> GetPlayers(RoleCategory category)
         {
-            foreach (var tuple in roles) if (tuple.role.RoleCategory == category) yield return (tuple.playerId, tuple.role);
+            foreach (var tuple in roles) if ((tuple.role.RoleCategory & category) != 0) yield return (tuple.playerId, tuple.role);
         }
     }
 

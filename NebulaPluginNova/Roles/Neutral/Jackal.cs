@@ -67,7 +67,7 @@ public class Jackal : ConfigurableStandardRole
 
                 if ((JackalTeamId == MyPlayer.PlayerId && MyRole.CanCreateSidekickOption || Sidekick.MyRole.CanCreateSidekickChainlyOption))
                 {
-                    sidekickButton = Bind(new ModAbilityButton(true)).KeyBind(KeyCode.F);
+                    sidekickButton = Bind(new ModAbilityButton(true)).KeyBind(KeyAssignmentType.Ability);
 
                     if (left > 0)
                     {
@@ -93,7 +93,7 @@ public class Jackal : ConfigurableStandardRole
                     sidekickButton.SetLabel("sidekick");
                 }
 
-                killButton = Bind(new ModAbilityButton(isArrangedAsKillButton: true)).KeyBind(KeyCode.Q);
+                killButton = Bind(new ModAbilityButton(isArrangedAsKillButton: true)).KeyBind(KeyAssignmentType.Kill);
                 killButton.Availability = (button) => myTracker.CurrentTarget != null && MyPlayer.MyControl.CanMove;
                 killButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;
                 killButton.OnClick = (button) =>
@@ -221,7 +221,7 @@ public class Sidekick : ConfigurableRole
                 {
                     var myTracker = Bind(ObjectTrackers.ForPlayer(1.2f, MyPlayer.MyControl, (p) => p.PlayerId != MyPlayer.PlayerId && !p.Data.IsDead));
 
-                    killButton = Bind(new ModAbilityButton(isArrangedAsKillButton: true)).KeyBind(KeyCode.Q);
+                    killButton = Bind(new ModAbilityButton(isArrangedAsKillButton: true)).KeyBind(KeyAssignmentType.Kill);
                     killButton.Availability = (button) => myTracker.CurrentTarget != null && MyPlayer.MyControl.CanMove;
                     killButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;
                     killButton.OnClick = (button) =>

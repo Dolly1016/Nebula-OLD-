@@ -50,7 +50,7 @@ public class Sheriff : ConfigurableStandardRole
             if (AmOwner)
             {
                 var killTracker = Bind(ObjectTrackers.ForPlayer(1.2f, MyPlayer.MyControl, (p) => p.PlayerId != MyPlayer.PlayerId && !p.Data.IsDead));
-                killButton = Bind(new ModAbilityButton(isArrangedAsKillButton: true)).KeyBind(KeyCode.F);
+                killButton = Bind(new ModAbilityButton(isArrangedAsKillButton: true)).KeyBind(KeyAssignmentType.Ability);
                 killButton.SetSprite(buttonSprite.GetSprite());
                 killButton.Availability = (button) => killTracker.CurrentTarget != null && MyPlayer.MyControl.CanMove;
                 killButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;

@@ -234,9 +234,6 @@ public class NebulaGameManager
         //ゲームモードによる終了条件を追加
         foreach(var c in GeneralConfigurations.CurrentGameMode.GameModeCriteria)CriteriaManager.AddCriteria(c);
 
-        //無効試合の終了条件
-        CriteriaManager.AddCriteria(NebulaEndCriteria.NoGameCriteria);
-
         foreach (var p in allModPlayers) p.Value.OnGameStart();
         NebulaGameManager.Instance?.AllScriptAction(s => s.OnGameStart());
         HudManager.Instance.UpdateHudContent();

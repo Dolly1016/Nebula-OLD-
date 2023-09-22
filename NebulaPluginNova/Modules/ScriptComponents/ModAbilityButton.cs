@@ -183,6 +183,7 @@ public class ModAbilityButton : INebulaScriptComponent
         return text;
     }
 
+    public ModAbilityButton KeyBind(KeyAssignmentType keyCode) => KeyBind(NebulaInput.GetKeyCode(keyCode));
     public ModAbilityButton KeyBind(KeyCode keyCode)
     {
         VanillaButton.gameObject.ForEachChild((Il2CppSystem.Action<GameObject>)((c) => { if (c.name.Equals("HotKeyGuide")) GameObject.Destroy(c); }));

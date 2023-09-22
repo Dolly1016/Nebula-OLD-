@@ -82,7 +82,7 @@ public class Vulture : ConfigurableStandardRole
 
                 var eatTracker = Bind(ObjectTrackers.ForDeadBody(1.2f, MyPlayer.MyControl, (d) => true));
 
-                eatButton = Bind(new ModAbilityButton()).KeyBind(KeyCode.F);
+                eatButton = Bind(new ModAbilityButton()).KeyBind(KeyAssignmentType.Ability);
                 var usesIcon = eatButton.ShowUsesIcon(2);
                 eatButton.SetSprite(buttonSprite.GetSprite());
                 eatButton.Availability = (button) => eatTracker.CurrentTarget != null && MyPlayer.MyControl.CanMove;

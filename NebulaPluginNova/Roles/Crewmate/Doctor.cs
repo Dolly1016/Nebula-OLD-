@@ -54,7 +54,7 @@ public class Doctor : ConfigurableStandardRole
         {
             if (AmOwner)
             {
-                vitalButton = Bind(new ModAbilityButton()).KeyBind(KeyCode.F);
+                vitalButton = Bind(new ModAbilityButton()).KeyBind(KeyAssignmentType.Ability);
                 vitalButton.SetSprite(HudManager.Instance.UseButton.fastUseSettings[ImageNames.VitalsButton].Image);
                 vitalButton.Availability = (button) => MyPlayer.MyControl.CanMove && vitalTimer > 0f;
                 vitalButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;

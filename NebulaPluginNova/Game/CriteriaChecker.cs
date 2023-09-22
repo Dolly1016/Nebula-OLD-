@@ -135,15 +135,6 @@ public class NebulaEndCriteria
             return jackals * 2 >= totalAlive ? NebulaGameEnd.ImpostorWin : null;
         }
     };
-
-    static public NebulaEndCriteria NoGameCriteria = new()
-    {
-        OnUpdate = () =>
-        {
-            if (NebulaInput.GetKeyDown(KeyCode.F5) && NebulaInput.GetKey(KeyCode.LeftControl)) return NebulaGameEnd.NoGame;
-            return null;
-        }
-    };
 }
 
 public class CriteriaManager

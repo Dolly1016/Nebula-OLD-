@@ -15,6 +15,8 @@ public class MouseOverPopup : MonoBehaviour
     private SpriteRenderer background;
     private Vector2 screenSize;
     private PassiveUiElement? relatedButton;
+
+    public PassiveUiElement? RelatedObject => relatedButton;
     static MouseOverPopup()
     {
         ClassInjector.RegisterTypeInIl2Cpp<MouseOverPopup>();
@@ -78,7 +80,7 @@ public class MouseOverPopup : MonoBehaviour
 
     public void Update()
     {
-        if(!relatedButton)
+        if(relatedButton != null && !relatedButton)
         {
             SetContext(null, null);
         }
@@ -86,9 +88,28 @@ public class MouseOverPopup : MonoBehaviour
     }
 }
 
+[NebulaPreLoad]
 public class NebulaManager : MonoBehaviour
 {
-    private List<Tuple<GameObject, PassiveButton?>> allModUi = new List<Tuple<GameObject, PassiveButton?>>();
+    public class MetaCommand
+    {
+        public KeyAssignmentType? KeyAssignmentType = null;
+        public KeyCode? DefaultKeyCode = null;
+        public KeyCode? KeyCode => KeyAssignmentType != null ? NebulaInput.GetKeyCode(KeyAssignmentType.Value) : DefaultKeyCode;
+        public string TranslationKey;
+        public Func<bool> Predicate;
+        public Action CommandAction;
+
+        public MetaCommand(string translationKey, Func<bool> predicate,Action commandAction)
+        {
+            TranslationKey = translationKey;
+            Predicate = predicate;
+            CommandAction = commandAction;
+        }
+    }
+
+    private List<Tuple<GameObject, PassiveButton?>> allModUi = new();
+    static private List<MetaCommand> commands = new();
     static public NebulaManager Instance { get; private set; }
 
     //テキスト情報表示
@@ -97,6 +118,14 @@ public class NebulaManager : MonoBehaviour
     static NebulaManager()
     {
         ClassInjector.RegisterTypeInIl2Cpp<NebulaManager>();
+    }
+
+    static public void Load()
+    {
+        commands.Add(new( "help.command.nogame",
+            () => NebulaGameManager.Instance != null && AmongUsClient.Instance &&  AmongUsClient.Instance.AmHost && AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started,
+            () => NebulaGameManager.Instance?.RpcInvokeSpecialWin(NebulaGameEnd.NoGame, 0)
+        ){ DefaultKeyCode = KeyCode.F5 });
     }
 
     public void CloseAllUI()
@@ -142,6 +171,46 @@ public class NebulaManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.T)) NebulaPlugin.Test();
 
+        //コマンド
+        if (Input.GetKeyDown(NebulaInput.GetKeyCode(KeyAssignmentType.Command)))
+        {
+            MetaContext context = new();
+            context.Append(new MetaContext.Text(TextAttribute.BoldAttr) { TranslationKey = "help.command", Alignment = IMetaContext.AlignmentOption.Left });
+            string commandsStr = "";
+            foreach(var command in commands)
+            {
+                if (!command.Predicate.Invoke()) continue;
+
+                if (commandsStr.Length != 0) commandsStr += "\n";
+                commandsStr += ButtonEffect.KeyCodeInfo.AllKeyInfo[command.KeyCode!.Value].TranslationKey;
+
+                commandsStr += " :" + Language.Translate(command.TranslationKey);
+            }
+            context.Append(new MetaContext.VariableText(TextAttribute.ContentAttr) { RawText = commandsStr });
+
+            if (HelpRelatedObject == null) SetHelpContext(null, context);
+
+        }
+
+        //コマンド
+        if (Input.GetKeyUp(NebulaInput.GetKeyCode(KeyAssignmentType.Command)))
+        {
+            if (HelpRelatedObject == null) HideHelpContext();
+        }
+
+        //コマンド
+        if (Input.GetKey(NebulaInput.GetKeyCode(KeyAssignmentType.Command)))
+        {
+            foreach (var command in commands)
+            {
+                if (!Input.GetKeyDown(command.KeyCode!.Value)) continue;
+
+                command.CommandAction.Invoke();
+                HideHelpContext();
+                break;
+            }
+        }
+
         //ダイアログ管理
         allModUi.RemoveAll(tuple => !tuple.Item1);
         for (int i = 0; i < allModUi.Count; i++)
@@ -167,4 +236,5 @@ public class NebulaManager : MonoBehaviour
 
     public void SetHelpContext(PassiveUiElement? related, IMetaContext? context) => mouseOverPopup.SetContext(related, context);
     public void HideHelpContext() => mouseOverPopup.SetContext(null, null);
+    public PassiveUiElement? HelpRelatedObject => mouseOverPopup.RelatedObject;
 }

@@ -88,7 +88,7 @@ public class Arsonist : ConfigurableStandardRole
 
                 var douseTracker = Bind(ObjectTrackers.ForPlayer(1.2f, MyPlayer.MyControl, (p) => playerIcons.Any(tuple => tuple.playerId == p.PlayerId && tuple.icon.GetAlpha() < 0.8f)));
 
-                douseButton = Bind(new ModAbilityButton()).KeyBind(KeyCode.F);
+                douseButton = Bind(new ModAbilityButton()).KeyBind(KeyAssignmentType.Ability);
                 douseButton.SetSprite(douseButtonSprite.GetSprite());
                 douseButton.Availability = (button) => MyPlayer.MyControl.CanMove && douseTracker.CurrentTarget != null;
                 douseButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead && !canIgnite;
@@ -115,7 +115,7 @@ public class Arsonist : ConfigurableStandardRole
                 douseButton.SetLabel("douse");
 
                 bool won = false;
-                igniteButton = Bind(new ModAbilityButton()).KeyBind(KeyCode.F);
+                igniteButton = Bind(new ModAbilityButton()).KeyBind(KeyAssignmentType.Ability);
                 igniteButton.SetSprite(IgniteButtonSprite.GetSprite());
                 igniteButton.Availability = (button) => MyPlayer.MyControl.CanMove;
                 igniteButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead && canIgnite && !won;

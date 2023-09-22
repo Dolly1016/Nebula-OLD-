@@ -149,7 +149,7 @@ public class Raider : ConfigurableStandardRole
 
             if (AmOwner)
             {
-                equipButton = Bind(new ModAbilityButton()).KeyBind(KeyCode.F);
+                equipButton = Bind(new ModAbilityButton()).KeyBind(KeyAssignmentType.Ability);
                 equipButton.SetSprite(buttonSprite.GetSprite());
                 equipButton.Availability = (button) => MyPlayer.MyControl.CanMove;
                 equipButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;
@@ -165,7 +165,7 @@ public class Raider : ConfigurableStandardRole
                 equipButton.SetLabelType(ModAbilityButton.LabelType.Standard);
                 equipButton.SetLabel("equip");
 
-                killButton = Bind(new ModAbilityButton(isArrangedAsKillButton: true)).KeyBind(KeyCode.Q);
+                killButton = Bind(new ModAbilityButton(isArrangedAsKillButton: true)).KeyBind(KeyAssignmentType.Kill);
                 killButton.Availability = (button) => MyAxe != null && MyPlayer.MyControl.CanMove;
                 killButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;
                 killButton.OnClick = (button) =>
