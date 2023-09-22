@@ -1,4 +1,5 @@
-﻿using Nebula.Configuration;
+﻿using Nebula.Behaviour;
+using Nebula.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,10 +43,12 @@ public class Jailer : ConfigurableStandardRole
             MapBehaviour.Instance.countOverlay.gameObject.SetActive(true);
             MapBehaviour.Instance.countOverlay.SetModOption(MyRole.CanIdentifyImpostorsOption, MyRole.CanIdentifyDeadBodiesOption, false, Palette.ImpostorRed);
             MapBehaviour.Instance.countOverlay.SetOptions(true, true);
+            ConsoleTimer.MarkAsNonConsoleMinigame();
 
             MapBehaviour.Instance.taskOverlay.Hide();
 
             MapBehaviour.Instance.countOverlayAllowsMovement = MyRole.CanMoveWithMapWatchingOption;
+            if (!MapBehaviour.Instance.countOverlayAllowsMovement) PlayerControl.LocalPlayer.NetTransform.Halt();
         }
 
         protected override void OnInactivated()

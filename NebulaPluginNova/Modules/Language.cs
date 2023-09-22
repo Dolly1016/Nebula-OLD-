@@ -179,12 +179,18 @@ public class Language
     public static string Translate(string? translationKey)
     {
         if (translationKey == null) return "Invalid Key";
+        return Find(translationKey) ?? "*" + translationKey;
+    }
+
+    public static string? Find(string? translationKey)
+    {
+        if (translationKey == null) return null;
         string? result;
         if (CurrentLanguage?.translationMap.TryGetValue(translationKey, out result) ?? false)
             return result!;
-        if (DefaultLanguage?.translationMap.TryGetValue(translationKey,out result) ?? false)
+        if (DefaultLanguage?.translationMap.TryGetValue(translationKey, out result) ?? false)
             return result!;
-        return "*" + translationKey;
+        return null;
     }
 }
 

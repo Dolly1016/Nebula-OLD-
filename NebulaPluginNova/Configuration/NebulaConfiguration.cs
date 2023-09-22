@@ -12,6 +12,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using TMPro;
 using UnityEngine;
 using static Il2CppSystem.Linq.Expressions.Interpreter.NullableMethodCallInstruction;
 
@@ -391,16 +392,28 @@ public class NebulaConfiguration
     public bool IsShown => (MyHolder?.IsShown ?? true) && (Predicate?.Invoke() ?? true);
     public Action? OnValueChanged = null;
 
+    public void TitlePostBuild(TextMeshPro text, string? detailId)
+    {
+        string? display = Language.Find((detailId ?? Id) + ".detail");
+        if (display == null) return;
+
+        var buttonArea = UnityHelper.CreateObject<BoxCollider2D>("DetailArea", text.transform, Vector3.zero);
+        var button = buttonArea.gameObject.SetUpButton();
+        buttonArea.size = text.rectTransform.sizeDelta;
+        buttonArea.isTrigger = true;
+        button.OnMouseOver.AddListener(() => NebulaManager.Instance.SetHelpContext(button, new MetaContext.VariableText(TextAttribute.ContentAttr) { Alignment = IMetaContext.AlignmentOption.Left, RawText = display }));
+        button.OnMouseOut.AddListener(()=>NebulaManager.Instance.HideHelpContext());
+    }
     public IMetaContext? GetEditor()
     {
         if (Editor != null)
             return Editor.Invoke();
         return new CombinedContext(0.55f, IMetaContext.AlignmentOption.Center,
-            new MetaContext.Text(OptionTitleAttr) { RawText = Title.Text },
+            new MetaContext.Text(OptionTitleAttr) { RawText = Title.Text, PostBuilder = (text) => TitlePostBuild(text, null) },
             OptionTextColon,
             OptionButtonContext(() => ChangeValue(false), "<<"),
-            new MetaContext.Text(OptionValueAttr) { RawText = ToDisplayString() },
-            OptionButtonContext(() => ChangeValue(true),">>")
+            new MetaContext.Text(OptionValueAttr) { RawText = ToDisplayString()},
+            OptionButtonContext(() => ChangeValue(true), ">>")
             );
     }
 
@@ -490,6 +503,13 @@ public class NebulaConfiguration
         Decorator = (v) => Language.Translate((bool)v! ? "options.switch.on" : "options.switch.off");
     }
 
+    public NebulaConfiguration(ConfigurationHolder? holder, string id, ITextComponent? title, object?[] selections, object? defaultValue, object? invalidatedValue,Func<object?,string> decorator) :
+        this(holder, id, title, selections.Count() - 1, Array.IndexOf(selections, defaultValue), Array.IndexOf(selections, invalidatedValue))
+    {
+        Mapper = (i) => selections[i];
+        Decorator = decorator;
+    }
+
     public NebulaConfiguration(ConfigurationHolder? holder,string id, ITextComponent? title, string[] selections,string defaultValue,string invalidatedValue):
         this(holder,id, title, selections.Length-1,Array.IndexOf(selections,defaultValue), Array.IndexOf(selections, invalidatedValue))
     {
@@ -545,7 +565,7 @@ public class NebulaConfiguration
     
     public object? GetMapped()
     {
-        return Mapper?.Invoke(CurrentValue) ?? CurrentValue;
+        return Mapper != null ? Mapper.Invoke(CurrentValue) : CurrentValue;
     }
 
     public int GetMappedInt()

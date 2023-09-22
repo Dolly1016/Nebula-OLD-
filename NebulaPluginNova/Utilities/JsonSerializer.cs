@@ -33,6 +33,8 @@ public static class JsonStructure
 
             if (type.Equals(typeof(int)))
                 return int.Parse(trimmed);
+            if (type.Equals(typeof(byte)))
+                return byte.Parse(trimmed);
             if (type.Equals(typeof(string)))
                 return trimmed;
             if (type.Equals(typeof(float)))
@@ -213,7 +215,7 @@ public static class JsonStructure
 
     public static string Serialize(this object obj)
     {
-        if (obj is int or float or double or bool)
+        if (obj is int or byte or float or double or bool)
             return obj.ToString() ?? "null";
         if (obj is string)
             return "\"" + obj + "\"";

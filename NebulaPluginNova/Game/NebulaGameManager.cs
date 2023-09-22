@@ -76,6 +76,8 @@ public class NebulaGameManager
     public Synchronizer Syncronizer { get; private set; } = new();
     public LobbySlideManager LobbySlideManager { get; private set; } = new();
     public VoiceChatManager? VoiceChatManager { get; set; } = GeneralConfigurations.UseVoiceChatOption ? new() : null;
+    public ConsoleRestriction ConsoleRestriction { get; private set; } = new();
+
     //天界視点フラグ
     public bool CanSeeAllInfo { get; set; }
 
@@ -169,6 +171,8 @@ public class NebulaGameManager
         var tuple = CriteriaManager.OnExiled(player);
         if(tuple == null) return;
         CheckAndEndGame(tuple.Item1,tuple.Item2);
+
+        ConsoleRestriction?.OnMeetingEnd();
     }
 
     public void OnUpdate() {
@@ -236,6 +240,8 @@ public class NebulaGameManager
         foreach (var p in allModPlayers) p.Value.OnGameStart();
         NebulaGameManager.Instance?.AllScriptAction(s => s.OnGameStart());
         HudManager.Instance.UpdateHudContent();
+
+        ConsoleRestriction?.OnGameStart();
     }
 
     public void OnGameEnd()

@@ -14,6 +14,7 @@ public class MouseOverPopup : MonoBehaviour
     private MetaScreen myScreen;
     private SpriteRenderer background;
     private Vector2 screenSize;
+    private PassiveUiElement? relatedButton;
     static MouseOverPopup()
     {
         ClassInjector.RegisterTypeInIl2Cpp<MouseOverPopup>();
@@ -25,7 +26,7 @@ public class MouseOverPopup : MonoBehaviour
         background.sprite = NebulaAsset.SharpWindowBackgroundSprite.GetSprite();
         background.drawMode = SpriteDrawMode.Sliced;
         background.tileMode = SpriteTileMode.Continuous;
-        background.color = new Color(0.25f, 0.25f, 0.25f, 1f);
+        background.color = new Color(0.17f, 0.17f, 0.17f, 1f);
 
         screenSize = new Vector2(7f, 4f);
         myScreen = MetaScreen.GenerateScreen(screenSize,transform,Vector3.zero,false,false,false);
@@ -35,37 +36,53 @@ public class MouseOverPopup : MonoBehaviour
         NebulaGameManager.Instance?.OnSceneChanged();
     }
 
-    public void SetContext(Func<IMetaContext.AlignmentOption, MetaContext?>? context)
+    public void SetContext(PassiveUiElement? related, IMetaContext? context)
     {
         if(context == null) {
             gameObject.SetActive(false);
+            relatedButton = null;
             return;
         }
 
         gameObject.SetActive(true);
 
+        relatedButton = related;
         transform.SetParent(UnityHelper.FindCamera(LayerExpansion.GetUILayer())!.transform);
 
-        var pos = UnityHelper.ScreenToWorldPoint(Input.mousePosition, LayerExpansion.GetUILayer());
-
-        pos.z = -800f;
-
         bool isLeft = Input.mousePosition.x < Screen.width / 2f;
-        float height = myScreen.SetContext(context.Invoke(isLeft ? IMetaContext.AlignmentOption.Left : IMetaContext.AlignmentOption.Right), out var width);
+        bool isLower = Input.mousePosition.y < Screen.height / 2f;
+
+        float height = myScreen.SetContext(context, out var width);
 
         if (width.min > width.max)
         {
             gameObject.SetActive(false);
             return;
         }
-        Vector2 anchorPoint = new(screenSize.x / 2f + 0.15f, screenSize.y / 2f + 0.15f);
-        if (isLeft) anchorPoint.x *= -1f;
+
+        Vector2 anchorPoint = new(-screenSize.x / 2f - 0.15f, screenSize.y / 2f + 0.15f);
+        if (!isLeft) anchorPoint.x += (width.max - width.min) + 0.3f;
+        if (isLower) anchorPoint.y -= height + 0.3f;
+        
+        var pos = UnityHelper.ScreenToWorldPoint(Input.mousePosition, LayerExpansion.GetUILayer());
+        pos.z = -800f;
         transform.position = pos - (Vector3)anchorPoint;
+
+
 
         background.transform.localPosition = new Vector3((width.min + width.max) / 2f, screenSize.y / 2f - height / 2f, 1f);
         background.size = new Vector2((width.max - width.min) + 0.22f, height + 0.1f);
 
-        
+        Update();
+    }
+
+    public void Update()
+    {
+        if(!relatedButton)
+        {
+            SetContext(null, null);
+        }
+
     }
 }
 
@@ -148,5 +165,6 @@ public class NebulaManager : MonoBehaviour
         mouseOverPopup = UnityHelper.CreateObject<MouseOverPopup>("MouseOverPopup",transform,Vector3.zero);
     }
 
-    public void SetContext(Func<IMetaContext.AlignmentOption, MetaContext?>? context) => mouseOverPopup.SetContext(context);
+    public void SetHelpContext(PassiveUiElement? related, IMetaContext? context) => mouseOverPopup.SetContext(related, context);
+    public void HideHelpContext() => mouseOverPopup.SetContext(null, null);
 }

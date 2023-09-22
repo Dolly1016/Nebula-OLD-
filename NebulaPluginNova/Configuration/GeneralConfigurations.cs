@@ -59,6 +59,34 @@ public static class GeneralConfigurations
     static public NebulaConfiguration JackalRadioOption = new NebulaConfiguration(VoiceChatOptions, "jackalRadio", null, false, false) { Predicate = () => UseVoiceChatOption };
     static public NebulaConfiguration AffectedByCommsSabOption = new NebulaConfiguration(VoiceChatOptions, "affectedByCommsSab", null, false, false) { Predicate = () => UseVoiceChatOption };
 
+    static IEnumerable<object?> RestrictionSelections()
+    {
+        yield return null;
+        float time = 0f;
+        while (time < 10f)
+        {
+            time += 1f;
+            yield return time;
+        }
+        while (time < 120f)
+        {
+            time += 5f;
+            yield return time;
+        }
+    }
+    static string RestrictionDecorator(object? val)
+    {
+        if (val is null) return Language.Translate("options.consoleRestriction.unlimited");
+        return NebulaConfiguration.SecDecorator(val);
+    }
+
+    static public ConfigurationHolder ConsoleRestrictionOptions = new("options.consoleRestriction", null, ConfigurationTab.Settings, CustomGameMode.Standard | CustomGameMode.FreePlay);
+    static public NebulaConfiguration ResetRestrictionsOption = new NebulaConfiguration(ConsoleRestrictionOptions, "resetRestrictions", null, true, true);
+    static public NebulaConfiguration AdminRestrictionOption = new NebulaConfiguration(ConsoleRestrictionOptions, "adminRestriction", null, RestrictionSelections().ToArray(), null, null, RestrictionDecorator);
+    static public NebulaConfiguration VitalsRestrictionOption = new NebulaConfiguration(ConsoleRestrictionOptions, "vitalsRestriction", null, RestrictionSelections().ToArray(), null, null, RestrictionDecorator);
+    static public NebulaConfiguration CameraRestrictionOption = new NebulaConfiguration(ConsoleRestrictionOptions, "cameraRestriction", null, RestrictionSelections().ToArray(), null, null, RestrictionDecorator);
+
+
     static public CustomGameMode CurrentGameMode => CustomGameMode.AllGameMode[GameModeOption.CurrentValue];
 
     public class ExclusiveAssignmentConfiguration

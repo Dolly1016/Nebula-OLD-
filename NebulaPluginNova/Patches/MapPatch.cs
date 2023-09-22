@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Nebula.Behaviour;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,9 @@ public static class OpenMapCountOverlayPatch
     static void Prefix(MapCountOverlay __instance)
     {
         __instance.InitializeModOption();
+
+        var timer = NebulaGameManager.Instance?.ConsoleRestriction?.ShowTimerIfNecessary(ConsoleRestriction.ConsoleType.Admin, __instance.transform, new Vector3(4.8f, 2f, -50f));
+        if (timer != null) timer.transform.localScale = Vector3.one / __instance.transform.localScale.x;
     }
 }
 
@@ -20,10 +24,27 @@ public static class OpenMapCountOverlayPatch
 [HarmonyPatch(typeof(MapCountOverlay), nameof(MapCountOverlay.Update))]
 public static class CountOverlayUpdatePatch
 {
+    static TMPro.TextMeshPro notAvailableText;
 
     static bool Prefix(MapCountOverlay __instance)
     {
-        //0.1秒に1回だけ通る
+        if (!ConsoleTimer.IsOpenedByAvailableWay())
+        {
+            __instance.BackgroundColor.SetColor(Palette.DisabledGrey);
+            if (!notAvailableText) {
+                notAvailableText = GameObject.Instantiate(__instance.SabotageText, __instance.SabotageText.transform.parent);
+                notAvailableText.text = Language.Translate("console.notAvailable");
+                notAvailableText.GetComponent<AlphaBlink>().enabled = true;
+            }
+            notAvailableText.gameObject.SetActive(true);
+            __instance.SabotageText.gameObject.SetActive(false);
+            foreach (var counterArea in __instance.CountAreas) counterArea.UpdateCount(0);
+
+            return false;
+        }
+
+        if(notAvailableText) notAvailableText.gameObject.SetActive(false);
+
         __instance.timer += Time.deltaTime;
         if (__instance.timer < 0.1f) return false;
         

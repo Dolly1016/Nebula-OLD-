@@ -184,6 +184,8 @@ public class MetaContext : IMetaContext
         public ITextComponent? MyText { get; set; } = null;
         public string RawText { set { MyText = new RawTextComponent(value); } }
         public string TranslationKey { set { MyText = new TranslateTextComponent(value); } }
+        
+        public Action<TMPro.TextMeshPro>? PostBuilder { get; set; }
 
         public Text(TextAttribute attribute)
         {
@@ -196,6 +198,8 @@ public class MetaContext : IMetaContext
             TextAttribute.Reflect(text);
             text.text = MyText?.Text ?? "";
             text.transform.localPosition = center;
+
+            PostBuilder?.Invoke(text);
         }
 
         public float Generate(GameObject screen, Vector2 cursor, Vector2 size, out (float min, float max) width)
@@ -210,6 +214,8 @@ public class MetaContext : IMetaContext
 
             var bounds = text.GetTextBounds();
             width = CalcWidth(Alignment, cursor, size, TextAttribute.Size.x, bounds.min.x, bounds.max.x);
+
+            PostBuilder?.Invoke(text);
 
             return TextAttribute.Size.y;
         }

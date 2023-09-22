@@ -1,9 +1,11 @@
-﻿using HarmonyLib;
+﻿using AmongUs.Data;
+using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using Il2CppSystem.Reflection.Internal;
 using Il2CppSystem.Text.RegularExpressions;
 using Innersloth.Assets;
 using Rewired.Utils.Platforms.Windows;
+using Sentry;
 using System;
 using System.Collections;
 using System.IO.Compression;
@@ -18,6 +20,7 @@ using Unity.IL2CPP.CompilerServices;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.XR;
+using static Il2CppSystem.Uri;
 using static Rewired.Controller;
 
 namespace Nebula.Modules;
@@ -35,6 +38,8 @@ public class CustomCosmicItem : CustomItemGrouped
     public string Author = "Unknown";
     [JsonSerializableField]
     public string Package = "None";
+    [JsonSerializableField]
+    public string? TranslationKey = null;
 
     public string UnescapedName => Regex.Unescape(Name).Replace('_', ' ');
     public string UnescapedAuthor => Regex.Unescape(Author).Replace('_', ' ');
@@ -54,6 +59,8 @@ public class CustomCosmicItem : CustomItemGrouped
     }
 
     public string SubholderPath => Author.ToByteString() + "/" + Name.ToByteString();
+
+    public bool HasAnimation => AllImage().Any(image => image.Length > 1);
 
     public async Task Preactivate()
     {
@@ -383,7 +390,11 @@ public class CosmicPackage : CustomItemGrouped
     [JsonSerializableField]
     public string Format = "Custom Package";
     [JsonSerializableField]
+    public string? TranslationKey = null;
+    [JsonSerializableField]
     public int Priority = 1;
+
+    public string DisplayName => Language.Find(TranslationKey) ?? Format;
 }
 
 public class CustomItemBundle
@@ -441,6 +452,8 @@ public class CustomItemBundle
         {
             yield return item.Activate();
         }
+
+        foreach (var package in Packages) MoreCosmic.AllPackages.Add(package.Package, package);
 
         var hatList = HatManager.Instance.allHats.ToList();
         foreach (var item in Hats) if (item.IsValid) hatList.Add(item.MyHat);
@@ -740,6 +753,41 @@ public class CosmeticsCacheGetNameplatePatch
     }
 }
 
+[HarmonyPatch(typeof(CosmeticData), nameof(CosmeticData.GetItemName))]
+public class ItemNamePatch
+{
+    public static bool Prefix(CosmeticData __instance, ref string __result)
+    {
+        CustomCosmicItem? item = null;
+        if (__instance.TryCast<HatData>())
+        {
+            if (!MoreCosmic.AllHats.TryGetValue(__instance.ProductId, out var val)) return true;
+            item = val;
+        }
+        else if (__instance.TryCast<VisorData>())
+        {
+            if (!MoreCosmic.AllVisors.TryGetValue(__instance.ProductId, out var val)) return true;
+            item = val;
+        }
+        else if (__instance.TryCast<NamePlateData>())
+        {
+            if (!MoreCosmic.AllNameplates.TryGetValue(__instance.ProductId, out var val)) return true;
+            item = val;
+        }
+        else
+        {
+            return true;
+        }
+
+        if (item == null) return true;
+
+        string? name = Language.Find(item.TranslationKey);
+        if (name == null) return true;
+
+        __result = name + "\n<size=1.6>by " + item.UnescapedAuthor + "</size>";
+        return false;
+    }
+}
 
 [HarmonyPatch(typeof(HatData), nameof(HatData.CreateAddressableAsset))]
 public class HatAssetPatch
@@ -1118,5 +1166,172 @@ public class NebulaCosmeticsLayer : MonoBehaviour
             }
         }
         catch { }
+    }
+}
+
+[HarmonyPatch]
+public static class TabEnablePatch
+{
+    public static TMPro.TMP_Text textTemplate;
+
+    private static float headerSize = 0.8f;
+    private static float headerX = 0.85f;
+    private static float inventoryZ = -2f;
+
+    private static List<TMPro.TMP_Text> customTexts = new List<TMPro.TMP_Text>();
+
+    private static SpriteLoader animationSprite = SpriteLoader.FromResource("Nebula.Resources.HasGraphicIcon.png", 100f);
+
+    public static void SetUpTab<ItemTab,VanillaItem,ModItem>(ItemTab __instance,VanillaItem emptyItem,(VanillaItem,ModItem?)[] items,Func<VanillaItem> defaultProvider,Action<VanillaItem> selector,Action<VanillaItem, ColorChip>? chipSetter = null) where ItemTab : InventoryTab where ModItem : CustomCosmicItem where VanillaItem : CosmeticData
+    {
+        textTemplate = __instance.transform.FindChild("Text").gameObject.GetComponent<TMPro.TMP_Text>();
+
+        var groups = items.GroupBy((tuple) => tuple.Item2?.Package ?? "InnerSloth").OrderBy(group => MoreCosmic.AllPackages.TryGetValue(group.Key, out var package) ? package.Priority : 10000);
+
+        foreach (var text in customTexts) if (text) GameObject.Destroy(text.gameObject);
+        foreach (var chip in __instance.ColorChips) if (chip) GameObject.Destroy(chip.gameObject);
+        customTexts.Clear();
+        __instance.ColorChips.Clear();
+
+        float y = __instance.YStart;
+
+        if (__instance.ColorTabPrefab.Inner != null)
+        {
+            __instance.ColorTabPrefab.Inner.FrontLayer.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+            __instance.ColorTabPrefab.Inner.BackLayer.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+        }
+        __instance.ColorTabPrefab.PlayerEquippedForeground.GetComponentsInChildren<SpriteRenderer>().Do(renderer => renderer.maskInteraction = SpriteMaskInteraction.VisibleInsideMask);
+        __instance.ColorTabPrefab.SelectionHighlight.transform.parent.GetComponentsInChildren<SpriteRenderer>().Do(renderer => renderer.maskInteraction = SpriteMaskInteraction.VisibleInsideMask);
+
+        foreach (var group in groups)
+        {
+            TMPro.TMP_Text title = UnityEngine.Object.Instantiate<TMPro.TMP_Text>(textTemplate, __instance.scroller.Inner);
+            title.GetComponent<TextTranslatorTMP>().enabled = false;
+            var mat = title.GetComponent<MeshRenderer>().material;
+            mat.SetFloat("_StencilComp", 4f);
+            mat.SetFloat("_Stencil", 1f);
+
+            title.transform.parent = __instance.scroller.Inner;
+            title.transform.localPosition = new Vector3(headerX, y, inventoryZ);
+            title.text = MoreCosmic.AllPackages.TryGetValue(group.Key, out var package) ? package.DisplayName : group.Key;
+            title.alignment = TMPro.TextAlignmentOptions.Center;
+            title.fontSize = 5f;
+            title.fontWeight = TMPro.FontWeight.Thin;
+            title.enableAutoSizing = false;
+            title.autoSizeTextContainer = true;
+            y -= headerSize * __instance.YOffset;
+            customTexts.Add(title);
+
+
+            int index = 0;
+            float yInOffset = 0;
+            foreach (var item in group.Prepend((emptyItem,null)))
+            {
+                VanillaItem vanillaItem = item.Item1;
+                ModItem? modItem = item.Item2;
+                if (index != 0 && vanillaItem == emptyItem) continue;
+
+                yInOffset = (float)(index / __instance.NumPerRow) * __instance.YOffset;
+                float itemX = __instance.XRange.Lerp((float)(index % __instance.NumPerRow) / ((float)__instance.NumPerRow - 1f));
+                float itemY = y - yInOffset;
+
+                ColorChip colorChip = GameObject.Instantiate<ColorChip>(__instance.ColorTabPrefab, __instance.scroller.Inner);
+                colorChip.transform.localPosition = new Vector3(itemX, itemY, -1f);
+
+                colorChip.Button.OnMouseOver.AddListener(()=>selector.Invoke(vanillaItem));
+                colorChip.Button.OnMouseOut.AddListener(() => selector.Invoke(defaultProvider.Invoke()));
+                colorChip.Button.OnClick.AddListener(__instance.ClickEquip);
+
+                colorChip.Button.ClickMask = __instance.scroller.Hitbox;
+
+                if(chipSetter == null)
+                {
+                    colorChip.Inner.SetMaskType(PlayerMaterial.MaskType.ScrollingUI);
+                    __instance.UpdateMaterials(colorChip.Inner.FrontLayer, vanillaItem);
+                    vanillaItem.SetPreview(colorChip.Inner.FrontLayer, __instance.HasLocalPlayer() ? PlayerControl.LocalPlayer.Data.DefaultOutfit.ColorId : ((int)DataManager.Player.Customization.Color));
+                }
+                else
+                {
+                    chipSetter.Invoke(vanillaItem,colorChip);
+                }
+
+                if (modItem?.HasAnimation ?? false)
+                {
+                    GameObject obj = new GameObject("AnimationMark");
+                    obj.transform.SetParent(colorChip.transform);
+                    obj.layer = colorChip.gameObject.layer;
+                    obj.transform.localPosition = new Vector3(-0.38f, 0.39f, -10f);
+                    SpriteRenderer renderer = obj.AddComponent<SpriteRenderer>();
+                    renderer.sprite = animationSprite.GetSprite();
+                    renderer.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+                }
+
+                colorChip.Tag = vanillaItem;
+                colorChip.SelectionHighlight.gameObject.SetActive(false);
+                __instance.ColorChips.Add(colorChip);
+
+                index++;
+            }
+
+            y -= yInOffset + __instance.YOffset;
+        }
+
+        __instance.scroller.ContentYBounds.max = -(y - __instance.YStart) - 3.5f;
+        __instance.scroller.UpdateScrollBars();
+    }
+
+    [HarmonyPatch(typeof(HatsTab), nameof(HatsTab.OnEnable))]
+    public class HatsTabOnEnablePatch
+    {
+        public static bool Prefix(HatsTab __instance)
+        {
+            (HatData, CosmicHat?)[] unlockedHats = DestroyableSingleton<HatManager>.Instance.GetUnlockedHats().Select(hat => MoreCosmic.AllHats.TryGetValue(hat.ProductId, out var modHat) ? (hat, modHat) : (hat, null)).ToArray();
+            __instance.currentHat = DestroyableSingleton<HatManager>.Instance.GetHatById(DataManager.Player.Customization.Hat);
+
+            SetUpTab(__instance, HatManager.Instance.allHats.First(h => h.IsEmpty), unlockedHats, 
+                () => HatManager.Instance.GetHatById(DataManager.Player.Customization.Hat),
+                (hat) => __instance.SelectHat(hat)
+            );
+
+            return false;
+        }
+    }
+
+    [HarmonyPatch(typeof(VisorsTab), nameof(VisorsTab.OnEnable))]
+    public class VisorsTabOnEnablePatch
+    {
+        public static bool Prefix(VisorsTab __instance)
+        {
+            (VisorData, CosmicVisor?)[] unlockedVisors = DestroyableSingleton<HatManager>.Instance.GetUnlockedVisors().Select(visor => MoreCosmic.AllVisors.TryGetValue(visor.ProductId, out var modVisor) ? (visor, modVisor) : (visor, null)).ToArray();
+
+            SetUpTab(__instance, HatManager.Instance.allVisors.First(v => v.IsEmpty), unlockedVisors,
+                () => HatManager.Instance.GetVisorById(DataManager.Player.Customization.Visor),
+                (visor) => __instance.SelectVisor(visor)
+            );
+
+            return false;
+        }
+    }
+
+    [HarmonyPatch(typeof(NameplatesTab), nameof(NameplatesTab.OnEnable))]
+    public class NameplatesTabOnEnablePatch
+    {
+        public static bool Prefix(NameplatesTab __instance)
+        {
+            (NamePlateData, CosmicNamePlate?)[] unlockedNamePlates = DestroyableSingleton<HatManager>.Instance.GetUnlockedNamePlates().Select(nameplate => MoreCosmic.AllNameplates.TryGetValue(nameplate.ProductId, out var modNameplate) ? (nameplate, modNameplate) : (nameplate, null)).ToArray();
+
+            SetUpTab(__instance, HatManager.Instance.allNamePlates.First(v => v.IsEmpty), unlockedNamePlates,
+                () => HatManager.Instance.GetNamePlateById(DataManager.Player.Customization.NamePlate),
+                (nameplate) => __instance.SelectNameplate(nameplate),
+                (item, chip) => {
+                    __instance.StartCoroutine(AddressableAssetExtensions.CoLoadAssetAsync(__instance, item.Cast<IAddressableAssetProvider<NamePlateViewData>>(), (Il2CppSystem.Action<NamePlateViewData>)((viewData) =>
+                    {
+                        chip.CastFast<NameplateChip>().image.sprite = ((viewData != null) ? viewData.Image : null);
+                    })));
+                }
+            );
+
+            return false;
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Nebula.Behaviour;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,7 +20,7 @@ public static class MapBehaviourExtension
         MapColor = null;
     }
 
-    public static void SetModOption(this MapCountOverlay overlay, bool? canIdentifyImpostors = null, bool? canIdentifyDeadBodies = null, bool? affectedByCommSab = null, Color? mapColor = null)
+    public static void SetModOption(this MapCountOverlay overlay, bool? canIdentifyImpostors = null, bool? canIdentifyDeadBodies = null, bool? affectedByCommSab = null, Color? mapColor = null, bool? isOpenedByMapConsole = null)
     {
         if (canIdentifyImpostors.HasValue) CanIdentifyImpostors = canIdentifyImpostors.Value;
         if (canIdentifyDeadBodies.HasValue) CanIdentifyDeadBodies = canIdentifyDeadBodies.Value;

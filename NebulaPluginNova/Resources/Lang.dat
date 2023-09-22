@@ -58,6 +58,13 @@
 "options.meeting" : "Meeting Options"
 "options.meeting.noticeExtraVictims" : "Notice Extra Victims"
 
+"options.consoleRestriction" : "Console Restriction"
+"options.consoleRestriction.unlimited" : "Unlimited"
+"options.consoleRestriction.adminRestriction" : "Admin"
+"options.consoleRestriction.vitalsRestriction" : "Vitals"
+"options.consoleRestriction.cameraRestriction" : "Security Cams & Logs"
+"options.consoleRestriction.resetRestrictions" : "Reset Restrictions Per Meetings"
+
 "options.voiceChat" : "Voice Chat Options"
 "options.voiceChat.useVoiceChat" : "Use Voice Chat"
 "options.voiceChat.wallsBlockAudio" : "Walls Block Audio"
@@ -140,6 +147,11 @@
 "role.niceGuesser.blurb" : "Guess and Shoot"
 "options.role.niceGuesser.detail" : "Guesser can shoot players in the meeting by guessing the role.<br>If the guess is wrong, guesser dies instead."
 
+"role.doctor.name" : "Doctor"
+"role.doctor.blurb" : "Thus They Died"
+"options.role.doctor.detail" : "Doctor has portable vitals."
+"role.doctor.gadgetLeft" : "%SECOND%s"
+
 "role.madmate.name" : "Madmate"
 "role.madmate.blurb" : "Assist Impostors"
 "options.role.madmate.detail" : "Madmate is on the side of imposters.<br>Obstruct crewmates to help imposters win."
@@ -187,7 +199,7 @@
 
 "role.bountyHunter.name" : "Bounty Hunter"
 "role.bountyHunter.blurb" : "Get Rich Quick!"
-"options.role.bountyHunter.detail" : "Bounty Hunter can gain a special cool down.<br>Be careful! If they kill them but the bounty, they'll gain penalty cool down."
+"options.role.bountyHunter.detail" : "Bounty Hunter can gain a special cool down.<br>If they kill them but the bounty, they'll gain penalty cool down."
 "options.role.bountyHunter.bountyKillCoolDown" : "Bounty Kill Cool Down"
 "options.role.bountyHunter.othersKillCoolDown" : "Others Kill Cool Down"
 "options.role.bountyHunter.changeBountyInterval" : "Change Bounty Interval"
@@ -448,3 +460,37 @@
 "voiceChat.info.jackalRadio" : "Jackal Radio"
 "voiceChat.info.loversRadio" : "Lovers Radio"
 "voiceChat.info.roomHostRadio" : "Room Host Radio"
+
+# Console
+
+"console.notAvailable" : "Not Available"
+
+# Inventory
+
+"inventory.palette.catalogue" : "Catalogue"
+"inventory.catalogue.innersloth" : "Vanilla Collection"
+"inventory.color.vanilla0" : "Red"
+"inventory.color.vanilla1" : "Blue"
+"inventory.color.vanilla2" : "Green"
+"inventory.color.vanilla3" : "Pink"
+"inventory.color.vanilla4" : "Orange"
+"inventory.color.vanilla5" : "Yellow"
+"inventory.color.vanilla6" : "Black"
+"inventory.color.vanilla7" : "White"
+"inventory.color.vanilla8" : "Purple"
+"inventory.color.vanilla9" : "Brown"
+"inventory.color.vanilla10" : "Cyan"
+"inventory.color.vanilla11" : "Lime"
+"inventory.color.vanilla12" : "Maroon"
+"inventory.color.vanilla13" : "Rose"
+"inventory.color.vanilla14" : "Banana"
+"inventory.color.vanilla15" : "Gray"
+"inventory.color.vanilla16" : "Tan"
+"inventory.color.vanilla17" : "Coral"
+
+# Input
+
+"input.ability" : "Ability"
+"input.secondaryAbility" : "Secondary Ability"
+"input.command" : "Command"
+"input.recording" : "Recording..."
