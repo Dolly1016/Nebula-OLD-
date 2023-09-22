@@ -188,7 +188,7 @@ public class NebulaManager : MonoBehaviour
             }
             context.Append(new MetaContext.VariableText(TextAttribute.ContentAttr) { RawText = commandsStr });
 
-            if (HelpRelatedObject == null) SetHelpContext(null, context);
+            if (commandsStr.Length > 0) SetHelpContext(null, context);
 
         }
 
