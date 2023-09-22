@@ -56,7 +56,7 @@ public class Morphing : ConfigurableStandardRole
                 PoolablePlayer? sampleIcon = null;
                 var sampleTracker = Bind(ObjectTrackers.ForPlayer(1.2f, MyPlayer.MyControl, (p) => p.PlayerId != MyPlayer.PlayerId && !p.Data.IsDead));
 
-                sampleButton = Bind(new ModAbilityButton()).KeyBind(KeyCode.F);
+                sampleButton = Bind(new ModAbilityButton()).KeyBind(KeyAssignmentType.Ability);
                 sampleButton.SetSprite(sampleButtonSprite.GetSprite());
                 sampleButton.Availability = (button) => sampleTracker.CurrentTarget != null && MyPlayer.MyControl.CanMove;
                 sampleButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;
@@ -71,7 +71,7 @@ public class Morphing : ConfigurableStandardRole
                 sampleButton.SetLabelType(ModAbilityButton.LabelType.Standard);
                 sampleButton.SetLabel("sample");
 
-                morphButton = Bind(new ModAbilityButton()).KeyBind(KeyCode.G);
+                morphButton = Bind(new ModAbilityButton()).KeyBind(KeyAssignmentType.SecondaryAbility);
                 morphButton.SetSprite(morphButtonSprite.GetSprite());
                 morphButton.Availability = (button) => MyPlayer.MyControl.CanMove && sample != null;
                 morphButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;

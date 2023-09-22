@@ -13,11 +13,12 @@ public class NebulaRoleHoler : Attribute
 
 }
 
+[Flags]
 public enum RoleCategory
 {
-    ImpostorRole,
-    NeutralRole,
-    CrewmateRole
+    ImpostorRole = 0x01,
+    NeutralRole = 0x02,
+    CrewmateRole = 0x04
 }
 
 public abstract class AbstractRole : IAssignableBase

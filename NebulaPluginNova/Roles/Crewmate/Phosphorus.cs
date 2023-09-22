@@ -78,7 +78,7 @@ public class Phosphorus : ConfigurableStandardRole
             {
                 localLanterns = new();
 
-                lanternButton = Bind(new ModAbilityButton()).KeyBind(KeyCode.F);
+                lanternButton = Bind(new ModAbilityButton()).KeyBind(KeyAssignmentType.Ability);
                 lanternButton.SetSprite(lanternButtonSprite.GetSprite());
                 lanternButton.Availability = (button) => MyPlayer.MyControl.CanMove ;
                 lanternButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead && globalLanterns != null;
@@ -97,7 +97,7 @@ public class Phosphorus : ConfigurableStandardRole
 
                 int left = MyRole.NumOfLampsOption;
 
-                placeButton = Bind(new ModAbilityButton()).KeyBind(KeyCode.F);
+                placeButton = Bind(new ModAbilityButton()).KeyBind(KeyAssignmentType.Ability);
                 var usesText = placeButton.ShowUsesIcon(3);
                 placeButton.SetSprite(placeButtonSprite.GetSprite());
                 placeButton.Availability = (button) => MyPlayer.MyControl.CanMove;

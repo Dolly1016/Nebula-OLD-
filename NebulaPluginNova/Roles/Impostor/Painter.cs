@@ -52,7 +52,7 @@ public class Painter : ConfigurableStandardRole
                 PoolablePlayer? sampleIcon = null;
                 var sampleTracker = Bind(ObjectTrackers.ForPlayer(1.2f, MyPlayer.MyControl, (p) => p.PlayerId != MyPlayer.PlayerId && !p.Data.IsDead));
 
-                sampleButton = Bind(new ModAbilityButton()).KeyBind(KeyCode.F);
+                sampleButton = Bind(new ModAbilityButton()).KeyBind(KeyAssignmentType.Ability);
                 sampleButton.SetSprite(sampleButtonSprite.GetSprite());
                 sampleButton.Availability = (button) => sampleTracker.CurrentTarget != null && MyPlayer.MyControl.CanMove;
                 sampleButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;
@@ -67,7 +67,7 @@ public class Painter : ConfigurableStandardRole
                 sampleButton.SetLabelType(ModAbilityButton.LabelType.Standard);
                 sampleButton.SetLabel("sample");
 
-                paintButton = Bind(new ModAbilityButton()).KeyBind(KeyCode.G);
+                paintButton = Bind(new ModAbilityButton()).KeyBind(KeyAssignmentType.SecondaryAbility);
                 paintButton.SetSprite(paintButtonSprite.GetSprite());
                 paintButton.Availability = (button) => sampleTracker.CurrentTarget != null && MyPlayer.MyControl.CanMove;
                 paintButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;

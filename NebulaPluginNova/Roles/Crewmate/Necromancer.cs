@@ -133,7 +133,7 @@ public class Necromancer : ConfigurableStandardRole
                     message.text = Language.Translate("role.necromancer.phantomMessage").Replace("%ROOM%", AmongUsUtil.ToDisplayString(currentTargetRoom.Value));
                 };
 
-                reviveButton = Bind(new ModAbilityButton()).KeyBind(KeyCode.G);
+                reviveButton = Bind(new ModAbilityButton()).KeyBind(KeyAssignmentType.SecondaryAbility);
                 reviveButton.SetSprite(buttonSprite.GetSprite());
                 reviveButton.Availability = (button) => MyPlayer.MyControl.CanMove && MyPlayer.HoldingDeadBody.HasValue && canReviveHere();
                 reviveButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;

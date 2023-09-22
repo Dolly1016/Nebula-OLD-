@@ -22,6 +22,7 @@ public static class PlayerState
     public static TranslatableTag Guessed = new("state.guessed");
     public static TranslatableTag Misguessed = new("state.misguessed");
     public static TranslatableTag Embroiled = new("state.embroiled");
+    public static TranslatableTag Suicide = new("state.suicide");
 }
 
 [NebulaRPCHolder]

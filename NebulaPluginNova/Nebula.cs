@@ -5,6 +5,7 @@ global using Nebula.Utilities;
 global using Nebula.Game;
 global using Nebula.Player;
 global using Nebula.Modules;
+global using Nebula.Configuration;
 global using UnityEngine;
 global using Nebula.Modules.ScriptComponents;
 global using System.Collections;

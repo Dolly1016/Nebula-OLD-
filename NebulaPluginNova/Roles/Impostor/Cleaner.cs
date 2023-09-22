@@ -54,7 +54,7 @@ public class Cleaner : ConfigurableStandardRole
             {
                 var cleanTracker = Bind(ObjectTrackers.ForDeadBody(1.2f, MyPlayer.MyControl, (d) => true));
 
-                cleanButton = Bind(new ModAbilityButton()).KeyBind(KeyCode.F);
+                cleanButton = Bind(new ModAbilityButton()).KeyBind(KeyAssignmentType.Ability);
                 cleanButton.SetSprite(buttonSprite.GetSprite());
                 cleanButton.Availability = (button) => cleanTracker.CurrentTarget != null && MyPlayer.MyControl.CanMove;
                 cleanButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;

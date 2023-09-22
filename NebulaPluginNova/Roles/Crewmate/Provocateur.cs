@@ -44,7 +44,7 @@ public class Provocateur : ConfigurableStandardRole
         {
             if (AmOwner)
             {
-                embroilButton = Bind(new ModAbilityButton()).KeyBind(KeyCode.F);
+                embroilButton = Bind(new ModAbilityButton()).KeyBind(KeyAssignmentType.Ability);
                 embroilButton.SetSprite(buttonSprite.GetSprite());
                 embroilButton.Availability = (button) => MyPlayer.MyControl.CanMove;
                 embroilButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;
