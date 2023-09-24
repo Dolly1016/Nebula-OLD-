@@ -51,7 +51,7 @@ public class Jackal : ConfigurableStandardRole
             if (player.AllModifiers.Any(m => m is SidekickModifier.Instance sidekick && sidekick.JackalTeamId == JackalTeamId)) return true;
             return false;
         }
-        public override bool CheckWins(CustomEndCondition endCondition) => endCondition == NebulaGameEnd.JackalWin;
+        public override bool CheckWins(CustomEndCondition endCondition, ref ulong _) => endCondition == NebulaGameEnd.JackalWin;
 
         public override void OnActivated()
         {
@@ -209,7 +209,7 @@ public class Sidekick : ConfigurableRole
         {
             JackalTeamId=jackalTeamId;
         }
-        public override bool CheckWins(CustomEndCondition endCondition) => endCondition == NebulaGameEnd.JackalWin;
+        public override bool CheckWins(CustomEndCondition endCondition, ref ulong _) => endCondition == NebulaGameEnd.JackalWin;
         public override void OnActivated()
         {
             //サイドキック除去
@@ -261,7 +261,7 @@ public class SidekickModifier : AbstractModifier
         public override AbstractModifier Role => MyRole;
         public int JackalTeamId;
 
-        public override bool CheckWins(CustomEndCondition endCondition) => endCondition == NebulaGameEnd.JackalWin;
+        public override bool CheckWins(CustomEndCondition endCondition, ref ulong _) => endCondition == NebulaGameEnd.JackalWin;
 
         public Instance(PlayerModInfo player, int jackalTeamId) : base(player)
         {

@@ -31,8 +31,19 @@ public class VanillaAsset
             if(oblongMaskedFontMaterial == null) oblongMaskedFontMaterial = UnityHelper.FindAsset<Material>("Brook Atlas Material Masked");
             return oblongMaskedFontMaterial;
         } }
+    
     static private Material? standardMaskedFontMaterial = null;
     static private Material? oblongMaskedFontMaterial = null;
+
+    static private TMP_FontAsset? versionFont = null;
+    static public TMP_FontAsset VersionFont
+    {
+        get
+        {
+            if (versionFont == null) versionFont = UnityHelper.FindAsset<TMP_FontAsset>("Barlow-Medium SDF");
+            return versionFont;
+        }
+    }
 
     static private TMP_FontAsset? preSpawnFont = null;
     static public TMP_FontAsset PreSpawnFont { get

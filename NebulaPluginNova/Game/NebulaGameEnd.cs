@@ -10,8 +10,8 @@ namespace Nebula.Game;
 
 public class CustomEndCondition
 {
-    static private HashSet<CustomEndCondition> AllEndConditions= new HashSet<CustomEndCondition>();
-    static public CustomEndCondition? GetEndCondition(byte id) => AllEndConditions.FirstOrDefault(end => end.Id == id);
+    static private HashSet<CustomEndCondition> allEndConditions= new();
+    static public CustomEndCondition? GetEndCondition(byte id) => allEndConditions.FirstOrDefault(end => end.Id == id);
     
     public byte Id { get; init; }
     public string LocalizedName { get; init; }
@@ -27,7 +27,27 @@ public class CustomEndCondition
         Color = color;
         Priority = priority;
 
-        AllEndConditions.Add(this);
+        allEndConditions.Add(this);
+    }
+}
+
+public class CustomExtraWin
+{
+    static private HashSet<CustomExtraWin> allExtraWin = new();
+    static public CustomExtraWin? GetEndCondition(byte id) => allExtraWin.FirstOrDefault(end => end.Id == id);
+    static public IEnumerable<CustomExtraWin> AllExtraWins => allExtraWin;
+    public byte Id { get; private set; }
+    public string LocalizedName { get; init; }
+    public string DisplayText => Language.Translate("end.extra." + LocalizedName);
+    public Color Color { get; init; }
+
+    public CustomExtraWin(byte id,string localizedName,Color color)
+    {
+        Id = id;
+        LocalizedName = localizedName;
+        Color = color;
+
+        allExtraWin.Add(this);
     }
 }
 
@@ -41,33 +61,36 @@ public class NebulaGameEnd
     static public CustomEndCondition JesterWin = new(25, "jester", Roles.Neutral.Jester.MyRole.RoleColor, 32);
     static public CustomEndCondition JackalWin = new(26, "jackal", Roles.Neutral.Jackal.MyRole.RoleColor, 16);
     static public CustomEndCondition ArsonistWin = new(27, "arsonist", Roles.Neutral.Arsonist.MyRole.RoleColor, 32);
+    static public CustomEndCondition LoversWin = new(28, "lover", Roles.Modifier.Lover.MyRole.RoleColor, 18);
     static public CustomEndCondition NoGame = new(128, "nogame", InvalidColor, 128);
 
-    private readonly static RemoteProcess<(byte conditionId, ulong winnersMask)> RpcEndGame = new(
+    static public CustomExtraWin ExtraLoversWin = new(0, "lover", Roles.Modifier.Lover.MyRole.RoleColor);
+
+    private readonly static RemoteProcess<(byte conditionId, int winnersMask,ulong extraWinMask)> RpcEndGame = new(
        "EndGame",
        (message, isCalledByMe) =>
        {
            if (NebulaGameManager.Instance != null)
            {
-               NebulaGameManager.Instance.EndState ??= new NebulaEndState(message.conditionId,message.winnersMask);
+               NebulaGameManager.Instance.EndState ??= new NebulaEndState(message.conditionId,message.winnersMask,message.extraWinMask);
                NebulaGameManager.Instance.ToGameEnd();
                NebulaGameManager.Instance.OnGameEnd();
            }
        }
        );
 
-    public static bool RpcSendGameEnd(CustomEndCondition winCondition,HashSet<byte> winners)
+    public static bool RpcSendGameEnd(CustomEndCondition winCondition, int winnersMask, ulong extraWinMask)
     {
-        if (NebulaGameManager.Instance.EndState != null) return false;
-        ulong winnersMask = 0;
-        foreach (byte w in winners) winnersMask |= (ulong)(1 << w);
-        RpcEndGame.Invoke((winCondition.Id, winnersMask));
+        if (NebulaGameManager.Instance?.EndState != null) return false;
+        RpcEndGame.Invoke((winCondition.Id, winnersMask, extraWinMask));
         return true;
     }
 
-    public static void RpcSendNoGame()
+    public static bool RpcSendGameEnd(CustomEndCondition winCondition,HashSet<byte> winners, ulong extraWinMask)
     {
-        RpcEndGame.Invoke((NoGame.Id, 0));
+        int winnersMask = 0;
+        foreach (byte w in winners) winnersMask |= ((int)1 << w);
+        return RpcSendGameEnd(winCondition, winnersMask, extraWinMask);
     }
 }
 
@@ -93,7 +116,7 @@ public class EndGameManagerSetUpPatch
         bool amWin = false;
         for (byte i= 0;i < 32; i++)
         {
-            if ((endState.WinnersMask & (ulong)(1 << i)) != 0)
+            if ((endState.WinnersMask & (1 << i)) != 0)
             {
                 if (NebulaGameManager.Instance.GetModPlayerInfo(i)?.AmOwner ?? false)
                 {
@@ -142,7 +165,10 @@ public class EndGameManagerSetUpPatch
         bonusText.transform.position = new Vector3(__instance.WinText.transform.position.x, __instance.WinText.transform.position.y - 0.5f, __instance.WinText.transform.position.z);
         bonusText.transform.localScale = new Vector3(0.7f, 0.7f, 1f);
         TMPro.TMP_Text textRenderer = bonusText.GetComponent<TMPro.TMP_Text>();
-        textRenderer.text = endCondition?.DisplayText;
+
+        string extraText = "";
+        foreach (var extraWin in NebulaGameManager.Instance!.EndState!.ExtraWins) extraText += extraWin.DisplayText;
+        textRenderer.text = endCondition?.DisplayText.Replace("%EXTRA%", extraText) ?? "Error";
         textRenderer.color = endCondition?.Color ?? Color.white;
 
         __instance.BackgroundBar.material.SetColor("_Color", endCondition?.Color ?? new Color(1f, 1f, 1f));

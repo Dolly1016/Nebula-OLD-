@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
+using Nebula.Behaviour;
 using Nebula.Game;
 using Nebula.Modules;
 using Nebula.Utilities;
@@ -89,6 +90,7 @@ public class MouseOverPopup : MonoBehaviour
 }
 
 [NebulaPreLoad]
+[NebulaRPCHolder]
 public class NebulaManager : MonoBehaviour
 {
     public class MetaCommand
@@ -115,17 +117,55 @@ public class NebulaManager : MonoBehaviour
     //テキスト情報表示
     private MouseOverPopup mouseOverPopup;
 
+    //コンソール
+    private CommandConsole? console = null;
+
     static NebulaManager()
     {
         ClassInjector.RegisterTypeInIl2Cpp<NebulaManager>();
     }
 
+    static private RemoteProcess RpcResetGameStart = new(
+        "ResetStarting",
+        (_) =>
+        {
+            if(GameStartManager.Instance) GameStartManager.Instance.ResetStartState();
+        }
+        );
     static public void Load()
     {
         commands.Add(new( "help.command.nogame",
             () => NebulaGameManager.Instance != null && AmongUsClient.Instance &&  AmongUsClient.Instance.AmHost && AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started,
-            () => NebulaGameManager.Instance?.RpcInvokeSpecialWin(NebulaGameEnd.NoGame, 0)
+            () => NebulaGameManager.Instance?.RpcInvokeForcelyWin(NebulaGameEnd.NoGame, 0)
         ){ DefaultKeyCode = KeyCode.F5 });
+        
+        commands.Add(new("help.command.quickStart",
+            () => NebulaGameManager.Instance != null && AmongUsClient.Instance && AmongUsClient.Instance.AmHost && GameStartManager.Instance && GameStartManager.Instance.startState == GameStartManager.StartingStates.NotStarting,
+            () =>
+            {
+                GameStartManager.Instance.startState = GameStartManager.StartingStates.Countdown;
+                GameStartManager.Instance.FinallyBegin();
+            }
+        )
+        { DefaultKeyCode = KeyCode.F1 });
+        
+        commands.Add(new("help.command.cancelStarting",
+            () => NebulaGameManager.Instance != null && AmongUsClient.Instance && AmongUsClient.Instance.AmHost && GameStartManager.Instance && GameStartManager.Instance.startState == GameStartManager.StartingStates.Countdown,
+            RpcResetGameStart.Invoke
+        )
+        { DefaultKeyCode = KeyCode.F2 });
+
+        commands.Add(new("help.command.console",
+            () => true,
+            ()=>NebulaManager.Instance.ToggleConsole()
+        )
+        { DefaultKeyCode = KeyCode.Return });
+    }
+
+    private void ToggleConsole()
+    {
+        if (console == null) console = new CommandConsole();
+        else console.IsShown = !console.IsShown;
     }
 
     public void CloseAllUI()
@@ -166,48 +206,57 @@ public class NebulaManager : MonoBehaviour
 
     public void Update()
     {
-        //スクリーンショット
-        if (Input.GetKeyDown(KeyCode.P)) StartCoroutine(CaptureAndSave().WrapToIl2Cpp());
-
-        if (Input.GetKeyDown(KeyCode.T)) NebulaPlugin.Test();
-
-        //コマンド
-        if (Input.GetKeyDown(NebulaInput.GetKeyCode(KeyAssignmentType.Command)))
+        /*
+        if (Input.GetKeyDown(KeyCode.T))
         {
-            MetaContext context = new();
-            context.Append(new MetaContext.Text(TextAttribute.BoldAttr) { TranslationKey = "help.command", Alignment = IMetaContext.AlignmentOption.Left });
-            string commandsStr = "";
-            foreach(var command in commands)
+            UnityHelper.CreateObject<TextField>("TextField", null, new Vector3(0, 0, -200f), LayerExpansion.GetUILayer());
+        }
+        */
+
+
+        if (NebulaPlugin.FinishedPreload)
+        {
+            //スクリーンショット
+            if (Input.GetKeyDown(NebulaInput.GetKeyCode(KeyAssignmentType.Screenshot))) StartCoroutine(CaptureAndSave().WrapToIl2Cpp());
+
+            //コマンド
+            if (Input.GetKeyDown(NebulaInput.GetKeyCode(KeyAssignmentType.Command)))
             {
-                if (!command.Predicate.Invoke()) continue;
+                MetaContext context = new();
+                context.Append(new MetaContext.Text(new(TextAttribute.BoldAttr) { Alignment = TMPro.TextAlignmentOptions.Left }) { TranslationKey = "help.command", Alignment = IMetaContext.AlignmentOption.Left });
+                string commandsStr = "";
+                foreach (var command in commands)
+                {
+                    if (!command.Predicate.Invoke()) continue;
 
-                if (commandsStr.Length != 0) commandsStr += "\n";
-                commandsStr += ButtonEffect.KeyCodeInfo.AllKeyInfo[command.KeyCode!.Value].TranslationKey;
+                    if (commandsStr.Length != 0) commandsStr += "\n";
+                    commandsStr += ButtonEffect.KeyCodeInfo.GetKeyDisplayName(command.KeyCode!.Value);
 
-                commandsStr += " :" + Language.Translate(command.TranslationKey);
+                    commandsStr += " :" + Language.Translate(command.TranslationKey);
+                }
+                context.Append(new MetaContext.VariableText(TextAttribute.ContentAttr) { RawText = commandsStr });
+
+                if (commandsStr.Length > 0) SetHelpContext(null, context);
+
             }
-            context.Append(new MetaContext.VariableText(TextAttribute.ContentAttr) { RawText = commandsStr });
 
-            if (commandsStr.Length > 0) SetHelpContext(null, context);
-
-        }
-
-        //コマンド
-        if (Input.GetKeyUp(NebulaInput.GetKeyCode(KeyAssignmentType.Command)))
-        {
-            if (HelpRelatedObject == null) HideHelpContext();
-        }
-
-        //コマンド
-        if (Input.GetKey(NebulaInput.GetKeyCode(KeyAssignmentType.Command)))
-        {
-            foreach (var command in commands)
+            //コマンド
+            if (Input.GetKeyUp(NebulaInput.GetKeyCode(KeyAssignmentType.Command)))
             {
-                if (!Input.GetKeyDown(command.KeyCode!.Value)) continue;
+                if (HelpRelatedObject == null) HideHelpContext();
+            }
 
-                command.CommandAction.Invoke();
-                HideHelpContext();
-                break;
+            //コマンド
+            if (Input.GetKey(NebulaInput.GetKeyCode(KeyAssignmentType.Command)))
+            {
+                foreach (var command in commands)
+                {
+                    if (!Input.GetKeyDown(command.KeyCode!.Value)) continue;
+
+                    command.CommandAction.Invoke();
+                    HideHelpContext();
+                    break;
+                }
             }
         }
 

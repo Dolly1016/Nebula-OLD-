@@ -2,6 +2,7 @@
 using Nebula.Configuration;
 using Nebula.Roles;
 using Nebula.Roles.Impostor;
+using Nebula.Roles.Modifier;
 using Nebula.Roles.Neutral;
 using System;
 using System.Collections.Generic;
@@ -133,6 +134,29 @@ public class NebulaEndCriteria
             }
 
             return jackals * 2 >= totalAlive ? NebulaGameEnd.ImpostorWin : null;
+        }
+    };
+
+    static public NebulaEndCriteria LoversCriteria = new()
+    {
+        OnUpdate = () =>
+        {
+            int totalAlive = NebulaGameManager.Instance!.AllPlayerInfo().Count((p) => !p.IsDead);
+            if (totalAlive != 3) return null;
+
+            foreach (var p in NebulaGameManager.Instance!.AllPlayerInfo())
+            {
+                if (p.IsDead) continue;
+                totalAlive++;
+                if (p.TryGetModifier<Lover.Instance>(out var lover)){
+                    if (lover.MyLover?.IsDead ?? true) continue;
+
+                    return NebulaGameEnd.LoversWin;
+                }
+
+            }
+
+            return null;
         }
     };
 }

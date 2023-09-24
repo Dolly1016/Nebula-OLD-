@@ -42,7 +42,7 @@ public class Impostor : ConfigurableStandardRole
             }
         }
 
-        public override bool CheckWins(CustomEndCondition endCondition) => endCondition == NebulaGameEnd.ImpostorWin;
+        public override bool CheckWins(CustomEndCondition endCondition, ref ulong _) => endCondition == NebulaGameEnd.ImpostorWin;
 
         public override void DecoratePlayerName(ref string text, ref Color color)
         {

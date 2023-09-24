@@ -57,7 +57,7 @@ public static class StartOptionMenuPatch
                 currentAssignment = assignment;
                 SetKeyBindingContext();
             }, new(TextAttribute.NormalAttr) { Size = new Vector2(2.2f, 0.26f) })
-            { RawText = assignment.DisplayName + " : " + (currentAssignment == assignment ? Language.Translate("input.recording") : ButtonEffect.KeyCodeInfo.AllKeyInfo[assignment.KeyInput].TranslationKey), PostBuilder = (_, _, t) => text = t }, 2, -1, 0, 0.55f);
+            { RawText = assignment.DisplayName + " : " + (currentAssignment == assignment ? Language.Translate("input.recording") : ButtonEffect.KeyCodeInfo.GetKeyDisplayName(assignment.KeyInput)), PostBuilder = (_, _, t) => text = t }, 2, -1, 0, 0.55f);
             keyBindingScreen.SetContext(keyBindingContext);
         }
 

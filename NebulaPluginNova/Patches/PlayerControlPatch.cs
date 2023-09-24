@@ -1,6 +1,7 @@
 ﻿using AmongUs.Data.Player;
 using Epic.OnlineServices.Presence;
 using HarmonyLib;
+using Nebula.Behaviour;
 using Nebula.Configuration;
 using Nebula.Game;
 using Nebula.Modules;
@@ -211,5 +212,16 @@ public class PlayerJoinedPatch
     public static void Postfix()
     {
         if (AmongUsClient.Instance.AmHost) NebulaConfigEntryManager.ShareAll();
+    }
+}
+
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CanMove), MethodType.Getter)]
+class PlayerCanMovePatch
+{
+    public static void Postfix(PlayerControl __instance, ref bool __result)
+    {
+        if (__instance != PlayerControl.LocalPlayer) return;
+
+        __result &= !TextField.AnyoneValid;
     }
 }

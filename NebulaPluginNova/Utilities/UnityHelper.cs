@@ -62,6 +62,11 @@ public static class UnityHelper
         return FindCamera(cameraLayer)?.ScreenToWorldPoint(screenPos) ?? Vector3.zero;
     }
 
+    public static Vector3 WorldToScreenPoint(Vector3 worldPos, int cameraLayer)
+    {
+        return FindCamera(cameraLayer)?.WorldToScreenPoint(worldPos) ?? Vector3.zero;
+    }
+
     public static PassiveButton SetUpButton(this GameObject gameObject, bool withSound = false, SpriteRenderer? buttonRenderer = null, Color? defaultColor = null) {
         var button = gameObject.AddComponent<PassiveButton>();
         button.OnClick = new UnityEngine.UI.Button.ButtonClickedEvent();

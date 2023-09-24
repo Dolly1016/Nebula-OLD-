@@ -25,7 +25,7 @@ public class Madmate : ConfigurableStandardRole
         {
         }
 
-        public override bool CheckWins(CustomEndCondition endCondition) => endCondition == NebulaGameEnd.ImpostorWin;
+        public override bool CheckWins(CustomEndCondition endCondition, ref ulong _) => endCondition == NebulaGameEnd.ImpostorWin;
         public override bool HasCrewmateTasks => false;
     }
 }

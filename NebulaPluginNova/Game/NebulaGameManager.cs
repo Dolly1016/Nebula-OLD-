@@ -25,14 +25,17 @@ public enum NebulaGameStates
 }
 
 public class NebulaEndState {
-    public ulong WinnersMask;
+    public int WinnersMask;
     public byte ConditionId;
+    public ulong ExtraWinMask;
     public CustomEndCondition? EndCondition => CustomEndCondition.GetEndCondition(ConditionId);
+    public IEnumerable<CustomExtraWin> ExtraWins => CustomExtraWin.AllExtraWins.Where(e => ((ulong)(1 << e.Id) & ExtraWinMask) != 0ul);
 
-    public NebulaEndState(byte conditionId, ulong winnersMask)
+    public NebulaEndState(byte conditionId, int winnersMask,ulong extraWinMask)
     {
         WinnersMask = winnersMask;
         ConditionId = conditionId;
+        ExtraWinMask = extraWinMask;
     }
 }
 
@@ -143,13 +146,14 @@ public class NebulaGameManager
         if(endCondition == null) return;
         if (GameState != NebulaGameStates.Initialized) return;
 
-        HashSet<byte> winners = new();
-        foreach(var p in allModPlayers)
-        {
-            if (p.Value.AllAssigned().Any(a=>a.CheckWins(endCondition))) winners.Add(p.Key);
-            else if (((1 << p.Value.PlayerId) & winnersMask) != 0) winners.Add(p.Key);
-        }
-        NebulaGameEnd.RpcSendGameEnd(endCondition!, winners);
+        int extraMask = 0;
+        ulong extraWinMask = 0;
+
+        foreach(var p in allModPlayers) if (p.Value.AllAssigned().Any(a => a.CheckWins(endCondition,ref extraWinMask))) winnersMask |= (1 << p.Value.PlayerId);
+        foreach (var p in allModPlayers) if (p.Value.AllAssigned().Any(a => a.CheckExtraWins(endCondition, winnersMask, ref extraWinMask))) extraMask |= (1 << p.Value.PlayerId);
+        winnersMask |= extraMask;
+
+        NebulaGameEnd.RpcSendGameEnd(endCondition!, winnersMask, extraWinMask);
     }
 
     public void OnTaskUpdated()
@@ -319,6 +323,11 @@ public class NebulaGameManager
     public void RpcInvokeSpecialWin(CustomEndCondition endCondition, int winnersMask)
     {
         if (GeneralConfigurations.CurrentGameMode.AllowSpecialEnd) RpcSpecialWin.Invoke(new(endCondition.Id, winnersMask));
+    }
+
+    public void RpcInvokeForcelyWin(CustomEndCondition endCondition, int winnersMask)
+    {
+        RpcSpecialWin.Invoke(new(endCondition.Id, winnersMask));
     }
 
     static RemoteProcess<Tuple<int, int>> RpcSpecialWin = new RemoteProcess<Tuple<int, int>>(

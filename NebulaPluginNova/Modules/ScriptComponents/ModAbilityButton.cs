@@ -199,6 +199,14 @@ public static class ButtonEffect
     [NebulaPreLoad]
     public class KeyCodeInfo
     {
+        public static string? GetKeyDisplayName(KeyCode keyCode)
+        {
+            if (keyCode == KeyCode.Return)
+                return "Return";
+            if (AllKeyInfo.TryGetValue(keyCode, out var val)) return val.TranslationKey;
+            return null;
+        }
+
         static public Dictionary<KeyCode, KeyCodeInfo> AllKeyInfo = new();
         public KeyCode keyCode { get; private set; }
         public DividedSpriteLoader textureHolder { get; private set; }

@@ -27,6 +27,6 @@ public class Crewmate : ConfigurableStandardRole
         {
         }
 
-        public override bool CheckWins(CustomEndCondition endCondition) => endCondition == NebulaGameEnd.CrewmateWin;
+        public override bool CheckWins(CustomEndCondition endCondition,ref ulong _) => endCondition == NebulaGameEnd.CrewmateWin;
     }
 }

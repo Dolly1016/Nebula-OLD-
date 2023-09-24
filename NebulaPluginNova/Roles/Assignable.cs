@@ -39,7 +39,8 @@ public abstract class AssignableInstance : ScriptHolder
         OnInactivated();
     }
 
-    public virtual bool CheckWins(CustomEndCondition endCondition) => false;
+    public virtual bool CheckWins(CustomEndCondition endCondition,ref ulong extraWinMask) => false;
+    public virtual bool CheckExtraWins(CustomEndCondition endCondition, int winnersMask,ref ulong extraWinMask) => false;
     public virtual void OnGameStart() { }
     public virtual void Update() { }
     public virtual void LocalUpdate() { }

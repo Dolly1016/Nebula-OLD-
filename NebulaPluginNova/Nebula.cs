@@ -60,7 +60,7 @@ public class NebulaPlugin : BasePlugin
     public const bool IsSnapshot = false;
     public const string MajorCodeName = "Experimental"/*"Haro"*/;
     public const string SnapshotVersion = "23.08.01";
-    public const string VisualPluginVersion = "5";
+    public const string VisualPluginVersion = "6";
 
     static public HttpClient HttpClient
     {
@@ -187,34 +187,6 @@ public class NebulaPlugin : BasePlugin
             new GameObject("NebulaManager").AddComponent<NebulaManager>();
         });
     }
-
-
-
-    private static SpriteLoader testSprite = SpriteLoader.FromResource("Nebula.Resources.LightMask.png", 100f);
-    public static void Test()
-    {
-        /*
-        var renderer = UnityHelper.CreateObject<SpriteRenderer>("Map", null, new Vector3(0, 0, -400f), LayerExpansion.GetUILayer());
-        renderer.sprite = NebulaAsset.GetMapSprite(0, int.MaxValue);
-        renderer.sharedMaterial = HatManager.Instance.PlayerMaterial;
-        PlayerMaterial.SetColors(Color.blue, renderer);
-        */
-
-        /*
-        if (Input.GetKey(KeyCode.LeftShift))
-            NebulaManager.Instance.SetContext(null);
-        else
-            NebulaManager.Instance.SetContext((alignment) =>
-            {
-                var context = new MetaContext();
-                context.Append(new MetaContext.Text(new(TextAttribute.NormalAttr) { Alignment = alignment == IMetaContext.AlignmentOption.Left ? TMPro.TextAlignmentOptions.Left : TMPro.TextAlignmentOptions.Right })
-                { RawText = "Test", Alignment = alignment });
-                return context;
-            });
-        */
-    }
-
-    
 }
 
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.Awake))]

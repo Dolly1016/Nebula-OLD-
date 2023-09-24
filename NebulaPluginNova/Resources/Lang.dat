@@ -56,9 +56,11 @@
 "options.map.silentVents" : "Silent Vents"
 
 "options.meeting" : "Meeting Options"
+"options.meeting.detail" : "About meeting"
 "options.meeting.noticeExtraVictims" : "Notice Extra Victims"
 
 "options.consoleRestriction" : "Console Restriction"
+"options.consoleRestriction.detail" : "About restriction for vitals, admin and cameras"
 "options.consoleRestriction.unlimited" : "Unlimited"
 "options.consoleRestriction.adminRestriction" : "Admin"
 "options.consoleRestriction.vitalsRestriction" : "Vitals"
@@ -66,6 +68,7 @@
 "options.consoleRestriction.resetRestrictions" : "Reset Restrictions Per Meetings"
 
 "options.voiceChat" : "Voice Chat Options"
+"options.voiceChat.detail" : "Let's play while talking with nearby players!"
 "options.voiceChat.useVoiceChat" : "Use Voice Chat"
 "options.voiceChat.wallsBlockAudio" : "Walls Block Audio"
 "options.voiceChat.killersHearDead" : "Killers Hear Dead"
@@ -150,6 +153,9 @@
 "role.doctor.name" : "Doctor"
 "role.doctor.blurb" : "Thus They Died"
 "options.role.doctor.detail" : "Doctor has portable vitals."
+"options.role.doctor.portableVitalsCharge" : "Portable Vitals Charge"
+"options.role.doctor.maxPortableVitalsCharge" : "Max Portable Vitals Charge"
+"options.role.doctor.chargesPerTasks" : "Charges Per Tasks" 
 "role.doctor.gadgetLeft" : "%SECOND%s"
 
 "role.madmate.name" : "Madmate"
@@ -309,6 +315,13 @@
 "role.tieBreaker.name" : "Tie Breaker"
 "options.role.tieBreaker.detail" : "When the vote results in a tie, Tie Breaker cast an additional vote."
 
+"role.lover.name" : "Lover"
+"options.role.lover.detail" : "While the number of ways to win increases, so does the risk of death."
+"role.guesser.blurb" : "You're in <color=#fc04bdff>Love</color> with %NAME%"
+"options.role.lover.numOfPairs" : "Num Of Pairs"
+"options.role.lover.chanceOfAssigningImpostors" : "Chance Of Assigning Impostors"
+"options.role.lover.allowExtraWin" : "Allow Extra Win" 
+
 # Teams
 
 "teams.crewmate" : "Crewmate"
@@ -435,11 +448,14 @@
 
 # Endings
 
-"end.crewmate" : "Crewmates win"
-"end.impostor" : "Impostors win"
-"end.jackal" : "Team Jackal Wins"
-"end.jester" : "Jester Wins"
-"end.vulture" : "Vulture Wins"
+"end.crewmate" : "Crewmates Win%EXTRA%"
+"end.impostor" : "Impostors Win%EXTRA%"
+"end.jackal" : "Team Jackal Wins%EXTRA%"
+"end.jester" : "Jester Wins%EXTRA%"
+"end.vulture" : "Vulture Wins%EXTRA%"
+"end.lover" : "Lovers Win%EXTRA%"
+
+"end.extra.lover" : " <color=#FFFFFF>with</color> Lovers"
 
 # Help
 
@@ -449,8 +465,11 @@
 "help.tabs.options" : "Options"
 "help.tabs.slides" : "Slides"
 "help.slides.share" : "Share"
-"help.command" : "Meta Command"
+"help.command" : "Commands"
 "help.command.nogame" : "No Game"
+"help.command.quickStart" : "Quick Start"
+"help.command.cancelStarting" : "Cancel Starting"
+"help.command.console" : "Console"
 
 # Voice Chat
 
@@ -495,4 +514,10 @@
 "input.ability" : "Ability"
 "input.secondaryAbility" : "Secondary Ability"
 "input.command" : "Command"
+"input.screenshot" : "Screenshot"
+"input.mute" : "Mute"
 "input.recording" : "Recording..."
+
+# Client Configurations
+
+"config.client.keyBindings" : "Key Bindings" 

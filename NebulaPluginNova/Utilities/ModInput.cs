@@ -1,5 +1,6 @@
 ﻿using BepInEx.Configuration;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using Nebula.Behaviour;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,7 @@ public enum KeyAssignmentType
     Ability,
     SecondaryAbility,
     Command,
-    ScreenShot,
+    Screenshot,
     Mute
 }
 
@@ -45,7 +46,7 @@ public class KeyAssignment
 [NebulaPreLoad]
 public class NebulaInput
 {
-    private static bool SomeUiIsActive => (ControllerManager.Instance && ControllerManager.Instance.CurrentUiState?.BackButton  != null) || NebulaManager.Instance.HasSomeUI;
+    private static bool SomeUiIsActive => (ControllerManager.Instance && ControllerManager.Instance.CurrentUiState?.BackButton != null) || NebulaManager.Instance.HasSomeUI || TextField.AnyoneValid;
 
     public static bool GetKeyDown(KeyCode keyCode)
     {
@@ -83,7 +84,7 @@ public class NebulaInput
         modInput[KeyAssignmentType.Ability] = GetModKeyCodeGetter("ability", KeyCode.F);
         modInput[KeyAssignmentType.SecondaryAbility] = GetModKeyCodeGetter("secondaryAbility", KeyCode.G);
         modInput[KeyAssignmentType.Command] = GetModKeyCodeGetter("command", KeyCode.LeftControl);
-        modInput[KeyAssignmentType.ScreenShot] = GetModKeyCodeGetter("screenShot", KeyCode.P);
-        modInput[KeyAssignmentType.Mute] = GetModKeyCodeGetter("screenShot", KeyCode.V);
+        modInput[KeyAssignmentType.Screenshot] = GetModKeyCodeGetter("screenshot", KeyCode.P);
+        modInput[KeyAssignmentType.Mute] = GetModKeyCodeGetter("mute", KeyCode.V);
     }
 }

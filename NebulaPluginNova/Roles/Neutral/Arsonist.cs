@@ -58,7 +58,7 @@ public class Arsonist : ConfigurableStandardRole
             canIgnite = playerIcons.All(tuple => tuple.icon.GetAlpha() > 0.8f);
         }
         
-        public override bool CheckWins(CustomEndCondition endCondition) => false;
+        public override bool CheckWins(CustomEndCondition endCondition, ref ulong _) => false;
 
         private void UpdateIcons()
         {

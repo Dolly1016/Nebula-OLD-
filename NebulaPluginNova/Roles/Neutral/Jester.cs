@@ -50,7 +50,7 @@ public class Jester : ConfigurableStandardRole
             if (MyRole.CanDragDeadBodyOption) draggable = Bind(new Scripts.Draggable());
         }
 
-        public override bool CheckWins(CustomEndCondition endCondition) => false;
+        public override bool CheckWins(CustomEndCondition endCondition, ref ulong _) => false;
 
 
         public override void OnActivated()

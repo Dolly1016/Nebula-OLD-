@@ -97,6 +97,18 @@ public class PlayerModInfo
     }
 
     public IEnumerable<ModifierInstance> AllModifiers => myModifiers;
+    public bool TryGetModifier<Modifier>(out Modifier modifier) where Modifier : ModifierInstance {
+        foreach(var m in AllModifiers)
+        {
+            if(m is Modifier result)
+            {
+                modifier = result;
+                return true;
+            }
+        }
+        modifier = null;
+        return false;
+    }
 
     public PlayerModInfo(PlayerControl myPlayer)
     {
