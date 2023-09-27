@@ -165,6 +165,7 @@ public class NebulaGameManager
     {
         if (PlayerControl.LocalPlayer.Data.IsDead) CanSeeAllInfo = true;
 
+        foreach (var p in allModPlayers) p.Value.OnMeetingStart();
         foreach (var script in allScripts) script.OnMeetingStart();
 
         AllRoleAction(r=>r.OnMeetingStart());

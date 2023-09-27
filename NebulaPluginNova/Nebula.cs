@@ -60,7 +60,7 @@ public class NebulaPlugin : BasePlugin
     public const bool IsSnapshot = false;
     public const string MajorCodeName = "Experimental"/*"Haro"*/;
     public const string SnapshotVersion = "23.08.01";
-    public const string VisualPluginVersion = "6";
+    public const string VisualPluginVersion = "6 hotfix";
 
     static public HttpClient HttpClient
     {
@@ -157,6 +157,7 @@ public class NebulaPlugin : BasePlugin
                     try
                     {
                         coload = (IEnumerator)coloadMethod.Invoke(null, null)!;
+                        UnityEngine.Debug.Log("Preloaded type " + type.Name + " has CoLoad");
                     }
                     catch (Exception e)
                     {

@@ -187,6 +187,19 @@ public static class RemoteProcessAsset
                 return new OutfitCandidate(reader.ReadString(), reader.ReadInt32(), reader.ReadBoolean(), outfit);
             }
         );
+        defaultProcessDic[typeof(SpeedModulator)] = (
+            (writer, obj) =>
+            {
+                var mod = (SpeedModulator)obj;
+                writer.Write(mod.Num);
+                writer.Write(mod.IsMultiplier);
+                writer.Write(mod.Timer);
+                writer.Write(mod.CanPassMeeting);
+                writer.Write(mod.Priority);
+                writer.Write(mod.DuplicateTag);
+            },
+            (reader) => new SpeedModulator(reader.ReadSingle(), reader.ReadBoolean(), reader.ReadSingle(), reader.ReadBoolean(), reader.ReadInt32(), reader.ReadInt32())
+        ); ;
         defaultProcessDic[typeof(TranslatableTag)] = ((writer, obj) => writer.Write(((TranslatableTag)obj).Id), (reader) => TranslatableTag.ValueOf(reader.ReadInt32()));
     }
 

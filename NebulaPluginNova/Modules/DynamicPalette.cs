@@ -436,10 +436,10 @@ public class DynamicPalette
     public static SpriteLoader colorBackSprite = SpriteLoader.FromResource("Nebula.Resources.ColorFullBase.png", 100f);
     public static void OpenCatalogue(SpriteRenderer TargetRenderer,Action ShownColor)
     {
-        var screen = MetaScreen.GenerateWindow(new Vector2(6f, 3.6f), PlayerCustomizationMenu.Instance.transform, new Vector3(0f, 0f, 0f), true, false, true);
-
+        var screen = MetaScreen.GenerateWindow(new Vector2(6.25f, 3.6f), PlayerCustomizationMenu.Instance.transform, new Vector3(0f, 0f, 0f), true, false, true);
+        screen.transform.parent.FindChild("Background").GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0.85f);
         MetaContext inner = new();
-        MetaContext.ScrollView scrollView = new(new(6f, 3.6f), inner, true);
+        MetaContext.ScrollView scrollView = new(new(6.25f, 3.6f), inner, true);
         
         foreach(var category in ColorCatalogue)
         {
@@ -488,7 +488,8 @@ public class DynamicPalette
                             NebulaManager.Instance.SetHelpContext(button,context);
                         });
                         button.OnMouseOut.AddListener(NebulaManager.Instance.HideHelpContext);
-                    }
+                    },
+                    Alignment = IMetaContext.AlignmentOption.Left
                 }
             , 6, -1, 0, 0.65f);
         }

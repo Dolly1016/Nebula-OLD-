@@ -27,9 +27,9 @@ public class Provocateur : ConfigurableStandardRole
     {
         base.LoadOptions();
 
-        EmbroilCoolDownOption = new(RoleConfig, "embroilCoolDown", null, 5f, 60f, 2.5f, 20f, 20f);
-        EmbroilAdditionalCoolDownOption = new(RoleConfig, "embroilAdditionalCoolDown", null, 0f, 30f, 2.5f, 5f, 5f);
-        EmbroilDurationOption = new(RoleConfig, "embroilCoolDown", null, 1f, 20f, 1f, 5f, 5f);
+        EmbroilCoolDownOption = new(RoleConfig, "embroilCoolDown", null, 5f, 60f, 2.5f, 20f, 20f) { Decorator = NebulaConfiguration.SecDecorator };
+        EmbroilAdditionalCoolDownOption = new(RoleConfig, "embroilAdditionalCoolDown", null, 0f, 30f, 2.5f, 5f, 5f) { Decorator = NebulaConfiguration.SecDecorator };
+        EmbroilDurationOption = new(RoleConfig, "embroilCoolDown", null, 1f, 20f, 1f, 5f, 5f) { Decorator = NebulaConfiguration.SecDecorator };
     }
 
     public class Instance : Crewmate.Instance

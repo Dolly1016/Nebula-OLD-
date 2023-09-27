@@ -9,6 +9,44 @@ using System.Threading.Tasks;
 namespace Nebula.Modules;
 
 
+[NebulaPreLoad]
+public class ClientOption
+{
+    public enum ClientOptionType
+    {
+        OutputCosmicHash
+    }
+
+    static private DataSaver ClientOptionSaver = new("ClientOption");
+    static public Dictionary<ClientOptionType,ClientOption> AllOptions = new();
+    DataEntry<int> configEntry;
+    string id;
+    string[] selections;
+    ClientOptionType type;
+
+    public ClientOption(ClientOptionType type,string name,string[] selections,int defaultValue)
+    {
+        id = name;
+        configEntry = new IntegerDataEntry(name, ClientOptionSaver, defaultValue);
+        this.selections = selections;
+        this.type = type;
+        AllOptions[type] = this;
+    }
+
+    public string DisplayName => Language.Translate("config.client." + id);
+    public string DisplayValue => Language.Translate(selections[configEntry.Value]);
+    public int Value => configEntry.Value;
+
+    public void Increament()
+    {
+        configEntry.Value = (configEntry.Value + 1) % selections.Length;
+    }
+    static public void Load()
+    {
+        new ClientOption(ClientOptionType.OutputCosmicHash, "outputHash", new string[] { "options.switch.off", "options.switch.on" }, 0);
+    }
+}
+
 [HarmonyPatch(typeof(OptionsMenuBehaviour), nameof(OptionsMenuBehaviour.Start))]
 public static class StartOptionMenuPatch
 {
@@ -30,11 +68,17 @@ public static class StartOptionMenuPatch
 
         void SetNebulaContext()
         {
+            var buttonAttr = new TextAttribute(TextAttribute.BoldAttr) { Size = new Vector2(2.05f, 0.26f) };
             MetaContext nebulaContext = new();
+            nebulaContext.Append(ClientOption.AllOptions.Values, (option) => new MetaContext.Button(()=> {
+                option.Increament();
+                SetNebulaContext();
+            }, buttonAttr) { RawText = option.DisplayName + " : " + option.DisplayValue }, 2, -1, 0, 0.4f);
+            nebulaContext.Append(new MetaContext.VerticalMargin(0.2f));
             nebulaContext.Append(new MetaContext.Button(() => {
                 __instance.OpenTabGroup(tabs.Count - 1);
                 SetKeyBindingContext();
-            }, new(TextAttribute.BoldAttr) { Size = new Vector2(2.2f, 0.26f) }) { TranslationKey = "config.client.keyBindings", Alignment = IMetaContext.AlignmentOption.Center });
+            }, buttonAttr) { TranslationKey = "config.client.keyBindings", Alignment = IMetaContext.AlignmentOption.Center });
             nebulaScreen.SetContext(nebulaContext);
         }
 

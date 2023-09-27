@@ -25,6 +25,45 @@ public static class PlayerState
     public static TranslatableTag Suicide = new("state.suicide");
 }
 
+public class SpeedModulator
+{
+    public float Num { get; private set; }
+    public bool IsMultiplier { get; private set; }
+    public float Timer { get; private set; }
+    public bool CanPassMeeting { get; private set; }
+    public int Priority { get; private set; }
+    public int DuplicateTag { get; private set; }
+    public void Calc(ref float speed)
+    {
+        if (IsMultiplier)
+            speed *= Num;
+        else
+            speed += Num;
+    }
+
+    public void Update()
+    {
+        if (Timer < 9999f) Timer -= Time.deltaTime;
+    }
+
+    public void OnMeetingStart()
+    {
+        if (!CanPassMeeting) Timer = -1f;
+    }
+
+    public bool IsBroken => Timer < 0f;
+
+    public SpeedModulator(float? num, bool isMultiplier, float timer, bool canPassMeeting,int priority, int? duplicateTag)
+    {
+        this.Num = num ?? 10000f;
+        this.IsMultiplier = isMultiplier;
+        this.Timer = timer;
+        this.CanPassMeeting = canPassMeeting;
+        this.Priority = priority;
+        this.DuplicateTag = duplicateTag ?? 0;
+    }
+}
+
 [NebulaRPCHolder]
 public class PlayerModInfo
 {
@@ -55,6 +94,7 @@ public class PlayerModInfo
     
     public byte? HoldingDeadBody { get; private set; } = null;
     private DeadBody? deadBodyCache { get; set; } = null;
+    private List<SpeedModulator> speedModulators = new();
 
     public RoleInstance Role => myRole;
     private RoleInstance myRole;
@@ -269,6 +309,17 @@ public class PlayerModInfo
        "UpdateAngle", (message, _) => NebulaGameManager.Instance!.GetModPlayerInfo(message.playerId)!.MouseAngle = message.angle
        );
 
+    public readonly static RemoteProcess<(byte playerId, SpeedModulator modulator)> RpcAddModulator = new(
+       "AddSpeedModulator", (message, _) =>
+       {
+           var modulators = NebulaGameManager.Instance!.GetModPlayerInfo(message.playerId)!.speedModulators;
+           if (message.modulator.DuplicateTag != 0 && modulators.Any(m => m.DuplicateTag == message.modulator.DuplicateTag)) return;
+           modulators.Add(message.modulator);
+           modulators.Sort((m1, m2) => m2.Priority - m1.Priority);
+           
+       }
+       );
+
     private void UpdateHoldingDeadBody()
     {
         if (!HoldingDeadBody.HasValue) return;
@@ -368,12 +419,20 @@ public class PlayerModInfo
         requiredUpdateMouseAngle = false;
     }
 
+    private void UpdateSpeedModulators()
+    {
+        foreach(var m in speedModulators) m.Update();
+        speedModulators.RemoveAll(m => m.IsBroken);
+        MyControl.MyPhysics.Speed = CalcSpeed();
+    }
+
     public void Update()
     {
         UpdateNameText(MyControl.cosmetics.nameText, NebulaGameManager.Instance.CanSeeAllInfo);
         UpdateRoleText(roleText);
         UpdateHoldingDeadBody();
         UpdateMouseAngle();
+        UpdateSpeedModulators();
 
         RoleAction((role) => {
             role.Update();
@@ -395,5 +454,21 @@ public class PlayerModInfo
 
         RoleAction((role) =>role.OnGameStart());
     }
-    
+
+    public void OnMeetingStart()
+    {
+        foreach (var m in speedModulators) m.OnMeetingStart();
+    }
+
+    public void CalcSpeed(ref float speed)
+    {
+        foreach (var m in speedModulators) m.Calc(ref speed);
+    }
+
+    public float CalcSpeed()
+    {
+        float speed = 2.5f;
+        CalcSpeed(ref speed);
+        return speed;
+    }
 }

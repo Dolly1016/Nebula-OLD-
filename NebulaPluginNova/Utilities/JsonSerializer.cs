@@ -29,8 +29,10 @@ public static class JsonStructure
     {
         try
         {
-            var trimmed = json.Trim('"');
+            if (type.IsGenericType) type = type.GetGenericArguments()[0];
 
+            var trimmed = json.Trim('"');
+            
             if (type.Equals(typeof(int)))
                 return int.Parse(trimmed);
             if (type.Equals(typeof(byte)))
@@ -272,7 +274,7 @@ public static class JsonStructure
         int nested = 0;
         while (index < json.Length)
         {
-            if (json[index] is '"') inStr = !inStr;
+            if (json[index] is '"' && (index == 0 || json[index - 1] is not '\\')) inStr = !inStr;
             else if (!inStr && json[index] is '{' or '[') nested++;
             else if (!inStr && json[index] is '}' or ']') nested--;
 
@@ -281,7 +283,7 @@ public static class JsonStructure
             index++;
         }
 
-        if (index > 0) current = json.Substring(0, index).Trim();
+        if (index > 0) current = json.Substring(0, index).Trim().Replace("\\\"","\"");
         if (index + 1 < json.Length) follower = json.Substring(index + 1).TrimStart();
     }
 }

@@ -492,7 +492,7 @@ public class CustomItemBundle
         var hatFileResponse = await NebulaPlugin.HttpClient.GetAsync(RelatedRemoteAddress + category + "/" + address, HttpCompletionOption.ResponseContentRead);
         if (hatFileResponse.StatusCode != HttpStatusCode.OK) return;
 
-        using var responseStream = await hatFileResponse.Content.ReadAsStreamAsync();
+        var responseStream = await hatFileResponse.Content.ReadAsByteArrayAsync();
         //サブディレクトリまでを作っておく
         string localPath = RelatedLocalAddress + category + "/" + localHolder + "/" + address;
 
@@ -500,7 +500,16 @@ public class CustomItemBundle
         if(dir!=null)Directory.CreateDirectory(dir);
 
         using var fileStream = File.Create(localPath);
-        responseStream.CopyTo(fileStream);
+
+        await fileStream.WriteAsync(responseStream);
+        
+        if (ClientOption.AllOptions[ClientOption.ClientOptionType.OutputCosmicHash].Value == 1)
+        {
+            string hash = System.BitConverter.ToString(CustomItemBundle.MD5.ComputeHash(responseStream)).Replace("-", "").ToLowerInvariant();
+
+            NebulaPlugin.Log.Print(NebulaLog.LogCategory.MoreCosmic,$"Hash: {hash} ({category}/{address})");
+        }
+
     }
 
     public UnloadTextureLoader.AsyncLoader GetTextureLoader(string category,string subholder,string address)
@@ -553,7 +562,7 @@ public class CustomItemBundle
     }
 }
 
-[NebulaPreLoad(typeof(NebulaAddon))]
+[NebulaPreLoad(typeof(NebulaAddon),typeof(ClientOption))]
 public static class MoreCosmic
 {
     public static Dictionary<string, CosmicHat> AllHats = new();
@@ -1113,11 +1122,11 @@ public class NebulaCosmeticsLayer : MonoBehaviour
                 MyLayer.hat.FrontLayer.enabled = true;
                 MyLayer.hat.BackLayer.enabled = true;
 
-                MyLayer.hat.FrontLayer.transform.SetLocalZ(MyLayer.visor.Image.transform.localPosition.z * (CurrentModHat.IsSkinny ? 0.5f : 1.3f));
+                MyLayer.hat.FrontLayer.transform.SetLocalZ(MyLayer.zIndexSpacing * (CurrentModHat.IsSkinny ? -1f : -3f));
             }
             else
             {
-                MyLayer.hat.FrontLayer.transform.SetLocalZ(MyLayer.visor.Image.transform.localPosition.z * 1.3f);
+                MyLayer.hat.FrontLayer.transform.SetLocalZ(MyLayer.zIndexSpacing * -3f);
             }
             if (CurrentModVisor != null)
             {
@@ -1162,7 +1171,11 @@ public class NebulaCosmeticsLayer : MonoBehaviour
 
                 MyLayer.visor.Image.sprite = image?.GetSprite(VisorIndex) ?? null;
 
-
+                MyLayer.visor.Image.transform.SetLocalZ(MyLayer.zIndexSpacing * (CurrentModVisor.BehindHat ? -2f : -4f));
+            }
+            else
+            {
+                MyLayer.visor.Image.transform.SetLocalZ(MyLayer.zIndexSpacing * -4f);
             }
         }
         catch { }
@@ -1243,6 +1256,8 @@ public static class TabEnablePatch
                 colorChip.Button.OnClick.AddListener(__instance.ClickEquip);
 
                 colorChip.Button.ClickMask = __instance.scroller.Hitbox;
+
+                colorChip.ProductId = vanillaItem.ProductId;
 
                 if(chipSetter == null)
                 {

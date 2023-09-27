@@ -225,3 +225,28 @@ class PlayerCanMovePatch
         __result &= !TextField.AnyoneValid;
     }
 }
+
+//指定位置への移動
+[HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.WalkPlayerTo))]
+class WalkPatch
+{
+    public static void Postfix(PlayerPhysics __instance,ref Il2CppSystem.Collections.IEnumerator __result)
+    {
+        var info = __instance.myPlayer.GetModInfo();
+        if (info == null) return;
+
+        __result = Effects.Sequence(
+            Effects.Action((Il2CppSystem.Action)(() =>
+            {
+                float speed = info.CalcSpeed();
+                if (speed < 0f) speed *= -1f;
+                __instance.Speed = speed;
+            })),
+            __result,
+            Effects.Action((Il2CppSystem.Action)(() =>
+            {
+                __instance.Speed = info.CalcSpeed();
+            }))
+            );
+    }
+}

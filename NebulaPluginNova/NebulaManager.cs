@@ -81,7 +81,7 @@ public class MouseOverPopup : MonoBehaviour
 
     public void Update()
     {
-        if(relatedButton != null && !relatedButton)
+        if(relatedButton is not null && !relatedButton)
         {
             SetContext(null, null);
         }
@@ -140,7 +140,7 @@ public class NebulaManager : MonoBehaviour
         ){ DefaultKeyCode = KeyCode.F5 });
         
         commands.Add(new("help.command.quickStart",
-            () => NebulaGameManager.Instance != null && AmongUsClient.Instance && AmongUsClient.Instance.AmHost && GameStartManager.Instance && GameStartManager.Instance.startState == GameStartManager.StartingStates.NotStarting,
+            () => NebulaGameManager.Instance != null && AmongUsClient.Instance && AmongUsClient.Instance.AmHost && AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Joined && GameStartManager.Instance && GameStartManager.Instance.startState == GameStartManager.StartingStates.NotStarting,
             () =>
             {
                 GameStartManager.Instance.startState = GameStartManager.StartingStates.Countdown;
@@ -150,7 +150,7 @@ public class NebulaManager : MonoBehaviour
         { DefaultKeyCode = KeyCode.F1 });
         
         commands.Add(new("help.command.cancelStarting",
-            () => NebulaGameManager.Instance != null && AmongUsClient.Instance && AmongUsClient.Instance.AmHost && GameStartManager.Instance && GameStartManager.Instance.startState == GameStartManager.StartingStates.Countdown,
+            () => NebulaGameManager.Instance != null && AmongUsClient.Instance && AmongUsClient.Instance.AmHost && AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Joined && GameStartManager.Instance && GameStartManager.Instance.startState == GameStartManager.StartingStates.Countdown,
             RpcResetGameStart.Invoke
         )
         { DefaultKeyCode = KeyCode.F2 });

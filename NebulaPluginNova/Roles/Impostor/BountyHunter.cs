@@ -114,7 +114,7 @@ public class BountyHunter : ConfigurableStandardRole
 
                 var killTracker = Bind(ObjectTrackers.ForPlayer(1.2f, MyPlayer.MyControl, (p) => !p.Data.Role.IsImpostor));
 
-                killButton = Bind(new ModAbilityButton()).KeyBind(KeyAssignmentType.Kill);
+                killButton = Bind(new ModAbilityButton(false,true)).KeyBind(KeyAssignmentType.Kill);
                 killButton.Availability = (button) => killTracker.CurrentTarget != null && MyPlayer.MyControl.CanMove;
                 killButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;
                 killButton.OnClick = (button) => {

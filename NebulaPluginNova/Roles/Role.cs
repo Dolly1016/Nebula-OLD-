@@ -78,6 +78,7 @@ public abstract class ConfigurableRole : AbstractRole {
 
     public override sealed void Load()
     {
+        SerializableDocument.RegisterColor("role." + InternalName, RoleColor);
         RoleConfig = new ConfigurationHolder("options.role." + InternalName, new ColorTextComponent(RoleColor, new TranslateTextComponent("role." + LocalizedName + ".name")), myTabMask ?? ConfigurationTab.FromRoleCategory(RoleCategory), CustomGameMode.AllGameModeMask);
         RoleConfig.Priority = IsDefaultRole ? 0 : 1;
         RoleConfig.RelatedAssignable = this;

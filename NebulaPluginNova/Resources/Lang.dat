@@ -403,22 +403,26 @@
 "button.label.agent" : "agent"
 "button.label.camo" : "camo"
 "button.label.clean" : "clean"
+"button.label.douse" : "douse"
 "button.label.drag" : "drag"
 "button.label.eat" : "eat"
 "button.label.embroil" : "Embroil"
 "button.label.equip" : "equip"
+"button.label.ignite" : "ignite"
 "button.label.kill" : "kill"
 "button.label.lantern" : "lantern"
 "button.label.morph" : "morph"
 "button.label.operate" : "operate"
+"button.label.paint" : "paint"
 "button.label.place" : "place"
 "button.label.release" : "release"
 "button.label.revive" : "revive"
 "button.label.sample" : "sample"
 "button.label.snipe" : "snipe"
 "button.label.sidekick" : "sidekick"
-"button.label.throw" : "Throw"
+"button.label.throw" : "throw"
 "button.label.unequip" : "unequip"
+"button.label.vital" : "vitals"
 
 # Game
 
@@ -521,3 +525,4 @@
 # Client Configurations
 
 "config.client.keyBindings" : "Key Bindings" 
+"config.client.outputHash" : "Output Hash"

@@ -1,5 +1,6 @@
 ﻿using Il2CppInterop.Runtime.Injection;
 using Nebula.Utilities;
+using Sentry.Unity.NativeUtils;
 using UnityEngine;
 using UnityEngine.Rendering;
 using static Nebula.Modules.IMetaContext;
@@ -54,7 +55,7 @@ public interface IMetaContext
 
 public interface IMetaParallelPlacable
 {
-    public void Generate(GameObject screen, Vector2 center);
+    public float Generate(GameObject screen, Vector2 center);
     public float Width { get; }
 
 }
@@ -149,12 +150,14 @@ public class MetaContext : IMetaContext
             Sprite = sprite;
         }
 
-        public void Generate(GameObject screen, Vector2 center)
+        public float Generate(GameObject screen, Vector2 center)
         {
             var renderer = UnityHelper.CreateObject<SpriteRenderer>("Image", screen.transform,center);
             renderer.sprite = Sprite;
             if (Sprite) renderer.transform.localScale = Vector3.one * (Width / Sprite!.bounds.size.x);
             PostBuilder?.Invoke(renderer);
+
+            return Sprite ? renderer.transform.localScale.y * Sprite!.bounds.size.y : 0f;
         }
 
         public float Generate(GameObject screen, Vector2 cursor, Vector2 size, out (float min, float max) width)
@@ -192,7 +195,7 @@ public class MetaContext : IMetaContext
             TextAttribute = attribute;
         }
 
-        public void Generate(GameObject screen, Vector2 center)
+        public float Generate(GameObject screen, Vector2 center)
         {
             var text = GameObject.Instantiate(VanillaAsset.StandardTextPrefab, screen.transform);
             TextAttribute.Reflect(text);
@@ -200,6 +203,8 @@ public class MetaContext : IMetaContext
             text.transform.localPosition = center;
 
             PostBuilder?.Invoke(text);
+
+            return TextAttribute.Size.y;
         }
 
         public float Generate(GameObject screen, Vector2 cursor, Vector2 size, out (float min, float max) width)
@@ -221,17 +226,36 @@ public class MetaContext : IMetaContext
         }
     }
 
-    public class VariableText : IMetaContext
+    public class VariableText : IMetaContext, IMetaParallelPlacable
     {
         public AlignmentOption Alignment { get; set; }
         public TextAttribute TextAttribute { get; set; }
         public ITextComponent? MyText { get; set; } = null;
         public string RawText { set { MyText = new RawTextComponent(value); } }
         public string TranslationKey { set { MyText = new TranslateTextComponent(value); } }
+        public float Width { get => TextAttribute.Size.x; }
+        public Action<TMPro.TextMeshPro>? PostBuilder { get; set; } = null;
 
         public VariableText(TextAttribute attribute)
         {
             TextAttribute = attribute;
+        }
+
+        public float Generate(GameObject screen, Vector2 center)
+        {
+            var text = GameObject.Instantiate(VanillaAsset.StandardTextPrefab, screen.transform);
+            TextAttribute.Reflect(text);
+            text.text = MyText?.Text ?? "";
+            text.transform.localPosition = center;
+
+            text.ForceMeshUpdate();
+            text.rectTransform.sizeDelta = new(text.rectTransform.sizeDelta.x, text.preferredHeight);
+
+            text.ForceMeshUpdate();
+
+            PostBuilder?.Invoke(text);
+
+            return text.rectTransform.sizeDelta.y;
         }
 
         public float Generate(GameObject screen, Vector2 cursor, Vector2 size, out (float min, float max) width)
@@ -249,6 +273,8 @@ public class MetaContext : IMetaContext
             width = CalcWidth(Alignment, cursor, size, TextAttribute.Size.x, bounds.min.x, bounds.max.x);
 
             text.transform.localPosition = ReflectAlignment(Alignment, text.rectTransform.sizeDelta, cursor, size);
+
+            PostBuilder?.Invoke(text);
 
             return text.rectTransform.sizeDelta.y;
         }
@@ -302,11 +328,13 @@ public class MetaContext : IMetaContext
             if (OnMouseOver != null) passiveButton.OnMouseOver.AddListener(OnMouseOver);
         }
 
-        public void Generate(GameObject screen, Vector2 center)
+        public float Generate(GameObject screen, Vector2 center)
         {
             var renderer = UnityHelper.CreateObject<SpriteRenderer>("Button", screen.transform, center);
             Generate(renderer,out var button,out var text);
             PostBuilder?.Invoke(button, renderer, text);
+
+            return TextAttribute.Size.y + TextMargin;
         }
 
         public float Generate(GameObject screen, Vector2 cursor, Vector2 size, out (float min, float max) width)
@@ -324,9 +352,10 @@ public class MetaContext : IMetaContext
         }
     }
 
-    public class VerticalMargin : IMetaContext
+    public class VerticalMargin : IMetaContext, IMetaParallelPlacable
     {
         public float Margin { get; set; }
+        public float Width => 0f;
 
         public AlignmentOption Alignment => AlignmentOption.Center;
 
@@ -340,9 +369,14 @@ public class MetaContext : IMetaContext
             width = new(size.x/2,cursor.x);
             return Margin;
         }
+
+        public float Generate(GameObject screen, Vector2 center)
+        {
+            return Margin;
+        }
     }
 
-    public class HorizonalMargin : IMetaParallelPlacable
+    public class HorizonalMargin : IMetaContext, IMetaParallelPlacable
     {
         public float Width { get; set; }
 
@@ -353,9 +387,14 @@ public class MetaContext : IMetaContext
             Width = margin;
         }
 
-        public void Generate(GameObject screen, Vector2 center)
+        public float Generate(GameObject screen, Vector2 cursor, Vector2 size, out (float min, float max) width)
         {
-            return;
+            width = new(cursor.x, cursor.x);
+            return 0f;
+        }
+        public float Generate(GameObject screen, Vector2 center)
+        {
+            return 0f;
         }
     }
 
@@ -373,7 +412,7 @@ public class MetaContext : IMetaContext
             this.WithMask = withMask;
         }
 
-        public void Generate(GameObject screen, Vector2 center)
+        public float Generate(GameObject screen, Vector2 center)
         {
             var view = UnityHelper.CreateObject("ScrollView", screen.transform, new Vector3(center.x, center.y, -0.01f));
             var inner = UnityHelper.CreateObject("Inner", view.transform, new Vector3(0, 0, 0));
@@ -388,7 +427,12 @@ public class MetaContext : IMetaContext
             }
 
             float height = Inner?.Generate(inner, new Vector2(-innerSize.x / 2f - 0.2f, innerSize.y / 2f), innerSize) ?? 0f;
-            VanillaAsset.GenerateScroller(Size, view.transform, new Vector2(Size.x / 2 - 0.15f, 0f), inner.transform, new FloatRange(0, height - Size.y), Size.y);
+            var scroller = VanillaAsset.GenerateScroller(Size, view.transform, new Vector2(Size.x / 2 - 0.15f, 0f), inner.transform, new FloatRange(0, height - Size.y), Size.y);
+
+            var hitBox = scroller.GetComponent<Collider2D>();
+            foreach(var button in inner.GetComponentsInChildren<PassiveButton>()) button.ClickMask = hitBox;
+
+            return Size.y;
         }
 
         public float Generate(GameObject screen, Vector2 cursor, Vector2 size,out (float min,float max) width)
@@ -406,7 +450,10 @@ public class MetaContext : IMetaContext
             }
 
             float height = Inner?.Generate(inner, new Vector2(-innerSize.x / 2f, innerSize.y / 2f), innerSize) ?? 0f;
-            VanillaAsset.GenerateScroller(Size, view.transform, new Vector2(Size.x / 2 - 0.1f, 0f), inner.transform, new FloatRange(0, height - Size.y), Size.y);
+            var scroller = VanillaAsset.GenerateScroller(Size, view.transform, new Vector2(Size.x / 2 - 0.1f, 0f), inner.transform, new FloatRange(0, height - Size.y), Size.y);
+
+            var hitBox = scroller.GetComponent<Collider2D>();
+            foreach (var button in inner.GetComponentsInChildren<PassiveButton>()) button.ClickMask = hitBox;
 
             width = CalcWidth(Alignment, cursor, size, Size.x, -Size.x / 2f, Size.x / 2f);
 
@@ -460,16 +507,17 @@ public class CombinedContext : IMetaContext
 {
     IMetaParallelPlacable[] contents;
     public AlignmentOption Alignment { get; set; }
-    float height;
+    float? height;
 
     public CombinedContext(float height, AlignmentOption alignment, params IMetaParallelPlacable[] contents)
     {
         this.contents = contents.ToArray();
         this.Alignment = alignment;
-        this.height = height;
+        this.height = height < 0f ? null : height;
     }
 
     public CombinedContext(float height, params IMetaParallelPlacable[] contents) : this(height, AlignmentOption.Center, contents) { }
+    public CombinedContext(params IMetaParallelPlacable[] contents) : this(-1f, AlignmentOption.Center, contents) { }
 
     public float Generate(GameObject screen, Vector2 cursor,Vector2 size, out (float min, float max) width)
     {
@@ -487,16 +535,33 @@ public class CombinedContext : IMetaContext
                 leftPos = cursor.x + (size.x - widthSum) / 2f; break;
         }
 
-        float centerY = cursor.y - height / 2f;
-        foreach(var c in contents)
+        if (height.HasValue)
         {
-            c.Generate(screen, new Vector2(leftPos + c.Width / 2f, centerY));
-            leftPos += c.Width;
+            float centerY = cursor.y - height.Value / 2f;
+            foreach (var c in contents)
+            {
+                c.Generate(screen, new Vector2(leftPos + c.Width / 2f, centerY));
+                leftPos += c.Width;
+            }
+
+            width = CalcWidth(Alignment, cursor, size, widthSum, -widthSum / 2f, widthSum / 2f);
+
+            return height.Value;
         }
+        else
+        {
+            var combinedScreen = UnityHelper.CreateObject("CombinedScreen", screen.transform, Vector3.zero);
+            float maxHeight = 0f;
+            foreach (var c in contents)
+            {
+                maxHeight = Math.Max(maxHeight, c.Generate(combinedScreen, new Vector2(leftPos + c.Width / 2f, cursor.y)));
+                leftPos += c.Width;
+            }
+            combinedScreen.transform.localPosition -= new Vector3(0, maxHeight / 2f);
+            width = CalcWidth(Alignment, cursor, size, widthSum, -widthSum / 2f, widthSum / 2f);
 
-        width = CalcWidth(Alignment, cursor, size, widthSum, -widthSum / 2f, widthSum / 2f);
-
-        return height;
+            return maxHeight;
+        }
     }
 }
 
@@ -628,7 +693,13 @@ public class MetaScreen : MonoBehaviour
         NebulaManager.Instance.RegisterUI(obj, button);
 
         if (closeOnClickOutside)
+        {
             obj.transform.FindChild("ClickGuard").GetComponent<PassiveButton>().OnClick.AddListener(() => GameObject.Destroy(obj));
+            var myCollider = UnityHelper.CreateObject<BoxCollider2D>("MyScreenCollider", obj.transform, new Vector3(0f, 0f, 0.1f));
+            myCollider.isTrigger = false;
+            myCollider.size = size;
+            myCollider.gameObject.SetUpButton();
+        }
 
         return screen;
     }

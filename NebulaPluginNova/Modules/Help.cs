@@ -94,7 +94,14 @@ public static class HelpScreen
     {
         MetaContext inner = new();
 
-        inner.Append(allAssignable, (role) => new MetaContext.Button(() => { }, RoleTitleAttr)
+        inner.Append(allAssignable, (role) => new MetaContext.Button(() => {
+            var doc = DocumentManager.GetDocument("role." + role.InternalName);
+            if (doc == null) return;
+
+            var screen = MetaScreen.GenerateWindow(new(7f, 4.5f), HudManager.Instance.transform, Vector3.zero, true, true, true);
+            screen.SetContext(doc.Build(screen) ?? new MetaContext.Text(new(TextAttribute.BoldAttr) { Size = new(7f, 4.5f), Color = Color.gray }) { RawText = "Failed to Load" });
+
+        }, RoleTitleAttr)
         {
             RawText = role.DisplayName.Color(role.RoleColor),
             PostBuilder = (button, renderer, text) => renderer.maskInteraction = SpriteMaskInteraction.VisibleInsideMask,

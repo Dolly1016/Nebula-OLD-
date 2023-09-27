@@ -62,6 +62,7 @@ public class NebulaLog
         static public LogCategory MoreCosmic = new("MoreCosmic");
         static public LogCategory Language = new("Language");
         static public LogCategory Addon = new("Addon");
+        static public LogCategory Document = new("Documentation");
     }
 
     public void Print(LogCategory? category,string message)
