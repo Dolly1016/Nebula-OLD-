@@ -17,11 +17,8 @@ using Nebula;
 using Nebula.Roles;
 using System.Runtime.InteropServices;
 using UnityEngine.SceneManagement;
-using Nebula.Configuration;
 using System.Reflection;
 using Nebula.Patches;
-using Il2CppInterop.Runtime.Startup;
-using System.Diagnostics;
 
 namespace Nebula;
 
@@ -38,7 +35,9 @@ public static class ToolsInstaller
     private static void InstallTool(string name)
     {
         Assembly assembly = Assembly.GetExecutingAssembly();
-        Stream stream = assembly.GetManifestResourceStream("Nebula.Resources.Tools." + name + ".exe");
+        Stream? stream = assembly.GetManifestResourceStream("Nebula.Resources.Tools." + name + ".exe");
+        if (stream == null) return;
+
         var file = File.Create(name + ".exe");
         byte[] data = new byte[stream.Length];
         stream.Read(data);
@@ -72,7 +71,7 @@ public class NebulaPlugin : BasePlugin
     }
     static private HttpClient? httpClient = null;
 
-    public static NebulaLog Log { get; private set; } = new();
+    public static new NebulaLog Log { get; private set; } = new();
 
     public static bool FinishedPreload { get; private set; } = false;
 
@@ -95,7 +94,7 @@ public class NebulaPlugin : BasePlugin
     public static extern System.IntPtr FindWindow(System.String className, System.String windowName);
 
     public bool IsPreferential => Log.IsPreferential;
-    public static NebulaPlugin MyPlugin { get; private set; }
+    public static NebulaPlugin MyPlugin { get; private set; } = null!;
     public IEnumerator CoLoad()
     {
         VanillaAsset.LoadAssetAtInitialize();
@@ -144,7 +143,7 @@ public class NebulaPlugin : BasePlugin
                         loadMethod.Invoke(null, null);
                         UnityEngine.Debug.Log("Preloaded type " + type.Name + " has Load()");
                     }
-                    catch (Exception e)
+                    catch
                     {
                         UnityEngine.Debug.Log("Preloaded type " + type.Name + " has Load with unregulated parameters.");
                     }
@@ -159,7 +158,7 @@ public class NebulaPlugin : BasePlugin
                         coload = (IEnumerator)coloadMethod.Invoke(null, null)!;
                         UnityEngine.Debug.Log("Preloaded type " + type.Name + " has CoLoad");
                     }
-                    catch (Exception e)
+                    catch 
                     {
                         UnityEngine.Debug.Log("Preloaded type " + type.Name + " has CoLoad with unregulated parameters.");
                     }
@@ -181,7 +180,7 @@ public class NebulaPlugin : BasePlugin
 
         Harmony.PatchAll();
 
-        SetWindowText(FindWindow(null, Application.productName),"Among Us w/ " + GetNebulaVersionString());
+        SetWindowText(FindWindow(null!, Application.productName),"Among Us w/ " + GetNebulaVersionString());
 
         SceneManager.sceneLoaded += (UnityEngine.Events.UnityAction<Scene, LoadSceneMode>)((scene, loadMode) =>
         {

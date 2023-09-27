@@ -15,8 +15,8 @@ public class Jester : ConfigurableStandardRole
 
     public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player);
 
-    private NebulaConfiguration CanDragDeadBodyOption;
-    private VentConfiguration VentConfiguration;
+    private NebulaConfiguration CanDragDeadBodyOption = null!;
+    private new VentConfiguration VentConfiguration = null!;
     protected override void LoadOptions()
     {
         base.LoadOptions();
@@ -31,7 +31,7 @@ public class Jester : ConfigurableStandardRole
         {
             if(p== null) return null;
 
-            if (p.GetModInfo().Role.Role != MyRole) return null;
+            if (p!.GetModInfo()!.Role.Role != MyRole) return null;
             return new(NebulaGameEnd.JesterWin, 1 << p.PlayerId);
         }
     };

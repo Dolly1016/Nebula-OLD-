@@ -16,8 +16,8 @@ public class Sheriff : ConfigurableStandardRole
 
     public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player);
 
-    private KillCoolDownConfiguration KillCoolDownOption;
-    private NebulaConfiguration CanKillMadmateOption;
+    private KillCoolDownConfiguration KillCoolDownOption = null!;
+    private NebulaConfiguration CanKillMadmateOption = null!;
     
     protected override void LoadOptions()
     {
@@ -40,6 +40,7 @@ public class Sheriff : ConfigurableStandardRole
         private bool CanKill(PlayerControl target)
         {
             var info = target.GetModInfo();
+            if (info == null) return true;
             if (info.Role.Role == Madmate.MyRole) return Sheriff.MyRole.CanKillMadmateOption;
             if (info.Role.Role.RoleCategory == RoleCategory.CrewmateRole) return false;
             return true;

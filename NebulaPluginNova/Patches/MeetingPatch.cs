@@ -16,8 +16,8 @@ class MeetingStartPatch
 
     class MeetingPlayerContent
     {
-        public TMPro.TextMeshPro NameText, RoleText;
-        public PlayerModInfo Player;
+        public TMPro.TextMeshPro NameText = null!, RoleText = null!;
+        public PlayerModInfo Player = null!;
     }
 
     static private void Update(List<MeetingPlayerContent> meetingContent)
@@ -223,7 +223,7 @@ static class CheckForEndVotingPatch
                 {
                     if (!state.DidVote) continue;
 
-                    var modInfo = NebulaGameManager.Instance.GetModPlayerInfo(state.TargetPlayerId);
+                    var modInfo = NebulaGameManager.Instance?.GetModPlayerInfo(state.TargetPlayerId);
                     modInfo?.RoleAction(r=>r.OnTieVotes(ref extraVotes,state));
                 }
 

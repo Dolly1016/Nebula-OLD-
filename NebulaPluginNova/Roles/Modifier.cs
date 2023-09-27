@@ -38,7 +38,7 @@ public abstract class IntroAssignableModifier : AbstractModifier
 
 public abstract class ConfigurableModifier : IntroAssignableModifier
 {
-    public ConfigurationHolder RoleConfig { get; private set; }
+    public ConfigurationHolder RoleConfig { get; private set; } = null!;
     public override ConfigurationHolder? RelatedConfig { get => RoleConfig; }
 
     public int? myTabMask;
@@ -66,10 +66,10 @@ public abstract class ConfigurableModifier : IntroAssignableModifier
 
 public abstract class ConfigurableStandardModifier : ConfigurableModifier
 {
-    NebulaConfiguration CrewmateRoleCountOption;
-    NebulaConfiguration ImpostorRoleCountOption;
-    NebulaConfiguration NeutralRoleCountOption;
-    NebulaConfiguration RoleChanceOption;
+    NebulaConfiguration CrewmateRoleCountOption = null!;
+    NebulaConfiguration ImpostorRoleCountOption = null!;
+    NebulaConfiguration NeutralRoleCountOption = null!;
+    NebulaConfiguration RoleChanceOption = null!;
 
     public ConfigurableStandardModifier(int TabMask) : base(TabMask)
     {

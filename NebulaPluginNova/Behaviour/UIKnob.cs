@@ -59,12 +59,12 @@ public class UIKnob : PassiveUiElement
 
     public override void ReceiveMouseOver()
     {
-        if (Renderer) Renderer.color = Color.white.RGBMultiplied(0.5f);
+        if (Renderer) Renderer!.color = Color.white.RGBMultiplied(0.5f);
     }
 
     public override void ReceiveMouseOut()
     {
-        if (Renderer) Renderer.color = Color.white;
+        if (Renderer) Renderer!.color = Color.white;
     }
 
     public override void OnEnable()

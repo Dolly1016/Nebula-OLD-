@@ -15,16 +15,13 @@ namespace Nebula.Patches;
 [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.Update))]
 public class GameStartManagerUpdatePatch
 {
-    private static bool update = false;
-    private static string currentText = "";
-
     public static bool Prefix(GameStartManager __instance)
     {
         if (!GameData.Instance) return false;
         if (!GameManager.Instance) return false;
 
         //公開ルームではスライド使用不可 (不特定多数への画像配信を禁止)
-        if (AmongUsClient.Instance.IsGamePublic) NebulaGameManager.Instance.LobbySlideManager.Abandon();
+        if (AmongUsClient.Instance.IsGamePublic) NebulaGameManager.Instance?.LobbySlideManager.Abandon();
 
         __instance.MinPlayers = GeneralConfigurations.CurrentGameMode.MinPlayers;
 

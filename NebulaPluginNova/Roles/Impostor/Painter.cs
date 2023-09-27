@@ -18,9 +18,9 @@ public class Painter : ConfigurableStandardRole
 
     public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player);
 
-    private NebulaConfiguration SampleCoolDownOption;
-    private NebulaConfiguration PaintCoolDownOption;
-    private NebulaConfiguration LoseSampleOnMeetingOption;
+    private NebulaConfiguration SampleCoolDownOption = null!;
+    private NebulaConfiguration PaintCoolDownOption = null!;
+    private NebulaConfiguration LoseSampleOnMeetingOption = null!;
     protected override void LoadOptions()
     {
         base.LoadOptions();
@@ -57,11 +57,12 @@ public class Painter : ConfigurableStandardRole
                 sampleButton.Availability = (button) => sampleTracker.CurrentTarget != null && MyPlayer.MyControl.CanMove;
                 sampleButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;
                 sampleButton.OnClick = (button) => {
-                    if (paintButton.CoolDownTimer.CurrentTime < 5f) paintButton.CoolDownTimer.SetTime(5f).Resume();
-                    sample = sampleTracker.CurrentTarget!.GetModInfo().GetOutfit(75);
+                    if (paintButton!.CoolDownTimer!.CurrentTime < 5f) paintButton!.CoolDownTimer!.SetTime(5f).Resume();
+                    sample = sampleTracker.CurrentTarget!.GetModInfo()?.GetOutfit(75);
 
                     if (sampleIcon != null) GameObject.Destroy(sampleIcon.gameObject);
-                    sampleIcon = AmongUsUtil.GetPlayerIcon(sample, paintButton.VanillaButton.transform, new Vector3(-0.4f, 0.35f, -0.5f), new(0.3f, 0.3f)).SetAlpha(0.5f);
+                    if (sample == null) return;
+                    sampleIcon = AmongUsUtil.GetPlayerIcon(sample!, paintButton.VanillaButton.transform, new Vector3(-0.4f, 0.35f, -0.5f), new(0.3f, 0.3f)).SetAlpha(0.5f);
                 };
                 sampleButton.CoolDownTimer = Bind(new Timer(MyRole.SampleCoolDownOption.GetFloat()).SetAsAbilityCoolDown().Start());
                 sampleButton.SetLabelType(ModAbilityButton.LabelType.Standard);

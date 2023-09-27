@@ -21,9 +21,9 @@ public class Doctor : ConfigurableStandardRole
 
     public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player);
 
-    private NebulaConfiguration PortableVitalsChargeOption;
-    private NebulaConfiguration MaxPortableVitalsChargeOption;
-    private NebulaConfiguration ChargesPerTasksOption;
+    private NebulaConfiguration PortableVitalsChargeOption = null!;
+    private NebulaConfiguration MaxPortableVitalsChargeOption = null!;
+    private NebulaConfiguration ChargesPerTasksOption = null!;
 
     protected override void LoadOptions()
     {
@@ -37,7 +37,6 @@ public class Doctor : ConfigurableStandardRole
     public class Instance : Crewmate.Instance
     {
         private ModAbilityButton? vitalButton = null;
-        private TMPro.TextMeshPro UsesText;
         public override AbstractRole Role => MyRole;
         private float vitalTimer = MyRole.PortableVitalsChargeOption.GetFloat();
 

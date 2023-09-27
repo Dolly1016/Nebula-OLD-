@@ -24,10 +24,10 @@ public class Raider : ConfigurableStandardRole
 
     public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player);
 
-    private KillCoolDownConfiguration ThrowCoolDownOption;
-    private NebulaConfiguration AxeSizeOption;
-    private NebulaConfiguration AxeSpeedOption;
-    private NebulaConfiguration CanKillImpostorOption;
+    private KillCoolDownConfiguration ThrowCoolDownOption = null!;
+    private NebulaConfiguration AxeSizeOption = null!;
+    private NebulaConfiguration AxeSpeedOption = null!;
+    private NebulaConfiguration CanKillImpostorOption = null!;
 
     protected override void LoadOptions()
     {
@@ -121,7 +121,7 @@ public class Raider : ConfigurableStandardRole
             ZOrder = ZOption.Just;
             CanSeeInShadow = true;
             MyRenderer.sprite = thrownAxeSprite.GetSprite();
-            thrownTime = NebulaGameManager.Instance.CurrentTime;
+            thrownTime = NebulaGameManager.Instance!.CurrentTime;
         }
 
         public static void Load()
@@ -170,7 +170,7 @@ public class Raider : ConfigurableStandardRole
                 killButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;
                 killButton.OnClick = (button) =>
                 {
-                    MyAxe.Throw(MyAxe.Position,MyPlayer.MouseAngle);
+                    MyAxe?.Throw(MyAxe.Position,MyPlayer.MouseAngle);
                     MyAxe = null;
                     button.StartCoolDown();
                     equipButton.SetLabel("equip");
@@ -208,7 +208,7 @@ public class Raider : ConfigurableStandardRole
         "ThrowAxe",
         (message,_) => {
             var axe = NebulaSyncObject.GetObject<RaiderAxe>(message.objectId);
-            axe.Throw(message.pos, message.angle);
+            axe?.Throw(message.pos, message.angle);
         }
         );
 }

@@ -16,6 +16,7 @@ public enum KeyAssignmentType
     Use,
     Ability,
     SecondaryAbility,
+    AidAction,
     Command,
     Screenshot,
     Mute
@@ -83,6 +84,7 @@ public class NebulaInput
         modInput[KeyAssignmentType.Vent] = () => GetVanillaKeyCode(50);
         modInput[KeyAssignmentType.Ability] = GetModKeyCodeGetter("ability", KeyCode.F);
         modInput[KeyAssignmentType.SecondaryAbility] = GetModKeyCodeGetter("secondaryAbility", KeyCode.G);
+        modInput[KeyAssignmentType.AidAction] = GetModKeyCodeGetter("aidAction", KeyCode.LeftShift);
         modInput[KeyAssignmentType.Command] = GetModKeyCodeGetter("command", KeyCode.LeftControl);
         modInput[KeyAssignmentType.Screenshot] = GetModKeyCodeGetter("screenshot", KeyCode.P);
         modInput[KeyAssignmentType.Mute] = GetModKeyCodeGetter("mute", KeyCode.V);

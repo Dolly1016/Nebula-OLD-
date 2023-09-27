@@ -19,9 +19,9 @@ public class Jailer : ConfigurableStandardRole
 
     public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player);
 
-    private NebulaConfiguration CanMoveWithMapWatchingOption;
-    private NebulaConfiguration CanIdentifyDeadBodiesOption;
-    private NebulaConfiguration CanIdentifyImpostorsOption;
+    private NebulaConfiguration CanMoveWithMapWatchingOption = null!;
+    private NebulaConfiguration CanIdentifyDeadBodiesOption = null!;
+    private NebulaConfiguration CanIdentifyImpostorsOption = null!;
     protected override void LoadOptions()
     {
         base.LoadOptions();

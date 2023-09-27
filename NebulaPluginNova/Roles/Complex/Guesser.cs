@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 
 namespace Nebula.Roles.Complex;
 
-static public class GuesserSystem
+static file class GuesserSystem
 {
     static TextAttribute ButtonAttribute = new TextAttribute(TextAttribute.BoldAttr) { Size = new(1.3f, 0.3f), Alignment = TMPro.TextAlignmentOptions.Center, FontMaterial = VanillaAsset.StandardMaskedFontMaterial }.EditFontSize(2f, 1f, 2f);
-    public static MetaScreen LastGuesserWindow;
+    public static MetaScreen LastGuesserWindow = null!;
 
     static public MetaScreen OpenGuessWindow(int leftGuess,Action<AbstractRole> onSelected)
     {
@@ -74,7 +74,7 @@ static public class GuesserSystem
                     
 
                     if (LastGuesserWindow) LastGuesserWindow.CloseScreen();
-                    LastGuesserWindow = null;
+                    LastGuesserWindow = null!;
                 });
             });
         }
@@ -83,7 +83,7 @@ static public class GuesserSystem
     static public void OnDead()
     {
         if (LastGuesserWindow) LastGuesserWindow.CloseScreen();
-        LastGuesserWindow = null;
+        LastGuesserWindow = null!;
     }
 }
 
@@ -102,7 +102,7 @@ public class Guesser : ConfigurableStandardRole
 
     public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => IsEvil ? new EvilInstance(player) : new NiceInstance(player);
 
-    static public NebulaConfiguration NumOfGuessOption;
+    static public NebulaConfiguration NumOfGuessOption = null!;
 
     private NebulaConfiguration? CommonEditorOption;
 
@@ -149,7 +149,7 @@ public class Guesser : ConfigurableStandardRole
         }
     }
 
-    public class EvilInstance : Crewmate.Crewmate.Instance
+    public class EvilInstance : Impostor.Impostor.Instance
     {
         public override AbstractRole Role => MyEvilRole;
         private int leftGuess = NumOfGuessOption;
@@ -201,7 +201,7 @@ public class GuesserModifier : ConfigurableStandardModifier
         }
         public override void DecoratePlayerName(ref string text, ref Color color)
         {
-            if (AmOwner || NebulaGameManager.Instance.CanSeeAllInfo) text += " ⊕".Color(Jackal.MyRole.RoleColor);
+            if (AmOwner || (NebulaGameManager.Instance?.CanSeeAllInfo ?? false)) text += " ⊕".Color(Jackal.MyRole.RoleColor);
         }
 
         public override string? IntroText => Language.Translate("role.guesser.blurb");

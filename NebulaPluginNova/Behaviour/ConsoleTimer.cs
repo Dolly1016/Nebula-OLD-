@@ -10,11 +10,11 @@ namespace Nebula.Behaviour;
 
 public class ConsoleTimer : MonoBehaviour
 {
-    public static ConsoleTimer Instance { get; private set; }
+    public static ConsoleTimer Instance { get; private set; } = null!;
     static ConsoleTimer() => ClassInjector.RegisterTypeInIl2Cpp<ConsoleTimer>();
 
     private float storedUsed = 0f;
-    private TextMeshPro timerText;
+    private TextMeshPro timerText = null!;
     public ConsoleRestriction.ConsoleType? Type = null;
     public void Awake()
     {
@@ -31,7 +31,7 @@ public class ConsoleTimer : MonoBehaviour
     static public void MarkAsNonConsoleMinigame()
     {
         if (Instance) GameObject.Destroy(Instance.gameObject);
-        Instance = null;
+        Instance = null!;
     }
 
     static public bool IsOpenedByAvailableWay()

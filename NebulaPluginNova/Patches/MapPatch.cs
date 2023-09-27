@@ -24,7 +24,7 @@ public static class OpenMapCountOverlayPatch
 [HarmonyPatch(typeof(MapCountOverlay), nameof(MapCountOverlay.Update))]
 public static class CountOverlayUpdatePatch
 {
-    static TMPro.TextMeshPro notAvailableText;
+    static TMPro.TextMeshPro notAvailableText = null!;
 
     static bool Prefix(MapCountOverlay __instance)
     {

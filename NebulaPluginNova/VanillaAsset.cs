@@ -15,21 +15,21 @@ namespace Nebula;
 
 public class VanillaAsset
 {
-    static public Sprite PopUpBackSprite { get; private set; }
-    static public Sprite FullScreenSprite { get; private set; }
-    static public Sprite TextButtonSprite { get; private set; }
-    static public Sprite CloseButtonSprite { get; private set; }
-    static public TMPro.TextMeshPro StandardTextPrefab { get; private set; }
-    static public AudioClip HoverClip { get; private set; }
-    static public AudioClip SelectClip { get; private set; }
+    static public Sprite PopUpBackSprite { get; private set; } = null!;
+    static public Sprite FullScreenSprite { get; private set; } = null!;
+    static public Sprite TextButtonSprite { get; private set; } = null!;
+    static public Sprite CloseButtonSprite { get; private set; } = null!;
+    static public TMPro.TextMeshPro StandardTextPrefab { get; private set; } = null!;
+    static public AudioClip HoverClip { get; private set; } = null!;
+    static public AudioClip SelectClip { get; private set; } = null!;
     static public Material StandardMaskedFontMaterial { get {
             if (standardMaskedFontMaterial == null) standardMaskedFontMaterial = UnityHelper.FindAsset<Material>("LiberationSans SDF - BlackOutlineMasked")!;
-            return standardMaskedFontMaterial;
+            return standardMaskedFontMaterial!;
         }
     }
     static public Material OblongMaskedFontMaterial { get { 
             if(oblongMaskedFontMaterial == null) oblongMaskedFontMaterial = UnityHelper.FindAsset<Material>("Brook Atlas Material Masked");
-            return oblongMaskedFontMaterial;
+            return oblongMaskedFontMaterial!;
         } }
     
     static private Material? standardMaskedFontMaterial = null;
@@ -41,7 +41,7 @@ public class VanillaAsset
         get
         {
             if (versionFont == null) versionFont = UnityHelper.FindAsset<TMP_FontAsset>("Barlow-Medium SDF");
-            return versionFont;
+            return versionFont!;
         }
     }
 
@@ -52,7 +52,7 @@ public class VanillaAsset
             return preSpawnFont;
         }
     }
-    static public GameSettingMenu PlayerOptionsMenuPrefab { get; private set; }
+    static public GameSettingMenu PlayerOptionsMenuPrefab { get; private set; } = null!;
 
     static public void LoadAssetAtInitialize()
     {

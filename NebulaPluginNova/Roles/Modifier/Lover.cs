@@ -9,9 +9,9 @@ public class Lover : ConfigurableModifier
     public override string LocalizedName => "lover";
     public override string CodeName => "LVR";
     public override Color RoleColor => new Color(255f / 255f, 0f / 255f, 184f / 255f);
-    private NebulaConfiguration NumOfPairsOption;
-    private NebulaConfiguration ChanceOfAssigningImpostorsOption;
-    private NebulaConfiguration AllowExtraWinOption;
+    private NebulaConfiguration NumOfPairsOption = null!;
+    private NebulaConfiguration ChanceOfAssigningImpostorsOption = null!;
+    private NebulaConfiguration AllowExtraWinOption = null!;
     public override ModifierInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player, arguments[0]);
 
     public override void Assign(IRoleAllocator.RoleTable roleTable) {
@@ -68,7 +68,7 @@ public class Lover : ConfigurableModifier
 
         public override void DecoratePlayerName(ref string text, ref Color color)
         {
-            if (AmOwner || NebulaGameManager.Instance.CanSeeAllInfo || (MyLover?.AmOwner ?? false)) text += " ♥".Color(colors[loversId]);
+            if (AmOwner || (NebulaGameManager.Instance?.CanSeeAllInfo ?? false) || (MyLover?.AmOwner ?? false)) text += " ♥".Color(colors[loversId]);
         }
 
         public override void OnMurdered(PlayerControl murder)

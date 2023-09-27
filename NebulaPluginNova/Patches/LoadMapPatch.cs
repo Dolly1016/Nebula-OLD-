@@ -22,7 +22,7 @@ public static class LoadShipInstancePatch
 
             //ShipStatusの生成時
             __result = UnityEngine.AddressableAssets.Addressables.InstantiateAsync(__instance.RuntimeKey, null, false, false);
-            NebulaGameManager.Instance.RuntimeAsset.SetHandle(__result);
+            NebulaGameManager.Instance?.RuntimeAsset.SetHandle(__result);
             __result.Acquire();
             return false;
         }

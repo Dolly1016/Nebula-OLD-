@@ -56,19 +56,19 @@ public class ScriptHolder : INebulaBindableComponent
 {
 
     private List<INebulaBindableComponent> myComponent { get; init; } = new();
-    protected T Bind<T>(T component) where T : INebulaBindableComponent
+    public T Bind<T>(T component) where T : INebulaBindableComponent
     {
         BindComponent(component);
         return component;
     }
 
-    protected GameObject Bind(GameObject gameObject)
+    public GameObject Bind(GameObject gameObject)
     {
         BindComponent(new GameObjectBinding(gameObject));
         return gameObject;
     }
 
-    protected void BindComponent(INebulaBindableComponent component) => myComponent.Add(component);
+    public void BindComponent(INebulaBindableComponent component) => myComponent.Add(component);
 
     protected void ReleaseComponents()
     {

@@ -103,7 +103,7 @@ public class EndGameManagerSetUpPatch
     {
         if (NebulaGameManager.Instance == null) return;
         var endState = NebulaGameManager.Instance.EndState;
-        var endCondition = endState.EndCondition;
+        var endCondition = endState?.EndCondition;
 
         if(endState==null) return;
 
@@ -142,9 +142,9 @@ public class EndGameManagerSetUpPatch
             Vector3 vector = new Vector3(num7, num7, 1f);
             poolablePlayer.transform.localScale = vector;
 
-            var player = NebulaGameManager.Instance.GetModPlayerInfo(winners[i]);
+            var player = NebulaGameManager.Instance.GetModPlayerInfo(winners[i])!;
 
-            if (false)//死んでいる場合
+            if (player.IsDead)//死んでいる場合
             {
                 poolablePlayer.SetBodyAsGhost();
                 poolablePlayer.SetDeadFlipX(i % 2 == 0);

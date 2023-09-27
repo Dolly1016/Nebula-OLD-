@@ -19,7 +19,7 @@ public class Bait : ConfigurableStandardRole
 
     public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player);
 
-    private NebulaConfiguration ShowKillFlashOption;
+    private NebulaConfiguration ShowKillFlashOption = null!;
     protected override void LoadOptions()
     {
         base.LoadOptions();

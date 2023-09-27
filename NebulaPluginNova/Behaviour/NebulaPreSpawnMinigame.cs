@@ -92,7 +92,7 @@ public class NebulaPreSpawnLocation
     public string? AudioClip { get; private init; }
     public Vector2? Position { get; set; }
     public int? VanillaIndex { get; private init; }
-    public string? AssetImagePath(byte mapId) => "assets/SpawnCandidates/" + MapName[mapId] + "/" + LocationName + ".png";
+    public string AssetImagePath(byte mapId) => "assets/SpawnCandidates/" + MapName[mapId] + "/" + LocationName + ".png";
     public IDividedSpriteLoader GetSprite(byte mapId) => new XOnlyDividedSpriteLoader(new AssetTextureLoader(AssetImagePath(mapId)), 115f, ImageSize, true) { Pivot = new(0.5f, 0f) };
     private int ImageSize { get; set; } = 200;
     public NebulaPreSpawnLocation(string locationName,Vector2 pos,string? audioClip = null) { 
@@ -117,7 +117,7 @@ public class NebulaPreSpawnMinigame : Minigame
     public NebulaPreSpawnMinigame() : base(ClassInjector.DerivedConstructorPointer<NebulaPreSpawnMinigame>())
     { ClassInjector.DerivedConstructorBody(this); }
 
-    TMPro.TextMeshPro UnderText;
+    TMPro.TextMeshPro UnderText = null!;
 
     Vector2 spawnAt = new Vector2(0, 0);
 
@@ -137,7 +137,7 @@ public class NebulaPreSpawnMinigame : Minigame
         } }
     public IEnumerator CoClose()
     {
-        var gathering = NebulaGameManager.Instance.GameStatistics.Gathering[GameStatisticsGatherTag.Spawn];
+        var gathering = NebulaGameManager.Instance!.GameStatistics.Gathering[GameStatisticsGatherTag.Spawn];
         foreach (var p in PlayerControl.AllPlayerControls)
         {
             if (p.Data.IsDead) continue;
@@ -235,7 +235,7 @@ public class NebulaPreSpawnMinigame : Minigame
         IEnumerator CoSelect(int selected)
         {
             gotSelect = true;
-            spawnAt= cand[rand[selected]].Position.Value;
+            spawnAt= cand![rand[selected]].Position!.Value;
 
             foreach (var button in allButton) button.Item1.GetComponent<PassiveButton>().enabled = false;
             if (currentAnim != null) StopCoroutine(currentAnim);
@@ -257,7 +257,7 @@ public class NebulaPreSpawnMinigame : Minigame
             StartCoroutine(CoAnim(allButton[selected].Item1, allSprite[selected]).WrapToIl2Cpp());
 
             //点滅しおわってからスポーン
-            NebulaGameManager.Instance.RpcPreSpawn(PlayerControl.LocalPlayer.PlayerId, spawnAt);
+            NebulaGameManager.Instance?.RpcPreSpawn(PlayerControl.LocalPlayer.PlayerId, spawnAt);
 
             while (true)
             {
@@ -379,7 +379,7 @@ public class NebulaPreSpawnMinigame : Minigame
         {
             if (!p.isDummy) continue;
 
-            GameStatistics.RpcPoolPosition.LocalInvoke(new(GameStatisticsGatherTag.Spawn, p.PlayerId, cand[System.Random.Shared.Next(cand.Length)].Position.Value));
+            GameStatistics.RpcPoolPosition.LocalInvoke(new(GameStatisticsGatherTag.Spawn, p.PlayerId, cand![System.Random.Shared.Next(cand!.Length)].Position!.Value));
         }
 
     }

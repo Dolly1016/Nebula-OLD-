@@ -125,7 +125,7 @@ public static class HelpScreen
                 0.5f,
                 new MetaContext.Text(SlideTitleAttr) { RawText = temp.Title },
                 new MetaContext.HorizonalMargin(0.2f),
-                new MetaContext.Button(()=> NebulaGameManager.Instance.LobbySlideManager.TryRegisterAndShow(copiedTemp.Generate()), SlideButtonAttr) { TranslationKey = "help.slides.share", PostBuilder = (_,renderer,_)=>renderer.maskInteraction = SpriteMaskInteraction.VisibleInsideMask }
+                new MetaContext.Button(()=> NebulaGameManager.Instance?.LobbySlideManager.TryRegisterAndShow(copiedTemp?.Generate()), SlideButtonAttr) { TranslationKey = "help.slides.share", PostBuilder = (_,renderer,_)=>renderer.maskInteraction = SpriteMaskInteraction.VisibleInsideMask }
                 ));
         }
 

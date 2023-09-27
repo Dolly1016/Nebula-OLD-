@@ -1,4 +1,6 @@
-﻿using Cpp2IL.Core.Extensions;
+﻿using BepInEx.Unity.IL2CPP.Utils;
+using Cpp2IL.Core.Extensions;
+using Il2CppSystem.Linq;
 using Newtonsoft.Json.Bson;
 using System;
 using System.Collections.Generic;
@@ -6,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Nebula;
 
@@ -19,16 +22,17 @@ public enum NebulaAudioClip {
 }
 
 [NebulaPreLoad]
+[NebulaRPCHolder]
 public static class NebulaAsset
 {
-    static AssetBundle AssetBundle;
+    static AssetBundle AssetBundle = null!;
     public static IEnumerator CoLoad()
     {
         Patches.LoadPatch.LoadingText = "Loading Map Expansions";
         yield return null;
 
         var resourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Nebula.Resources.Assets.nebula_asset");
-        AssetBundle = AssetBundle.LoadFromMemory(resourceStream.ReadBytes());
+        AssetBundle = AssetBundle.LoadFromMemory(resourceStream!.ReadBytes());
 
         MultiplyBackShader = AssetBundle.LoadAsset<Shader>("Sprites-MultiplyBackground").MarkDontUnload();
         StoreBackShader = AssetBundle.LoadAsset<Shader>("Sprites-StoreBackground").MarkDontUnload();
@@ -36,7 +40,7 @@ public static class NebulaAsset
         DivMap[0] = AssetBundle.LoadAsset<GameObject>("SkeldDivMap").MarkDontUnload();
         DivMap[1] = AssetBundle.LoadAsset<GameObject>("MIRADivMap").MarkDontUnload();
         DivMap[2] = AssetBundle.LoadAsset<GameObject>("PolusDivMap").MarkDontUnload();
-        DivMap[3] = null;
+        DivMap[3] = null!;
         DivMap[4] = AssetBundle.LoadAsset<GameObject>("AirshipDivMap").MarkDontUnload();
 
         audioMap[NebulaAudioClip.ThrowAxe] = AssetBundle.LoadAsset<AudioClip>("RaiderThrow.wav").MarkDontUnload();
@@ -49,18 +53,18 @@ public static class NebulaAsset
 
     private static T LoadAsset<T>(this AssetBundle assetBundle, string name) where T : UnityEngine.Object
     {
-        return assetBundle.LoadAsset(name, Il2CppType.Of<T>())?.Cast<T>();
+        return assetBundle.LoadAsset(name, Il2CppType.Of<T>())?.Cast<T>()!;
     }
 
     public static T LoadAsset<T>(string name) where T : UnityEngine.Object
     {
-        return AssetBundle.LoadAsset(name, Il2CppType.Of<T>())?.Cast<T>();
+        return AssetBundle.LoadAsset(name, Il2CppType.Of<T>())?.Cast<T>()!;
     }
 
     public static Sprite GetMapSprite(byte mapId, Int32 mask, Vector2? size = null)
     {
         GameObject prefab = DivMap[mapId];
-        if (prefab == null) return null;
+        if (prefab == null) return null!;
         if (size == null) size = prefab.transform.GetChild(0).GetChild(0).GetComponent<SpriteRenderer>().sprite.bounds.size * 100f;
         var obj = GameObject.Instantiate(prefab);
         Camera cam = obj.AddComponent<Camera>();
@@ -108,8 +112,8 @@ public static class NebulaAsset
         return texture2D.ToSprite(100f);
     }
 
-    static public Shader MultiplyBackShader { get; private set; }
-    static public Shader StoreBackShader { get; private set; }
+    static public Shader MultiplyBackShader { get; private set; } = null!;
+    static public Shader StoreBackShader { get; private set; } = null!;
 
     static public ResourceExpandableSpriteLoader SharpWindowBackgroundSprite = new("Nebula.Resources.StatisticsBackground.png", 100f,5,5);
 
@@ -120,4 +124,41 @@ public static class NebulaAsset
     {
         SoundManager.Instance.PlaySound(audioMap[clip],false,0.8f);
     }
+
+    public static void PlaySE(NebulaAudioClip clip,Vector2 pos,float minDistance,float maxDistance)
+    {
+        var audioSource = UnityHelper.CreateObject<AudioSource>("SEPlayer", null, pos);
+
+        float v = (SoundManager.SfxVolume + 80) / 80f;
+        v = 1f - v;
+        v = v * v;
+        v = 1f - v;
+        audioSource.volume = v;
+
+        audioSource.transform.position = pos;
+        audioSource.priority = 0;
+        audioSource.spatialBlend = 1;
+        audioSource.clip = audioMap[clip];
+        audioSource.loop = false;
+        audioSource.playOnAwake = false;
+        audioSource.maxDistance = maxDistance;
+        audioSource.minDistance = minDistance;
+        audioSource.rolloffMode = UnityEngine.AudioRolloffMode.Linear;
+        audioSource.PlayOneShot(audioSource.clip);
+
+        IEnumerator CoPlay()
+        {
+            yield return new WaitForSeconds(audioSource.clip.length);
+            while (audioSource.isPlaying) yield return null;
+            GameObject.Destroy(audioSource.gameObject);
+            yield break;
+        }
+
+        NebulaManager.Instance.StartCoroutine(CoPlay().WrapToIl2Cpp());
+    }
+
+    public static readonly RemoteProcess<(NebulaAudioClip clip, Vector2 pos, float minDistance, float maxDistance)> RpcPlaySE = new(
+        "PlaySE",
+        (message, _) => PlaySE(message.clip, message.pos, message.minDistance, message.maxDistance)
+    );
 }

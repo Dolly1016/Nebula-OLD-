@@ -26,7 +26,7 @@ public unsafe class Il2CppListEnumerable<T> : System.Collections.Generic.IEnumer
 
     private static readonly int _elemSize;
     private static readonly int _offset;
-    private static Func<IntPtr, T> _objFactory;
+    private static Func<IntPtr, T> _objFactory = null!;
 
     static Il2CppListEnumerable()
     {
@@ -52,7 +52,7 @@ public unsafe class Il2CppListEnumerable<T> : System.Collections.Generic.IEnumer
     }
 
     object IEnumerator.Current => Current;
-    public T Current { get; private set; }
+    public T Current { get; private set; } = null!;
 
     public bool MoveNext()
     {

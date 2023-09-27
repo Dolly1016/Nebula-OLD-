@@ -13,7 +13,7 @@ public static class LoadPatch
 {
     static SpriteLoader logoSprite = SpriteLoader.FromResource("Nebula.Resources.NebulaLogo.png", 100f);
     static SpriteLoader logoGlowSprite = SpriteLoader.FromResource("Nebula.Resources.NebulaLogoGlow.png", 100f);
-    static TMPro.TextMeshPro loadText;
+    static TMPro.TextMeshPro loadText = null!;
     static public string LoadingText { set { loadText.text = value; } }
     static IEnumerator CoLoadNebula(SplashManager __instance)
     {

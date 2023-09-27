@@ -27,7 +27,7 @@ namespace Nebula.Modules;
 
 public class CustomItemGrouped
 {
-    public CustomItemBundle MyBundle;
+    public CustomItemBundle MyBundle = null!;
 }
 
 public class CustomCosmicItem : CustomItemGrouped
@@ -99,13 +99,13 @@ public class CustomCosmicItem : CustomItemGrouped
             
             try
             {
-                if (!image.TryLoadImage(loader.Result))
+                if (!image.TryLoadImage(loader?.Result!))
                 {
                     IsValid = false;
                     break;
                 }
             }
-            catch (Exception ex)
+            catch 
             {
                 IsValid = false;
                 break;
@@ -205,8 +205,8 @@ public class CosmicHat : CustomCosmicItem
     [JSFieldAmbiguous]
     public int FPS = 1;
 
-    public HatData MyHat { get; private set; }
-    public HatViewData MyView { get; private set; }
+    public HatData MyHat { get; private set; } = null!;
+    public HatViewData MyView { get; private set; } = null!;
     public override IEnumerator Activate()
     {
         foreach (var image in AllImage()) {
@@ -295,8 +295,8 @@ public class CosmicVisor : CustomCosmicItem
     [JSFieldAmbiguous]
     public int FPS = 1;
 
-    public VisorData MyVisor { get; private set; }
-    public VisorViewData MyView { get; private set; }
+    public VisorData MyVisor { get; private set; } = null!;
+    public VisorViewData MyView { get; private set; } = null!;
     public bool HasClimbUpImage => Climb != null;
     public bool HasClimbDownImage => (ClimbDown ?? Climb) != null;
 
@@ -352,8 +352,8 @@ public class CosmicNamePlate : CustomCosmicItem
     [JsonSerializableField]
     public CosmicImage? Plate;
 
-    public NamePlateData MyPlate { get; private set; }
-    public NamePlateViewData MyView { get; private set; }
+    public NamePlateData MyPlate { get; private set; } = null!;
+    public NamePlateViewData MyView { get; private set; } = null!;
     public override IEnumerator Activate()
     {
         yield return base.Activate();
@@ -440,13 +440,13 @@ public class CustomItemBundle
         foreach (var item in AllContents()) item.MyBundle = this;
         foreach (var item in AllCosmicItem()) await item.Preactivate();
 
-        if (AllBundles.ContainsKey(BundleName)) throw new Exception("Duplicated Bundle Error");
+        if (AllBundles.ContainsKey(BundleName!)) throw new Exception("Duplicated Bundle Error");
     }
 
     public IEnumerator Activate()
     {
         IsActive = true;
-        AllBundles[BundleName] = this;
+        AllBundles[BundleName!] = this;
 
         foreach (var item in AllCosmicItem())
         {
@@ -678,7 +678,7 @@ public class WrappedHatAsset : AddressableAsset<HatViewData> {
     public WrappedHatAsset(System.IntPtr ptr) : base(ptr) { }
     public WrappedHatAsset() : base(ClassInjector.DerivedConstructorPointer<WrappedHatAsset>())
     { ClassInjector.DerivedConstructorBody(this); }
-    public override HatViewData GetAsset() => viewData;
+    public override HatViewData GetAsset() => viewData!;
     public override void LoadAsync(Il2CppSystem.Action? onSuccessCb = null, Il2CppSystem.Action? onErrorcb = null, Il2CppSystem.Action? onFinishedcb = null)
     {
         if (onSuccessCb != null) onSuccessCb.Invoke();
@@ -689,7 +689,7 @@ public class WrappedHatAsset : AddressableAsset<HatViewData> {
     public override AssetLoadState GetState() => AssetLoadState.Success;
 }
 public class WrappedVisorAsset : AddressableAsset<VisorViewData> {
-    public VisorViewData viewData;
+    public VisorViewData viewData = null!;
     public WrappedVisorAsset(System.IntPtr ptr) : base(ptr) { }
     public WrappedVisorAsset() : base(ClassInjector.DerivedConstructorPointer<WrappedVisorAsset>())
     { ClassInjector.DerivedConstructorBody(this); }
@@ -704,7 +704,7 @@ public class WrappedVisorAsset : AddressableAsset<VisorViewData> {
     public override AssetLoadState GetState() => AssetLoadState.Success;
 }
 public class WrappedNamePlateAsset : AddressableAsset<NamePlateViewData> {
-    public NamePlateViewData viewData;
+    public NamePlateViewData viewData = null!;
     public WrappedNamePlateAsset(System.IntPtr ptr) : base(ptr) { }
     public WrappedNamePlateAsset() : base(ClassInjector.DerivedConstructorPointer<WrappedNamePlateAsset>())
     { ClassInjector.DerivedConstructorBody(this); }
@@ -887,8 +887,8 @@ public class CoLoadIconPatch
             asset.viewData = value.MyView;
             yield return asset.CoLoadAsync(null);
             VisorViewData viewData = asset.GetAsset();
-            Sprite sprite = ((viewData != null) ? viewData.IdleFrame : null);
-            onLoaded.Invoke(sprite, asset);
+            Sprite? sprite = ((viewData != null) ? viewData.IdleFrame : null);
+            onLoaded.Invoke(sprite!, asset);
             yield break;
         }
         __result = GetEnumerator().WrapToIl2Cpp();
@@ -948,7 +948,7 @@ public static class HatFixPatch
 
         try
         {
-            __instance.myPlayer.cosmetics.SetHatAndVisorIdle(__instance.myPlayer.GetModInfo().CurrentOutfit.ColorId);
+            __instance.myPlayer.cosmetics.SetHatAndVisorIdle(__instance.myPlayer.GetModInfo()!.CurrentOutfit.ColorId);
         }
         catch { }
     }
@@ -988,7 +988,7 @@ public enum PlayerAnimState
 
 public class NebulaCosmeticsLayer : MonoBehaviour
 {
-    public CosmeticsLayer MyLayer;
+    public CosmeticsLayer MyLayer = null!;
     public PlayerPhysics? MyPhysics;
 
     public HatData? CurrentHat;
@@ -1041,7 +1041,7 @@ public class NebulaCosmeticsLayer : MonoBehaviour
 
             if (MyPhysics)
             {
-                var anim = MyPhysics.Animations;
+                var anim = MyPhysics!.Animations;
                 if (anim)
                 {
                     var current = anim.Animator.m_currAnim;
@@ -1116,17 +1116,17 @@ public class NebulaCosmeticsLayer : MonoBehaviour
                 lastHatFrontImage = frontImage;
                 lastHatBackImage = backImage;
 
-                MyLayer.hat.FrontLayer.sprite = frontImage?.GetSprite(HatFrontIndex) ?? null;
-                MyLayer.hat.BackLayer.sprite = backImage?.GetSprite(HatBackIndex) ?? null;
+                MyLayer.hat!.FrontLayer.sprite = frontImage?.GetSprite(HatFrontIndex) ?? null;
+                MyLayer.hat!.BackLayer.sprite = backImage?.GetSprite(HatBackIndex) ?? null;
 
-                MyLayer.hat.FrontLayer.enabled = true;
-                MyLayer.hat.BackLayer.enabled = true;
+                MyLayer.hat!.FrontLayer.enabled = true;
+                MyLayer.hat!.BackLayer.enabled = true;
 
-                MyLayer.hat.FrontLayer.transform.SetLocalZ(MyLayer.zIndexSpacing * (CurrentModHat.IsSkinny ? -1f : -3f));
+                MyLayer.hat!.FrontLayer.transform.SetLocalZ(MyLayer.zIndexSpacing * (CurrentModHat.IsSkinny ? -1f : -3f));
             }
             else
             {
-                MyLayer.hat.FrontLayer.transform.SetLocalZ(MyLayer.zIndexSpacing * -3f);
+                MyLayer.hat!.FrontLayer.transform.SetLocalZ(MyLayer.zIndexSpacing * -3f);
             }
             if (CurrentModVisor != null)
             {
@@ -1169,13 +1169,13 @@ public class NebulaCosmeticsLayer : MonoBehaviour
                 if (lastVisorImage != image && (image?.RequirePlayFirstState ?? true)) VisorIndex = 0;
                 lastVisorImage = image;
 
-                MyLayer.visor.Image.sprite = image?.GetSprite(VisorIndex) ?? null;
+                MyLayer.visor!.Image.sprite = image?.GetSprite(VisorIndex) ?? null;
 
-                MyLayer.visor.Image.transform.SetLocalZ(MyLayer.zIndexSpacing * (CurrentModVisor.BehindHat ? -2f : -4f));
+                MyLayer.visor!.Image.transform.SetLocalZ(MyLayer.zIndexSpacing * (CurrentModVisor.BehindHat ? -2f : -4f));
             }
             else
             {
-                MyLayer.visor.Image.transform.SetLocalZ(MyLayer.zIndexSpacing * -4f);
+                MyLayer.visor!.Image.transform.SetLocalZ(MyLayer.zIndexSpacing * -4f);
             }
         }
         catch { }
@@ -1185,7 +1185,7 @@ public class NebulaCosmeticsLayer : MonoBehaviour
 [HarmonyPatch]
 public static class TabEnablePatch
 {
-    public static TMPro.TMP_Text textTemplate;
+    public static TMPro.TMP_Text textTemplate = null!;
 
     private static float headerSize = 0.8f;
     private static float headerX = 0.85f;

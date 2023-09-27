@@ -35,20 +35,20 @@ public static class VentCanUsePatch
 {
     public static bool Prefix(Vent __instance, ref float __result,[HarmonyArgument(0)] GameData.PlayerInfo pc, [HarmonyArgument(1)] out bool canUse, [HarmonyArgument(2)] out bool couldUse)
     {
-        float num = float.MaxValue;
-        PlayerControl @object = pc.Object;
-        PlayerModInfo modInfo = NebulaGameManager.Instance.GetModPlayerInfo(pc.PlayerId);
-
         couldUse = true;
         
+        float num = float.MaxValue;
+        PlayerControl @object = pc.Object;
+        PlayerModInfo? modInfo = NebulaGameManager.Instance?.GetModPlayerInfo(pc.PlayerId);
+
         if (@object.inVent && Vent.currentVent == __instance)
         {
             //既にベント内にいる場合
         }
         else {
             //ベント外にいる場合
-            couldUse &= modInfo.Role.CanUseVent || @object.inVent || @object.walkingToVent;
-            if (modInfo.Role.HasAnyTasks) couldUse &= !@object.MustCleanVent(__instance.Id);
+            couldUse &= (modInfo?.Role.CanUseVent ?? false) || @object.inVent || @object.walkingToVent;
+            if (modInfo?.Role.HasAnyTasks ?? false) couldUse &= !@object.MustCleanVent(__instance.Id);
             couldUse &= !pc.IsDead && @object.CanMove;
         }
 
@@ -117,7 +117,7 @@ public static class ConsoleCanUsePatch
 
         if (__instance.AllowImpostor) return true;
 
-        var info = NebulaGameManager.Instance.GetModPlayerInfo(PlayerControl.LocalPlayer.PlayerId);
+        var info = NebulaGameManager.Instance?.GetModPlayerInfo(PlayerControl.LocalPlayer.PlayerId);
         if (info == null) return true;
 
         if (!info.Role.HasAnyTasks)

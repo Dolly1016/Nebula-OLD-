@@ -21,9 +21,9 @@ public class Agent : ConfigurableStandardRole
 
     public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player);
 
-    private NebulaConfiguration NumOfExemptedTasksOption;
-    private NebulaConfiguration NumOfExtraTasksOption;
-    private VentConfiguration VentConfiguration;
+    private NebulaConfiguration NumOfExemptedTasksOption = null!;
+    private NebulaConfiguration NumOfExtraTasksOption = null!;
+    private new VentConfiguration VentConfiguration = null!;
 
     protected override void LoadOptions()
     {
@@ -43,7 +43,7 @@ public class Agent : ConfigurableStandardRole
         public override bool CanUseVent => leftVent > 0;
         private int leftVent = MyRole.VentConfiguration.Uses;
         private Timer ventDuration = new Timer(MyRole.VentConfiguration.Duration);
-        private TMPro.TextMeshPro UsesText;
+        private TMPro.TextMeshPro UsesText = null!;
 
         public override Timer? VentDuration => ventDuration;
         public Instance(PlayerModInfo player) : base(player)

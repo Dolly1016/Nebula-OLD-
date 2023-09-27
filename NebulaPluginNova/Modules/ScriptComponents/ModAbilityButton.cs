@@ -29,10 +29,12 @@ public class ModAbilityButton : INebulaScriptComponent
     public Action<ModAbilityButton>? OnEffectEnd { get; set; } = null;
     public Action<ModAbilityButton>? OnUpdate { get; set; } = null;
     public Action<ModAbilityButton>? OnClick { get; set; } = null;
+    public Action<ModAbilityButton>? OnSubAction { get; set; } = null;
     public Action<ModAbilityButton>? OnMeeting { get; set; } = null;
     public Predicate<ModAbilityButton>? Availability { get; set; } = null;
     public Predicate<ModAbilityButton>? Visibility { get; set; } = null;
     private KeyCode? keyCode { get; set; } = null;
+    private KeyCode? subKeyCode { get; set; } = null;
 
     internal ModAbilityButton(bool isLeftSideButton = false, bool isArrangedAsKillButton = false,int priority = 0)
     {
@@ -141,10 +143,10 @@ public class ModAbilityButton : INebulaScriptComponent
         return this;
     }
 
-    public ModAbilityButton SetSprite(Sprite sprite)
+    public ModAbilityButton SetSprite(Sprite? sprite)
     {
         VanillaButton.graphic.sprite = sprite;
-        VanillaButton.graphic.SetCooldownNormalizedUvs();
+        if (sprite != null) VanillaButton.graphic.SetCooldownNormalizedUvs();
         return this;
     }
 
@@ -190,6 +192,22 @@ public class ModAbilityButton : INebulaScriptComponent
 
         this.keyCode= keyCode;
         ButtonEffect.SetKeyGuide(VanillaButton.gameObject, keyCode);
+        return this;
+    }
+
+    private static SpriteLoader aidActionSprite = SpriteLoader.FromResource("Nebula.Resources.KeyBindOption.png", 100f);
+    public ModAbilityButton SubKeyBind(KeyAssignmentType keyCode) => SubKeyBind(NebulaInput.GetKeyCode(keyCode));
+    public ModAbilityButton SubKeyBind(KeyCode keyCode)
+    {
+        this.subKeyCode = keyCode;
+        var guideObj = ButtonEffect.SetSubKeyGuide(VanillaButton.gameObject, keyCode);
+
+        if (guideObj != null)
+        {
+            var renderer = UnityHelper.CreateObject<SpriteRenderer>("HotKeyOption", guideObj.transform, new Vector3(0.12f, 0.07f, -2f));
+            renderer.sprite = aidActionSprite.GetSprite();
+        }
+
         return this;
     }
 }
@@ -317,6 +335,11 @@ public static class ButtonEffect
     static public GameObject? SetKeyGuide(GameObject button, KeyCode key)
     {
         return AddKeyGuide(button, key, new Vector2(0.48f, 0.48f));
+    }
+
+    static public GameObject? SetSubKeyGuide(GameObject button, KeyCode key)
+    {
+        return AddKeyGuide(button, key, new Vector2(0.48f, 0.13f));
     }
 
     static public GameObject? SetKeyGuideOnSmallButton(GameObject button, KeyCode key)

@@ -11,7 +11,7 @@ namespace Nebula.Behaviour;
 public class ZOrderedSortingGroup : MonoBehaviour
 {
     static ZOrderedSortingGroup() => ClassInjector.RegisterTypeInIl2Cpp<ZOrderedSortingGroup>();
-    private SortingGroup group;
+    private SortingGroup group = null!;
     public void Start()
     {
         group = gameObject.AddComponent<SortingGroup>();

@@ -14,7 +14,7 @@ public static class EndIntroPatch
 {
     static void Postfix(IntroCutscene __instance)
     {
-        NebulaGameManager.Instance.OnGameStart();
+        NebulaGameManager.Instance?.OnGameStart();
         HudManager.Instance.ShowVanillaKeyGuide();
     }
 }
@@ -41,18 +41,18 @@ public static class ShowIntroPatch
 
         IEnumerable<PlayerControl> shownPlayers = PlayerControl.AllPlayerControls.GetFastEnumerator();
         var myInfo = PlayerControl.LocalPlayer.GetModInfo();
-        switch (myInfo.Role.Role.Team.RevealType)
+        switch (myInfo?.Role.Role.Team.RevealType)
         {
             case Roles.TeamRevealType.OnlyMe:
                 shownPlayers = new PlayerControl[] { PlayerControl.LocalPlayer };
                 break;
             case Roles.TeamRevealType.Teams:
-                shownPlayers = shownPlayers.Where(p => p.GetModInfo().Role.Role.Team == myInfo.Role.Role.Team);
+                shownPlayers = shownPlayers.Where(p => p.GetModInfo()?.Role.Role.Team == myInfo.Role.Role.Team);
                 break;
         }
 
-        yield return CoShowTeam(__instance,myInfo,shownPlayers.ToArray(), 3f);
-        yield return CoShowRole(__instance,myInfo);
+        yield return CoShowTeam(__instance,myInfo!,shownPlayers.ToArray(), 3f);
+        yield return CoShowRole(__instance,myInfo!);
         GameObject.Destroy(__instance.gameObject);
     }
 

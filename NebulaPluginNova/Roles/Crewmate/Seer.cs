@@ -19,7 +19,7 @@ public class Seer : ConfigurableStandardRole
 
     public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player);
 
-    private NebulaConfiguration GhostDurationOption;
+    private NebulaConfiguration GhostDurationOption = null!;
     protected override void LoadOptions()
     {
         base.LoadOptions();

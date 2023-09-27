@@ -32,8 +32,8 @@ public class LightPatch
 
         float t = (float)(switchSystem?.Value ?? 255f) / 255f;
 
-        bool hasImpostorVision = PlayerControl.LocalPlayer.GetModInfo().Role.HasImpostorVision;
-        bool ignoreBlackOut = PlayerControl.LocalPlayer.GetModInfo().Role.IgnoreBlackout;
+        bool hasImpostorVision = PlayerControl.LocalPlayer.GetModInfo()?.Role.HasImpostorVision ?? false;
+        bool ignoreBlackOut = PlayerControl.LocalPlayer.GetModInfo()?.Role.IgnoreBlackout ?? true;
 
         if (ignoreBlackOut) t = 1f;
 

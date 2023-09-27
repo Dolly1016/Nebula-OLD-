@@ -13,7 +13,7 @@ public static class AmongUsUtil
     public static bool InMeeting => MeetingHud.Instance == null && ExileController.Instance == null;
     public static byte CurrentMapId => GameOptionsManager.Instance.CurrentGameOptions.MapId;
     private static string[] mapName = new string[] { "skeld", "mira", "polus", "undefined", "airship" };
-    public static string ToDisplayString(SystemTypes room)=> Language.Translate("location." + mapName[CurrentMapId] + "." + Enum.GetName(typeof(SystemTypes),room).HeadLower());
+    public static string ToDisplayString(SystemTypes room)=> Language.Translate("location." + mapName[CurrentMapId] + "." + Enum.GetName(typeof(SystemTypes),room)!.HeadLower());
     public static float VanillaKillCoolDown => GameOptionsManager.Instance.CurrentGameOptions.GetFloat(FloatOptionNames.KillCooldown);
     public static bool InCommSab => PlayerTask.PlayerHasTaskOfType<IHudOverrideTask>(PlayerControl.LocalPlayer);
     public static PoolablePlayer PoolablePrefab => HudManager.Instance.IntroPrefab.PlayerPrefab;
@@ -115,7 +115,7 @@ public static class AmongUsUtil
             foreach (var d in Helpers.AllDeadBodies()) if (d.ParentId == message.TargetId) GameObject.Destroy(d.gameObject);
 
             if (message.SourceId != byte.MaxValue)
-                NebulaGameManager.Instance.GameStatistics.RecordEvent(new GameStatistics.Event(GameStatistics.EventVariation.CreanBody, message.SourceId, 1 << message.TargetId) { RelatedTag = message.RelatedTag });
+                NebulaGameManager.Instance?.GameStatistics.RecordEvent(new GameStatistics.Event(GameStatistics.EventVariation.CreanBody, message.SourceId, 1 << message.TargetId) { RelatedTag = message.RelatedTag });
         }
         );
 
@@ -126,7 +126,7 @@ public static class AmongUsUtil
 
     public static PlayerModInfo? GetHolder(this DeadBody body)
     {
-        return NebulaGameManager.Instance.AllPlayerInfo().FirstOrDefault((p) => p.HoldingDeadBody.HasValue && p.HoldingDeadBody.Value == body.ParentId);
+        return NebulaGameManager.Instance?.AllPlayerInfo().FirstOrDefault((p) => p.HoldingDeadBody.HasValue && p.HoldingDeadBody.Value == body.ParentId);
     }
 
     public static SpriteRenderer GenerateCustomLight(Vector2 position,Sprite lightSprite)

@@ -18,9 +18,9 @@ public static class ModPreSpawnInPatch
         if (NebulaPreSpawnMinigame.PreSpawnLocations.Length > 0)
         {
             NebulaPreSpawnMinigame spawnInMinigame = UnityHelper.CreateObject<NebulaPreSpawnMinigame>("PreSpawnInMinigame", minigameParent, new Vector3(0, 0, -600f), LayerExpansion.GetUILayer());
-            spawnInMinigame.Begin(null);
-            yield return NebulaGameManager.Instance.Syncronizer.CoSync(Modules.SynchronizeTag.PreSpawnMinigame, true, false, false);
-            NebulaGameManager.Instance.Syncronizer.ResetSync(Modules.SynchronizeTag.PreSpawnMinigame);
+            spawnInMinigame.Begin(null!);
+            yield return NebulaGameManager.Instance?.Syncronizer.CoSync(Modules.SynchronizeTag.PreSpawnMinigame, true, false, false);
+            NebulaGameManager.Instance?.Syncronizer.ResetSync(Modules.SynchronizeTag.PreSpawnMinigame);
             spawnInMinigame.Close();
 
             NebulaGameManager.Instance?.GameStatistics.RecordEvent(new GameStatistics.Event(eventVariation, null, 0, GameStatisticsGatherTag.Spawn) { RelatedTag = tag });

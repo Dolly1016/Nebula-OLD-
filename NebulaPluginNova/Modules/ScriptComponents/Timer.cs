@@ -96,7 +96,12 @@ public class Timer : INebulaScriptComponent
 
     public Timer SetAsAbilityCoolDown()
     {
-        return SetPredicate(() => PlayerControl.LocalPlayer.CanMove);
+        return SetPredicate(() =>
+        {
+            if (PlayerControl.LocalPlayer.CanMove) return true;
+            if (Minigame.Instance && Minigame.Instance.MyNormTask) return true;
+            return false;
+        });
     }
 }
 

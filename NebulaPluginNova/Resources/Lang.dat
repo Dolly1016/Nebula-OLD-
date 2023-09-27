@@ -112,7 +112,7 @@
 "role.general.ventDuration.short" : "Duration"
 "role.general.ventUses" : "Max Uses"
 "role.general.ventUses.short" : "Uses"
-"role.general.common" : "[COMMON]"
+"role.general.common" : "#"
 
 # Common Roles
 

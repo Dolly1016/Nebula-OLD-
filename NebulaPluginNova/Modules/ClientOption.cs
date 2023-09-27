@@ -55,7 +55,6 @@ public static class StartOptionMenuPatch
         var tabs = new List<TabGroup>(__instance.Tabs.ToArray());
 
         PassiveButton passiveButton;
-        ToggleButtonBehaviour toggleButton;
 
         //設定項目を追加する
 

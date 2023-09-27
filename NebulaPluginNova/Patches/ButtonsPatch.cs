@@ -21,7 +21,7 @@ public static class SabotageButtonPatch
                 __instance.SetDisabled();
             else
                 __instance.SetEnabled();
-        }catch(Exception e)
+        }catch
         {
             __instance.SetDisabled();
         }
@@ -38,7 +38,7 @@ public static class AdminButtonPatch
         {
             if (!(GameManager.Instance == null))
             {
-                LogicGameFlowHnS logicGameFlowHnS = GameManager.Instance.LogicFlow.TryCast<LogicGameFlowHnS>();
+                LogicGameFlowHnS logicGameFlowHnS = GameManager.Instance.LogicFlow.TryCast<LogicGameFlowHnS>()!;
                 if (logicGameFlowHnS != null)
                 {
                     __instance.useable = logicGameFlowHnS.SeekerAdminMapEnabled(PlayerControl.LocalPlayer);
@@ -48,7 +48,7 @@ public static class AdminButtonPatch
                         __instance.SetEnabled();
                 }
             }
-        }catch(Exception e)
+        }catch
         {
             __instance.SetDisabled();
         }

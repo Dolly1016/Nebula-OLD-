@@ -11,15 +11,15 @@ namespace Nebula.Roles;
 [NebulaPreLoad(typeof(RemoteProcessBase),typeof(Team))]
 public class Roles
 {
-    static public IReadOnlyList<AbstractRole> AllRoles { get; private set; }
-    
-    static public IReadOnlyList<AbstractModifier> AllModifiers { get; private set; }
+    static public IReadOnlyList<AbstractRole> AllRoles { get; private set; } = null!;
+
+    static public IReadOnlyList<AbstractModifier> AllModifiers { get; private set; } = null!;
     static public IEnumerable<IntroAssignableModifier> AllIntroAssignableModifiers()
     {
         foreach (var m in AllModifiers) if (m is IntroAssignableModifier iam) yield return iam;
     }
 
-    static public IReadOnlyList<Team> AllTeams { get; private set; }
+    static public IReadOnlyList<Team> AllTeams { get; private set; } = null!;
 
     static private List<AbstractRole>? allRoles = new();
     static private List<AbstractModifier>? allModifiers = new();

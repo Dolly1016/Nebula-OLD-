@@ -13,12 +13,12 @@ namespace Nebula.VoiceChat;
 
 public class VCClient : IDisposable
 {
-    private OpusDotNet.OpusDecoder? myDecoder;
-    private BufferedWaveProvider? bufferedProvider;
-    private VolumeSampleProvider? volumeFilter;
-    private PanningSampleProvider? panningFilter;
+    private OpusDotNet.OpusDecoder myDecoder;
+    private BufferedWaveProvider bufferedProvider;
+    private VolumeSampleProvider volumeFilter;
+    private PanningSampleProvider panningFilter;
     private PlayerControl relatedControl;
-    private PlayerModInfo relatedInfo;
+    private PlayerModInfo? relatedInfo;
     public MixingSampleProvider? myRoute = null;
     private float wallRatio = 1f;
     private bool onRadio = false;
@@ -30,7 +30,7 @@ public class VCClient : IDisposable
         if (voiceType == VoiceType) return;
 
         VoiceType = voiceType;
-        var route = NebulaGameManager.Instance.VoiceChatManager?.GetRoute(voiceType);
+        var route = NebulaGameManager.Instance!.VoiceChatManager?.GetRoute(voiceType);
         SetRoute(route);
     }
 
@@ -49,7 +49,7 @@ public class VCClient : IDisposable
 
     public void OnGameStart()
     {
-        relatedInfo = NebulaGameManager.Instance.GetModPlayerInfo(relatedControl.PlayerId);
+        relatedInfo = NebulaGameManager.Instance!.GetModPlayerInfo(relatedControl.PlayerId);
     }
 
     public void Update()
@@ -125,7 +125,7 @@ public class VCClient : IDisposable
     public void Dispose()
     {
         myDecoder?.Dispose();
-        myDecoder = null;
+        myDecoder = null!;
 
         SetRoute(null);
     }
@@ -152,21 +152,21 @@ public class VCClient : IDisposable
 
         this.radioMask = radioMask; 
 
-        int rawSize = myDecoder.Decode(data, data.Length, rawAudioData, rawAudioData.Length);
+        int rawSize = myDecoder!.Decode(data, data.Length, rawAudioData, rawAudioData.Length);
 
         try
         {
-            if (bufferedProvider.BufferedBytes == 0)
-                bufferedProvider.AddSamples(new byte[1024], 0, 1024);
+            if (bufferedProvider!.BufferedBytes == 0)
+                bufferedProvider!.AddSamples(new byte[1024], 0, 1024);
 
-            bufferedProvider.AddSamples(rawAudioData, 0, rawSize);
+            bufferedProvider!.AddSamples(rawAudioData, 0, rawSize);
         }
         catch (Exception e){
             Debug.Log(e.Message);
         }
     }
 
-    public void SetRoute(MixingSampleProvider route)
+    public void SetRoute(MixingSampleProvider? route)
     {
         if (myRoute != null) myRoute.RemoveMixerInput(MyProvider);
         myRoute = route;

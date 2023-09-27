@@ -12,8 +12,8 @@ namespace Nebula;
 
 public class MouseOverPopup : MonoBehaviour
 {
-    private MetaScreen myScreen;
-    private SpriteRenderer background;
+    private MetaScreen myScreen = null!;
+    private SpriteRenderer background = null!;
     private Vector2 screenSize;
     private PassiveUiElement? relatedButton;
 
@@ -112,10 +112,10 @@ public class NebulaManager : MonoBehaviour
 
     private List<Tuple<GameObject, PassiveButton?>> allModUi = new();
     static private List<MetaCommand> commands = new();
-    static public NebulaManager Instance { get; private set; }
+    static public NebulaManager Instance { get; private set; } = null!;
 
     //テキスト情報表示
-    private MouseOverPopup mouseOverPopup;
+    private MouseOverPopup mouseOverPopup = null!;
 
     //コンソール
     private CommandConsole? console = null;

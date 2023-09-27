@@ -39,7 +39,7 @@ public class NebulaEndCriteria
                     ISystemType? systemType = status.Systems.ContainsKey(SystemTypes.LifeSupp) ? status.Systems[SystemTypes.LifeSupp] : null;
                     if (systemType != null)
                     {
-                        LifeSuppSystemType lifeSuppSystemType = systemType.TryCast<LifeSuppSystemType>();
+                        LifeSuppSystemType lifeSuppSystemType = systemType.TryCast<LifeSuppSystemType>()!;
                         if (lifeSuppSystemType != null && lifeSuppSystemType.Countdown < 0f)
                         {
                             lifeSuppSystemType.Countdown = 10000f;
@@ -87,7 +87,7 @@ public class NebulaEndCriteria
         {
             int quota = 0;
             int completed = 0;
-            foreach (var p in NebulaGameManager.Instance.AllPlayerInfo())
+            foreach (var p in NebulaGameManager.Instance!.AllPlayerInfo())
             {
                 if (!p.Tasks.IsCrewmateTask) continue;
                 quota += p.Tasks.Quota;

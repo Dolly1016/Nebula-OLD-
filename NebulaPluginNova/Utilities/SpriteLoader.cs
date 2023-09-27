@@ -34,7 +34,8 @@ public static class GraphicsHelper
     {
         Texture2D texture = new Texture2D(2, 2, TextureFormat.ARGB32, true);
         Assembly assembly = Assembly.GetExecutingAssembly();
-        Stream stream = assembly.GetManifestResourceStream(path);
+        Stream? stream = assembly.GetManifestResourceStream(path);
+        if (stream == null) return null!;
         var byteTexture = new byte[stream.Length];
         var read = stream.Read(byteTexture, 0, (int)stream.Length);
         LoadImage(texture, byteTexture, false);
@@ -66,12 +67,12 @@ public static class GraphicsHelper
         {
             //System.Console.WriteLine("Error loading texture from disk: " + path);
         }
-        return null;
+        return null!;
     }
 
     public static Texture2D LoadTextureFromZip(ZipArchive? zip, string path)
     {
-        if (zip == null) return null;
+        if (zip == null) return null!;
         try
         {
             var entry = zip.GetEntry(path);
@@ -90,7 +91,7 @@ public static class GraphicsHelper
         {
             System.Console.WriteLine("Error loading texture from disk: " + path);
         }
-        return null;
+        return null!;
     }
 
     public static Sprite ToSprite(this Texture2D texture, float pixelsPerUnit) => ToSprite(texture, new Rect(0, 0, texture.width, texture.height),pixelsPerUnit);
@@ -111,7 +112,7 @@ public static class GraphicsHelper
     }
 
     internal delegate bool d_LoadImage(IntPtr tex, IntPtr data, bool markNonReadable);
-    internal static d_LoadImage iCall_LoadImage;
+    internal static d_LoadImage iCall_LoadImage = null!;
     public static bool LoadImage(Texture2D tex, byte[] data, bool markNonReadable)
     {
         if (iCall_LoadImage == null)
@@ -124,7 +125,7 @@ public static class GraphicsHelper
 public class ResourceTextureLoader : ITextureLoader
 {
     string address;
-    Texture2D texture = null;
+    Texture2D? texture = null;
 
     public ResourceTextureLoader(string address)
     {
@@ -134,14 +135,14 @@ public class ResourceTextureLoader : ITextureLoader
     public Texture2D GetTexture()
     {
         if (!texture) texture = GraphicsHelper.LoadTextureFromResources(address);
-        return texture;
+        return texture!;
     }
 }
 
 public class DiskTextureLoader : ITextureLoader
 {
     string address;
-    Texture2D texture = null;
+    Texture2D texture = null!;
     bool isUnloadAsset = false;
 
     public DiskTextureLoader MarkAsUnloadAsset() { isUnloadAsset = true; return this; }
@@ -165,7 +166,7 @@ public class ZipTextureLoader : ITextureLoader
 {
     ZipArchive archive;
     string address;
-    Texture2D texture = null;
+    Texture2D texture = null!;
 
     public ZipTextureLoader(ZipArchive zip,string address)
     {
@@ -180,13 +181,13 @@ public class ZipTextureLoader : ITextureLoader
             texture = GraphicsHelper.LoadTextureFromZip(archive, address);
             if(texture!=null) texture.hideFlags |= HideFlags.DontUnloadUnusedAsset | HideFlags.HideAndDontSave;
         }
-        return texture;
+        return texture!;
     }
 }
 
 public class UnloadTextureLoader : ITextureLoader
 {
-    Texture2D texture = null;
+    Texture2D texture = null!;
     
     public UnloadTextureLoader(byte[] byteTexture)
     {
@@ -245,7 +246,7 @@ public class UnloadTextureLoader : ITextureLoader
 public class AssetTextureLoader : ITextureLoader
 {
     string address;
-    Texture2D texture = null;
+    Texture2D texture = null!;
 
     public AssetTextureLoader(string address)
     {
@@ -261,7 +262,7 @@ public class AssetTextureLoader : ITextureLoader
 
 public class SpriteLoader : ISpriteLoader
 {
-    Sprite sprite = null;
+    Sprite sprite = null!;
     float pixelsPerUnit;
     ITextureLoader textureLoader;
     public SpriteLoader(ITextureLoader textureLoader, float pixelsPerUnit)
@@ -282,7 +283,7 @@ public class SpriteLoader : ISpriteLoader
 
 public class ResourceExpandableSpriteLoader : ISpriteLoader
 {
-    Sprite sprite = null;
+    Sprite sprite = null!;
     string address;
     float pixelsPerUnit;
     //端のピクセル数
@@ -325,7 +326,7 @@ public class DividedSpriteLoader : ISpriteLoader, IDividedSpriteLoader
             this.division = new(x, y);
             this.size = null;
         }
-        sprites = null;
+        sprites = null!;
         texture = textureLoader;
     }
 
@@ -335,16 +336,16 @@ public class DividedSpriteLoader : ISpriteLoader, IDividedSpriteLoader
         {
             var texture2D = texture.GetTexture();
             if (size == null)
-                size = new(texture2D.width / division.Item1, texture2D.height / division.Item2);
+                size = new(texture2D.width / division!.Item1, texture2D.height / division!.Item2);
             else if (division == null)
-                division = new(texture2D.width / size.Item1, texture2D.height / size.Item2);
-            sprites = new Sprite[division.Item1 * division.Item2];
+                division = new(texture2D.width / size!.Item1, texture2D.height / size!.Item2);
+            sprites = new Sprite[division!.Item1 * division!.Item2];
         }
 
         if (!sprites[index])
         {
-            int _x = index % division.Item1;
-            int _y = index / division.Item1;
+            int _x = index % division!.Item1;
+            int _y = index / division!.Item1;
             sprites[index] = texture.GetTexture().ToSprite(new Rect(_x * size.Item1, -_y * size.Item2, size.Item1, -size.Item2), Pivot, pixelsPerUnit);
         }
         return sprites[index];
@@ -357,7 +358,7 @@ public class DividedSpriteLoader : ISpriteLoader, IDividedSpriteLoader
     public int Length {
         get {
             if (division == null) GetSprite(0);
-            return division.Item1 * division.Item2;
+            return division!.Item1 * division!.Item2;
         }
     }
 
@@ -388,7 +389,7 @@ public class XOnlyDividedSpriteLoader : ISpriteLoader, IDividedSpriteLoader
             this.division = x;
             this.size = null;
         }
-        sprites = null;
+        sprites = null!;
         texture = textureLoader;
     }
 
@@ -400,14 +401,14 @@ public class XOnlyDividedSpriteLoader : ISpriteLoader, IDividedSpriteLoader
             if (size == null)
                 size = texture2D.width / division;
             else if (division == null)
-                division = texture2D.width / size;
-            sprites = new Sprite[division.Value];
+                division = texture2D.width / size!;
+            sprites = new Sprite[division!.Value];
         }
 
         if (!sprites[index])
         {
             var texture2D = texture.GetTexture();
-            sprites[index] = texture2D.ToSprite(new Rect(index * size.Value, 0, size.Value, texture2D.height), Pivot, pixelsPerUnit);
+            sprites[index] = texture2D.ToSprite(new Rect(index * size!.Value, 0, size!.Value, texture2D.height), Pivot, pixelsPerUnit);
         }
         return sprites[index];
     }
@@ -419,7 +420,7 @@ public class XOnlyDividedSpriteLoader : ISpriteLoader, IDividedSpriteLoader
         get
         {
             if (!division.HasValue) GetSprite(0);
-            return division.Value;
+            return division!.Value;
         }
     }
 

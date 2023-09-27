@@ -21,10 +21,10 @@ public class Phosphorus : ConfigurableStandardRole
 
     public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player);
 
-    private NebulaConfiguration NumOfLampsOption;
-    private NebulaConfiguration PlaceCoolDownOption;
-    private NebulaConfiguration LampCoolDownOption;
-    private NebulaConfiguration LampDurationOption;
+    private NebulaConfiguration NumOfLampsOption = null!;
+    private NebulaConfiguration PlaceCoolDownOption = null!;
+    private NebulaConfiguration LampCoolDownOption = null!;
+    private NebulaConfiguration LampDurationOption = null!;
     
     protected override void LoadOptions()
     {
@@ -70,7 +70,7 @@ public class Phosphorus : ConfigurableStandardRole
 
 
         private int[]? globalLanterns = null;
-        List<NebulaSyncStandardObject> localLanterns = null;
+        List<NebulaSyncStandardObject> localLanterns = null!;
 
         public override void OnActivated()
         {
@@ -104,7 +104,7 @@ public class Phosphorus : ConfigurableStandardRole
                 placeButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead && globalLanterns == null && left > 0;
                 placeButton.OnClick = (button) => {
                     var pos = PlayerControl.LocalPlayer.GetTruePosition();
-                    localLanterns.Add(Bind<NebulaSyncStandardObject>(NebulaSyncObject.LocalInstantiate(Lantern.MyLocalTag, new float[] { pos.x, pos.y }) as NebulaSyncStandardObject));
+                    localLanterns.Add(Bind<NebulaSyncStandardObject>((NebulaSyncObject.LocalInstantiate(Lantern.MyLocalTag, new float[] { pos.x, pos.y }) as NebulaSyncStandardObject)!));
 
                     left--;
                     usesText.text = left.ToString();
@@ -129,10 +129,10 @@ public class Phosphorus : ConfigurableStandardRole
             {
                 globalLanterns = new int[localLanterns.Count];
                 for (int i = 0;i<localLanterns.Count;i++) {
-                    globalLanterns[i] = NebulaSyncObject.RpcInstantiate(Lantern.MyGlobalTag, new float[] { localLanterns[i].Position.x, localLanterns[i].Position.y }).ObjectId;
+                    globalLanterns[i] = NebulaSyncObject.RpcInstantiate(Lantern.MyGlobalTag, new float[] { localLanterns[i].Position.x, localLanterns[i].Position.y })!.ObjectId;
                     NebulaSyncObject.LocalDestroy(localLanterns[i].ObjectId);
                 }
-                localLanterns = null;
+                localLanterns = null!;
             }
         }
 

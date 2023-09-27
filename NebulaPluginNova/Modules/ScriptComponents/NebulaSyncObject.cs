@@ -46,6 +46,8 @@ public abstract class NebulaSyncObject : INebulaScriptComponent
         {
             var obj = instantiaters[message.tagHash]?.Invoke(message.arguments);
 
+            if (obj == null) return;
+
             obj.ObjectId = message.id;
             obj.TagHash = message.tagHash;
             if (allObjects.ContainsKey(obj.ObjectId)) throw new Exception("[NebulaSyncObject] Duplicated Key Error");
@@ -129,7 +131,6 @@ public class NebulaSyncStandardObject : NebulaSyncObject
     {
         get => zOrder;
         set {
-            if (zOrder == value) return;
             zOrder = value;
             Position = MyRenderer.transform.position;
         }

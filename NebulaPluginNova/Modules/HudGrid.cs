@@ -18,7 +18,7 @@ public class HudGrid : MonoBehaviour
     }
 
     public List<Il2CppArgument<HudContent>>[] Contents = { new(), new() };
-    private Transform ButtonsHolder;
+    private Transform ButtonsHolder = null!;
 
     public void Awake()
     {
@@ -163,7 +163,7 @@ public class HudContent : MonoBehaviour
         obj.OccupiesLine= occupiesLine;
         obj.MarkAsKillButtonContent(asKillButtonContent);
 
-        NebulaGameManager.Instance.HudGrid.RegisterContent(obj,isLeftSide);
+        NebulaGameManager.Instance?.HudGrid.RegisterContent(obj,isLeftSide);
         return obj;
     }
 }

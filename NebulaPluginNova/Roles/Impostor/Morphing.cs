@@ -20,10 +20,10 @@ public class Morphing : ConfigurableStandardRole
 
     public override RoleInstance CreateInstance(PlayerModInfo player, int[]? arguments) => new Instance(player);
 
-    private NebulaConfiguration SampleCoolDownOption;
-    private NebulaConfiguration MorphCoolDownOption;
-    private NebulaConfiguration MorphDurationOption;
-    private NebulaConfiguration LoseSampleOnMeetingOption;
+    private NebulaConfiguration SampleCoolDownOption = null!;
+    private NebulaConfiguration MorphCoolDownOption = null!;
+    private NebulaConfiguration MorphDurationOption = null!;
+    private NebulaConfiguration LoseSampleOnMeetingOption = null!;
     protected override void LoadOptions()
     {
         base.LoadOptions();
@@ -61,10 +61,11 @@ public class Morphing : ConfigurableStandardRole
                 sampleButton.Availability = (button) => sampleTracker.CurrentTarget != null && MyPlayer.MyControl.CanMove;
                 sampleButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;
                 sampleButton.OnClick = (button) => {
-                    if (morphButton.CoolDownTimer.CurrentTime < 5f) morphButton.CoolDownTimer.SetTime(5f).Resume();
-                    sample = sampleTracker.CurrentTarget!.GetModInfo().GetOutfit(75);
+                    if (morphButton!.CoolDownTimer!.CurrentTime < 5f) morphButton.CoolDownTimer.SetTime(5f).Resume();
+                    sample = sampleTracker!.CurrentTarget!.GetModInfo()?.GetOutfit(75);
 
                     if (sampleIcon != null) GameObject.Destroy(sampleIcon.gameObject);
+                    if (sample == null) return;
                     sampleIcon = AmongUsUtil.GetPlayerIcon(sample, morphButton.VanillaButton.transform, new Vector3(-0.4f, 0.35f, -0.5f), new(0.3f, 0.3f)).SetAlpha(0.5f);
                 };
                 sampleButton.CoolDownTimer = Bind(new Timer(MyRole.SampleCoolDownOption.GetFloat()).SetAsAbilityCoolDown().Start());
@@ -80,12 +81,12 @@ public class Morphing : ConfigurableStandardRole
                 };
                 morphButton.OnEffectStart = (button) =>
                 {
-                    PlayerModInfo.RpcAddOutfit.Invoke(new(PlayerControl.LocalPlayer.PlayerId, new("Morphing", 50, true, sample)));
+                    PlayerModInfo.RpcAddOutfit.Invoke(new(PlayerControl.LocalPlayer.PlayerId, new("Morphing", 50, true, sample!)));
                 };
                 morphButton.OnEffectEnd = (button) =>
                 {
                     PlayerModInfo.RpcRemoveOutfit.Invoke(new(PlayerControl.LocalPlayer.PlayerId, "Morphing"));
-                    morphButton.CoolDownTimer.Start();
+                    morphButton.CoolDownTimer?.Start();
                 };
                 morphButton.OnMeeting = (button) =>
                 {

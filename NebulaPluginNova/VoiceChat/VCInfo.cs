@@ -16,7 +16,7 @@ public class VoiceChatInfo : MonoBehaviour
     static SpriteLoader backgroundSprite = SpriteLoader.FromResource("Nebula.Resources.UpperBackground.png", 100f);
     static SpriteLoader iconRadioSprite = SpriteLoader.FromResource("Nebula.Resources.UpperIconRadio.png", 100f);
 
-    private MetaScreen myScreen;
+    private MetaScreen myScreen = null!;
 
     public void Awake() {
         gameObject.AddComponent<SpriteRenderer>().sprite = backgroundSprite.GetSprite();

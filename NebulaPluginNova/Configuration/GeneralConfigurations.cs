@@ -32,7 +32,7 @@ public static class GeneralConfigurations
     static public NebulaConfiguration NumOfDummiesOption = new NebulaConfiguration(SoloFreePlayOptions, "numOfDummies", null, 0, 14, 0, 0);
 
 
-    static private Func<object?, string> AssignmentDecorator = (obj) => (int)obj == -1 ? Language.Translate("options.assignment.unlimited") : obj.ToString();
+    static private Func<object?, string> AssignmentDecorator = (obj) => (int)obj! == -1 ? Language.Translate("options.assignment.unlimited") : obj.ToString()!;
     static public NebulaConfiguration AssignmentCrewmateOption = new NebulaConfiguration(AssignmentOptions, "crewmate", null, -1, 15, -1, -1) { Decorator = AssignmentDecorator };
     static public NebulaConfiguration AssignmentImpostorOption = new NebulaConfiguration(AssignmentOptions, "impostor", null, -1, 3, -1, -1) { Decorator = AssignmentDecorator };
     static public NebulaConfiguration AssignmentNeutralOption = new NebulaConfiguration(AssignmentOptions, "neutral", null, -1, 15, 0, 0) { Decorator = AssignmentDecorator };
@@ -105,8 +105,8 @@ public static class GeneralConfigurations
 
         public class ExclusiveAssignment
         {
-            NebulaConfiguration toggleOption;
-            NebulaStringConfigEntry[] roles;
+            NebulaConfiguration toggleOption = null!;
+            NebulaStringConfigEntry[] roles = null!;
             public ExclusiveAssignment(ConfigurationHolder holder,int index)
             {
                 toggleOption = new(holder, "category." + index, null, false, false);
@@ -165,7 +165,7 @@ public static class GeneralConfigurations
                 };
                 toggleOption.Shower = () =>
                 {
-                    if (!toggleOption) return null;
+                    if (!toggleOption) return null!;
 
                     string innerText = "";
                     bool isFirst = true;

@@ -21,9 +21,9 @@ public class Arsonist : ConfigurableStandardRole
 
     public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player);
 
-    private NebulaConfiguration DouseCoolDownOption;
-    private NebulaConfiguration DouseDurationOption;
-    private VentConfiguration VentConfiguration;
+    private NebulaConfiguration DouseCoolDownOption = null!;
+    private NebulaConfiguration DouseDurationOption = null!;
+    private new VentConfiguration VentConfiguration = null!;
     protected override void LoadOptions()
     {
         base.LoadOptions();
@@ -73,7 +73,7 @@ public class Arsonist : ConfigurableStandardRole
             if (AmOwner)
             {
                 var IconsHolder = HudContent.InstantiateContent("ArsonistIcons",true,true);
-                foreach(var p in NebulaGameManager.Instance.AllPlayerInfo())
+                foreach(var p in NebulaGameManager.Instance!.AllPlayerInfo())
                 {
                     if (p.AmOwner) continue;
 
@@ -99,7 +99,7 @@ public class Arsonist : ConfigurableStandardRole
                 {
                     if (douseTracker.CurrentTarget == null) return;
 
-                    if (!button.EffectTimer.IsInProcess)
+                    if (!button.EffectTimer!.IsInProcess)
                         foreach (var icon in playerIcons) if (icon.playerId == douseTracker.CurrentTarget.PlayerId) icon.icon.SetAlpha(1f);
 
                     CheckIgnitable();
@@ -139,7 +139,7 @@ public class Arsonist : ConfigurableStandardRole
             if (!AmOwner) return;
             playerIcons.RemoveAll(tuple =>
             {
-                if (NebulaGameManager.Instance.GetModPlayerInfo(tuple.playerId).IsDead)
+                if (NebulaGameManager.Instance?.GetModPlayerInfo(tuple.playerId)?.IsDead ?? true)
                 {
                     GameObject.Destroy(tuple.icon.gameObject);
                     return true;

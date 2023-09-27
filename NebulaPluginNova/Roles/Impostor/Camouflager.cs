@@ -19,8 +19,8 @@ public class Camouflager : ConfigurableStandardRole
 
     public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player);
 
-    private NebulaConfiguration CamoCoolDownOption;
-    private NebulaConfiguration CamoDurationOption;
+    private NebulaConfiguration CamoCoolDownOption = null!;
+    private NebulaConfiguration CamoDurationOption = null!;
     protected override void LoadOptions()
     {
         base.LoadOptions();
@@ -75,7 +75,7 @@ public class Camouflager : ConfigurableStandardRole
         (message, _) =>
         {
             PlayerModInfo.OutfitCandidate outfit = new("Camo" + message.camouflagerId, 100, true, CamouflagerOutfit);
-            foreach(var p in NebulaGameManager.Instance.AllPlayerInfo())
+            foreach(var p in NebulaGameManager.Instance!.AllPlayerInfo())
             {
                 if (message.on)
                     p.AddOutfit(outfit);

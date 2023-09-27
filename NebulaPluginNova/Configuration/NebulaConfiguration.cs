@@ -251,7 +251,7 @@ public class NebulaModifierFilterConfigEntry
         for (int i = 0; i < 30; i++)
         {
             //追加するべき役職
-            if (((1 << i) & value) != 0) modifiers.Add(Roles.Roles.AllModifiers[i + index * 30] as IntroAssignableModifier);
+            if (((1 << i) & value) != 0) modifiers.Add((Roles.Roles.AllModifiers[i + index * 30] as IntroAssignableModifier)!);
         }
 
         Save();
@@ -356,7 +356,7 @@ public class ConfigurationHolder
         entry.Share();
     }
 
-    public void GetShownString(ref StringBuilder? builder)
+    public void GetShownString(ref StringBuilder builder)
     {
         builder ??= new();
 
@@ -561,7 +561,7 @@ public class NebulaConfiguration
         entry.Share();
     }
 
-    public int CurrentValue => IsShown ? entry.CurrentValue : InvalidatedValue;
+    public int CurrentValue => (IsShown && entry != null) ? entry.CurrentValue : InvalidatedValue;
     
     public object? GetMapped()
     {

@@ -46,7 +46,7 @@ public class Impostor : ConfigurableStandardRole
 
         public override void DecoratePlayerName(ref string text, ref Color color)
         {
-            if (PlayerControl.LocalPlayer.GetModInfo().Role.Role.RoleCategory == RoleCategory.ImpostorRole) color = Palette.ImpostorRed;
+            if (PlayerControl.LocalPlayer.GetModInfo()?.Role.Role.RoleCategory == RoleCategory.ImpostorRole) color = Palette.ImpostorRed;
         }
     }
 }

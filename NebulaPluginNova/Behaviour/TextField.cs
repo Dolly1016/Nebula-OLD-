@@ -18,8 +18,8 @@ public class TextField : MonoBehaviour
 
     static TextField() => ClassInjector.RegisterTypeInIl2Cpp<TextField>();
 
-    TextMeshPro myText;
-    TextMeshPro myCursor;
+    TextMeshPro myText = null!;
+    TextMeshPro myCursor = null!;
     string myInput = "";
     int selectingBegin = -1;
     int cursor = 0;
@@ -142,7 +142,6 @@ public class TextField : MonoBehaviour
         }
         myText.ForceMeshUpdate();
 
-        float cursorX;
         int visualCursor = ConsiderComposition(cursor, compStr);
         myCursor.transform.localPosition = new(GetCursorX(visualCursor), 0, -1f);
 

@@ -20,11 +20,11 @@ public class Mayor : ConfigurableStandardRole
 
     public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player);
 
-    private NebulaConfiguration MinVoteOption;
-    private NebulaConfiguration MaxVoteOption;
-    private NebulaConfiguration MaxVoteStockOption;
-    private NebulaConfiguration VoteAssignmentOption;
-    private NebulaConfiguration FixedVotesOption;
+    private NebulaConfiguration MinVoteOption = null!;
+    private NebulaConfiguration MaxVoteOption = null!;
+    private NebulaConfiguration MaxVoteStockOption = null!;
+    private NebulaConfiguration VoteAssignmentOption = null!;
+    private NebulaConfiguration FixedVotesOption = null!;
 
     private int MinVote => FixedVotesOption ? VoteAssignmentOption : MinVoteOption;
     private int MaxVote => FixedVotesOption ? VoteAssignmentOption : MaxVoteOption;
@@ -81,6 +81,7 @@ public class Mayor : ConfigurableStandardRole
                 if (min == max) return;
 
                 var myArea = MeetingHud.Instance.playerStates.FirstOrDefault(v=>v.TargetPlayerId == MyPlayer.PlayerId);
+                if (myArea is null) return;
 
                 var leftRenderer = UnityHelper.CreateObject<SpriteRenderer>("MayorButton-Minus", MeetingHud.Instance.SkipVoteButton.transform, new Vector3(1.5f, 0f));
                 leftRenderer.sprite = leftButtonSprite.GetSprite();

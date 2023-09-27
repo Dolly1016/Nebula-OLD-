@@ -11,8 +11,6 @@ public static class MeetingHudExtension
 {
     public static void RecheckPlayerState(this MeetingHud meetingHud)
     {
-        bool existsDeadPlayer = false;
-
         foreach (PlayerVoteArea pva in meetingHud.playerStates)
         {
             bool isDead = NebulaGameManager.Instance?.GetModPlayerInfo(pva.TargetPlayerId)?.IsDead ?? true;
@@ -29,10 +27,7 @@ public static class MeetingHudExtension
                     if (voter.VotedFor != pva.TargetPlayerId) continue;
 
                     var p = NebulaGameManager.Instance?.GetModPlayerInfo(voter.TargetPlayerId);
-                    if (p.AmOwner)
-                    {
-                        meetingHud.ClearVote();
-                    }
+                    if (p?.AmOwner ?? false) meetingHud.ClearVote();
 
                     voter.ThumbsDown.enabled = false;
                     voter.UnsetVote();
@@ -56,7 +51,9 @@ public static class MeetingHudExtension
     {
         foreach(var victims in ExtraVictims)
         {
-            var player = NebulaGameManager.Instance.GetModPlayerInfo(victims.exiledId);
+            var player = NebulaGameManager.Instance?.GetModPlayerInfo(victims.exiledId);
+            if (player == null) continue;
+
             player.MyControl.Exiled();
             player.MyControl.Data.IsDead = true;
 

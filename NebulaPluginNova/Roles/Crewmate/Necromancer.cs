@@ -15,9 +15,9 @@ public class Necromancer : ConfigurableStandardRole
 
     public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player);
 
-    private NebulaConfiguration ReviveCoolDownOption;
-    private NebulaConfiguration ReviveDurationOption;
-    private NebulaConfiguration DetectedRangeOption;
+    private NebulaConfiguration ReviveCoolDownOption = null!;
+    private NebulaConfiguration ReviveDurationOption = null!;
+    private NebulaConfiguration DetectedRangeOption = null!;
     protected override void LoadOptions()
     {
         base.LoadOptions();
@@ -33,7 +33,7 @@ public class Necromancer : ConfigurableStandardRole
         private Scripts.Draggable? draggable = null;
         private ModAbilityButton? reviveButton = null;
         private Arrow? myArrow;
-        private TMPro.TextMeshPro message;
+        private TMPro.TextMeshPro message = null!;
         private SpriteRenderer? fullScreen;
 
         static private ISpriteLoader buttonSprite = SpriteLoader.FromResource("Nebula.Resources.Buttons.ReviveButton.png", 115f);
@@ -56,7 +56,7 @@ public class Necromancer : ConfigurableStandardRole
         public override void LocalUpdate()
         {
             bool flag = MyPlayer.HoldingDeadBody.HasValue;
-            myArrow.IsActive = flag;
+            if (myArrow != null) myArrow.IsActive = flag;
             message.gameObject.SetActive(flag);
             if (flag) message.color = MyRole.RoleColor.AlphaMultiplied(MathF.Sin(Time.time * 2.4f) * 0.2f + 0.8f);
 
@@ -75,9 +75,9 @@ public class Necromancer : ConfigurableStandardRole
                     break;
                 }
 
-                float a = fullScreen.color.a;
+                float a = fullScreen!.color.a;
                 a += ((detected ? 0.32f : 0) - a) * Time.deltaTime * 1.8f;
-                fullScreen.color = MyRole.RoleColor.AlphaMultiplied(a);
+                fullScreen!.color = MyRole.RoleColor.AlphaMultiplied(a);
             }
         }
 
@@ -103,7 +103,7 @@ public class Necromancer : ConfigurableStandardRole
                 myArrow.IsActive = false;
                 myArrow.SetColor(MyRole.RoleColor);
 
-                draggable.OnHoldingDeadBody = (deadBody) =>
+                draggable!.OnHoldingDeadBody = (deadBody) =>
                 {
                     if (!resurrectionRoom.ContainsKey(deadBody.ParentId))
                     {
@@ -142,10 +142,10 @@ public class Necromancer : ConfigurableStandardRole
                 };
                 reviveButton.OnEffectEnd = (button) =>
                 {
-                    if (!button.EffectTimer.IsInProcess)
+                    if (!button.EffectTimer!.IsInProcess)
                     {
-                        Helpers.GetPlayer(MyPlayer.HoldingDeadBody.Value)?.ModRevive(MyPlayer.MyControl, MyPlayer.MyControl.transform.position, true);
-                        reviveButton.CoolDownTimer.Start();
+                        Helpers.GetPlayer(MyPlayer.HoldingDeadBody)?.ModRevive(MyPlayer.MyControl, MyPlayer.MyControl.transform.position, true);
+                        button.CoolDownTimer!.Start();
                     }
                 };
                 reviveButton.OnMeeting = (button) =>

@@ -42,7 +42,7 @@ public class NebulaEndState {
 public class RuntimeGameAsset
 {
     AsyncOperationHandle<GameObject>? handle = null;
-    public MapBehaviour MinimapPrefab;
+    public MapBehaviour MinimapPrefab = null!;
     public float MapScale;
     public GameObject MinimapObjPrefab => MinimapPrefab.transform.GetChild(1).gameObject;
     public void SetHandle(AsyncOperationHandle<GameObject> handle) => this.handle = handle;
@@ -357,7 +357,7 @@ public static class NebulaGameManagerExpansion
     static public PlayerModInfo? GetModInfo(this PlayerControl? player)
     {
         if (!player) return null;
-        return NebulaGameManager.Instance?.GetModPlayerInfo(player.PlayerId);
+        return NebulaGameManager.Instance?.GetModPlayerInfo(player!.PlayerId);
     }
 
 

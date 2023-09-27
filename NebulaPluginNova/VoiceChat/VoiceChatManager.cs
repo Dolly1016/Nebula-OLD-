@@ -39,7 +39,7 @@ public class VoiceChatRadio
         get
         {
             int mask = 0;
-            foreach (var p in NebulaGameManager.Instance.AllPlayerInfo()) if (predicate.Invoke(p)) mask |= 1 << p.PlayerId;
+            foreach (var p in NebulaGameManager.Instance!.AllPlayerInfo()) if (predicate.Invoke(p)) mask |= 1 << p.PlayerId;
             return mask;
         } 
     }
@@ -185,7 +185,7 @@ public class VoiceChatManager : IDisposable
     {
         if (!GeneralConfigurations.UseVoiceChatOption)
         {
-            NebulaGameManager.Instance.VoiceChatManager = null;
+            NebulaGameManager.Instance!.VoiceChatManager = null;
             Dispose();
             return;
         }
@@ -546,7 +546,7 @@ public class AdvancedCircularBuffer<T>
 
 public class ReverbBufferedSampleProvider : ISampleProvider
 {
-    private AdvancedCircularBuffer<float> circularBuffer;
+    private AdvancedCircularBuffer<float>? circularBuffer;
 
     private readonly WaveFormat waveFormat;
     public bool ReadFully { get; set; }
@@ -591,10 +591,7 @@ public class ReverbBufferedSampleProvider : ISampleProvider
 
     public void AddSamples(float[] buffer, int offset, int count)
     {
-        if (circularBuffer == null)
-        {
-            circularBuffer = new AdvancedCircularBuffer<float>(BufferLength);
-        }
+        circularBuffer ??= new AdvancedCircularBuffer<float>(BufferLength);
 
         if (circularBuffer.Write(buffer, offset, count) < count)
         {
@@ -604,11 +601,8 @@ public class ReverbBufferedSampleProvider : ISampleProvider
 
     public int Read(float[] buffer, int offset, int count)
     {
-        int num = 0;
-        if (circularBuffer != null)
-        {
-            num = circularBuffer.Read(buffer, offset, count);
-        }
+        int num = circularBuffer?.Read(buffer, offset, count) ?? 0;
+        
 
         if (ReadFully && num < count)
         {
@@ -621,14 +615,10 @@ public class ReverbBufferedSampleProvider : ISampleProvider
 
     public int Peek(float[] buffer, int offset, int count, int bufferOffset)
     {
-        int num = 0;
-        if (circularBuffer != null)
-        {
-            num = circularBuffer.Peek(buffer, offset, count, bufferOffset);
-        }
+        int num = circularBuffer?.Peek(buffer, offset, count, bufferOffset) ?? 0;
 
         if (ReadFully && num < count)
-        { 
+        {
             Array.Clear(buffer, offset + num, count - num);
             num = count;
         }
@@ -638,11 +628,8 @@ public class ReverbBufferedSampleProvider : ISampleProvider
 
     public void ClearBuffer()
     {
-        if (circularBuffer != null)
-        {
-            circularBuffer.Reset();
-        }
-    }
+        circularBuffer?.Reset();
+    } 
 }
 
 public class ReverbSampleProvider : ISampleProvider

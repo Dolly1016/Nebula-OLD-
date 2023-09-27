@@ -16,9 +16,9 @@ public class Jackal : ConfigurableStandardRole
 
     public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player, arguments.Length == 1 ? arguments[0] : 0);
 
-    private KillCoolDownConfiguration KillCoolDownOption;
-    public NebulaConfiguration CanCreateSidekickOption;
-    private NebulaConfiguration NumOfKillingToCreateSidekickOption;
+    private KillCoolDownConfiguration KillCoolDownOption = null!;
+    public NebulaConfiguration CanCreateSidekickOption = null!;
+    private NebulaConfiguration NumOfKillingToCreateSidekickOption = null!;
 
 
     protected override void LoadOptions()
@@ -145,7 +145,7 @@ public class Jackal : ConfigurableStandardRole
 
         public override void OnDead()
         {
-            foreach (var player in NebulaGameManager.Instance.AllPlayerInfo())
+            foreach (var player in NebulaGameManager.Instance!.AllPlayerInfo())
             {
                 if (player.IsDead) continue;
                 if (IsMySidekick(player)) player.RpcInvokerSetRole(Jackal.MyRole, new int[] { JackalTeamId }).InvokeSingle();
@@ -179,10 +179,11 @@ public class Sidekick : ConfigurableRole
     public override int RoleCount => 0;
     public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player, arguments.Length == 1 ? arguments[0] : 0);
 
-    public NebulaConfiguration IsModifierOption;
-    public NebulaConfiguration SidekickCanKillOption;
-    public NebulaConfiguration CanCreateSidekickChainlyOption;
-    private KillCoolDownConfiguration KillCoolDownOption;
+    public NebulaConfiguration IsModifierOption = null!;
+    public NebulaConfiguration SidekickCanKillOption = null!;
+    public NebulaConfiguration CanCreateSidekickChainlyOption = null!;
+    private KillCoolDownConfiguration KillCoolDownOption = null!;
+
     protected override void LoadOptions()
     {
         base.LoadOptions();
@@ -270,7 +271,7 @@ public class SidekickModifier : AbstractModifier
 
         public override void DecoratePlayerName(ref string text, ref Color color)
         {
-            if (AmOwner || NebulaGameManager.Instance.CanSeeAllInfo) text += " #".Color(Jackal.MyRole.RoleColor);
+            if (AmOwner || (NebulaGameManager.Instance?.CanSeeAllInfo ?? false)) text += " #".Color(Jackal.MyRole.RoleColor);
         }
 
         public override void OnActivated()

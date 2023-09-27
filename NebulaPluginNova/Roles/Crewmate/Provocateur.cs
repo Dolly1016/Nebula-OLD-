@@ -19,9 +19,9 @@ public class Provocateur : ConfigurableStandardRole
 
     public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player);
 
-    private NebulaConfiguration EmbroilCoolDownOption;
-    private NebulaConfiguration EmbroilAdditionalCoolDownOption;
-    private NebulaConfiguration EmbroilDurationOption;
+    private NebulaConfiguration EmbroilCoolDownOption = null!;
+    private NebulaConfiguration EmbroilAdditionalCoolDownOption = null!;
+    private NebulaConfiguration EmbroilDurationOption = null!;
 
     protected override void LoadOptions()
     {
@@ -37,7 +37,7 @@ public class Provocateur : ConfigurableStandardRole
         public override AbstractRole Role => MyRole;
         public Instance(PlayerModInfo player) : base(player){}
 
-        private ModAbilityButton embroilButton;
+        private ModAbilityButton embroilButton = null!;
         static private ISpriteLoader buttonSprite = SpriteLoader.FromResource("Nebula.Resources.Buttons.EmbroilButton.png", 115f);
         
         public override void OnActivated()
@@ -64,7 +64,7 @@ public class Provocateur : ConfigurableStandardRole
         {
             if (murderer.PlayerId == MyPlayer.PlayerId) return;
 
-            if (AmOwner &&  embroilButton.EffectActive && !murderer.Data.IsDead)
+            if (AmOwner && embroilButton.EffectActive && !murderer.Data.IsDead)
             {
                 MyPlayer.MyControl.ModKill(murderer,false,PlayerState.Embroiled,EventDetail.Embroil);
             }
@@ -76,8 +76,8 @@ public class Provocateur : ConfigurableStandardRole
 
             var voters = MeetingHudExtension.LastVotedForMap
                 .Where(entry => entry.Value == MyPlayer.PlayerId && entry.Key != MyPlayer.PlayerId)
-                .Select(entry => NebulaGameManager.Instance.GetModPlayerInfo(entry.Key))
-                .Where(p => !p.IsDead)
+                .Select(entry => NebulaGameManager.Instance!.GetModPlayerInfo(entry.Key))
+                .Where(p => !p!.IsDead)
                 .ToArray();
 
             if (voters.Length == 0) return;

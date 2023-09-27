@@ -62,7 +62,7 @@ public abstract class AbstractRole : IAssignableBase
 }
 
 public abstract class ConfigurableRole : AbstractRole {
-    public ConfigurationHolder RoleConfig { get; private set; }
+    public ConfigurationHolder RoleConfig { get; private set; } = null!;
     public override ConfigurationHolder? RelatedConfig { get => RoleConfig; }
 
     private int? myTabMask;
@@ -112,13 +112,14 @@ public abstract class ConfigurableRole : AbstractRole {
                 case 2:
                     return ratioOption;
             }
-            return null;
+
+            throw new Exception("Invalid kill cool option is selected.");
         }
         private static string[] AllSelections = new string[] { "options.killCoolDown.type.immediate", "options.killCoolDown.type.relative", "options.killCoolDown.type.ratio" };
 
         private static Func<object?, string> RelativeDecorator = (mapped) =>
         {
-            float val = (float)mapped;
+            float val = (float)mapped!;
             string str = val.ToString();
             if (val > 0f) str = "+" + str;
             else if (!(val < 0f)) str = "±" + str;
@@ -254,10 +255,10 @@ public abstract class ConfigurableRole : AbstractRole {
 
 public abstract class ConfigurableStandardRole : ConfigurableRole
 {
-    protected NebulaConfiguration RoleCountOption { get; private set; }
-    protected NebulaConfiguration RoleChanceOption { get; private set; }
-    protected NebulaConfiguration RoleSecondaryChanceOption { get; private set; }
-    private NebulaModifierFilterConfigEntry modifierFilter;
+    protected NebulaConfiguration RoleCountOption { get; private set; } = null!;
+    protected NebulaConfiguration RoleChanceOption { get; private set; } = null!;
+    protected NebulaConfiguration RoleSecondaryChanceOption { get; private set; } = null!;
+    private NebulaModifierFilterConfigEntry modifierFilter = null!;
     public override NebulaModifierFilterConfigEntry? ModifierFilter { get => modifierFilter; }
 
     public ConfigurableStandardRole(int TabMask):base(TabMask){ }
@@ -312,7 +313,7 @@ public abstract class ConfigurableStandardRole : ConfigurableRole
 
         RoleSecondaryChanceOption = new(RoleConfig, "secondaryChance", SecondaryChanceOptionText, 0f, 100f, 10f, 0f, 0f) { Decorator = (mapped)=>
         {
-            if ((float)mapped > 0f)
+            if ((float)mapped! > 0f)
                 return NebulaConfiguration.PercentageDecorator.Invoke(mapped);
             else
                 return Language.Translate("options.followPrimaryChance");

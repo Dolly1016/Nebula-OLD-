@@ -18,9 +18,9 @@ public class Comet : ConfigurableStandardRole
 
     public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player);
 
-    private NebulaConfiguration BrazeCoolDownOption;
-    private NebulaConfiguration BrazeSpeedOption;
-    private NebulaConfiguration BrazeDurationOption;
+    private NebulaConfiguration BrazeCoolDownOption = null!;
+    private NebulaConfiguration BrazeSpeedOption = null!;
+    private NebulaConfiguration BrazeDurationOption = null!;
 
     protected override void LoadOptions()
     {
@@ -36,14 +36,13 @@ public class Comet : ConfigurableStandardRole
         public override AbstractRole Role => MyRole;
         public Instance(PlayerModInfo player) : base(player) { }
 
-        private ModAbilityButton boostButton;
         static private ISpriteLoader buttonSprite = SpriteLoader.FromResource("Nebula.Resources.Buttons.BoostButton.png", 115f);
 
         public override void OnActivated()
         {
             if (AmOwner)
             {
-                boostButton = Bind(new ModAbilityButton()).KeyBind(KeyAssignmentType.Ability);
+                var boostButton = Bind(new ModAbilityButton()).KeyBind(KeyAssignmentType.Ability);
                 boostButton.SetSprite(buttonSprite.GetSprite());
                 boostButton.Availability = (button) => MyPlayer.MyControl.CanMove;
                 boostButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;

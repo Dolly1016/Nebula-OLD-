@@ -200,7 +200,7 @@ public static class RemoteProcessAsset
             },
             (reader) => new SpeedModulator(reader.ReadSingle(), reader.ReadBoolean(), reader.ReadSingle(), reader.ReadBoolean(), reader.ReadInt32(), reader.ReadInt32())
         ); ;
-        defaultProcessDic[typeof(TranslatableTag)] = ((writer, obj) => writer.Write(((TranslatableTag)obj).Id), (reader) => TranslatableTag.ValueOf(reader.ReadInt32()));
+        defaultProcessDic[typeof(TranslatableTag)] = ((writer, obj) => writer.Write(((TranslatableTag)obj).Id), (reader) => TranslatableTag.ValueOf(reader.ReadInt32())!);
     }
 
     static public (Action<MessageWriter, object>, Func<MessageReader, object>) GetProcess(Type type)
@@ -235,8 +235,8 @@ public static class RemoteProcessAsset
         if (constructor == null) throw new Exception("Can not Tuple Constructor");
 
         sender = (writer, param) => {
-            var tuple = (param as ITuple)!;
-            for (int i = 0; i < processAry.Length; i++) processAry[i].Item1.Invoke(writer, tuple[i]);
+            ITuple tuple = (param as ITuple)!;
+            for (int i = 0; i < processAry.Length; i++) processAry[i].Item1.Invoke(writer, tuple[i]!);
         };
         receiver = (reader) => {
             return (Parameter)constructor.Invoke(processAry.Select(p => p.Item2.Invoke(reader)).ToArray());

@@ -17,7 +17,7 @@ public static class HudManagerExtension
 
         if (!PlayerControl.LocalPlayer) return;
 
-        if(NebulaGameManager.Instance.GameState == NebulaGameStates.NotStarted)
+        if(NebulaGameManager.Instance?.GameState == NebulaGameStates.NotStarted)
         {
             manager.ReportButton.ToggleVisible(false);
             manager.KillButton.ToggleVisible(false);

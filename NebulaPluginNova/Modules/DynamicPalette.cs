@@ -21,9 +21,9 @@ public class DynamicPalette
 
     static public Dictionary<int, (int h, int d, string? name)> ColorNameDic = new();
 
-    static private DataSaver ColorData;
-    static public ModColor MyColor;
-    static public ModColor[] SavedColor;
+    static private DataSaver ColorData = null!;
+    static public ModColor MyColor = null!;
+    static public ModColor[] SavedColor = null!;
 
     public static Dictionary<string, List<RestorableColor>> ColorCatalogue = new();
 
@@ -303,9 +303,9 @@ public class DynamicPalette
     public class RestorableColor
     {
         [JsonSerializableField]
-        public SerializableColor MainColor;
+        public SerializableColor MainColor = null!;
         [JsonSerializableField]
-        public SerializableColor ShadowColor;
+        public SerializableColor ShadowColor = null!;
         [JsonSerializableField]
         public string Name = "";
         [JsonSerializableField]
@@ -380,7 +380,7 @@ public class DynamicPalette
             {
                 PlayerControl.AllPlayerControls.Find((Il2CppSystem.Predicate<PlayerControl>)(p => p.PlayerId == message.playerId))?.RawSetColor(message.playerId);
             }
-            catch (Exception e){ }
+            catch{ }
         }
         );
 
@@ -514,14 +514,14 @@ public class NebulaPlayerTab : MonoBehaviour
     int currentPalette = 0;
     bool edittingShadowColor = false;
 
-    SpriteRenderer DynamicPaletteRenderer;
-    SpriteRenderer TargetRenderer;
+    SpriteRenderer DynamicPaletteRenderer = null!;
+    SpriteRenderer TargetRenderer = null!;
 
-    SpriteRenderer BrightnessRenderer;
-    SpriteRenderer BrightnessTargetRenderer;
-    UIKnob BrTargetKnob;
+    SpriteRenderer BrightnessRenderer = null!;
+    SpriteRenderer BrightnessTargetRenderer = null!;
+    UIKnob BrTargetKnob = null!;
 
-    public PlayerTab playerTab;
+    public PlayerTab playerTab = null!;
 
     static private float BrightnessHeight = 2.6f;
     static private float ToBrightness(float y) => Mathf.Clamp01((y + BrightnessHeight * 0.5f) / BrightnessHeight);

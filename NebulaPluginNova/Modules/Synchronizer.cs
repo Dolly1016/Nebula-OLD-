@@ -28,7 +28,7 @@ public class Synchronizer
 
     static public RemoteProcess<(SynchronizeTag, byte)> RpcSync = new(
         "Syncronize",
-        (message, calledByMe) => NebulaGameManager.Instance.Syncronizer.Sync(message.Item1,message.Item2)
+        (message, calledByMe) => NebulaGameManager.Instance?.Syncronizer.Sync(message.Item1,message.Item2)
         );
 
     public void SendSync(SynchronizeTag tag)

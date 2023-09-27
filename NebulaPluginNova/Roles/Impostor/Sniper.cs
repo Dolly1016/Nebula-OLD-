@@ -19,11 +19,11 @@ public class Sniper : ConfigurableStandardRole
 
     public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player);
 
-    private KillCoolDownConfiguration SnipeCoolDownOption;
-    private NebulaConfiguration ShotSizeOption;
-    private NebulaConfiguration ShotEffectiveRangeOption;
-    private NebulaConfiguration ShotNoticeRangeOption;
-    private NebulaConfiguration StoreRifleOnFireOption;
+    private KillCoolDownConfiguration SnipeCoolDownOption = null!;
+    private NebulaConfiguration ShotSizeOption = null!;
+    private NebulaConfiguration ShotEffectiveRangeOption = null!;
+    private NebulaConfiguration ShotNoticeRangeOption = null!;
+    private NebulaConfiguration StoreRifleOnFireOption = null!;
 
     protected override void LoadOptions()
     {
@@ -63,7 +63,7 @@ public class Sniper : ConfigurableStandardRole
         public override void OnReleased()
         {
             if (Renderer) GameObject.Destroy(Renderer.gameObject);
-            Renderer = null;
+            Renderer = null!;
         }
 
         public PlayerModInfo? GetTarget(float width,float maxLength)
@@ -71,7 +71,7 @@ public class Sniper : ConfigurableStandardRole
             float minLength = maxLength;
             PlayerModInfo? result = null;
 
-            foreach(var p in NebulaGameManager.Instance.AllPlayerInfo())
+            foreach(var p in NebulaGameManager.Instance!.AllPlayerInfo())
             {
                 if (p.IsDead || p.AmOwner) continue;
 

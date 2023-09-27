@@ -39,7 +39,7 @@ public static class ColorTabDefaultSelectablePatch
 {
     static bool Prefix(PlayerTab __instance,ref ColorChip __result)
     {
-        __result = null;
+        __result = null!;
         return false;
     }
 }

@@ -21,9 +21,9 @@ public class Vulture : ConfigurableStandardRole
 
     public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player);
 
-    private NebulaConfiguration EatCoolDownOption;
-    private NebulaConfiguration NumOfEatenToWinOption;
-    private VentConfiguration VentConfiguration;
+    private NebulaConfiguration EatCoolDownOption = null!;
+    private NebulaConfiguration NumOfEatenToWinOption = null!;
+    private new VentConfiguration VentConfiguration = null!;
     protected override void LoadOptions()
     {
         base.LoadOptions();
@@ -92,7 +92,7 @@ public class Vulture : ConfigurableStandardRole
                     leftEaten--;
                     usesIcon.text=leftEaten.ToString();
 
-                    if (leftEaten <= 0) NebulaGameManager.Instance.RpcInvokeSpecialWin(NebulaGameEnd.VultureWin, 1 << MyPlayer.PlayerId);
+                    if (leftEaten <= 0) NebulaGameManager.Instance?.RpcInvokeSpecialWin(NebulaGameEnd.VultureWin, 1 << MyPlayer.PlayerId);
                 };
                 eatButton.CoolDownTimer = Bind(new Timer(MyRole.EatCoolDownOption.GetFloat()).SetAsAbilityCoolDown().Start());
                 eatButton.SetLabelType(ModAbilityButton.LabelType.Standard);

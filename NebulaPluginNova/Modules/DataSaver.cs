@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Nebula.Modules;
 
-public abstract class DataEntry<T>
+public abstract class DataEntry<T> where T : notnull
 {
     private T value;
     string name;
@@ -159,22 +159,22 @@ public class StringArrayDataEntry : DataEntry<string[]>
 
 public class DataSaver
 {
-    private Dictionary<string, string> contents;
+    private Dictionary<string, string> contents = new();
     string filename;
 
     public string GetValue(string name, object defaultValue)
     {
-        if (contents.TryGetValue(name, out string value))
+        if (contents.TryGetValue(name, out string? value))
         {
-            return value;
+            return value!;
         }
-        var res = contents[name] = defaultValue.ToString();
+        var res = contents[name] = defaultValue.ToString()!;
         return res;
     }
 
     public void SetValue(string name, object value, bool skipSave = false)
     {
-        contents[name] = value.ToString();
+        contents[name] = value.ToString()!;
         if (!skipSave) Save();
     }
 
@@ -188,12 +188,8 @@ public class DataSaver
     {
         string dataPathTo = FileIO.GetDataPathTo(new string[] { filename });
 
-        if (!FileIO.Exists(dataPathTo))
-        {
-            contents = new();
-            return;
-        }
-        contents = new();
+        if (!FileIO.Exists(dataPathTo)) return;
+        
         string[] vals = (FileIO.ReadAllText(dataPathTo)).Split("\n");
         foreach (string val in vals)
         {

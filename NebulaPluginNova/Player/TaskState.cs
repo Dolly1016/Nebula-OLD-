@@ -184,7 +184,7 @@ public class PlayerTaskState
                 task.Quota = reader.ReadInt32();
                 task.IsCrewmateTask = reader.ReadBoolean();
             }
-            return task;
+            return task!;
         },
         (message, isCalledByMe) => NebulaGameManager.Instance?.OnTaskUpdated()
         );

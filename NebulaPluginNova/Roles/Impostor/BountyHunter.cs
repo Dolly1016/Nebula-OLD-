@@ -20,11 +20,11 @@ public class BountyHunter : ConfigurableStandardRole
 
     public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player);
 
-    private KillCoolDownConfiguration BountyKillCoolDownOption;
-    private KillCoolDownConfiguration OthersKillCoolDownOption;
-    private NebulaConfiguration ShowBountyArrowOption;
-    private NebulaConfiguration ArrowUpdateIntervalOption;
-    private NebulaConfiguration ChangeBountyIntervalOption;
+    private KillCoolDownConfiguration BountyKillCoolDownOption = null!;
+    private KillCoolDownConfiguration OthersKillCoolDownOption = null!;
+    private NebulaConfiguration ShowBountyArrowOption = null!;
+    private NebulaConfiguration ArrowUpdateIntervalOption = null!;
+    private NebulaConfiguration ChangeBountyIntervalOption = null!;
     protected override void LoadOptions()
     {
         base.LoadOptions();
@@ -50,10 +50,10 @@ public class BountyHunter : ConfigurableStandardRole
 
         private byte currentBounty = 0;
 
-        PoolablePlayer bountyIcon;
-        Timer bountyTimer;
-        Timer arrowTimer;
-        Arrow bountyArrow;
+        PoolablePlayer bountyIcon = null!;
+        Timer bountyTimer = null!;
+        Timer arrowTimer = null!;
+        Arrow bountyArrow = null!;
         bool CanBeBounty(PlayerControl target) => true;
         void ChangeBounty()
         {
@@ -118,9 +118,9 @@ public class BountyHunter : ConfigurableStandardRole
                 killButton.Availability = (button) => killTracker.CurrentTarget != null && MyPlayer.MyControl.CanMove;
                 killButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;
                 killButton.OnClick = (button) => {
-                    PlayerControl.LocalPlayer.ModKill(killTracker.CurrentTarget, true, PlayerState.Dead, EventDetail.Kill);
+                    PlayerControl.LocalPlayer.ModKill(killTracker.CurrentTarget!, true, PlayerState.Dead, EventDetail.Kill);
 
-                    if(killTracker.CurrentTarget.PlayerId == currentBounty)
+                    if(killTracker.CurrentTarget!.PlayerId == currentBounty)
                     {
                         ChangeBounty();
                         button.CoolDownTimer!.Start(MyRole.BountyKillCoolDownOption.KillCoolDown);

@@ -15,13 +15,13 @@ public class NebulaSettingMenu : MonoBehaviour
         ClassInjector.RegisterTypeInIl2Cpp<NebulaSettingMenu>();
     }
 
-    MetaScreen LeftHolder, MainHolder, RightHolder, SecondScreen,SecondTopScreen;
-    GameObject FirstPage, SecondPage;
-    Scroller FirstScroller, SecondScroller;
-    TMPro.TextMeshPro SecondTitle;
-    ConfigurationTab CurrentTab;
+    MetaScreen LeftHolder = null!, MainHolder = null!, RightHolder = null!, SecondScreen = null!, SecondTopScreen = null!;
+    GameObject FirstPage = null!, SecondPage = null!;
+    Scroller FirstScroller = null!, SecondScroller = null!;
+    TMPro.TextMeshPro SecondTitle = null!;
+    ConfigurationTab CurrentTab = null!;
 
-    static public NebulaSettingMenu Instance { get;private set; }
+    static public NebulaSettingMenu Instance { get; private set; } = null!;
 
     public void Start()
     {
@@ -183,12 +183,12 @@ public class NebulaSettingMenu : MonoBehaviour
                         screen = MetaScreen.GenerateWindow(new Vector2(5f, 3.2f), HudManager.Instance.transform, Vector3.zero, true, true);
 
                     MetaContext inner = new();
-                    inner.Append(Roles.Roles.AllIntroAssignableModifiers().Where(m => role.CanLoadDefault(m)), (m) => new MetaContext.Button(() => { role.ModifierFilter.ToggleAndShare(m); OpenFilterScreen(screen,role); }, RelatedInsideButtonAttr)
+                    inner.Append(Roles.Roles.AllIntroAssignableModifiers().Where(m => role.CanLoadDefault(m)), (m) => new MetaContext.Button(() => { role.ModifierFilter!.ToggleAndShare(m); OpenFilterScreen(screen,role); }, RelatedInsideButtonAttr)
                     {
                         RawText = m.DisplayName.Color(m.RoleColor),
                         PostBuilder = (button, renderer, text) => renderer.maskInteraction = SpriteMaskInteraction.VisibleInsideMask,
                         Alignment = IMetaContext.AlignmentOption.Center,
-                        Color = role.ModifierFilter.Contains(m) ? new Color(0.24f, 0.24f, 0.24f) : Color.white
+                        Color = role.ModifierFilter!.Contains(m) ? new Color(0.24f, 0.24f, 0.24f) : Color.white
                     }, 3, -1, 0, 0.6f);
 
                     screen!.SetContext(new MetaContext.ScrollView(new(5f, 3.1f), inner, true));
@@ -205,12 +205,12 @@ public class NebulaSettingMenu : MonoBehaviour
                         screen = MetaScreen.GenerateWindow(new Vector2(5f, 3.2f), HudManager.Instance.transform, Vector3.zero, true, true);
 
                     MetaContext inner = new();
-                    inner.Append(Roles.Roles.AllRoles.Where(r=>r.ModifierFilter != null && r.CanLoadDefault(modifier)), (role) => new MetaContext.Button(() => { role.ModifierFilter.ToggleAndShare(iam); OpenFilterScreen(screen, modifier); }, RelatedInsideButtonAttr)
+                    inner.Append(Roles.Roles.AllRoles.Where(r=>r.ModifierFilter != null && r.CanLoadDefault(modifier)), (role) => new MetaContext.Button(() => { role.ModifierFilter!.ToggleAndShare(iam); OpenFilterScreen(screen, modifier); }, RelatedInsideButtonAttr)
                     {
                         RawText = role.DisplayName.Color(role.RoleColor),
                         PostBuilder = (button, renderer, text) => renderer.maskInteraction = SpriteMaskInteraction.VisibleInsideMask,
                         Alignment = IMetaContext.AlignmentOption.Center,
-                        Color = role.ModifierFilter.Contains(modifier) ? new Color(0.24f, 0.24f, 0.24f) : Color.white
+                        Color = role.ModifierFilter!.Contains(modifier) ? new Color(0.24f, 0.24f, 0.24f) : Color.white
                     }, 3, -1, 0, 0.6f);
 
                     screen!.SetContext(new MetaContext.ScrollView(new(5f, 3.1f), inner, true));

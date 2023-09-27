@@ -23,6 +23,7 @@ public static class PlayerState
     public static TranslatableTag Misguessed = new("state.misguessed");
     public static TranslatableTag Embroiled = new("state.embroiled");
     public static TranslatableTag Suicide = new("state.suicide");
+    public static TranslatableTag Trapped = new("state.trapped");
 }
 
 public class SpeedModulator
@@ -97,7 +98,7 @@ public class PlayerModInfo
     private List<SpeedModulator> speedModulators = new();
 
     public RoleInstance Role => myRole;
-    private RoleInstance myRole;
+    private RoleInstance myRole = null!;
     private List<ModifierInstance> myModifiers = new();
 
     private List<OutfitCandidate> outfits = new List<OutfitCandidate>();
@@ -146,7 +147,7 @@ public class PlayerModInfo
                 return true;
             }
         }
-        modifier = null;
+        modifier = null!;
         return false;
     }
 
@@ -232,12 +233,12 @@ public class PlayerModInfo
 
         ModifierAction(m => m.DecorateRoleName(ref text));
 
-        if (myRole.HasAnyTasks)
-            text += (" (" + Tasks.ToString(NebulaGameManager.Instance.CanSeeAllInfo || !AmongUsUtil.InCommSab) + ")").Color(myRole.HasCrewmateTasks ? crewTaskColor : fakeTaskColor);
+        if (myRole?.HasAnyTasks ?? true)
+            text += (" (" + Tasks.ToString((NebulaGameManager.Instance?.CanSeeAllInfo ?? false) || !AmongUsUtil.InCommSab) + ")").Color((myRole?.HasCrewmateTasks ?? false) ? crewTaskColor : fakeTaskColor);
         
         roleText.text = text;
 
-        roleText.gameObject.SetActive(NebulaGameManager.Instance.CanSeeAllInfo || AmOwner);
+        roleText.gameObject.SetActive((NebulaGameManager.Instance?.CanSeeAllInfo ?? false) || AmOwner);
     }
 
     private void SetRole(AbstractRole role, int[] arguments)
@@ -275,7 +276,7 @@ public class PlayerModInfo
             }
             return false;
         });
-        if (NebulaGameManager.Instance.GameState != NebulaGameStates.NotStarted) HudManager.Instance.UpdateHudContent();
+        if (NebulaGameManager.Instance?.GameState != NebulaGameStates.NotStarted) HudManager.Instance.UpdateHudContent();
     }
 
     public readonly static RemoteProcess<(byte playerId,int assignableId, int[] arguments,bool isRole)> RpcSetAssignable = new(
@@ -325,7 +326,7 @@ public class PlayerModInfo
         if (!HoldingDeadBody.HasValue) return;
 
         //同じ死体を持つプレイヤーがいる
-        if (NebulaGameManager.Instance.AllPlayerInfo().Any(p => p.PlayerId < PlayerId && p.HoldingDeadBody.HasValue && p.HoldingDeadBody.Value == HoldingDeadBody.Value))
+        if (NebulaGameManager.Instance?.AllPlayerInfo().Any(p => p.PlayerId < PlayerId && p.HoldingDeadBody.HasValue && p.HoldingDeadBody.Value == HoldingDeadBody.Value) ?? false)
         {
             deadBodyCache = null;
             if (AmOwner) ReleaseDeadBody();
@@ -333,7 +334,7 @@ public class PlayerModInfo
         }
 
 
-        if (!deadBodyCache || deadBodyCache.ParentId != HoldingDeadBody.Value)
+        if (!deadBodyCache || deadBodyCache!.ParentId != HoldingDeadBody.Value)
         {
             deadBodyCache = Helpers.AllDeadBodies().FirstOrDefault((d) => d.ParentId == HoldingDeadBody.Value);
             if (!deadBodyCache)
@@ -345,19 +346,19 @@ public class PlayerModInfo
         }
 
         //ベント中の死体
-        deadBodyCache.Reported = MyControl.inVent;
-        foreach (var r in deadBodyCache.bodyRenderers) r.enabled = !MyControl.inVent;
+        deadBodyCache!.Reported = MyControl.inVent;
+        foreach (var r in deadBodyCache!.bodyRenderers) r.enabled = !MyControl.inVent;
 
         var targetPosition = MyControl.transform.position + new Vector3(-0.1f, -0.1f);
 
-        if (MyControl.transform.position.Distance(deadBodyCache.transform.position) < 1.8f)
-            deadBodyCache.transform.position += (targetPosition - deadBodyCache.transform.position) * 0.15f;
+        if (MyControl.transform.position.Distance(deadBodyCache!.transform.position) < 1.8f)
+            deadBodyCache!.transform.position += (targetPosition - deadBodyCache!.transform.position) * 0.15f;
         else
-            deadBodyCache.transform.position = targetPosition;
+            deadBodyCache!.transform.position = targetPosition;
 
 
         Vector3 playerPos = MyControl.GetTruePosition();
-        Vector3 deadBodyPos = deadBodyCache.TruePosition;
+        Vector3 deadBodyPos = deadBodyCache!.TruePosition;
         Vector3 diff = (deadBodyPos - playerPos);
         float d = diff.magnitude;
         if (PhysicsHelpers.AnythingBetween(playerPos, deadBodyPos, Constants.ShipAndAllObjectsMask, false))
@@ -371,11 +372,11 @@ public class PlayerModInfo
             d -= 0.15f;
             if (d < 0f) d = 0f;
 
-            deadBodyCache.transform.localPosition = playerPos + diff.normalized * d;
+            deadBodyCache!.transform.localPosition = playerPos + diff.normalized * d;
         }
         else
         {
-            deadBodyCache.transform.localPosition = deadBodyCache.transform.position;
+            deadBodyCache!.transform.localPosition = deadBodyCache!.transform.position;
         }
 
     }
@@ -402,7 +403,7 @@ public class PlayerModInfo
               info.HoldingDeadBody = message.bodyId;
               var deadBody = Helpers.AllDeadBodies().FirstOrDefault(d => d.ParentId == message.bodyId);
               info.deadBodyCache = deadBody;
-              if (deadBody && message.pos.magnitude < 10000) deadBody.transform.localPosition = new Vector3(message.Item3.x, message.Item3.y, message.Item3.y / 1000f);
+              if (deadBody && message.pos.magnitude < 10000) deadBody!.transform.localPosition = new Vector3(message.Item3.x, message.Item3.y, message.Item3.y / 1000f);
           }
       }
       );
@@ -428,7 +429,7 @@ public class PlayerModInfo
 
     public void Update()
     {
-        UpdateNameText(MyControl.cosmetics.nameText, NebulaGameManager.Instance.CanSeeAllInfo);
+        UpdateNameText(MyControl.cosmetics.nameText, NebulaGameManager.Instance?.CanSeeAllInfo ?? false);
         UpdateRoleText(roleText);
         UpdateHoldingDeadBody();
         UpdateMouseAngle();

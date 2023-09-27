@@ -99,11 +99,11 @@ public class NebulaAddon : IDisposable
     }
 
     public string InZipPath { get; private set; } = "";
-    public string MyPath { get; private set; }
-    public string Author { get; private set; }
-    public string Description { get; private set; }
-    public string Version { get; private set; }
-    public string AddonName { get; private set; }
+    public string MyPath { get; private set; } = "";
+    public string Author { get; private set; } = "";
+    public string Description { get; private set; } = "";
+    public string Version { get; private set; } = "";
+    public string AddonName { get; private set; } = "";
     public Sprite? Icon { get; private set; } = null;
     public ZipArchive Archive { get; private set; }
 }

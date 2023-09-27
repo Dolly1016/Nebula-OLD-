@@ -20,7 +20,7 @@ public class Cleaner : ConfigurableStandardRole
 
     public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player);
 
-    private NebulaConfiguration CleanCoolDownOption;
+    private NebulaConfiguration CleanCoolDownOption = null!;
     protected override void LoadOptions()
     {
         base.LoadOptions();
@@ -42,7 +42,7 @@ public class Cleaner : ConfigurableStandardRole
         {
             if (AmOwner)
             {
-                cleanButton.CoolDownTimer.Start();
+                cleanButton?.CoolDownTimer?.Start();
             }
         }
 

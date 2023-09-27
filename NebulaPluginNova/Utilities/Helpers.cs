@@ -10,9 +10,10 @@ namespace Nebula.Utilities;
 
 public static class Helpers
 {
-    public static PlayerControl? GetPlayer(byte id)
+    public static PlayerControl? GetPlayer(byte? id)
     {
-        return PlayerControl.AllPlayerControls.Find((Il2CppSystem.Predicate<PlayerControl>)((p) => p.PlayerId == id));
+        if (!id.HasValue) return null;
+        return PlayerControl.AllPlayerControls.Find((Il2CppSystem.Predicate<PlayerControl>)((p) => p.PlayerId == id!));
     }
 
     public static DeadBody? GetDeadBody(byte id)

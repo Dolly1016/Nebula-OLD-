@@ -54,7 +54,7 @@ public abstract class LobbyImageSlide : LobbySlide
     }
     public override void Abandon()
     {
-        if (mySlide && mySlide!.texture) GameObject.Destroy(mySlide.texture);
+        if (mySlide && mySlide!.texture) GameObject.Destroy(mySlide!.texture);
     }
 
     public override IMetaContext Show(out float height)
@@ -65,11 +65,14 @@ public abstract class LobbyImageSlide : LobbySlide
 
         context.Append(new MetaContext.Text(TitleAttribute) { RawText = Title, Alignment = IMetaContext.AlignmentOption.Center });
 
-        //縦に大きすぎる画像はそれに合わせて調整する
-        float width = Mathf.Min(5.4f, mySlide.bounds.size.x / mySlide.bounds.size.y * 2.9f);
-        height += width / mySlide.bounds.size.x * mySlide.bounds.size.y;
+        if (mySlide != null)
+        {
+            //縦に大きすぎる画像はそれに合わせて調整する
+            float width = Mathf.Min(5.4f, mySlide.bounds.size.x / mySlide.bounds.size.y * 2.9f);
+            height += width / mySlide.bounds.size.x * mySlide.bounds.size.y;
 
-        context.Append(new MetaContext.Image(mySlide!) { Alignment = IMetaContext.AlignmentOption.Center, Width = width });
+            context.Append(new MetaContext.Image(mySlide) { Alignment = IMetaContext.AlignmentOption.Center, Width = width });
+        }
 
         context.Append(new MetaContext.VerticalMargin(0.2f));
 
@@ -124,7 +127,7 @@ public class LobbyOnlineImageSlide : LobbyImageSlide
 public class LobbySlideTemplate
 {
     [JsonSerializableField]
-    public string Tag;
+    public string Tag = null!;
     [JsonSerializableField]
     public string Title = "None";
     [JsonSerializableField]
@@ -261,8 +264,10 @@ public class LobbySlideManager
         if (LobbyBehaviour.Instance) LobbyBehaviour.Instance.StartCoroutine(coroutine.WrapToIl2Cpp());
     }
 
-    public void TryRegisterAndShow(LobbySlide slide)
+    public void TryRegisterAndShow(LobbySlide? slide)
     {
+        if (slide == null) return;
+
         RegisterSlide(slide);
         RpcShowScreen(slide.Tag, false);
     }

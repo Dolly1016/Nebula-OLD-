@@ -89,8 +89,8 @@ public static class PlayerCompleteTaskPatch
     {
         if (!__instance.AmOwner) return;
 
-        __instance.GetModInfo().Tasks.OnCompleteTask();
-        __instance.GetModInfo().RoleAction((r)=>r.OnTaskCompleteLocal());
+        __instance.GetModInfo()?.Tasks.OnCompleteTask();
+        __instance.GetModInfo()?.RoleAction((r)=>r.OnTaskCompleteLocal());
     }
 }
 
@@ -106,11 +106,11 @@ public static class PlayerStartMeetingPatch
             var targetInfo = Helpers.GetPlayer(info.PlayerId)!.GetModInfo();
 
             //ベイトレポートチェック
-            if (targetInfo?.Role.Role is Roles.Crewmate.Bait && ((targetInfo.MyKiller?.PlayerId ?? byte.MaxValue) == __instance.PlayerId) && (targetInfo.DeathTimeStamp.HasValue && NebulaGameManager.Instance.CurrentTime - targetInfo.DeathTimeStamp.Value < 3f))
+            if (targetInfo?.Role.Role is Roles.Crewmate.Bait && ((targetInfo.MyKiller?.PlayerId ?? byte.MaxValue) == __instance.PlayerId) && (targetInfo.DeathTimeStamp.HasValue && NebulaGameManager.Instance!.CurrentTime - targetInfo.DeathTimeStamp.Value < 3f))
                 tag = EventDetail.BaitReport;
         }
 
-        NebulaGameManager.Instance.GameStatistics.RecordEvent(new GameStatistics.Event(
+        NebulaGameManager.Instance?.GameStatistics.RecordEvent(new GameStatistics.Event(
             info == null ? GameStatistics.EventVariation.EmergencyButton : GameStatistics.EventVariation.Report, __instance.PlayerId,
             info == null ? 0 : (1 << info.PlayerId))
         { RelatedTag = tag });
@@ -161,8 +161,8 @@ class SetTaskPAtch
         var tasksList = tasks.ToArray().ToList();
         int num = tasksList.Count;
         var info = __instance.GetModInfo();
-        info.RoleAction((r)=>r.OnSetTaskLocal(ref tasksList));
-        if (num != tasksList.Count) info.Tasks.ReplaceTasks(tasksList.Count);
+        info?.RoleAction((r)=>r.OnSetTaskLocal(ref tasksList));
+        if (num != tasksList.Count) info?.Tasks.ReplaceTasks(tasksList.Count);
 
         __instance.StartCoroutine(CoSetTasks().WrapToIl2Cpp());
 
@@ -197,11 +197,11 @@ class PlayerDisconnectPatch
 {
     public static void Postfix(GameData __instance, [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] DisconnectReasons reason)
     {
-        if (NebulaGameManager.Instance.GameState == NebulaGameStates.NotStarted) return;
+        if (NebulaGameManager.Instance?.GameState == NebulaGameStates.NotStarted) return;
 
-        player.GetModInfo().IsDisconnected = true;
+        player.GetModInfo()!.IsDisconnected = true;
 
-        NebulaGameManager.Instance.GameStatistics.RecordEvent(new GameStatistics.Event(GameStatistics.EventVariation.Disconnect, player.PlayerId, 0){ RelatedTag = EventDetail.Disconnect }) ;
+        NebulaGameManager.Instance?.GameStatistics.RecordEvent(new GameStatistics.Event(GameStatistics.EventVariation.Disconnect, player.PlayerId, 0){ RelatedTag = EventDetail.Disconnect }) ;
     }
 }
 
