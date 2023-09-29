@@ -1,10 +1,4 @@
 ﻿using AmongUs.GameOptions;
-using Nebula.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Nebula.Modules.ScriptComponents;
 
@@ -82,6 +76,7 @@ public class ModAbilityButton : INebulaScriptComponent
         VanillaButton.cooldownTimerText.color = EffectActive ? Color.green : Color.white;
 
         if (keyCode.HasValue && NebulaInput.GetKeyDown(keyCode.Value)) DoClick();
+        if (subKeyCode.HasValue && NebulaInput.GetKeyDown(subKeyCode.Value)) DoSubClick();
     }
 
     public override void OnMeetingStart()
@@ -140,6 +135,15 @@ public class ModAbilityButton : INebulaScriptComponent
         if (!(Visibility?.Invoke(this) ?? true) || !(Availability?.Invoke(this) ?? true)) return this;
 
         OnClick?.Invoke(this);
+        return this;
+    }
+
+    public ModAbilityButton DoSubClick()
+    {
+        //見えないボタンは使用させない
+        if (!(Visibility?.Invoke(this) ?? true)) return this;
+
+        OnSubAction?.Invoke(this);
         return this;
     }
 

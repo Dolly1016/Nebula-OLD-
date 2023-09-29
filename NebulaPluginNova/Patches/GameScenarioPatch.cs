@@ -59,8 +59,19 @@ public static class SetGhostRolePatch
 [HarmonyPatch(typeof(GameManager), nameof(GameManager.CheckTaskCompletion))]
 static class CheckTaskCompletionPatch
 {
-    static bool Prefix(GameManager __instance)
+    static bool Prefix(GameManager __instance,ref bool __result)
     {
+        __result = false;
+        return false;
+    }
+}
+
+[HarmonyPatch(typeof(LogicGameFlowNormal), nameof(LogicGameFlowNormal.IsGameOverDueToDeath))]
+public static class BlockGameOverPatch
+{
+    public static bool Prefix(LogicGameFlowNormal __instance, ref bool __result)
+    {
+        __result = false;
         return false;
     }
 }

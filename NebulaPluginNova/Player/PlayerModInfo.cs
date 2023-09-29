@@ -6,6 +6,7 @@ using Nebula.Roles;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
+using static Il2CppSystem.Globalization.CultureInfo;
 using static UnityEngine.GraphicsBuffer;
 
 namespace Nebula.Player;
@@ -26,21 +27,12 @@ public static class PlayerState
     public static TranslatableTag Trapped = new("state.trapped");
 }
 
-public class SpeedModulator
+public class TimeLimitedModulator
 {
-    public float Num { get; private set; }
-    public bool IsMultiplier { get; private set; }
     public float Timer { get; private set; }
     public bool CanPassMeeting { get; private set; }
     public int Priority { get; private set; }
     public int DuplicateTag { get; private set; }
-    public void Calc(ref float speed)
-    {
-        if (IsMultiplier)
-            speed *= Num;
-        else
-            speed += Num;
-    }
 
     public void Update()
     {
@@ -54,16 +46,52 @@ public class SpeedModulator
 
     public bool IsBroken => Timer < 0f;
 
-    public SpeedModulator(float? num, bool isMultiplier, float timer, bool canPassMeeting,int priority, int? duplicateTag)
+    public TimeLimitedModulator(float timer, bool canPassMeeting, int priority, int? duplicateTag)
     {
-        this.Num = num ?? 10000f;
-        this.IsMultiplier = isMultiplier;
         this.Timer = timer;
         this.CanPassMeeting = canPassMeeting;
         this.Priority = priority;
         this.DuplicateTag = duplicateTag ?? 0;
     }
 }
+
+public class SpeedModulator : TimeLimitedModulator
+{
+    public float Num { get; private set; }
+    public bool IsMultiplier { get; private set; }
+   
+    public void Calc(ref float speed)
+    {
+        if (IsMultiplier)
+            speed *= Num;
+        else
+            speed += Num;
+    }
+
+    
+    public SpeedModulator(float? num, bool isMultiplier, float timer, bool canPassMeeting,int priority, int duplicateTag = 0) :base(timer,canPassMeeting, priority, duplicateTag)
+    {
+        this.Num = num ?? 10000f;
+        this.IsMultiplier = isMultiplier;
+    }
+}
+
+public class AttributeModulator : TimeLimitedModulator
+{
+    public enum PlayerAttribute
+    {
+        Invisibility,
+        MaxId
+    }
+
+    public PlayerAttribute Attribute;
+
+    public AttributeModulator(PlayerAttribute attribute, float timer, bool canPassMeeting, int priority, int duplicateTag = 0) : base(timer, canPassMeeting, priority, duplicateTag)
+    {
+        Attribute = attribute;
+    }
+}
+
 
 [NebulaRPCHolder]
 public class PlayerModInfo
@@ -96,6 +124,7 @@ public class PlayerModInfo
     public byte? HoldingDeadBody { get; private set; } = null;
     private DeadBody? deadBodyCache { get; set; } = null;
     private List<SpeedModulator> speedModulators = new();
+    private List<AttributeModulator> attributeModulators = new();
 
     public RoleInstance Role => myRole;
     private RoleInstance myRole = null!;
@@ -261,6 +290,10 @@ public class PlayerModInfo
         modifier.OnActivated();
     }
 
+    public void OnSetAttribute(AttributeModulator.PlayerAttribute attribute) { }
+    public void OnUnsetAttribute(AttributeModulator.PlayerAttribute attribute) { }
+
+    public bool HasAttribute(AttributeModulator.PlayerAttribute attribute) => attributeModulators.Any(m => m.Attribute == attribute);
 
     public NebulaRPCInvoker RpcInvokerSetRole(AbstractRole role, int[]? arguments) => RpcSetAssignable.GetInvoker((PlayerId, role.Id, arguments ?? Array.Empty<int>(), true));
     public NebulaRPCInvoker RpcInvokerSetModifier(AbstractModifier modifier, int[]? arguments) => RpcSetAssignable.GetInvoker((PlayerId, modifier.Id, arguments ?? Array.Empty<int>(), false));
@@ -310,7 +343,7 @@ public class PlayerModInfo
        "UpdateAngle", (message, _) => NebulaGameManager.Instance!.GetModPlayerInfo(message.playerId)!.MouseAngle = message.angle
        );
 
-    public readonly static RemoteProcess<(byte playerId, SpeedModulator modulator)> RpcAddModulator = new(
+    public readonly static RemoteProcess<(byte playerId, SpeedModulator modulator)> RpcSpeedModulator = new(
        "AddSpeedModulator", (message, _) =>
        {
            var modulators = NebulaGameManager.Instance!.GetModPlayerInfo(message.playerId)!.speedModulators;
@@ -318,6 +351,23 @@ public class PlayerModInfo
            modulators.Add(message.modulator);
            modulators.Sort((m1, m2) => m2.Priority - m1.Priority);
            
+       }
+       );
+
+    public readonly static RemoteProcess<(byte playerId, AttributeModulator modulator)> RpcAttrModulator = new(
+       "AddAttributeModulator", (message, _) =>
+       {
+           var playerInfo = NebulaGameManager.Instance!.GetModPlayerInfo(message.playerId);
+           if (playerInfo == null) return;
+
+           var modulators = playerInfo!.attributeModulators;
+           if (message.modulator.DuplicateTag != 0 && modulators.Any(m => m.DuplicateTag == message.modulator.DuplicateTag)) return;
+
+           //新たな属性が付与されたとき
+           if (!modulators.Any(m => m.Attribute == message.modulator.Attribute)) playerInfo!.OnSetAttribute(message.modulator.Attribute);
+           
+           modulators.Add(message.modulator);
+           modulators.Sort((m1, m2) => m2.Priority - m1.Priority);
        }
        );
 
@@ -427,6 +477,65 @@ public class PlayerModInfo
         MyControl.MyPhysics.Speed = CalcSpeed();
     }
 
+    private void UpdateAttributeModulators()
+    {
+        ulong maskBefore = 0, maskAfter = 0;
+        foreach (var m in attributeModulators)
+        {
+            m.Update();
+            maskBefore |= 1ul << (int)m.Attribute;
+        }
+        attributeModulators.RemoveAll(m => m.IsBroken);
+        foreach (var m in attributeModulators) maskAfter |= 1ul << (int)m.Attribute;
+
+        ulong mask = maskBefore ^ maskAfter;
+        for(int i = 0; i < (int)AttributeModulator.PlayerAttribute.MaxId; i++)
+        {
+            if ((mask & (1ul << i)) != 0) OnUnsetAttribute((AttributeModulator.PlayerAttribute)i);
+        }
+    }
+
+    private void UpdateVisibility()
+    {
+        bool isInvisible = HasAttribute(AttributeModulator.PlayerAttribute.Invisibility) && !IsDead;
+        MyControl.cosmetics.nameText.gameObject.SetActive((!isInvisible) || AmOwner || (NebulaGameManager.Instance?.CanSeeAllInfo ?? false));
+
+        if (IsDead) return;
+
+        float alpha = MyControl.cosmetics.currentBodySprite.BodySprite.color.a;
+        if (isInvisible)
+            alpha -= 0.85f * Time.deltaTime;
+        else
+            alpha += 0.85f * Time.deltaTime;
+
+        float min = 0f, max = 1f;
+        if (AmOwner || (NebulaGameManager.Instance?.CanSeeAllInfo ?? false)) min = 0.25f;
+        alpha = Mathf.Clamp(alpha, min, max);
+
+
+        var color = new Color(1f, 1f, 1f, alpha);
+        
+
+        if (MyControl.cosmetics.currentBodySprite.BodySprite != null) MyControl.cosmetics.currentBodySprite.BodySprite.color = color;
+
+        if (MyControl.cosmetics.skin.layer != null) MyControl.cosmetics.skin.layer.color = color;
+
+        if (MyControl.cosmetics.hat)
+        {
+            if (MyControl.cosmetics.hat.FrontLayer != null) MyControl.cosmetics.hat.FrontLayer.color = color;
+            if (MyControl.cosmetics.hat.BackLayer != null) MyControl.cosmetics.hat.BackLayer.color = color;
+        }
+
+        if (MyControl.cosmetics.currentPet)
+        {
+            if (MyControl.cosmetics.currentPet.rend != null) MyControl.cosmetics.currentPet.rend.color = color;
+
+            if (MyControl.cosmetics.currentPet.shadowRend != null) MyControl.cosmetics.currentPet.shadowRend.color = color;
+        }
+
+        if (MyControl.cosmetics.visor != null) MyControl.cosmetics.visor.Image.color = color;
+    }
+
     public void Update()
     {
         UpdateNameText(MyControl.cosmetics.nameText, NebulaGameManager.Instance?.CanSeeAllInfo ?? false);
@@ -434,6 +543,8 @@ public class PlayerModInfo
         UpdateHoldingDeadBody();
         UpdateMouseAngle();
         UpdateSpeedModulators();
+        UpdateAttributeModulators();
+        UpdateVisibility();
 
         RoleAction((role) => {
             role.Update();

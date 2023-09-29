@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Nebula.Roles.Crewmate;
 
+
 public class Comet : ConfigurableStandardRole
 {
     static public Comet MyRole = new Comet();
@@ -48,7 +49,11 @@ public class Comet : ConfigurableStandardRole
                 boostButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;
                 boostButton.OnClick = (button) => {
                     button.ActivateEffect();
-                    PlayerModInfo.RpcAddModulator.Invoke(new(MyPlayer.PlayerId, new(MyRole.BrazeSpeedOption.GetFloat(), true, MyRole.BrazeDurationOption.GetFloat(), false, 100, 1)));
+                    using (RPCRouter.CreateSection("CometBlaze"))
+                    {
+                        PlayerModInfo.RpcSpeedModulator.Invoke(new(MyPlayer.PlayerId, new(MyRole.BrazeSpeedOption.GetFloat(), true, MyRole.BrazeDurationOption.GetFloat(), false, 100)));
+                        PlayerModInfo.RpcAttrModulator.Invoke(new(MyPlayer.PlayerId, new(AttributeModulator.PlayerAttribute.Invisibility, MyRole.BrazeDurationOption.GetFloat(), false, 100)));
+                    }
                 };
                 boostButton.OnEffectEnd = (button) => boostButton.StartCoolDown();
                 boostButton.CoolDownTimer = Bind(new Timer(0f, MyRole.BrazeCoolDownOption.GetFloat()).SetAsAbilityCoolDown().Start());
@@ -59,5 +64,4 @@ public class Comet : ConfigurableStandardRole
         }
     }
 }
-
 

@@ -59,7 +59,7 @@ public class NebulaPlugin : BasePlugin
     public const bool IsSnapshot = false;
     public const string MajorCodeName = "Experimental"/*"Haro"*/;
     public const string SnapshotVersion = "23.08.01";
-    public const string VisualPluginVersion = "6 hotfix";
+    public const string VisualPluginVersion = "6 hotfix2";
 
     static public HttpClient HttpClient
     {

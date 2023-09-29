@@ -134,7 +134,7 @@ public class TextField : MonoBehaviour
 
             str = Regex.Replace(str,"[<>]", "<noparse>$0</noparse>").Replace("\\EMK", "</mark>").Replace("\\BMK", "<mark=#5F74A5AA>");
 
-            myText.text = str;
+            myText.text = $"<font=\"Barlow-Medium SDF\">{str}";
         }
         else
         {

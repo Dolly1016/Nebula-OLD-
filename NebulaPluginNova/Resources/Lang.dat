@@ -114,10 +114,16 @@
 "role.general.ventUses.short" : "Uses"
 "role.general.common" : "#"
 
-# Common Roles
+# Complex Roles
 
 "role.guesser.numOfGuess" : "Num Of Guess"
 "options.role.guesser.detail" : "Guesser can shoot players in the meeting by guessing the role.<br>If the guess is wrong, guesser dies instead."
+
+"role.trapper.placeCoolDown" : "Place Cool Down"
+"role.trapper.placeDuration" : "Place Duration"
+"role.trapper.numOfCharges" : "Num Of Charges"
+
+# Common Roles
 
 "options.role.modifierFilter" : "Modifiers Filter"
 
@@ -149,6 +155,11 @@
 "role.niceGuesser.name" : "Nice Guesser"
 "role.niceGuesser.blurb" : "Guess and Shoot"
 "options.role.niceGuesser.detail" : "Guesser can shoot players in the meeting by guessing the role.<br>If the guess is wrong, guesser dies instead."
+
+"role.niceTrapper.name" : "Nice Trapper"
+"role.niceTrapper.blurb" : "Entrap and Find the Impostors"
+"options.role.niceTrapper.detail" : "Nice Trapper sets traps with various effects."
+"role.niceTrapper.costOfCommTrap" : "Cost Of Comm. Trap"
 
 "role.doctor.name" : "Doctor"
 "role.doctor.blurb" : "Thus They Died"
@@ -226,6 +237,12 @@
 "role.evilGuesser.name" : "Evil Guesser"
 "role.evilGuesser.blurb" : "Guess and Shoot"
 "options.role.evilGuesser.detail" : "Guesser can shoot players in the meeting by guessing the role.<br>If the guess is wrong, guesser dies instead."
+
+"role.evilTrapper.name" : "Evil Trapper"
+"role.evilTrapper.blurb" : "Entrap and Kill Crewmates"
+"options.role.niceTrapper.detail" : "Evil Trapper sets traps with various effects.<br>Killing by trap shares its kill cool down too."
+"role.evilTrapper.killTrapSoundDistance" : "Kill Trap Sound Distance"
+"role.evilTrapper.costOfKillTrap" : "Cost Of Kill Trap"
 
 "role.jailer.name" : "Jailer"
 "role.jailer.blurb" : "Be Under the Control"
@@ -449,6 +466,7 @@
 "statistics.events.clean" : "Clean"
 "statistics.events.missed" : "Missed"
 "statistics.events.embroil" : "Embroil"
+"statistics.events.trap" : "Entrap"
 
 # Endings
 
