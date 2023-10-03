@@ -117,6 +117,22 @@ public static class NebulaAsset
 
     static public ResourceExpandableSpriteLoader SharpWindowBackgroundSprite = new("Nebula.Resources.StatisticsBackground.png", 100f,5,5);
 
+    static public SpriteRenderer CreateSharpBackground(Vector2 size, Color color, Transform transform)
+    {
+        var renderer = UnityHelper.CreateObject<SpriteRenderer>("Background", transform, new Vector3(0, 0, 0.25f));
+        return CreateSharpBackground(renderer, color, size);
+    }
+
+    static public SpriteRenderer CreateSharpBackground(SpriteRenderer renderer, Color color, Vector2 size)
+    {
+        renderer.sprite = NebulaAsset.SharpWindowBackgroundSprite.GetSprite();
+        renderer.drawMode = SpriteDrawMode.Sliced;
+        renderer.tileMode = SpriteTileMode.Continuous;
+        renderer.color = color;
+        renderer.size = size;
+        return renderer;
+    }
+
     public static GameObject[] DivMap { get; private set; } = new GameObject[5];
     private static Dictionary<NebulaAudioClip, AudioClip> audioMap = new();
 

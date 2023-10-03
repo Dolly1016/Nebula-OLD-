@@ -67,7 +67,7 @@ public static class UnityHelper
         return FindCamera(cameraLayer)?.WorldToScreenPoint(worldPos) ?? Vector3.zero;
     }
 
-    public static PassiveButton SetUpButton(this GameObject gameObject, bool withSound = false, SpriteRenderer? buttonRenderer = null, Color? defaultColor = null) {
+    public static PassiveButton SetUpButton(this GameObject gameObject, bool withSound = false, SpriteRenderer? buttonRenderer = null, Color? defaultColor = null, Color? selectedColor = null) {
         var button = gameObject.AddComponent<PassiveButton>();
         button.OnClick = new UnityEngine.UI.Button.ButtonClickedEvent();
         button.OnMouseOut = new UnityEngine.Events.UnityEvent();
@@ -81,7 +81,7 @@ public static class UnityHelper
         if (buttonRenderer != null)
         {
             button.OnMouseOut.AddListener(() => buttonRenderer!.color = defaultColor ?? Color.white);
-            button.OnMouseOver.AddListener(() => buttonRenderer!.color = Color.green);
+            button.OnMouseOver.AddListener(() => buttonRenderer!.color = selectedColor ?? Color.green);
         }
 
         if (buttonRenderer != null) buttonRenderer.color = defaultColor ?? Color.white;
@@ -96,6 +96,25 @@ public static class UnityHelper
     {
         text.TargetText = (StringNames)short.MaxValue;
         text.defaultStr = translationKey;
+    }
+
+    static public void DoTransitionFade(this TransitionFade transitionFade, GameObject? transitionFrom, GameObject? transitionTo, Action onTransition, Action callback)
+    {
+        if (transitionTo) transitionTo!.SetActive(false);
+
+        IEnumerator Coroutine()
+        {
+            yield return Effects.ColorFade(transitionFade.overlay, Color.clear, Color.black, 0.1f);
+            if (transitionFrom && transitionFrom!.gameObject) transitionFrom.gameObject.SetActive(false);
+            if (transitionTo && transitionTo!.gameObject) if (transitionTo != null) transitionTo.gameObject.SetActive(true);
+            onTransition.Invoke();
+            yield return null;
+            yield return Effects.ColorFade(transitionFade.overlay, Color.black, Color.clear, 0.1f);
+            callback.Invoke();
+            yield break;
+        }
+
+        transitionFade.StartCoroutine(Coroutine().WrapToIl2Cpp());
     }
 }
 

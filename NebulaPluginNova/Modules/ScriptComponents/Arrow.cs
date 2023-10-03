@@ -27,6 +27,11 @@ public class Arrow : INebulaScriptComponent
         if (usePlayerMaterial) SetColor(Color.white, Color.gray);
     }
 
+    public Arrow SetColorByOutfit(GameData.PlayerOutfit outfit)
+    {
+        return SetColor(Palette.PlayerColors[outfit.ColorId], Palette.ShadowColors[outfit.ColorId]);
+    }
+
     public Arrow SetColor(Color mainColor, Color shadowColor)
     {
         arrowRenderer?.material.SetColor(PlayerMaterial.BackColor, shadowColor);
@@ -95,5 +100,16 @@ public class Arrow : INebulaScriptComponent
             }
             arrowRenderer.color = new Color(arrowRenderer.color.r, arrowRenderer.color.g, arrowRenderer.color.b, a);
         }
+    }
+
+    public void MarkAsDisappering()
+    {
+        IsDisappearing = true;
+    }
+
+    public IEnumerator CoWaitAndDisappear(float waiting)
+    {
+        yield return new WaitForSeconds(waiting);
+        IsDisappearing = true;
     }
 }

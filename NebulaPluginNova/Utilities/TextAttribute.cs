@@ -42,15 +42,18 @@ public class TextAttribute
         FontSize = 1.8f,
         Size = new Vector2(1.7f, 0.3f)
     };
+
     public Color Color { get; set; } = Color.white;
     public TMPro.TextAlignmentOptions Alignment { get; set; } = TMPro.TextAlignmentOptions.Center;
     public TMPro.FontStyles Styles { get; set; } = TMPro.FontStyles.Normal;
     public Material? FontMaterial { get; set; } = null;
+    public TMPro.TMP_FontAsset? Font { get; set; } = null;
     public float FontMinSize { get; set; } = 0.6f;
     public float FontMaxSize { get; set; } = 2f;
     public float FontSize { get; set; } = 1.5f;
     public bool AllowAutoSizing { get; set; } = true;
     public Vector2 Size { get; set; } = new Vector2(3f, 0.5f);
+    public TextAttribute EditFontSize(float size) => EditFontSize(size, size, size);
     public TextAttribute EditFontSize(float size,float min,float max)
     {
         FontMaxSize = max;
@@ -72,6 +75,7 @@ public class TextAttribute
         text.rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
         text.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
         text.rectTransform.pivot = new Vector2(0.5f, 0.5f);
+        if (Font != null) text.font = Font;
         if (FontMaterial != null) text.fontMaterial = FontMaterial;
     }
 

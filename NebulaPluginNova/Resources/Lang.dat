@@ -5,11 +5,13 @@
 
 "title.buttons.update" : "Update to Latest NoS"
 "title.buttons.addons" : "Add-ons"
+"title.buttons.developersStudio" : "Dev. Studio"
 
 # UI
 
 "ui.dialog.yes" : "Yes"
 "ui.dialog.no" : "No"
+"ui.common.loading" : "Now Loading..."
 
 # Game Mode
 
@@ -144,6 +146,13 @@
 "options.role.bait.detail" : "Your murderer reports your body immediately."
 "options.role.bait.showKillFlash" : "Show Kill Flash"
 
+"role.comet.name" : "Comet"
+"role.comet.blurb" : "Run Through"
+"options.role.comet.detail" : "You move fastly and secretly.<br>While your ability is activated, your body can not be seen anyone."
+"options.role.comet.brazeCoolDown" : "Blaze Cool Down"
+"options.role.comet.brazeSpeed" : "Blaze Speed"
+"options.role.comet.brazeDuration" : "Blaze Duration"
+
 "role.necromancer.name" : "Necromancer"
 "role.necromancer.blurb" : "Revive Phantoms"
 "options.role.necromancer.detail" : "Necromancer can raise dead bodies from the dead!<br>They drags a corpse for a resurrection ritual."
@@ -159,7 +168,7 @@
 "role.niceTrapper.name" : "Nice Trapper"
 "role.niceTrapper.blurb" : "Entrap and Find the Impostors"
 "options.role.niceTrapper.detail" : "Nice Trapper sets traps with various effects."
-"role.niceTrapper.costOfCommTrap" : "Cost Of Comm. Trap"
+"options.role.niceTrapper.costOfCommTrap" : "Cost Of Comm. Trap"
 
 "role.doctor.name" : "Doctor"
 "role.doctor.blurb" : "Thus They Died"
@@ -192,7 +201,7 @@
 
 "role.provocateur.name" : "Provocateur"
 "role.provocateur.blurb" : "Go To The Grave Together"
-"options.role.provocateur.detail" : "On died, Provocateur embroils their murderer."
+"options.role.provocateur.detail" : "On death, Provocateur embroils their murderer."
 "options.role.provocateur.embroilCoolDown" : "Embroil Cool Down"
 "options.role.provocateur.embroilAdditionalCoolDown" : "Embroil Additional Cool Down"
 "options.role.provocateur.embroilDuration" : "Embroil Duration"
@@ -240,9 +249,9 @@
 
 "role.evilTrapper.name" : "Evil Trapper"
 "role.evilTrapper.blurb" : "Entrap and Kill Crewmates"
-"options.role.niceTrapper.detail" : "Evil Trapper sets traps with various effects.<br>Killing by trap shares its kill cool down too."
-"role.evilTrapper.killTrapSoundDistance" : "Kill Trap Sound Distance"
-"role.evilTrapper.costOfKillTrap" : "Cost Of Kill Trap"
+"options.role.evilTrapper.detail" : "Evil Trapper sets traps with various effects.<br>Killing by trap shares its kill cool down too."
+"options.role.evilTrapper.killTrapSoundDistance" : "Kill Trap Sound Distance"
+"options.role.evilTrapper.costOfKillTrap" : "Cost Of Kill Trap"
 
 "role.jailer.name" : "Jailer"
 "role.jailer.blurb" : "Be Under the Control"
@@ -544,3 +553,35 @@
 
 "config.client.keyBindings" : "Key Bindings" 
 "config.client.outputHash" : "Output Hash"
+
+# Developer Studio
+
+"devStudio.ui.common.edit" : "Edit"
+"devStudio.ui.common.save" : "Save"
+"devStudio.ui.common.preview" : "Preview"
+"devStudio.ui.common.delete" : "Delete"
+"devStudio.ui.common.generate" : "Generate"
+"devStudio.ui.common.confirmSaving" : "Are you sure to save?"
+"devStudio.ui.common.confirmDeletingAddon" : "Are you sure to delete add-on?"
+"devStudio.ui.common.confirmDeleting" : "Are you sure to delete?"
+"devStudio.ui.main.title" : "My Add-ons"
+"devStudio.ui.addon.build" : "Export Addon"
+"devStudio.ui.addon.document" : "Documents"
+"devStudio.ui.addon.language" : "Language"
+"devStudio.ui.document.isDuplicatedId" : "This document has been existed already."
+"devStudio.ui.document.isUsingId" : "<b>Great!</b> It is used standardly!"
+"devStudio.ui.document.element.contents" : "Contents Holder"
+"devStudio.ui.document.element.aligned" : "Aligned Holder"
+"devStudio.ui.document.element.localizedText" : "Localized Text"
+"devStudio.ui.document.element.rawText" : "Raw Text"
+"devStudio.ui.document.element.image" : "Image"
+"devStudio.ui.document.element.vertical" : "Vertical Space"
+"devStudio.ui.document.element.horizontal" : "Horizontal Space"
+"devStudio.ui.document.editor.color" : "Color"
+"devStudio.ui.document.editor.image" : "Image"
+"devStudio.ui.document.editor.width" : "Width"
+"devStudio.ui.document.editor.height" : "Height"
+"devStudio.ui.document.editor.fontSize" : "Font Size"
+"devStudio.ui.document.editor.isBold" : "Bold"
+"devStudio.ui.hint.requiredText" : "#Required"
+"devStudio.ui.hint.duplicatedId" : "#Already existed"

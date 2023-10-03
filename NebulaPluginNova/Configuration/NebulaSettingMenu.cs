@@ -59,7 +59,7 @@ public class NebulaSettingMenu : MonoBehaviour
         TextAttribute.TitleAttr.Reflect(SecondTitle);
         SecondTitle.text = "Configuration Title";
         SecondTitle.transform.localPosition = new Vector3(-2.8f, 1.9f, -10f);
-        new MetaContext.Button(() => OpenFirstPage(), new(TextAttribute.BoldAttr) { Size = new Vector2(0.4f, 0.28f) }) { RawText = "<<" }.Generate(SecondPage, new Vector2(-4.8f, 1.9f));
+        new MetaContext.Button(() => OpenFirstPage(), new(TextAttribute.BoldAttr) { Size = new Vector2(0.4f, 0.28f) }) { RawText = "<<" }.Generate(SecondPage, new Vector2(-4.8f, 1.9f),out _);
         SecondTopScreen = UnityHelper.CreateObject<MetaScreen>("SecondTopScreen", SecondPage.transform, new Vector3(0f, 1.9f, -5f));
 
         OpenFirstPage();

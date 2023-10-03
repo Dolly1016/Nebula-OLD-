@@ -54,6 +54,17 @@ public class VanillaAsset
             return preSpawnFont;
         }
     }
+
+    static private TMP_FontAsset? brookFont = null;
+    static public TMP_FontAsset BrookFont
+    {
+        get
+        {
+            if (brookFont == null) brookFont = UnityHelper.FindAsset<TMP_FontAsset>("Brook SDF")!;
+            return brookFont;
+        }
+    }
+
     static public GameSettingMenu PlayerOptionsMenuPrefab { get; private set; } = null!;
 
     static public void LoadAssetAtInitialize()

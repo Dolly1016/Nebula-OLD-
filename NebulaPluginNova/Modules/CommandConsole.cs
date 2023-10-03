@@ -30,4 +30,9 @@ public class CommandConsole
         backGround.size = size + new Vector2(0.15f, 0.008f);
         backGround.color = new Color(0.1f, 0.1f, 0.1f, 0.85f);
     }
+
+    public void GainFocus()
+    {
+        myInput.GainFocus();
+    }
 }

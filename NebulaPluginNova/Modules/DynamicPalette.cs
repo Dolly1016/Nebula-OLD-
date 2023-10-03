@@ -529,7 +529,7 @@ public class NebulaPlayerTab : MonoBehaviour
     static private SpriteLoader saveButtonSprite = SpriteLoader.FromResource("Nebula.Resources.ColorSave.png", 100f);
     public void Start()
     {
-        new MetaContext.Button(() => DynamicPalette.OpenCatalogue(TargetRenderer, () => PreviewColor(null, null, null)), TextAttribute.BoldAttr) { TranslationKey = "inventory.palette.catalogue" }.Generate(gameObject, new Vector2(2.9f, 2.25f));
+        new MetaContext.Button(() => DynamicPalette.OpenCatalogue(TargetRenderer, () => PreviewColor(null, null, null)), TextAttribute.BoldAttr) { TranslationKey = "inventory.palette.catalogue" }.Generate(gameObject, new Vector2(2.9f, 2.25f),out _);
 
         DynamicPaletteRenderer = UnityHelper.CreateObject<SpriteRenderer>("DynamicPalette",transform, new Vector3(0.4f, -0.1f, -80f));
         DynamicPaletteRenderer.sprite = spritePalette.GetSprite();

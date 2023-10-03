@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Nebula.Modules.CustomMap;
 
+/*
 public class ImageAsset
 {
     [JsonSerializableField]
@@ -54,3 +55,4 @@ public class Blueprint
     BlueprintChain[]? Children = null;
 }
 
+*/

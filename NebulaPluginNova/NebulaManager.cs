@@ -39,6 +39,11 @@ public class MouseOverPopup : MonoBehaviour
         NebulaGameManager.Instance?.OnSceneChanged();
     }
 
+    public void Irrelevantize()
+    {
+        relatedButton = null;
+    }
+
     public void SetContext(PassiveUiElement? related, IMetaContext? context)
     {
         if(context == null) {
@@ -63,14 +68,36 @@ public class MouseOverPopup : MonoBehaviour
             return;
         }
 
-        Vector2 anchorPoint = new(-screenSize.x / 2f - 0.15f, screenSize.y / 2f + 0.15f);
-        if (!isLeft) anchorPoint.x += (width.max - width.min) + 0.3f;
-        if (isLower) anchorPoint.y -= height + 0.3f;
-        
+        float[] xRange = new float[2], yRange = new float[2];
+        xRange[0] = -screenSize.x / 2f - 0.15f;
+        yRange[1] = screenSize.y / 2f + 0.15f;
+        xRange[1] = xRange[0] + (width.max - width.min) + 0.3f;
+        yRange[0] = yRange[1] - height - 0.3f;
+
+        Vector2 anchorPoint = new(xRange[isLeft ? 0 : 1], yRange[isLower ? 0 : 1]);
+
         var pos = UnityHelper.ScreenToWorldPoint(Input.mousePosition, LayerExpansion.GetUILayer());
         pos.z = -800f;
         transform.position = pos - (Vector3)anchorPoint;
 
+        //範囲外にはみ出た表示の是正
+        {
+            var lower = UnityHelper.ScreenToWorldPoint(new(10f, 10f), LayerExpansion.GetUILayer());
+            var upper = UnityHelper.ScreenToWorldPoint(new(Screen.width - 10f, Screen.height - 10f), LayerExpansion.GetUILayer());
+            float diff;
+
+            diff = (transform.position.x + xRange[0]) - lower.x;
+            if (diff < 0f) transform.position -= new Vector3(diff, 0f);
+
+            diff = (transform.position.y + yRange[0]) - lower.y;
+            if (diff < 0f) transform.position -= new Vector3(0f, diff);
+
+            diff = (transform.position.x + xRange[1]) - upper.x;
+            if (diff > 0f) transform.position -= new Vector3(diff, 0f);
+
+            diff = (transform.position.y + yRange[1]) - upper.y;
+            if (diff > 0f) transform.position -= new Vector3(0f, diff);
+        }
 
 
         background.transform.localPosition = new Vector3((width.min + width.max) / 2f, screenSize.y / 2f - height / 2f, 1f);
@@ -166,6 +193,8 @@ public class NebulaManager : MonoBehaviour
     {
         if (console == null) console = new CommandConsole();
         else console.IsShown = !console.IsShown;
+
+        if (console.IsShown) console.GainFocus();
     }
 
     public void CloseAllUI()
@@ -196,16 +225,37 @@ public class NebulaManager : MonoBehaviour
         return dir + "\\" + currentTime + ".png";
     }
 
-    static public IEnumerator CaptureAndSave()
+    static public IEnumerator CaptureAndSave(bool fillBackColor)
     {
         yield return new WaitForEndOfFrame();
-        Texture2D tex = ScreenCapture.CaptureScreenshotAsTexture();
 
-        File.WriteAllBytes(GetPicturePath(out string displayPath), tex.EncodeToPNG());
+
+        var tex = ScreenCapture.CaptureScreenshotAsTexture();
+
+        if (fillBackColor)
+        {
+            var backColor = Camera.main.backgroundColor;
+            var pixels = tex.GetPixels();
+
+            for (int i = 0; i < pixels.Length; i++)
+            {
+                Color c = pixels[i] * pixels[i].a + backColor * (1f - pixels[i].a);
+                c.a = 1f;
+                pixels[i] = c;
+
+                if (i % 10000 == 0) yield return null;
+            }
+
+            tex.SetPixels(pixels);
+            tex.Apply();
+        }
+
+        File.WriteAllBytesAsync(GetPicturePath(out string displayPath), tex.EncodeToPNG());
     }
 
     public void Update()
     {
+
         /*
         if (Input.GetKeyDown(KeyCode.T))
         {
@@ -217,45 +267,48 @@ public class NebulaManager : MonoBehaviour
         if (NebulaPlugin.FinishedPreload)
         {
             //スクリーンショット
-            if (Input.GetKeyDown(NebulaInput.GetKeyCode(KeyAssignmentType.Screenshot))) StartCoroutine(CaptureAndSave().WrapToIl2Cpp());
+            if (Input.GetKeyDown(NebulaInput.GetKeyCode(KeyAssignmentType.Screenshot))) StartCoroutine(CaptureAndSave(Input.GetKey(NebulaInput.GetKeyCode(KeyAssignmentType.Command))).WrapToIl2Cpp());
 
-            //コマンド
-            if (Input.GetKeyDown(NebulaInput.GetKeyCode(KeyAssignmentType.Command)))
+            if (AmongUsClient.Instance && AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.NotJoined)
             {
-                MetaContext context = new();
-                context.Append(new MetaContext.Text(new(TextAttribute.BoldAttr) { Alignment = TMPro.TextAlignmentOptions.Left }) { TranslationKey = "help.command", Alignment = IMetaContext.AlignmentOption.Left });
-                string commandsStr = "";
-                foreach (var command in commands)
+                //コマンド
+                if (Input.GetKeyDown(NebulaInput.GetKeyCode(KeyAssignmentType.Command)))
                 {
-                    if (!command.Predicate.Invoke()) continue;
+                    MetaContext context = new();
+                    context.Append(new MetaContext.Text(new(TextAttribute.BoldAttr) { Alignment = TMPro.TextAlignmentOptions.Left }) { TranslationKey = "help.command", Alignment = IMetaContext.AlignmentOption.Left });
+                    string commandsStr = "";
+                    foreach (var command in commands)
+                    {
+                        if (!command.Predicate.Invoke()) continue;
 
-                    if (commandsStr.Length != 0) commandsStr += "\n";
-                    commandsStr += ButtonEffect.KeyCodeInfo.GetKeyDisplayName(command.KeyCode!.Value);
+                        if (commandsStr.Length != 0) commandsStr += "\n";
+                        commandsStr += ButtonEffect.KeyCodeInfo.GetKeyDisplayName(command.KeyCode!.Value);
 
-                    commandsStr += " :" + Language.Translate(command.TranslationKey);
+                        commandsStr += " :" + Language.Translate(command.TranslationKey);
+                    }
+                    context.Append(new MetaContext.VariableText(TextAttribute.ContentAttr) { RawText = commandsStr });
+
+                    if (commandsStr.Length > 0) SetHelpContext(null, context);
+
                 }
-                context.Append(new MetaContext.VariableText(TextAttribute.ContentAttr) { RawText = commandsStr });
 
-                if (commandsStr.Length > 0) SetHelpContext(null, context);
-
-            }
-
-            //コマンド
-            if (Input.GetKeyUp(NebulaInput.GetKeyCode(KeyAssignmentType.Command)))
-            {
-                if (HelpRelatedObject == null) HideHelpContext();
-            }
-
-            //コマンド
-            if (Input.GetKey(NebulaInput.GetKeyCode(KeyAssignmentType.Command)))
-            {
-                foreach (var command in commands)
+                //コマンド
+                if (Input.GetKeyUp(NebulaInput.GetKeyCode(KeyAssignmentType.Command)))
                 {
-                    if (!Input.GetKeyDown(command.KeyCode!.Value)) continue;
+                    if (HelpRelatedObject == null) HideHelpContext();
+                }
 
-                    command.CommandAction.Invoke();
-                    HideHelpContext();
-                    break;
+                //コマンド
+                if (Input.GetKey(NebulaInput.GetKeyCode(KeyAssignmentType.Command)))
+                {
+                    foreach (var command in commands)
+                    {
+                        if (!Input.GetKeyDown(command.KeyCode!.Value)) continue;
+
+                        command.CommandAction.Invoke();
+                        HideHelpContext();
+                        break;
+                    }
                 }
             }
         }
@@ -286,4 +339,6 @@ public class NebulaManager : MonoBehaviour
     public void SetHelpContext(PassiveUiElement? related, IMetaContext? context) => mouseOverPopup.SetContext(related, context);
     public void HideHelpContext() => mouseOverPopup.SetContext(null, null);
     public PassiveUiElement? HelpRelatedObject => mouseOverPopup.RelatedObject;
+    public bool ShowingAnyHelpContent => mouseOverPopup.isActiveAndEnabled;
+    public void HelpIrrelevantize() => mouseOverPopup.Irrelevantize();
 }

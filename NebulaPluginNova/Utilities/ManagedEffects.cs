@@ -19,4 +19,16 @@ public static class ManagedEffects
         action.Invoke();
         yield break;
     }
+
+    static public IEnumerator WaitAsCoroutine(this Task task)
+    {
+        while (!task.IsCompleted) yield return null;
+        yield break;
+    }
+
+    static public IEnumerator WaitAsCoroutine<T>(this Task<T> task)
+    {
+        while (!task.IsCompleted) yield return null;
+        yield break;
+    }
 }

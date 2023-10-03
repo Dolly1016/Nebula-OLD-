@@ -12,6 +12,12 @@ namespace Nebula.Utilities;
 [AttributeUsage(AttributeTargets.Field)]
 public class JsonSerializableField : Attribute
 {
+    public bool SkipSerializeIfIsNull { get; private init; } = false;
+
+    public JsonSerializableField(bool skipSerializeIfIsNull = false)
+    {
+        SkipSerializeIfIsNull = skipSerializeIfIsNull;
+    }
 }
 
 [AttributeUsage(AttributeTargets.Field)]
@@ -63,7 +69,7 @@ public static class JsonStructure
 
         object? instance = constructor.Invoke(new object[0]);
 
-        json = json.Substring(1);
+        json = json.Substring(1).TrimStart();
 
         while (true)
         {
@@ -233,11 +239,14 @@ public static class JsonStructure
         {
             if (!f.IsDefined(typeof(JsonSerializableField))) continue;
 
-            if(!isFirst) result += ",";
+            var val = f.GetValue(obj);
+            if (val == null && f.GetCustomAttribute<JsonSerializableField>()!.SkipSerializeIfIsNull) continue;
+
+            if (!isFirst) result += ",";
             result += "\n\t";
             result += "\"" + f.Name + "\" : ";
-            var val = f.GetValue(obj);
-            if (val != null && !f.FieldType.Equals(val.GetType())) result += "<" + obj.GetType()!.Name + ">";
+
+            if (val != null && !f.FieldType.Equals(val.GetType()) && !val.GetType().IsPrimitive) result += "<" + val.GetType()!.Name + ">";
             result += (val?.Serialize()! ?? "null").Replace("\n", "\n\t");
 
             isFirst = false;

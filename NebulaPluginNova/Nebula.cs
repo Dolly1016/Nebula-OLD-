@@ -11,6 +11,7 @@ global using Nebula.Modules.ScriptComponents;
 global using System.Collections;
 global using HarmonyLib;
 global using Timer = Nebula.Modules.ScriptComponents.Timer;
+global using Color = UnityEngine.Color;
 using BepInEx;
 using BepInEx.Unity.IL2CPP;
 using Nebula;
@@ -59,7 +60,7 @@ public class NebulaPlugin : BasePlugin
     public const bool IsSnapshot = false;
     public const string MajorCodeName = "Experimental"/*"Haro"*/;
     public const string SnapshotVersion = "23.08.01";
-    public const string VisualPluginVersion = "6 hotfix2";
+    public const string VisualPluginVersion = "7 hotfix";
 
     static public HttpClient HttpClient
     {
@@ -186,6 +187,11 @@ public class NebulaPlugin : BasePlugin
         {
             new GameObject("NebulaManager").AddComponent<NebulaManager>();
         });
+    }
+
+    public static List<SerializableDocument>? Test()
+    {
+        return JsonStructure.Deserialize<List<SerializableDocument>>("[]");
     }
 }
 

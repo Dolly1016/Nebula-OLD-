@@ -59,12 +59,25 @@ public class EastAsianFontChanger
 public class Language
 {
     static private Language? CurrentLanguage = null;
+    static private Language? GuestLanguage = null;
     static private Language? DefaultLanguage = null;
 
     public Dictionary<string, string> translationMap = new();
 
+    public static void SetGuestLanguage(Language? language) => GuestLanguage = language;
+
     public static string GetCurrentLanguage() => GetLanguage((uint)AmongUs.Data.DataManager.Settings.Language.CurrentLanguage);
     
+    
+    public static IEnumerable<uint> AllLanguageId()
+    {
+        for (uint i = 0; i <= 15; i++) yield return i;
+    }
+
+    public static string GetLanguageShownString(uint language)
+    {
+        return TranslationController.Instance.Languages[(SupportedLangs)language].Name;
+    }
     public static string GetLanguage(uint language)
     {
         switch (language)
@@ -123,8 +136,9 @@ public class Language
         EastAsianFontChanger.SetUpFont(lang);
 
         CurrentLanguage = new Language();
-        CurrentLanguage.Deserialize(StreamHelper.OpenFromResource("Nebula.Resources.Languages." + lang + ".dat"));
-        CurrentLanguage.Deserialize(StreamHelper.OpenFromResource("Nebula.Resources.Languages." + lang + "_Help.dat"));
+
+        //CurrentLanguage.Deserialize(StreamHelper.OpenFromResource("Nebula.Resources.Languages." + lang + ".dat"));
+        //CurrentLanguage.Deserialize(StreamHelper.OpenFromResource("Nebula.Resources.Languages." + lang + "_Help.dat"));
 
         foreach(var addon in NebulaAddon.AllAddons)
         {
@@ -133,7 +147,7 @@ public class Language
         }
     }
 
-    private void Deserialize(Stream? stream)
+    public void Deserialize(Stream? stream)
     {
         if (stream == null) return;
         using (var reader = new StreamReader(stream, Encoding.GetEncoding("utf-8"))) {
@@ -186,6 +200,8 @@ public class Language
     {
         if (translationKey == null) return null;
         string? result;
+        if (GuestLanguage?.translationMap.TryGetValue(translationKey, out result) ?? false)
+            return result!;
         if (CurrentLanguage?.translationMap.TryGetValue(translationKey, out result) ?? false)
             return result!;
         if (DefaultLanguage?.translationMap.TryGetValue(translationKey, out result) ?? false)

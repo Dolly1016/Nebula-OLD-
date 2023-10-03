@@ -199,7 +199,7 @@ public class Sniper : ConfigurableStandardRole
             {
                 var arrow = new Arrow(snipeNoticeSprite.GetSprite(), false) { IsSmallenNearPlayer = false, IsAffectedByComms = false, FixedAngle = true };
                 arrow.TargetPos = message;
-                NebulaManager.Instance.StartCoroutine(Effects.Sequence(Effects.Wait(3f), ManagedEffects.Action(() => arrow.IsDisappearing = true).WrapToIl2Cpp()));
+                NebulaManager.Instance.StartCoroutine(arrow.CoWaitAndDisappear(3f).WrapToIl2Cpp());
             }
         }
         );

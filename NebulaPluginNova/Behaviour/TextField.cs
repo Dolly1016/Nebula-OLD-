@@ -15,8 +15,59 @@ namespace Nebula.Behaviour;
 
 public class TextField : MonoBehaviour
 {
+    static private List<TextField> allFields = new();
+
+    public static TextField? EditFirstField()
+    {
+        if (allFields.Count == 0) return null;
+        var field = allFields.FirstOrDefault(f=>f.gameObject.active);
+        ChangeFocus(field);
+        return field;
+    }
+
+    public static TextField? EditLastField()
+    {
+        if (allFields.Count == 0) return null;
+        var field = allFields.LastOrDefault(f => f.gameObject.active);
+        ChangeFocus(field);
+        return field;
+    }
+
+    public static TextField? ChangeField(bool increament = true)
+    {
+        if (validField == null) return null;
+
+        int index = allFields.IndexOf(validField);
+        if (index == -1)
+        {
+            return null;
+        }
+
+        while (true)
+        {
+            index += increament ? 1 : -1;
+            if (index < 0 || index >= allFields.Count) break;
+
+            if (allFields[index].gameObject.active)
+            {
+                ChangeFocus(allFields[index]);
+                return allFields[index];
+            }
+        }
+
+        return null;
+    }
+
+    public TextField GainFocus()
+    {
+        ChangeFocus(this);
+        return this;
+    }
 
     static TextField() => ClassInjector.RegisterTypeInIl2Cpp<TextField>();
+
+    public string Text => myInput;
+    private string? hint;
 
     TextMeshPro myText = null!;
     TextMeshPro myCursor = null!;
@@ -26,32 +77,52 @@ public class TextField : MonoBehaviour
     float cursorTimer = 0f;
     string lastCompoStr = "";
 
+    public int MaxLines = 1;
+    public bool AllowMultiLine => MaxLines >= 2;
+    public bool AllowTab = false;
+
+    public Predicate<char>? InputPredicate;
+    public Action<string>? UpdateAction;
+    public Action<string>? LostFocusAction;
+
     static private TextField? validField = null;
 
     static public bool AnyoneValid => validField?.IsValid ?? false;
 
     public bool IsSelecting => selectingBegin != -1;
 
+    static readonly public Predicate<char> TokenPredicate = (c) => ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') || ('0' <= c && c <= '9');
+    static readonly public Predicate<char> IdPredicate = (c) => TokenPredicate(c) || c is '.';
+    static readonly public Predicate<char> IntegerPredicate = (c) => ('0' <= c && c <= '9');
+    static readonly public Predicate<char> NumberPredicate = (c) => ('0' <= c && c <= '9') || c is '.';
+    static readonly public Predicate<char> JsonStringPredicate = (c) => !(c is '\\' or '"');
+
     private bool InputText(string input)
     {
+        if (InputPredicate != null) input = new string(input.Where(c => (InputPredicate.Invoke(c))||(c is '\r' or (char)0x08)).ToArray());
+
         if (input.Length == 0) return false;
 
-        int i = 0;
-        while (true)
         {
-            if (i == input.Length) return false;
-            if (input[i] == 0x08)
-                RemoveCharacter(false);
-            if (input[i] == 0xFF)
-                RemoveCharacter(true);
-            else
-                break;
+            int i = 0;
+            while (true)
+            {
+                if (i == input.Length) return false;
+                if (input[i] == 0x08)
+                    RemoveCharacter(false);
+                if (input[i] == 0xFF)
+                    RemoveCharacter(true);
+                else
+                    break;
 
-            i++;
+                i++;
+            }
+
+
+            if (!AllowMultiLine) input = input.Replace("\r", "");
+            if (!AllowTab) input = input.Replace("\t", " ");
+            input = input.Substring(i).Replace(((char)0x08).ToString(), "").Replace(((char)0xFF).ToString(), "").Replace("\0", "").Replace("\n", "");
         }
-
-
-        input = input.Substring(i).Replace(((char)0x08).ToString(), "").Replace(((char)0xFF).ToString(), "").Replace("\n", "").Replace("\r", "").Replace("\t", " ").Replace("\0", "");
 
         ShowCursor();
 
@@ -68,7 +139,26 @@ public class TextField : MonoBehaviour
             cursor += input.Length;
         }
 
+        //改行文字を制限
+        var strings = myInput.Split('\r');
+        myInput = "";
+        for(int i = 0; i < strings.Length; i++)
+        {
+            if (i > 0 && i < MaxLines) myInput += '\r';
+            myInput += strings[i];
+        }
+        cursor = Math.Clamp(cursor, 0, myInput.Length);
+
+        UpdateAction?.Invoke(myInput);
+
         return true;
+    }
+
+    private void RemoveAll()
+    {
+        myInput = "";
+        cursor = 0;
+        selectingBegin = -1;
     }
 
     private void RemoveCharacter(bool isDelete)
@@ -91,6 +181,30 @@ public class TextField : MonoBehaviour
                 myInput = myInput.Remove(cursor, 1);
             }
         }
+    }
+
+    private void MoveCursorLine(bool moveForward,bool shift)
+    {
+        try
+        {
+            int myLineBegining = cursor;
+            while (myLineBegining > 0 && myInput[myLineBegining - 1] != '\r') myLineBegining--;
+            int targetLineBegining = moveForward ? cursor : myLineBegining - 1;
+            while (targetLineBegining > 0 && targetLineBegining < myInput.Length && myInput[targetLineBegining - 1] != '\r') targetLineBegining += moveForward ? 1 : -1;
+
+            int dis = cursor - myLineBegining;
+            int result = targetLineBegining;
+            for (int i = 0; i < dis; i++)
+            {
+                if (myInput[result] != '\r' && result + 1 < myInput.Length) result++;
+            }
+
+            if (IsSelecting && !shift) selectingBegin = -1;
+            if (shift && !IsSelecting) selectingBegin = cursor;
+            cursor = result;
+            if (selectingBegin == cursor) selectingBegin = -1;
+        }
+        catch { }
     }
 
     private void MoveCursor(bool moveForward, bool shift)
@@ -116,9 +230,18 @@ public class TextField : MonoBehaviour
         return index;
     }
 
+    private int GetCursorLineNum(int index)
+    {
+        if (index >= myText.textInfo.characterInfo.Length) index = myText.textInfo.characterInfo.Length - 1;
+        return myText.textInfo.characterInfo[index].lineNumber;
+    }
+
+    //改行文字を含むindex
     private float GetCursorX(int index)
     {
-        if (index == 0) return myText.rectTransform.rect.min.x;
+        //最初あるいは直前の文字と行が違う場合
+        if (index <= 0 || (index < myText.textInfo.characterInfo.Count && myText.textInfo.characterInfo[index - 1].lineNumber != myText.textInfo.characterInfo[index].lineNumber))
+            return myText.rectTransform.rect.min.x;
         else return myText.textInfo.characterInfo[index - 1].xAdvance;
     }
 
@@ -132,22 +255,40 @@ public class TextField : MonoBehaviour
             string str = myInput.Insert(cursor, compStr);
             if (IsSelecting) str = str.Insert(ConsiderComposition(Math.Max(cursor, selectingBegin), compStr), "\\EMK").Insert(ConsiderComposition(Math.Min(cursor, selectingBegin), compStr), "\\BMK");
 
-            str = Regex.Replace(str,"[<>]", "<noparse>$0</noparse>").Replace("\\EMK", "</mark>").Replace("\\BMK", "<mark=#5F74A5AA>");
+            str = Regex.Replace(str, "[<>]", "<noparse>$0</noparse>").Replace("\\EMK", "</mark>").Replace("\\BMK", "<mark=#5F74A5AA>").Replace("\r", "<br>");
 
-            myText.text = $"<font=\"Barlow-Medium SDF\">{str}";
+            myText.text = str + " ";
         }
         else
         {
-            myText.text = "";
+            myText.text = hint;
+            cursor = 0;
         }
         myText.ForceMeshUpdate();
 
         int visualCursor = ConsiderComposition(cursor, compStr);
-        myCursor.transform.localPosition = new(GetCursorX(visualCursor), 0, -1f);
+        int lineNum = GetCursorLineNum(visualCursor);
+        myCursor.transform.localPosition = new(GetCursorX(visualCursor), myInput.Length == 0 ? 
+            0f : myText.textInfo.lineInfo[lineNum].baseline - myCursor.textInfo.lineInfo[0].baseline, -1f);
+        
 
         Vector2 compoPos = UnityHelper.WorldToScreenPoint(transform.position + new Vector3(GetCursorX(cursor), 0.15f, 0f), LayerExpansion.GetUILayer());
         compoPos.y = Screen.height - compoPos.y;
         Input.compositionCursorPos = compoPos;
+    }
+
+    public void SetHint(string hint)
+    {
+        this.hint = hint;
+        if (myInput.Length == 0) UpdateTextMesh();
+    }
+
+    public void SetText(string text)
+    {
+        RemoveAll();
+        InputText(text);
+        ShowCursor();
+        UpdateTextMesh();
     }
 
     private TextAttribute GenerateAttribute(Vector2 size, float fontSize, TextAlignmentOptions alignment)
@@ -162,10 +303,11 @@ public class TextField : MonoBehaviour
     };
     
 
-    public void SetSize(Vector2 size,float fontSize)
+    public void SetSize(Vector2 size,float fontSize,int maxLines = 1)
     {
-        GenerateAttribute(size, fontSize, TextAlignmentOptions.Left).Reflect(myText);
-        GenerateAttribute(new(0.3f,size.y), fontSize, TextAlignmentOptions.Center).Reflect(myCursor);
+        MaxLines = maxLines;
+        GenerateAttribute(size, fontSize, AllowMultiLine ? TextAlignmentOptions.TopLeft : TextAlignmentOptions.Left).Reflect(myText);
+        GenerateAttribute(new(0.3f, size.y), fontSize, AllowMultiLine ? TextAlignmentOptions.Top : TextAlignmentOptions.Center).Reflect(myCursor);
         myText.font = VanillaAsset.VersionFont;
         myCursor.font = VanillaAsset.VersionFont;
 
@@ -174,8 +316,13 @@ public class TextField : MonoBehaviour
 
     public void Awake()
     {
+        allFields.Add(this);
+
         myText = GameObject.Instantiate(VanillaAsset.StandardTextPrefab, transform);
         myCursor = GameObject.Instantiate(VanillaAsset.StandardTextPrefab, transform);
+        
+        myText.sortingOrder = 15;
+        myCursor.sortingOrder = 15;
 
         myText.transform.localPosition = new Vector3(0, 0, -1f);
         myCursor.transform.localPosition = new Vector3(0, 0, -1f);
@@ -185,6 +332,9 @@ public class TextField : MonoBehaviour
 
         myText.text = "";
         myCursor.text = "|";
+        myCursor.ForceMeshUpdate();
+
+        dirtyFlag = true;
 
         SetSize(new Vector2(4f, 0.5f), 2f);
     }
@@ -206,7 +356,39 @@ public class TextField : MonoBehaviour
             return;
         }
 
+        if (lockedTime > 0f)
+        {
+            lockedTime -= Time.deltaTime;
+            myCursor.gameObject.SetActive(false);
+            return;
+        }
+
+        if (!AllowTab && Input.GetKeyDown(KeyCode.Tab)){
+            ChangeField(!PressingShift);
+            return;
+        }
+
+        if(!AllowMultiLine && Input.GetKeyDown(KeyCode.Return))
+        {
+            ChangeFocus(null);
+            return;
+        }
+
         bool requireUpdate = InputText(Input.inputString);
+        if (dirtyFlag) { requireUpdate = true; dirtyFlag = false; }
+
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            MoveCursorLine(false, PressingShift);
+            ShowCursor();
+            requireUpdate = true;
+        }
+        if (Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            MoveCursorLine(true, PressingShift);
+            ShowCursor();
+            requireUpdate = true;
+        }
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
             MoveCursor(false, PressingShift);
@@ -223,14 +405,14 @@ public class TextField : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Home))
         {
             if (!IsSelecting && PressingShift) selectingBegin = cursor;
-            cursor = 0;
+            while (cursor > 0 && myInput[cursor - 1] != '\r') cursor--;
             ShowCursor();
             requireUpdate = true;
         }
         if (Input.GetKeyDown(KeyCode.End))
         {
             if (!IsSelecting && PressingShift) selectingBegin = cursor;
-            cursor = myInput.Length;
+            while (cursor < myInput.Length && myInput[cursor] != '\r') cursor++;
             ShowCursor();
             requireUpdate = true;
         }
@@ -258,7 +440,7 @@ public class TextField : MonoBehaviour
                 requireUpdate = true;
             }
             if (Input.GetKeyDown(KeyCode.V)){
-                InputText(ClipboardHelper.GetClipboardString());
+                InputText(Helpers.GetClipboardString());
                 requireUpdate = true;
             }
         }
@@ -279,14 +461,14 @@ public class TextField : MonoBehaviour
         cursorTimer = 0.8f;
     }
 
-    public void OnEnable()
-    {
-        ChangeFocus(this);
-    }
-
     public void OnDisable()
     {
         if (validField == this) ChangeFocus(null);
+    }
+
+    public void OnDestroy()
+    {
+        allFields.Remove(this);
     }
 
     static private void ChangeFocus(TextField? field)
@@ -298,11 +480,18 @@ public class TextField : MonoBehaviour
     }
 
     private void LoseFocus() {
+        LostFocusAction?.Invoke(myInput);
         Input.imeCompositionMode = IMECompositionMode.Off;
     }
     private void GetFocus() {
         Input.imeCompositionMode = IMECompositionMode.On;
+        lockedTime = 0.1f;
+        cursor = myInput.Length;
+        UpdateTextMesh();
     }
 
-    public bool IsValid => validField == this && gameObject.active;
+    public bool IsValid => validField == this && validField;
+    //有効になっても操作できない時間
+    private float lockedTime = 0f;
+    private bool dirtyFlag;
 }

@@ -263,17 +263,6 @@ public class GameStatisticsViewer : MonoBehaviour
     public TMPro.TextMeshPro GameEndText = null!;
     static public GameStatisticsViewer Instance { get; private set; } = null!;
 
-    public SpriteRenderer CreateBackground(Vector2 size,Transform transform)
-    {
-        var renderer = UnityHelper.CreateObject<SpriteRenderer>("Background",transform,new Vector3(0,0,1f));
-        renderer.sprite = NebulaAsset.SharpWindowBackgroundSprite.GetSprite();
-        renderer.drawMode = SpriteDrawMode.Sliced;
-        renderer.tileMode = SpriteTileMode.Continuous;
-        renderer.color = MainColor;
-        renderer.size = size;
-        return renderer;
-    }
-
     public void Start()
     {
         allStatistics = NebulaGameManager.Instance!.GameStatistics.Sealed;
@@ -291,7 +280,7 @@ public class GameStatisticsViewer : MonoBehaviour
         minimapRenderer.transform.localPosition = Vector3.zero;
         mapColor = minimapRenderer.GetComponent<AlphaPulse>();
         mapColor.SetColor(MainColor);
-        CreateBackground(new Vector2(4.6f, 2.8f), minimap.transform);
+        NebulaAsset.CreateSharpBackground(new Vector2(4.6f, 2.8f), MainColor, minimap.transform);
         baseOnMinimap = UnityHelper.CreateObject("Scaler", scaledMinimap.transform,NebulaGameManager.Instance.RuntimeAsset.MinimapPrefab.HerePoint.transform.parent.localPosition);
         detailHolder = UnityHelper.CreateObject("Detail", transform, new Vector3(0, -3.5f, 0));
         Hide();
@@ -453,7 +442,7 @@ public class GameStatisticsViewer : MonoBehaviour
 
             GameObject detail = UnityHelper.CreateObject("EventDetail", detailHolder.transform, new Vector3(0, -0.76f * num, -10f));
             
-            var backGround = CreateBackground(new Vector2(3.4f, 0.7f), detail.transform);
+            var backGround = NebulaAsset.CreateSharpBackground(new Vector2(3.4f, 0.7f), MainColor, detail.transform);
 
             var collider = detail.AddComponent<BoxCollider2D>();
             collider.size = new Vector2(3.4f, 0.7f);

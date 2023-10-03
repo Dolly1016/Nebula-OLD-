@@ -20,14 +20,16 @@ file static class TrapperSystem
     };
     private const int CommTrapId = 2;
     private const int KillTrapId = 3;
-    public static void OnActivated(RoleInstance myRole, int[] buttonVariation, List<Trapper.Trap> localTraps)
+    public static void OnActivated(RoleInstance myRole, (int id,int cost)[] buttonVariation, List<Trapper.Trap> localTraps)
     {
         int buttonIndex = 0;
-
+        int leftCost = Trapper.NumOfChargesOption;
         var placeButton = myRole.Bind(new ModAbilityButton()).KeyBind(KeyAssignmentType.Ability).SubKeyBind(KeyAssignmentType.AidAction);
-        placeButton.SetSprite(buttonSprites[buttonVariation[0]]?.GetSprite());
-        placeButton.Availability = (button) => myRole.MyPlayer.MyControl.CanMove;
-        placeButton.Visibility = (button) => !myRole.MyPlayer.MyControl.Data.IsDead;
+        placeButton.SetSprite(buttonSprites[buttonVariation[0].id]?.GetSprite());
+        placeButton.Availability = (button) => myRole.MyPlayer.MyControl.CanMove && leftCost >= buttonVariation[buttonIndex].cost;
+        placeButton.Visibility = (button) => !myRole.MyPlayer.MyControl.Data.IsDead && leftCost > 0;
+        var usesText = placeButton.ShowUsesIcon(myRole.Role.RoleCategory == RoleCategory.ImpostorRole ? 0 : 3);
+        usesText.text = leftCost.ToString();
         placeButton.OnClick = (button) =>
         {
             float duration = Trapper.PlaceDurationOption.GetFloat();
@@ -37,14 +39,17 @@ file static class TrapperSystem
         };
         placeButton.OnEffectEnd = (button) => 
         {
-            localTraps.Add(Trapper.Trap.GenerateTrap(buttonVariation[buttonIndex], myRole.MyPlayer.MyControl.GetTruePosition()));
-            if (buttonVariation[buttonIndex] == KillTrapId) NebulaAsset.RpcPlaySE.Invoke((NebulaAudioClip.TrapperKillTrap, PlayerControl.LocalPlayer.transform.position, Trapper.KillTrapSoundDistanceOption.GetFloat() * 0.6f, Trapper.KillTrapSoundDistanceOption.GetFloat()));
+            placeButton.StartCoolDown();
+            localTraps.Add(Trapper.Trap.GenerateTrap(buttonVariation[buttonIndex].id, myRole.MyPlayer.MyControl.GetTruePosition()));
+            leftCost -= buttonVariation[buttonIndex].cost;
+            usesText.text = leftCost.ToString();
+            if (buttonVariation[buttonIndex].id == KillTrapId) NebulaAsset.RpcPlaySE.Invoke((NebulaAudioClip.TrapperKillTrap, PlayerControl.LocalPlayer.transform.position, Trapper.KillTrapSoundDistanceOption.GetFloat() * 0.6f, Trapper.KillTrapSoundDistanceOption.GetFloat()));
         };
         placeButton.OnSubAction = (button) =>
         {
             if (button.EffectActive) return;
             buttonIndex = (buttonIndex + 1) % buttonVariation.Length;
-            placeButton.SetSprite(buttonSprites[buttonVariation[buttonIndex]]?.GetSprite());
+            placeButton.SetSprite(buttonSprites[buttonVariation[buttonIndex].id]?.GetSprite());
         };
         placeButton.CoolDownTimer = myRole.Bind(new Timer(0f, Trapper.PlaceCoolDownOption.GetFloat()).SetAsAbilityCoolDown().Start());
         placeButton.EffectTimer = myRole.Bind(new Timer(0f, Trapper.PlaceDurationOption.GetFloat()));
@@ -182,12 +187,12 @@ public class Trapper : ConfigurableStandardRole
         if (IsEvil)
         {
             KillTrapSoundDistanceOption = new NebulaConfiguration(RoleConfig, "killTrapSoundDistance", null, 0f, 20f, 1.25f, 10f, 10f) { Decorator = NebulaConfiguration.OddsDecorator };
-            CostOfKillTrapOption = new NebulaConfiguration(RoleConfig, "costOfKillTrap", null, 1, 5, 1, 2, 2);
+            CostOfKillTrapOption = new NebulaConfiguration(RoleConfig, "costOfKillTrap", null, 1, 5, 2, 2);
             KillTrapSizeOption ??= new NebulaConfiguration(null, "killTrapSize", null, 0.25f, 5f, 0.25f, 1f, 1f) { Decorator = NebulaConfiguration.OddsDecorator };
         }
         else
         {
-            CostOfCommTrapOption = new NebulaConfiguration(RoleConfig, "costOfCommTrap", null, 1, 5, 1, 2, 2);
+            CostOfCommTrapOption = new NebulaConfiguration(RoleConfig, "costOfCommTrap", null, 1, 5, 2, 2);
             CommTrapSizeOption ??= new NebulaConfiguration(null, "commTrapSize", null, 0.25f, 5f, 0.25f, 1f, 1f) { Decorator = NebulaConfiguration.OddsDecorator };
         }
 
@@ -212,7 +217,7 @@ public class Trapper : ConfigurableStandardRole
 
         public override void OnActivated()
         {
-            if (AmOwner) TrapperSystem.OnActivated(this, new int[] { 0, 1, 2 },localTraps);
+            if (AmOwner) TrapperSystem.OnActivated(this, new (int, int)[] { (0, 1), (1, 1), (2, CostOfCommTrapOption) }, localTraps);
         }
 
         public override void OnMeetingStart()
@@ -220,8 +225,10 @@ public class Trapper : ConfigurableStandardRole
             if (AmOwner) TrapperSystem.OnMeetingStart(localTraps, commTraps);
         }
 
+        private uint lastCommPlayersMask = 0;
         public override void LocalUpdate()
         {
+            uint commMask = 0;
             foreach(var commTrap in commTraps)
             {
                 foreach (var p in NebulaGameManager.Instance!.AllPlayerInfo())
@@ -230,10 +237,19 @@ public class Trapper : ConfigurableStandardRole
                     if (p.IsDead || p.HasAttribute(AttributeModulator.PlayerAttribute.Invisibility)) continue;
                     if (p.MyControl.transform.position.Distance(commTrap.Position) < CommTrapSizeOption.GetFloat() * 0.25f)
                     {
-                        ;
+                        //直前にトラップを踏んでいるプレイヤーは無視する
+                        commMask |= 1u << p.PlayerId;
+                        if ((lastCommPlayersMask & (1u << p.PlayerId)) != 0) continue;
+
+                        //Camo貫通(Morphingまで効果を受ける)
+                        var arrow = new Arrow().SetColorByOutfit(p.GetOutfit(75));
+                        arrow.TargetPos = commTrap.Position;
+                        NebulaManager.Instance.StartCoroutine(arrow.CoWaitAndDisappear(3f).WrapToIl2Cpp());
                     }
                 }
             }
+
+            lastCommPlayersMask = commMask;
         }
     }
 
@@ -248,7 +264,7 @@ public class Trapper : ConfigurableStandardRole
 
         public override void OnActivated()
         {
-            if (AmOwner) TrapperSystem.OnActivated(this, new int[] { 0, 1, 3 }, localTraps);
+            if (AmOwner) TrapperSystem.OnActivated(this, new (int, int)[] { (0, 1), (1, 1), (3, CostOfKillTrapOption) }, localTraps);
         }
 
         public override void OnMeetingStart()

@@ -99,7 +99,12 @@ public static class HelpScreen
             if (doc == null) return;
 
             var screen = MetaScreen.GenerateWindow(new(7f, 4.5f), HudManager.Instance.transform, Vector3.zero, true, true, true);
-            screen.SetContext(doc.Build(screen) ?? new MetaContext.Text(new(TextAttribute.BoldAttr) { Size = new(7f, 4.5f), Color = Color.gray }) { RawText = "Failed to Load" });
+            Reference<MetaContext.ScrollView.InnerScreen> innerRef = new();
+
+            screen.SetContext(
+                new MetaContext.ScrollView(new Vector2(7f, 4.5f),
+                doc.Build(innerRef) ?? new MetaContext.Text(new(TextAttribute.BoldAttr) { Size = new(7f, 4.5f), Color = Color.gray }) { RawText = "Failed to Load" })
+                { InnerRef = innerRef});
 
         }, RoleTitleAttr)
         {

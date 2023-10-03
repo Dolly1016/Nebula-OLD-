@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Nebula.Behaviour;
 using Nebula.Modules;
 using Nebula.Utilities;
 using System;
@@ -96,6 +97,9 @@ public static class MainMenuSetUpPatch
             if (!AddonsScreen) CreateAddonsScreen();
             AddonsScreen?.SetActive(true);
             __instance.screenTint.enabled = true;
+        });
+        SetUpButton("title.buttons.developersStudio", () => {
+            DevStudio.Open(__instance);
         });
 
         void CreateAddonsScreen()

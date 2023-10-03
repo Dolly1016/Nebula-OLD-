@@ -10,6 +10,11 @@ namespace Nebula.Utilities;
 public interface ITextComponent
 {
     string Text { get; }
+
+    public static ITextComponent From(string translationKey, Color color)
+    {
+        return new ColorTextComponent(color, new TranslateTextComponent(translationKey));
+    }
 }
 
 public class CombinedComponent : ITextComponent

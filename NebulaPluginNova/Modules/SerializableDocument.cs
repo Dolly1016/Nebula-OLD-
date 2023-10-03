@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TMPro;
+using UnityEngine;
 
 namespace Nebula.Modules;
 
@@ -49,6 +50,13 @@ public class DocumentManager
             yield return null;
         }
     }
+
+    //ゲーム内で使用しているID
+    public static IEnumerable<string> GetAllUsingId()
+    {
+        foreach (var role in Roles.Roles.AllRoles) yield return "role." + role.InternalName;
+        foreach (var modifier in Roles.Roles.AllModifiers) yield return "role." + modifier.InternalName;
+    }
 }
 
 [NebulaPreLoad]
@@ -57,16 +65,16 @@ public class SerializableDocument
     public class SerializableColor
     {
         [JsonSerializableField]
-        public byte R = 255;
+        public byte? R;
         [JsonSerializableField]
-        public byte G = 255;
+        public byte? G;
         [JsonSerializableField]
-        public byte B = 255;
+        public byte? B;
         [JsonSerializableField]
-        public byte A = 255;
-        [JsonSerializableField]
+        public byte? A;
+        [JsonSerializableField(true)]
         public string? Style = null;
-        public Color AsColor => GetColor(Style) ?? new Color((float)R / 255f, (float)G / 255f, (float)B / 255f, (float)A / 255f);
+        public Color AsColor => GetColor(Style) ?? new Color((float)(R ?? 255) / 255f, (float)(G ?? 255) / 255f, (float)(B ?? 255) / 255f, (float)(A ?? 255) / 255f);
     }
 
     private static Dictionary<string, TextAttribute> TextStyle = new();
@@ -89,69 +97,115 @@ public class SerializableDocument
     }
 
     //子となるコンテンツ
-    [JsonSerializableField]
+    [JsonSerializableField(true)]
     public List<SerializableDocument>? Contents = null;
 
     //横並びのコンテンツ
-    [JsonSerializableField]
+    [JsonSerializableField(true)]
     public List<SerializableDocument>? Aligned = null;
 
     //テンプレートスタイルID
+    [JsonSerializableField(true)]
     public string? Style = null;
 
     //テキストの生文字列
-    [JsonSerializableField]
+    [JsonSerializableField(true)]
     public string? RawText;
 
     //テキストの翻訳キー
-    [JsonSerializableField]
+    [JsonSerializableField(true)]
     public string? TranslationKey;
 
     //太字
-    [JsonSerializableField]
-    public bool IsBold = false;
+    [JsonSerializableField(true)]
+    public bool? IsBold = null;
 
     //テキストカラー
-    [JsonSerializableField]
+    [JsonSerializableField(true)]
     public SerializableColor? Color = null;
 
     //フォントサイズ
-    [JsonSerializableField]
+    [JsonSerializableField(true)]
     public float? FontSize = null;
 
     //可変テキスト
-    [JsonSerializableField]
-    public bool IsVariable = false;
+    [JsonSerializableField(true)]
+    public bool? IsVariable = null;
 
     //画像パス
-    [JsonSerializableField]
+    [JsonSerializableField(true)]
     public string? Image = null;
 
     //横幅
-    [JsonSerializableField]
+    [JsonSerializableField(true)]
     public float? Width = null;
 
     //縦方向余白
-    [JsonSerializableField]
+    [JsonSerializableField(true)]
     public float? VSpace = null;
 
     //横方向余白
-    [JsonSerializableField]
+    [JsonSerializableField(true)]
     public float? HSpace = null;
 
     private ISpriteLoader? imageLoader = null;
+    private string? lastImagePath;
 
-    public IMetaContext? Build(MetaScreen? myScreen)
+    public List<SerializableDocument>? MyContainer => Contents ?? Aligned;
+    public void ReplaceContent(SerializableDocument content, bool moveToHead)
+    {
+        List<SerializableDocument>? list = MyContainer;
+        if (list == null) return;
+
+        int index = list.IndexOf(content);
+        if (index == -1) return;
+
+        list.RemoveAt(index);
+        index += moveToHead ? -1 : 1;
+
+        if (0 <= index && index <= list.Count) list.Insert(index, content);
+    }
+
+    public void RemoveContent(SerializableDocument content)
+    {
+        MyContainer?.Remove(content);
+    }
+
+    public void AppendContent(SerializableDocument content)
+    {
+        MyContainer?.Add(content);
+    }
+
+    public IMetaContext? BuildForDev(Action<PassiveButton,SerializableDocument, SerializableDocument?> editorBuilder, SerializableDocument? parent = null)
+    {
+        var context = BuildInternal(null, c => c.BuildForDev(editorBuilder, this), false);
+
+        if (context != null) context = new MetaContext.FramedContext(context, new Vector2(0.15f, 0.15f)) { 
+            HighlightColor = UnityEngine.Color.cyan.AlphaMultiplied(0.25f), 
+            PostBuilder = renderer =>
+            {
+                renderer.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+                var button = renderer.gameObject.SetUpButton(true, renderer, UnityEngine.Color.white.AlphaMultiplied(0.15f), UnityEngine.Color.Lerp(UnityEngine.Color.cyan, UnityEngine.Color.green, 0.4f).AlphaMultiplied(0.3f));
+                var collider = renderer.gameObject.AddComponent<BoxCollider2D>();
+                collider.size = renderer.size;
+                editorBuilder.Invoke(button,this,parent);
+            } };
+
+        return context;
+    }
+
+    public IMetaContext? Build(Reference<MetaContext.ScrollView.InnerScreen> myScreen) => BuildInternal(myScreen, c => c.Build(myScreen),true);
+    
+
+    public IMetaContext? BuildInternal(Reference<MetaContext.ScrollView.InnerScreen>? myScreen, Func<SerializableDocument, IMetaContext?> builder, bool buildHyperLink)
     {
         if (Contents != null)
         {
             MetaContext context = new();
             foreach(var c in Contents)
             {
-                var subContext = c.Build(myScreen);
-                if (subContext == null) continue;
-
-                context.Append(subContext);
+                var subContext = builder.Invoke(c);
+                if (subContext != null) context.Append(subContext);
             }
             return context;
         }
@@ -161,8 +215,8 @@ public class SerializableDocument
             List<IMetaParallelPlacable> list = new();
             foreach (var c in Aligned)
             {
-                var tem = c.Build(myScreen);
-                if(!(tem is IMetaParallelPlacable mpp))
+                var tem = builder.Invoke(c);
+                if (!(tem is IMetaParallelPlacable mpp))
                 {
                     NebulaPlugin.Log.Print(NebulaLog.LogCategory.Document,"Document contains an unalignable content.");
                     continue;
@@ -177,7 +231,7 @@ public class SerializableDocument
             string text = TranslationKey != null ? Language.Translate(TranslationKey!) : RawText!;
 
             TextAttribute? attr = null;
-            if(Style == null || !TextStyle.TryGetValue(Style, out attr)) attr = IsVariable ? TextStyle["Content"] : TextStyle["Standard"];
+            if(Style == null || !TextStyle.TryGetValue(Style, out attr)) attr = (IsVariable ?? false) ? TextStyle["Content"] : TextStyle["Standard"];
 
             float fontSize = FontSize.HasValue ? FontSize.Value : attr.FontSize;
             attr = new(attr) {
@@ -185,58 +239,56 @@ public class SerializableDocument
                 FontMinSize = Mathf.Min(fontSize, attr.FontMinSize),
                 FontMaxSize = Mathf.Max(fontSize, attr.FontMaxSize),
                 Color = Color?.AsColor ?? UnityEngine.Color.white,
-                Styles = IsBold ? TMPro.FontStyles.Bold : TMPro.FontStyles.Normal,
-                Alignment = TMPro.TextAlignmentOptions.Left
+                Styles = IsBold.HasValue ? (IsBold.Value ? TMPro.FontStyles.Bold : TMPro.FontStyles.Normal) : attr.Styles,
+                Alignment = TMPro.TextAlignmentOptions.Left,
+                FontMaterial = VanillaAsset.StandardMaskedFontMaterial
+               
             };
 
             void PostBuilder(TMPro.TextMeshPro text) {
-
-                foreach(var linkInfo in text.textInfo.linkInfo)
+                if (buildHyperLink)
                 {
-                    int begin = linkInfo.linkTextfirstCharacterIndex;
-                    for (int i = 0; i < linkInfo.linkTextLength; i++)
+                    foreach (var linkInfo in text.textInfo.linkInfo)
                     {
-                        int index = begin + i;
-                        text.textInfo.characterInfo[i].color = new Color32(116, 132, 169, 255);
+                        int begin = linkInfo.linkTextfirstCharacterIndex;
+                        for (int i = 0; i < linkInfo.linkTextLength; i++)
+                        {
+                            int index = begin + i;
+                            text.textInfo.characterInfo[i].color = new Color32(116, 132, 169, 255);
+                        }
                     }
+
+                    var collider = UnityHelper.CreateObject<BoxCollider2D>("TextCollider", text.transform.parent, text.transform.localPosition);
+                    collider.size = text.rectTransform.sizeDelta;
+                    var button = collider.gameObject.SetUpButton();
+                    button.OnClick.AddListener(() =>
+                    {
+                        var cam = UnityHelper.FindCamera(LayerExpansion.GetUILayer());
+                        if (cam == null) return;
+
+                        int linkIdx = TMP_TextUtilities.FindIntersectingLink(text, Input.mousePosition, cam);
+                        if (linkIdx == -1) return;
+
+                        var action = text.textInfo.linkInfo[linkIdx].GetLinkID();
+                        var args = action.Split(':', 2);
+                        if (args.Length != 2) return;
+
+                        switch (args[0])
+                        {
+                            case "to":
+                                myScreen?.Value?.SetContext(DocumentManager.GetDocument(args[1])?.Build(myScreen) ?? null);
+                                break;
+                            default:
+                                NebulaPlugin.Log.Print(NebulaLog.LogCategory.Document, $"Unknown link action \"{args[0]}\" is triggered.");
+                                break;
+                        }
+                    });
                 }
-
-                //スタイルシートが使える
-                /*
-                var styleSheet = new TMP_StyleSheet();
-                styleSheet.styles.Add(new TMP_Style(,))
-                */
-
-                var collider = UnityHelper.CreateObject<BoxCollider2D>("TextCollider", text.transform.parent, text.transform.localPosition);
-                collider.size = text.rectTransform.sizeDelta;
-                var button = collider.gameObject.SetUpButton();
-                button.OnClick.AddListener(() => {
-                    var cam = UnityHelper.FindCamera(LayerExpansion.GetUILayer());
-                    if (cam == null) return;
-                    
-                    int linkIdx = TMP_TextUtilities.FindIntersectingLink(text, Input.mousePosition,cam);
-                    if (linkIdx == -1) return;
-                    
-                    var action = text.textInfo.linkInfo[linkIdx].GetLinkID();
-                    var args = action.Split(':', 2);
-                    if (args.Length != 2) return;
-
-                    switch (args[0])
-                    {
-                        case "to":
-                            myScreen?.SetContext(DocumentManager.GetDocument(args[1])?.Build(myScreen) ?? null);
-                            break;
-                        default:
-                            NebulaPlugin.Log.Print(NebulaLog.LogCategory.Document, $"Unknown link action \"{args[0]}\" is triggered.");
-                            break;
-                    }
-                });
-                
             }
 
-            if (IsVariable)
+            if (IsVariable ?? false)
             {
-                return new MetaContext.VariableText(attr) { RawText = text, Alignment = IMetaContext.AlignmentOption.Left, PostBuilder = PostBuilder };
+                return new MetaContext.VariableText(attr) { RawText = text, Alignment = IMetaContext.AlignmentOption.Left, PostBuilder =  PostBuilder };
             }
             else
             {
@@ -246,12 +298,19 @@ public class SerializableDocument
 
         if(Image != null)
         {
-            if(imageLoader == null)
+            if(imageLoader == null || Image != lastImagePath)
             {
                 imageLoader = SpriteLoader.FromResource("Nebula.Resources." + Image + ".png", 100f);
+                lastImagePath = Image;
             }
 
-            return new MetaContext.Image(imageLoader.GetSprite()) { Width = Width ?? 1f };
+            Sprite sprite = null!;
+            try
+            {
+                sprite = imageLoader?.GetSprite()!;
+            }
+            catch { }
+            return new MetaContext.Image(sprite) { Width = Width ?? 1f, PostBuilder = image => image.maskInteraction = SpriteMaskInteraction.VisibleInsideMask };
         }
 
         if (HSpace != null) return new MetaContext.HorizonalMargin(HSpace.Value);
