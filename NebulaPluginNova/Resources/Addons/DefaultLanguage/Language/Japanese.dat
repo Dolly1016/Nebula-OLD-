@@ -1,3 +1,18 @@
+# Title
+
+"title.buttons.nebula" : "ネブラ"
+"title.label.nebula" : "Nebula on the Ship"
+
+"title.buttons.update" : "最新版に更新"
+"title.buttons.addons" : "アドオン"
+"title.buttons.developersStudio" : "デベロッパースタジオ"
+
+# UI
+
+"ui.dialog.yes" : "はい"
+"ui.dialog.no" : "いいえ"
+"ui.common.loading" : "読み込み中"
+
 # Game Mode
 
 "gamemode.standard" : "標準"
@@ -9,7 +24,9 @@
 "options.switch.on" : "On"
 "options.percentage" : "%"
 "options.cross" : "x"
+"options.sec" : "s"
 "options.followPrimaryChance" : "-"
+"options.inactivated" : "無効"
 
 "options.gamemode" : "ゲームモード"
 
@@ -20,15 +37,146 @@
 "options.tab.ghost" : "[ゴースト] ロール"
 "options.tab.modifier" : "[モディファイア]"
 
+"options.assignment" : "割り当てオプション"
+"options.assignment.detail" : "ロールの割り当てに関する設定"
+"options.assignment.crewmate" : "クルーメイトロール"
+"options.assignment.impostor" : "インポスターロール"
+"options.assignment.neutral" : "ニュートラルロール"
+"options.assignment.unlimited" : "無制限"
+
+"options.soloFreePlay" : "ソロフリープレイオプション"
+"options.soloFreePlay.detail" : "ダミーに関する設定"
+"options.soloFreePlay.numOfDummies" : "ダミーのスポーン数"
+
+"options.map" : "マップオプション"
+"options.map.detail" : "マップに関する設定"
+"options.map.spawnMethod" : "スポーンメソッド"
+"options.map.spawnMethod.default" : "標準"
+"options.map.spawnMethod.selective" : "選択式"
+"options.map.spawnMethod.random" : "ランダム"
+"options.map.spawnCandidates" : "スポーン候補数"
+"options.map.silentVents" : "視界外のベント開閉の可視性"
+
+"options.meeting" : "緊急会議オプション"
+"options.meeting.detail" : "緊急会議に関する設定"
+"options.meeting.noticeExtraVictims" : "追加追放者の通知"
+
+"options.consoleRestriction" : "情報端末制限"
+"options.consoleRestriction.detail" : "アドミンやバイタルの使用制限"
+"options.consoleRestriction.unlimited" : "無制限"
+"options.consoleRestriction.adminRestriction" : "アドミン"
+"options.consoleRestriction.vitalsRestriction" : "バイタル"
+"options.consoleRestriction.cameraRestriction" : "カメラ & ログ"
+"options.consoleRestriction.resetRestrictions" : "会議ごとの制限リセット"
+
+"options.voiceChat" : "ボイスチャットオプション"
+"options.voiceChat.detail" : "ゲーム内VCの設定"
+"options.voiceChat.useVoiceChat" : "ゲーム内VC"
+"options.voiceChat.wallsBlockAudio" : "壁による声の遮蔽"
+"options.voiceChat.killersHearDead" : "幽霊の語り掛け"
+"options.voiceChat.killersHearDead.onlyImpostors" : "対インポスターのみ"
+"options.voiceChat.impostorsRadio" : "インポスターラジオ"
+"options.voiceChat.jackalRadio" : "ジャッカルラジオ"
+"options.voiceChat.affectedByCommsSab" : "通信障害による通話の無効化"
+
 "options.role.count" : "割当人数"
 "options.role.chance" : "割当確率"
 "options.role.secondaryChance" : "2回目～"
+"options.role.count.short" : "割り当て"
+"options.modifier.chance" : "割り当て確率"
+"options.role.crewmateCount" : "クルーメイト割り当て"
+"options.role.impostorCount" : "インポスター割り当て"
+"options.role.neutralCount" : "ニュートラル割り当て"
+
+"options.killCoolDown.type.immediate" : "即値"
+"options.killCoolDown.type.relative" : "相対"
+"options.killCoolDown.type.ratio" : "比率"
+
+"options.exclusiveAssignment" : "排他的割り当て"
+"options.exclusiveAssignment.detail" : "排他的なロール割り当て"
+"options.exclusiveAssignment.category.0" : "カテゴリ 1"
+"options.exclusiveAssignment.category.1" : "カテゴリ 2"
+"options.exclusiveAssignment.category.2" : "カテゴリ 3"
+"options.exclusiveAssignment.category.3" : "カテゴリ 4"
+"options.exclusiveAssignment.category.4" : "カテゴリ 5"
+"options.exclusiveAssignment.category.5" : "カテゴリ 6"
+"options.exclusiveAssignment.category.6" : "カテゴリ 7"
+"options.exclusiveAssignment.category.7" : "カテゴリ 8"
+"options.exclusiveAssignment.category.8" : "カテゴリ 9"
+"options.exclusiveAssignment.category.9" : "カテゴリ 10"
+
+# Roles
+
+"role.general.ventOption" : "ベントオプション"
+"role.general.ventCoolDown" : "クールダウン"
+"role.general.ventCoolDown.short" : "クール"
+"role.general.ventDuration" : "潜伏可能時間"
+"role.general.ventDuration.short" : "潜伏"
+"role.general.ventUses" : "最大使用回数"
+"role.general.ventUses.short" : "使用"
+"role.general.common" : "#"
+
+# Complex Roles
+
+"role.guesser.numOfGuess" : "推察可能回数"
+"options.role.guesser.detail" : "ゲッサーは会議中にプレイヤーの役職を推察してキルすることができます。<br>ただし、推察に失敗すると自身が代わりに死んでしまいます。"
+
+"role.trapper.placeCoolDown" : "設置クールダウン"
+"role.trapper.placeDuration" : "設置にかかる時間"
+"role.trapper.numOfCharges" : "初期割り当てコスト"
+
+# Common Roles
+
+"options.role.modifierFilter" : "モディファイアフィルター"
 
 # Crewmate Roles
 
 "role.crewmate.name" : "クルーメイト"
 "role.crewmate.blurb" : "タスクをせよ"
 "options.role.crewmate.detail" : "特殊な能力を持たない素のクルーメイトです。<br>割り当てる役職が他に無い場合にもこれが割り当てられます。"
+
+"role.agent.name" : "エージェント"
+"role.agent.blurb" : "もっと！タスクをせよ"
+"options.role.agent.detail" : "ノルマとして課されている以上のタスクをこなすことができます。<br>追加のタスクは他のクルーメイトのタスクを肩代わりします。"
+"options.role.agent.numOfExemptedTasks" : "タスクの面除数"
+"options.role.agent.numOfExtraTasks" : "追加タスク数"
+
+"role.bait.name" : "ベイト"
+"role.bait.blurb" : "敵を嵌めよ！"
+"options.role.bait.detail" : "キルされると、あなたのキラーは即座にその死体をレポートします。"
+"options.role.bait.showKillFlash" : "キルフラッシュの表示"
+
+"role.comet.name" : "コメット"
+"role.comet.blurb" : "駆け抜けろ"
+"options.role.comet.detail" : "あなたは迅速に、かつ隠密に移動することができます。<br>能力使用中はあなたの姿は他人から視認することはできません。"
+"options.role.comet.blazeCoolDown" : "ブーストクールダウン"
+"options.role.comet.blazeSpeed" : "ブースト速度"
+"options.role.comet.blazeDuration" : "ブースト効果時間"
+
+"role.doctor.name" : "ドクター"
+"role.doctor.blurb" : "斯くして奴は死んだ"
+"options.role.doctor.detail" : "ドクターは持ち歩き可能なバイタル端末を使うことができます。"
+"options.role.doctor.portableVitalsCharge" : "ポータブルバイタルの使用可能時間"
+"options.role.doctor.maxPortableVitalsCharge" : "ポータブルバイタルの最大チャージ"
+"options.role.doctor.chargesPerTasks" : "タスクによる使用可能時間チャージ" 
+"role.doctor.gadgetLeft" : "%SECOND%s"
+
+"role.necromancer.name" : "ネクロマンサー"
+"role.necromancer.blurb" : "死霊を喚びさませ"
+"options.role.necromancer.detail" : "ネクロマンサーは死体を運び、復活させることができます。<br>復活のためには、死体を指定された部屋まで運ぶ必要があります。"
+"options.role.necromancer.reviveCoolDown" : "復活クールダウン"
+"options.role.necromancer.reviveDuration" : "復活所要時間"
+"options.role.necromancer.detectedRange" : "死体探知可能範囲"
+"role.necromancer.phantomMessage" : "%ROOM%に連れて行って..."
+
+"role.niceGuesser.name" : "ナイスゲッサー"
+"role.niceGuesser.blurb" : "敵を撃ち抜け"
+"options.role.niceGuesser.detail" : "ゲッサーは会議中にプレイヤーの役職を推察してキルすることができます。<br>ただし、推察に失敗すると自身が代わりに死んでしまいます。"
+
+"role.niceTrapper.name" : "ナイストラッパー"
+"role.niceTrapper.blurb" : "罠を仕掛けよ"
+"options.role.niceTrapper.detail" : "トラッパーはさまざまなトラップを仕掛けることができます。"
+"options.role.niceTrapper.costOfCommTrap" : "探知トラップの設置コスト"
 
 "role.madmate.name" : "マッドメイト"
 "role.madmate.blurb" : "インポスターを勝利へ導け"

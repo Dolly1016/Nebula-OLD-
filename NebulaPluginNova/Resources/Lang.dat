@@ -153,6 +153,14 @@
 "options.role.comet.blazeSpeed" : "Blaze Speed"
 "options.role.comet.blazeDuration" : "Blaze Duration"
 
+"role.doctor.name" : "Doctor"
+"role.doctor.blurb" : "Thus They Died"
+"options.role.doctor.detail" : "Doctor has portable vitals."
+"options.role.doctor.portableVitalsCharge" : "Portable Vitals Charge"
+"options.role.doctor.maxPortableVitalsCharge" : "Max Portable Vitals Charge"
+"options.role.doctor.chargesPerTasks" : "Charges Per Tasks" 
+"role.doctor.gadgetLeft" : "%SECOND%s"
+
 "role.necromancer.name" : "Necromancer"
 "role.necromancer.blurb" : "Revive Phantoms"
 "options.role.necromancer.detail" : "Necromancer can raise dead bodies from the dead!<br>They drags a corpse for a resurrection ritual."
@@ -169,14 +177,6 @@
 "role.niceTrapper.blurb" : "Entrap and Find the Impostors"
 "options.role.niceTrapper.detail" : "Nice Trapper sets traps with various effects."
 "options.role.niceTrapper.costOfCommTrap" : "Cost Of Comm. Trap"
-
-"role.doctor.name" : "Doctor"
-"role.doctor.blurb" : "Thus They Died"
-"options.role.doctor.detail" : "Doctor has portable vitals."
-"options.role.doctor.portableVitalsCharge" : "Portable Vitals Charge"
-"options.role.doctor.maxPortableVitalsCharge" : "Max Portable Vitals Charge"
-"options.role.doctor.chargesPerTasks" : "Charges Per Tasks" 
-"role.doctor.gadgetLeft" : "%SECOND%s"
 
 "role.madmate.name" : "Madmate"
 "role.madmate.blurb" : "Assist Impostors"
