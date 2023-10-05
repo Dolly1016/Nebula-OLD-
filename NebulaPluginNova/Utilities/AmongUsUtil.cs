@@ -137,4 +137,28 @@ public static class AmongUsUtil
 
         return renderer;
     }
+
+    private static SpriteLoader footprintSprite = SpriteLoader.FromResource("Nebula.Resources.Footprint.png", 100f);
+    public static void GenerateFootprint(Vector2 pos,Color color, float duration)
+    {
+        var renderer = UnityHelper.CreateObject<SpriteRenderer>("Footprint", null, new Vector3(pos.x, pos.y, pos.y / 1000f + 0.001f), LayerExpansion.GetShipLayer());
+        renderer.sprite = footprintSprite.GetSprite();
+        renderer.color = color;
+        renderer.transform.eulerAngles = new Vector3(0f, 0f, (float)System.Random.Shared.NextDouble() * 360f);
+
+        IEnumerator CoShowFootprint()
+        {
+            yield return new WaitForSeconds(duration);
+            while (renderer.color.a > 0f)
+            {
+                Color col = renderer.color;
+                col.a = Mathf.Clamp01(col.a - Time.deltaTime * 0.8f);
+                renderer.color = col;
+                yield return null;
+            }
+            GameObject.Destroy(renderer.gameObject);
+        }
+
+        NebulaManager.Instance.StartCoroutine(CoShowFootprint().WrapToIl2Cpp());
+    }
 }

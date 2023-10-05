@@ -16,6 +16,9 @@ namespace Nebula.Modules;
 [NebulaRPCHolder]
 public class DynamicPalette
 {
+    //PlayerIdと紐づけられたバイザーのゲーム内カラーパレット
+    static public Color[] VisorColors = new UnityEngine.Color[18];
+
     static public ColorPalette[] AllColorPalette = { new DefaultColorPalette() };
     static public ShadowPattern[] AllShadowPattern = { new DefaultShadowPattern() };
 
@@ -23,15 +26,19 @@ public class DynamicPalette
 
     static private DataSaver ColorData = null!;
     static public ModColor MyColor = null!;
-    static public ModColor[] SavedColor = null!;
+    static public ColorEntry MyVisorColor = null!;
+    static public (ModColor color,ColorEntry visorColor)[] SavedColor = null!;
 
     public static Dictionary<string, List<RestorableColor>> ColorCatalogue = new();
+    public static Dictionary<string, List<RestorableColor>> VisorColorCatalogue = new();
 
     static public void Load()
     {
         ColorData = new DataSaver("DynamicColor");
         MyColor = new ModColor("myColor");
-        SavedColor = new ModColor[] { new("savedColor0"), new("savedColor1"), new("savedColor2"), new("savedColor3"), new("savedColor4") };
+        MyVisorColor = new ColorEntry("myColor.visor");
+        SavedColor = new (ModColor, ColorEntry)[5];
+        for (int i = 0; i < SavedColor.Length; i++) SavedColor[i] = (new("savedColor" + i), new("savedColor" + i + ".visor"));
 
         List<RestorableColor> vanilaCatalogue = new();
         for (int i = 0; i < 18; i++)
@@ -45,8 +52,18 @@ public class DynamicPalette
                 TranslationKey = "inventory.color.vanilla" + i
             });
         }
+        List<RestorableColor> vanilaVisorCatalogue = new(new RestorableColor[]{ new RestorableColor()
+            {
+                MainColor = new(Palette.VisorColor),
+                ShadowType = byte.MaxValue,
+                Category = "innersloth",
+                TranslationKey = "inventory.color.visor"
+            }});
+        
         ColorCatalogue.Add("innersloth",vanilaCatalogue);
+        VisorColorCatalogue.Add("innersloth", vanilaVisorCatalogue);
 
+        for (int i = 0; i < VisorColors.Length; i++) VisorColors[i] = Palette.VisorColor;
 
         //カモフラージャーカラー
         Palette.PlayerColors[16] = Palette.PlayerColors[6].Multiply(new Color32(180, 180, 180, 255));
@@ -61,39 +78,81 @@ public class DynamicPalette
         foreach (var addon in NebulaAddon.AllAddons)
         {
             using var stream = addon.OpenStream("Color/ColorCatalogue.json");
-            if (stream == null) continue;
-
-            var colors = JsonStructure.Deserialize<List<RestorableColor>>(stream);
-            if (colors == null) continue;
-
-            foreach (var c in colors)
+            if (stream != null)
             {
-                if (!ColorCatalogue.ContainsKey(c.Category))
-                    ColorCatalogue[c.Category] = new();
-                ColorCatalogue[c.Category].Add(c);
+                var colors = JsonStructure.Deserialize<List<RestorableColor>>(stream);
+                if (colors == null) continue;
+
+                foreach (var c in colors)
+                {
+                    if (!ColorCatalogue.ContainsKey(c.Category))
+                        ColorCatalogue[c.Category] = new();
+                    ColorCatalogue[c.Category].Add(c);
+                }
             }
 
+            //Visor
+            using var visorStream = addon.OpenStream("Color/VisorColorCatalogue.json");
+            if (visorStream != null)
+            {
+                var visorColors = JsonStructure.Deserialize<List<RestorableColor>>(visorStream);
+                if (visorColors == null) continue;
+
+                foreach (var c in visorColors)
+                {
+                    if (!VisorColorCatalogue.ContainsKey(c.Category))
+                        VisorColorCatalogue[c.Category] = new();
+                    VisorColorCatalogue[c.Category].Add(c);
+                }
+            }
             yield return null;
         }
     }
 
+    public class ColorEntry
+    {
+        public DataEntry<byte> r, g, b;
+
+        public ColorEntry(string colorDataId)
+        {
+            r = new ByteDataEntry(colorDataId + ".col.r", ColorData, 0);
+            g = new ByteDataEntry(colorDataId + ".col.g", ColorData, 0);
+            b = new ByteDataEntry(colorDataId + ".col.b", ColorData, 0);
+        }
+
+        public void Edit(Color color)
+        {
+            r.Value = (byte)(color.r * byte.MaxValue);
+            g.Value = (byte)(color.g * byte.MaxValue);
+            b.Value = (byte)(color.b * byte.MaxValue);
+        }
+
+        public void Edit(SerializableColor color)
+        {
+            r.Value = color.R;
+            g.Value = color.G;
+            b.Value = color.B;
+        }
+
+        public Color ToColor(Color? defaultColor = null)
+        {
+            if (r.Value == 0 && g.Value == 0 && b.Value == 0 && defaultColor.HasValue) return defaultColor.Value;
+            return new Color((float)r.Value / 255f, (float)g.Value / 255f, (float)b.Value / 255f);
+        }
+    }
     public class ColorParameters
     {
         public DataEntry<byte> hue, distance;
         public DataEntry<float> brightness;
         public DataEntry<byte> palette;
-        public DataEntry<byte>[] color;
+        public ColorEntry color;
         public ColorParameters(string colorDataId)
         {
             hue = new ByteDataEntry(colorDataId + ".h", ColorData, 0);
             distance = new ByteDataEntry(colorDataId + ".d", ColorData, 8);
             palette = new ByteDataEntry(colorDataId + ".p", ColorData, 0);
             brightness = new FloatDataEntry(colorDataId + ".b", ColorData, 1f);
-            color = new DataEntry<byte>[3] {
-                new ByteDataEntry(colorDataId + ".col.r",ColorData,0),
-                new ByteDataEntry(colorDataId + ".col.g",ColorData,0),
-                new ByteDataEntry(colorDataId + ".col.b",ColorData,0),
-            };
+            color = new(colorDataId);
         }
 
         public void Edit(byte? hue, byte? distance, float? brightness, byte? palette)
@@ -107,9 +166,7 @@ public class DynamicPalette
         public void Edit(Color color)
         {
             hue.Value = byte.MaxValue;
-            this.color[0].Value = (byte)(color.r * byte.MaxValue);
-            this.color[1].Value = (byte)(color.g * byte.MaxValue);
-            this.color[2].Value = (byte)(color.b * byte.MaxValue);
+            this.color.Edit(color);
         }
 
         public void Edit(SerializableColor color)
@@ -117,15 +174,13 @@ public class DynamicPalette
             hue.Value = color.Hue;
             distance.Value = color.Distance;
             brightness.Value = color.Brightness;
-            this.color[0].Value = color.R;
-            this.color[1].Value = color.G;
-            this.color[2].Value = color.B;
+            this.color.Edit(color);
         }
 
         public Color ToColor()
         {
             if (hue.Value == byte.MaxValue)
-                return new Color((float)color[0].Value/255f, (float)color[1].Value / 255f, (float)color[2].Value / 255f);
+                return color.ToColor();
             else
                 return AllColorPalette[palette.Value].GetColor(hue.Value, distance.Value, brightness.Value);
         }
@@ -318,7 +373,7 @@ public class DynamicPalette
     }
     public class ShareColorMessage
     {
-        public Color mainColor, shadowColor;
+        public Color mainColor, shadowColor, visorColor;
         public byte playerId;
         public Tuple<int, int>? colorNameParam;
         public string? colorName;
@@ -327,6 +382,7 @@ public class DynamicPalette
         {
             mainColor = MyColor.mainColor;
             shadowColor = MyColor.shadowColor;
+            visorColor = MyVisorColor.ToColor(Palette.VisorColor);
             MyColor.GetMainParam(out var h, out var d, out _);
             colorNameParam = new(h, d);
             colorName = h == byte.MaxValue ? MyColor.Name : null;
@@ -345,6 +401,9 @@ public class DynamicPalette
             writer.Write(message.shadowColor.r);
             writer.Write(message.shadowColor.g);
             writer.Write(message.shadowColor.b);
+            writer.Write(message.visorColor.r);
+            writer.Write(message.visorColor.g);
+            writer.Write(message.visorColor.b);
             if (message.colorName != null)
             {
                 writer.Write(false);
@@ -363,6 +422,7 @@ public class DynamicPalette
             message.playerId = reader.ReadByte();
             message.mainColor = new Color(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
             message.shadowColor = new Color(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+            message.visorColor = new Color(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
             if (reader.ReadBoolean())
                 message.colorNameParam = new(reader.ReadInt32(), reader.ReadInt32());
             else
@@ -373,6 +433,7 @@ public class DynamicPalette
         {
             Palette.PlayerColors[message.playerId] = message.mainColor;
             Palette.ShadowColors[message.playerId] = message.shadowColor;
+            VisorColors[message.playerId] = message.visorColor;
             ColorNameDic[message.playerId] = (message.colorNameParam?.Item1 ?? byte.MaxValue, message.colorNameParam?.Item2 ?? 0, message.colorName);
 
             //まだプレイヤーが追加されていない場合は即座に反映させなくても大丈夫
@@ -432,16 +493,28 @@ public class DynamicPalette
         return (color.r + color.g + color.b) > 1.2f;
     }
 
+    public static SpriteLoader colorFullButtonSprite = SpriteLoader.FromResource("Nebula.Resources.ColorButton.png", 100f);
     public static SpriteLoader colorButtonSprite = SpriteLoader.FromResource("Nebula.Resources.ColorHalfButton.png", 100f);
     public static SpriteLoader colorBackSprite = SpriteLoader.FromResource("Nebula.Resources.ColorFullBase.png", 100f);
-    public static void OpenCatalogue(SpriteRenderer TargetRenderer,Action ShownColor)
+    public static void OpenCatalogue(SpriteRenderer TargetRenderer,Action ShownColor, bool isBodyColor = true)
     {
-        var screen = MetaScreen.GenerateWindow(new Vector2(6.25f, 3.6f), PlayerCustomizationMenu.Instance.transform, new Vector3(0f, 0f, 0f), true, false, true);
+        var screen = MetaScreen.GenerateWindow(new Vector2(6.7f, 4.2f), PlayerCustomizationMenu.Instance.transform, new Vector3(0f, 0f, 0f), true, false, true);
         screen.transform.parent.FindChild("Background").GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0.85f);
+
+        MetaContext context = new();
+
+        context.Append(new CombinedContext(
+            new MetaContext.Button(() => { screen.CloseScreen(); OpenCatalogue(TargetRenderer, ShownColor, true); }, TextAttribute.BoldAttr) { RawText = "Body Color" },
+            new MetaContext.HorizonalMargin(0.15f),
+            new MetaContext.Button(() => { screen.CloseScreen(); OpenCatalogue(TargetRenderer, ShownColor, false); }, TextAttribute.BoldAttr) { RawText = "Visor Color" }
+            ));
+        context.Append(new MetaContext.VerticalMargin(0.05f));
+
         MetaContext inner = new();
-        MetaContext.ScrollView scrollView = new(new(6.25f, 3.6f), inner, true);
+
+        MetaContext.ScrollView scrollView = new(new(6.7f, 3.55f), inner, true);
         
-        foreach(var category in ColorCatalogue)
+        foreach(var category in (isBodyColor ? ColorCatalogue : VisorColorCatalogue))
         {
             inner.Append(new MetaContext.Text(new(TextAttribute.BoldAttr) { FontMaterial = VanillaAsset.StandardMaskedFontMaterial}) { TranslationKey = "inventory.catalogue." + category.Key });
             inner.Append(category.Value, (col) =>
@@ -454,12 +527,18 @@ public class DynamicPalette
                         renderer.sortingOrder = 20;
                         renderer.color = col.MainColor.AsColor;
 
-                        var baseRenderer= GameObject.Instantiate(renderer,renderer.transform.parent);
-                        baseRenderer.sprite = colorBackSprite.GetSprite();
-                        baseRenderer.transform.localPosition += new Vector3(0, 0, 0.1f);
-                        baseRenderer.sortingOrder = 10;
-                        baseRenderer.color = col.ShadowColor.AsColor;
-                        
+                        if (isBodyColor)
+                        {
+                            var baseRenderer = GameObject.Instantiate(renderer, renderer.transform.parent);
+                            baseRenderer.sprite = colorBackSprite.GetSprite();
+                            baseRenderer.transform.localPosition += new Vector3(0, 0, 0.1f);
+                            baseRenderer.sortingOrder = 10;
+                            baseRenderer.color = col.ShadowColor.AsColor;
+                        }
+                        else
+                        {
+                            renderer.sprite = colorFullButtonSprite.GetSprite();
+                        }
 
                         var collider = renderer.gameObject.AddComponent<BoxCollider2D>();
                         collider.size = new(0.7f, 0.5f);
@@ -468,10 +547,16 @@ public class DynamicPalette
                         button.OnClick.AddListener(() =>
                         {
                             screen.CloseScreen();
-                            MyColor.Restore(col);
-                            TargetRenderer.gameObject.SetActive(col.MainColor.Hue != byte.MaxValue);
-                            TargetRenderer.transform.localPosition = NebulaPlayerTab.ToPalettePosition(col.MainColor.Hue, col.MainColor.Distance);
-
+                            if (isBodyColor)
+                            {
+                                MyColor.Restore(col);
+                                TargetRenderer.gameObject.SetActive(col.MainColor.Hue != byte.MaxValue);
+                                TargetRenderer.transform.localPosition = NebulaPlayerTab.ToPalettePosition(col.MainColor.Hue, col.MainColor.Distance);
+                            }
+                            else
+                            {
+                                MyVisorColor.Edit(col.MainColor.AsColor);
+                            }
                             ShownColor();
 
                             if (AmongUsClient.Instance && AmongUsClient.Instance.IsInGame && PlayerControl.LocalPlayer) DynamicPalette.RpcShareColor.Invoke(new DynamicPalette.ShareColorMessage() { playerId = PlayerControl.LocalPlayer.PlayerId }.ReflectMyColor());
@@ -493,7 +578,10 @@ public class DynamicPalette
                 }
             , 6, -1, 0, 0.65f);
         }
-        screen.SetContext(scrollView);
+
+        context.Append(scrollView);
+
+        screen.SetContext(context);
     }
 }
 
@@ -622,16 +710,16 @@ public class NebulaPlayerTab : MonoBehaviour
             int copiedIndex = i;
             var renderer = UnityHelper.CreateObject<SpriteRenderer>("SavedColor", transform, new(4.45f + (float)i * 0.81f, 2.25f, -50f));
             renderer.sprite = DynamicPalette.colorButtonSprite.GetSprite();
-            renderer.color = DynamicPalette.SavedColor[copiedIndex].MainColor;
+            renderer.color = DynamicPalette.SavedColor[copiedIndex].color.MainColor;
             var baseRenderer = UnityHelper.CreateObject<SpriteRenderer>("ShadowColor", renderer.transform, new(0f, 0f, 1f));
             baseRenderer.sprite = DynamicPalette.colorBackSprite.GetSprite();
-            baseRenderer.color = DynamicPalette.SavedColor[copiedIndex].ShadowColor;
+            baseRenderer.color = DynamicPalette.SavedColor[copiedIndex].color.ShadowColor;
             var saveRenderer = UnityHelper.CreateObject<SpriteRenderer>("SaveButton", renderer.transform, new(0f, -0.38f, 0f));
             saveRenderer.sprite = saveButtonSprite.GetSprite();
 
             var restoreButton = renderer.gameObject.SetUpButton(true);
             restoreButton.OnClick.AddListener(() => {
-                DynamicPalette.MyColor.Restore(DynamicPalette.SavedColor[copiedIndex]);
+                DynamicPalette.MyColor.Restore(DynamicPalette.SavedColor[copiedIndex].color);
                 TargetRenderer.gameObject.SetActive(h != byte.MaxValue);
                 TargetRenderer.transform.localPosition = ToPalettePosition(h, d);
 
@@ -639,14 +727,14 @@ public class NebulaPlayerTab : MonoBehaviour
 
                 PreviewColor(null, null, null);
             });
-            restoreButton.OnMouseOver.AddListener(() => PreviewColor(DynamicPalette.SavedColor[copiedIndex]));
+            restoreButton.OnMouseOver.AddListener(() => PreviewColor(DynamicPalette.SavedColor[copiedIndex].color, DynamicPalette.SavedColor[copiedIndex].visorColor.ToColor(Palette.VisorColor)));
             restoreButton.OnMouseOut.AddListener(() => PreviewColor(null, null, null));
             restoreButton.gameObject.AddComponent<BoxCollider2D>().size = new Vector2(0.7f, 0.5f);
 
             var saveButon = saveRenderer.gameObject.SetUpButton(true,saveRenderer);
             saveButon.OnClick.AddListener(() =>
             {
-                DynamicPalette.SavedColor[copiedIndex].Restore(DynamicPalette.MyColor);
+                DynamicPalette.SavedColor[copiedIndex].color.Restore(DynamicPalette.MyColor);
                 renderer.color = DynamicPalette.MyColor.mainColor;
                 baseRenderer.color = DynamicPalette.MyColor.shadowColor;
             });
@@ -757,6 +845,7 @@ public class NebulaPlayerTab : MonoBehaviour
             {
                 Palette.PlayerColors[PreviewColorId] = DynamicPalette.MyColor.MainColor;
                 Palette.ShadowColors[PreviewColorId] = DynamicPalette.MyColor.ShadowColor;
+                DynamicPalette.VisorColors[PreviewColorId] = DynamicPalette.MyVisorColor.ToColor(Palette.VisorColor);
             }
 
             AfterPreviewColor(concernedHue.Value,concernedDistance.Value);
@@ -764,12 +853,13 @@ public class NebulaPlayerTab : MonoBehaviour
         catch { }
     }
 
-    private void PreviewColor(DynamicPalette.ModColor color)
+    private void PreviewColor(DynamicPalette.ModColor color,Color visorColor)
     {
         try
         {
             Palette.PlayerColors[PreviewColorId] = color.MainColor;
             Palette.ShadowColors[PreviewColorId] = color.ShadowColor;
+            DynamicPalette.VisorColors[PreviewColorId] = visorColor;
 
             color.GetMainParam(out var h,out var d,out _);
             AfterPreviewColor(h, d, color.Name);
@@ -811,5 +901,17 @@ public static class ColorNamePatch
         }
            
         return false;
+    }
+}
+
+[HarmonyPatch(typeof(PlayerMaterial), nameof(PlayerMaterial.SetColors),typeof(int),typeof(Renderer))]
+public static class SetColorPatch
+{
+    static void Postfix([HarmonyArgument(0)] int colorId, [HarmonyArgument(1)] Renderer rend)
+    {
+        if (!rend || colorId < 0 || colorId >= DynamicPalette.VisorColors.Length) return;
+
+        rend.material.SetColor(PlayerMaterial.VisorColor, DynamicPalette.VisorColors[colorId]);
+
     }
 }

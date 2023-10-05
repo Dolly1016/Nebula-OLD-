@@ -191,8 +191,8 @@ public class MetaContext : IMetaContext, IMetaParallelPlacable
             renderer.sortingOrder = 10;
             if (Sprite) renderer.transform.localScale = Vector3.one * (Width / Sprite!.bounds.size.x);
             PostBuilder?.Invoke(renderer);
-            width = Width;
-            return Sprite ? renderer.transform.localScale.y * Sprite!.bounds.size.y : 0f;
+            width = Width + 0.1f;
+            return (Sprite ? renderer.transform.localScale.y * Sprite!.bounds.size.y : 0f) + 0.1f;
         }
 
         public float Generate(GameObject screen, Vector2 cursor, Vector2 size, out (float min, float max) width)
@@ -208,7 +208,7 @@ public class MetaContext : IMetaContext, IMetaParallelPlacable
                 PostBuilder?.Invoke(renderer);
             }
 
-            width = CalcWidth(Alignment, cursor, size, mySize.x, -mySize.x / 2f, mySize.x / 2f);
+            width = CalcWidth(Alignment, cursor, size, mySize.x + 0.1f);
 
             return mySize.y + 0.1f;
         }

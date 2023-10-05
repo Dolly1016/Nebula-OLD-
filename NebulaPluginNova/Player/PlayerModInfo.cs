@@ -7,6 +7,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
 using static Il2CppSystem.Globalization.CultureInfo;
+using static Il2CppSystem.Xml.Schema.FacetsChecker.FacetsCompiler;
 using static UnityEngine.GraphicsBuffer;
 
 namespace Nebula.Player;
@@ -30,6 +31,7 @@ public static class PlayerState
 public class TimeLimitedModulator
 {
     public float Timer { get; private set; }
+    public float MaxTime { get; private set; }
     public bool CanPassMeeting { get; private set; }
     public int Priority { get; private set; }
     public int DuplicateTag { get; private set; }
@@ -48,7 +50,7 @@ public class TimeLimitedModulator
 
     public TimeLimitedModulator(float timer, bool canPassMeeting, int priority, int? duplicateTag)
     {
-        this.Timer = timer;
+        this.MaxTime = this.Timer = timer;
         this.CanPassMeeting = canPassMeeting;
         this.Priority = priority;
         this.DuplicateTag = duplicateTag ?? 0;
@@ -80,7 +82,10 @@ public class AttributeModulator : TimeLimitedModulator
 {
     public enum PlayerAttribute
     {
-        Invisibility,
+        Accel,
+        Decel,
+        Invisible,
+        CurseOfBloody,
         MaxId
     }
 
@@ -290,7 +295,33 @@ public class PlayerModInfo
         modifier.OnActivated();
     }
 
-    public void OnSetAttribute(AttributeModulator.PlayerAttribute attribute) { }
+    public void OnSetAttribute(AttributeModulator.PlayerAttribute attribute) {
+        if(attribute == AttributeModulator.PlayerAttribute.CurseOfBloody)
+        {
+            IEnumerator CoCurseUpdate()
+            {
+                bool isLeft = false;
+
+                while (true)
+                {
+                    yield return new WaitForSeconds(0.24f);
+                    if (!HasAttribute(attribute)) yield break;
+
+                    if (MyControl.MyPhysics.Velocity.magnitude > 0)
+                    {
+                        var vec = MyControl.MyPhysics.Velocity.normalized * 0.08f * (isLeft ? 1f : -1f);
+                        AmongUsUtil.GenerateFootprint(MyControl.transform.position + new Vector3(-vec.y, vec.x - 0.22f), Roles.Modifier.Bloody.MyRole.RoleColor, 5f);
+                        isLeft = !isLeft;
+                    }
+                    else
+                    {
+                        AmongUsUtil.GenerateFootprint(MyControl.transform.position + new Vector3(0f, -0.22f), Roles.Modifier.Bloody.MyRole.RoleColor,5f);
+                    }
+                }
+            }
+            NebulaManager.Instance.StartCoroutine(CoCurseUpdate().WrapToIl2Cpp());
+        }
+    }
     public void OnUnsetAttribute(AttributeModulator.PlayerAttribute attribute) { }
 
     public bool HasAttribute(AttributeModulator.PlayerAttribute attribute) => attributeModulators.Any(m => m.Attribute == attribute);
@@ -347,7 +378,10 @@ public class PlayerModInfo
        "AddSpeedModulator", (message, _) =>
        {
            var modulators = NebulaGameManager.Instance!.GetModPlayerInfo(message.playerId)!.speedModulators;
-           if (message.modulator.DuplicateTag != 0 && modulators.Any(m => m.DuplicateTag == message.modulator.DuplicateTag)) return;
+           if (message.modulator.DuplicateTag != 0)
+           {
+               modulators.RemoveAll(m => m.DuplicateTag == message.modulator.DuplicateTag);
+           }
            modulators.Add(message.modulator);
            modulators.Sort((m1, m2) => m2.Priority - m1.Priority);
            
@@ -361,12 +395,28 @@ public class PlayerModInfo
            if (playerInfo == null) return;
 
            var modulators = playerInfo!.attributeModulators;
-           if (message.modulator.DuplicateTag != 0 && modulators.Any(m => m.DuplicateTag == message.modulator.DuplicateTag)) return;
-
+           
            //新たな属性が付与されたとき
            if (!modulators.Any(m => m.Attribute == message.modulator.Attribute)) playerInfo!.OnSetAttribute(message.modulator.Attribute);
            
            modulators.Add(message.modulator);
+
+           if (message.modulator.DuplicateTag != 0)
+           {
+               AttributeModulator? removed = null;
+               modulators.RemoveAll(m =>
+               {
+                   if(m.DuplicateTag == message.modulator.DuplicateTag && m != message.modulator)
+                   {
+                       removed = m;
+                       return true;
+                   }
+                   return false;
+               });
+               //属性を失ったとき
+               if(removed != null && !modulators.Any(m => m.Attribute == removed.Attribute)) playerInfo!.OnUnsetAttribute(removed.Attribute);
+           }
+
            modulators.Sort((m1, m2) => m2.Priority - m1.Priority);
        }
        );
@@ -495,10 +545,44 @@ public class PlayerModInfo
         }
     }
 
+    public IEnumerable<(AttributeModulator.PlayerAttribute attribute, float percentage)> GetValidAttributes()
+    {
+        float accelMax = 0f, accelCurrent = 0f;
+        float decelMax = 0f, decelCurrent = 0f;
+        foreach (var mod in speedModulators)
+        {
+            //加速
+            if((mod.IsMultiplier && mod.Num>1f) || (!mod.IsMultiplier && mod.Num > 0f))
+            {
+                if (accelMax < mod.MaxTime) accelMax = mod.MaxTime;
+                if (accelCurrent < mod.Timer) accelCurrent = mod.Timer;
+            }
+            //減速
+            else if ((mod.IsMultiplier && mod.Num > 0f) || (!mod.IsMultiplier && mod.Num < 0f))
+            {
+                if (decelMax < mod.MaxTime) decelMax = mod.MaxTime;
+                if (decelCurrent < mod.Timer) decelCurrent = mod.Timer;
+            }
+        }
+        if (accelMax > 0f && accelCurrent > 0f) yield return (AttributeModulator.PlayerAttribute.Accel, accelCurrent / accelMax);
+        if (decelMax > 0f && decelCurrent > 0f) yield return (AttributeModulator.PlayerAttribute.Decel, decelCurrent / decelMax);
+
+        for (int i = 0; i < (int)AttributeModulator.PlayerAttribute.MaxId; i++)
+        {
+            float max = 0f, current = 0f;
+            foreach(var attribute in attributeModulators.Where(attr => (int)attr.Attribute == i))
+            {
+                if (max < attribute.MaxTime) max = attribute.MaxTime;
+                if (current < attribute.Timer) current = attribute.Timer;
+            }
+            if (max > 0f && current > 0f) yield return ((AttributeModulator.PlayerAttribute)i, current / max);
+        }
+
+    }
     private void UpdateVisibility()
     {
-        bool isInvisible = HasAttribute(AttributeModulator.PlayerAttribute.Invisibility) && !IsDead;
-        MyControl.cosmetics.nameText.gameObject.SetActive((!isInvisible) || AmOwner || (NebulaGameManager.Instance?.CanSeeAllInfo ?? false));
+        bool isInvisible = HasAttribute(AttributeModulator.PlayerAttribute.Invisible) && !IsDead;
+        MyControl.cosmetics.nameText.gameObject.SetActive(!MyControl.inVent && ((!isInvisible) || AmOwner || (NebulaGameManager.Instance?.CanSeeAllInfo ?? false)));
 
         if (IsDead) return;
 

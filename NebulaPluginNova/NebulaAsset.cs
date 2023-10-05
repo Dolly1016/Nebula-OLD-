@@ -36,6 +36,7 @@ public static class NebulaAsset
 
         MultiplyBackShader = AssetBundle.LoadAsset<Shader>("Sprites-MultiplyBackground").MarkDontUnload();
         StoreBackShader = AssetBundle.LoadAsset<Shader>("Sprites-StoreBackground").MarkDontUnload();
+        GuageShader = AssetBundle.LoadAsset<Shader>("Sprites-Guage").MarkDontUnload();
 
         DivMap[0] = AssetBundle.LoadAsset<GameObject>("SkeldDivMap").MarkDontUnload();
         DivMap[1] = AssetBundle.LoadAsset<GameObject>("MIRADivMap").MarkDontUnload();
@@ -114,6 +115,7 @@ public static class NebulaAsset
 
     static public Shader MultiplyBackShader { get; private set; } = null!;
     static public Shader StoreBackShader { get; private set; } = null!;
+    static public Shader GuageShader { get; private set; } = null!;
 
     static public ResourceExpandableSpriteLoader SharpWindowBackgroundSprite = new("Nebula.Resources.StatisticsBackground.png", 100f,5,5);
 

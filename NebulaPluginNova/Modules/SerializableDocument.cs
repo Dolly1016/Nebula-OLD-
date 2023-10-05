@@ -44,6 +44,8 @@ public class DocumentManager
                 var doc = JsonStructure.Deserialize<SerializableDocument>(stream);
                 if (doc == null) continue;
 
+                foreach(var c in doc.AllConents())c.RelatedNamespace = addon;
+
                 allDocuments[id] = doc;
             }
 
@@ -56,6 +58,7 @@ public class DocumentManager
     {
         foreach (var role in Roles.Roles.AllRoles) yield return "role." + role.InternalName;
         foreach (var modifier in Roles.Roles.AllModifiers) yield return "role." + modifier.InternalName;
+        foreach (var option in NebulaConfiguration.AllConfigurations) yield return option.Id + ".detail";
     }
 }
 
@@ -94,6 +97,13 @@ public class SerializableDocument
         TextStyle["Bold"] = new TextAttribute(TextAttribute.BoldAttr).EditFontSize(1.2f, 0.6f, 1.2f);
         TextStyle["Content"] = new TextAttribute(TextAttribute.ContentAttr).EditFontSize(1.2f, 0.6f, 1.2f);
         TextStyle["Title"] = new TextAttribute(TextAttribute.TitleAttr).EditFontSize(2.2f, 0.6f, 2.2f);
+    }
+
+    public IEnumerable<SerializableDocument> AllConents()
+    {
+        yield return this;
+        if (Contents != null) foreach (var doc in Contents) foreach (var c in doc.AllConents()) yield return c;
+        if (Aligned != null) foreach (var doc in Aligned) foreach (var c in doc.AllConents()) yield return c;
     }
 
     //子となるコンテンツ
@@ -148,6 +158,8 @@ public class SerializableDocument
     [JsonSerializableField(true)]
     public float? HSpace = null;
 
+    public INameSpace? RelatedNamespace = null;
+
     private ISpriteLoader? imageLoader = null;
     private string? lastImagePath;
 
@@ -178,7 +190,7 @@ public class SerializableDocument
 
     public IMetaContext? BuildForDev(Action<PassiveButton,SerializableDocument, SerializableDocument?> editorBuilder, SerializableDocument? parent = null)
     {
-        var context = BuildInternal(null, c => c.BuildForDev(editorBuilder, this), false);
+        var context = BuildInternal(RelatedNamespace, null, c => c.BuildForDev(editorBuilder, this), false, true);
 
         if (context != null) context = new MetaContext.FramedContext(context, new Vector2(0.15f, 0.15f)) { 
             HighlightColor = UnityEngine.Color.cyan.AlphaMultiplied(0.25f), 
@@ -194,10 +206,10 @@ public class SerializableDocument
         return context;
     }
 
-    public IMetaContext? Build(Reference<MetaContext.ScrollView.InnerScreen> myScreen) => BuildInternal(myScreen, c => c.Build(myScreen),true);
+    public IMetaContext? Build(Reference<MetaContext.ScrollView.InnerScreen>? myScreen, bool useMaskedMaterial = true) => BuildInternal(RelatedNamespace, myScreen, c => c.Build(myScreen, useMaskedMaterial), true, useMaskedMaterial);
     
 
-    public IMetaContext? BuildInternal(Reference<MetaContext.ScrollView.InnerScreen>? myScreen, Func<SerializableDocument, IMetaContext?> builder, bool buildHyperLink)
+    public IMetaContext? BuildInternal(INameSpace? nameSpace, Reference<MetaContext.ScrollView.InnerScreen>? myScreen, Func<SerializableDocument, IMetaContext?> builder, bool buildHyperLink,bool useMaskedMaterial)
     {
         if (Contents != null)
         {
@@ -241,12 +253,12 @@ public class SerializableDocument
                 Color = Color?.AsColor ?? UnityEngine.Color.white,
                 Styles = IsBold.HasValue ? (IsBold.Value ? TMPro.FontStyles.Bold : TMPro.FontStyles.Normal) : attr.Styles,
                 Alignment = TMPro.TextAlignmentOptions.Left,
-                FontMaterial = VanillaAsset.StandardMaskedFontMaterial
+                FontMaterial = useMaskedMaterial ? VanillaAsset.StandardMaskedFontMaterial : null
                
             };
 
             void PostBuilder(TMPro.TextMeshPro text) {
-                if (buildHyperLink)
+                if (myScreen != null && buildHyperLink)
                 {
                     foreach (var linkInfo in text.textInfo.linkInfo)
                     {
@@ -300,7 +312,15 @@ public class SerializableDocument
         {
             if(imageLoader == null || Image != lastImagePath)
             {
-                imageLoader = SpriteLoader.FromResource("Nebula.Resources." + Image + ".png", 100f);
+                if (Image.Contains("::"))
+                {
+                    var splitted = Image.Split("::", 2);
+                    imageLoader = new SpriteLoader(new AddressedTextureLoader(NameSpaceManager.ResolveOrGetDefault(splitted[0]), splitted[1]+".png"), 100f);
+                }
+                else
+                {
+                    imageLoader = new SpriteLoader(new AddressedTextureLoader(nameSpace ?? NameSpaceManager.DefaultNameSpace, Image + ".png"), 100f);
+                }
                 lastImagePath = Image;
             }
 
@@ -310,7 +330,7 @@ public class SerializableDocument
                 sprite = imageLoader?.GetSprite()!;
             }
             catch { }
-            return new MetaContext.Image(sprite) { Width = Width ?? 1f, PostBuilder = image => image.maskInteraction = SpriteMaskInteraction.VisibleInsideMask };
+            return new MetaContext.Image(sprite) { Width = Width ?? 1f, PostBuilder = image => image.maskInteraction = useMaskedMaterial ? SpriteMaskInteraction.VisibleInsideMask : SpriteMaskInteraction.None };
         }
 
         if (HSpace != null) return new MetaContext.HorizonalMargin(HSpace.Value);

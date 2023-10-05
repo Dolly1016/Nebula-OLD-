@@ -1,0 +1,12 @@
+{
+	"Contents" : [
+		{
+			"RawText" : "オンに設定することで視界外のベントの開閉が見えなくなります。",
+			"IsVariable" : True
+		},
+		{
+			"Image" : "Images.SilentVent",
+			"Width" : 1.6
+		}
+	]
+}

@@ -392,16 +392,29 @@ public class NebulaConfiguration
     public bool IsShown => (MyHolder?.IsShown ?? true) && (Predicate?.Invoke() ?? true);
     public Action? OnValueChanged = null;
 
+    public static List<NebulaConfiguration> AllConfigurations = new();
+
     public void TitlePostBuild(TextMeshPro text, string? detailId)
     {
-        string? display = Language.Find((detailId ?? Id) + ".detail");
-        if (display == null) return;
+        IMetaContext? context = null;
+
+        detailId ??= Id;
+        detailId += ".detail";
+
+        context = DocumentManager.GetDocument(detailId)?.Build(null,false);
+
+        if (context == null) {
+            string? display = Language.Find(detailId);
+            if (display != null) context = new MetaContext.VariableText(TextAttribute.ContentAttr) { Alignment = IMetaContext.AlignmentOption.Left, RawText = display };
+        }
+
+        if (context == null) return;
 
         var buttonArea = UnityHelper.CreateObject<BoxCollider2D>("DetailArea", text.transform, Vector3.zero);
         var button = buttonArea.gameObject.SetUpButton();
         buttonArea.size = text.rectTransform.sizeDelta;
         buttonArea.isTrigger = true;
-        button.OnMouseOver.AddListener(() => NebulaManager.Instance.SetHelpContext(button, new MetaContext.VariableText(TextAttribute.ContentAttr) { Alignment = IMetaContext.AlignmentOption.Left, RawText = display }));
+        button.OnMouseOver.AddListener(() => NebulaManager.Instance.SetHelpContext(button, context));
         button.OnMouseOut.AddListener(()=>NebulaManager.Instance.HideHelpContext());
     }
     public IMetaContext? GetEditor()
@@ -470,6 +483,8 @@ public class NebulaConfiguration
         Title = new RawTextComponent("Undefined");
 
         Shower = null;
+
+        AllConfigurations.Add(this);
     }
 
     public NebulaConfiguration(ConfigurationHolder? holder, string id,ITextComponent? title, int maxValue,int defaultValue,int invalidatedValue)
@@ -488,6 +503,8 @@ public class NebulaConfiguration
         Title = title ?? new TranslateTextComponent(entryId);
 
         Shower = () => Title.Text + " : " + ToDisplayString();
+
+        AllConfigurations.Add(this);
     }
 
     public NebulaConfiguration(ConfigurationHolder? holder, string id, ITextComponent? title, int minValue,int maxValue, int defaultValue, int invalidatedValue) :

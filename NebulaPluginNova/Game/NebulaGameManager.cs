@@ -80,6 +80,7 @@ public class NebulaGameManager
     public LobbySlideManager LobbySlideManager { get; private set; } = new();
     public VoiceChatManager? VoiceChatManager { get; set; } = GeneralConfigurations.UseVoiceChatOption ? new() : null;
     public ConsoleRestriction ConsoleRestriction { get; private set; } = new();
+    public AttributeShower AttributeShower { get; private set; } = new();
 
     //天界視点フラグ
     public bool CanSeeAllInfo { get; set; }
@@ -218,6 +219,10 @@ public class NebulaGameManager
             HudManager.Instance.ImpostorVentButton.cooldownTimerText.color = PlayerControl.LocalPlayer.inVent ? Color.green : Color.white;
 
             //サボタージュボタン
+
+
+            //ローカルモジュール
+            AttributeShower.Update(localModInfo);
         }
 
         CheckAndEndGame(CriteriaManager.OnUpdate());

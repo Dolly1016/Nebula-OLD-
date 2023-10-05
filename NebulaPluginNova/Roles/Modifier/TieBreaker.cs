@@ -27,5 +27,10 @@ public class TieBreaker : ConfigurableStandardModifier
             if (!myVoteArea.DidVote) return;
             extraVotes.Add(myVoteArea.VotedFor);
         }
+
+        public override void DecoratePlayerName(ref string text, ref Color color)
+        {
+            if (AmOwner || (NebulaGameManager.Instance?.CanSeeAllInfo ?? false)) text += " ♠".Color(MyRole.RoleColor);
+        }
     }
 }

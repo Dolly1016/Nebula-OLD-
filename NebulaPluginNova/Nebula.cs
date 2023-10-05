@@ -189,9 +189,18 @@ public class NebulaPlugin : BasePlugin
         });
     }
 
-    public static List<SerializableDocument>? Test()
+    public static void Test()
     {
-        return JsonStructure.Deserialize<List<SerializableDocument>>("[]");
+        var obj = UnityHelper.CreateObject("Icon", null, new Vector3(0, 0, -100f), LayerExpansion.GetUILayer());
+
+        var guageLoader = SpriteLoader.FromResource("Nebula.Resources.AttributeGuage.png", 100f);
+        var loader= XOnlyDividedSpriteLoader.FromResource("Nebula.Resources.AttributeIcon.png", 100f, 33, true);
+        obj.AddComponent<SpriteRenderer>().sprite = loader.GetSprite(0);
+
+        var guage= UnityHelper.CreateObject<SpriteRenderer>("Guage", obj.transform, new Vector3(0, 0, -1f));
+        guage.sprite = guageLoader.GetSprite();
+        guage.material.shader = NebulaAsset.GuageShader;
+        guage.material.SetFloat("_Guage",0.4f);
     }
 }
 

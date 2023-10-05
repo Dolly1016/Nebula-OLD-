@@ -149,9 +149,9 @@
 "role.comet.name" : "Comet"
 "role.comet.blurb" : "Run Through"
 "options.role.comet.detail" : "You move fastly and secretly.<br>While your ability is activated, your body can not be seen anyone."
-"options.role.comet.brazeCoolDown" : "Blaze Cool Down"
-"options.role.comet.brazeSpeed" : "Blaze Speed"
-"options.role.comet.brazeDuration" : "Blaze Duration"
+"options.role.comet.blazeCoolDown" : "Blaze Cool Down"
+"options.role.comet.blazeSpeed" : "Blaze Speed"
+"options.role.comet.blazeDuration" : "Blaze Duration"
 
 "role.necromancer.name" : "Necromancer"
 "role.necromancer.blurb" : "Revive Phantoms"
@@ -427,6 +427,7 @@
 # Button
 
 "button.label.agent" : "agent"
+"button.label.blaze" : "blaze"
 "button.label.camo" : "camo"
 "button.label.clean" : "clean"
 "button.label.douse" : "douse"

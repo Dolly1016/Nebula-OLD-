@@ -17,7 +17,7 @@ public static class ObjectTrackers
     public static ObjectTracker<PlayerControl> ForPlayer(float distance, PlayerControl tracker, Predicate<PlayerControl>? candidatePredicate)
     {
         return new ObjectTracker<PlayerControl>(distance, tracker, PlayerSupplier,
-            (p) => (candidatePredicate?.Invoke(p) ?? true) && (p.GetModInfo()?.HasAttribute(AttributeModulator.PlayerAttribute.Invisibility) ?? true),
+            (p) => (candidatePredicate?.Invoke(p) ?? true) && (p.GetModInfo()?.HasAttribute(AttributeModulator.PlayerAttribute.Invisible) ?? true),
             DefaultPlayerPosConverter, DefaultPlayerRendererConverter);
     }
 

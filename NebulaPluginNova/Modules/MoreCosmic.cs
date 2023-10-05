@@ -8,6 +8,7 @@ using Rewired.Utils.Platforms.Windows;
 using Sentry;
 using System;
 using System.Collections;
+using System.Drawing;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
@@ -1175,7 +1176,7 @@ public class NebulaCosmeticsLayer : MonoBehaviour
             }
             else
             {
-                MyLayer.visor!.Image.transform.SetLocalZ(MyLayer.zIndexSpacing * -4f);
+                MyLayer.visor!.Image.transform.SetLocalZ(MyLayer.zIndexSpacing * (MyLayer.visor.currentVisor.behindHats ? -2f : -4f));
             }
         }
         catch { }
@@ -1263,7 +1264,14 @@ public static class TabEnablePatch
                 {
                     colorChip.Inner.SetMaskType(PlayerMaterial.MaskType.ScrollingUI);
                     __instance.UpdateMaterials(colorChip.Inner.FrontLayer, vanillaItem);
-                    vanillaItem.SetPreview(colorChip.Inner.FrontLayer, __instance.HasLocalPlayer() ? PlayerControl.LocalPlayer.Data.DefaultOutfit.ColorId : ((int)DataManager.Player.Customization.Color));
+                    int colorId = __instance.HasLocalPlayer() ? PlayerControl.LocalPlayer.Data.DefaultOutfit.ColorId : ((int)DataManager.Player.Customization.Color);
+                    vanillaItem.SetPreview(colorChip.Inner.FrontLayer, colorId);
+                    if(modItem is CosmicHat mHat && mHat.Preview == null && mHat.Main != null && mHat.Back != null)
+                    {
+                        __instance.UpdateMaterials(colorChip.Inner.BackLayer, vanillaItem);
+                        colorChip.Inner.BackLayer.sprite = mHat.Back.GetSprite(0)!;
+                        if (Application.isPlaying) PlayerMaterial.SetColors(colorId, colorChip.Inner.BackLayer);
+                    }
                 }
                 else
                 {

@@ -124,7 +124,7 @@ public class DevStudio : MonoBehaviour
             Directory.CreateDirectory("Addons/" + id.Value.Text);
             using (var stream = new StreamWriter(File.Create("Addons/" + id.Value.Text + "/addon.meta"), Encoding.UTF8))
             {
-                stream.Write(JsonStructure.Serialize(new AddonMeta() { Name = name.Value.Text, Author = author.Value.Text, Version = "1.0", Description = desc.Value.Text }));
+                stream.Write(JsonStructure.Serialize(new AddonMeta() { Id = id.Value.Text, Name = name.Value.Text, Author = author.Value.Text, Version = "1.0", Description = desc.Value.Text }));
             }
             editScreen.Value.CloseScreen();
 

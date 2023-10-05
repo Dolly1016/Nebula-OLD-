@@ -260,6 +260,29 @@ public class AssetTextureLoader : ITextureLoader
     }
 }
 
+public class AddressedTextureLoader : ITextureLoader
+{
+    string address;
+    INameSpace nameSpace;
+    Texture2D texture = null!;
+
+    public AddressedTextureLoader(INameSpace nameSpace, string innerAddress)
+    {
+        this.nameSpace = nameSpace;
+        this.address = innerAddress;
+    }
+
+    public Texture2D GetTexture()
+    {
+        if (!texture)
+        {
+            using var stream = nameSpace.OpenRead(address);
+            if (stream != null) texture = GraphicsHelper.LoadTextureFromStream(stream);
+        }
+        return texture!;
+    }
+}
+
 public class SpriteLoader : ISpriteLoader
 {
     Sprite sprite = null!;

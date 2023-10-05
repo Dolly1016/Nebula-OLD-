@@ -234,7 +234,7 @@ public class Trapper : ConfigurableStandardRole
                 foreach (var p in NebulaGameManager.Instance!.AllPlayerInfo())
                 {
                     if (p.AmOwner) continue;
-                    if (p.IsDead || p.HasAttribute(AttributeModulator.PlayerAttribute.Invisibility)) continue;
+                    if (p.IsDead || p.HasAttribute(AttributeModulator.PlayerAttribute.Invisible)) continue;
                     if (p.MyControl.transform.position.Distance(commTrap.Position) < CommTrapSizeOption.GetFloat() * 0.25f)
                     {
                         //直前にトラップを踏んでいるプレイヤーは無視する

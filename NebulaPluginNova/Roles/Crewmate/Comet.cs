@@ -19,17 +19,17 @@ public class Comet : ConfigurableStandardRole
 
     public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player);
 
-    private NebulaConfiguration BrazeCoolDownOption = null!;
-    private NebulaConfiguration BrazeSpeedOption = null!;
-    private NebulaConfiguration BrazeDurationOption = null!;
+    private NebulaConfiguration BlazeCoolDownOption = null!;
+    private NebulaConfiguration BlazeSpeedOption = null!;
+    private NebulaConfiguration BlazeDurationOption = null!;
 
     protected override void LoadOptions()
     {
         base.LoadOptions();
 
-        BrazeCoolDownOption = new(RoleConfig, "brazeCoolDown", null, 5f, 60f, 2.5f, 20f, 20f) { Decorator = NebulaConfiguration.SecDecorator };
-        BrazeSpeedOption = new(RoleConfig, "brazeSpeed", null, 0.5f, 3f, 0.125f, 1.5f, 1.5f) { Decorator = NebulaConfiguration.OddsDecorator };
-        BrazeDurationOption = new(RoleConfig, "brazeDuration", null, 5f, 60f, 2.5f, 15f, 15f) { Decorator = NebulaConfiguration.SecDecorator };
+        BlazeCoolDownOption = new(RoleConfig, "blazeCoolDown", null, 5f, 60f, 2.5f, 20f, 20f) { Decorator = NebulaConfiguration.SecDecorator };
+        BlazeSpeedOption = new(RoleConfig, "blazeSpeed", null, 0.5f, 3f, 0.125f, 1.5f, 1.5f) { Decorator = NebulaConfiguration.OddsDecorator };
+        BlazeDurationOption = new(RoleConfig, "blazeDuration", null, 5f, 60f, 2.5f, 15f, 15f) { Decorator = NebulaConfiguration.SecDecorator };
     }
 
     public class Instance : Crewmate.Instance
@@ -51,15 +51,15 @@ public class Comet : ConfigurableStandardRole
                     button.ActivateEffect();
                     using (RPCRouter.CreateSection("CometBlaze"))
                     {
-                        PlayerModInfo.RpcSpeedModulator.Invoke(new(MyPlayer.PlayerId, new(MyRole.BrazeSpeedOption.GetFloat(), true, MyRole.BrazeDurationOption.GetFloat(), false, 100)));
-                        PlayerModInfo.RpcAttrModulator.Invoke(new(MyPlayer.PlayerId, new(AttributeModulator.PlayerAttribute.Invisibility, MyRole.BrazeDurationOption.GetFloat(), false, 100)));
+                        PlayerModInfo.RpcSpeedModulator.Invoke(new(MyPlayer.PlayerId, new(MyRole.BlazeSpeedOption.GetFloat(), true, MyRole.BlazeDurationOption.GetFloat(), false, 100)));
+                        PlayerModInfo.RpcAttrModulator.Invoke(new(MyPlayer.PlayerId, new(AttributeModulator.PlayerAttribute.Invisible, MyRole.BlazeDurationOption.GetFloat(), false, 100)));
                     }
                 };
                 boostButton.OnEffectEnd = (button) => boostButton.StartCoolDown();
-                boostButton.CoolDownTimer = Bind(new Timer(0f, MyRole.BrazeCoolDownOption.GetFloat()).SetAsAbilityCoolDown().Start());
-                boostButton.EffectTimer = Bind(new Timer(0f, MyRole.BrazeDurationOption.GetFloat()));
+                boostButton.CoolDownTimer = Bind(new Timer(0f, MyRole.BlazeCoolDownOption.GetFloat()).SetAsAbilityCoolDown().Start());
+                boostButton.EffectTimer = Bind(new Timer(0f, MyRole.BlazeDurationOption.GetFloat()));
                 boostButton.SetLabelType(ModAbilityButton.LabelType.Standard);
-                boostButton.SetLabel("braze");
+                boostButton.SetLabel("blaze");
             }
         }
     }
