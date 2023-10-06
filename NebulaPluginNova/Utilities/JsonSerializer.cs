@@ -32,7 +32,26 @@ public class JsonRawStructure
     public string? Prefix;
     public string? AsRaw;
 
-    public bool CanMerge => AsRaw == null && (StructiveContents?.All(entry => entry.Value.CanMerge) ?? true) && Prefix == null;
+    public bool MergeWith(JsonRawStructure structure)
+    {
+        if (structure.ContentsAsList != null)
+        {
+            ContentsAsList ??= new();
+            foreach (var c in structure.ContentsAsList!) ContentsAsList.Add(c);
+        }
+
+        if (structure.StructiveContents != null)
+        {
+            StructiveContents ??= new();
+            foreach (var entry in structure.StructiveContents)
+            {
+                if (!StructiveContents.ContainsKey(entry.Key)) StructiveContents.Add(entry.Key, entry.Value);
+                else StructiveContents[entry.Key].MergeWith(entry.Value);
+            }
+        }
+
+        return true;
+    }
 }
 
 public static class JsonStructure
@@ -290,6 +309,19 @@ public static class JsonStructure
 
     public static string Serialize(this object obj)
     {
+        if (obj is JsonRawStructure structure)
+        {
+            if(structure.ContentsAsList != null)
+            {
+                string json = "";
+                foreach(var item in structure.ContentsAsList) { if (json.Length > 0) json += ","; json += "\n" + item; }
+                return $"[{json}\n]";
+            }
+            if (structure.AsRaw != null) return structure.AsRaw;
+            if (structure.StructiveContents != null) return SerializeDictionary(structure.StructiveContents);
+            return "null";
+        }
+
         if (obj is int or byte or float or double or bool)
             return obj.ToString() ?? "null";
         if (obj is string)
