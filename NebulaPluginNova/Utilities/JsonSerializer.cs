@@ -201,7 +201,7 @@ public static class JsonStructure
         {
             var top = json.Substring(0, json.IndexOf('>') + 1);
             var follower = DeserializeRaw(json.Substring(top.Length));
-            follower.Prefix = top;
+            if (follower != null) follower.Prefix = top;
             return follower;
         }
 
@@ -229,7 +229,7 @@ public static class JsonStructure
         structure.StructiveContents = new();
         foreach (var entry in textMap)
         {
-            
+            structure.StructiveContents.Add(entry.Key, DeserializeRaw(entry.Value)!);
         }
     }
 
