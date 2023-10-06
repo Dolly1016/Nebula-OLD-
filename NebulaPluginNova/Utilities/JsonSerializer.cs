@@ -206,7 +206,24 @@ public static class JsonStructure
         }
 
         if (json.StartsWith('['))
-            return DeserializeCollection(json, type);
+        {
+            json = json.Substring(1).TrimStart();
+
+            JsonRawStructure structure = new JsonRawStructure();
+            structure.ContentsAsList = new();
+            while (true)
+            {
+                SplitObject(json, out var current, out string? follower);
+                if (current == null) break;
+
+                structure.ContentsAsList.Add(current);
+
+                if (follower == null) break;
+                json = follower;
+            }
+
+            return structure;
+        }
 
         if (!json.StartsWith('{'))
             return new JsonRawStructure() { AsRaw = json };
@@ -225,11 +242,11 @@ public static class JsonStructure
             json = follower;
         }
 
-        JsonRawStructure structure = new JsonRawStructure();
-        structure.StructiveContents = new();
-        foreach (var entry in textMap)
         {
-            structure.StructiveContents.Add(entry.Key, DeserializeRaw(entry.Value)!);
+            JsonRawStructure structure = new JsonRawStructure();
+            structure.StructiveContents = new();
+            foreach (var entry in textMap) structure.StructiveContents.Add(entry.Key, DeserializeRaw(entry.Value)!);
+            return structure;
         }
     }
 
