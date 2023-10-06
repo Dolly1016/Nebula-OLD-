@@ -25,6 +25,15 @@ public class JSFieldAmbiguous : JsonSerializableField
 {
 }
 
+public class JsonRawStructure
+{
+    public List<string> ContentsAsList = null!;
+    public Dictionary<string, JsonRawStructure> StructiveContents = null!;
+    public string? Prefix;
+    public string? AsRaw;
+
+    public bool CanMerge => AsRaw == null && (StructiveContents?.All(entry => entry.Value.CanMerge) ?? true) && Prefix == null;
+}
 
 public static class JsonStructure
 {
@@ -170,19 +179,60 @@ public static class JsonStructure
         type = Assembly.GetAssembly(typeof(JsonStructure))?.GetType(strings[0]);
         if (type != null)
         {
-            foreach(var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
                 type = assembly.GetType(strings[0]);
                 if (type != null) break;
             }
         }
-        
-        if(type == null) return null;
+
+        if (type == null) return null;
 
         return DeserializeTrimmed(json, type);
     }
 
-    
+    public static JsonRawStructure? DeserializeRaw(string json)
+    {
+        json = json.Trim();
+
+        if (json.Equals("null")) return null;
+
+        if (json.StartsWith('<'))
+        {
+            var top = json.Substring(0, json.IndexOf('>') + 1);
+            var follower = DeserializeRaw(json.Substring(top.Length));
+            follower.Prefix = top;
+            return follower;
+        }
+
+        if (json.StartsWith('['))
+            return DeserializeCollection(json, type);
+
+        if (!json.StartsWith('{'))
+            return new JsonRawStructure() { AsRaw = json };
+
+        json = json.Substring(1).TrimStart();
+
+        Dictionary<string, string> textMap = new();
+        while (true)
+        {
+            Split(json, out var current, out string? follower);
+            if (current == null) break;
+
+            textMap.Add(current.Item1, current.Item2);
+
+            if (follower == null) break;
+            json = follower;
+        }
+
+        JsonRawStructure structure = new JsonRawStructure();
+        structure.StructiveContents = new();
+        foreach (var entry in textMap)
+        {
+            
+        }
+    }
+
     private static string SerializeDictionary(IDictionary obj)
     {
         var valType = obj.GetType().GenericTypeArguments[1];
