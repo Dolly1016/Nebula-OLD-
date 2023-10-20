@@ -219,6 +219,14 @@
 "options.role.doctor.chargesPerTasks" : "Charges Per Tasks" 
 "role.doctor.gadgetLeft" : "%SECOND%s"
 
+"role.doctor.name" : "Doctor"
+"role.doctor.blurb" : "Thus They Died"
+"options.role.doctor.detail" : "Doctor has portable vitals."
+"options.role.doctor.portableVitalsCharge" : "Portable Vitals Charge"
+"options.role.doctor.maxPortableVitalsCharge" : "Max Portable Vitals Charge"
+"options.role.doctor.chargesPerTasks" : "Charges Per Tasks" 
+"role.doctor.gadgetLeft" : "%SECOND%s"
+
 "role.necromancer.name" : "Necromancer"
 "role.necromancer.short" : "N"
 "role.necromancer.blurb" : "Revive Phantoms"

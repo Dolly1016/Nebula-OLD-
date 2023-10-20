@@ -196,6 +196,18 @@ public class NebulaPlugin : BasePlugin
         {
             new GameObject("NebulaManager").AddComponent<NebulaManager>();
         });
+
+        string j;
+        j = File.ReadAllText("Json/json1.json");
+        Debug.Log(j);
+        var json1 = JsonStructure.DeserializeRaw(j);
+        j = File.ReadAllText("Json/json2.json");
+        Debug.Log(j);
+        var json2 = JsonStructure.DeserializeRaw(j);
+        Debug.Log("j1:" + (json1 == null ? "null" : json1.Serialize()));
+        Debug.Log("j2:" + (json2 == null ? "null" : json2.Serialize()));
+        json1.MergeWith(json2);
+        File.WriteAllText("Json/merged.json", json1.Serialize());
     }
 
     public static void Test()
