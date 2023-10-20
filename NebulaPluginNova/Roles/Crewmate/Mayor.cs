@@ -61,7 +61,7 @@ public class Mayor : ConfigurableStandardRole
                 countText.gameObject.SetActive(true);
                 countText.gameObject.GetComponent<TextTranslatorTMP>().enabled = false;
                 countText.alignment = TMPro.TextAlignmentOptions.Center;
-                countText.transform.localPosition = new Vector3(2.29f, 0f);
+                countText.transform.localPosition = new Vector3(2.59f, 0f);
                 countText.color = Palette.White;
                 countText.transform.localScale *= 0.8f;
                 countText.text = "";

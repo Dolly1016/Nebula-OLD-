@@ -54,11 +54,13 @@ public static class HudManagerCoStartGamePatch
             yield return DestroyableSingleton<HudManager>.Instance.ShowEmblem(true);
             IntroCutscene introCutscene = GameObject.Instantiate<IntroCutscene>(__instance.IntroPrefab, __instance.transform);
             yield return introCutscene.CoBegin();
-            PlayerControl.LocalPlayer.SetKillTimer(10f);
-            ShipStatus.Instance.Systems[SystemTypes.Sabotage].Cast<SabotageSystemType>().ForceSabTime(10f);
 
             yield return ModPreSpawnInPatch.ModPreSpawnIn(__instance.transform, GameStatistics.EventVariation.GameStart, EventDetail.GameStart);
 
+            PlayerControl.LocalPlayer.killTimer = 10f;
+            HudManager.Instance.KillButton.SetCoolDown(10f, AmongUsUtil.VanillaKillCoolDown);
+
+            ShipStatus.Instance.Systems[SystemTypes.Sabotage].Cast<SabotageSystemType>().ForceSabTime(10f);
             PlayerControl.LocalPlayer.AdjustLighting();
             yield return __instance.CoFadeFullScreen(Color.black, Color.clear, 0.2f, false);
             __instance.FullScreen.transform.localPosition = new Vector3(0f, 0f, -500f);

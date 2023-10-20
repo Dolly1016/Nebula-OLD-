@@ -1,6 +1,7 @@
 ﻿using Nebula.Game;
 using Rewired.Libraries.SharpDX.RawInput;
 using Rewired.Utils.Platforms.Windows;
+using System.ComponentModel.DataAnnotations;
 using static Il2CppSystem.Xml.Schema.FacetsChecker.FacetsCompiler;
 
 namespace Nebula.Modules.ScriptComponents;
@@ -11,6 +12,8 @@ public class Timer : INebulaScriptComponent
     private bool isActive;
     protected float currentTime;
     protected float min, max;
+
+    public float Max => max;
 
     public Timer Pause()
     {
@@ -99,7 +102,11 @@ public class Timer : INebulaScriptComponent
         return SetPredicate(() =>
         {
             if (PlayerControl.LocalPlayer.CanMove) return true;
-            if (Minigame.Instance && Minigame.Instance.MyNormTask) return true;
+            if (Minigame.Instance && 
+            ((bool)Minigame.Instance.MyNormTask
+            || Minigame.Instance.TryCast<IDoorMinigame>() != null
+            || Minigame.Instance.TryCast<VitalsMinigame>() != null
+            )) return true;
             return false;
         });
     }

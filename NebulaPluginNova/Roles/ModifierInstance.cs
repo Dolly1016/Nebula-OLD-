@@ -8,6 +8,7 @@ namespace Nebula.Roles;
 
 public abstract class ModifierInstance : AssignableInstance
 {
+    public override IAssignableBase AssignableBase => Role;
     public abstract AbstractModifier Role { get; }
 
     public ModifierInstance(PlayerModInfo player) : base(player)

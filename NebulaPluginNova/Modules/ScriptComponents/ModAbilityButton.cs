@@ -19,6 +19,8 @@ public class ModAbilityButton : INebulaScriptComponent
     public Timer? CurrentTimer => (EffectActive && (EffectTimer?.IsInProcess ?? false)) ? EffectTimer : CoolDownTimer;
     public bool EffectActive = false;
 
+    public float CoolDownOnGameStart = 10f;
+
     public Action<ModAbilityButton>? OnEffectStart { get; set; } = null;
     public Action<ModAbilityButton>? OnEffectEnd { get; set; } = null;
     public Action<ModAbilityButton>? OnUpdate { get; set; } = null;
@@ -27,8 +29,8 @@ public class ModAbilityButton : INebulaScriptComponent
     public Action<ModAbilityButton>? OnMeeting { get; set; } = null;
     public Predicate<ModAbilityButton>? Availability { get; set; } = null;
     public Predicate<ModAbilityButton>? Visibility { get; set; } = null;
-    private KeyCode? keyCode { get; set; } = null;
-    private KeyCode? subKeyCode { get; set; } = null;
+    private VirtualInput? keyCode { get; set; } = null;
+    private VirtualInput? subKeyCode { get; set; } = null;
 
     internal ModAbilityButton(bool isLeftSideButton = false, bool isArrangedAsKillButton = false,int priority = 0)
     {
@@ -75,8 +77,8 @@ public class ModAbilityButton : INebulaScriptComponent
         VanillaButton.cooldownTimerText.text = timerText;
         VanillaButton.cooldownTimerText.color = EffectActive ? Color.green : Color.white;
 
-        if (keyCode.HasValue && NebulaInput.GetKeyDown(keyCode.Value)) DoClick();
-        if (subKeyCode.HasValue && NebulaInput.GetKeyDown(subKeyCode.Value)) DoSubClick();
+        if (keyCode?.KeyDownInGame ?? false) DoClick();
+        if (subKeyCode?.KeyDownInGame ?? false) DoSubClick();
     }
 
     public override void OnMeetingStart()
@@ -124,7 +126,7 @@ public class ModAbilityButton : INebulaScriptComponent
     }
 
     public override void OnGameStart() {
-        if (UseCoolDownSupport) StartCoolDown();
+        if (UseCoolDownSupport && CoolDownTimer != null) CoolDownTimer!.Start(Mathf.Min(CoolDownTimer!.Max, CoolDownOnGameStart));
     }
 
     public ModAbilityButton DoClick()
@@ -189,22 +191,30 @@ public class ModAbilityButton : INebulaScriptComponent
         return text;
     }
 
-    public ModAbilityButton KeyBind(KeyAssignmentType keyCode) => KeyBind(NebulaInput.GetKeyCode(keyCode));
-    public ModAbilityButton KeyBind(KeyCode keyCode)
+    public ModAbilityButton ResetKeyBind()
+    {
+        VanillaButton.gameObject.ForEachChild((Il2CppSystem.Action<GameObject>)((c) => { if (c.name.Equals("HotKeyGuide")) GameObject.Destroy(c); }));
+        keyCode = null;
+        subKeyCode = null;
+        return this;
+    }
+
+    public ModAbilityButton KeyBind(KeyAssignmentType keyCode) => KeyBind(NebulaInput.GetInput(keyCode));
+    public ModAbilityButton KeyBind(VirtualInput keyCode)
     {
         VanillaButton.gameObject.ForEachChild((Il2CppSystem.Action<GameObject>)((c) => { if (c.name.Equals("HotKeyGuide")) GameObject.Destroy(c); }));
 
         this.keyCode= keyCode;
-        ButtonEffect.SetKeyGuide(VanillaButton.gameObject, keyCode);
+        ButtonEffect.SetKeyGuide(VanillaButton.gameObject, keyCode.TypicalKey);
         return this;
     }
 
     private static SpriteLoader aidActionSprite = SpriteLoader.FromResource("Nebula.Resources.KeyBindOption.png", 100f);
-    public ModAbilityButton SubKeyBind(KeyAssignmentType keyCode) => SubKeyBind(NebulaInput.GetKeyCode(keyCode));
-    public ModAbilityButton SubKeyBind(KeyCode keyCode)
+    public ModAbilityButton SubKeyBind(KeyAssignmentType keyCode) => SubKeyBind(NebulaInput.GetInput(keyCode));
+    public ModAbilityButton SubKeyBind(VirtualInput keyCode)
     {
         this.subKeyCode = keyCode;
-        var guideObj = ButtonEffect.SetSubKeyGuide(VanillaButton.gameObject, keyCode);
+        var guideObj = ButtonEffect.SetSubKeyGuide(VanillaButton.gameObject, keyCode.TypicalKey, false);
 
         if (guideObj != null)
         {
@@ -312,8 +322,10 @@ public static class ButtonEffect
     
 
     static ISpriteLoader keyBindBackgroundSprite = SpriteLoader.FromResource("Nebula.Resources.KeyBindBackground.png", 100f);
-    static public GameObject? AddKeyGuide(GameObject button, KeyCode key, Vector2 pos)
+    static public GameObject? AddKeyGuide(GameObject button, KeyCode key, Vector2 pos,bool removeExistingGuide)
     {
+        if(removeExistingGuide)button.gameObject.ForEachChild((Il2CppSystem.Action<GameObject>)(obj => { if (obj.name == "HotKeyGuide") GameObject.Destroy(obj); }));
+
         Sprite? numSprite = null;
         if (KeyCodeInfo.AllKeyInfo.ContainsKey(key)) numSprite = KeyCodeInfo.AllKeyInfo[key].Sprite;
         if (numSprite == null) return null;
@@ -336,18 +348,18 @@ public static class ButtonEffect
 
         return obj;
     }
-    static public GameObject? SetKeyGuide(GameObject button, KeyCode key)
+    static public GameObject? SetKeyGuide(GameObject button, KeyCode key, bool removeExistingGuide = true)
     {
-        return AddKeyGuide(button, key, new Vector2(0.48f, 0.48f));
+        return AddKeyGuide(button, key, new Vector2(0.48f, 0.48f),removeExistingGuide);
     }
 
-    static public GameObject? SetSubKeyGuide(GameObject button, KeyCode key)
+    static public GameObject? SetSubKeyGuide(GameObject button, KeyCode key, bool removeExistingGuide)
     {
-        return AddKeyGuide(button, key, new Vector2(0.48f, 0.13f));
+        return AddKeyGuide(button, key, new Vector2(0.48f, 0.13f),removeExistingGuide);
     }
 
     static public GameObject? SetKeyGuideOnSmallButton(GameObject button, KeyCode key)
     {
-        return AddKeyGuide(button, key, new Vector2(0.28f, 0.28f));
+        return AddKeyGuide(button, key, new Vector2(0.28f, 0.28f), true);
     }
 }

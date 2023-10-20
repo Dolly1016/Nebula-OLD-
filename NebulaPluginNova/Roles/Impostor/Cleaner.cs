@@ -21,11 +21,13 @@ public class Cleaner : ConfigurableStandardRole
     public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player);
 
     private NebulaConfiguration CleanCoolDownOption = null!;
+    private NebulaConfiguration SyncKillAndCleanCoolDownOption = null!;
     protected override void LoadOptions()
     {
         base.LoadOptions();
 
         CleanCoolDownOption = new NebulaConfiguration(RoleConfig, "cleanCoolDown", null, 5f, 60f, 2.5f, 30f, 15f) { Decorator = NebulaConfiguration.SecDecorator };
+        SyncKillAndCleanCoolDownOption = new NebulaConfiguration(RoleConfig, "syncKillAndCleanCoolDown", null, true, true);
     }
 
     public class Instance : Impostor.Instance
@@ -42,7 +44,7 @@ public class Cleaner : ConfigurableStandardRole
         {
             if (AmOwner)
             {
-                cleanButton?.CoolDownTimer?.Start();
+                cleanButton?.CoolDownTimer?.Start(MyRole.SyncKillAndCleanCoolDownOption ? null : 5f);
             }
         }
 
@@ -52,7 +54,7 @@ public class Cleaner : ConfigurableStandardRole
 
             if (AmOwner)
             {
-                var cleanTracker = Bind(ObjectTrackers.ForDeadBody(1.2f, MyPlayer.MyControl, (d) => true));
+                var cleanTracker = Bind(ObjectTrackers.ForDeadBody(null, MyPlayer.MyControl, (d) => true));
 
                 cleanButton = Bind(new ModAbilityButton()).KeyBind(KeyAssignmentType.Ability);
                 cleanButton.SetSprite(buttonSprite.GetSprite());
@@ -60,7 +62,7 @@ public class Cleaner : ConfigurableStandardRole
                 cleanButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;
                 cleanButton.OnClick = (button) => {
                     AmongUsUtil.RpcCleanDeadBody(cleanTracker.CurrentTarget!.ParentId,MyPlayer.PlayerId,EventDetail.Clean);
-                    PlayerControl.LocalPlayer.killTimer = GameOptionsManager.Instance.CurrentGameOptions.GetFloat(FloatOptionNames.KillCooldown);
+                    if (MyRole.SyncKillAndCleanCoolDownOption) PlayerControl.LocalPlayer.killTimer = GameOptionsManager.Instance.CurrentGameOptions.GetFloat(FloatOptionNames.KillCooldown);
                 };
                 cleanButton.CoolDownTimer = Bind(new Timer(MyRole.CleanCoolDownOption.GetFloat()).SetAsAbilityCoolDown().Start());
                 cleanButton.SetLabelType(ModAbilityButton.LabelType.Standard);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AmongUs.GameOptions;
 using HarmonyLib;
 using Nebula.Player;
 
@@ -22,7 +23,7 @@ public static class KeyboardInputPatch
         if (KeyboardJoystick.player.GetButtonDown(4) && !HudManager.Instance.Chat.IsOpenOrOpening)
             HudManager.Instance.ToggleMapVisible(GameManager.Instance.GetMapOptions());
 
-        if (KeyboardJoystick.player.GetButtonDown(8) && HudManager.Instance.KillButton.gameObject.active) HudManager.Instance.KillButton.DoClick();
+        if (NebulaInput.GetInput(KeyAssignmentType.Kill).KeyDown && HudManager.Instance.KillButton.gameObject.active) HudManager.Instance.KillButton.DoClick();
         if (KeyboardJoystick.player.GetButtonDown(50) && HudManager.Instance.ImpostorVentButton.gameObject.active) HudManager.Instance.ImpostorVentButton.DoClick();
 
         return false;
@@ -127,5 +128,35 @@ public static class ConsoleCanUsePatch
         }
 
         return true;
+    }
+}
+
+[HarmonyPatch(typeof(MovingPlatformBehaviour), nameof(MovingPlatformBehaviour.MeetingCalled))]
+class MovingPlatformBehaviourMeetingCalledPatch
+{
+    static bool Prefix(MovingPlatformBehaviour __instance)
+    {
+        if (AmongUsUtil.CurrentMapId != 4) return true;
+        return !GeneralConfigurations.AirshipOneWayMeetingRoomOption;
+    }
+}
+
+[HarmonyPatch(typeof(MovingPlatformBehaviour), nameof(MovingPlatformBehaviour.InUse), MethodType.Getter)]
+class CanUseMovingPlayformPatch
+{
+    static bool Prefix(MovingPlatformBehaviour __instance)
+    {
+        if (AmongUsUtil.CurrentMapId != 4) return true;
+        return !GeneralConfigurations.AirshipOneWayMeetingRoomOption;
+    }
+}
+
+[HarmonyPatch(typeof(MovingPlatformBehaviour), nameof(MovingPlatformBehaviour.SetSide))]
+class MovingPlatformBehaviourSetSidePatch
+{
+    static bool Prefix(MovingPlatformBehaviour __instance)
+    {
+        __instance.IsDirty = true;
+        return !GeneralConfigurations.AirshipOneWayMeetingRoomOption;
     }
 }

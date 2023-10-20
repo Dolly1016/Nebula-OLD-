@@ -82,6 +82,18 @@ public static class PlayerUpdatePatch
     }
 }
 
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetHatAndVisorAlpha))]
+public class PlayerControlSetAlphaPatch
+{
+    public static void Postfix(PlayerControl __instance)
+    {
+        if (NebulaGameManager.Instance == null) return;
+        if (NebulaGameManager.Instance.GameState == NebulaGameStates.NotStarted) return;
+
+        NebulaGameManager.Instance.GetModPlayerInfo(__instance.PlayerId)?.UpdateVisibility(false);
+    }
+}
+
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CompleteTask))]
 public static class PlayerCompleteTaskPatch
 {
@@ -222,7 +234,7 @@ class PlayerCanMovePatch
     {
         if (__instance != PlayerControl.LocalPlayer) return;
 
-        __result &= !TextField.AnyoneValid;
+        __result &= !TextField.AnyoneValid && HudManager.Instance.PlayerCam.Target == PlayerControl.LocalPlayer;
     }
 }
 

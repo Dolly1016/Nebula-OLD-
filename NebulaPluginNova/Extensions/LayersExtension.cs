@@ -12,6 +12,7 @@ static public class LayerExpansion
     static int? defaultLayer = null;
     static int? shortObjectsLayer = null;
     static int? objectsLayer = null;
+    static int? playersLayer = null;
     static int? uiLayer = null;
     static int? shipLayer = null;
     static int? shadowLayer = null;
@@ -33,6 +34,12 @@ static public class LayerExpansion
     {
         if (objectsLayer == null) objectsLayer = LayerMask.NameToLayer("Objects");
         return objectsLayer.Value;
+    }
+
+    static public int GetPlayersLayer()
+    {
+        if (playersLayer == null) playersLayer = LayerMask.NameToLayer("Players");
+        return playersLayer.Value;
     }
 
     static public int GetUILayer()

@@ -20,6 +20,7 @@ using System.Runtime.InteropServices;
 using UnityEngine.SceneManagement;
 using System.Reflection;
 using Nebula.Patches;
+using Il2CppSystem.Net.NetworkInformation;
 
 namespace Nebula;
 
@@ -55,18 +56,24 @@ public class NebulaPlugin : BasePlugin
     public const string AmongUsVersion = "2023.7.12";
     public const string PluginGuid = "jp.dreamingpig.amongus.nebula";
     public const string PluginName = "NebulaOnTheShip";
-    public const string PluginVersion = "0.1.0";
+    public const string PluginVersion = "2.0.0";
 
     public const bool IsSnapshot = false;
-    public const string MajorCodeName = "Experimental"/*"Haro"*/;
-    public const string SnapshotVersion = "23.08.01";
-    public const string VisualPluginVersion = "7 hotfix";
+    //public const string VisualVersion = "v2.0";
+    public const string VisualVersion = "Snapshot 23.10.20b";
+
+    public const int PluginEpoch = 100;
+    public const int PluginBuildNum = 1020;
 
     static public HttpClient HttpClient
     {
         get
         {
-            if (httpClient == null) httpClient = new HttpClient();
+            if (httpClient == null)
+            {
+                httpClient = new HttpClient();
+                httpClient.DefaultRequestHeaders.Add("User-Agent", "Nebula Updater");
+            }
             return httpClient;
         }
     }
@@ -78,13 +85,7 @@ public class NebulaPlugin : BasePlugin
 
     public static string GetNebulaVersionString()
     {
-        return "NoS " + MajorCodeName + " " + VisualPluginVersion;
-        /*
-        if (IsSnapshot)
-            return "NoS Snapshot " + SnapshotVersion;
-        else
-            return "NoS " + MajorCodeName + " v" + VisualPluginVersion;
-        */
+        return "NoS " + VisualVersion;
     }
 
     public Harmony Harmony = new Harmony(PluginGuid);
@@ -98,12 +99,18 @@ public class NebulaPlugin : BasePlugin
     public static NebulaPlugin MyPlugin { get; private set; } = null!;
     public IEnumerator CoLoad()
     {
-        VanillaAsset.LoadAssetAtInitialize();
         yield return Preload();
+        VanillaAsset.LoadAssetAtInitialize();
     }
 
+    public static (Exception,Type)? LastException = null;
     private IEnumerator Preload()
     {
+        void OnRaisedExcep(Exception exception,Type type)
+        {
+            LastException ??= (exception,type);
+        }
+
         var types = Assembly.GetAssembly(typeof(RemoteProcessBase))?.GetTypes().Where((type) => type.IsDefined(typeof(NebulaPreLoad)));
         if (types != null)
         {
@@ -144,9 +151,10 @@ public class NebulaPlugin : BasePlugin
                         loadMethod.Invoke(null, null);
                         UnityEngine.Debug.Log("Preloaded type " + type.Name + " has Load()");
                     }
-                    catch
+                    catch(Exception e)
                     {
-                        UnityEngine.Debug.Log("Preloaded type " + type.Name + " has Load with unregulated parameters.");
+                        OnRaisedExcep(e,type);
+                        //UnityEngine.Debug.Log("Preloaded type " + type.Name + " has Load with unregulated parameters.");
                     }
                 }
 
@@ -159,11 +167,12 @@ public class NebulaPlugin : BasePlugin
                         coload = (IEnumerator)coloadMethod.Invoke(null, null)!;
                         UnityEngine.Debug.Log("Preloaded type " + type.Name + " has CoLoad");
                     }
-                    catch 
+                    catch (Exception e)
                     {
-                        UnityEngine.Debug.Log("Preloaded type " + type.Name + " has CoLoad with unregulated parameters.");
+                        OnRaisedExcep(e, type);
+                        //UnityEngine.Debug.Log("Preloaded type " + type.Name + " has CoLoad with unregulated parameters.");
                     }
-                    if (coload != null) yield return coload;
+                    if (coload != null) yield return coload.HandleException((e)=>OnRaisedExcep(e,type));
                 }
 
                 Loaded.Add(type);

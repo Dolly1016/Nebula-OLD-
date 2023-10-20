@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using Discord;
 
 namespace Nebula.Patches;
 
@@ -146,8 +147,9 @@ static class AirshipSpawnDummyPatch
 [HarmonyPatch(typeof(GameManager), nameof(GameManager.CheckTaskCompletion))]
 static class CheckTaskCompletionPatch
 {
-    static bool Prefix(GameManager __instance)
+    static bool Prefix(GameManager __instance,ref bool __result)
     {
+        __result = false;
         return false;
     }
 }

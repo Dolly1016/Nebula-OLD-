@@ -1,4 +1,5 @@
-﻿using Nebula.Configuration;
+﻿using Nebula.Behaviour;
+using Nebula.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,7 +41,7 @@ public class Sniper : ConfigurableStandardRole
     public class SniperRifle : INebulaScriptComponent
     {
         public PlayerModInfo Owner { get; private set; }
-        private SpriteRenderer Renderer { get; set; }
+        public SpriteRenderer Renderer { get; private set; }
         private static SpriteLoader rifleSprite = SpriteLoader.FromResource("Nebula.Resources.SniperRifle.png", 100f);
         public SniperRifle(PlayerModInfo owner) : base()
         {
@@ -159,8 +160,11 @@ public class Sniper : ConfigurableStandardRole
 
         public override void OnMeetingStart()
         {
-
-            equipButton?.SetLabel("equip");
+            if (AmOwner)
+            {
+                if (MyRifle != null) RpcEquip.Invoke((MyPlayer.PlayerId, false));
+                equipButton?.SetLabel("equip");
+            }
         }
 
         void EquipRifle()

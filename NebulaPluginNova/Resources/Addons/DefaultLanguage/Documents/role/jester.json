@@ -1,0 +1,27 @@
+﻿{
+	"Contents" : [
+		{
+			"Document" : {
+				"Id" : "templates.roleName",
+				"Arguments" : {
+					"roleName" : "jester"
+				}
+			}
+		},
+		{
+			"TranslationKey" : "role.jester.doc.main",
+			"IsVariable" : True,
+			"Document" : null
+		},
+		{
+			"Document" : {
+				"Id" : "templates.buttonContent",
+				"Arguments" : {
+					"buttonName" : "DragAndDropButton",
+					"textKey" : "role.jester.doc.corpseButton"
+				}
+			}
+		}
+	],
+	"Document" : null
+}

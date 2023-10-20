@@ -28,7 +28,7 @@ public class MetaRole : AbstractModifier
         {
             if (AmOwner)
             {
-                var roleButton = Bind(new ModAbilityButton(true,false,100)).KeyBind(KeyCode.Z);
+                var roleButton = Bind(new ModAbilityButton(true,false,100)).KeyBind(new VirtualInput(KeyCode.Z));
                 roleButton.SetSprite(buttonSprite.GetSprite());
                 roleButton.Availability = (button) => true;
                 roleButton.Visibility = (button) => true;

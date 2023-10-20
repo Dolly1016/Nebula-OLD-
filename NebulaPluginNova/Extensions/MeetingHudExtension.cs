@@ -4,12 +4,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TMPro;
 
 namespace Nebula.Extensions;
 
+
+[NebulaRPCHolder]
 public static class MeetingHudExtension
 {
-    public static void RecheckPlayerState(this MeetingHud meetingHud)
+    public static void ResetPlayerState(this MeetingHud meetingHud)
     {
         foreach (PlayerVoteArea pva in meetingHud.playerStates)
         {
@@ -19,20 +22,17 @@ public static class MeetingHudExtension
 
             pva.SetDead(pva.DidReport, isDead);
             pva.Overlay.gameObject.SetActive(isDead);
+        }
 
-            if (isDead)
-            {
-                foreach (PlayerVoteArea voter in meetingHud.playerStates)
-                {
-                    if (voter.VotedFor != pva.TargetPlayerId) continue;
+        foreach (PlayerVoteArea voter in meetingHud.playerStates)
+        {
+            if (!voter.DidVote) continue;
 
-                    var p = NebulaGameManager.Instance?.GetModPlayerInfo(voter.TargetPlayerId);
-                    if (p?.AmOwner ?? false) meetingHud.ClearVote();
+            var p = NebulaGameManager.Instance?.GetModPlayerInfo(voter.TargetPlayerId);
+            if (p?.AmOwner ?? false) meetingHud.ClearVote();
 
-                    voter.ThumbsDown.enabled = false;
-                    voter.UnsetVote();
-                }
-            }
+            voter.ThumbsDown.enabled = false;
+            voter.UnsetVote();
         }
     }
 
@@ -56,6 +56,7 @@ public static class MeetingHudExtension
 
             player.MyControl.Exiled();
             player.MyControl.Data.IsDead = true;
+            player.MyState = victims.playerState;
 
             player.RoleAction(role =>
             {
@@ -80,7 +81,7 @@ public static class MeetingHudExtension
         (message, _) =>
         {
             WeightMap[message.source] = message.weight;
-            MeetingHud.Instance.CastVote(message.source,message.target);
+            if (AmongUsClient.Instance.AmHost) MeetingHud.Instance.CastVote(message.source, message.target);
         }
         );
     

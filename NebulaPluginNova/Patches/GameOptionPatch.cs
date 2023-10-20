@@ -83,3 +83,20 @@ public class GameSettingMenuStartPatch
         }
     }
 }
+
+[HarmonyPatch(typeof(GameOptionsMenu), nameof(GameOptionsMenu.Start))]
+class GameOptionsMenuStartPatch
+{
+    public static void Postfix(GameOptionsMenu __instance)
+    {
+
+        var commonTasksOption = __instance.Children.FirstOrDefault(x => x.name == "NumCommonTasks")?.TryCast<NumberOption>();
+        if (commonTasksOption != null) commonTasksOption.ValidRange = new FloatRange(0f, 4f);
+
+        var shortTasksOption = __instance.Children.FirstOrDefault(x => x.name == "NumShortTasks")?.TryCast<NumberOption>();
+        if (shortTasksOption != null) shortTasksOption.ValidRange = new FloatRange(0f, 23f);
+
+        var longTasksOption = __instance.Children.FirstOrDefault(x => x.name == "NumLongTasks")?.TryCast<NumberOption>();
+        if (longTasksOption != null) longTasksOption.ValidRange = new FloatRange(0f, 15f);
+    }
+}

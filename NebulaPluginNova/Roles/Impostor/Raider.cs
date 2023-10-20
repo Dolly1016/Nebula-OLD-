@@ -54,29 +54,27 @@ public class Raider : ConfigurableStandardRole
         private bool killed = false;
         private float thrownTime = 0f;
 
-        private PlayerModInfo owner;
         public RaiderAxe(PlayerControl owner) : base(owner.GetTruePosition(),ZOption.Front,false,staticAxeSprite.GetSprite())
         {
-            this.owner = owner.GetModInfo()!;
         }
 
         public override void Update()
         {
             if (state == 0)
             {
-                if (owner.AmOwner) owner.RequireUpdateMouseAngle();
-                MyRenderer.transform.localEulerAngles = new Vector3(0, 0, owner.MouseAngle * 180f / Mathf.PI);
-                var pos = owner.MyControl.transform.position + new Vector3(Mathf.Cos(owner.MouseAngle), Mathf.Sin(owner.MouseAngle), -1f) * 0.67f;
+                if (AmOwner) Owner.RequireUpdateMouseAngle();
+                MyRenderer.transform.localEulerAngles = new Vector3(0, 0, Owner.MouseAngle * 180f / Mathf.PI);
+                var pos = Owner.MyControl.transform.position + new Vector3(Mathf.Cos(Owner.MouseAngle), Mathf.Sin(Owner.MouseAngle), -1f) * 0.67f;
                 var diff = (pos - MyRenderer.transform.position) * Time.deltaTime * 7.5f;
                 Position += (Vector2)diff;
-                MyRenderer.flipY = Mathf.Cos(owner.MouseAngle) < 0f;
+                MyRenderer.flipY = Mathf.Cos(Owner.MouseAngle) < 0f;
             }
             else if (state == 1)
             {
                 //進行方向ベクトル
                 var vec = new Vector2(Mathf.Cos(thrownAngle), Mathf.Sin(thrownAngle));
 
-                if (owner.AmOwner)
+                if (AmOwner)
                 {
                     var pos = Position;
                     var size = MyRole.AxeSizeOption.GetFloat();
@@ -98,9 +96,9 @@ public class Raider : ConfigurableStandardRole
                 {
                     state = 2;
                     MyRenderer.sprite = stuckAxeSprite.GetSprite();
-                    MyRenderer.transform.eulerAngles = new Vector3(0f, 0f, thrownAngle);
+                    MyRenderer.transform.eulerAngles = new Vector3(0f, 0f, thrownAngle * 180f / Mathf.PI);
 
-                    if (owner.AmOwner && !killed)
+                    if (AmOwner && !killed)
                         NebulaGameManager.Instance?.GameStatistics.RpcRecordEvent(GameStatistics.EventVariation.Kill, EventDetail.Missed, NebulaGameManager.Instance.CurrentTime - thrownTime, PlayerControl.LocalPlayer, 0);
                 }
                 else
@@ -170,7 +168,7 @@ public class Raider : ConfigurableStandardRole
                 killButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;
                 killButton.OnClick = (button) =>
                 {
-                    MyAxe?.Throw(MyAxe.Position,MyPlayer.MouseAngle);
+                    if (MyAxe != null) RpcThrow.Invoke((MyAxe!.ObjectId, MyAxe!.Position, MyPlayer.MouseAngle));
                     MyAxe = null;
                     button.StartCoolDown();
                     equipButton.SetLabel("equip");

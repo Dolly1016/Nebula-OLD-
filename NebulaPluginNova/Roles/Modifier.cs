@@ -27,6 +27,7 @@ public abstract class AbstractModifier : IAssignableBase
     public AbstractModifier()
     {
         Roles.Register(this);
+        SerializableDocument.RegisterColor("role." + InternalName, RoleColor);
     }
 }
 
@@ -57,7 +58,6 @@ public abstract class ConfigurableModifier : IntroAssignableModifier
 
     public sealed override void Load()
     {
-        SerializableDocument.RegisterColor("role." + InternalName, RoleColor);
         RoleConfig = new ConfigurationHolder("options.role." + InternalName, new ColorTextComponent(RoleColor, new TranslateTextComponent("role." + LocalizedName + ".name")), myTabMask ?? ConfigurationTab.Modifiers, CustomGameMode.AllGameModeMask);
         RoleConfig.RelatedAssignable = this;
         LoadOptions();

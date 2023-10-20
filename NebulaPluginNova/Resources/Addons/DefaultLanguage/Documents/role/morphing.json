@@ -1,0 +1,43 @@
+﻿{
+	"Contents" : [
+		{
+			"Document" : {
+				"Id" : "templates.roleName",
+				"Arguments" : {
+					"roleName" : "morphing"
+				}
+			}
+		},
+		{
+			"TranslationKey" : "role.morphing.doc.main",
+			"IsVariable" : True
+		},
+		{
+			"Document" : {
+				"Id" : "role.sampleHolder.common",
+				"Arguments" : {
+					"nConfig" : "options.role.morphing.loseSampleOnMeeting"
+				}
+			}
+		},
+		{
+			"Document" : {
+				"Id" : "templates.buttonContent",
+				"Arguments" : {
+					"buttonName" : "SampleButton",
+					"textKey" : "role.morphing.doc.sampleButton"
+				}
+			}
+		},
+		{
+			"Document" : {
+				"Id" : "templates.buttonContent",
+				"Arguments" : {
+					"buttonName" : "MorphButton",
+					"textKey" : "role.morphing.doc.morphButton"
+				}
+			}
+		}
+	],
+	"Document" : null
+}

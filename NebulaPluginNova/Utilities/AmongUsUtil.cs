@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using Nebula.Behaviour;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,14 +11,18 @@ namespace Nebula.Utilities;
 [NebulaRPCHolder]
 public static class AmongUsUtil
 {
+    public static void SetCamTarget(MonoBehaviour? target = null) => HudManager.Instance.PlayerCam.Target = target ?? PlayerControl.LocalPlayer;
+    public static UiElement CurrentUiElement => ControllerManager.Instance.CurrentUiState.CurrentSelection;
     public static bool InMeeting => MeetingHud.Instance == null && ExileController.Instance == null;
     public static byte CurrentMapId => GameOptionsManager.Instance.CurrentGameOptions.MapId;
     private static string[] mapName = new string[] { "skeld", "mira", "polus", "undefined", "airship" };
-    public static string ToDisplayString(SystemTypes room)=> Language.Translate("location." + mapName[CurrentMapId] + "." + Enum.GetName(typeof(SystemTypes),room)!.HeadLower());
+    public static string ToMapName(byte mapId) => mapName[mapId];
+    public static string ToDisplayString(SystemTypes room, byte? mapId = null) => Language.Translate("location." + mapName[mapId ?? CurrentMapId] + "." + Enum.GetName(typeof(SystemTypes), room)!.HeadLower());
     public static float VanillaKillCoolDown => GameOptionsManager.Instance.CurrentGameOptions.GetFloat(FloatOptionNames.KillCooldown);
+    public static float VanillaKillDistance => GameManager.Instance.LogicOptions.GetKillDistance();
     public static bool InCommSab => PlayerTask.PlayerHasTaskOfType<IHudOverrideTask>(PlayerControl.LocalPlayer);
     public static PoolablePlayer PoolablePrefab => HudManager.Instance.IntroPrefab.PlayerPrefab;
-    public static PoolablePlayer GetPlayerIcon(GameData.PlayerOutfit outfit, Transform parent,Vector3 position,Vector2 scale,bool flip = false)
+    public static PoolablePlayer GetPlayerIcon(GameData.PlayerOutfit outfit, Transform parent,Vector3 position,Vector3 scale,bool flip = false)
     {
         var player = GameObject.Instantiate(PoolablePrefab);
 
@@ -139,13 +144,13 @@ public static class AmongUsUtil
     }
 
     private static SpriteLoader footprintSprite = SpriteLoader.FromResource("Nebula.Resources.Footprint.png", 100f);
-    public static void GenerateFootprint(Vector2 pos,Color color, float duration)
+    public static void GenerateFootprint(Vector2 pos,Color color, float duration,bool canSeeInShadow = false)
     {
-        var renderer = UnityHelper.CreateObject<SpriteRenderer>("Footprint", null, new Vector3(pos.x, pos.y, pos.y / 1000f + 0.001f), LayerExpansion.GetShipLayer());
+        var renderer = UnityHelper.CreateObject<SpriteRenderer>("Footprint", null, new Vector3(pos.x, pos.y, pos.y / 1000f + 0.001f), canSeeInShadow ? LayerExpansion.GetObjectsLayer() : LayerExpansion.GetDefaultLayer());
         renderer.sprite = footprintSprite.GetSprite();
         renderer.color = color;
         renderer.transform.eulerAngles = new Vector3(0f, 0f, (float)System.Random.Shared.NextDouble() * 360f);
-
+        
         IEnumerator CoShowFootprint()
         {
             yield return new WaitForSeconds(duration);
@@ -160,5 +165,27 @@ public static class AmongUsUtil
         }
 
         NebulaManager.Instance.StartCoroutine(CoShowFootprint().WrapToIl2Cpp());
+    }
+
+    public static PlayerControl SpawnDummy()
+    {
+        var playerControl = UnityEngine.Object.Instantiate(AmongUsClient.Instance.PlayerPrefab);
+        var i = playerControl.PlayerId = (byte)GameData.Instance.GetAvailableId();
+
+        playerControl.isDummy = true;
+
+        GameData.Instance.AddPlayer(playerControl);
+
+        playerControl.transform.position = PlayerControl.LocalPlayer.transform.position;
+        playerControl.GetComponent<DummyBehaviour>().enabled = true;
+        playerControl.isDummy = true;
+        playerControl.SetName(AccountManager.Instance.GetRandomName());
+        playerControl.SetColor(i);
+        playerControl.GetComponent<UncertifiedPlayer>().Certify();
+
+        AmongUsClient.Instance.Spawn(playerControl, -2, InnerNet.SpawnFlags.None);
+        GameData.Instance.RpcSetTasks(playerControl.PlayerId, new byte[0]);
+
+        return playerControl;
     }
 }

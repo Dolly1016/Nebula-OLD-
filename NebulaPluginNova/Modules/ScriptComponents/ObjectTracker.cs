@@ -14,16 +14,18 @@ public static class ObjectTrackers
     static private Func<DeadBody, Vector2> DefaultDeadBodyPosConverter = (d) => d.TruePosition;
     static private Func<DeadBody, SpriteRenderer> DefaultDeadBodyRendererConverter = (d) => d.bodyRenderers[0];
 
-    public static ObjectTracker<PlayerControl> ForPlayer(float distance, PlayerControl tracker, Predicate<PlayerControl>? candidatePredicate)
+    public static ObjectTracker<PlayerControl> ForPlayer(float? distance, PlayerControl tracker, Predicate<PlayerControl>? candidatePredicate)
     {
-        return new ObjectTracker<PlayerControl>(distance, tracker, PlayerSupplier,
-            (p) => (candidatePredicate?.Invoke(p) ?? true) && (p.GetModInfo()?.HasAttribute(AttributeModulator.PlayerAttribute.Invisible) ?? true),
+        distance ??= AmongUsUtil.VanillaKillDistance;
+        return new ObjectTracker<PlayerControl>(distance.Value, tracker, PlayerSupplier,
+            (p) => (candidatePredicate?.Invoke(p) ?? true) && !(p.GetModInfo()?.HasAttribute(AttributeModulator.PlayerAttribute.Invisible) ?? false),
             DefaultPlayerPosConverter, DefaultPlayerRendererConverter);
     }
 
-    public static ObjectTracker<DeadBody> ForDeadBody(float distance, PlayerControl tracker, Predicate<DeadBody>? candidatePredicate)
+    public static ObjectTracker<DeadBody> ForDeadBody(float? distance, PlayerControl tracker, Predicate<DeadBody>? candidatePredicate)
     {
-        return new ObjectTracker<DeadBody>(distance, tracker, DeadBodySupplier, candidatePredicate, DefaultDeadBodyPosConverter, DefaultDeadBodyRendererConverter);
+        distance ??= AmongUsUtil.VanillaKillDistance;
+        return new ObjectTracker<DeadBody>(distance.Value, tracker, DeadBodySupplier, candidatePredicate, DefaultDeadBodyPosConverter, DefaultDeadBodyRendererConverter);
     }
 }
 

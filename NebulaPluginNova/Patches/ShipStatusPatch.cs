@@ -12,6 +12,7 @@ public class ShipStatusPatch
 {
     static public void Postfix(ShipStatus __instance)
     {
+        ShipExtension.PatchModification(AmongUsUtil.CurrentMapId);
         if (GeneralConfigurations.SilentVentOption)
         {
             //ベントを見えなくする

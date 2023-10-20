@@ -309,6 +309,7 @@ public class DevStudio : MonoBehaviour
     {
         void Save()
         {
+            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
             File.WriteAllText(path, doc.Serialize(), Encoding.UTF8);
         }
 
@@ -321,9 +322,10 @@ public class DevStudio : MonoBehaviour
                 ("aligned", ()=>new SerializableDocument(){ Aligned = new() }),
                 ("localizedText", ()=>new SerializableDocument(){ TranslationKey = "undefined", IsVariable = true }),
                 ("rawText", ()=>new SerializableDocument(){ RawText = "Text", IsVariable = true }),
-                ("image", ()=>new SerializableDocument(){ Image = "NebulaImage", Width = 0.25f }),
+                ("image", ()=>new SerializableDocument(){ Image = "Nebula::NebulaImage", Width = 0.25f }),
                 ("vertical", ()=>new SerializableDocument(){ VSpace = 0.5f }),
-                ("horizontal", ()=>new SerializableDocument(){ HSpace = 0.5f })
+                ("horizontal", ()=>new SerializableDocument(){ HSpace = 0.5f }),
+                ("documentRef", ()=>new SerializableDocument(){ Document = new(){ Id = "", Arguments = new() } })
             };
 
             context.Append(variations, (entry) =>
@@ -343,12 +345,19 @@ public class DevStudio : MonoBehaviour
         {
             MetaContext context = new();
 
+            MetaContext.Button GetButton(Action clickAction, string rawText, bool reopenScreen = true, bool useBoldFont = false, bool asMasked = false)
+            {
+                var attr = new TextAttribute(useBoldFont ? TextAttribute.BoldAttr : TextAttribute.NormalAttr) { Size = new(0.2f, 0.2f) };
+                if (asMasked) attr.FontMaterial = VanillaAsset.StandardMaskedFontMaterial;
+                var button = new MetaContext.Button(() => { clickAction.Invoke(); if (reopenScreen) ReopenScreen(true); }, attr) { RawText = rawText };
+                if (asMasked) button.SetAsMaskedButton();
+                return button;
+            }
+
             List<IMetaParallelPlacable> buttons = new();
             void AppendMargin(bool wide = false) { if (buttons.Count > 0) buttons.Add(new MetaContext.HorizonalMargin(wide ? 0.35f : 0.2f)); }
-            void AppendButton(Action clickAction, string rawText, bool reopenScreen = true, bool useBoldFont = false)
-            {
-                buttons.Add(new MetaContext.Button(() => { clickAction.Invoke(); if (reopenScreen) ReopenScreen(true); }, new(useBoldFont ? TextAttribute.BoldAttr : TextAttribute.NormalAttr) { Size = new(0.2f, 0.2f) }) { RawText = rawText });
-            }
+            void AppendButton(Action clickAction, string rawText, bool reopenScreen = true, bool useBoldFont = false) => buttons.Add(GetButton(clickAction,rawText,reopenScreen,useBoldFont));
+            
 
             if (doc.Contents != null || doc.Aligned != null)
             {
@@ -370,7 +379,7 @@ public class DevStudio : MonoBehaviour
 
             context.Append(new CombinedContext(buttons.ToArray()) { Alignment = IMetaContext.AlignmentOption.Left });
 
-            MetaContext.TextInput GetTextFieldContent(bool isMultiline, float width, string defaultText, Action<string> updateAction, Predicate<char>? textPredicate)
+            MetaContext.TextInput GetTextFieldContent(bool isMultiline, float width, string defaultText, Action<string> updateAction, Predicate<char>? textPredicate,bool withMaskMaterial = false)
             {
                 return new MetaContext.TextInput(isMultiline ? 7 : 1, isMultiline ? 1.2f : 1.8f, new(width, isMultiline ? 1.2f : 0.23f))
                 {
@@ -384,7 +393,8 @@ public class DevStudio : MonoBehaviour
                             updateAction.Invoke(myInput);
                             ReopenScreen(true);
                         };
-                    }
+                    },
+                    WithMaskMaterial = withMaskMaterial
                 };
             }
 
@@ -411,15 +421,15 @@ public class DevStudio : MonoBehaviour
                 AppendParallelMargin(0.1f);
             }
 
-            MetaContext.VariableText GetRawTagContent(string rawText) => new MetaContext.VariableText(new(TextAttribute.BoldAttr) { Alignment = TMPro.TextAlignmentOptions.Left }) { RawText = rawText };
-            MetaContext.VariableText GetLocalizedTagContent(string translationKey) => new MetaContext.VariableText(new(TextAttribute.BoldAttr) { Alignment = TMPro.TextAlignmentOptions.Left }) { TranslationKey = translationKey };
+            MetaContext.VariableText GetRawTagContent(string rawText, bool asMasked = false) => new MetaContext.VariableText(asMasked ? new(TextAttribute.BoldAttrLeft) { FontMaterial = VanillaAsset.StandardMaskedFontMaterial } : TextAttribute.BoldAttrLeft) { RawText = rawText };
+            MetaContext.VariableText GetLocalizedTagContent(string translationKey) => new MetaContext.VariableText(TextAttribute.BoldAttrLeft) { TranslationKey = translationKey };
 
             if (doc.RawText != null || doc.TranslationKey != null)
             {
                 if (doc.RawText != null)
                     AppendTextField(true, 7.5f, doc.RawText, (input) => doc.RawText = input, TextField.JsonStringPredicate);
                 else
-                    AppendTextField(false, 3f, doc.TranslationKey, (input) => doc.TranslationKey = input, TextField.IdPredicate);
+                    AppendTextField(false, 3f, doc.TranslationKey, (input) => doc.TranslationKey = input, TextField.JsonStringPredicate);
 
 
                 AppendParallel(MetaContext.StateButton.TopLabelCheckBox("devStudio.ui.document.editor.isBold", null, true, doc.IsBold ?? false, (val) => { doc.IsBold = val; ReopenScreen(true); }));
@@ -454,21 +464,16 @@ public class DevStudio : MonoBehaviour
             }
             else if (doc.Image != null)
             {
-                AppendParallel(GetLocalizedTagContent("devStudio.ui.document.editor.image"));
-                AppendParallelMargin(0.05f);
-                AppendParallel(GetRawTagContent(":"));
-                AppendParallelMargin(0.1f);
+                AppendTopTag("devStudio.ui.document.editor.image");
                 AppendParallel(GetTextFieldContent(false, 3.2f, doc.Image, (input) =>
                 {
                     doc.Image = input;
-                }, TextField.IdPredicate));
+                }, TextField.NameSpacePredicate));
 
                 AppendParallelMargin(0.2f);
 
-                AppendParallel(GetLocalizedTagContent("devStudio.ui.document.editor.width"));
-                AppendParallelMargin(0.05f);
-                AppendParallel(GetRawTagContent(":"));
-                AppendParallelMargin(0.1f);
+
+                AppendTopTag("devStudio.ui.document.editor.width");
                 AppendParallel(GetTextFieldContent(false, 0.8f, doc.Width?.ToString() ?? "0.25", (input) =>
                 {
                     if (float.TryParse(input, out var val)) doc.Width = val;
@@ -479,10 +484,7 @@ public class DevStudio : MonoBehaviour
             else if (doc.HSpace != null || doc.VSpace != null)
             {
                 bool isHorizontal = doc.HSpace != null;
-                AppendParallel(GetLocalizedTagContent("devStudio.ui.document.editor." + (isHorizontal ? "width" : "height")));
-                AppendParallelMargin(0.05f);
-                AppendParallel(GetRawTagContent(":"));
-                AppendParallelMargin(0.1f);
+                AppendTopTag("devStudio.ui.document.editor." + (isHorizontal ? "width" : "height"));
                 AppendParallel(GetTextFieldContent(false, 0.8f, (isHorizontal ? doc.HSpace : doc.VSpace)?.ToString() ?? "0.5", (input) =>
                 {
                     if (float.TryParse(input, out var val))
@@ -493,6 +495,84 @@ public class DevStudio : MonoBehaviour
                 }, TextField.NumberPredicate));
 
                 OutputParallelToContext();
+            }else if(doc.Document != null)
+            {
+                Reference<MetaContext.ScrollView.InnerScreen> innerRef = new();
+                void UpdateInner()
+                {
+                    if (innerRef.Value == null) return;
+                    if (!innerRef.Value.IsValid) return;
+
+                    MetaContext inner = new();
+                    foreach (var arg in doc.Document!.Arguments!)
+                    {
+                        inner.Append(new CombinedContext(
+                            GetTextFieldContent(false, 1.4f, arg.Key, (input) =>
+                            {
+                                if (arg.Key != input)
+                                {
+                                    doc.Document.Arguments.Remove(arg.Key);
+                                    doc.Document.Arguments[input] = arg.Value;
+                                    NebulaManager.Instance.ScheduleDelayAction(UpdateInner);
+                                }
+                            }, TextField.IdPredicate, true),
+                            new MetaContext.HorizonalMargin(0.1f),
+                            GetRawTagContent(":"),
+                            new MetaContext.HorizonalMargin(0.1f),
+                            GetTextFieldContent(false, 3.1f, arg.Value, (input) =>
+                            {
+                                if (arg.Value != input)
+                                {
+                                    doc.Document.Arguments[arg.Key] = input;
+                                    NebulaManager.Instance.ScheduleDelayAction(UpdateInner);
+                                }
+                            }, TextField.JsonStringPredicate, true),
+                            new MetaContext.HorizonalMargin(0.1f),
+                            GetButton(() => {
+                                doc.Document.Arguments.Remove(arg.Key);
+                                NebulaManager.Instance.ScheduleDelayAction(UpdateInner);
+                            }, "×".Color(Color.red), true, true, true)
+                            )
+                        { Alignment = IMetaContext.AlignmentOption.Left });
+                    }
+
+                    try
+                    {
+                        innerRef.Value!.SetContext(inner);
+                    }
+                    catch { }
+                }
+
+                AppendTopTag("devStudio.ui.document.editor.document");
+                AppendParallel(GetTextFieldContent(false, 2.6f, doc.Document.Id.ToString() ?? "", (input) =>
+                {
+                    doc.Document.Id = input;
+                    var refDoc = DocumentManager.GetDocument(input);
+                    if(refDoc?.Arguments != null)
+                    {
+                        foreach (var entry in doc.Document.Arguments) if (!refDoc!.Arguments!.Contains(entry.Key)) doc.Document.Arguments.Remove(entry.Key);
+                        foreach (var arg in refDoc!.Arguments!) if (!doc.Document.Arguments.ContainsKey(arg)) doc.Document.Arguments[arg] = "";
+                        NebulaManager.Instance.ScheduleDelayAction(UpdateInner);
+                    }
+                }, TextField.IdPredicate));
+                OutputParallelToContext();
+                AppendParallel(GetButton(() => {
+                    int index = 0;
+                    while (true) {
+                        string str = "argument" + (index == 0 ? "" : index.ToString());
+                        if (!doc.Document!.Arguments!.ContainsKey(str))
+                        {
+                            doc.Document.Arguments[str] = "";
+                            break;
+                        }
+                        index++;
+                        continue;
+                    }
+                    NebulaManager.Instance.ScheduleDelayAction(UpdateInner);
+                }, "+", false, true));
+                OutputParallelToContext();
+
+                context.Append(new MetaContext.ScrollView(new Vector2(6.1f, 2.6f), new MetaContext(), true) { Alignment = IMetaContext.AlignmentOption.Left, InnerRef = innerRef, PostBuilder = UpdateInner });
             }
 
             NebulaManager.Instance.SetHelpContext(editorButton, context);
@@ -528,7 +608,7 @@ public class DevStudio : MonoBehaviour
                     NebulaManager.Instance.HideHelpContext();
                     var screen = MetaScreen.GenerateWindow(new(7f, 4.5f), transform, Vector3.zero, true, true, true);
                     Reference<MetaContext.ScrollView.InnerScreen> innerRef = new();
-                    screen.SetContext(new MetaContext.ScrollView(new Vector2(7f, 4.5f), doc.Build(innerRef) ?? new MetaContext()) { InnerRef = innerRef });
+                    screen.SetContext(new MetaContext.ScrollView(new Vector2(7f, 4.5f), doc.Build(innerRef, nameSpace: addon) ?? new MetaContext()) { InnerRef = innerRef });
                 }, TextAttribute.BoldAttr)
                 { TranslationKey = "devStudio.ui.common.preview" }
             )
@@ -536,7 +616,7 @@ public class DevStudio : MonoBehaviour
         );
 
         context.Append(new MetaContext.VerticalMargin(0.1f));
-        context.Append(new MetaContext.ScrollView(new Vector2(ScreenWidth - 0.4f, 4.65f), doc.BuildForDev(BuildContentEditor) ?? new MetaContext(), true));
+        context.Append(new MetaContext.ScrollView(new Vector2(ScreenWidth - 0.4f, 4.65f), doc.BuildForDev(BuildContentEditor) ?? new MetaContext(), true) { ScrollerTag = "DocumentEditor" });
 
         return (context, null, () =>
         {
@@ -550,7 +630,7 @@ public class DevStudio : MonoBehaviour
     //Documents
     private (IMetaContext context, Action? postAction, Func<bool>? confirm) ShowDocumentScreen(DevAddon addon)
     {
-        void CheckAndGenerateDocument(Il2CppArgument<MetaScreen> editScreen, Il2CppArgument<TextField> id)
+        void CheckAndGenerateDocument(Il2CppArgument<MetaScreen> editScreen, Il2CppArgument<TextField> id, string? originalId = null)
         {
             if (id.Value.Text.Length < 1)
             {
@@ -565,8 +645,13 @@ public class DevStudio : MonoBehaviour
                 return;
             }
 
+            MetaContext.ScrollView.RemoveDistHistory("DocumentEditor");
             editScreen.Value.CloseScreen();
-            var doc = new SerializableDocument() { Contents = new() };
+            SerializableDocument? doc = null;
+            if(originalId != null)
+                doc = JsonStructure.Deserialize<SerializableDocument>(File.ReadAllText(addon.FolderPath + "/Documents/" + originalId + ".json"));
+            doc ??= new SerializableDocument() { Contents = new() };
+            doc.RelatedNamespace = addon;
             OpenScreen(() => ShowDocumentEditorScreen(addon, addon.FolderPath + "/Documents/" + id.Value.Text + ".json", id.Value.Text, doc));
         }
 
@@ -577,14 +662,17 @@ public class DevStudio : MonoBehaviour
 
         (string path, string id, SerializableDocument doc)[]? docs = null;
 
-        //Add Button
-        context.Append(new MetaContext.Button(() =>
+        void OpenGenerateWindow(string? original = null)
         {
-            var screen = MetaScreen.GenerateWindow(new(5.9f, 1.5f), transform, Vector3.zero, true, false);
+            var screen = MetaScreen.GenerateWindow(new(5.9f, original != null ? 1.8f : 1.5f), transform, Vector3.zero, true, false);
             MetaContext context = new();
+
+            if (original != null) context.Append(new MetaContext.Text(new TextAttribute(TextAttribute.BoldAttr) { Alignment = TMPro.TextAlignmentOptions.Center, Size = new(1.5f, 0.3f) }) { RawText = Language.Translate("devStudio,ui.common.original") + " : " + original });
 
             Reference<TextField> refId = new();
             TMPro.TextMeshPro usingInfoText = null!;
+
+
             context.Append(new CombinedContext(
                new MetaContext.Text(new TextAttribute(TextAttribute.BoldAttr) { Alignment = TMPro.TextAlignmentOptions.Left, Size = new(1.5f, 0.3f) }) { RawText = "ID" },
                new MetaContext.Text(new TextAttribute(TextAttribute.BoldAttr) { Alignment = TMPro.TextAlignmentOptions.Center, Size = new(0.2f, 0.3f) }) { RawText = ":" },
@@ -594,9 +682,9 @@ public class DevStudio : MonoBehaviour
             context.Append(new MetaContext.VerticalMargin(0.16f));
             context.Append(new MetaContext.Button(() =>
             {
-                CheckAndGenerateDocument(screen, refId.Value!);
+                CheckAndGenerateDocument(screen, refId.Value!,original);
             }, new(TextAttribute.BoldAttr) { Size = new(1.8f, 0.3f) })
-            { TranslationKey = "devStudio.ui.common.generate", Alignment = IMetaContext.AlignmentOption.Center });
+            { TranslationKey = original != null ? "devStudio.ui.common.clone" : "devStudio.ui.common.generate", Alignment = IMetaContext.AlignmentOption.Center });
 
             screen.SetContext(context);
             TextField.EditFirstField();
@@ -609,7 +697,7 @@ public class DevStudio : MonoBehaviour
                     usingInfoText.color = Color.red;
                     usingInfoText.text = Language.Translate("devStudio.ui.document.isDuplicatedId");
                 }
-                else if(DocumentManager.GetAllUsingId().Any(str => str == id))
+                else if (DocumentManager.GetAllUsingId().Any(str => str == id))
                 {
                     usingInfoText.color = Color.green;
                     usingInfoText.text = Language.Translate("devStudio.ui.document.isUsingId");
@@ -619,7 +707,12 @@ public class DevStudio : MonoBehaviour
                     usingInfoText.text = "";
                 }
             };
+        }
 
+        //Add Button
+        context.Append(new MetaContext.Button(() =>
+        {
+            OpenGenerateWindow();
         }, new TextAttribute(TextAttribute.BoldAttr) { Size = new(0.34f, 0.18f) }.EditFontSize(2.4f))
         { RawText = "+" });
 
@@ -644,8 +737,14 @@ public class DevStudio : MonoBehaviour
                     new MetaContext.Text(new(TextAttribute.NormalAttr) { FontMaterial = VanillaAsset.StandardMaskedFontMaterial,  Alignment = TMPro.TextAlignmentOptions.Left, Size = new(3f, 0.27f) }) { RawText = entry.id },
                     new MetaContext.Button(() =>
                     {
+                        MetaContext.ScrollView.RemoveDistHistory("DocumentEditor");
                         var doc = JsonStructure.Deserialize<SerializableDocument>(File.ReadAllText(entry.path));
-                        if (doc != null) OpenScreen(() => ShowDocumentEditorScreen(addon, entry.path, entry.id, doc));
+
+                        if (doc != null)
+                        {
+                            doc.RelatedNamespace = addon;
+                            OpenScreen(() => ShowDocumentEditorScreen(addon, entry.path, entry.id, doc));
+                        }
                     }, new(TextAttribute.BoldAttr) { FontMaterial = VanillaAsset.StandardMaskedFontMaterial, Size = new(0.8f, 0.22f) })
                     { TranslationKey = "devStudio.ui.common.edit" }.SetAsMaskedButton(),
                     new MetaContext.HorizonalMargin(0.2f),
@@ -653,7 +752,13 @@ public class DevStudio : MonoBehaviour
                     {
                         ShowConfirmWindow(() => { File.Delete(entry.path); ReopenScreen(true); }, () => { }, Language.Translate("devStudio.ui.common.confirmDeleting") + $"<br>\"{entry.id}\"");
                     }, new(TextAttribute.BoldAttr) { FontMaterial = VanillaAsset.StandardMaskedFontMaterial, Size = new(0.8f, 0.22f)  })
-                    { Text = ITextComponent.From("devStudio.ui.common.delete", Color.red) }.SetAsMaskedButton()
+                    { Text = ITextComponent.From("devStudio.ui.common.delete", Color.red) }.SetAsMaskedButton(),
+                    new MetaContext.HorizonalMargin(0.2f),
+                    new MetaContext.Button(() =>
+                    {
+                        OpenGenerateWindow(entry.id);
+                    }, new(TextAttribute.BoldAttr) { FontMaterial = VanillaAsset.StandardMaskedFontMaterial, Size = new(0.8f, 0.22f) })
+                    { Text = ITextComponent.From("devStudio.ui.common.clone", Color.white) }.SetAsMaskedButton()
                     )
                 { Alignment = IMetaContext.AlignmentOption.Left });
             }
@@ -684,7 +789,7 @@ public class DevStudio : MonoBehaviour
     }
 }
 
-public class DevAddon
+public class DevAddon : INameSpace
 {
     public string Name { get; private set; }
     public string FolderPath { get; private set; }
@@ -762,8 +867,41 @@ public class DevAddon
             var doc = JsonStructure.Deserialize<SerializableDocument>(await File.ReadAllTextAsync(path));
             if(doc == null) continue;
 
+            doc.RelatedNamespace = this;
             result.Add((path, id, doc));
         }
         return result.ToArray();
     }
+
+    private Stream? OpenRead(string folder, string innerAddress)
+    {
+        if (File.Exists(folder + "/" + innerAddress)) return File.OpenRead(folder + "/" + innerAddress);
+        
+
+        foreach (var dir in Directory.GetDirectories(folder))
+        {
+            string lowestDir = dir.Substring(folder.Length + 1);
+            if (innerAddress.Length > (lowestDir.Length) && innerAddress[lowestDir.Length] is '.' && innerAddress.StartsWith(lowestDir))
+            {
+                var stream = OpenRead(dir, innerAddress.Substring(lowestDir.Length + 1));
+                if (stream != null) return stream;
+            }
+        }
+
+        return null;
+    }
+
+    public Stream? OpenRead(string innerAddress)
+    {
+        try
+        {
+            return OpenRead(FolderPath,innerAddress);
+        }
+        catch
+        {
+            return null;
+        }
+        
+    }
+    
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace Nebula.Utilities;
 
@@ -80,5 +81,6 @@ public unsafe class Il2CppListEnumerable<T> : System.Collections.Generic.IEnumer
     public void Dispose()
     {
     }
+
 }
 

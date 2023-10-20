@@ -1,0 +1,34 @@
+﻿{
+	"Contents" : [
+		{
+			"Document" : {
+				"Id" : "templates.roleName",
+				"Arguments" : {
+					"roleName" : "necromancer"
+				}
+			}
+		},
+		{
+			"TranslationKey" : "role.necromancer.doc.main",
+			"IsVariable" : True
+		},
+		{
+			"Document" : {
+				"Id" : "templates.buttonContent",
+				"Arguments" : {
+					"buttonName" : "DragAndDropButton",
+					"textKey" : "role.necromancer.doc.corpseButton"
+				}
+			}
+		},
+		{
+			"Document" : {
+				"Id" : "templates.buttonContent",
+				"Arguments" : {
+					"buttonName" : "ReviveButton",
+					"textKey" : "role.necromancer.doc.reviveButton"
+				}
+			}
+		}
+	]
+}

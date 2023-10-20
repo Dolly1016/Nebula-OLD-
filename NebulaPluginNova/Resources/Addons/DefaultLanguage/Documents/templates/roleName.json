@@ -1,0 +1,11 @@
+{
+	"Arguments" : [
+		"roleName",
+	],
+	"TranslationKey" : "#Concat(ToRoleName(roleName),'.name')",
+	"IsBold" : True,
+	"Color" : {
+		"Style" : "#ToRoleName(roleName)"
+	},
+	"FontSize" : 2.8
+}

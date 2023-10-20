@@ -1,0 +1,34 @@
+﻿{
+	"Contents" : [
+		{
+			"Document" : {
+				"Id" : "templates.roleName",
+				"Arguments" : {
+					"roleName" : "evilTrapper"
+				}
+			}
+		},
+		{
+			"TranslationKey" : "role.evilTrapper.doc.main",
+			"IsVariable" : True,
+			"Document" : null
+		},
+		{
+			"Document" : {
+				"Id" : "role.trapper.common",
+				"Arguments" : {
+				}
+			}
+		},
+		{
+			"Document" : {
+				"Id" : "templates.imageContent",
+				"Arguments" : {
+					"imageName" : "KillTrap",
+					"textKey" : "role.evilTrapper.doc.killTrap"
+				}
+			}
+		}
+	],
+	"Document" : null
+}

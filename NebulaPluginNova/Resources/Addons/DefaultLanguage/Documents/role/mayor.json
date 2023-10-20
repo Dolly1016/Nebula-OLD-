@@ -1,0 +1,16 @@
+﻿{
+	"Contents" : [
+		{
+			"Document" : {
+				"Id" : "templates.roleName",
+				"Arguments" : {
+					"roleName" : "mayor"
+				}
+			}
+		},
+		{
+			"TranslationKey" : "role.mayor.doc.main",
+			"IsVariable" : True
+		}
+	]
+}

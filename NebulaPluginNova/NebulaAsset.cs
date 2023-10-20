@@ -50,6 +50,8 @@ public static class NebulaAsset
         audioMap[NebulaAudioClip.Trapper2s] = AssetBundle.LoadAsset<AudioClip>("PlaceTrap2s.wav").MarkDontUnload();
         audioMap[NebulaAudioClip.Trapper3s] = AssetBundle.LoadAsset<AudioClip>("PlaceTrap3s.wav").MarkDontUnload();
         audioMap[NebulaAudioClip.TrapperKillTrap] = AssetBundle.LoadAsset<AudioClip>("PlaceKillTrap.wav").MarkDontUnload();
+
+        PaparazzoShot = AssetBundle.LoadAsset<GameObject>("PhotoObject").MarkDontUnload().AddComponent<Roles.Neutral.PaparazzoShot>();
     }
 
     private static T LoadAsset<T>(this AssetBundle assetBundle, string name) where T : UnityEngine.Object
@@ -118,6 +120,7 @@ public static class NebulaAsset
     static public Shader GuageShader { get; private set; } = null!;
 
     static public ResourceExpandableSpriteLoader SharpWindowBackgroundSprite = new("Nebula.Resources.StatisticsBackground.png", 100f,5,5);
+    static public Roles.Neutral.PaparazzoShot PaparazzoShot { get; private set; } = null!;
 
     static public SpriteRenderer CreateSharpBackground(Vector2 size, Color color, Transform transform)
     {

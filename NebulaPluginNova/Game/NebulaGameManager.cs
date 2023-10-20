@@ -5,6 +5,7 @@ using Nebula.Configuration;
 using Nebula.Modules;
 using Nebula.Player;
 using Nebula.Roles;
+using Nebula.Roles.Assignment;
 using Nebula.VoiceChat;
 using System.Collections;
 using UnityEngine;
@@ -52,6 +53,68 @@ public class RuntimeGameAsset
     }
 }
 
+public record RoleHistory
+{
+    public float Time;
+    public byte PlayerId;
+    public bool IsModifier;
+    public bool IsSet;
+    public AssignableInstance Assignable;
+
+    public RoleHistory(byte playerId, ModifierInstance modifier, bool isSet)
+    {
+        Time = NebulaGameManager.Instance!.CurrentTime;
+        PlayerId = playerId;
+        IsModifier = true;
+        IsSet = isSet;
+        Assignable = modifier;
+    }
+
+    public RoleHistory(byte playerId, RoleInstance role)
+    {
+        Time = NebulaGameManager.Instance!.CurrentTime;
+        PlayerId = playerId;
+        IsModifier = false;
+        IsSet = true;
+        Assignable = role;
+    }
+}
+
+public static class RoleHistoryHelper { 
+    static public IEnumerable<T> EachMoment<T>(this List<RoleHistory> history, Predicate<RoleHistory> predicate, Func<RoleInstance, List<AssignableInstance>, T> converter)
+    {
+        RoleInstance? role = null;
+        List<AssignableInstance> modifiers = new();
+
+        float lastTime = history[0].Time;
+        foreach(var h in history.Append(null))
+        {
+            if (h != null && !predicate(h)) continue;
+
+            if(h == null || lastTime + 1f < h.Time)
+            {
+                if(role != null) yield return converter.Invoke(role, modifiers);
+
+                if (h == null) break;
+
+                lastTime = h.Time;
+            }
+
+            if (!h.IsModifier && h.Assignable is RoleInstance ri) role = ri;
+            else if (h.IsSet) modifiers.Add(h.Assignable);
+            else modifiers.Remove(h.Assignable);
+        }
+    }
+
+    static public string ConvertToRoleName(RoleInstance role, List<AssignableInstance> modifier, bool isShort)
+    {
+        string result = isShort ? role.Role.ShortName : role.Role.DisplayName;
+        Color color = role.Role.RoleColor;
+        foreach (var m in modifier) m.DecoratePlayerName(ref result, ref color);
+        return result.Replace(" ","").Color(color);
+    }
+}
+
 [NebulaRPCHolder]
 public class NebulaGameManager
 {
@@ -81,16 +144,32 @@ public class NebulaGameManager
     public VoiceChatManager? VoiceChatManager { get; set; } = GeneralConfigurations.UseVoiceChatOption ? new() : null;
     public ConsoleRestriction ConsoleRestriction { get; private set; } = new();
     public AttributeShower AttributeShower { get; private set; } = new();
+    public RPCScheduler Scheduler { get; private set; } = new();
+
+    //自身のキルボタン用トラッカー
+    private ObjectTracker<PlayerControl> KillButtonTracker = null!;
 
     //天界視点フラグ
     public bool CanSeeAllInfo { get; set; }
 
+    //ゲーム内履歴
+    public List<RoleHistory> RoleHistory = new();
+
+    static private SpriteLoader vcConnectSprite = SpriteLoader.FromResource("Nebula.Resources.Buttons.VCReconnectButton.png", 100f);
     public NebulaGameManager()
     {
         allModPlayers = new Dictionary<byte, PlayerModInfo>();
         instance = this;
         HudGrid = HudManager.Instance.gameObject.AddComponent<HudGrid>();
         RuntimeAsset = new();
+
+        var vcConnectButton = new ModAbilityButton(true);
+        vcConnectButton.Visibility = (_) => VoiceChatManager != null && GameState == NebulaGameStates.NotStarted;
+        vcConnectButton.Availability = (_) =>true;
+        vcConnectButton.SetSprite(vcConnectSprite.GetSprite());
+        vcConnectButton.OnClick = (_) => VoiceChatManager!.Rejoin();
+        vcConnectButton.SetLabel("rejoin");
+        vcConnectButton.SetLabelType(ModAbilityButton.LabelType.Standard);
     }
 
 
@@ -170,15 +249,19 @@ public class NebulaGameManager
         foreach (var script in allScripts) script.OnMeetingStart();
 
         AllRoleAction(r=>r.OnMeetingStart());
+
+        Scheduler.Execute(RPCScheduler.RPCTrigger.PreMeeting);
     }
 
     public void OnMeetingEnd(PlayerControl? player)
     {
+        ConsoleRestriction?.OnMeetingEnd();
+        Scheduler.Execute(RPCScheduler.RPCTrigger.AfterMeeting);
+
         var tuple = CriteriaManager.OnExiled(player);
         if(tuple == null) return;
         CheckAndEndGame(tuple.Item1,tuple.Item2);
 
-        ConsoleRestriction?.OnMeetingEnd();
     }
 
     public void OnUpdate() {
@@ -212,7 +295,11 @@ public class NebulaGameManager
                 ventText = Mathf.CeilToInt(ventTimer.CurrentTime).ToString();
                 ventPercentage = ventTimer.Percentage;
             }
-            if (ventTimer != null && !ventTimer.IsInProcess && PlayerControl.LocalPlayer.inVent) Vent.currentVent?.ExitVent(PlayerControl.LocalPlayer);
+            if (ventTimer != null && !ventTimer.IsInProcess && PlayerControl.LocalPlayer.inVent)
+            {
+                Vent.currentVent.SetButtons(false);
+                PlayerControl.LocalPlayer.MyPhysics.RpcExitVent(Vent.currentVent!.Id);
+            }
             HudManager.Instance.ImpostorVentButton.SetCooldownFill(ventPercentage);
             CooldownHelpers.SetCooldownNormalizedUvs(HudManager.Instance.ImpostorVentButton.graphic);
             HudManager.Instance.ImpostorVentButton.cooldownTimerText.text = ventText;
@@ -230,6 +317,14 @@ public class NebulaGameManager
 
     public void OnFixedUpdate() {
         foreach (var script in allScripts) if (script.UpdateWithMyPlayer) script.Update();
+
+        if (AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started && HudManager.Instance.KillButton.gameObject.active)
+        {
+            KillButtonTracker ??= ObjectTrackers.ForPlayer(null, PlayerControl.LocalPlayer, (p) => p.PlayerId != PlayerControl.LocalPlayer.PlayerId && !p.Data.IsDead && !p.Data.Role.IsImpostor);
+            KillButtonTracker.Update();
+            HudManager.Instance.KillButton.SetTarget(KillButtonTracker.CurrentTarget);
+        }
+
     }
     public void OnGameStart()
     {
@@ -353,7 +448,12 @@ public class NebulaGameManager
 
     public readonly static RemoteProcess RpcStartGame = new RemoteProcess(
         "StartGame",
-        (_) => NebulaGameManager.Instance?.CheckGameState()
+        (_) =>
+        {
+            NebulaGameManager.Instance?.CheckGameState();
+            NebulaGameManager.Instance?.AllRoleAction(r=>r.OnActivated());
+        }
+
         );
 }
 

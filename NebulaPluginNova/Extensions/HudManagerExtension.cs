@@ -33,12 +33,13 @@ public static class HudManagerExtension
         manager.KillButton.ToggleVisible((modRole?.HasVanillaKillButton ?? false) && !flag);
         manager.SabotageButton.ToggleVisible((modRole?.CanInvokeSabotage ?? false));
         manager.ImpostorVentButton.ToggleVisible(!flag && ((modRole?.CanUseVent ?? false) || PlayerControl.LocalPlayer.walkingToVent || PlayerControl.LocalPlayer.inVent));
+        manager.MapButton.gameObject.SetActive(true);
     }
 
     static public void ShowVanillaKeyGuide(this HudManager manager)
     {
         //ボタンのガイドを表示
-        var keyboardMap = Rewired.ReInput.mapping.GetKeyboardMapInstance(0, 0);
+        var keyboardMap = Rewired.ReInput.mapping.GetKeyboardMapInstanceSavedOrDefault(0, 0, 0);
         Il2CppReferenceArray<Rewired.ActionElementMap> actionArray;
         Rewired.ActionElementMap actionMap;
 
@@ -50,6 +51,7 @@ public static class HudManagerExtension
             ButtonEffect.SetKeyGuideOnSmallButton(HudManager.Instance.MapButton.gameObject, actionMap.keyCode);
             ButtonEffect.SetKeyGuide(HudManager.Instance.SabotageButton.gameObject, actionMap.keyCode);
         }
+        HudManager.Instance.MapButton.transform.localPosition += new Vector3(0, 0, -15f);
 
         //使用
         actionArray = keyboardMap.GetButtonMapsWithAction(6);

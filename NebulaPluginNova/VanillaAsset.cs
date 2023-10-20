@@ -67,6 +67,8 @@ public class VanillaAsset
 
     static public GameSettingMenu PlayerOptionsMenuPrefab { get; private set; } = null!;
 
+    static public ShipStatus[] MapAsset = new ShipStatus[5];
+
     static public void LoadAssetAtInitialize()
     {
         HoverClip = UnityHelper.FindAsset<AudioClip>("UI_Hover")!;
@@ -91,15 +93,22 @@ public class VanillaAsset
 
         while (AmongUsClient.Instance == null) yield return null;
 
-        /*
+
         //AsyncOperationHandle<GameObject> handle;
         //AmongUsClient.Instance.ShipPrefabs[2].RuntimeKey;
-        UnityEngine.AddressableAssets.Addressables.InstantiateAsync(AmongUsClient.Instance.ShipPrefabs[2].RuntimeKey, null, false, false);
+        //UnityEngine.AddressableAssets.Addressables.LoadAssetAsync(AmongUsClient.Instance.ShipPrefabs[0].RuntimeKey, null, false, false);
+        for (int i = 0; i < MapAsset.Length; i++) {
+            if (i == 3) continue;
+            var handle = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<GameObject>(AmongUsClient.Instance.ShipPrefabs[i].RuntimeKey);
+            yield return handle;
+            MapAsset[i] = handle.Result.GetComponent<ShipStatus>();
+        }
+
         //Polus
         //handle = AmongUsClient.Instance.ShipPrefabs[2].InstantiateAsync(null, false);
         //yield return handle;
         //var polus = handle.Result.GetComponent<PolusShipStatus>();
-        */
+        
 
         /*
         //Airship

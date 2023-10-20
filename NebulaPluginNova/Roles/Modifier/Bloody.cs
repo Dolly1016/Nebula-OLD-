@@ -17,7 +17,8 @@ public class Bloody : ConfigurableStandardModifier
 
     protected override void LoadOptions()
     {
-        CurseDurationOption = new NebulaConfiguration(RoleConfig, "CurseDuration", null, 2.5f, 30f, 2.5f, 10f, 10f) { Decorator = NebulaConfiguration.SecDecorator };
+        base.LoadOptions();
+        CurseDurationOption = new NebulaConfiguration(RoleConfig, "curseDuration", null, 2.5f, 30f, 2.5f, 10f, 10f) { Decorator = NebulaConfiguration.SecDecorator };
     }
     public override ModifierInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player);
     public class Instance : ModifierInstance

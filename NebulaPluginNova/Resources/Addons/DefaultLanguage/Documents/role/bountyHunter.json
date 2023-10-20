@@ -1,0 +1,18 @@
+﻿{
+	"Contents" : [
+		{
+			"Document" : {
+				"Id" : "templates.roleName",
+				"Arguments" : {
+					"roleName" : "bountyHunter"
+				}
+			}
+		},
+		{
+			"TranslationKey" : "role.bountyHunter.doc.main",
+			"IsVariable" : True,
+			"Document" : null
+		}
+	],
+	"Document" : null
+}

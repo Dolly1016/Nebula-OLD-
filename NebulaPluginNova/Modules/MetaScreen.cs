@@ -1,6 +1,7 @@
 ﻿using Iced.Intel;
 using Il2CppInterop.Runtime.Injection;
 using Nebula.Behaviour;
+using UnityEngine;
 using UnityEngine.Rendering;
 using static Nebula.Modules.IMetaContext;
 
@@ -63,6 +64,7 @@ public class MetaContext : IMetaContext, IMetaParallelPlacable
 {
     List<IMetaContext> contents = new();
 
+    public int Count => contents.Count;
     public AlignmentOption Alignment => AlignmentOption.Center;
     public float Generate(GameObject screen, Vector2 cursor, Vector2 size,out (float,float) width)
     {
@@ -118,9 +120,9 @@ public class MetaContext : IMetaContext, IMetaParallelPlacable
         return heightSum;
     }
 
-    public MetaContext Append(IMetaContext content)
+    public MetaContext Append(IMetaContext? content)
     {
-        contents.Add(content);
+        if (content != null) contents.Add(content);
         return this;
     }
 
@@ -211,6 +213,30 @@ public class MetaContext : IMetaContext, IMetaParallelPlacable
             width = CalcWidth(Alignment, cursor, size, mySize.x + 0.1f);
 
             return mySize.y + 0.1f;
+        }
+
+        public static Image AsMapImage<T>(byte mapId,float width,IEnumerable<T> collection,Func<T,(IMetaParallelPlacable context,Vector2 pos)> converter)
+        {
+            return new Image(NebulaAsset.GetMapSprite(mapId, 0xFFFFFFF))
+            {
+                Width = width,
+                Alignment = AlignmentOption.Center,
+                PostBuilder = (renderer) => {
+                    renderer.material = VanillaAsset.MapAsset[mapId].MapPrefab.ColorControl.gameObject.GetComponent<SpriteRenderer>().material;
+                    renderer.color = new Color(0.05f, 0.2f, 1f, 1f);
+
+                    var canvas = UnityHelper.CreateObject("OnMapContent", renderer.transform, new Vector3(0, 0, -1f));
+
+                    var center = (Vector2)VanillaAsset.MapAsset[mapId].MapPrefab.transform.GetChild(5).localPosition;
+                    var scale = VanillaAsset.MapAsset[mapId].MapScale;
+
+                    foreach (var c in collection)
+                    {
+                        (var context,var pos) = converter.Invoke(c);
+                        context.Generate(canvas, (Vector2)(pos / scale) + center,out _);
+                    }
+                }
+            };
         }
     }
 
@@ -541,9 +567,17 @@ public class MetaContext : IMetaContext, IMetaParallelPlacable
 
     public class ScrollView : IMetaContext, IMetaParallelPlacable
     {
+        private static Dictionary<string, float> distDic = new();
+        public static void RemoveDistHistory(string tag) => distDic.Remove(tag);
+        public static void UpdateDistHistory(string tag, float y) => distDic[tag] = y;
+        public static float TryGetDistHistory(string tag) => distDic.TryGetValue(tag, out var val) ? val : 0f;
+        public static Action GetDistHistoryUpdater(Func<float> y, string tag) => () => UpdateDistHistory(tag, y.Invoke());
+
         //ビュー内のコンテンツが後から変更できる
         public class InnerScreen
         {
+            public bool IsValid => screen;
+
             private GameObject screen;
             private Vector2 innerSize;
             private float scrollViewSizeY;
@@ -556,6 +590,7 @@ public class MetaContext : IMetaContext, IMetaParallelPlacable
 
                 float height = context?.Generate(screen, new Vector2(-innerSize.x / 2f, innerSize.y / 2f), innerSize) ?? 0f;
                 scroller.SetBounds(new FloatRange(0, height - scrollViewSizeY), null);
+                scroller.ScrollRelative(Vector2.zero);
 
                 foreach (var button in screen.GetComponentsInChildren<PassiveButton>()) button.ClickMask = scrollerCollider;
             }
@@ -567,6 +602,7 @@ public class MetaContext : IMetaContext, IMetaParallelPlacable
 
                 context?.Generate(screen, new Vector2(0f, 0f), out _);
                 scroller.SetBounds(new FloatRange(0f, 0f), null);
+                scroller.ScrollRelative(Vector2.zero);
             }
 
             public void SetLoadingContext() => SetStaticContext(new MetaContext.Text(new TextAttribute(TextAttribute.BoldAttr).EditFontSize(2.8f)) { TranslationKey = "ui.common.loading" });
@@ -587,6 +623,8 @@ public class MetaContext : IMetaContext, IMetaParallelPlacable
         public Vector2 Size;
         public bool WithMask;
         public Reference<InnerScreen>? InnerRef = null;
+        public string? ScrollerTag = null;
+        public Action? PostBuilder = null;
 
         public ScrollView(Vector2 size,IMetaContext inner,bool withMask=true)
         {
@@ -619,12 +657,22 @@ public class MetaContext : IMetaContext, IMetaParallelPlacable
             float height = Inner?.Generate(inner, new Vector2(-innerSize.x / 2f, innerSize.y / 2f), innerSize) ?? 0f;
             var scroller = VanillaAsset.GenerateScroller(Size, view.transform, new Vector2(Size.x / 2 - 0.15f, 0f), inner.transform, new FloatRange(0, height - Size.y), Size.y);
 
+            if (ScrollerTag != null && distDic.TryGetValue(ScrollerTag, out var val))
+                scroller.Inner.transform.localPosition = scroller.Inner.transform.localPosition +
+                    new Vector3(0f, Mathf.Clamp(val + scroller.ContentYBounds.min, scroller.ContentYBounds.min, scroller.ContentYBounds.max), 0f);
+            if(ScrollerTag != null)
+            {
+                scroller.Inner.gameObject.AddComponent<ScriptBehaviour>().UpdateHandler += () => { distDic[ScrollerTag] = scroller.Inner.transform.localPosition.y - scroller.ContentYBounds.min; };
+            }
+
             var hitBox = scroller.GetComponent<Collider2D>();
             foreach(var button in inner.GetComponentsInChildren<PassiveButton>()) button.ClickMask = hitBox;
 
             InnerRef?.Set(new(inner, innerSize, scroller, hitBox, Size.y));
 
             width = Size.x;
+
+            PostBuilder?.Invoke();
 
             return Size.y;
         }
@@ -646,12 +694,24 @@ public class MetaContext : IMetaContext, IMetaParallelPlacable
             float height = Inner?.Generate(inner, new Vector2(-innerSize.x / 2f, innerSize.y / 2f), innerSize) ?? 0f;
             var scroller = VanillaAsset.GenerateScroller(Size, view.transform, new Vector2(Size.x / 2 - 0.1f, 0f), inner.transform, new FloatRange(0, height - Size.y), Size.y);
 
+            if (ScrollerTag != null && distDic.TryGetValue(ScrollerTag, out var val))
+            {
+                scroller.Inner.transform.localPosition += new Vector3(0f, val, 0f);
+                scroller.ScrollRelative(Vector2.zero);
+            }
+            if (ScrollerTag != null)
+            {
+                scroller.Inner.gameObject.AddComponent<ScriptBehaviour>().UpdateHandler += () => { distDic[ScrollerTag] = scroller.Inner.transform.localPosition.y - scroller.ContentYBounds.min; };
+            }
+
             var hitBox = scroller.GetComponent<Collider2D>();
             foreach (var button in inner.GetComponentsInChildren<PassiveButton>()) button.ClickMask = hitBox;
 
             width = CalcWidth(Alignment, cursor, size, Size.x, -Size.x / 2f, Size.x / 2f);
 
             InnerRef?.Set(new(inner, innerSize, scroller, hitBox, Size.y));
+
+            PostBuilder?.Invoke();
 
             return Size.y;
         }
@@ -669,6 +729,7 @@ public class MetaContext : IMetaContext, IMetaParallelPlacable
         public Predicate<char>? TextPredicate;
         public Action<TextField>? PostBuilder;
         public string DefaultText = "";
+        public bool WithMaskMaterial = false;
 
         public TextInput(int maxLines,float fontSize,Vector2 size,bool useSharpField = false)
         {
@@ -687,6 +748,7 @@ public class MetaContext : IMetaContext, IMetaParallelPlacable
             var field = UnityHelper.CreateObject<TextField>("Text", obj.transform, new Vector3(0, 0, -0.5f));
             field.SetSize(fieldSize, fontSize, maxLines);
             field.InputPredicate = TextPredicate;
+            if (WithMaskMaterial) field.AsMaskedText();
 
             var background = UnityHelper.CreateObject<SpriteRenderer>("Background", obj.transform, Vector3.zero);
             background.sprite = useSharpFieldFlag ? NebulaAsset.SharpWindowBackgroundSprite.GetSprite() : VanillaAsset.TextButtonSprite;
@@ -694,6 +756,7 @@ public class MetaContext : IMetaContext, IMetaParallelPlacable
             background.tileMode = SpriteTileMode.Continuous;
             background.size = actualSize;
             background.sortingOrder = 5;
+            if (WithMaskMaterial) background.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
             var collider = background.gameObject.AddComponent<BoxCollider2D>();
             collider.size = actualSize;
             collider.isTrigger = true;
@@ -976,7 +1039,11 @@ public class MetaScreen : MonoBehaviour
 
     public void CloseScreen()
     {
-        GameObject.Destroy(combinedObject ?? gameObject);
+        try
+        {
+            GameObject.Destroy(combinedObject ?? gameObject);
+        }
+        catch { }
     }
 
     static public MetaScreen GenerateScreen(Vector2 size,Transform? parent,Vector3 localPos,bool withBackground,bool withBlackScreen,bool withClickGuard)

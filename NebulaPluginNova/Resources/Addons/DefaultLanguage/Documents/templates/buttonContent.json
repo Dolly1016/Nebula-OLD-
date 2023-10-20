@@ -1,0 +1,13 @@
+{
+	"Arguments" : [
+		"buttonName",
+		"textKey"
+	],
+	"Document" : {
+		"Id" : "templates.imageContent",
+		"Arguments" : {
+			"imageName" : "#Concat('Buttons.',buttonName)",
+			"textKey" : "#textKey"
+		}
+	}
+}

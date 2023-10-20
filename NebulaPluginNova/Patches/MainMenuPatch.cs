@@ -1,13 +1,4 @@
-﻿using HarmonyLib;
-using Nebula.Behaviour;
-using Nebula.Modules;
-using Nebula.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine.Rendering;
+﻿using Nebula.Behaviour;
 
 namespace Nebula.Patches;
 
@@ -17,8 +8,15 @@ public static class MainMenuSetUpPatch
     static private ISpriteLoader nebulaIconSprite = SpriteLoader.FromResource("Nebula.Resources.NebulaNewsIcon.png", 100f);
     static public GameObject? NebulaScreen = null;
     static public GameObject? AddonsScreen = null;
+    static public GameObject? VersionsScreen = null;
+
+    static public bool IsLocalGame = false;
+
     static void Postfix(MainMenuManager __instance)
     {
+        __instance.PlayOnlineButton.OnClick.AddListener(() => IsLocalGame = false);
+        __instance.playLocalButton.OnClick.AddListener(() => IsLocalGame = true);
+
         var leftPanel = __instance.mainMenuUI.transform.FindChild("AspectScaler").FindChild("LeftPanel");
         leftPanel.GetComponent<SpriteRenderer>().size += new Vector2(0f,0.5f);
         var auLogo = leftPanel.FindChild("Sizer").GetComponent<AspectSize>();
@@ -91,7 +89,12 @@ public static class MainMenuSetUpPatch
             index++;
         }
 
-        SetUpButton("title.buttons.update", () => { });
+        SetUpButton("title.buttons.update", () => {
+            __instance.ResetScreen();
+            if (!VersionsScreen) CreateVersionsScreen();
+            VersionsScreen?.SetActive(true);
+            __instance.screenTint.enabled = true;
+        });
         SetUpButton("title.buttons.addons", () => {
             __instance.ResetScreen();
             if (!AddonsScreen) CreateAddonsScreen();
@@ -148,7 +151,106 @@ public static class MainMenuSetUpPatch
                 { Alignment = IMetaContext.AlignmentOption.Left });
                 inner.Append(new MetaContext.Text(DescAttribute) { RawText = addon.Description });
             }
-            screen.SetContext(new MetaContext.ScrollView(new Vector2(6.2f, 4.1f), inner, false) { Alignment = IMetaContext.AlignmentOption.Center });
+            screen.SetContext(new MetaContext.ScrollView(new Vector2(6.2f, 4.1f), inner, true) { Alignment = IMetaContext.AlignmentOption.Center });
+        }
+
+        void CreateVersionsScreen()
+        {
+            VersionsScreen = UnityHelper.CreateObject("Versions", __instance.accountButtons.transform.parent, new Vector3(0, 0, -1f));
+            VersionsScreen.transform.localScale = NebulaScreen!.transform.localScale;
+
+            var screen = MetaScreen.GenerateScreen(new Vector2(6.2f, 4.1f), VersionsScreen.transform, new Vector3(-0.1f, 0, 0f), false, false, false);
+
+            TextAttribute NameAttribute = new(TextAttribute.BoldAttr)
+            {
+                FontMaterial = VanillaAsset.StandardMaskedFontMaterial,
+                Size = new Vector2(2.2f, 0.3f),
+                Alignment = TMPro.TextAlignmentOptions.Left
+            };
+
+            TextAttribute CategoryAttribute = new(TextAttribute.BoldAttr)
+            {
+                FontMaterial = VanillaAsset.StandardMaskedFontMaterial,
+                Size = new Vector2(0.8f, 0.3f),
+                Alignment = TMPro.TextAlignmentOptions.Center
+            };
+            CategoryAttribute.EditFontSize(1.2f,0.6f,1.2f);
+
+            TextAttribute ButtonAttribute = new(TextAttribute.BoldAttr)
+            {
+                FontMaterial = VanillaAsset.StandardMaskedFontMaterial,
+                Size = new Vector2(1f, 0.2f),
+                Alignment = TMPro.TextAlignmentOptions.Center
+            };
+
+            Reference<MetaContext.ScrollView.InnerScreen> innerRef = new();
+            List<ModUpdater.ReleasedInfo>? versions = null;
+            MetaContext staticContext = new();
+
+            MetaContext menuContext = new();
+            menuContext.Append(Enum.GetValues<ModUpdater.ReleasedInfo.ReleaseCategory>(), (category) =>
+            new MetaContext.Button(() => UpdateContents(category), new(TextAttribute.BoldAttr) { Size = new(0.95f, 0.28f) }) { TranslationKey = ModUpdater.ReleasedInfo.CategoryTranslationKeys[(int)category] }
+                , 1, -1, 0, 0.6f);
+
+            staticContext.Append(new ParallelContext(
+                new(new MetaContext.HorizonalMargin(0.1f),0.1f),
+                new(menuContext,1f),
+                new(new MetaContext.HorizonalMargin(0.1f), 0.1f),
+                new(new MetaContext.ScrollView(new Vector2(5f, 4f), new MetaContext(), true) { Alignment = IMetaContext.AlignmentOption.Center, InnerRef = innerRef },5f)));
+            
+            screen.SetContext(staticContext);
+
+            innerRef.Value?.SetLoadingContext();
+
+            void UpdateContents(ModUpdater.ReleasedInfo.ReleaseCategory? category = null)
+            {
+                if (versions == null) return;
+
+                var inner = new MetaContext();
+
+                foreach (var version in versions)
+                {
+                    if (category != null && version.Category != category) continue;
+
+                    List<IMetaParallelPlacable> placable = new();
+                    placable.Add(new MetaContext.Text(CategoryAttribute) { MyText = ITextComponent.From(ModUpdater.ReleasedInfo.CategoryTranslationKeys[(int)version.Category], ModUpdater.ReleasedInfo.CategoryColors[(int)version.Category])});
+                    placable.Add(new MetaContext.HorizonalMargin(0.15f));
+                    placable.Add(new MetaContext.Text(NameAttribute) { RawText = version.Version!.Replace('_', ' '),
+                        PostBuilder = text => {
+                            var button = text.gameObject.SetUpButton(true);
+                            button.gameObject.AddComponent<BoxCollider2D>().size = text.rectTransform.sizeDelta;
+                            button.OnClick.AddListener(() => Application.OpenURL("https://github.com/Dolly1016/Nebula/releases/tag/" + version.RawTag));
+                            button.OnMouseOver.AddListener(() => {
+                                text.color = Color.green;
+                            });
+                            button.OnMouseOut.AddListener(() => {
+                                text.color = Color.white;
+                            });
+                        }
+                    });
+                    placable.Add(new MetaContext.HorizonalMargin(0.15f));
+
+                    if (version.Epoch == NebulaPlugin.PluginEpoch && version.BuildNum != NebulaPlugin.PluginBuildNum)
+                    {
+                        placable.Add(new MetaContext.Button(()=>NebulaManager.Instance.StartCoroutine(version.CoUpdateAndShowDialog().WrapToIl2Cpp()), ButtonAttribute) { TranslationKey = "version.fetching.gainPackage", PostBuilder = (_, renderer, _) => renderer.maskInteraction = SpriteMaskInteraction.VisibleInsideMask });
+                    }
+                    else
+                    {
+                        placable.Add(new MetaContext.HorizonalMargin(0.13f));
+                        placable.Add(new MetaContext.Text(ButtonAttribute) { TranslationKey = version.Epoch == NebulaPlugin.PluginEpoch ? "version.fetching.current" : "version.fetching.mismatched", });
+                    }
+                    inner.Append(new CombinedContext(0.5f, placable.ToArray()) { Alignment = IMetaContext.AlignmentOption.Left });
+                }
+
+                innerRef.Value?.SetContext(inner);
+            }
+
+
+            NebulaManager.Instance.StartCoroutine(ModUpdater.CoFetchVersionTags((list) =>
+            {
+                versions = list;
+                UpdateContents();
+            }).WrapToIl2Cpp());
         }
 
         foreach (var obj in GameObject.FindObjectsOfType<GameObject>(true)) {
@@ -165,5 +267,15 @@ public static class MainMenuClearScreenPatch
     {
         if (MainMenuSetUpPatch.NebulaScreen) MainMenuSetUpPatch.NebulaScreen?.SetActive(false);
         if (MainMenuSetUpPatch.AddonsScreen) MainMenuSetUpPatch.AddonsScreen?.SetActive(false);
+        if (MainMenuSetUpPatch.VersionsScreen) MainMenuSetUpPatch.VersionsScreen?.SetActive(false);
+    }
+}
+
+[HarmonyPatch(typeof(Constants), nameof(Constants.GetBroadcastVersion))]
+class ServerVersionPatch
+{
+    static void Postfix(ref int __result)
+    {
+        if(!MainMenuSetUpPatch.IsLocalGame) __result += 25;
     }
 }

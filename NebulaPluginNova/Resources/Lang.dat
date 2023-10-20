@@ -7,11 +7,39 @@
 "title.buttons.addons" : "Add-ons"
 "title.buttons.developersStudio" : "Dev. Studio"
 
+# Certification
+
+"certification.uncertified" : "Uncertified"
+"certification.uncertified.detail" : "This player does not have NoS installed."
+"certification.uncertified.client" : "Do not participate in vanilla games<br>with NoS installed."
+"certification.unmatchedEpoch" : "Unmatched Epoch"
+"certification.unmatchedEpoch.detail" : "The version of NoS this player has installed is far from ours.<br>Guide they to get the same version of NoS from <b>GitHub</b>."
+"certification.unmatchedEpoch.client" : "The version of NoS the host has installed is far from yours.<br>Get the same version of NoS from <b>GitHub</b>!"
+"certification.unmatchedBuild" : "Unmatched Build"
+"certification.unmatchedBuild.detail" : "This player has a different version of NoS installed.<br>Guide they to get the same version of NoS from <b>the title screen</b>."
+"certification.unmatchedBuild.client" : "The host has a different version of NoS installed.<br>Get the same version of NoS from <b>the title screen</b>!"
+
 # UI
 
 "ui.dialog.yes" : "Yes"
 "ui.dialog.no" : "No"
+"ui.dialog.exit" : "Exit"
 "ui.common.loading" : "Now Loading..."
+"ui.update.waitFinishing" : "Wait for updating..."
+"ui.update.finishUpdate" : "Update finished!<br>Please restart the game."
+"ui.document.tooLongNesting" : "[The nesting is too long.]"
+
+# Versions
+
+"version.category.all" : "All"
+"version.category.major" : "Stable"
+"version.category.snapshot" : "Snapshot"
+"version.category.preRelease" : "Pre-Release"
+"version.category.custom" : "Custom"
+"version.category.unknown" : "Unknown"
+"version.fetching.gainPackage" : "Gain"
+"version.fetching.current" : "Current"
+"version.fetching.mismatched" : "Mismatched"
 
 # Game Mode
 
@@ -56,6 +84,22 @@
 "options.map.spawnMethod.random" : "Random"
 "options.map.spawnCandidates" : "Num of Spawning Candidates"
 "options.map.silentVents" : "Silent Vents"
+"options.map.customization" : "Map Customization"
+"options.map.customization.skeld.useAdmin" : "Admin Console"
+"options.map.customization.skeld.cafeteriaVent" : "Extra Vent (Cafeteria)"
+"options.map.customization.skeld.storageVent" : "Extra Vent (Storage)"
+"options.map.customization.mira.useAdmin" : "Admin Console"
+"options.map.customization.polus.useAdmin" : "Admin Console"
+"options.map.customization.polus.specimenVent" : "Extra Vent (Specimen Room)"
+"options.map.customization.airship.useCockpitAdmin" : "Admin Console (Cockpit)"
+"options.map.customization.airship.useRecordsAdmin" : "Admin Console (Records)"
+"options.map.customization.airship.meetingVent" : "Extra Vent (Meeting Room)"
+"options.map.customization.airship.electricalVent" : "Extra Vent (Electrical)"
+"options.map.customization.airship.oneWayMeetingRoom" : "One-way Meeting Room"
+"options.map.customization.airship.armoryWiring" : "Extra Wiring Console (Armory)"
+"options.map.customization.airship.vaultWiring" : "Extra Wiring Console (Vault)"
+"options.map.customization.airship.hallwayWiring" : "Extra Wiring Console (Hallway)"
+"options.map.customization.airship.medicalWiring" : "Extra Wiring Console (Medical)"
 
 "options.meeting" : "Meeting Options"
 "options.meeting.detail" : "About meeting"
@@ -120,6 +164,7 @@
 
 "role.guesser.numOfGuess" : "Num Of Guess"
 "options.role.guesser.detail" : "Guesser can shoot players in the meeting by guessing the role.<br>If the guess is wrong, guesser dies instead."
+"role.guesser.leftGuess" : "Left Guess"
 
 "role.trapper.placeCoolDown" : "Place Cool Down"
 "role.trapper.placeDuration" : "Place Duration"
@@ -132,28 +177,50 @@
 # Crewmate Roles
 
 "role.crewmate.name" : "Crewmate"
+"role.crewmate.short" : "C"
 "role.crewmate.blurb" : "Do Tasks"
 "options.role.crewmate.detail" : "Crewmates with no special abilities."
 
 "role.agent.name" : "Agent"
+"role.agent.short" : "A"
 "role.agent.blurb" : "Do Tasks More"
 "options.role.agent.detail" : "You can gain extra tasks to cover someone else's incomplete ones."
 "options.role.agent.numOfExemptedTasks" : "Num of Exempted Tasks"
 "options.role.agent.numOfExtraTasks" : "Num of Extra Tasks"
 
 "role.bait.name" : "Bait"
+"role.bait.short" : "B"
 "role.bait.blurb" : "Bait Your Enemies"
 "options.role.bait.detail" : "Your murderer reports your body immediately."
 "options.role.bait.showKillFlash" : "Show Kill Flash"
 
+"role.busker.name" : "Busker"
+"role.busker.short" : "B"
+"role.busker.blurb" : "Unfailing Wonder"
+"options.role.busker.detail" : "Busker disguises your death. If you revive within the time limit,\nyour body will teleport to your ghost's position."
+"options.role.busker.pseudocideCoolDown" : "Pseudocide Cool Down"
+"options.role.busker.pseudocideDuration" : "Pseudocide Duration"
+
 "role.comet.name" : "Comet"
+"role.comet.short" : "C"
 "role.comet.blurb" : "Run Through"
 "options.role.comet.detail" : "You move fastly and secretly.<br>While your ability is activated, your body can not be seen anyone."
 "options.role.comet.blazeCoolDown" : "Blaze Cool Down"
 "options.role.comet.blazeSpeed" : "Blaze Speed"
 "options.role.comet.blazeDuration" : "Blaze Duration"
+"options.role.comet.blazeVisionRate" : "Blaze Vision Rate"
+
+"role.doctor.name" : "Doctor"
+"role.doctor.short" : "D"
+"role.doctor.blurb" : "Thus They Died"
+"options.role.doctor.detail" : "Doctor has portable vitals."
+"options.role.doctor.portableVitalsCharge" : "Portable Vitals Charge"
+"options.role.doctor.maxPortableVitalsCharge" : "Max Portable Vitals Charge"
+"options.role.doctor.chargesPerTasks" : "Charges Per Tasks" 
+"role.doctor.gadgetLeft" : "%SECOND%s"
 
 "role.necromancer.name" : "Necromancer"
+"role.necromancer.short" : "N"
 "role.necromancer.blurb" : "Revive Phantoms"
 "options.role.necromancer.detail" : "Necromancer can raise dead bodies from the dead!<br>They drags a corpse for a resurrection ritual."
 "options.role.necromancer.reviveCoolDown" : "Revive Cool Down"
@@ -162,27 +229,23 @@
 "role.necromancer.phantomMessage" : "Please take me to %ROOM%..."
 
 "role.niceGuesser.name" : "Nice Guesser"
+"role.niceGuesser.short" : "G"
 "role.niceGuesser.blurb" : "Guess and Shoot"
 "options.role.niceGuesser.detail" : "Guesser can shoot players in the meeting by guessing the role.<br>If the guess is wrong, guesser dies instead."
 
 "role.niceTrapper.name" : "Nice Trapper"
+"role.niceTrapper.short" : "T"
 "role.niceTrapper.blurb" : "Entrap and Find the Impostors"
 "options.role.niceTrapper.detail" : "Nice Trapper sets traps with various effects."
 "options.role.niceTrapper.costOfCommTrap" : "Cost Of Comm. Trap"
 
-"role.doctor.name" : "Doctor"
-"role.doctor.blurb" : "Thus They Died"
-"options.role.doctor.detail" : "Doctor has portable vitals."
-"options.role.doctor.portableVitalsCharge" : "Portable Vitals Charge"
-"options.role.doctor.maxPortableVitalsCharge" : "Max Portable Vitals Charge"
-"options.role.doctor.chargesPerTasks" : "Charges Per Tasks" 
-"role.doctor.gadgetLeft" : "%SECOND%s"
-
 "role.madmate.name" : "Madmate"
+"role.madmate.short" : "Ma"
 "role.madmate.blurb" : "Assist Impostors"
 "options.role.madmate.detail" : "Madmate is on the side of imposters.<br>Obstruct crewmates to help imposters win."
 
 "role.mayor.name" : "Mayor"
+"role.mayor.short" : "M"
 "role.mayor.blurb" : "Find and Vote out the Impostors"
 "options.role.mayor.detail" : "Mayor can save vote on meetings.<br>Saved votes are used other meetings all at once."
 "options.role.mayor.fixedVotes" : "Fixed Votes"
@@ -192,6 +255,7 @@
 "options.role.mayor.voteAssignment" : "Vote Assignment On Meeting"
 
 "role.phosphorus.name" : "Phosphorus"
+"role.phosphorus.short" : "P"
 "role.phosphorus.blurb" : "Pierce the Darkness"
 "options.role.phosphorus.detail" : "Lamps that Phosphorus places give a better view of the surroundings.<br>Imposters will avoid kills around lamps. "
 "options.role.phosphorus.numOfLamps" : "Num of Lamps"
@@ -200,6 +264,7 @@
 "options.role.phosphorus.lampDuration" : "Lamp Duration"
 
 "role.provocateur.name" : "Provocateur"
+"role.provocateur.short" : "P"
 "role.provocateur.blurb" : "Go To The Grave Together"
 "options.role.provocateur.detail" : "On death, Provocateur embroils their murderer."
 "options.role.provocateur.embroilCoolDown" : "Embroil Cool Down"
@@ -207,11 +272,13 @@
 "options.role.provocateur.embroilDuration" : "Embroil Duration"
 
 "role.seer.name" : "Seer"
+"role.seer.short" : "S"
 "role.seer.blurb" : "You Will See Players Die"
 "options.role.seer.detail" : "Seer can see the ghosts to find out where victims died."
 "options.role.seer.ghostDuration" : "Ghost Duration"
 
 "role.sheriff.name" : "Sheriff"
+"role.sheriff.short" : "S"
 "role.sheriff.blurb" : "Shoot the Impostor"
 "options.role.sheriff.detail" : "Sheriff can kill other members.<br>Attempting to kill a Crewmate will die instead."
 "options.role.sheriff.canKillMadmate" : "Can Kill Madmate"
@@ -220,10 +287,12 @@
 # Impostor Roles
 
 "role.impostor.name" : "Impostor"
+"role.impostor.short" : "I"
 "role.impostor.blurb" : "Kill and Sabotage"
 "options.role.impostor.detail" : "Impostors with no special abilities."
 
 "role.bountyHunter.name" : "Bounty Hunter"
+"role.bountyHunter.short" : "B"
 "role.bountyHunter.blurb" : "Get Rich Quick!"
 "options.role.bountyHunter.detail" : "Bounty Hunter can gain a special cool down.<br>If they kill them but the bounty, they'll gain penalty cool down."
 "options.role.bountyHunter.bountyKillCoolDown" : "Bounty Kill Cool Down"
@@ -233,34 +302,49 @@
 "options.role.bountyHunter.arrowUpdateInterval" : "Arrow Update Interval"
 
 "role.camouflager.name" : "Camouflager"
+"role.camouflager.short" : "Ca"
 "role.camouflager.blurb" : "Camouflage and Kill"
 "options.role.camouflager.detail" : "Camouflager prevents players from identify each other."
 "options.role.camouflager.camoCoolDown" : "Camo. Cool Down"
 "options.role.camouflager.camoDuration" : "Camo. Duration"
 
 "role.cleaner.name" : "Cleaner"
+"role.cleaner.short" : "Cl"
 "role.cleaner.blurb" : "Kill Everyone and Leave No Traces"
 "options.role.cleaner.detail" : "Cleaner can obliterate corpses."
 "options.role.cleaner.cleanCoolDown" : "Clean Cool Down"
+"options.role.cleaner.syncKillAndCleanCoolDown" : "Sync Kill And Clean Cool Down"
 
 "role.evilGuesser.name" : "Evil Guesser"
+"role.evilGuesser.short" : "G"
 "role.evilGuesser.blurb" : "Guess and Shoot"
 "options.role.evilGuesser.detail" : "Guesser can shoot players in the meeting by guessing the role.<br>If the guess is wrong, guesser dies instead."
 
 "role.evilTrapper.name" : "Evil Trapper"
+"role.evilTrapper.short" : "T"
 "role.evilTrapper.blurb" : "Entrap and Kill Crewmates"
 "options.role.evilTrapper.detail" : "Evil Trapper sets traps with various effects.<br>Killing by trap shares its kill cool down too."
 "options.role.evilTrapper.killTrapSoundDistance" : "Kill Trap Sound Distance"
 "options.role.evilTrapper.costOfKillTrap" : "Cost Of Kill Trap"
 
 "role.jailer.name" : "Jailer"
+"role.jailer.short" : "J"
 "role.jailer.blurb" : "Be Under the Control"
 "options.role.jailer.detail" : "Jailer is an impostor who commits crimes in a planned way.<br>They has the portable admin."
 "options.role.jailer.canMoveWithMapWatching" : "Can Move With Map Watching"
 "options.role.jailer.canIdentifyDeadBodies" : "Can Identify Dead Bodies"
 "options.role.jailer.canIdentifyImpostors" : "Can Identify Impostors"
 
+"role.marionette.name" : "Marionette"
+"role.marionette.short" : "Ma"
+"role.marionette.blurb" : "There Is No Intention"
+"options.role.marionette.detail" : "Marionette can place the decoy.<br>they and the decoy swap position each other."
+"options.role.marionette.placeCoolDown" : "Place Cool Down"
+"options.role.marionette.swapCoolDown" : "Swap Cool Down"
+"options.role.marionette.decoyDuration" : "Decoy Duration"
+
 "role.morphing.name" : "Morphing"
+"role.morphing.short" : "Mo"
 "role.morphing.blurb" : "Change Your Look to Not Get Caught"
 "options.role.morphing.detail" : "Morphing samples the appearance of the player<br>and transforms into that form."
 "options.role.morphing.sampleCoolDown" : "Sample Cool Down"
@@ -269,13 +353,16 @@
 "options.role.morphing.loseSampleOnMeeting" : "Lose Sample On Meeting"
 
 "role.painter.name" : "Painter"
+"role.painter.short" : "P"
 "role.painter.blurb" : "No One Knows You Anymore"
 "options.role.painter.detail" : "Painter samples the appearance of the player<br>and paints the form onto players."
 "options.role.painter.sampleCoolDown" : "Sample Cool Down"
 "options.role.painter.paintCoolDown" : "Paint Cool Down"
 "options.role.painter.loseSampleOnMeeting" : "Lose Sample On Meeting"
+"options.role.painter.transformAfterMeeting" : "Transform After Meeting"
 
 "role.raider.name" : "Raider"
+"role.raider.short" : "Ra"
 "role.raider.blurb" : "Let's Rampage"
 "options.role.raider.detail" : "Raider throws axes to kill players.<br>Thrown axe remains and serves as evidence."
 "options.role.raider.throwCoolDown" : "Throw Cool Down"
@@ -284,10 +371,12 @@
 "options.role.raider.canKillImpostor" : "Can Kill Impostor"
 
 "role.reaper.name" : "Reaper"
+"role.reaper.short" : "Re"
 "role.reaper.blurb" : "Kill and Deceive the Crewmates"
 "options.role.reaper.detail" : "Reaper can drag dead bodies."
 
 "role.sniper.name" : "Sniper"
+"role.sniper.short" : "S"
 "role.sniper.blurb" : "Shoot Up!"
 "options.role.sniper.detail" : "Sniper has a rifle to snipe players.<br>When sniper shoots, players nearby they see a notification."
 "options.role.sniper.snipeCoolDown" : "Snipe Cool Down"
@@ -299,12 +388,14 @@
 # Neutral Roles
 
 "role.arsonist.name" : "Arsonist"
+"role.arsonist.short" : "A"
 "role.arsonist.blurb" : "Let Them Burn"
 "options.role.arsonist.detail" : "Arsonist douses all of the alive to burn."
 "options.role.arsonist.douseCoolDown" : "Douse Cool Down"
 "options.role.arsonist.douseDuration" : "Douse Duration"
 
 "role.jackal.name" : "Jackal"
+"role.jackal.short" : "J"
 "role.jackal.blurb" : "Kill Everyone"
 "options.role.jackal.detail" : "Jackal annihilates players to win.<br>Exile of the Jackal is a common goal for Impostors and Crewmates."
 "options.role.jackal.killCoolDown" : "Kill Cool Down"
@@ -312,6 +403,7 @@
 "options.role.jackal.numOfKillingToCreateSidekick" : "Num of Killing to Create Sidekick"
 
 "role.sidekick.name" : "Sidekick"
+"role.sidekick.short" : "S"
 "options.role.jackal.sidekick.detail" : "Sidekick assists Jackal.<br>Sidekick is promoted to Jackal upon Jackal's death."
 "options.role.jackal.sidekick.canKill" : "Can Kill"
 "options.role.jackal.sidekick.killCoolDown" : "Kill Cool Down"
@@ -319,11 +411,13 @@
 "options.role.jackal.sidekick.canCreateSidekickChainly" : "Can Create Sidekick Chainly"
 
 "role.jester.name" : "Jester"
+"role.jester.short" : "J"
 "role.jester.blurb" : "Get Voted Out"
 "options.role.jester.detail" : "Jester schemes to be exiled to win.<br>Crewmates must not vote for the Jester!"
 "options.role.jester.canDragDeadBody" : "Can Drag Dead Body"
 
 "role.vulture.name" : "Vulture"
+"role.vulture.short" : "V"
 "role.vulture.blurb" : "Eat Corpses to Win"
 "options.role.vulture.detail" : "Vulture eats dead bodies to win.<br>Crewmates must report before the corpse is eaten."
 "options.role.vulture.eatCoolDown" : "Eat Cool Down"
@@ -338,12 +432,16 @@
 
 "role.metaRole.name" : "Free Play Modifier"
 
+"role.bloody.name" : "Bloody"
+"options.role.bloody.detail" : "When Bloody is murdered, the killer lefts bloody footprints for a while."
+"options.role.bloody.curseDuration" : "Curse Duration"
+
 "role.tieBreaker.name" : "Tie Breaker"
 "options.role.tieBreaker.detail" : "When the vote results in a tie, Tie Breaker cast an additional vote."
 
 "role.lover.name" : "Lover"
 "options.role.lover.detail" : "While the number of ways to win increases, so does the risk of death."
-"role.guesser.blurb" : "You're in <color=#fc04bdff>Love</color> with %NAME%"
+"role.lover.blurb" : "You're in <color=#fc04bdff>Love</color> with %NAME%"
 "options.role.lover.numOfPairs" : "Num Of Pairs"
 "options.role.lover.chanceOfAssigningImpostors" : "Chance Of Assigning Impostors"
 "options.role.lover.allowExtraWin" : "Allow Extra Win" 
@@ -352,7 +450,8 @@
 
 "teams.crewmate" : "Crewmate"
 "teams.impostor" : "Impostor"
-"team.jackal" : "Jackal"
+"teams.arsonist" : "Arsonist"
+"teams.jackal" : "Jackal"
 "teams.jester" : "Jester"
 "teams.vulture" : "Vulture"
 
@@ -430,23 +529,28 @@
 "button.label.blaze" : "blaze"
 "button.label.camo" : "camo"
 "button.label.clean" : "clean"
+"button.label.destroy" : "destroy"
 "button.label.douse" : "douse"
 "button.label.drag" : "drag"
 "button.label.eat" : "eat"
-"button.label.embroil" : "Embroil"
+"button.label.embroil" : "embroil"
 "button.label.equip" : "equip"
 "button.label.ignite" : "ignite"
 "button.label.kill" : "kill"
 "button.label.lantern" : "lantern"
+"button.label.monitor" : "monitor"
 "button.label.morph" : "morph"
 "button.label.operate" : "operate"
 "button.label.paint" : "paint"
 "button.label.place" : "place"
+"button.label.pseudocide" : "pseudocide"
+"button.label.rejoin" : "rejoin"
 "button.label.release" : "release"
 "button.label.revive" : "revive"
 "button.label.sample" : "sample"
 "button.label.snipe" : "snipe"
 "button.label.sidekick" : "sidekick"
+"button.label.swap" : "swap"
 "button.label.throw" : "throw"
 "button.label.unequip" : "unequip"
 "button.label.vital" : "vitals"
@@ -477,15 +581,33 @@
 "statistics.events.missed" : "Missed"
 "statistics.events.embroil" : "Embroil"
 "statistics.events.trap" : "Entrap"
+"statistics.events.guess" : "Guess"
+
+# States
+
+"state.alive" : "Alive"
+"state.dead" : "Dead"
+"state.exiled" : "Exiled"
+"state.misfired" : "Misfired"
+"state.sniped" : "Sniped"
+"state.beaten" : "Beaten"
+"state.guessed" : "Guessed"
+"state.misguessed" : "Misguessed"
+"state.embroiled" : "Embroiled"
+"state.suicide" : "Suicide"
+"state.trapped" : "Trapped"
+"state.revived" : "Revived"
 
 # Endings
 
 "end.crewmate" : "Crewmates Win%EXTRA%"
 "end.impostor" : "Impostors Win%EXTRA%"
+"end.arsonist" : "Arsonist Wins%EXTRA%"
 "end.jackal" : "Team Jackal Wins%EXTRA%"
 "end.jester" : "Jester Wins%EXTRA%"
 "end.vulture" : "Vulture Wins%EXTRA%"
 "end.lover" : "Lovers Win%EXTRA%"
+"end.nogame" : "No Game"
 
 "end.extra.lover" : " <color=#FFFFFF>with</color> Lovers"
 
@@ -540,11 +662,14 @@
 "inventory.color.vanilla15" : "Gray"
 "inventory.color.vanilla16" : "Tan"
 "inventory.color.vanilla17" : "Coral"
+"inventory.color.visor" : "Default"
 
 # Input
 
+"input.kill" : "Kill (Additional)"
 "input.ability" : "Ability"
 "input.secondaryAbility" : "Secondary Ability"
+"input.aidAction" : "Aid Action"
 "input.command" : "Command"
 "input.screenshot" : "Screenshot"
 "input.mute" : "Mute"
@@ -552,7 +677,8 @@
 
 # Client Configurations
 
-"config.client.keyBindings" : "Key Bindings" 
+"config.client.keyBindings" : "Key Bindings"
+"config.client.vcSettings" : "VC Settings"
 "config.client.outputHash" : "Output Hash"
 
 # Developer Studio
@@ -561,6 +687,8 @@
 "devStudio.ui.common.save" : "Save"
 "devStudio.ui.common.preview" : "Preview"
 "devStudio.ui.common.delete" : "Delete"
+"devStudio.ui.common.clone" : "Clone"
+"devStudio,ui.common.original" : "Original"
 "devStudio.ui.common.generate" : "Generate"
 "devStudio.ui.common.confirmSaving" : "Are you sure to save?"
 "devStudio.ui.common.confirmDeletingAddon" : "Are you sure to delete add-on?"
@@ -578,11 +706,13 @@
 "devStudio.ui.document.element.image" : "Image"
 "devStudio.ui.document.element.vertical" : "Vertical Space"
 "devStudio.ui.document.element.horizontal" : "Horizontal Space"
+"devStudio.ui.document.element.documentRef" : "Document"
 "devStudio.ui.document.editor.color" : "Color"
 "devStudio.ui.document.editor.image" : "Image"
 "devStudio.ui.document.editor.width" : "Width"
 "devStudio.ui.document.editor.height" : "Height"
 "devStudio.ui.document.editor.fontSize" : "Font Size"
 "devStudio.ui.document.editor.isBold" : "Bold"
+"devStudio.ui.document.editor.document" : "Document ID"
 "devStudio.ui.hint.requiredText" : "#Required"
 "devStudio.ui.hint.duplicatedId" : "#Already existed"

@@ -1,0 +1,16 @@
+﻿{
+	"Contents" : [
+		{
+			"Document" : {
+				"Id" : "templates.roleName",
+				"Arguments" : {
+					"roleName" : "tieBreaker"
+				}
+			}
+		},
+		{
+			"TranslationKey" : "role.tieBreaker.doc.main",
+			"IsVariable" : True
+		}
+	]
+}

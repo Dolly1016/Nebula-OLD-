@@ -1,0 +1,34 @@
+﻿{
+	"Contents" : [
+		{
+			"Document" : {
+				"Id" : "templates.roleName",
+				"Arguments" : {
+					"roleName" : "niceTrapper"
+				}
+			}
+		},
+		{
+			"TranslationKey" : "role.niceTrapper.doc.main",
+			"IsVariable" : True,
+			"Document" : null
+		},
+		{
+			"Document" : {
+				"Id" : "role.trapper.common",
+				"Arguments" : {
+				}
+			}
+		},
+		{
+			"Document" : {
+				"Id" : "templates.imageContent",
+				"Arguments" : {
+					"imageName" : "CommTrap",
+					"textKey" : "role.niceTrapper.doc.commTrap"
+				}
+			}
+		}
+	],
+	"Document" : null
+}

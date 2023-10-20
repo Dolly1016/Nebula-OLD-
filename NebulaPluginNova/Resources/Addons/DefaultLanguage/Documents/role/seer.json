@@ -1,0 +1,16 @@
+﻿{
+	"Contents" : [
+		{
+			"Document" : {
+				"Id" : "templates.roleName",
+				"Arguments" : {
+					"roleName" : "seer"
+				}
+			}
+		},
+		{
+			"TranslationKey" : "role.seer.doc.main",
+			"IsVariable" : True
+		}
+	]
+}

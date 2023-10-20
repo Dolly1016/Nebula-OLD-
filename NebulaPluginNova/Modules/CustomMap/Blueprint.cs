@@ -6,6 +6,23 @@ using System.Threading.Tasks;
 
 namespace Nebula.Modules.CustomMap;
 
+public class SerializableVector
+{
+    [JsonSerializableField]
+    public float X;
+    [JsonSerializableField]
+    public float Y;
+    [JsonSerializableField(true)]
+    public float? Z;
+}
+
+public class SerializableBlueprint
+{
+    [JsonSerializableField(true)]
+    public SerializableVector? Position;
+
+}
+
 /*
 public class ImageAsset
 {

@@ -1,0 +1,30 @@
+﻿{
+	"Contents" : [
+		{
+			"Document" : {
+				"Id" : "templates.roleName",
+				"Arguments" : {
+					"roleName" : "cleaner"
+				}
+			}
+		},
+		{
+			"TranslationKey" : "role.cleaner.doc.main",
+			"IsVariable" : True
+		},
+		{
+			"TranslationKey" : "#IfConfig('options.role.cleaner.syncKillAndCleanCoolDown','role.cleaner.doc.syncCoolDown','role.cleaner.doc.notSyncCoolDown')",
+			"IsVariable" : True
+		},
+		{
+			"Document" : {
+				"Id" : "templates.buttonContent",
+				"Arguments" : {
+					"buttonName" : "CleanButton",
+					"textKey" : "role.cleaner.doc.cleanButton"
+				}
+			}
+		}
+	],
+	"Document" : null
+}

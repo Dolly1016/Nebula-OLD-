@@ -1,7 +1,7 @@
 {
 	"Contents" : [
 		{
-			"RawText" : "オンに設定することで視界外のベントの開閉が見えなくなります。",
+			"TranslationKey" : "options.map.silentVents.detail",
 			"IsVariable" : True
 		},
 		{

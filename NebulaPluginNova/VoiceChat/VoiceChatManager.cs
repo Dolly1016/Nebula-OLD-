@@ -259,8 +259,19 @@ public class VoiceChatManager : IDisposable
         childProcess = Process.Start(processStartInfo);
     }
 
+    public void Rejoin()
+    {
+        myCoroutine = NebulaManager.Instance.StartCoroutine(CoCommunicate().WrapToIl2Cpp());
+    }
+
     private IEnumerator CoCommunicate()
     {
+        if (myCoroutine != null) NebulaManager.Instance?.StopCoroutine(myCoroutine);
+        myCoroutine = null;
+
+        childProcess?.Kill();
+        childProcess = null;
+
         if (!AllowedUsingMic /*&& !AmongUsClient.Instance.AmHost*/)
         {
             var screen = MetaScreen.GenerateWindow(new(2.4f, 1f), HudManager.Instance.transform, Vector3.zero, true, true, false);
@@ -362,10 +373,25 @@ public class VoiceChatManager : IDisposable
             return (id, isRadio, radioMask, length, reader.ReadBytes(length));
             },
         (message,calledByMe) => {
+            if (calledByMe) return;
             if (NebulaGameManager.Instance?.VoiceChatManager?.allClients.TryGetValue(message.clientId, out var client) ?? false)
                 client?.OnReceivedData(message.isRadio, message.radioMask, message.dataAry);
         }
         );
+
+
+    public void OpenSettingScreen()
+    {
+        var screen = MetaScreen.GenerateWindow(new Vector2(7f,3.2f), HudManager.Instance.transform, Vector3.zero, true, false, true);
+
+        MetaContext context = new();
+
+        /*
+        context.Append(allClients.Values, (client) => {
+            return 
+        }, 3, -1, 0, 0.5f);
+        */
+    }
 }
 
 public class SampleFunctionalProvider : ISampleProvider

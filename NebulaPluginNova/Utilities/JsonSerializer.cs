@@ -32,7 +32,26 @@ public class JsonRawStructure
     public string? Prefix;
     public string? AsRaw;
 
-    public bool CanMerge => AsRaw == null && (StructiveContents?.All(entry => entry.Value.CanMerge) ?? true) && Prefix == null;
+    public bool MergeWith(JsonRawStructure structure)
+    {
+        if (structure.ContentsAsList != null)
+        {
+            ContentsAsList ??= new();
+            foreach (var c in structure.ContentsAsList!) ContentsAsList.Add(c);
+        }
+
+        if (structure.StructiveContents != null)
+        {
+            StructiveContents ??= new();
+            foreach (var entry in structure.StructiveContents)
+            {
+                if (!StructiveContents.ContainsKey(entry.Key)) StructiveContents.Add(entry.Key, entry.Value);
+                else StructiveContents[entry.Key].MergeWith(entry.Value);
+            }
+        }
+
+        return true;
+    }
 }
 
 public static class JsonStructure
@@ -40,32 +59,25 @@ public static class JsonStructure
     public static T? Deserialize<T>(Stream json) => (T?)Deserialize(json, typeof(T));
     public static T? Deserialize<T>(string json) => (T?)Deserialize(json, typeof(T));
 
-    private static object? DeserializePrimitive(string json,Type type)
+    private static object? DeserializePrimitive(string json, Type type)
     {
-        try
-        {
-            if (type.IsGenericType) type = type.GetGenericArguments()[0];
+        if (type.IsGenericType) type = type.GetGenericArguments()[0];
 
-            var trimmed = json.Trim('"');
-            
-            if (type.Equals(typeof(int)))
-                return int.Parse(trimmed);
-            if (type.Equals(typeof(byte)))
-                return byte.Parse(trimmed);
-            if (type.Equals(typeof(string)))
-                return trimmed;
-            if (type.Equals(typeof(float)))
-                return float.Parse(trimmed);
-            if (type.Equals(typeof(double)))
-                return double.Parse(trimmed);
-            if (type.Equals(typeof(bool)))
-                return bool.Parse(trimmed);
-            return null;
-        }
-        catch
-        {
-            throw new Exception("Input json \"" + json + "\" is invalid format.");
-        }
+        var trimmed = json.Trim('"');
+
+        if (type.Equals(typeof(int)))
+            return int.Parse(trimmed);
+        if (type.Equals(typeof(byte)))
+            return byte.Parse(trimmed);
+        if (type.Equals(typeof(string)))
+            return trimmed;
+        if (type.Equals(typeof(float)))
+            return float.Parse(trimmed);
+        if (type.Equals(typeof(double)))
+            return double.Parse(trimmed);
+        if (type.Equals(typeof(bool)))
+            return bool.Parse(trimmed);
+        return null;
     }
 
     private static object? DeserializeCollection(string json,Type type)
@@ -162,7 +174,14 @@ public static class JsonStructure
                 if (f.IsDefined(typeof(JSFieldAmbiguous)) && ignoreCaseMap.TryGetValue(f.Name.ToLower(), out var tableName)) name = tableName;
 
                 if (!textMap.TryGetValue(name, out var rawValue)) continue;
-                f.SetValue(instance, DeserializeTrimmed(rawValue, f.FieldType));
+
+                try
+                {
+                    f.SetValue(instance, DeserializeTrimmed(rawValue, f.FieldType));
+                }catch(Exception e)
+                {
+                    throw new Exception($"Substitute exception ({rawValue} => {f.Name} as {f.FieldType.FullName})", e);
+                }
             }
         }
 
@@ -206,7 +225,24 @@ public static class JsonStructure
         }
 
         if (json.StartsWith('['))
-            return DeserializeCollection(json, type);
+        {
+            json = json.Substring(1).TrimStart();
+
+            JsonRawStructure structure = new JsonRawStructure();
+            structure.ContentsAsList = new();
+            while (true)
+            {
+                SplitObject(json, out var current, out string? follower);
+                if (current == null) break;
+
+                structure.ContentsAsList.Add(current);
+
+                if (follower == null) break;
+                json = follower;
+            }
+
+            return structure;
+        }
 
         if (!json.StartsWith('{'))
             return new JsonRawStructure() { AsRaw = json };
@@ -225,11 +261,11 @@ public static class JsonStructure
             json = follower;
         }
 
-        JsonRawStructure structure = new JsonRawStructure();
-        structure.StructiveContents = new();
-        foreach (var entry in textMap)
         {
-            structure.StructiveContents.Add(entry.Key, DeserializeRaw(entry.Value)!);
+            JsonRawStructure structure = new JsonRawStructure();
+            structure.StructiveContents = new();
+            foreach (var entry in textMap) structure.StructiveContents.Add(entry.Key, DeserializeRaw(entry.Value)!);
+            return structure;
         }
     }
 
@@ -273,6 +309,19 @@ public static class JsonStructure
 
     public static string Serialize(this object obj)
     {
+        if (obj is JsonRawStructure structure)
+        {
+            if(structure.ContentsAsList != null)
+            {
+                string json = "";
+                foreach(var item in structure.ContentsAsList) { if (json.Length > 0) json += ","; json += "\n" + item; }
+                return $"[{json}\n]";
+            }
+            if (structure.AsRaw != null) return structure.AsRaw;
+            if (structure.StructiveContents != null) return SerializeDictionary(structure.StructiveContents);
+            return "null";
+        }
+
         if (obj is int or byte or float or double or bool)
             return obj.ToString() ?? "null";
         if (obj is string)
@@ -344,5 +393,154 @@ public static class JsonStructure
 
         if (index > 0) current = json.Substring(0, index).Trim().Replace("\\\"","\"");
         if (index + 1 < json.Length) follower = json.Substring(index + 1).TrimStart();
+    }
+
+    static public string ShapeJsonString(string json)
+    {
+        string result = "";
+
+        int read = 0, advanced = 0;
+        int scopes = 0;
+
+        string getCurrentString(bool requireAdvance = true)
+        {
+            string str = json.Substring(read, advanced).Trim();
+            if (requireAdvance) advance();
+            return str;
+        }
+
+        void appendNewLine()
+        {
+            result += "\n";
+            for (int i = 0; i < scopes; i++) result += "\t";
+        }
+
+        bool readIgnored(bool requireAdvance = true)
+        {
+            while (true)
+            {
+                if (read + advanced >= json.Length) return true;
+                if (!(json[read + advanced] is ' ' or '\n' or '\t' or '\r' or '\b')) break;
+                advanced++;
+            }
+            if (requireAdvance) advance();
+            return false;
+        }
+
+        bool readString()
+        {
+            if (json[read + advanced] != '\"') return false;
+            advanced++;
+            while (json[read + advanced] is not '\"' || json[read + advanced - 1] is '\\') advanced++;
+
+            advanced++;
+            return true;
+        }
+
+        bool readPrimitive()
+        {
+            char first = json[read + advanced];
+            if (first is ',' or '{' or '}' or '[' or ']' or ':' or '\"') return false;
+
+            while (!(json[read + advanced] is ',' or '}' or ']')) advanced++;
+            return true;
+        }
+
+        void advance()
+        {
+            Debug.Log("Read:" + json.Substring(read,advanced));
+            read += advanced;
+            advanced = 0;
+        }
+
+        bool readOpener()
+        {
+            if (json[read + advanced] is '{' or '[')
+            {
+                advanced++;
+                scopes++;
+                return true;
+            }
+            return false;
+        }
+
+        bool readCloser()
+        {
+            if (json[read + advanced] is '}' or ']')
+            {
+                advanced++;
+                scopes--;
+                return true;
+            }
+            return false;
+        }
+
+        bool readColon()
+        {
+            if (json[read + advanced] is ':')
+            {
+                advanced++;
+                return true;
+            }
+            return false;
+        }
+
+        bool readComma()
+        {
+            if (json[read + advanced] is ',')
+            {
+                advanced++;
+                return true;
+            }
+            return false;
+        }
+
+        while (read + advanced < json.Length)
+        {
+            readIgnored();
+            if (readOpener())
+            {
+                result += getCurrentString();
+                appendNewLine();
+                if (readIgnored()) break;
+            }
+
+            if (readCloser())
+            {
+                appendNewLine();
+                result += getCurrentString();
+                if (readIgnored()) break;
+            }
+
+            if (readColon())
+            {
+                advance();
+                result += " : ";
+                advance();
+                if (readIgnored()) break;
+            }
+
+            if (readComma())
+            {
+                advance();
+                result += ",";
+                appendNewLine();
+                if (readIgnored()) break;
+            }
+
+            if (readString())
+            {
+                result += getCurrentString();
+                if (readIgnored()) break;
+            }
+
+            if (readPrimitive())
+            {
+                result += getCurrentString();
+                if (readIgnored()) break;
+            }
+        }
+
+        return result;
     }
 }

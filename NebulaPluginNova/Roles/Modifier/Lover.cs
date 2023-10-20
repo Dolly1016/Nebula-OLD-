@@ -65,6 +65,7 @@ public class Lover : ConfigurableModifier
         {
             this.loversId = loversId;
         }
+        public override bool CheckWins(CustomEndCondition endCondition, ref ulong _) => endCondition == NebulaGameEnd.LoversWin && !MyPlayer.IsDead;
 
         public override void DecoratePlayerName(ref string text, ref Color color)
         {

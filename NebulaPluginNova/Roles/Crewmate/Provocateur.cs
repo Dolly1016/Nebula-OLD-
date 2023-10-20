@@ -29,7 +29,7 @@ public class Provocateur : ConfigurableStandardRole
 
         EmbroilCoolDownOption = new(RoleConfig, "embroilCoolDown", null, 5f, 60f, 2.5f, 20f, 20f) { Decorator = NebulaConfiguration.SecDecorator };
         EmbroilAdditionalCoolDownOption = new(RoleConfig, "embroilAdditionalCoolDown", null, 0f, 30f, 2.5f, 5f, 5f) { Decorator = NebulaConfiguration.SecDecorator };
-        EmbroilDurationOption = new(RoleConfig, "embroilCoolDown", null, 1f, 20f, 1f, 5f, 5f) { Decorator = NebulaConfiguration.SecDecorator };
+        EmbroilDurationOption = new(RoleConfig, "embroilDuration", null, 1f, 20f, 1f, 5f, 5f) { Decorator = NebulaConfiguration.SecDecorator };
     }
 
     public class Instance : Crewmate.Instance
@@ -50,9 +50,12 @@ public class Provocateur : ConfigurableStandardRole
                 embroilButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;
                 embroilButton.OnClick = (button) => {
                     button.ActivateEffect();
-                    button.CoolDownTimer?.Expand(MyRole.EmbroilAdditionalCoolDownOption.GetFloat());
                 };
-                embroilButton.OnEffectEnd = (button) => embroilButton.StartCoolDown();
+                embroilButton.OnEffectEnd = (button) =>
+                {
+                    button.CoolDownTimer?.Expand(MyRole.EmbroilAdditionalCoolDownOption.GetFloat());
+                    embroilButton.StartCoolDown();
+                };
                 embroilButton.CoolDownTimer = Bind(new Timer(0f, MyRole.EmbroilCoolDownOption.GetFloat()).SetAsAbilityCoolDown().Start());
                 embroilButton.EffectTimer = Bind(new Timer(0f, MyRole.EmbroilDurationOption.GetFloat()));
                 embroilButton.SetLabelType(ModAbilityButton.LabelType.Standard);

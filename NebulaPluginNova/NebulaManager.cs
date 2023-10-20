@@ -46,7 +46,9 @@ public class MouseOverPopup : MonoBehaviour
 
     public void SetContext(PassiveUiElement? related, IMetaContext? context)
     {
-        if(context == null) {
+        myScreen.SetContext(null);
+
+        if (context == null) {
             gameObject.SetActive(false);
             relatedButton = null;
             return;
@@ -123,8 +125,8 @@ public class NebulaManager : MonoBehaviour
     public class MetaCommand
     {
         public KeyAssignmentType? KeyAssignmentType = null;
-        public KeyCode? DefaultKeyCode = null;
-        public KeyCode? KeyCode => KeyAssignmentType != null ? NebulaInput.GetKeyCode(KeyAssignmentType.Value) : DefaultKeyCode;
+        public VirtualInput? DefaultKeyInput = null;
+        public VirtualInput? KeyInput => KeyAssignmentType != null ? NebulaInput.GetInput(KeyAssignmentType.Value) : DefaultKeyInput;
         public string TranslationKey;
         public Func<bool> Predicate;
         public Action CommandAction;
@@ -164,7 +166,7 @@ public class NebulaManager : MonoBehaviour
         commands.Add(new( "help.command.nogame",
             () => NebulaGameManager.Instance != null && AmongUsClient.Instance &&  AmongUsClient.Instance.AmHost && AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started,
             () => NebulaGameManager.Instance?.RpcInvokeForcelyWin(NebulaGameEnd.NoGame, 0)
-        ){ DefaultKeyCode = KeyCode.F5 });
+        ){ DefaultKeyInput = new(KeyCode.F5) });
         
         commands.Add(new("help.command.quickStart",
             () => NebulaGameManager.Instance != null && AmongUsClient.Instance && AmongUsClient.Instance.AmHost && AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Joined && GameStartManager.Instance && GameStartManager.Instance.startState == GameStartManager.StartingStates.NotStarting,
@@ -174,19 +176,19 @@ public class NebulaManager : MonoBehaviour
                 GameStartManager.Instance.FinallyBegin();
             }
         )
-        { DefaultKeyCode = KeyCode.F1 });
+        { DefaultKeyInput = new(KeyCode.F1) });
         
         commands.Add(new("help.command.cancelStarting",
             () => NebulaGameManager.Instance != null && AmongUsClient.Instance && AmongUsClient.Instance.AmHost && AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Joined && GameStartManager.Instance && GameStartManager.Instance.startState == GameStartManager.StartingStates.Countdown,
             RpcResetGameStart.Invoke
         )
-        { DefaultKeyCode = KeyCode.F2 });
+        { DefaultKeyInput = new(KeyCode.F2) });
 
         commands.Add(new("help.command.console",
             () => true,
             ()=>NebulaManager.Instance.ToggleConsole()
         )
-        { DefaultKeyCode = KeyCode.Return });
+        { DefaultKeyInput = new(KeyCode.Return) });
     }
 
     private void ToggleConsole()
@@ -267,12 +269,12 @@ public class NebulaManager : MonoBehaviour
         if (NebulaPlugin.FinishedPreload)
         {
             //スクリーンショット
-            if (Input.GetKeyDown(NebulaInput.GetKeyCode(KeyAssignmentType.Screenshot))) StartCoroutine(CaptureAndSave(Input.GetKey(NebulaInput.GetKeyCode(KeyAssignmentType.Command))).WrapToIl2Cpp());
+            if (NebulaInput.GetInput(KeyAssignmentType.Screenshot).KeyDown) StartCoroutine(CaptureAndSave(NebulaInput.GetInput(KeyAssignmentType.Command).KeyState).WrapToIl2Cpp());
 
             if (AmongUsClient.Instance && AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.NotJoined)
             {
                 //コマンド
-                if (Input.GetKeyDown(NebulaInput.GetKeyCode(KeyAssignmentType.Command)))
+                if (NebulaInput.GetInput(KeyAssignmentType.Command).KeyDown)
                 {
                     MetaContext context = new();
                     context.Append(new MetaContext.Text(new(TextAttribute.BoldAttr) { Alignment = TMPro.TextAlignmentOptions.Left }) { TranslationKey = "help.command", Alignment = IMetaContext.AlignmentOption.Left });
@@ -282,7 +284,7 @@ public class NebulaManager : MonoBehaviour
                         if (!command.Predicate.Invoke()) continue;
 
                         if (commandsStr.Length != 0) commandsStr += "\n";
-                        commandsStr += ButtonEffect.KeyCodeInfo.GetKeyDisplayName(command.KeyCode!.Value);
+                        commandsStr += ButtonEffect.KeyCodeInfo.GetKeyDisplayName(command.KeyInput!.TypicalKey);
 
                         commandsStr += " :" + Language.Translate(command.TranslationKey);
                     }
@@ -293,17 +295,19 @@ public class NebulaManager : MonoBehaviour
                 }
 
                 //コマンド
-                if (Input.GetKeyUp(NebulaInput.GetKeyCode(KeyAssignmentType.Command)))
+                if (NebulaInput.GetInput(KeyAssignmentType.Command).KeyUp)
                 {
                     if (HelpRelatedObject == null) HideHelpContext();
                 }
 
                 //コマンド
-                if (Input.GetKey(NebulaInput.GetKeyCode(KeyAssignmentType.Command)))
+                if (NebulaInput.GetInput(KeyAssignmentType.Command).KeyState)
                 {
                     foreach (var command in commands)
                     {
-                        if (!Input.GetKeyDown(command.KeyCode!.Value)) continue;
+                        if (!command.Predicate.Invoke()) continue;
+
+                        if (!command.KeyInput!.KeyDown) continue;
 
                         command.CommandAction.Invoke();
                         HideHelpContext();
@@ -338,7 +342,19 @@ public class NebulaManager : MonoBehaviour
 
     public void SetHelpContext(PassiveUiElement? related, IMetaContext? context) => mouseOverPopup.SetContext(related, context);
     public void HideHelpContext() => mouseOverPopup.SetContext(null, null);
+    public void HideHelpContextIf(PassiveUiElement? related)
+    {
+        if(HelpRelatedObject == related) mouseOverPopup.SetContext(null, null);
+    }
     public PassiveUiElement? HelpRelatedObject => mouseOverPopup.RelatedObject;
     public bool ShowingAnyHelpContent => mouseOverPopup.isActiveAndEnabled;
     public void HelpIrrelevantize() => mouseOverPopup.Irrelevantize();
+
+    public Coroutine ScheduleDelayAction(Action action)
+    {
+        return StartCoroutine(Effects.Sequence(
+            Effects.Action((Il2CppSystem.Action)(() => { })),
+            Effects.Action(action)
+            ));
+    }
 }

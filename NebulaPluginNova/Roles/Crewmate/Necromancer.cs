@@ -18,6 +18,8 @@ public class Necromancer : ConfigurableStandardRole
     private NebulaConfiguration ReviveCoolDownOption = null!;
     private NebulaConfiguration ReviveDurationOption = null!;
     private NebulaConfiguration DetectedRangeOption = null!;
+    private NebulaConfiguration ReviveMinRangeOption = null!;
+    private NebulaConfiguration ReviveMaxRangeOption = null!;
     protected override void LoadOptions()
     {
         base.LoadOptions();
@@ -25,6 +27,8 @@ public class Necromancer : ConfigurableStandardRole
         ReviveCoolDownOption = new NebulaConfiguration(RoleConfig, "reviveCoolDown", null, 5f, 60f, 5f, 30f, 30f) { Decorator = NebulaConfiguration.SecDecorator };
         ReviveDurationOption = new NebulaConfiguration(RoleConfig, "reviveDuration", null, 0.5f, 10f, 0.5f, 3f, 3f) { Decorator = NebulaConfiguration.SecDecorator };
         DetectedRangeOption = new NebulaConfiguration(RoleConfig, "detectedRange", null, 2.5f, 30f, 2.5f, 7.5f, 7.5f) { Decorator = NebulaConfiguration.OddsDecorator };
+        ReviveMinRangeOption = new NebulaConfiguration(RoleConfig, "reviveMinRange", null, 0f, 12.5f, 2.5f, 7.5f, 7.5f) { Decorator = NebulaConfiguration.OddsDecorator };
+        ReviveMaxRangeOption = new NebulaConfiguration(RoleConfig, "reviveMaxRange", null, 10f, 30f, 2.5f, 17.5f, 17.5f) { Decorator = NebulaConfiguration.OddsDecorator };
     }
 
     public class Instance : Crewmate.Instance
@@ -114,14 +118,14 @@ public class Necromancer : ConfigurableStandardRole
                             if (entry.Key == SystemTypes.Ventilation) continue;
 
                             float d = entry.Value.roomArea.Distance(MyPlayer.MyControl.Collider).distance;
-                            if (d < 3f) continue;
+                            if (d < MyRole.ReviveMinRangeOption.GetFloat()) continue;
 
                             cand.Add(new(d, entry.Value));
                         }
 
                         //近い順にソートし、遠すぎる部屋は候補から外す 少なくとも1部屋は候補に入るようにする
                         cand.Sort((c1, c2) => Math.Sign(c1.Item1 - c2.Item1));
-                        int lastIndex = cand.FindIndex((tuple) => tuple.Item1 > 15f);
+                        int lastIndex = cand.FindIndex((tuple) => tuple.Item1 > MyRole.ReviveMaxRangeOption.GetFloat());
                         if (lastIndex == -1) lastIndex = cand.Count;
                         if (lastIndex == 0) lastIndex = 1;
 
@@ -137,9 +141,7 @@ public class Necromancer : ConfigurableStandardRole
                 reviveButton.SetSprite(buttonSprite.GetSprite());
                 reviveButton.Availability = (button) => MyPlayer.MyControl.CanMove && MyPlayer.HoldingDeadBody.HasValue && canReviveHere();
                 reviveButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;
-                reviveButton.OnClick = (button) => {
-                    button.ActivateEffect();
-                };
+                reviveButton.OnClick = (button) => button.ActivateEffect();
                 reviveButton.OnEffectEnd = (button) =>
                 {
                     if (!button.EffectTimer!.IsInProcess)

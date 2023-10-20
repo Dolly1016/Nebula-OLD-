@@ -155,7 +155,7 @@ public class Reaper : ConfigurableStandardRole
             base.OnActivated();
 
             draggable?.OnActivated(this);
-            EditVentInfo(true);
+            if (AmOwner) EditVentInfo(true);
         }
 
         public override void OnDead()
@@ -166,7 +166,7 @@ public class Reaper : ConfigurableStandardRole
         protected override void OnInactivated()
         {
             draggable?.OnInactivated(this);
-            EditVentInfo(false);
+            if (AmOwner) EditVentInfo(false);
         }
     }
 }

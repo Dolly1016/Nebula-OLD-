@@ -1,0 +1,18 @@
+﻿{
+	"Contents" : [
+		{
+			"Document" : {
+				"Id" : "templates.roleName",
+				"Arguments" : {
+					"roleName" : "bait"
+				}
+			}
+		},
+		{
+			"TranslationKey" : "role.bait.doc.main",
+			"IsVariable" : True,
+			"Document" : null
+		}
+	],
+	"Document" : null
+}

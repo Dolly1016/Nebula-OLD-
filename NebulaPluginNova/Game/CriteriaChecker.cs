@@ -74,6 +74,7 @@ public class NebulaEndCriteria
             {
                 if (p.IsDead) return false;
                 if (p.Role.Role.Team == Impostor.MyTeam) return true;
+                if (p.Role.Role.Team == Jackal.MyTeam || p.AllModifiers.Any(m => m.Role == SidekickModifier.MyRole)) return true;
                 return false;
             }) ?? true) return null;
 

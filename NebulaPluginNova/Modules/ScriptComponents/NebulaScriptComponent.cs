@@ -39,16 +39,42 @@ public abstract class INebulaScriptComponent : INebulaBindableComponent
 
 public class GameObjectBinding : INebulaScriptComponent
 {
-    public GameObject? MyObject { get; private init; }
+    public GameObject? MyObject { get; private set; }
 
     public GameObjectBinding(GameObject binding) : base()
     {
         MyObject = binding;
     }
 
+    public void Detach()
+    {
+        MyObject = null;
+    }
+
     public override void Update() { }
     public override void OnReleased() {
         if (MyObject) GameObject.Destroy(MyObject);
+    }
+}
+
+public class ComponentBinding<T> : INebulaScriptComponent where T : MonoBehaviour 
+{
+    public T? MyObject { get; private set; }
+
+    public ComponentBinding(T binding) : base()
+    {
+        MyObject = binding;
+    }
+
+    public void Detach()
+    {
+        MyObject = null;
+    }
+
+    public override void Update() { }
+    public override void OnReleased()
+    {
+        if (MyObject) GameObject.Destroy(MyObject.gameObject);
     }
 }
 

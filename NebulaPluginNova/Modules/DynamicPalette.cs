@@ -1,14 +1,7 @@
 ﻿using AmongUs.Data;
-using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
-using Nebula;
 using Nebula.Behaviour;
 using TMPro;
-using UnityEngine;
-using UnityEngine.UI;
-using static Nebula.Modules.NebulaPlayerTab;
-using static Nebula.Player.PlayerModInfo;
-using static Rewired.Demos.PressStartToJoinExample_Assigner;
 
 namespace Nebula.Modules;
 
@@ -122,9 +115,9 @@ public class DynamicPalette
 
         public void Edit(Color color)
         {
-            r.Value = (byte)(color.r * byte.MaxValue);
-            g.Value = (byte)(color.g * byte.MaxValue);
-            b.Value = (byte)(color.b * byte.MaxValue);
+            r.Value = (byte)(Math.Clamp((int)(color.r * byte.MaxValue), 0, (int)byte.MaxValue));
+            g.Value = (byte)(Math.Clamp((int)(color.g * byte.MaxValue), 0, (int)byte.MaxValue));
+            b.Value = (byte)(Math.Clamp((int)(color.b * byte.MaxValue), 0, (int)byte.MaxValue));
         }
 
         public void Edit(SerializableColor color)
@@ -465,7 +458,7 @@ public class DynamicPalette
             if (distance < 6)
             {
                 float d = 1f - (float)distance / 6f;
-                color += new Color(d, d, d);
+                color = Color.Lerp(color, Color.white, d);
             }
             else if (distance > 9)
             {
@@ -593,7 +586,7 @@ public class NebulaPlayerTab : MonoBehaviour
     static ISpriteLoader spriteBrPalette = SpriteLoader.FromResource("Nebula.Resources.PaletteBrightness.png", 100f);
     static ISpriteLoader spriteBrTarget = SpriteLoader.FromResource("Nebula.Resources.PaletteKnob.png", 100f);
 
-
+    static XOnlyDividedSpriteLoader spriteSwitches = XOnlyDividedSpriteLoader.FromResource("Nebula.Resources.PaletteSwitches.png", 100f, 2);
     static NebulaPlayerTab()
     {
         ClassInjector.RegisterTypeInIl2Cpp<NebulaPlayerTab>();
@@ -601,6 +594,7 @@ public class NebulaPlayerTab : MonoBehaviour
 
     int currentPalette = 0;
     bool edittingShadowColor = false;
+    bool edittingVisorColor = false;
 
     SpriteRenderer DynamicPaletteRenderer = null!;
     SpriteRenderer TargetRenderer = null!;
@@ -628,13 +622,25 @@ public class NebulaPlayerTab : MonoBehaviour
         var PaletteButton = DynamicPaletteRenderer.gameObject.SetUpButton();
 
         PaletteButton.OnClick.AddListener(() => {
-            if (DynamicPalette.MyColor.GetShadowPattern() == byte.MaxValue) DynamicPalette.MyColor.SetShadowPattern(0);
+            if (edittingVisorColor)
+            {
+                ToColorParam(GetOnPalettePosition(), out var h, out var d);
+                Color c = DynamicPalette.AllColorPalette[0].GetColor(h, d, 1f);
 
-            ToColorParam(GetOnPalettePosition(), out var h, out var d);
+                DynamicPalette.MyVisorColor.Edit(c);
+                TargetRenderer.gameObject.SetActive(true);
+                TargetRenderer.transform.localPosition = ToPalettePosition(h, d);
+            }
+            else
+            {
+                if (DynamicPalette.MyColor.GetShadowPattern() == byte.MaxValue) DynamicPalette.MyColor.SetShadowPattern(0);
 
-            DynamicPalette.MyColor.EditColor(edittingShadowColor, h, d, null, null);
-            TargetRenderer.gameObject.SetActive(h != byte.MaxValue);
-            TargetRenderer.transform.localPosition = ToPalettePosition(h, d);
+                ToColorParam(GetOnPalettePosition(), out var h, out var d);
+
+                DynamicPalette.MyColor.EditColor(edittingShadowColor, h, d, null, null);
+                TargetRenderer.gameObject.SetActive(h != byte.MaxValue && !edittingVisorColor);
+                TargetRenderer.transform.localPosition = ToPalettePosition(h, d);
+            }
 
             if (AmongUsClient.Instance && AmongUsClient.Instance.IsInGame && PlayerControl.LocalPlayer) DynamicPalette.RpcShareColor.Invoke(new DynamicPalette.ShareColorMessage() { playerId=PlayerControl.LocalPlayer.PlayerId}.ReflectMyColor());
         });
@@ -647,9 +653,14 @@ public class NebulaPlayerTab : MonoBehaviour
         TargetRenderer.sprite = spriteTarget.GetSprite();
         TargetRenderer.gameObject.layer = LayerExpansion.GetUILayer();
 
-        DynamicPalette.MyColor.GetParam(edittingShadowColor, out byte h, out byte d, out _);
-        TargetRenderer.gameObject.SetActive(h != byte.MaxValue);
-        TargetRenderer.transform.localPosition = ToPalettePosition(h,d);
+        void SetTargetRendererPos()
+        {
+            DynamicPalette.MyColor.GetParam(edittingShadowColor, out byte h, out byte d, out _);
+            TargetRenderer.gameObject.SetActive(h != byte.MaxValue);
+            TargetRenderer.transform.localPosition = ToPalettePosition(h, d);
+        }
+
+        SetTargetRendererPos();
 
         BrightnessRenderer = UnityHelper.CreateObject<SpriteRenderer>("BrightnessPalette", transform, new Vector3(3.1f, -0.1f, -80f));
         BrightnessRenderer.sprite = spriteBrPalette.GetSprite();
@@ -720,8 +731,8 @@ public class NebulaPlayerTab : MonoBehaviour
             var restoreButton = renderer.gameObject.SetUpButton(true);
             restoreButton.OnClick.AddListener(() => {
                 DynamicPalette.MyColor.Restore(DynamicPalette.SavedColor[copiedIndex].color);
-                TargetRenderer.gameObject.SetActive(h != byte.MaxValue);
-                TargetRenderer.transform.localPosition = ToPalettePosition(h, d);
+                DynamicPalette.MyVisorColor.Edit(DynamicPalette.SavedColor[copiedIndex].visorColor.ToColor());
+                SetTargetRendererPos();
 
                 if (AmongUsClient.Instance && AmongUsClient.Instance.IsInGame && PlayerControl.LocalPlayer) DynamicPalette.RpcShareColor.Invoke(new DynamicPalette.ShareColorMessage() { playerId = PlayerControl.LocalPlayer.PlayerId }.ReflectMyColor());
 
@@ -735,12 +746,36 @@ public class NebulaPlayerTab : MonoBehaviour
             saveButon.OnClick.AddListener(() =>
             {
                 DynamicPalette.SavedColor[copiedIndex].color.Restore(DynamicPalette.MyColor);
+                DynamicPalette.SavedColor[copiedIndex].visorColor.Edit(DynamicPalette.MyVisorColor.ToColor());
                 renderer.color = DynamicPalette.MyColor.mainColor;
                 baseRenderer.color = DynamicPalette.MyColor.shadowColor;
             });
             saveButon.gameObject.AddComponent<BoxCollider2D>().size = new Vector2(0.25f, 0.25f);
         }
 
+        var SwitchRenderer = UnityHelper.CreateObject<SpriteRenderer>("Switch",transform,new Vector3(2.5f,-1.73f,-50f));
+        SwitchRenderer.sprite = spriteSwitches.GetSprite(1);
+        var SwitchButton = SwitchRenderer.gameObject.SetUpButton(true, SwitchRenderer);
+        SwitchButton.OnClick.AddListener(() =>
+        {
+            edittingVisorColor = !edittingVisorColor;
+            if (edittingVisorColor)
+            {
+                edittingShadowColor = false;
+                TargetRenderer.gameObject.SetActive(false);
+            }
+            else
+            {
+                SetTargetRendererPos();
+            }
+
+            SwitchRenderer.sprite = spriteSwitches.GetSprite(edittingVisorColor ? 0 : 1);
+
+            BrightnessRenderer.gameObject.SetActive(!edittingVisorColor);
+        });
+        var SwitchCollider = SwitchButton.gameObject.AddComponent<BoxCollider2D>();
+        SwitchCollider.size = new(0.5f, 0.6f);
+        SwitchCollider.isTrigger = true;
 
         PreviewColor(null, null, null);
     }
@@ -780,9 +815,18 @@ public class NebulaPlayerTab : MonoBehaviour
         
         if (distance < 2.06f)
         {
-            //DynamicPaletteによる色の更新
             ToColorParam(pos, out var h, out var d);
-            PreviewColor(h, d, null);
+
+            if (edittingVisorColor)
+            {
+                DynamicPalette.VisorColors[PreviewColorId] = DynamicPalette.AllColorPalette[0].GetColor(h, d, 1f);
+                PreviewColor(DynamicPalette.MyColor, DynamicPalette.VisorColors[PreviewColorId]);
+            }
+            else
+            {
+                
+                PreviewColor(h, d, null);
+            }
         }
     }
 
@@ -845,8 +889,8 @@ public class NebulaPlayerTab : MonoBehaviour
             {
                 Palette.PlayerColors[PreviewColorId] = DynamicPalette.MyColor.MainColor;
                 Palette.ShadowColors[PreviewColorId] = DynamicPalette.MyColor.ShadowColor;
-                DynamicPalette.VisorColors[PreviewColorId] = DynamicPalette.MyVisorColor.ToColor(Palette.VisorColor);
             }
+            DynamicPalette.VisorColors[PreviewColorId] = DynamicPalette.MyVisorColor.ToColor(Palette.VisorColor);
 
             AfterPreviewColor(concernedHue.Value,concernedDistance.Value);
         }

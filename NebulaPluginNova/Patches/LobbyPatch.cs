@@ -2,6 +2,7 @@
 using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using InnerNet;
+using Nebula.Behaviour;
 using Nebula.Configuration;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ namespace Nebula.Patches;
 [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.Update))]
 public class GameStartManagerUpdatePatch
 {
+    public static bool LastChecked = false;
     public static bool Prefix(GameStartManager __instance)
     {
         if (!GameData.Instance) return false;
@@ -55,6 +57,9 @@ public class GameStartManagerUpdatePatch
 
         bool canStart = __instance.LastPlayerCount >= __instance.MinPlayers;
 
+        canStart &= PlayerControl.AllPlayerControls.GetFastEnumerator().All(p => !p.gameObject.TryGetComponent<UncertifiedPlayer>(out _));
+
+        LastChecked = canStart;
         __instance.StartButton.color = canStart ? Palette.EnabledColor : Palette.DisabledClear;
         __instance.startLabelText.color = canStart ? Palette.EnabledColor : Palette.DisabledClear;
         ActionMapGlyphDisplay startButtonGlyph = __instance.StartButtonGlyph;
@@ -94,8 +99,10 @@ public class GameStartManagerUpdatePatch
 [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.BeginGame))]
 public class GameStartManagerBeginGame
 {
-    public static void Prefix(GameStartManager __instance)
+    public static bool Prefix(GameStartManager __instance)
     {
+        if (!GameStartManagerUpdatePatch.LastChecked) return false;
+
         if (AmongUsClient.Instance.AmHost)
         {
 
@@ -105,26 +112,30 @@ public class GameStartManagerBeginGame
                 {
                     int num = GeneralConfigurations.NumOfDummiesOption;
 
-                    for (int n = 0; n < num; n++)
-                    {
-                        var playerControl = UnityEngine.Object.Instantiate(AmongUsClient.Instance.PlayerPrefab);
-                        var i = playerControl.PlayerId = (byte)GameData.Instance.GetAvailableId();
-
-                        GameData.Instance.AddPlayer(playerControl);
-
-                        playerControl.transform.position = PlayerControl.LocalPlayer.transform.position;
-                        playerControl.GetComponent<DummyBehaviour>().enabled = true;
-                        playerControl.isDummy = true;
-                        playerControl.SetName(AccountManager.Instance.GetRandomName());
-                        playerControl.SetColor(i);
-
-                        AmongUsClient.Instance.Spawn(playerControl, -2, InnerNet.SpawnFlags.None);
-                        GameData.Instance.RpcSetTasks(playerControl.PlayerId, new byte[0]);
-                    }
+                    for (int n = 0; n < num; n++) AmongUsUtil.SpawnDummy();
                 }
             }
         }
 
-        return;
+        return true;
+    }
+}
+
+
+[HarmonyPatch(typeof(GameData), nameof(GameData.AddPlayer))]
+public class RequireHandshakePatch
+{
+    public static void Postfix(GameData __instance, [HarmonyArgument(0)] PlayerControl pc)
+    {
+        if (AmongUsClient.Instance.AmHost) Certification.RequireHandshake();
+    }
+}
+
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Awake))]
+public class SetUpCertificationPatch
+{
+    public static void Postfix(PlayerControl __instance)
+    {
+        __instance.gameObject.AddComponent<UncertifiedPlayer>().MyControl = __instance;
     }
 }

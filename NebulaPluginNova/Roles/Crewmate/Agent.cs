@@ -69,7 +69,7 @@ public class Agent : ConfigurableStandardRole
         {
             if (AmOwner)
             {
-                taskButton = Bind(new ModAbilityButton()).KeyBind(NebulaInput.GetKeyCode(KeyAssignmentType.Ability));
+                taskButton = Bind(new ModAbilityButton()).KeyBind(NebulaInput.GetInput(KeyAssignmentType.Ability));
                 taskButton.SetSprite(buttonSprite.GetSprite());
                 taskButton.Availability = (button) => MyPlayer.MyControl.CanMove && MyPlayer.Tasks.IsCompletedCurrentTasks;
                 taskButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;

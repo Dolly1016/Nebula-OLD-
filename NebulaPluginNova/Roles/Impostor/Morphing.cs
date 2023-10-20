@@ -54,7 +54,7 @@ public class Morphing : ConfigurableStandardRole
             {
                 GameData.PlayerOutfit? sample = null;
                 PoolablePlayer? sampleIcon = null;
-                var sampleTracker = Bind(ObjectTrackers.ForPlayer(1.2f, MyPlayer.MyControl, (p) => p.PlayerId != MyPlayer.PlayerId && !p.Data.IsDead));
+                var sampleTracker = Bind(ObjectTrackers.ForPlayer(null, MyPlayer.MyControl, (p) => p.PlayerId != MyPlayer.PlayerId && !p.Data.IsDead));
 
                 sampleButton = Bind(new ModAbilityButton()).KeyBind(KeyAssignmentType.Ability);
                 sampleButton.SetSprite(sampleButtonSprite.GetSprite());

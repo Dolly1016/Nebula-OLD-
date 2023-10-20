@@ -1,0 +1,27 @@
+﻿{
+	"Contents" : [
+		{
+			"Document" : {
+				"Id" : "templates.roleName",
+				"Arguments" : {
+					"roleName" : "sniper"
+				}
+			}
+		},
+		{
+			"TranslationKey" : "role.sniper.doc.main",
+			"IsVariable" : True,
+			"Document" : null
+		},
+		{
+			"Document" : {
+				"Id" : "templates.buttonContent",
+				"Arguments" : {
+					"buttonName" : "SnipeButton",
+					"textKey" : "role.sniper.doc.snipeButton"
+				}
+			}
+		}
+	],
+	"Document" : null
+}

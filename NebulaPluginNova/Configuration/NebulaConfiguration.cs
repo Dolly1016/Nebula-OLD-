@@ -1,6 +1,7 @@
 ﻿using Epic.OnlineServices;
 using Il2CppSystem.ComponentModel;
 using Il2CppSystem.Runtime.Remoting.Messaging;
+using JetBrains.Annotations;
 using MS.Internal.Xml.XPath;
 using Nebula.Modules;
 using Nebula.Roles;
@@ -377,6 +378,37 @@ public class ConfigurationHolder
 
 public class NebulaConfiguration
 {
+    public class NebulaByteConfiguration
+    {
+        private NebulaConfiguration myConfiguration;
+        private int myIndex;
+        private bool defaultValue;
+        public string Id { get; private set; }
+
+        public NebulaByteConfiguration(NebulaConfiguration config, string id, int index,bool defaultValue)
+        {
+            myConfiguration = config;
+            myIndex = index;
+            this.defaultValue = defaultValue;
+            this.Id = id;
+        }
+
+        public void ToggleValue()
+        {
+            myConfiguration.ChangeValue(myConfiguration.CurrentValue ^ (1 << myIndex));
+        }
+
+        private bool RawValue => (myConfiguration.CurrentValue & (1 << myIndex)) != 0;
+        public bool CurrentValue => RawValue == defaultValue;
+
+        public void ChangeValue(bool value)
+        {
+            if (value != CurrentValue) ToggleValue();
+        }
+
+        public static implicit operator bool(NebulaByteConfiguration config) => config.CurrentValue;
+    }
+
     private INebulaConfigEntry? entry;
     public ConfigurationHolder? MyHolder { get; private set; }
     public Func<object?, string>? Decorator { get; set; } = null;
@@ -394,6 +426,18 @@ public class NebulaConfiguration
 
     public static List<NebulaConfiguration> AllConfigurations = new();
 
+    public static IMetaContext? GetDetailContext(string detailId) {
+        var context = DocumentManager.GetDocument(detailId)?.Build(null, false);
+
+        if (context == null)
+        {
+            string? display = Language.Find(detailId);
+            if (display != null) context = new MetaContext.VariableText(TextAttribute.ContentAttr) { Alignment = IMetaContext.AlignmentOption.Left, RawText = display };
+        }
+
+        return context;
+    }
+
     public void TitlePostBuild(TextMeshPro text, string? detailId)
     {
         IMetaContext? context = null;
@@ -401,12 +445,7 @@ public class NebulaConfiguration
         detailId ??= Id;
         detailId += ".detail";
 
-        context = DocumentManager.GetDocument(detailId)?.Build(null,false);
-
-        if (context == null) {
-            string? display = Language.Find(detailId);
-            if (display != null) context = new MetaContext.VariableText(TextAttribute.ContentAttr) { Alignment = IMetaContext.AlignmentOption.Left, RawText = display };
-        }
+        context = GetDetailContext(detailId);
 
         if (context == null) return;
 
@@ -602,7 +641,7 @@ public class NebulaConfiguration
 
     public bool GetBool()
     {
-        return (bool)GetMapped()!;
+        return (GetMapped() as bool?) ?? false;
     }
 
     public string ToDisplayString()

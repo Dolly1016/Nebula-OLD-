@@ -22,6 +22,7 @@ public class Comet : ConfigurableStandardRole
     private NebulaConfiguration BlazeCoolDownOption = null!;
     private NebulaConfiguration BlazeSpeedOption = null!;
     private NebulaConfiguration BlazeDurationOption = null!;
+    private NebulaConfiguration BlazeVisionOption = null!;
 
     protected override void LoadOptions()
     {
@@ -30,6 +31,7 @@ public class Comet : ConfigurableStandardRole
         BlazeCoolDownOption = new(RoleConfig, "blazeCoolDown", null, 5f, 60f, 2.5f, 20f, 20f) { Decorator = NebulaConfiguration.SecDecorator };
         BlazeSpeedOption = new(RoleConfig, "blazeSpeed", null, 0.5f, 3f, 0.125f, 1.5f, 1.5f) { Decorator = NebulaConfiguration.OddsDecorator };
         BlazeDurationOption = new(RoleConfig, "blazeDuration", null, 5f, 60f, 2.5f, 15f, 15f) { Decorator = NebulaConfiguration.SecDecorator };
+        BlazeVisionOption = new(RoleConfig, "blazeVisionRate", null, 1f, 3f, 0.125f, 1.5f, 1.5f) { Decorator = NebulaConfiguration.OddsDecorator };
     }
 
     public class Instance : Crewmate.Instance
@@ -38,17 +40,17 @@ public class Comet : ConfigurableStandardRole
         public Instance(PlayerModInfo player) : base(player) { }
 
         static private ISpriteLoader buttonSprite = SpriteLoader.FromResource("Nebula.Resources.Buttons.BoostButton.png", 115f);
-
+        private ModAbilityButton? boostButton = null;
         public override void OnActivated()
         {
             if (AmOwner)
             {
-                var boostButton = Bind(new ModAbilityButton()).KeyBind(KeyAssignmentType.Ability);
+                boostButton = Bind(new ModAbilityButton()).KeyBind(KeyAssignmentType.Ability);
                 boostButton.SetSprite(buttonSprite.GetSprite());
                 boostButton.Availability = (button) => MyPlayer.MyControl.CanMove;
                 boostButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;
-                boostButton.OnClick = (button) => {
-                    button.ActivateEffect();
+                boostButton.OnClick = (button) => button.ActivateEffect();
+                boostButton.OnEffectStart = (button) => {
                     using (RPCRouter.CreateSection("CometBlaze"))
                     {
                         PlayerModInfo.RpcSpeedModulator.Invoke(new(MyPlayer.PlayerId, new(MyRole.BlazeSpeedOption.GetFloat(), true, MyRole.BlazeDurationOption.GetFloat(), false, 100)));
@@ -61,6 +63,13 @@ public class Comet : ConfigurableStandardRole
                 boostButton.SetLabelType(ModAbilityButton.LabelType.Standard);
                 boostButton.SetLabel("blaze");
             }
+        }
+
+        public override bool IgnoreBlackout => true;
+
+        public override void EditLightRange(ref float range)
+        {
+            if(boostButton?.EffectActive ?? false) range *= MyRole.BlazeVisionOption.GetFloat();
         }
     }
 }

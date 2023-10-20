@@ -21,7 +21,7 @@ file static class TrapperSystem
     private const int CommTrapId = 2;
     private const int KillTrapId = 3;
     public static void OnActivated(RoleInstance myRole, (int id,int cost)[] buttonVariation, List<Trapper.Trap> localTraps)
-    {
+    {   
         int buttonIndex = 0;
         int leftCost = Trapper.NumOfChargesOption;
         var placeButton = myRole.Bind(new ModAbilityButton()).KeyBind(KeyAssignmentType.Ability).SubKeyBind(KeyAssignmentType.AidAction);
@@ -35,6 +35,10 @@ file static class TrapperSystem
             float duration = Trapper.PlaceDurationOption.GetFloat();
             NebulaAsset.PlaySE(duration < 3f ? NebulaAudioClip.Trapper2s : NebulaAudioClip.Trapper3s);
             button.ActivateEffect();
+        };
+        placeButton.OnEffectStart = (button) =>
+        {
+            float duration = Trapper.PlaceDurationOption.GetFloat();
             PlayerModInfo.RpcSpeedModulator.Invoke((myRole.MyPlayer.PlayerId, new SpeedModulator(0f, true, duration, false, 10, 0)));
         };
         placeButton.OnEffectEnd = (button) => 
@@ -119,7 +123,6 @@ public class Trapper : ConfigurableStandardRole
         };
 
         public int TypeId;
-        public bool AmOwner = false;
 
         public Trap(Vector2 pos,int type, bool isLocal) : base(pos, ZOption.Back, true, trapSprites[type].GetSprite(), isLocal) {
             TypeId = type;
@@ -130,7 +133,6 @@ public class Trapper : ConfigurableStandardRole
 
         public void SetAsOwner()
         {
-            AmOwner = true;
             if (!(Color.a > 0f)) Color = Color.white;
         }
 
@@ -153,11 +155,11 @@ public class Trapper : ConfigurableStandardRole
 
         public override void Update()
         {
-            if(TypeId < 2)
+            if(TypeId < 2 && !(Color.a < 1f))
             {
                 //加減速トラップはそれぞれで処理する
 
-                if (Position.Distance(PlayerControl.LocalPlayer.transform.position) < Trapper.SpeedTrapSizeOption.GetFloat()*0.25f)
+                if (Position.Distance(PlayerControl.LocalPlayer.transform.position) < Trapper.SpeedTrapSizeOption.GetFloat()*0.35f)
                 {
                     PlayerModInfo.RpcSpeedModulator.Invoke((PlayerControl.LocalPlayer.PlayerId,
                         new SpeedModulator(TypeId == 0 ? Trapper.AccelRateOption.GetFloat() : Trapper.DecelRateOption.GetFloat(), true, Trapper.SpeedTrapDurationOption.GetFloat(), false, 50, 2 + TypeId)));
@@ -196,7 +198,7 @@ public class Trapper : ConfigurableStandardRole
             CommTrapSizeOption ??= new NebulaConfiguration(null, "commTrapSize", null, 0.25f, 5f, 0.25f, 1f, 1f) { Decorator = NebulaConfiguration.OddsDecorator };
         }
 
-        var commonOptions = new NebulaConfiguration[] { PlaceCoolDownOption, PlaceDurationOption, NumOfChargesOption };
+        var commonOptions = new NebulaConfiguration[] { PlaceCoolDownOption, PlaceDurationOption, NumOfChargesOption, SpeedTrapSizeOption, AccelRateOption, DecelRateOption, SpeedTrapDurationOption };
         foreach (var option in commonOptions) option.Title = new CombinedComponent(new TranslateTextComponent("role.general.common"), new RawTextComponent(" "), new TranslateTextComponent(option.Id));
 
         CommonEditorOption = new NebulaConfiguration(RoleConfig, () => {
@@ -235,7 +237,7 @@ public class Trapper : ConfigurableStandardRole
                 {
                     if (p.AmOwner) continue;
                     if (p.IsDead || p.HasAttribute(AttributeModulator.PlayerAttribute.Invisible)) continue;
-                    if (p.MyControl.transform.position.Distance(commTrap.Position) < CommTrapSizeOption.GetFloat() * 0.25f)
+                    if (p.MyControl.transform.position.Distance(commTrap.Position) < CommTrapSizeOption.GetFloat() * 0.35f)
                     {
                         //直前にトラップを踏んでいるプレイヤーは無視する
                         commMask |= 1u << p.PlayerId;
@@ -281,7 +283,7 @@ public class Trapper : ConfigurableStandardRole
                     if (p.AmOwner) continue;
                     if (p.IsDead || p.MyControl.Data.Role.IsImpostor) continue;
 
-                    if (p.MyControl.transform.position.Distance(killTrap.Position) < KillTrapSizeOption.GetFloat() * 0.25f)
+                    if (p.MyControl.transform.position.Distance(killTrap.Position) < KillTrapSizeOption.GetFloat() * 0.35f)
                     {
                             using (RPCRouter.CreateSection("TrapKill"))
                             {

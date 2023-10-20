@@ -1,0 +1,27 @@
+﻿{
+	"Contents" : [
+		{
+			"Document" : {
+				"Id" : "templates.roleName",
+				"Arguments" : {
+					"roleName" : "jackal"
+				}
+			}
+		},
+		{
+			"TranslationKey" : "role.jackal.doc.main",
+			"IsVariable" : True,
+			"Document" : null
+		},
+		{
+			"Document" : {
+				"Id" : "templates.buttonContent",
+				"Arguments" : {
+					"buttonName" : "SidekickButton",
+					"textKey" : "role.jackal.doc.sidekickButton"
+				}
+			}
+		}
+	],
+	"Document" : null
+}

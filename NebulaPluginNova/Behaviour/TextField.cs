@@ -93,6 +93,7 @@ public class TextField : MonoBehaviour
 
     static readonly public Predicate<char> TokenPredicate = (c) => ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') || ('0' <= c && c <= '9');
     static readonly public Predicate<char> IdPredicate = (c) => TokenPredicate(c) || c is '.';
+    static readonly public Predicate<char> NameSpacePredicate = (c) => TokenPredicate(c) || c is '.' || c is ':';
     static readonly public Predicate<char> IntegerPredicate = (c) => ('0' <= c && c <= '9');
     static readonly public Predicate<char> NumberPredicate = (c) => ('0' <= c && c <= '9') || c is '.';
     static readonly public Predicate<char> JsonStringPredicate = (c) => !(c is '\\' or '"');
@@ -488,6 +489,14 @@ public class TextField : MonoBehaviour
         lockedTime = 0.1f;
         cursor = myInput.Length;
         UpdateTextMesh();
+    }
+
+    public void AsMaskedText()
+    {
+        myText.fontMaterial = VanillaAsset.StandardMaskedFontMaterial;
+        myCursor.fontMaterial = VanillaAsset.StandardMaskedFontMaterial;
+        myText.font = VanillaAsset.StandardTextPrefab.font;
+        myCursor.font = VanillaAsset.StandardTextPrefab.font;
     }
 
     public bool IsValid => validField == this && validField;

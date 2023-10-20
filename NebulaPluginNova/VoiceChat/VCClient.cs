@@ -18,7 +18,7 @@ public class VCClient : IDisposable
     private VolumeSampleProvider volumeFilter;
     private PanningSampleProvider panningFilter;
     private PlayerControl relatedControl;
-    private PlayerModInfo? relatedInfo;
+    private PlayerModInfo? relatedInfo = null;
     public MixingSampleProvider? myRoute = null;
     private float wallRatio = 1f;
     private bool onRadio = false;
@@ -52,7 +52,7 @@ public class VCClient : IDisposable
         relatedInfo = NebulaGameManager.Instance!.GetModPlayerInfo(relatedControl.PlayerId);
     }
 
-    public void Update()
+    private void UpdateAudio()
     {
         bool aliveAll = AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Started;
 
@@ -120,6 +120,11 @@ public class VCClient : IDisposable
             volumeFilter.Volume = 0f;
             panningFilter.Pan = 0f;
         }
+    }
+
+    public void Update()
+    {
+        UpdateAudio();
     }
 
     public void Dispose()

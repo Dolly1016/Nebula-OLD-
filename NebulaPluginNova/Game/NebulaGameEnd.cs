@@ -5,6 +5,7 @@ using System.Collections;
 using InnerNet;
 using Nebula.Modules;
 using UnityEngine;
+using UnityEngine.TextCore;
 
 namespace Nebula.Game;
 
@@ -98,6 +99,47 @@ public class NebulaGameEnd
 [HarmonyPatch(typeof(EndGameManager), nameof(EndGameManager.SetEverythingUp))]
 public class EndGameManagerSetUpPatch
 {
+    static SpriteLoader InfoButtonSprite = SpriteLoader.FromResource("Nebula.Resources.InformationButton.png", 100f);
+    private static IMetaContext GetRoleContent(TMPro.TMP_FontAsset font)
+    {
+        MetaContext context = new();
+        string text = "";
+        foreach (var p in NebulaGameManager.Instance!.AllPlayerInfo())
+        {
+            //Name Text
+            string nameText = p.DefaultName;
+            string stateText = p.MyState?.Text ?? "";
+            string taskText = p.Tasks.Quota > 0 ? $" ({p.Tasks.ToString(true)})".Color(p.Tasks.IsCrewmateTask ? PlayerModInfo.CrewTaskColor : PlayerModInfo.FakeTaskColor) : "";
+
+            //Role Text
+            string roleText = "";
+            var entries = NebulaGameManager.Instance.RoleHistory.EachMoment(history => history.PlayerId == p.PlayerId,
+                (role, modifiers) => (RoleHistoryHelper.ConvertToRoleName(role, modifiers, true), RoleHistoryHelper.ConvertToRoleName(role, modifiers, false))).ToArray();
+
+            if (entries.Length < 8)
+            {
+                for (int i = 0; i < entries.Length - 1; i++)
+                {
+                    if (roleText.Length > 0) roleText += " → ";
+                    roleText += entries[i].Item1;
+                }
+            }
+            else
+            {
+                roleText = entries[0].Item1 + " → ...";
+            }
+
+            if (roleText.Length > 0) roleText += " → ";
+            roleText += entries[entries.Length - 1].Item2;
+
+            text += $"{nameText}<indent=15px>{taskText}</indent><indent=24px>{stateText}</indent><indent=34px>{roleText}</indent>\n";
+        }
+
+        context.Append(new MetaContext.VariableText(new TextAttribute(TextAttribute.BoldAttr) { Font = font, Size = new(6f, 4.2f), Alignment = TMPro.TextAlignmentOptions.Left }.EditFontSize(1.4f, 1f, 1.4f))
+        { Alignment = IMetaContext.AlignmentOption.Left, RawText = text });
+
+        return context;
+    }
 
     public static void Postfix(EndGameManager __instance)
     {
@@ -176,14 +218,23 @@ public class EndGameManagerSetUpPatch
         __instance.WinText.text = DestroyableSingleton<TranslationController>.Instance.GetString(amWin ? StringNames.Victory : StringNames.Defeat);
         __instance.WinText.color = amWin ? new Color(0f, 0.549f, 1f, 1f) : Color.red;
 
+        GameStatisticsViewer? viewer;
+
         IEnumerator CoShowStatistics()
         {
             yield return new WaitForSeconds(0.4f);
-            var viewer = UnityHelper.CreateObject<GameStatisticsViewer>("Statistics", __instance.transform, new Vector3(0f, 2.5f, -20f),LayerExpansion.GetUILayer());
+            viewer = UnityHelper.CreateObject<GameStatisticsViewer>("Statistics", __instance.transform, new Vector3(0f, 2.5f, -20f),LayerExpansion.GetUILayer());
             viewer.PlayerPrefab = __instance.PlayerPrefab;
             viewer.GameEndText = __instance.WinText;
         }
         __instance.StartCoroutine(CoShowStatistics().WrapToIl2Cpp());
+
+        var buttonRenderer = UnityHelper.CreateObject<SpriteRenderer>("InfoButton", __instance.transform, new Vector3(-2.9f, 2.5f, -50f), LayerExpansion.GetUILayer());
+        buttonRenderer.sprite = InfoButtonSprite.GetSprite();
+        var button = buttonRenderer.gameObject.SetUpButton(false, buttonRenderer);
+        button.OnMouseOver.AddListener(() => NebulaManager.Instance.SetHelpContext(button, GetRoleContent(__instance.WinText.font)));
+        button.OnMouseOut.AddListener(() => NebulaManager.Instance.HideHelpContextIf(button));
+        button.gameObject.AddComponent<BoxCollider2D>().size = new(0.3f, 0.3f);
     }
 }
 

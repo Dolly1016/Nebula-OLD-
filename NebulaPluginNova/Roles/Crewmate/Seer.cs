@@ -31,7 +31,7 @@ public class Seer : ConfigurableStandardRole
     public class Ghost : INebulaScriptComponent
     {
         SpriteRenderer renderer;
-        static XOnlyDividedSpriteLoader ghostSprite = XOnlyDividedSpriteLoader.FromResource("Nebula.Resources.Ghost.png", 100f, 9);
+        static XOnlyDividedSpriteLoader ghostSprite = XOnlyDividedSpriteLoader.FromResource("Nebula.Resources.Ghost.png", 160f, 9);
         private float time;
         private float indexTime;
         private int index;
@@ -51,7 +51,7 @@ public class Seer : ConfigurableStandardRole
             if (indexTime < 0f)
             {
                 index = time > 0f ? (index + 1) % 3 : index + 1;
-                indexTime = 0.3f;
+                indexTime = 0.2f;
 
                 if (index < 9) renderer.sprite = ghostSprite.GetSprite(index);
                 else Release();
@@ -73,7 +73,10 @@ public class Seer : ConfigurableStandardRole
 
         public override void OnPlayerDeadLocal(PlayerControl dead)
         {
+            if (MeetingHud.Instance || ExileController.Instance) return;
+
             new Ghost(dead.transform.position, MyRole.GhostDurationOption.GetFloat());
+            AmongUsUtil.PlayFlash(MyRole.RoleColor);
         }
     }
 }

@@ -19,6 +19,7 @@ public class HudGrid : MonoBehaviour
 
     public List<Il2CppArgument<HudContent>>[] Contents = { new(), new() };
     private Transform ButtonsHolder = null!;
+    private Transform StaticButtonsHolder = null!;
 
     public void Awake()
     {
@@ -28,6 +29,7 @@ public class HudGrid : MonoBehaviour
         GameObject.Destroy(buttonParent.gameObject.GetComponent<GridArrange>());
         GameObject.Destroy(buttonParent.gameObject.GetComponent<AspectPosition>());
         ButtonsHolder = buttonParent;
+        StaticButtonsHolder = UnityHelper.CreateObject("StaticButtons", buttonParent.parent, new Vector3(0, 0, -30f)).transform;
 
         HudContent AddVanillaButtons(GameObject obj,int priority)
         {
@@ -96,6 +98,8 @@ public class HudGrid : MonoBehaviour
     {
         Contents[toLeft ? 0 : 1].Add(content);
         content.Value.SetSide(toLeft);
+
+        if (content.Value.IsStaticContent) content.Value.transform.SetParent(NebulaGameManager.Instance!.HudGrid.StaticButtonsHolder);
     }
 }
 
@@ -115,6 +119,8 @@ public class HudContent : MonoBehaviour
     private bool isLeftSide;
     private bool isDirty = true;
     public bool OccupiesLine = false;
+    public bool IsStaticContent = false;
+
     public Vector3 ToLocalPos => new Vector3((4.5f - CurrentPos.x) * (isLeftSide ? -1 : 1), -2.3f + CurrentPos.y, 0f);
     public bool MarkedAsKillButtonContent => onKillButtonPos;
     public void MarkAsKillButtonContent(bool mark = true)
@@ -157,11 +163,12 @@ public class HudContent : MonoBehaviour
         }
     }
 
-    static public HudContent InstantiateContent(string name, bool isLeftSide = true, bool occupiesLine = false,bool asKillButtonContent = false)
+    static public HudContent InstantiateContent(string name, bool isLeftSide = true, bool occupiesLine = false,bool asKillButtonContent = false, bool isStaticContent = false)
     {
         var obj = UnityHelper.CreateObject<HudContent>(name, HudManager.Instance.KillButton.transform.parent, Vector3.zero);
         obj.OccupiesLine= occupiesLine;
         obj.MarkAsKillButtonContent(asKillButtonContent);
+        obj.IsStaticContent = isStaticContent;
 
         NebulaGameManager.Instance?.HudGrid.RegisterContent(obj,isLeftSide);
         return obj;

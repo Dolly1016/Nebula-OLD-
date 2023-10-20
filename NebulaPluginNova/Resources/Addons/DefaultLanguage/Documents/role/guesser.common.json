@@ -1,0 +1,14 @@
+﻿{
+	"Contents" : [
+		{
+			"Document" : {
+				"Id" : "templates.imageContent",
+				"Arguments" : {
+					"imageName" : "TargetIcon",
+					"textKey" : "role.guesser.doc.guess"
+				}
+			}
+		}
+	],
+	"Document" : null
+}

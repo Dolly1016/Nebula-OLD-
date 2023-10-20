@@ -1,0 +1,16 @@
+﻿{
+	"Contents" : [
+		{
+			"Document" : {
+				"Id" : "templates.roleName",
+				"Arguments" : {
+					"roleName" : "bloody"
+				}
+			}
+		},
+		{
+			"TranslationKey" : "role.bloody.doc.main",
+			"IsVariable" : True
+		}
+	]
+}

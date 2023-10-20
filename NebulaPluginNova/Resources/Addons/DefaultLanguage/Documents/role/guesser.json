@@ -1,0 +1,23 @@
+﻿{
+	"Contents" : [
+		{
+			"Document" : {
+				"Id" : "templates.roleName",
+				"Arguments" : {
+					"roleName" : "guesser"
+				}
+			}
+		},
+		{
+			"TranslationKey" : "role.guesser.doc.main",
+			"IsVariable" : True
+		},
+		{
+			"Document" : {
+				"Id" : "role.guesser.common",
+				"Arguments" : {
+				}
+			}
+		}
+	]
+}

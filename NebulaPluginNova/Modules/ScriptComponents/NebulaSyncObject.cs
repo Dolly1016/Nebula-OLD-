@@ -20,6 +20,8 @@ public abstract class NebulaSyncObject : INebulaScriptComponent
     }
 
     public int ObjectId { get; private set; }
+    public PlayerModInfo Owner { get; private set; } = null!;
+    public bool AmOwner => Owner.AmOwner;
     private int TagHash { get; set; }
 
     private static int AvailableId(byte issuerId)
@@ -40,6 +42,8 @@ public abstract class NebulaSyncObject : INebulaScriptComponent
         allObjects.Remove(ObjectId);
     }
 
+    static private byte OwnerIdFromObjectId(int objId) => (byte)(objId >>= 16);
+
     static private RemoteProcess<(int id,int tagHash, float[] arguments)> RpcInstantiateDef = new(
         "InstantiateObj",
         (message,_) =>
@@ -49,6 +53,7 @@ public abstract class NebulaSyncObject : INebulaScriptComponent
             if (obj == null) return;
 
             obj.ObjectId = message.id;
+            obj.Owner = NebulaGameManager.Instance!.GetModPlayerInfo(OwnerIdFromObjectId(obj.ObjectId))!;
             obj.TagHash = message.tagHash;
             if (allObjects.ContainsKey(obj.ObjectId)) throw new Exception("[NebulaSyncObject] Duplicated Key Error");
             allObjects.Add(obj.ObjectId, obj);

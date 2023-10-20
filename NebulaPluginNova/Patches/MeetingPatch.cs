@@ -24,7 +24,7 @@ class MeetingStartPatch
     {
         foreach(var content in meetingContent)
         {
-            if(content.NameText) content.Player.UpdateNameText(content.NameText);
+            if (content.NameText) content.Player.UpdateNameText(content.NameText, true);
             if (content.RoleText) content.Player.UpdateRoleText(content.RoleText);
         }
     }
@@ -51,6 +51,7 @@ class MeetingStartPatch
             var roleText = GameObject.Instantiate(player.NameText, player.transform);
             roleText.transform.localPosition = new Vector3(0.3384f, -0.13f, -0.02f);
             roleText.transform.localScale = new Vector3(0.57f,0.57f);
+            roleText.rectTransform.sizeDelta += new Vector2(0.35f, 0f);
 
             allContents.Add(new() { Player = Helpers.GetPlayer(player.TargetPlayerId)!.GetModInfo()!, NameText = player.NameText, RoleText = roleText });
 

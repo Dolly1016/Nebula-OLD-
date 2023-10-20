@@ -83,16 +83,20 @@ public class StandardRoleAllocator : IRoleAllocator
 {
     private void OnSetRole(AbstractRole role,List<RoleAssignChance> pool)
     {
-        foreach(var remove in GeneralConfigurations.ExclusiveOptionBody.OnAssigned(role))
-            pool.RemoveAll(r=>r.Role == remove);
+        foreach (var remove in GeneralConfigurations.ExclusiveOptionBody.OnAssigned(role)) pool.RemoveAll(r => r.Role == remove);
     }
 
-    private void CategoryAssign(RoleTable table, RoleCategory category,int left,List<PlayerControl> main, List<PlayerControl> others)
+    private void OnSetRole(AbstractRole role, List<AbstractRole> allRoles)
+    {
+        foreach (var remove in GeneralConfigurations.ExclusiveOptionBody.OnAssigned(role)) allRoles.Remove(remove);
+    }
+
+    private void CategoryAssign(RoleTable table, RoleCategory category,int left,List<PlayerControl> main, List<PlayerControl> others,List<AbstractRole> allRoles)
     {
         if (left < 0) left = 15;
 
         List<RoleAssignChance> rolePool = new(), preferentialPool = new();
-        foreach (var r in Roles.AllRoles)
+        foreach (var r in allRoles)
         {
             if (r.RoleCategory != category) continue;
             for (int i = 0; i < r.RoleCount; i++)
@@ -140,6 +144,7 @@ public class StandardRoleAllocator : IRoleAllocator
             table.SetRole(main[0], selected!.Role);
             OnSetRole(selected!.Role, rolePool);
             OnSetRole(selected!.Role, preferentialPool);
+            OnSetRole(selected!.Role, allRoles);
 
             left--;
             main.RemoveAt(0);
@@ -152,6 +157,7 @@ public class StandardRoleAllocator : IRoleAllocator
                     table.SetRole(playerList[0], r);
                     OnSetRole(r, rolePool);
                     OnSetRole(r, preferentialPool);
+                    OnSetRole(r, allRoles);
 
                     if (selected.Role.HasAdditionalRoleOccupancy) left--;
                     playerList.RemoveAt(0);
@@ -168,9 +174,10 @@ public class StandardRoleAllocator : IRoleAllocator
     {
         RoleTable table = new();
 
-        CategoryAssign(table, RoleCategory.ImpostorRole, GeneralConfigurations.AssignmentImpostorOption, impostors, others);
-        CategoryAssign(table, RoleCategory.NeutralRole, GeneralConfigurations.AssignmentNeutralOption, others, others);
-        CategoryAssign(table, RoleCategory.CrewmateRole, GeneralConfigurations.AssignmentCrewmateOption, others, others);
+        List<AbstractRole> allRoles = new(Roles.AllRoles);
+        CategoryAssign(table, RoleCategory.ImpostorRole, GeneralConfigurations.AssignmentImpostorOption, impostors, others, allRoles);
+        CategoryAssign(table, RoleCategory.NeutralRole, GeneralConfigurations.AssignmentNeutralOption, others, others, allRoles);
+        CategoryAssign(table, RoleCategory.CrewmateRole, GeneralConfigurations.AssignmentCrewmateOption, others, others, allRoles);
 
         foreach (var p in impostors) table.SetRole(p, Impostor.Impostor.MyRole);
         foreach (var p in others) table.SetRole(p, Crewmate.Crewmate.MyRole);

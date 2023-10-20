@@ -116,5 +116,29 @@ public static class UnityHelper
 
         transitionFade.StartCoroutine(Coroutine().WrapToIl2Cpp());
     }
+
+    public static IEnumerator HandleException(this IEnumerator enumerator, Action<Exception> action)
+    {
+        StackfullCoroutine coroutine = new(enumerator);
+        while (true)
+        {
+            bool hasNext;
+
+            try
+            {
+                hasNext = coroutine.MoveNext();
+            }
+            catch (Exception e)
+            {
+                action.Invoke(e);
+                hasNext = false;
+            }
+
+            if (!hasNext) break;
+
+            yield return null;
+        }
+        yield break;
+    }
 }
 

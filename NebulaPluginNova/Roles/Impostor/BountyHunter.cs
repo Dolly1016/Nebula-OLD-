@@ -54,7 +54,7 @@ public class BountyHunter : ConfigurableStandardRole
         Timer bountyTimer = null!;
         Timer arrowTimer = null!;
         Arrow bountyArrow = null!;
-        bool CanBeBounty(PlayerControl target) => true;
+        bool CanBeBounty(PlayerControl target) => !target.Data.Role.IsImpostor;
         void ChangeBounty()
         {
             var arr = PlayerControl.AllPlayerControls.GetFastEnumerator().Where(p => !p.AmOwner && !p.Data.IsDead && CanBeBounty(p)).ToArray();
@@ -68,7 +68,8 @@ public class BountyHunter : ConfigurableStandardRole
                 bountyIcon.gameObject.SetActive(true);
                 bountyIcon.UpdateFromPlayerOutfit(NebulaGameManager.Instance!.GetModPlayerInfo(currentBounty)!.DefaultOutfit, PlayerMaterial.MaskType.None, false, true);
             }
-            UpdateArrow();
+
+            if (MyRole.ShowBountyArrowOption) UpdateArrow();
 
             bountyTimer.Start();
         }
@@ -97,7 +98,7 @@ public class BountyHunter : ConfigurableStandardRole
             }
             bountyIcon.SetName(Mathf.CeilToInt(bountyTimer.CurrentTime).ToString());
 
-            if (!arrowTimer.IsInProcess)
+            if (MyRole.ShowBountyArrowOption && !arrowTimer.IsInProcess)
             {
                 UpdateArrow();
             }
@@ -112,7 +113,7 @@ public class BountyHunter : ConfigurableStandardRole
                 bountyTimer = Bind(new Timer(MyRole.ChangeBountyIntervalOption.GetFloat())).Start();
                 arrowTimer = Bind(new Timer(MyRole.ArrowUpdateIntervalOption.GetFloat())).Start();
 
-                var killTracker = Bind(ObjectTrackers.ForPlayer(1.2f, MyPlayer.MyControl, (p) => !p.Data.Role.IsImpostor));
+                var killTracker = Bind(ObjectTrackers.ForPlayer(null, MyPlayer.MyControl, (p) => !p.Data.Role.IsImpostor && !p.Data.IsDead));
 
                 killButton = Bind(new ModAbilityButton(false,true)).KeyBind(KeyAssignmentType.Kill);
                 killButton.Availability = (button) => killTracker.CurrentTarget != null && MyPlayer.MyControl.CanMove;

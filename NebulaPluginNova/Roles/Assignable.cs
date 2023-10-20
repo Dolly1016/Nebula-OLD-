@@ -24,6 +24,7 @@ public interface IAssignableBase
 
 public abstract class AssignableInstance : ScriptHolder
 {
+    public virtual IAssignableBase AssignableBase { get; } = null!;
     public PlayerModInfo MyPlayer { get; private init; }
 
     public bool AmOwner => MyPlayer.AmOwner;
@@ -61,6 +62,8 @@ public abstract class AssignableInstance : ScriptHolder
     public virtual void OnDeadBodyGenerated(DeadBody deadBody) { }
     public virtual void DecoratePlayerName(ref string text, ref Color color) { }
     public virtual void DecorateOtherPlayerName(PlayerModInfo player,ref string text, ref Color color) { }
+
+    public virtual void EditLightRange(ref float range) { }
 
     public virtual void OnTieVotes(ref List<byte> extraVotes,PlayerVoteArea myVoteArea) { }
 

@@ -80,7 +80,7 @@ public class Vulture : ConfigurableStandardRole
             {
                 int leftEaten = MyRole.NumOfEatenToWinOption;
 
-                var eatTracker = Bind(ObjectTrackers.ForDeadBody(1.2f, MyPlayer.MyControl, (d) => true));
+                var eatTracker = Bind(ObjectTrackers.ForDeadBody(null, MyPlayer.MyControl, (d) => true));
 
                 eatButton = Bind(new ModAbilityButton()).KeyBind(KeyAssignmentType.Ability);
                 var usesIcon = eatButton.ShowUsesIcon(2);
@@ -100,5 +100,7 @@ public class Vulture : ConfigurableStandardRole
                 usesIcon.text= leftEaten.ToString();
             }
         }
+
+        public override bool HasImpostorVision => true;
     }
 }

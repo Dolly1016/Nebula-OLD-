@@ -126,6 +126,7 @@ public class Language
         DefaultLanguage = new Language();
         DefaultLanguage.Deserialize(StreamHelper.OpenFromResource("Nebula.Resources.Color.dat"));
         DefaultLanguage.Deserialize(StreamHelper.OpenFromResource("Nebula.Resources.Lang.dat"));
+        DefaultLanguage.translationMap["empty"] = "";
 
         EastAsianFontChanger.LoadFont();
     }

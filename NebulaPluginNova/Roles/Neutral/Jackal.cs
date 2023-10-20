@@ -14,7 +14,7 @@ public class Jackal : ConfigurableStandardRole
     public override Color RoleColor => new Color(8f / 255f, 190f / 255f, 245f / 255f);
     public override Team Team => MyTeam;
 
-    public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player, arguments.Length == 1 ? arguments[0] : 0);
+    public override RoleInstance CreateInstance(PlayerModInfo player, int[] arguments) => new Instance(player, arguments.Length == 1 ? arguments[0] : player.PlayerId);
 
     private KillCoolDownConfiguration KillCoolDownOption = null!;
     public NebulaConfiguration CanCreateSidekickOption = null!;
@@ -60,12 +60,12 @@ public class Jackal : ConfigurableStandardRole
                 int left = MyRole.NumOfKillingToCreateSidekickOption.CurrentValue;
                 bool hasSidekick = false;
 
-                var myTracker = Bind(ObjectTrackers.ForPlayer(1.2f, MyPlayer.MyControl, (p) => p.PlayerId != MyPlayer.PlayerId && !p.Data.IsDead && !IsMySidekick(p.GetModInfo())));
+                var myTracker = Bind(ObjectTrackers.ForPlayer(null, MyPlayer.MyControl, (p) => p.PlayerId != MyPlayer.PlayerId && !p.Data.IsDead && !IsMySidekick(p.GetModInfo())));
 
                 SpriteRenderer? lockSprite = null;
                 TMPro.TextMeshPro? leftText = null;
 
-                if ((JackalTeamId == MyPlayer.PlayerId && MyRole.CanCreateSidekickOption || Sidekick.MyRole.CanCreateSidekickChainlyOption))
+                if ((JackalTeamId == MyPlayer.PlayerId && MyRole.CanCreateSidekickOption) || Sidekick.MyRole.CanCreateSidekickChainlyOption)
                 {
                     sidekickButton = Bind(new ModAbilityButton(true)).KeyBind(KeyAssignmentType.Ability);
 
@@ -220,7 +220,7 @@ public class Sidekick : ConfigurableRole
             {
                 if (MyRole.SidekickCanKillOption)
                 {
-                    var myTracker = Bind(ObjectTrackers.ForPlayer(1.2f, MyPlayer.MyControl, (p) => p.PlayerId != MyPlayer.PlayerId && !p.Data.IsDead));
+                    var myTracker = Bind(ObjectTrackers.ForPlayer(null, MyPlayer.MyControl, (p) => p.PlayerId != MyPlayer.PlayerId && !p.Data.IsDead));
 
                     killButton = Bind(new ModAbilityButton(isArrangedAsKillButton: true)).KeyBind(KeyAssignmentType.Kill);
                     killButton.Availability = (button) => myTracker.CurrentTarget != null && MyPlayer.MyControl.CanMove;

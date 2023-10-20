@@ -1,0 +1,25 @@
+﻿{
+	"Contents" : [
+		{
+			"Document" : {
+				"Id" : "templates.roleName",
+				"Arguments" : {
+					"roleName" : "sheriff"
+				}
+			}
+		},
+		{
+			"TranslationKey" : "role.sheriff.doc.main",
+			"IsVariable" : True
+		},
+		{
+			"Document" : {
+				"Id" : "templates.buttonContent",
+				"Arguments" : {
+					"buttonName" : "SheriffKillButton",
+					"textKey" : "role.sheriff.doc.killButton"
+				}
+			}
+		}
+	]
+}

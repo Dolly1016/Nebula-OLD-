@@ -1,4 +1,5 @@
-﻿using Nebula.Configuration;
+﻿using BepInEx.Unity.IL2CPP.Utils;
+using Nebula.Configuration;
 using Nebula.Game;
 using Nebula.Roles.Neutral;
 using System;
@@ -27,6 +28,16 @@ static file class GuesserSystem
         context.Append(new MetaContext.Text(TextAttribute.BoldAttr) { MyText = new CombinedComponent(new TranslateTextComponent("role.guesser.leftGuess"), new RawTextComponent(" : " + leftGuess.ToString())), Alignment = IMetaContext.AlignmentOption.Center });
 
         window.SetContext(context);
+
+        IEnumerator CoCloseOnResult()
+        {
+            while (MeetingHud.Instance.state != MeetingHud.VoteStates.Results) yield return null;
+
+            window.CloseScreen();
+        }
+
+        window.StartCoroutine(CoCloseOnResult().WrapToIl2Cpp());
+
 
         return window;
     }
@@ -60,6 +71,7 @@ static file class GuesserSystem
                 LastGuesserWindow = OpenGuessWindow(leftGuess, (r) =>
                 {
                     if (PlayerControl.LocalPlayer.Data.IsDead) return;
+                    if (!(MeetingHud.Instance.state == MeetingHud.VoteStates.Voted || MeetingHud.Instance.state == MeetingHud.VoteStates.NotVoted)) return;
 
                     if (player?.Role.Role == r)
                         PlayerControl.LocalPlayer.ModMeetingKill(player!.MyControl, true, PlayerState.Guessed, EventDetail.Guess);
@@ -201,7 +213,7 @@ public class GuesserModifier : ConfigurableStandardModifier
         }
         public override void DecoratePlayerName(ref string text, ref Color color)
         {
-            if (AmOwner || (NebulaGameManager.Instance?.CanSeeAllInfo ?? false)) text += " ⊕".Color(Jackal.MyRole.RoleColor);
+            if (AmOwner || (NebulaGameManager.Instance?.CanSeeAllInfo ?? false)) text += " ⊕".Color(MyRole.RoleColor);
         }
 
         public override string? IntroText => Language.Translate("role.guesser.blurb");

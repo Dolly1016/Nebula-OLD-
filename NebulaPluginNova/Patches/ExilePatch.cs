@@ -7,6 +7,7 @@ using System.Collections;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TMPro;
 using static UnityEngine.GraphicsBuffer;
 
 namespace Nebula.Patches;
@@ -21,7 +22,7 @@ public static class ModPreSpawnInPatch
             spawnInMinigame.Begin(null!);
             yield return NebulaGameManager.Instance?.Syncronizer.CoSync(Modules.SynchronizeTag.PreSpawnMinigame, true, false, false);
             NebulaGameManager.Instance?.Syncronizer.ResetSync(Modules.SynchronizeTag.PreSpawnMinigame);
-            spawnInMinigame.Close();
+            spawnInMinigame.CloseSpawnInMinigame();
 
             NebulaGameManager.Instance?.GameStatistics.RecordEvent(new GameStatistics.Event(eventVariation, null, 0, GameStatisticsGatherTag.Spawn) { RelatedTag = tag });
         }
@@ -47,6 +48,7 @@ public static class NebulaExileWrapUp
             if (info != null)
             {
                 info.DeathTimeStamp = NebulaGameManager.Instance!.CurrentTime;
+                info.MyState = PlayerState.Exiled;
 
                 using (RPCRouter.CreateSection("ExilePlayer"))
                 {

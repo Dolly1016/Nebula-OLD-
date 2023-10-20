@@ -72,12 +72,12 @@ public class Arsonist : ConfigurableStandardRole
         {
             if (AmOwner)
             {
-                var IconsHolder = HudContent.InstantiateContent("ArsonistIcons",true,true);
+                var IconsHolder = HudContent.InstantiateContent("ArsonistIcons", true, true, false, true);
                 foreach(var p in NebulaGameManager.Instance!.AllPlayerInfo())
                 {
                     if (p.AmOwner) continue;
 
-                    var icon = AmongUsUtil.GetPlayerIcon(p.DefaultOutfit,IconsHolder.transform,Vector3.zero,Vector2.one*0.31f);
+                    var icon = AmongUsUtil.GetPlayerIcon(p.DefaultOutfit, IconsHolder.transform, Vector3.zero, Vector3.one * 0.31f);
                     icon.ToggleName(false);
                     icon.SetAlpha(0.35f);
                     playerIcons.Add((p.PlayerId,icon));
@@ -86,7 +86,7 @@ public class Arsonist : ConfigurableStandardRole
                 }
                 Bind(new GameObjectBinding(IconsHolder.gameObject));
 
-                var douseTracker = Bind(ObjectTrackers.ForPlayer(1.2f, MyPlayer.MyControl, (p) => playerIcons.Any(tuple => tuple.playerId == p.PlayerId && tuple.icon.GetAlpha() < 0.8f)));
+                var douseTracker = Bind(ObjectTrackers.ForPlayer(null, MyPlayer.MyControl, (p) => playerIcons.Any(tuple => tuple.playerId == p.PlayerId && tuple.icon.GetAlpha() < 0.8f)));
 
                 douseButton = Bind(new ModAbilityButton()).KeyBind(KeyAssignmentType.Ability);
                 douseButton.SetSprite(douseButtonSprite.GetSprite());

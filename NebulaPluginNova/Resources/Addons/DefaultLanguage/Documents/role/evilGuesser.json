@@ -1,0 +1,24 @@
+﻿{
+	"Contents" : [
+		{
+			"Document" : {
+				"Id" : "templates.roleName",
+				"Arguments" : {
+					"roleName" : "evilGuesser"
+				}
+			}
+		},
+		{
+			"TranslationKey" : "role.evilGuesser.doc.main",
+			"IsVariable" : True
+		},
+		{
+			"Document" : {
+				"Id" : "role.guesser.common",
+				"Arguments" : {
+				}
+			}
+		}
+	],
+	"Document" : null
+}

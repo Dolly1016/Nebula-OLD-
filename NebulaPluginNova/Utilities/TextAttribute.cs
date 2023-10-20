@@ -33,6 +33,8 @@ public class TextAttribute
         FontSize = 1.8f,
         Size = new Vector2(1.7f, 0.3f)
     };
+    static public readonly TextAttribute NormalAttrLeft = new(NormalAttr) { Alignment = TMPro.TextAlignmentOptions.Left };
+
     static public readonly TextAttribute BoldAttr = new TextAttribute()
     {
         Alignment = TMPro.TextAlignmentOptions.Center,
@@ -42,6 +44,7 @@ public class TextAttribute
         FontSize = 1.8f,
         Size = new Vector2(1.7f, 0.3f)
     };
+    static public readonly TextAttribute BoldAttrLeft = new(BoldAttr) { Alignment = TMPro.TextAlignmentOptions.Left };
 
     public Color Color { get; set; } = Color.white;
     public TMPro.TextAlignmentOptions Alignment { get; set; } = TMPro.TextAlignmentOptions.Center;

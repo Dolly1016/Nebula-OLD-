@@ -2,6 +2,7 @@
 using Nebula.Configuration;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Nebula.Modules;
 
@@ -71,6 +72,7 @@ public static class HelpScreen
         switch (tab)
         {
             case HelpTab.MyInfo:
+                context.Append(ShowMyRolesSceen());
                 break;
             case HelpTab.Roles:
                 context.Append(ShowAssignableScreen(Roles.Roles.AllRoles));
@@ -90,11 +92,13 @@ public static class HelpScreen
     }
 
     private static TextAttribute RoleTitleAttr = new TextAttribute(TextAttribute.BoldAttr) { Size = new Vector2(1.4f, 0.29f), FontMaterial = VanillaAsset.StandardMaskedFontMaterial };
+    private static TextAttribute RoleTitleAttrUnmasked = new TextAttribute(TextAttribute.BoldAttr) { Size = new Vector2(1.4f, 0.29f) };
     private static IMetaContext ShowAssignableScreen<Assignable>(IEnumerable<Assignable> allAssignable) where Assignable : Roles.IAssignableBase
     {
         MetaContext inner = new();
 
         inner.Append(allAssignable, (role) => new MetaContext.Button(() => {
+            Debug.Log("Search{" + ("role." + role.InternalName) + "}");
             var doc = DocumentManager.GetDocument("role." + role.InternalName);
             if (doc == null) return;
 
@@ -154,5 +158,33 @@ public static class HelpScreen
         inner.Append(new MetaContext.VariableText(OptionsAttr) { RawText = builder.ToString(), Alignment = IMetaContext.AlignmentOption.Center });
 
         return new MetaContext.ScrollView(new(7.4f, HelpHeight), inner) { Alignment = IMetaContext.AlignmentOption.Center };
+    }
+
+    private static IMetaContext ShowMyRolesSceen()
+    {
+        MetaContext context = new();
+        Reference<MetaContext.ScrollView.InnerScreen> innerRef = new();
+
+        context.Append(PlayerControl.LocalPlayer.GetModInfo()!.AllAssigned(),
+            (role) => new MetaContext.Button(() =>
+            {
+                var doc = DocumentManager.GetDocument("role." + role.AssignableBase.InternalName);
+                if (doc == null) return;
+
+                innerRef.Value!.SetContext(doc.Build(innerRef));
+            }, RoleTitleAttrUnmasked)
+            {
+                RawText = role.AssignableBase.DisplayName.Color(role.AssignableBase.RoleColor),
+                Alignment = IMetaContext.AlignmentOption.Center
+            }, 128, -1, 0, 0.6f);
+
+        context.Append(new MetaContext.ScrollView(new(7.4f, HelpHeight - 0.7f), new MetaContext()) { Alignment = IMetaContext.AlignmentOption.Center, InnerRef = innerRef,
+        PostBuilder = ()=> {
+            innerRef.Value!.SetContext(DocumentManager.GetDocument("role." + PlayerControl.LocalPlayer.GetModInfo()!.Role.AssignableBase.InternalName)?.Build(innerRef));
+        }
+        });
+        
+
+        return context;
     }
 }

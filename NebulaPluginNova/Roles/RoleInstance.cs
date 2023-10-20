@@ -4,6 +4,7 @@ namespace Nebula.Roles;
 
 public abstract class RoleInstance : AssignableInstance
 {
+    public override IAssignableBase AssignableBase => Role;
     public abstract AbstractRole Role { get; }
 
     public RoleInstance(PlayerModInfo player):base(player)

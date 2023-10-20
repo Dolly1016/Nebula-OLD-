@@ -1,0 +1,47 @@
+﻿{
+	"Contents" : [
+		{
+			"Document" : {
+				"Id" : "templates.roleName",
+				"Arguments" : {
+					"roleName" : "painter"
+				}
+			}
+		},
+		{
+			"TranslationKey" : "role.painter.doc.main",
+			"IsVariable" : True,
+		},
+		{
+			"TranslationKey" : "#IfConfig('options.role.painter.transformAfterMeeting','role.painter.doc.changeAfterMeeting','role.painter.doc.changeImmediately')",
+			"IsVariable" : True,
+		},
+		{
+			"Document" : {
+				"Id" : "role.sampleHolder.common",
+				"Arguments" : {
+					"nConfig" : "options.role.painter.loseSampleOnMeeting"
+				}
+			}
+		},
+		{
+			"Document" : {
+				"Id" : "templates.buttonContent",
+				"Arguments" : {
+					"buttonName" : "SampleButton",
+					"textKey" : "role.painter.doc.sampleButton"
+				}
+			}
+		},
+		{
+			"Document" : {
+				"Id" : "templates.buttonContent",
+				"Arguments" : {
+					"buttonName" : "MorphButton",
+					"textKey" : "role.painter.doc.paintButton"
+				}
+			}
+		}
+	],
+	"Document" : null
+}

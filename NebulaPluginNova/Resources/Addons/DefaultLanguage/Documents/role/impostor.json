@@ -1,0 +1,16 @@
+﻿{
+	"Contents" : [
+		{
+			"Document" : {
+				"Id" : "templates.roleName",
+				"Arguments" : {
+					"roleName" : "impostor"
+				}
+			}
+		},
+		{
+			"TranslationKey" : "role.impostor.doc.main",
+			"IsVariable" : True
+		}
+	]
+}

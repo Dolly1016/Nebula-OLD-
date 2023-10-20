@@ -59,6 +59,7 @@ public class Camouflager : ConfigurableStandardRole
                 camouflageButton.OnEffectEnd = (button) =>
                 {
                     RpcCamouflage.Invoke(new(MyPlayer.PlayerId,false));
+                    button.StartCoolDown();
                 };
                 camouflageButton.CoolDownTimer = Bind(new Timer(MyRole.CamoCoolDownOption.GetFloat()).SetAsAbilityCoolDown().Start());
                 camouflageButton.EffectTimer = Bind(new Timer(MyRole.CamoDurationOption.GetFloat()));

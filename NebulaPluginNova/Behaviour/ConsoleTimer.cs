@@ -54,7 +54,7 @@ public class ConsoleTimer : MonoBehaviour
 
         if (!(NebulaGameManager.Instance?.ConsoleRestriction?.ShouldShowTimer(Type.Value) ?? false)) return;
 
-        if(!AmongUsUtil.InCommSab) storedUsed += Time.deltaTime;
+        if (!AmongUsUtil.InCommSab && !PlayerControl.LocalPlayer.Data.IsDead) storedUsed += Time.deltaTime;
         if(storedUsed > 0.1f)
         {
             NebulaGameManager.Instance?.ConsoleRestriction?.Use(Type.Value, storedUsed);

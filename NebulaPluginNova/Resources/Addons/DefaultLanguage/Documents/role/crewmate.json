@@ -1,0 +1,16 @@
+﻿{
+	"Contents" : [
+		{
+			"Document" : {
+				"Id" : "templates.roleName",
+				"Arguments" : {
+					"roleName" : "crewmate"
+				}
+			}
+		},
+		{
+			"TranslationKey" : "role.crewmate.doc.main",
+			"IsVariable" : True
+		}
+	]
+}

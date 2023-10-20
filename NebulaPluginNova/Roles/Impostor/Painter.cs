@@ -21,6 +21,8 @@ public class Painter : ConfigurableStandardRole
     private NebulaConfiguration SampleCoolDownOption = null!;
     private NebulaConfiguration PaintCoolDownOption = null!;
     private NebulaConfiguration LoseSampleOnMeetingOption = null!;
+    private NebulaConfiguration TransformAfterMeetingOption = null!;
+
     protected override void LoadOptions()
     {
         base.LoadOptions();
@@ -28,6 +30,7 @@ public class Painter : ConfigurableStandardRole
         SampleCoolDownOption = new NebulaConfiguration(RoleConfig, "sampleCoolDown", null, 0f, 60f, 2.5f, 15f, 15f) { Decorator = NebulaConfiguration.SecDecorator };
         PaintCoolDownOption = new NebulaConfiguration(RoleConfig, "paintCoolDown", null, 5f, 60f, 5f, 30f, 30f) { Decorator = NebulaConfiguration.SecDecorator };
         LoseSampleOnMeetingOption = new NebulaConfiguration(RoleConfig, "loseSampleOnMeeting", null, false, false);
+        TransformAfterMeetingOption = new NebulaConfiguration(RoleConfig, "transformAfterMeeting", null, false, false);
     }
 
     public class Instance : Impostor.Instance
@@ -50,7 +53,7 @@ public class Painter : ConfigurableStandardRole
             {
                 GameData.PlayerOutfit? sample = null;
                 PoolablePlayer? sampleIcon = null;
-                var sampleTracker = Bind(ObjectTrackers.ForPlayer(1.2f, MyPlayer.MyControl, (p) => p.PlayerId != MyPlayer.PlayerId && !p.Data.IsDead));
+                var sampleTracker = Bind(ObjectTrackers.ForPlayer(null, MyPlayer.MyControl, (p) => p.PlayerId != MyPlayer.PlayerId && !p.Data.IsDead));
 
                 sampleButton = Bind(new ModAbilityButton()).KeyBind(KeyAssignmentType.Ability);
                 sampleButton.SetSprite(sampleButtonSprite.GetSprite());
@@ -73,7 +76,12 @@ public class Painter : ConfigurableStandardRole
                 paintButton.Availability = (button) => sampleTracker.CurrentTarget != null && MyPlayer.MyControl.CanMove;
                 paintButton.Visibility = (button) => !MyPlayer.MyControl.Data.IsDead;
                 paintButton.OnClick = (button) => {
-                    PlayerModInfo.RpcAddOutfit.Invoke(new(sampleTracker.CurrentTarget!.PlayerId, new("Paint", 40, false, sample ?? MyPlayer.GetOutfit(75))));
+                    var invoker = PlayerModInfo.RpcAddOutfit.GetInvoker(new(sampleTracker.CurrentTarget!.PlayerId, new("Paint", 40, false, sample ?? MyPlayer.GetOutfit(75))));
+                    if (MyRole.TransformAfterMeetingOption)
+                        NebulaGameManager.Instance?.Scheduler.Schedule(RPCScheduler.RPCTrigger.AfterMeeting, invoker);
+                    else
+                        invoker.InvokeSingle();
+                    button.StartCoolDown();
                 };
                 paintButton.OnMeeting = (button) =>
                 {

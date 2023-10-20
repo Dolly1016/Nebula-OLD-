@@ -1,0 +1,27 @@
+﻿{
+	"Contents" : [
+		{
+			"Document" : {
+				"Id" : "templates.roleName",
+				"Arguments" : {
+					"roleName" : "agent"
+				}
+			}
+		},
+		{
+			"TranslationKey" : "role.agent.doc.main",
+			"IsVariable" : True,
+			"Document" : null
+		},
+		{
+			"Document" : {
+				"Id" : "templates.buttonContent",
+				"Arguments" : {
+					"buttonName" : "AgentButton",
+					"textKey" : "role.agent.doc.agentButton"
+				}
+			}
+		}
+	],
+	"Document" : null
+}

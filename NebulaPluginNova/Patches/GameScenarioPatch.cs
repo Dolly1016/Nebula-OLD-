@@ -66,6 +66,16 @@ static class CheckTaskCompletionPatch
     }
 }
 
+[HarmonyPatch(typeof(GameManager), nameof(GameManager.CheckEndGameViaTasks))]
+static class CheckEndGameViaTasksPatch
+{
+    static bool Prefix(GameManager __instance, ref bool __result)
+    {
+        __result = false;
+        return false;
+    }
+}
+
 [HarmonyPatch(typeof(LogicGameFlowNormal), nameof(LogicGameFlowNormal.IsGameOverDueToDeath))]
 public static class BlockGameOverPatch
 {

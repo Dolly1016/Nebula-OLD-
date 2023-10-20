@@ -30,6 +30,8 @@ public static class ShowIntroPatch
 
     static IEnumerator CoBegin(IntroCutscene __instance)
     {
+        HudManager.Instance.HideGameLoader();
+
         SoundManager.Instance.PlaySound(__instance.IntroStinger, false, 1f, null);
 
         __instance.HideAndSeekPanels.SetActive(false);
@@ -39,7 +41,7 @@ public static class ShowIntroPatch
         __instance.ImpostorTitle.gameObject.SetActive(false);
         __instance.ImpostorText.gameObject.SetActive(false);
 
-        IEnumerable<PlayerControl> shownPlayers = PlayerControl.AllPlayerControls.GetFastEnumerator();
+        IEnumerable<PlayerControl> shownPlayers = PlayerControl.AllPlayerControls.GetFastEnumerator().OrderBy(p => p.AmOwner ? 0 : 1);
         var myInfo = PlayerControl.LocalPlayer.GetModInfo();
         switch (myInfo?.Role.Role.Team.RevealType)
         {
@@ -132,6 +134,10 @@ public static class ShowIntroPatch
         var role = myInfo.Role.Role;
         __instance.RoleText.text = role.DisplayName;
         __instance.RoleBlurbText.text = role.IntroBlurb;
+        __instance.RoleBlurbText.transform.localPosition = new(0.0965f, -2.12f, -36f);
+        __instance.RoleBlurbText.rectTransform.sizeDelta = new(12.8673f, 0.7f);
+        __instance.RoleBlurbText.alignment = TMPro.TextAlignmentOptions.Top;
+
         foreach(var m in myInfo.AllModifiers)
         {
             string? mBlurb = m.IntroText;

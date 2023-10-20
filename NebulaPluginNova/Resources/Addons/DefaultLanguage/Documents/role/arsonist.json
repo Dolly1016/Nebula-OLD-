@@ -1,0 +1,36 @@
+﻿{
+	"Contents" : [
+		{
+			"Document" : {
+				"Id" : "templates.roleName",
+				"Arguments" : {
+					"roleName" : "arsonist"
+				}
+			}
+		},
+		{
+			"TranslationKey" : "role.arsonist.doc.main",
+			"IsVariable" : True,
+			"Document" : null
+		},
+		{
+			"Document" : {
+				"Id" : "templates.buttonContent",
+				"Arguments" : {
+					"buttonName" : "DouseButton",
+					"textKey" : "role.arsonist.doc.douseButton"
+				}
+			}
+		},
+		{
+			"Document" : {
+				"Id" : "templates.buttonContent",
+				"Arguments" : {
+					"buttonName" : "IgniteButton",
+					"textKey" : "role.arsonist.doc.igniteButton"
+				}
+			}
+		}
+	],
+	"Document" : null
+}

@@ -5,6 +5,7 @@ using Nebula.Utilities;
 using UnityEngine;
 using UnityEngine.Rendering;
 using Nebula.Roles;
+using Nebula.Behaviour;
 
 namespace Nebula.Configuration;
 
@@ -39,6 +40,7 @@ public class NebulaSettingMenu : MonoBehaviour
         MainHolderMask.sprite = VanillaAsset.FullScreenSprite;
         MainHolderMask.transform.localScale = new Vector3(6f,4.5f);
         MainHolder = UnityHelper.CreateObject<MetaScreen>("MainHolder", MainHolderParent.transform, new Vector3(0f, 0f));
+        MainHolder.gameObject.AddComponent<ScriptBehaviour>().UpdateHandler += MetaContext.ScrollView.GetDistHistoryUpdater(() => MainHolder.transform.localPosition.y, "SettingsMenu");
 
         FirstScroller = VanillaAsset.GenerateScroller(new Vector2(4f, 4.5f), MainHolderParent.transform, new Vector3(2.2f, -0.05f, -1f), MainHolder.transform, new FloatRange(0f, 1f),4.6f);
         UpdateLeftTab();
@@ -101,9 +103,10 @@ public class NebulaSettingMenu : MonoBehaviour
 
     private static TextAttribute RightTextAttr = new(TextAttribute.NormalAttr) { FontSize = 1.5f, FontMaxSize = 1.5f, FontMinSize = 0.7f, Size = new(3f, 5f), Alignment = TMPro.TextAlignmentOptions.TopLeft };
 
-    private void UpdateMainTab()
+    private void UpdateMainTab(bool stay = false)
     {
-        MainHolder.transform.localPosition = new Vector3(0, 0, 0);
+        if (!stay) MetaContext.ScrollView.RemoveDistHistory("SettingsMenu");
+        MainHolder.transform.localPosition = new Vector3(0, MetaContext.ScrollView.TryGetDistHistory("SettingsMenu"), 0);
         RightHolder.SetContext(null);
 
         MetaContext context = new();
@@ -120,6 +123,7 @@ public class NebulaSettingMenu : MonoBehaviour
             FontMaterial = VanillaAsset.StandardMaskedFontMaterial,
             Size = new Vector2(3.1f,0.3f),
             FontMaxSize = 1.2f,
+            FontMinSize = 0.75f,
             FontSize = 1.2f,
             Alignment = TMPro.TextAlignmentOptions.BottomRight
         };

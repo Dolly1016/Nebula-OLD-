@@ -1,0 +1,23 @@
+﻿{
+	"Contents" : [
+		{
+			"Document" : {
+				"Id" : "templates.imageContent",
+				"Arguments" : {
+					"imageName" : "AccelTrap",
+					"textKey" : "role.trapper.doc.accelTrap"
+				}
+			}
+		},
+		{
+			"Document" : {
+				"Id" : "templates.imageContent",
+				"Arguments" : {
+					"imageName" : "DecelTrap",
+					"textKey" : "role.trapper.doc.decelTrap"
+				}
+			}
+		}
+	],
+	"Document" : null
+}

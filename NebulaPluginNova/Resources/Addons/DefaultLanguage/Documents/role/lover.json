@@ -1,0 +1,20 @@
+﻿{
+	"Contents" : [
+		{
+			"Document" : {
+				"Id" : "templates.roleName",
+				"Arguments" : {
+					"roleName" : "lover"
+				}
+			}
+		},
+		{
+			"TranslationKey" : "role.lover.doc.main",
+			"IsVariable" : True
+		}
+		{
+			"TranslationKey" : "#IfConfig('options.role.lover.allowExtraWin','role.lover.doc.extraWin','empty')",
+			"IsVariable" : True
+		}
+	]
+}

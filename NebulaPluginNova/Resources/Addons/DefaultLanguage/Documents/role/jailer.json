@@ -1,0 +1,21 @@
+﻿{
+	"Contents" : [
+		{
+			"Document" : {
+				"Id" : "templates.roleName",
+				"Arguments" : {
+					"roleName" : "jailer"
+				}
+			}
+		},
+		{
+			"TranslationKey" : "role.jailer.doc.main",
+			"IsVariable" : True
+		},
+		{
+			"TranslationKey" : "#IfConfig('options.role.jailer.canIdentifyImpostors',IfConfig('options.role.jailer.canIdentifyDeadBodies','role.jailer.doc.identifiableBoth','role.jailer.doc.identifiableImpostors'),IfConfig('options.role.jailer.canIdentifyDeadBodies','role.jailer.doc.identifiableDeadBodies','empty'))",
+			"IsVariable" : True
+		}
+	],
+	"Document" : null
+}

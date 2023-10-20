@@ -1,5 +1,6 @@
 ﻿using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Nebula.Behaviour;
+using Rewired.UI.ControlMapper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,6 +53,16 @@ public static class StartOptionMenuPatch
 {
     public static void Postfix(OptionsMenuBehaviour __instance)
     {
+        foreach(var button in __instance.GetComponentsInChildren<CustomButton>(true))
+        {
+            if (button.name != "DoneButton") continue;
+
+            button.onClick.AddListener(() => {
+                if (AmongUsClient.Instance && AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Started)
+                    HudManager.Instance.ShowVanillaKeyGuide();
+            });
+            Debug.Log("Addlistener: "+button.name);
+        }
         var tabs = new List<TabGroup>(__instance.Tabs.ToArray());
 
         PassiveButton passiveButton;
@@ -74,10 +85,27 @@ public static class StartOptionMenuPatch
                 SetNebulaContext();
             }, buttonAttr) { RawText = option.DisplayName + " : " + option.DisplayValue }, 2, -1, 0, 0.4f);
             nebulaContext.Append(new MetaContext.VerticalMargin(0.2f));
-            nebulaContext.Append(new MetaContext.Button(() => {
-                __instance.OpenTabGroup(tabs.Count - 1);
-                SetKeyBindingContext();
-            }, buttonAttr) { TranslationKey = "config.client.keyBindings", Alignment = IMetaContext.AlignmentOption.Center });
+
+            if (!AmongUsClient.Instance || AmongUsClient.Instance.GameState != InnerNet.InnerNetClient.GameStates.Started)
+            {
+                nebulaContext.Append(new MetaContext.Button(() =>
+                {
+                    __instance.OpenTabGroup(tabs.Count - 1);
+                    SetKeyBindingContext();
+                }, buttonAttr)
+                { TranslationKey = "config.client.keyBindings", Alignment = IMetaContext.AlignmentOption.Center });
+            }
+
+            if(NebulaGameManager.Instance?.VoiceChatManager != null)
+            {
+                nebulaContext.Append(new MetaContext.Button(() =>
+                {
+                    NebulaGameManager.Instance?.VoiceChatManager?.OpenSettingScreen();
+                }, buttonAttr)
+                { TranslationKey = "config.client.vcSettings", Alignment = IMetaContext.AlignmentOption.Center });
+            }
+
+
             nebulaScreen.SetContext(nebulaContext);
         }
 
@@ -88,13 +116,13 @@ public static class StartOptionMenuPatch
 
         var keyBindingScreen = MetaScreen.GenerateScreen(new(5f, 4.5f), keyBindingTab.transform, new(0f, -0.28f, -10f), false, false, false);
 
-        KeyAssignment? currentAssignment = null;
+        IKeyAssignment? currentAssignment = null;
 
         void SetKeyBindingContext()
         {
             MetaContext keyBindingContext = new();
             TMPro.TextMeshPro? text = null;
-            keyBindingContext.Append(KeyAssignment.AllKeyAssignments, (assignment) =>
+            keyBindingContext.Append(IKeyAssignment.AllKeyAssignments, (assignment) =>
             new MetaContext.Button(() =>
             {
                 currentAssignment = assignment;

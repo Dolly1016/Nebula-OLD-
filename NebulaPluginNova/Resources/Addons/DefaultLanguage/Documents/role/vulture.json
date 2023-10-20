@@ -1,0 +1,25 @@
+﻿{
+	"Contents" : [
+		{
+			"Document" : {
+				"Id" : "templates.roleName",
+				"Arguments" : {
+					"roleName" : "vulture"
+				}
+			}
+		},
+		{
+			"TranslationKey" : "role.vulture.doc.main",
+			"IsVariable" : True
+		},
+		{
+			"Document" : {
+				"Id" : "templates.buttonContent",
+				"Arguments" : {
+					"buttonName" : "EatButton",
+					"textKey" : "role.vulture.doc.eatButton"
+				}
+			}
+		}
+	]
+}

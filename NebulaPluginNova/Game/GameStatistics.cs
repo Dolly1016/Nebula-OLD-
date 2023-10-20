@@ -25,6 +25,7 @@ public static class EventDetail
     static public TranslatableTag Guess = new("statistics.events.guess");
     static public TranslatableTag Embroil = new("statistics.events.embroil");
     static public TranslatableTag Trap = new("statistics.events.trap");
+    static public TranslatableTag Accident = new("statistics.events.accident");
 }
 
 public enum GameStatisticsGatherTag
@@ -259,6 +260,8 @@ public class GameStatisticsViewer : MonoBehaviour
     GameStatistics.Event? eventPiled, eventSelected, currentShown;
     GameObject CriticalPoints = null!;
 
+    public float? SelectedTime => eventSelected?.Time;
+
     public PoolablePlayer PlayerPrefab = null!;
     public TMPro.TextMeshPro GameEndText = null!;
     static public GameStatisticsViewer Instance { get; private set; } = null!;
@@ -427,11 +430,35 @@ public class GameStatisticsViewer : MonoBehaviour
         minimap.SetActive(true);
         detailHolder.SetActive(true);
 
+        float p = 0f;
         foreach (var pos in statisticsEvent.Position)
         {
             var renderer = GameObject.Instantiate(NebulaGameManager.Instance!.RuntimeAsset.MinimapPrefab.HerePoint, baseOnMinimap.transform);
             PlayerMaterial.SetColors(pos.Item1, renderer);
-            renderer.transform.localPosition = (Vector3)(pos.Item2 / NebulaGameManager.Instance!.RuntimeAsset.MapScale) + new Vector3(0, 0, -1f);
+            renderer.transform.localPosition = (Vector3)(pos.Item2 / NebulaGameManager.Instance!.RuntimeAsset.MapScale) + new Vector3(0, 0, -1f - p);
+            var button = renderer.gameObject.SetUpButton();
+            button.gameObject.AddComponent<BoxCollider2D>().size = new(0.3f, 0.3f);
+
+            button.OnMouseOver.AddListener(()=> {
+                MetaContext context = new();
+
+                foreach (var near in statisticsEvent.Position)
+                {
+                    if (near.Item2.Distance(pos.Item2) > 0.6f) continue;
+
+                    if (context.Count > 0) context.Append(new MetaContext.VerticalMargin(0.1f));
+                    var roleText = NebulaGameManager.Instance.RoleHistory.EachMoment(history => history.PlayerId == near.Item1 && !(history.Time > statisticsEvent.Time),
+                        (role, modifiers) => RoleHistoryHelper.ConvertToRoleName(role, modifiers, false)).LastOrDefault();
+                    context.Append(new MetaContext.Text(TextAttribute.BoldAttrLeft) { RawText = NebulaGameManager.Instance.GetModPlayerInfo(near.Item1)!.DefaultName });
+                    context.Append(new MetaContext.VariableText(new TextAttribute(TextAttribute.BoldAttrLeft) { Alignment = TMPro.TextAlignmentOptions.TopLeft }.EditFontSize(1.35f)) { RawText = roleText ?? "" });
+
+                }
+
+                NebulaManager.Instance.SetHelpContext(button, context);
+            });
+            button.OnMouseOut.AddListener(() => NebulaManager.Instance.HideHelpContextIf(button));
+
+            p += 0.001f;
         }
 
         

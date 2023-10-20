@@ -1,0 +1,25 @@
+﻿{
+	"Contents" : [
+		{
+			"Document" : {
+				"Id" : "templates.roleName",
+				"Arguments" : {
+					"roleName" : "comet"
+				}
+			}
+		},
+		{
+			"TranslationKey" : "role.comet.doc.main",
+			"IsVariable" : True
+		},
+		{
+			"Document" : {
+				"Id" : "templates.buttonContent",
+				"Arguments" : {
+					"buttonName" : "BoostButton",
+					"textKey" : "role.comet.doc.blazeButton"
+				}
+			}
+		}
+	]
+}

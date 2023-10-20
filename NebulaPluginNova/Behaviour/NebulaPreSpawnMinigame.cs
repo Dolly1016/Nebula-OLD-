@@ -386,6 +386,11 @@ public class NebulaPreSpawnMinigame : Minigame
 
     public override void Close()
     {
+        
+    }
+
+    public void CloseSpawnInMinigame()
+    {
         ControllerManager.Instance.CloseOverlayMenu(base.name);
         this.amClosing = Minigame.CloseState.Closing;
         StartCoroutine(CoClose().WrapToIl2Cpp());

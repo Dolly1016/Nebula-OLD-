@@ -1,0 +1,27 @@
+﻿{
+	"Contents" : [
+		{
+			"Document" : {
+				"Id" : "templates.roleName",
+				"Arguments" : {
+					"roleName" : "camouflager"
+				}
+			}
+		},
+		{
+			"TranslationKey" : "role.camouflager.doc.main",
+			"IsVariable" : True,
+			"Document" : null
+		},
+		{
+			"Document" : {
+				"Id" : "templates.buttonContent",
+				"Arguments" : {
+					"buttonName" : "CamoButton",
+					"textKey" : "role.camouflager.doc.camoButton"
+				}
+			}
+		}
+	],
+	"Document" : null
+}

@@ -1,0 +1,26 @@
+{
+	"Arguments" : [
+		"imageName",
+		"textKey"
+	],
+	"Contents" : [
+		{
+			"VSpace" : 0.1
+		},
+		{
+			"Aligned" : [
+				{
+					"Image" : "#Concat('Nebula::',imageName)",
+					"Width" : 0.4
+				},
+				{
+					"HSpace" : 0.15
+				},
+				{
+					"TranslationKey" : "#textKey",
+					"IsVariable" : True
+				}
+			]
+		}
+	]
+}

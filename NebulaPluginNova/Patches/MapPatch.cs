@@ -145,3 +145,12 @@ public static class InitMapPatch
         PlayerControl.LocalPlayer.GetModInfo()?.RoleAction(r => r.OnMapInstantiated());
     }
 }
+
+[HarmonyPatch(typeof(MapBehaviour), nameof(MapBehaviour.GenericShow))]
+static class MapBehaviourGenericShowPatch
+{
+    static void Postfix(MapBehaviour __instance)
+    {
+        __instance.transform.localPosition = new Vector3(0, 0, -30f);
+    }
+}

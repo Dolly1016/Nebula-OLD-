@@ -16,6 +16,7 @@ public static class MapBehaviourExtension
     public static void InitializeModOption(this MapCountOverlay overlay)
     {
         CanIdentifyImpostors = false;
+        CanIdentifyDeadBodies = false;
         AffectedByCommSab = true;
         MapColor = null;
     }

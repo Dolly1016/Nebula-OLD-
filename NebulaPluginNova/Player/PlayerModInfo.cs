@@ -26,6 +26,8 @@ public static class PlayerState
     public static TranslatableTag Embroiled = new("state.embroiled");
     public static TranslatableTag Suicide = new("state.suicide");
     public static TranslatableTag Trapped = new("state.trapped");
+    public static TranslatableTag Revived = new("state.revived");
+    public static TranslatableTag Pseudocide = new("state.pseudocide");
 }
 
 public class TimeLimitedModulator
@@ -153,6 +155,7 @@ public class PlayerModInfo
     //各種収集データ
     public PlayerModInfo? MyKiller = null;
     public float? DeathTimeStamp = null;
+    public TranslatableTag? MyState = PlayerState.Alive;
 
     public IEnumerable<AssignableInstance> AllAssigned()
     {
@@ -208,11 +211,11 @@ public class PlayerModInfo
         if (outfits.Count > 0)
         {
             outfits.Sort((o1, o2) => o2.Priority - o1.Priority);
-            newOutfit = outfits[outfits.Count - 1].outfit;
+            newOutfit = outfits[0].outfit;
         }
 
         MyControl.RawSetColor(newOutfit.ColorId);
-        MyControl.RawSetName(newOutfit.PlayerName);
+        //MyControl.RawSetName(newOutfit.PlayerName);
         MyControl.RawSetHat(newOutfit.HatId, newOutfit.ColorId);
         MyControl.RawSetSkin(newOutfit.SkinId, newOutfit.ColorId);
         MyControl.RawSetVisor(newOutfit.VisorId, newOutfit.ColorId);
@@ -241,9 +244,9 @@ public class PlayerModInfo
         return DefaultOutfit;
     }
 
-    public void UpdateNameText(TMPro.TextMeshPro nameText,bool showDefaultName = false)
+    public void UpdateNameText(TMPro.TextMeshPro nameText,bool onMeeting = false,  bool showDefaultName = false)
     {
-        var text = CurrentOutfit.PlayerName;
+        var text = onMeeting ? DefaultName : CurrentOutfit.PlayerName;
         var color = Color.white;
 
         RoleAction(r => r.DecoratePlayerName(ref text, ref color));
@@ -259,8 +262,8 @@ public class PlayerModInfo
         
     }
 
-    static Color fakeTaskColor = new Color(0x86 / 255f, 0x86 / 255f, 0x86 / 255f);
-    static Color crewTaskColor = new Color(0xFA / 255f, 0xD9 / 255f, 0x34 / 255f);
+    static public readonly Color FakeTaskColor = new Color(0x86 / 255f, 0x86 / 255f, 0x86 / 255f);
+    static public readonly Color CrewTaskColor = new Color(0xFA / 255f, 0xD9 / 255f, 0x34 / 255f);
     public void UpdateRoleText(TMPro.TextMeshPro roleText) {
         
         string text = myRole?.DisplayRoleName ?? "Undefined";
@@ -268,7 +271,7 @@ public class PlayerModInfo
         ModifierAction(m => m.DecorateRoleName(ref text));
 
         if (myRole?.HasAnyTasks ?? true)
-            text += (" (" + Tasks.ToString((NebulaGameManager.Instance?.CanSeeAllInfo ?? false) || !AmongUsUtil.InCommSab) + ")").Color((myRole?.HasCrewmateTasks ?? false) ? crewTaskColor : fakeTaskColor);
+            text += (" (" + Tasks.ToString((NebulaGameManager.Instance?.CanSeeAllInfo ?? false) || !AmongUsUtil.InCommSab) + ")").Color((myRole?.HasCrewmateTasks ?? false) ? CrewTaskColor : FakeTaskColor);
         
         roleText.text = text;
 
@@ -285,14 +288,20 @@ public class PlayerModInfo
             DestroyableSingleton<RoleManager>.Instance.SetRole(MyControl, RoleTypes.Crewmate);
         
         myRole = role.CreateInstance(this, arguments);
-        myRole.OnActivated();
+
+        if(NebulaGameManager.Instance?.GameState == NebulaGameStates.Initialized)myRole.OnActivated();
+
+        NebulaGameManager.Instance?.RoleHistory.Add(new(PlayerId, myRole));
     }
 
     private void SetModifier(AbstractModifier role, int[] arguments)
     {
         var modifier = role.CreateInstance(this, arguments);
         myModifiers.Add(modifier);
-        modifier.OnActivated();
+
+        if (NebulaGameManager.Instance?.GameState == NebulaGameStates.Initialized) modifier.OnActivated();
+
+        NebulaGameManager.Instance?.RoleHistory.Add(new(PlayerId, modifier, true));
     }
 
     public void OnSetAttribute(AttributeModulator.PlayerAttribute attribute) {
@@ -307,15 +316,18 @@ public class PlayerModInfo
                     yield return new WaitForSeconds(0.24f);
                     if (!HasAttribute(attribute)) yield break;
 
-                    if (MyControl.MyPhysics.Velocity.magnitude > 0)
+                    if (!MyControl.inVent && !MyControl.Data.IsDead)
                     {
-                        var vec = MyControl.MyPhysics.Velocity.normalized * 0.08f * (isLeft ? 1f : -1f);
-                        AmongUsUtil.GenerateFootprint(MyControl.transform.position + new Vector3(-vec.y, vec.x - 0.22f), Roles.Modifier.Bloody.MyRole.RoleColor, 5f);
-                        isLeft = !isLeft;
-                    }
-                    else
-                    {
-                        AmongUsUtil.GenerateFootprint(MyControl.transform.position + new Vector3(0f, -0.22f), Roles.Modifier.Bloody.MyRole.RoleColor,5f);
+                        if (MyControl.MyPhysics.Velocity.magnitude > 0)
+                        {
+                            var vec = MyControl.MyPhysics.Velocity.normalized * 0.08f * (isLeft ? 1f : -1f);
+                            AmongUsUtil.GenerateFootprint(MyControl.transform.position + new Vector3(-vec.y, vec.x - 0.22f), Roles.Modifier.Bloody.MyRole.RoleColor, 5f);
+                            isLeft = !isLeft;
+                        }
+                        else
+                        {
+                            AmongUsUtil.GenerateFootprint(MyControl.transform.position + new Vector3(0f, -0.22f), Roles.Modifier.Bloody.MyRole.RoleColor, 5f);
+                        }
                     }
                 }
             }
@@ -336,6 +348,7 @@ public class PlayerModInfo
             if (predicate.Invoke(m))
             {
                 m.Inactivate();
+                NebulaGameManager.Instance?.RoleHistory.Add(new(PlayerId, m, false));
                 return true;
             }
             return false;
@@ -482,7 +495,7 @@ public class PlayerModInfo
     }
 
     public void ReleaseDeadBody() {
-        RpcHoldDeadBody.Invoke(new(PlayerId, byte.MaxValue, deadBodyCache?.transform.localPosition ?? new Vector2(10000, 10000)));
+        RpcHoldDeadBody.Invoke(new(PlayerId, byte.MaxValue, (deadBodyCache ? deadBodyCache?.transform.localPosition : null) ?? new Vector2(10000, 10000)));
     }
 
     public void HoldDeadBody(DeadBody deadBody) {
@@ -496,8 +509,11 @@ public class PlayerModInfo
           var info = NebulaGameManager.Instance?.GetModPlayerInfo(message.holderId);
           if (info == null) return;
 
-          if(message.bodyId == byte.MaxValue)
+          if (message.bodyId == byte.MaxValue)
+          {
+              if(info.deadBodyCache && message.pos.magnitude < 10000) info.deadBodyCache.transform.localPosition = new Vector3(message.Item3.x, message.Item3.y, message.Item3.y / 1000f);
               info.HoldingDeadBody = null;
+          }
           else
           {
               info.HoldingDeadBody = message.bodyId;
@@ -508,12 +524,20 @@ public class PlayerModInfo
       }
       );
 
+    static public (float angle,float distance) LocalMouseInfo { get
+        {
+            Vector2 vec = (Vector2)Input.mousePosition - new Vector2(Screen.width / 2, Screen.height / 2);
+            float currentAngle = Mathf.Atan2(vec.y, vec.x);
+            float ratio = (Camera.main.orthographicSize * 2f) / (float)Screen.height;
+            return (currentAngle, vec.magnitude * ratio);
+        } 
+    }
+
     private void UpdateMouseAngle()
     {
         if (!requiredUpdateMouseAngle) return;
 
-        Vector2 vec = (Vector2)Input.mousePosition - new Vector2(Screen.width / 2, Screen.height / 2);
-        float currentAngle = Mathf.Atan2(vec.y,vec.x);
+        float currentAngle = LocalMouseInfo.angle;
 
         if (Mathf.Repeat(currentAngle - MouseAngle, Mathf.PI * 2f) > 0.02f) RpcUpdateAngle.Invoke((PlayerId, currentAngle));
 
@@ -579,22 +603,25 @@ public class PlayerModInfo
         }
 
     }
-    private void UpdateVisibility()
+    public void UpdateVisibility(bool update)
     {
-        bool isInvisible = HasAttribute(AttributeModulator.PlayerAttribute.Invisible) && !IsDead;
-        MyControl.cosmetics.nameText.gameObject.SetActive(!MyControl.inVent && ((!isInvisible) || AmOwner || (NebulaGameManager.Instance?.CanSeeAllInfo ?? false)));
+        bool isInvisible = HasAttribute(AttributeModulator.PlayerAttribute.Invisible) || IsDead;
+        MyControl.cosmetics.nameText.transform.parent.gameObject.SetActive(!MyControl.inVent && ((!isInvisible) || AmOwner || (NebulaGameManager.Instance?.CanSeeAllInfo ?? false)));
 
         if (IsDead) return;
 
         float alpha = MyControl.cosmetics.currentBodySprite.BodySprite.color.a;
-        if (isInvisible)
-            alpha -= 0.85f * Time.deltaTime;
-        else
-            alpha += 0.85f * Time.deltaTime;
+        if (update)
+        {
+            if (isInvisible)
+                alpha -= 0.85f * Time.deltaTime;
+            else
+                alpha += 0.85f * Time.deltaTime;
 
-        float min = 0f, max = 1f;
-        if (AmOwner || (NebulaGameManager.Instance?.CanSeeAllInfo ?? false)) min = 0.25f;
-        alpha = Mathf.Clamp(alpha, min, max);
+            float min = 0f, max = 1f;
+            if (AmOwner || (NebulaGameManager.Instance?.CanSeeAllInfo ?? false)) min = 0.25f;
+            alpha = Mathf.Clamp(alpha, min, max);
+        }
 
 
         var color = new Color(1f, 1f, 1f, alpha);
@@ -622,13 +649,13 @@ public class PlayerModInfo
 
     public void Update()
     {
-        UpdateNameText(MyControl.cosmetics.nameText, NebulaGameManager.Instance?.CanSeeAllInfo ?? false);
+        UpdateNameText(MyControl.cosmetics.nameText, false, NebulaGameManager.Instance?.CanSeeAllInfo ?? false);
         UpdateRoleText(roleText);
         UpdateHoldingDeadBody();
         UpdateMouseAngle();
         UpdateSpeedModulators();
         UpdateAttributeModulators();
-        UpdateVisibility();
+        UpdateVisibility(true);
 
         RoleAction((role) => {
             role.Update();

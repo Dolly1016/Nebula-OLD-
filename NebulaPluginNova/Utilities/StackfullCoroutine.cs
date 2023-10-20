@@ -26,4 +26,5 @@ public class StackfullCoroutine
 
         return stack.Count > 0;
     }
+
 }

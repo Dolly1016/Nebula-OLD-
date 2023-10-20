@@ -16,7 +16,7 @@ public class Draggable : ScriptHolder
     {
         if (role.MyPlayer.AmOwner)
         {
-            ObjectTracker<DeadBody> deadBodyTracker = Bind(ObjectTrackers.ForDeadBody(1.2f, role.MyPlayer.MyControl, (d) => d.GetHolder() == null));
+            ObjectTracker<DeadBody> deadBodyTracker = Bind(ObjectTrackers.ForDeadBody(null, role.MyPlayer.MyControl, (d) => d.GetHolder() == null));
 
             var dragButton = Bind(new ModAbilityButton()).KeyBind(KeyAssignmentType.Ability);
             dragButton.SetSprite(buttonSprite.GetSprite());

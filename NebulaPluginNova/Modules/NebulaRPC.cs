@@ -131,7 +131,8 @@ public class RemoteProcessBase
         Hash = name.ComputeConstantHash();
         Name = name;
 
-        if (AllNebulaProcess.ContainsKey(Hash)) NebulaPlugin.Log.Print(null, name + " is duplicated.");
+        if (AllNebulaProcess.ContainsKey(Hash)) NebulaPlugin.Log.Print(null, name + " is duplicated. (" + Hash + ")");
+        else NebulaPlugin.Log.Print(null, name + " is registered. (" + Hash + ")");
 
         AllNebulaProcess[Hash] = this;
     }
@@ -428,6 +429,38 @@ public class DivisibleRemoteProcess<Parameter, DividedParameter> : RemoteProcess
         catch (Exception ex)
         {
             Debug.LogError($"Error in RPC(Received: {Name})" + ex.Message);
+        }
+    }
+}
+
+public class RPCScheduler
+{
+    public enum RPCTrigger
+    {
+        PreMeeting,
+        AfterMeeting
+    }
+
+    private Dictionary<RPCTrigger, List<NebulaRPCInvoker>> allDic = new();
+    public void Schedule(RPCTrigger trigger, NebulaRPCInvoker invoker)
+    {
+        List<NebulaRPCInvoker>? list;
+        if (!allDic.TryGetValue(trigger, out list))
+        {
+            list = new();
+            allDic[trigger] = list;
+        }
+
+        list?.Add(invoker);
+    }
+
+    public void Execute(RPCTrigger trigger)
+    {
+        if(allDic.TryGetValue(trigger,out var list))
+        {
+            Debug.Log($"Execute RPC ({list.Count})");
+            CombinedRemoteProcess.CombinedRPC.Invoke(list.ToArray());
+            allDic.Remove(trigger);
         }
     }
 }
